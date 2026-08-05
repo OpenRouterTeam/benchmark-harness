@@ -32,7 +32,27 @@ D) {option_d}`;
 
 export const GPQA_TEMPERATURE = GPQA_META.temperature;
 
-const GPQA_OPTION_FIELDS = [
+//#endregion
+
+//#region Dataset record -> Sample
+
+/**
+ * NOTE ON DIVERGENCE FROM OPENBENCH: openbench's gpqa reseeds Python's RNG to 0
+ * before EVERY record, collapsing `random.shuffle` to a constant permutation so
+ * the correct answer is ALWAYS at position "B". A model that always answers "B"
+ * would score 100%. We deliberately DO NOT replicate that bug: each record is
+ * shuffled with a seed derived from its index, removing MCQ position bias while
+ * staying reproducible (same index -> same order across epochs and runs).
+ *
+ * Consequence: gpqa accuracy will not match openbench's and should track
+ * canonical/published gpqa numbers more closely.
+ */
+/**
+ * Exported for the manifest drift guard (manifests.test.ts) — not a public
+ * API. The manifest's documentation-only targetField must stay pinned to the
+ * field the solver actually reads.
+ */
+export const GPQA_OPTION_FIELDS = [
   "Correct Answer",
   "Incorrect Answer 1",
   "Incorrect Answer 2",
@@ -86,6 +106,10 @@ export const GPQA_DATASET = {
   dataset: "nmayorga7/gpqa_diamond",
   config: "default",
   split: "train",
+  /* Captured 2026-08-05. The HF loader fails closed if upstream moves; an
+   * upstream dataset change is a new comparability series — re-pin, never
+   * un-pin. Must match GPQA_MANIFEST.dataset.revision (drift-guarded). */
+  revision: "c63e9ba02dc3da4c698e2a8485551b35041c3900",
   recordToSample: gpqaRecordToSample,
 } as const satisfies Omit<HfDatasetConfig, "pageSize">;
 
