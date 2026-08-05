@@ -182,6 +182,18 @@ export type CustomEvalBenchmarkConfig = z.infer<
   typeof CustomEvalBenchmarkConfigSchema
 >;
 
+/** Chess has no per-run options: the five tasks are fixed dataset rows. */
+export const ChessOptionsSchema = z.object({});
+
+export const ChessBenchmarkConfigSchema = z.object({
+  benchmarkId: z.literal("chess"),
+  /* Fixed-temperature base: the solver pins temperature 0 for move
+   * determinism, so the config must not accept (and silently drop) one. */
+  ...FixedTemperatureBenchmarkBaseSchema.shape,
+  ...ChessOptionsSchema.shape,
+});
+export type ChessBenchmarkConfig = z.infer<typeof ChessBenchmarkConfigSchema>;
+
 /**
  * Options shared by the Modal-backed agentic benchmarks (SWE-Atlas tracks and
  * DeepSWE). `stepLimit` is declared per benchmark because the defaults differ.
@@ -301,6 +313,7 @@ export const BenchmarkRunConfigSchema = z.discriminatedUnion("benchmarkId", [
   DracoBenchmarkConfigSchema,
   IfStructBenchmarkConfigSchema,
   CustomEvalBenchmarkConfigSchema,
+  ChessBenchmarkConfigSchema,
   SweAtlasQaConfigSchema,
   SweAtlasTwConfigSchema,
   SweAtlasRfConfigSchema,
@@ -338,6 +351,7 @@ export const BENCHMARK_OPTIONS_SCHEMAS = {
   terminal_bench: TerminalBenchOptionsSchema,
   ifstruct: IfStructOptionsSchema,
   custom_eval: CustomEvalOptionsSchema,
+  chess: ChessOptionsSchema,
   swe_atlas_qa: SweAtlasOptionsSchema,
   swe_atlas_tw: SweAtlasOptionsSchema,
   swe_atlas_rf: SweAtlasOptionsSchema,

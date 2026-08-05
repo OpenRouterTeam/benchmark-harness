@@ -136,6 +136,12 @@ export interface ModelOutput {
   readonly message: ChatMessage;
   readonly usage?: ModelUsage;
   readonly generationTimeMs?: number;
+  /**
+   * OpenRouter generation id for THIS call. Also recorded into the
+   * fiber-scoped run collector; surfaced here so multi-turn solvers can
+   * attribute cost to individual iterations (billing joins per turn).
+   */
+  readonly generationId?: string;
 }
 
 export interface TaskState {

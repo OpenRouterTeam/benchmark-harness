@@ -1,3 +1,4 @@
+import { CHESS_BENCHMARK } from "./chess/benchmark";
 import { CUSTOM_EVAL_BENCHMARK } from "./custom-eval/benchmark";
 import { DEEP_SWE_BENCHMARK } from "./deep-swe/benchmark";
 import { DRACO_BENCHMARK } from "./draco/benchmark";
@@ -30,6 +31,7 @@ const BENCHMARKS: Record<string, Benchmark> = {
   [DRACO_BENCHMARK.id]: DRACO_BENCHMARK,
   [IFSTRUCT_BENCHMARK.id]: IFSTRUCT_BENCHMARK,
   [CUSTOM_EVAL_BENCHMARK.id]: CUSTOM_EVAL_BENCHMARK,
+  [CHESS_BENCHMARK.id]: CHESS_BENCHMARK,
   [SWE_ATLAS_QA_BENCHMARK.id]: SWE_ATLAS_QA_BENCHMARK,
   [SWE_ATLAS_TW_BENCHMARK.id]: SWE_ATLAS_TW_BENCHMARK,
   [SWE_ATLAS_RF_BENCHMARK.id]: SWE_ATLAS_RF_BENCHMARK,
