@@ -22,6 +22,11 @@ import {
 } from "../harness/progress";
 import type { RunResult, RunConfig } from "../harness/run";
 import { runBenchmark } from "../harness/run";
+import type { SampleResultStoreService } from "../harness/sample-result-store";
+import {
+  NOOP_SAMPLE_RESULT_STORE,
+  SampleResultStore,
+} from "../harness/sample-result-store";
 import { runHarnessPromise } from "../internal/effect-logger";
 import type { AsyncEither } from "../internal/either";
 import { Either } from "../internal/either";
@@ -46,6 +51,8 @@ export interface RunBenchmarkInput {
   readonly checkpointStore?: CheckpointStoreService;
   readonly abortSignal?: AbortSignal;
   readonly resultStore?: ResultStoreService;
+  /** Durable per-(sample, epoch) results; enables skip/resume across activity retries. */
+  readonly sampleResultStore?: SampleResultStoreService;
 }
 
 export interface RunBenchmarkOutput {
@@ -81,6 +88,12 @@ export function runBenchmarkById(
     CheckpointStore,
     input.checkpointStore ?? NOOP_CHECKPOINT_STORE
   );
+
+  const sampleResultLayer = layerSucceed(
+    SampleResultStore,
+    input.sampleResultStore ?? NOOP_SAMPLE_RESULT_STORE
+  );
+
   const model = modelFromConfig(input.benchmarkConfig);
   const runConfig: RunConfig = {
     epochs: input.epochs,
@@ -101,7 +114,8 @@ export function runBenchmarkById(
   const layers = layerMergeAll(
     fullBenchmarkLayer,
     progressLayer,
-    checkpointLayer
+    checkpointLayer,
+    sampleResultLayer
   );
   const runOpts =
     input.abortSignal !== undefined ? { signal: input.abortSignal } : undefined;

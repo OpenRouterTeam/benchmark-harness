@@ -6,7 +6,10 @@ export const RESULT_WRITER = "openrouter-bench" as const;
 
 export const ScorerTrajectorySchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("verifier_log"), log: z.string() }),
-  z.object({ kind: z.literal("judge_runs"), runs: z.array(z.unknown()) }),
+  z.object({
+    kind: z.literal("judge_runs"),
+    runs: z.array(z.unknown()).readonly(),
+  }),
 ]);
 
 export const BenchmarkResultRowSchema = z.object({

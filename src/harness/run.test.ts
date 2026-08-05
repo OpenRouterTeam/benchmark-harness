@@ -16,6 +16,7 @@ import { fromChunk } from "effect/Stream";
 import {
   noopProgressLayer,
   noopCheckpointLayer,
+  noopSampleResultLayer,
 } from "../../test/helpers/noop-progress-layer";
 import { mcqScorer } from "../benchmarks/scorers/mcq/scorer";
 import { runHarnessPromise } from "../internal/effect-logger";
@@ -27,13 +28,12 @@ import type { ModelService } from "./model";
 import { Model } from "./model";
 import type { CheckpointStore, ProgressReporter } from "./progress";
 import { runBenchmark } from "./run";
+import type { SampleResultStore } from "./sample-result-store";
 import { Scorer } from "./scorer";
 import type { SolverService } from "./solver";
 import { systemMessage, chain, generate, Solver } from "./solver";
 
-const infoSpies: {
-  mockRestore: () => void;
-}[] = [];
+const infoSpies: { mockRestore: () => void }[] = [];
 afterEach(() => {
   for (const info of infoSpies.splice(0)) {
     info.mockRestore();
@@ -94,14 +94,22 @@ function makeLayers(
     layer: Layer<Model>;
   },
   solverService: ReturnType<typeof chain>
-): Layer<Dataset | Solver | Scorer | ProgressReporter | CheckpointStore> {
+): Layer<
+  | Dataset
+  | Solver
+  | Scorer
+  | ProgressReporter
+  | CheckpointStore
+  | SampleResultStore
+> {
   return mergeAll(
     fakeDatasetLayer(SAMPLES),
     layerSucceed(Solver, Solver.of(solverService)),
     layerSucceed(Scorer, Scorer.of(mcqScorer)),
     model.layer,
     noopProgressLayer,
-    noopCheckpointLayer
+    noopCheckpointLayer,
+    noopSampleResultLayer
   );
 }
 describe("runBenchmark", () => {
@@ -130,7 +138,8 @@ describe("runBenchmark", () => {
       layerSucceed(Solver, Solver.of(solver)),
       layerSucceed(Scorer, Scorer.of(mcqScorer)),
       noopProgressLayer,
-      noopCheckpointLayer
+      noopCheckpointLayer,
+      noopSampleResultLayer
     );
     await runHarnessPromise(
       runBenchmark({
@@ -184,7 +193,8 @@ describe("runBenchmark", () => {
       layerSucceed(Scorer, Scorer.of(mcqScorer)),
       model.layer,
       noopProgressLayer,
-      noopCheckpointLayer
+      noopCheckpointLayer,
+      noopSampleResultLayer
     );
     const result = await runPromise(
       runBenchmark({ epochs: 1, maxConcurrency: 1 }).pipe(provide(layers))
@@ -225,7 +235,8 @@ describe("runBenchmark", () => {
       layerSucceed(Solver, Solver.of(solver)),
       layerSucceed(Scorer, Scorer.of(mcqScorer)),
       noopProgressLayer,
-      noopCheckpointLayer
+      noopCheckpointLayer,
+      noopSampleResultLayer
     );
     const result = await runPromise(
       runBenchmark({ epochs: 1, maxConcurrency: 1 }).pipe(provide(layers))
@@ -241,7 +252,8 @@ describe("runBenchmark", () => {
       layerSucceed(Scorer, Scorer.of(mcqScorer)),
       model.layer,
       noopProgressLayer,
-      noopCheckpointLayer
+      noopCheckpointLayer,
+      noopSampleResultLayer
     );
     const result = await runPromise(
       runBenchmark({
@@ -280,7 +292,8 @@ describe("runBenchmark", () => {
       layerSucceed(Scorer, Scorer.of(mcqScorer)),
       model.layer,
       noopProgressLayer,
-      noopCheckpointLayer
+      noopCheckpointLayer,
+      noopSampleResultLayer
     );
     const result = await runPromise(
       runBenchmark({ epochs: 1, maxConcurrency: 2 }).pipe(provide(layers))
@@ -319,7 +332,8 @@ describe("runBenchmark", () => {
       layerSucceed(Scorer, Scorer.of(mcqScorer)),
       model.layer,
       noopProgressLayer,
-      noopCheckpointLayer
+      noopCheckpointLayer,
+      noopSampleResultLayer
     );
     const result = await runPromise(
       runBenchmark({ epochs: 1, maxConcurrency: 2 }).pipe(provide(layers))
@@ -362,7 +376,8 @@ describe("runBenchmark", () => {
       layerSucceed(Scorer, Scorer.of(mcqScorer)),
       model.layer,
       noopProgressLayer,
-      noopCheckpointLayer
+      noopCheckpointLayer,
+      noopSampleResultLayer
     );
     const result = await runPromise(
       runBenchmark({ epochs: 1, maxConcurrency: 2 }).pipe(provide(layers))

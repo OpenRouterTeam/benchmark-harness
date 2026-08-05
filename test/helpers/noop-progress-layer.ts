@@ -6,6 +6,10 @@ import {
   NOOP_PROGRESS_REPORTER,
   ProgressReporter,
 } from "../../src/harness/progress";
+import {
+  NOOP_SAMPLE_RESULT_STORE,
+  SampleResultStore,
+} from "../../src/harness/sample-result-store";
 
 export const noopProgressLayer = layerSucceed(
   ProgressReporter,
@@ -15,4 +19,8 @@ export const noopProgressLayer = layerSucceed(
 export const noopCheckpointLayer = layerSucceed(
   CheckpointStore,
   NOOP_CHECKPOINT_STORE
+);
+export const noopSampleResultLayer = layerSucceed(
+  SampleResultStore,
+  NOOP_SAMPLE_RESULT_STORE
 );
