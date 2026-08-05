@@ -1,0 +1,25 @@
+{
+  "task_id": "262b3145-5b6d-486b-a09f-c8e6a8f98e20",
+  "domain": "Technology",
+  "experiment_name": "gpt-5.5-solo",
+  "run_scores": [
+    {
+      "run_num": 1,
+      "raw_score": 178.0,
+      "max_possible": 238.0,
+      "normalized_score": 74.78991596638656,
+      "pass_rate": 80.0,
+      "criteria_met": 28,
+      "criteria_total": 35
+    }
+  ],
+  "mean_normalized": 74.78991596638656,
+  "std_normalized": 0.0,
+  "mean_pass_rate": 80.0,
+  "std_pass_rate": 0.0,
+  "judge_runs_completed": 1,
+  "judge_runs_failed": 0,
+  "generation_cost": 0.925152,
+  "judging_cost": 0.5149816,
+  "total_cost": 1.4401336
+}

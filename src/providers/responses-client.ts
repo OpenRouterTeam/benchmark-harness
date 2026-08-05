@@ -1,0 +1,470 @@
+import { HTTPClient } from "@openrouter/sdk/lib/http";
+import type {
+  OpenResponsesResult,
+  ResponsesRequest,
+  StreamEvents,
+} from "@openrouter/sdk/models";
+import { OpenRouterError } from "@openrouter/sdk/models/errors/openroutererror";
+import { Responses as ResponsesClient } from "@openrouter/sdk/sdk/responses";
+import { Tag } from "effect/Context";
+import { TaggedError } from "effect/Data";
+import type { Effect } from "effect/Effect";
+import { fail, flatMap, map, tryPromise } from "effect/Effect";
+import type { Layer } from "effect/Layer";
+import { succeed as layerSucceed } from "effect/Layer";
+
+import type { Citation, ModelUsage } from "../harness/core";
+import { ModelError } from "../harness/core";
+import { isRecord } from "../internal/guards";
+import { z } from "../internal/zod";
+import { recordGenerationId } from "../runtime/generation-ids";
+import type { ModelErrorIdentifiers } from "./request-identifiers";
+import {
+  appendModelErrorIdentifiers,
+  modelErrorIdentifiersFromFetchHeaders,
+  pickModelErrorIdentifiers,
+} from "./request-identifiers";
+
+export const ResponsesResultSchema = z.object({
+  id: z.string().nullable(),
+  model: z.string().nullable(),
+  status: z.string().nullable(),
+  output: z.array(z.record(z.string(), z.unknown())).default([]),
+  usage: z.record(z.string(), z.unknown()).nullable(),
+  text: z.string().default(""),
+  generationId: z.string().nullable(),
+  provider: z.string().nullable(),
+  generationTimeMs: z.number().default(0),
+});
+
+export type ResponsesResult = z.infer<typeof ResponsesResultSchema>;
+
+export interface ResponsesSendOptions {
+  readonly timeoutMs: number;
+  readonly versionOverride?: string;
+  readonly extraHeaders?: Readonly<Record<string, string>>;
+  readonly onStreamEvent?: (event: StreamEvents) => void;
+}
+
+export interface ResponsesConfig {
+  readonly apiKey: string;
+  readonly baseUrl?: string;
+  readonly sessionId?: string;
+}
+
+export const VERSION_OVERRIDE_HEADER =
+  "Cloudflare-Workers-Version-Overrides" as const;
+
+export class ResponsesError extends TaggedError("ResponsesError")<
+  {
+    readonly message: string;
+    readonly status?: number;
+    readonly retryable: boolean;
+  } & ModelErrorIdentifiers
+> {}
+
+export function toModelError(error: ResponsesError): ModelError {
+  const status = error.status ?? (error.retryable ? 500 : undefined);
+  return new ModelError({
+    message: error.message,
+    ...(status !== undefined && { status }),
+    ...pickModelErrorIdentifiers(error),
+  });
+}
+
+export class Responses extends Tag(
+  "@openrouter/bench-harness/responses-client/Responses"
+)<
+  Responses,
+  {
+    readonly send: (
+      body: ResponsesRequest,
+      options: ResponsesSendOptions
+    ) => Effect<ResponsesResult, ResponsesError>;
+  }
+>() {}
+
+export type ResponsesService = {
+  readonly send: (
+    body: ResponsesRequest,
+    options: ResponsesSendOptions
+  ) => Effect<ResponsesResult, ResponsesError>;
+};
+
+function normalizeBaseUrl(baseUrl: string): string {
+  const trimmed = baseUrl.replace(/\/+$/, "");
+  return trimmed.endsWith("/api/v1") ? trimmed : `${trimmed}/api/v1`;
+}
+
+export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
+  const send = (
+    body: ResponsesRequest,
+    options: ResponsesSendOptions
+  ): Effect<ResponsesResult, ResponsesError> => {
+    let identifiers: ModelErrorIdentifiers = {};
+    const httpClient = new HTTPClient({
+      fetcher: async (input, init) => {
+        const response = await (init === undefined
+          ? fetch(input)
+          : fetch(input, init));
+        identifiers = modelErrorIdentifiersFromFetchHeaders(response.headers);
+        return response;
+      },
+    });
+    const client = new ResponsesClient({
+      apiKey: config.apiKey,
+      httpClient,
+      retryConfig: { strategy: "none" },
+      ...(config.baseUrl !== undefined && {
+        serverURL: normalizeBaseUrl(config.baseUrl),
+      }),
+    });
+    const headers: Record<string, string> = {
+      ...options.extraHeaders,
+      ...(options.versionOverride
+        ? { [VERSION_OVERRIDE_HEADER]: `api="${options.versionOverride}"` }
+        : {}),
+      ...(config.sessionId !== undefined && {
+        "x-session-id": config.sessionId,
+      }),
+    };
+    return tryPromise({
+      try: async (signal) => {
+        identifiers = {};
+        const stream = await client.send(
+          { responsesRequest: { ...body, stream: true } },
+          {
+            fetchOptions: { signal },
+            ...(options.timeoutMs !== undefined && {
+              timeoutMs: options.timeoutMs,
+            }),
+            headers,
+          }
+        );
+        if (!isAsyncIterable(stream)) {
+          throw new ResponsesError({
+            message: "Expected streaming responses result from SDK",
+            retryable: false,
+          });
+        }
+        return consumeStream(stream, options.onStreamEvent, identifiers);
+      },
+      catch: (cause) => toResponsesError(cause, identifiers),
+    }).pipe(
+      flatMap((result) =>
+        result
+          ? recordGenerationId(result.generationId).pipe(map(() => result))
+          : fail(
+              new ResponsesError({
+                message: appendModelErrorIdentifiers(
+                  "Stream ended without a response.completed event",
+                  identifiers
+                ),
+                retryable: true,
+                ...identifiers,
+              })
+            )
+      )
+    );
+  };
+  return layerSucceed(Responses, Responses.of({ send }));
+}
+
+function isAsyncIterable(value: unknown): value is AsyncIterable<StreamEvents> {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    Symbol.asyncIterator in value &&
+    typeof value[Symbol.asyncIterator] === "function"
+  );
+}
+
+export async function consumeStream(
+  stream: AsyncIterable<StreamEvents>,
+  onEvent?: (event: StreamEvents) => void,
+  initialIdentifiers: ModelErrorIdentifiers = {}
+): Promise<ResponsesResult | null> {
+  let finalResponse: OpenResponsesResult | null = null;
+  const startedAt = performance.now();
+  const identifiers = initialIdentifiers;
+  try {
+    for await (const event of stream) {
+      onEvent?.(event);
+      const eventRecord: unknown = event;
+      const eventResponse = isRecord(eventRecord)
+        ? eventRecord["response"]
+        : undefined;
+      if (isRecord(eventResponse) && typeof eventResponse["id"] === "string") {
+        Object.assign(identifiers, { generationId: eventResponse["id"] });
+      }
+      switch (event.type) {
+        case "response.completed":
+        case "response.incomplete": {
+          finalResponse = event.response;
+          break;
+        }
+        case "response.failed": {
+          throw new ResponsesError({
+            message: appendModelErrorIdentifiers(
+              `OpenRouter stream error: ${extractResponseError(event.response)}`,
+              identifiers
+            ),
+            retryable: true,
+            ...identifiers,
+          });
+        }
+        case "error": {
+          throw new ResponsesError({
+            message: appendModelErrorIdentifiers(
+              `OpenRouter stream error: ${event.message}`,
+              identifiers
+            ),
+            retryable: true,
+            ...identifiers,
+          });
+        }
+      }
+    }
+  } catch (cause) {
+    if (cause instanceof ResponsesError) {
+      throw cause;
+    }
+    throw toResponsesError(cause, identifiers);
+  }
+  if (finalResponse === null) {
+    return null;
+  }
+  const { output } = finalResponse;
+  const usage = finalResponse.usage ?? null;
+  const { id } = finalResponse;
+  const providerRaw: unknown = finalResponse;
+  const provider =
+    isRecord(providerRaw) && typeof providerRaw["provider"] === "string"
+      ? providerRaw["provider"]
+      : null;
+  return {
+    id,
+    model: finalResponse.model,
+    status: finalResponse.status,
+    output,
+    usage,
+    text: extractMessageText(output),
+    generationId: id,
+    provider,
+    generationTimeMs: Math.round(performance.now() - startedAt),
+  };
+}
+
+export function usageFromResponses(
+  usage: Readonly<Record<string, unknown>> | null
+): ModelUsage | undefined {
+  if (usage === null) {
+    return undefined;
+  }
+  const detailsRaw =
+    usage["outputTokensDetails"] ?? usage["output_tokens_details"];
+  const details = isRecord(detailsRaw) ? detailsRaw : undefined;
+  const inputTokens = numField(usage, "inputTokens", "input_tokens");
+  const outputTokens = numField(usage, "outputTokens", "output_tokens");
+  const totalTokens = numField(usage, "totalTokens", "total_tokens");
+  const reasoningTokens =
+    details !== undefined
+      ? numField(details, "reasoningTokens", "reasoning_tokens")
+      : undefined;
+  const totalCost = numField(usage, "cost");
+  const serverToolUseRaw =
+    usage["serverToolUseDetails"] ?? usage["server_tool_use_details"];
+  const serverToolUse = isRecord(serverToolUseRaw)
+    ? serverToolUseRaw
+    : undefined;
+  const webSearchRequests =
+    serverToolUse !== undefined
+      ? numField(serverToolUse, "webSearchRequests", "web_search_requests")
+      : undefined;
+  const toolCallsRequested =
+    serverToolUse !== undefined
+      ? numField(serverToolUse, "toolCallsRequested", "tool_calls_requested")
+      : undefined;
+  const toolCallsExecuted =
+    serverToolUse !== undefined
+      ? numField(serverToolUse, "toolCallsExecuted", "tool_calls_executed")
+      : undefined;
+  const hasServerToolUse =
+    webSearchRequests !== undefined ||
+    toolCallsRequested !== undefined ||
+    toolCallsExecuted !== undefined;
+  return {
+    ...(inputTokens !== undefined && { inputTokens }),
+    ...(outputTokens !== undefined && { outputTokens }),
+    ...(totalTokens !== undefined && { totalTokens }),
+    ...(reasoningTokens !== undefined && { reasoningTokens }),
+    ...(totalCost !== undefined && { totalCost }),
+    ...(hasServerToolUse && {
+      serverToolUse: {
+        ...(webSearchRequests !== undefined && { webSearchRequests }),
+        ...(toolCallsRequested !== undefined && { toolCallsRequested }),
+        ...(toolCallsExecuted !== undefined && { toolCallsExecuted }),
+      },
+    }),
+  };
+}
+
+function numField(
+  record: Readonly<Record<string, unknown>>,
+  ...keys: readonly string[]
+): number | undefined {
+  for (const key of keys) {
+    const v = record[key];
+    if (typeof v === "number") {
+      return v;
+    }
+  }
+  return undefined;
+}
+
+export function extractMessageText(
+  output: readonly Record<string, unknown>[]
+): string {
+  let text = "";
+  for (const item of output) {
+    if (item["type"] !== "message") {
+      continue;
+    }
+    const { content } = item;
+    if (!Array.isArray(content)) {
+      continue;
+    }
+    for (const part of content) {
+      if (
+        part !== null &&
+        typeof part === "object" &&
+        part["type"] === "output_text" &&
+        typeof part["text"] === "string"
+      ) {
+        text += part["text"];
+      }
+    }
+  }
+  return text;
+}
+
+export function findOutputItems(
+  output: readonly Record<string, unknown>[],
+  itemType: string
+): Record<string, unknown>[] {
+  return output.filter((item) => item["type"] === itemType);
+}
+
+export function extractCitations(
+  output: readonly Record<string, unknown>[]
+): Citation[] {
+  const citations: Citation[] = [];
+  for (const item of output) {
+    if (item["type"] !== "message") {
+      continue;
+    }
+    const { content } = item;
+    if (!Array.isArray(content)) {
+      continue;
+    }
+    for (const part of content) {
+      if (
+        part === null ||
+        typeof part !== "object" ||
+        part["type"] !== "output_text"
+      ) {
+        continue;
+      }
+      const { annotations } = part;
+      if (!Array.isArray(annotations)) {
+        continue;
+      }
+      for (const ann of annotations) {
+        if (
+          isRecord(ann) &&
+          ann["type"] === "url_citation" &&
+          typeof ann["url"] === "string" &&
+          typeof ann["title"] === "string"
+        ) {
+          citations.push({
+            url: ann["url"],
+            title: ann["title"],
+            startIndex:
+              typeof ann["start_index"] === "number" ? ann["start_index"] : 0,
+            endIndex:
+              typeof ann["end_index"] === "number" ? ann["end_index"] : 0,
+          });
+        }
+      }
+    }
+  }
+  return citations;
+}
+
+function extractResponseError(response: unknown): string {
+  if (isRecord(response)) {
+    const err = response["error"];
+    if (isRecord(err) && typeof err["message"] === "string") {
+      return err["message"];
+    }
+    if (typeof response["message"] === "string") {
+      return response["message"];
+    }
+  }
+  return String(response);
+}
+
+function toResponsesError(
+  cause: unknown,
+  identifiers: ModelErrorIdentifiers = {}
+): ResponsesError {
+  if (cause instanceof ResponsesError) {
+    return cause;
+  }
+  if (cause instanceof OpenRouterError) {
+    const errorIdentifiers = {
+      ...identifiers,
+      ...modelErrorIdentifiersFromFetchHeaders(cause.headers),
+    };
+    return new ResponsesError({
+      message: appendModelErrorIdentifiers(
+        `OpenRouter HTTP ${cause.statusCode}: ${cause.body}`,
+        errorIdentifiers
+      ),
+      status: cause.statusCode,
+      retryable: cause.statusCode === 429 || cause.statusCode >= 500,
+      ...errorIdentifiers,
+    });
+  }
+  if (cause instanceof TypeError) {
+    return new ResponsesError({
+      message: appendModelErrorIdentifiers(
+        `Network error: ${cause.message}`,
+        identifiers
+      ),
+      retryable: true,
+      ...identifiers,
+    });
+  }
+  if (
+    cause instanceof DOMException &&
+    (cause.name === "AbortError" || cause.name === "TimeoutError")
+  ) {
+    return new ResponsesError({
+      message: appendModelErrorIdentifiers(
+        "Wall-clock timeout (request aborted)",
+        identifiers
+      ),
+      retryable: true,
+      ...identifiers,
+    });
+  }
+  return new ResponsesError({
+    message: appendModelErrorIdentifiers(
+      `OpenRouter request failed: ${String(cause)}`,
+      identifiers
+    ),
+    retryable: false,
+    ...identifiers,
+  });
+}

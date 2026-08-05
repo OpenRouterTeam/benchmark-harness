@@ -1,0 +1,215 @@
+import type { ResponsesRequest, StreamEvents } from "@openrouter/sdk/models";
+import type { Effect } from "effect/Effect";
+import { gen, mapError, retry, suspend } from "effect/Effect";
+
+import type { CostTier, ReasoningEffort } from "../../../harness/constants";
+import type {
+  ModelError,
+  ResponseItem,
+  TaskState,
+} from "../../../harness/core";
+import { MessageRole } from "../../../harness/core";
+import type { ProgressReporterService } from "../../../harness/progress";
+import { ProgressReporter } from "../../../harness/progress";
+import type { SolverService } from "../../../harness/solver";
+import { runHarnessSync } from "../../../internal/effect-logger";
+import type { ProviderSort } from "../../../internal/enums";
+import { isRecord } from "../../../internal/guards";
+import type {
+  ResponsesResult,
+  ResponsesSendOptions,
+  ResponsesService,
+} from "../../../providers/responses-client";
+import {
+  extractCitations,
+  toModelError,
+  usageFromResponses,
+} from "../../../providers/responses-client";
+import type { RetryConfig } from "../../../runtime/retry";
+import { rateLimitRetrySchedule } from "../../../runtime/retry";
+import type { SearchLaneConfig } from "./config";
+import { makeSearchProgressTracker } from "./progress";
+import { buildSearchRequestBody } from "./request";
+
+export const DEFAULT_SEARCH_TIMEOUT_MS = 420000;
+
+export interface SearchSolverOptions {
+  readonly model: string;
+  readonly instructions: string;
+  readonly lane: SearchLaneConfig;
+  readonly timeoutMs?: number;
+  readonly maxOutputTokens?: number;
+  readonly temperature?: number;
+  readonly reasoningEffort?: ReasoningEffort;
+  readonly endpointId?: string;
+  readonly sort?: ProviderSort;
+  readonly versionOverride?: string;
+  readonly costQualityTradeoff?: number;
+  readonly costTier?: CostTier;
+  readonly retry?: RetryConfig;
+}
+
+export interface SearchSolverMetadata {
+  readonly citations: readonly {
+    url: string;
+    title: string;
+  }[];
+  readonly responseStatus: string | null;
+  readonly provider: string | null;
+  readonly generationId: string | null;
+}
+
+export const SEARCH_SOLVER_METADATA_KEY = "search" as const;
+
+export function searchSolver(
+  responses: ResponsesService,
+  opts: SearchSolverOptions
+): SolverService {
+  return (state) =>
+    gen(function* () {
+      const reporter = yield* ProgressReporter;
+      const { epoch } = state;
+      const sendSort = opts.sort !== undefined && opts.endpointId === undefined;
+      const body = buildSearchRequestBody({
+        model: opts.model,
+        instructions: opts.instructions,
+        problem: state.sample.input,
+        lane: opts.lane,
+        ...(opts.maxOutputTokens !== undefined && {
+          maxOutputTokens: opts.maxOutputTokens,
+        }),
+        ...(opts.temperature !== undefined && {
+          temperature: opts.temperature,
+        }),
+        ...(opts.reasoningEffort !== undefined && {
+          reasoningEffort: opts.reasoningEffort,
+        }),
+        ...(sendSort && { sort: opts.sort }),
+        ...(opts.costQualityTradeoff !== undefined && {
+          costQualityTradeoff: opts.costQualityTradeoff,
+        }),
+        ...(opts.costTier !== undefined && { costTier: opts.costTier }),
+      });
+      const sendOptions = (): ResponsesSendOptions => ({
+        timeoutMs: opts.timeoutMs ?? DEFAULT_SEARCH_TIMEOUT_MS,
+        ...(opts.endpointId !== undefined && {
+          extraHeaders: { "X-OR-Endpoint-Id": opts.endpointId },
+        }),
+        ...(opts.versionOverride !== undefined && {
+          versionOverride: opts.versionOverride,
+        }),
+      });
+      const result = yield* sendWithRetry({
+        responses,
+        body,
+        options: () => ({
+          ...sendOptions(),
+          ...(epoch !== undefined && {
+            onStreamEvent: makeStreamEventReporter(
+              reporter,
+              state.sample.id,
+              epoch
+            ),
+          }),
+        }),
+        retryConfig: opts.retry,
+      });
+      return completedState({
+        state,
+        request: body,
+        result,
+        text: result.text.trim(),
+      });
+    });
+}
+
+function sendWithRetry({
+  responses,
+  body,
+  options,
+  retryConfig,
+}: {
+  readonly responses: ResponsesService;
+  readonly body: ResponsesRequest;
+  readonly options: () => ResponsesSendOptions;
+  readonly retryConfig?: RetryConfig;
+}): Effect<ResponsesResult, ModelError> {
+  return suspend(() => responses.send(body, options())).pipe(
+    mapError(toModelError),
+    retry(rateLimitRetrySchedule(retryConfig ?? {}))
+  );
+}
+
+function makeStreamEventReporter(
+  reporter: ProgressReporterService,
+  sampleId: string,
+  epoch: number
+): (event: StreamEvents) => void {
+  const track = makeSearchProgressTracker();
+  return (event) => {
+    const step = track(event);
+    if (step !== undefined) {
+      runHarnessSync(reporter.onAgentStep(step, sampleId, epoch));
+    }
+  };
+}
+
+function completedState({
+  state,
+  request,
+  result,
+  text,
+}: {
+  readonly state: TaskState;
+  readonly request: ResponsesRequest;
+  readonly result: ResponsesResult;
+  readonly text: string;
+}): TaskState {
+  const citations = extractCitations(result.output).map(({ url, title }) => ({
+    url,
+    title,
+  }));
+  const usage = usageFromResponses(result.usage);
+  const metadata: SearchSolverMetadata = {
+    citations,
+    responseStatus: result.status,
+    provider: result.provider,
+    generationId: result.generationId,
+  };
+  return {
+    sample: {
+      ...state.sample,
+      metadata: {
+        ...state.sample.metadata,
+        [SEARCH_SOLVER_METADATA_KEY]: metadata,
+      },
+    },
+    messages: [
+      { role: MessageRole.User, content: state.sample.input },
+      ...(text !== ""
+        ? [{ role: MessageRole.Assistant, content: text } as const]
+        : []),
+    ],
+    responseItems: responseItemsForCall(request, result),
+    output: {
+      completion: text,
+      message: { role: MessageRole.Assistant, content: text },
+      ...(usage !== undefined && { usage }),
+      ...(result.generationTimeMs > 0 && {
+        generationTimeMs: result.generationTimeMs,
+      }),
+    },
+    completed: true,
+    ...(state.epoch !== undefined && { epoch: state.epoch }),
+  };
+}
+
+function responseItemsForCall(
+  request: ResponsesRequest,
+  result: ResponsesResult
+): readonly ResponseItem[] {
+  const inputItems = Array.isArray(request.input)
+    ? request.input.filter(isRecord)
+    : [];
+  return [...inputItems, ...result.output];
+}

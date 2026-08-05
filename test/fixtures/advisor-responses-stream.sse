@@ -1,0 +1,75 @@
+:
+
+:
+
+:
+
+:
+
+:
+
+:
+
+:
+
+:
+
+:
+
+:
+
+:
+
+:
+
+:
+
+:
+
+:
+
+:
+
+:
+
+:
+
+:
+
+:
+
+:
+
+:
+
+:
+
+data: {"type":"response.created","response":{"id":"gen-1784161874-CXX4U5I6Ej7Z5hTnf0wU","object":"response","created_at":1784161875,"model":"openai/gpt-5","status":"in_progress","completed_at":null,"output":[],"error":null,"incomplete_details":null,"tools":[{"type":"function","name":"bash","description":"Run a bash command.","parameters":{"type":"object","properties":{"command":{"type":"string"}},"required":["command"]},"strict":null}],"tool_choice":"auto","parallel_tool_calls":true,"max_output_tokens":null,"temperature":1,"top_p":1,"presence_penalty":0,"frequency_penalty":0,"top_logprobs":0,"max_tool_calls":null,"metadata":{},"background":false,"previous_response_id":null,"service_tier":"auto","truncation":"disabled","store":false,"instructions":"You have an `openrouter:advisor` server tool and a `bash` function tool. Before answering, you MUST call the advisor tool once with a prompt asking for a sanity check, then give a one-line final answer. Do not call bash.","text":{"format":{"type":"text"}},"reasoning":{"effort":"low"},"safety_identifier":null,"prompt_cache_key":null,"usage":null},"sequence_number":0}
+
+data: {"type":"response.in_progress","response":{"id":"gen-1784161874-CXX4U5I6Ej7Z5hTnf0wU","object":"response","created_at":1784161875,"model":"openai/gpt-5","status":"in_progress","completed_at":null,"output":[],"error":null,"incomplete_details":null,"tools":[{"type":"function","name":"bash","description":"Run a bash command.","parameters":{"type":"object","properties":{"command":{"type":"string"}},"required":["command"]},"strict":null}],"tool_choice":"auto","parallel_tool_calls":true,"max_output_tokens":null,"temperature":1,"top_p":1,"presence_penalty":0,"frequency_penalty":0,"top_logprobs":0,"max_tool_calls":null,"metadata":{},"background":false,"previous_response_id":null,"service_tier":"auto","truncation":"disabled","store":false,"instructions":"You have an `openrouter:advisor` server tool and a `bash` function tool. Before answering, you MUST call the advisor tool once with a prompt asking for a sanity check, then give a one-line final answer. Do not call bash.","text":{"format":{"type":"text"}},"reasoning":{"effort":"low"},"safety_identifier":null,"prompt_cache_key":null,"usage":null},"sequence_number":1}
+
+data: {"type":"response.output_item.added","output_index":1,"item":{"id":"st_tmp_9l30h7yqjxj","type":"openrouter:advisor","status":"in_progress"},"sequence_number":2}
+
+data: {"type":"response.output_item.added","output_index":0,"item":{"id":"rs_04c1f2f9760ac552016a5826542be08195b407ec33ccb532a5","type":"reasoning","status":"in_progress","summary":[]},"sequence_number":3}
+
+data: {"type":"response.output_item.done","output_index":0,"item":{"id":"rs_04c1f2f9760ac552016a5826542be08195b407ec33ccb532a5","type":"reasoning","status":"completed","summary":[],"encrypted_content":"gAAAAABqWCZWwYJihrnJJ8PWs2Kr2--vNUpVKxgRMUXUycbFs9OAsL6LWc271KgXMbIhpNiQalAg4s_qG2xCr5iqCarK1TZfVRGjCuSrzKdi_oallqLZQ0AQSieXf156OL8hKrg7J0sBVF3GfD1EOzywBECgNox99YVryo7OAW_41K78dCZmeS-TcS90FAJEijNRpB9txlHFGydY2FKhsrSjZiHn8d7c2jNLOzS70LJ9RfItzSGztCIkrTMjd0vAdOERAnVfUgS4k7neFPrDLY5ugrHRQDnJ01iyNPt2HsJ8fN-A3Sv61e3O4oWOMJB7euSsltG7PQfjjoOWtcfCGfH7YcNVwQTxlY8_rdiLpngA-oCGpTlr1C0hL3BdzrypHJT5nuA3tVZWGyfCmCr-ss72ZDaiAFdr0b0_gFwxBIOD2Zh3XKDWKgogSOADbE3hzRwibwVJxwSCMITL6uUaCRTJ5ueL3g23uBQD57WD05rw67xhvGuaynvZxI_WzWE4XDbbyHSlqF22BpijRaM1V1H-msRt4kQwRmBJ79KMbOo8vGvod9dLGvrj_ll8xpmt_iy8ZHpAUMEqOTpqUIvIv5EfMqVUrELm4cuiLNBMz-th7yWrtlBBmh1rMKXdyzBVKqK1eRpfxD8KWqn4d4mFoptXDAup2mqIy_bXTEltobkVtsKl7tClxzr8bL0cLrH0Vy_ae7jdJ7Jyu-7SnnLKbaz2Dr9aqoDCYZDDv9lSBTsuBdiQEusIV_nFOlceKBePfsilxUBuWL8vAPPWz2vDk6Uv-L4xD6nCfAifumkKGWMMEzd1VtzrNasm8dPs3dAnKZ241mBiuxErPvJlpaj-Rzry3X-1FI3rUcjsS2sTPp9a-PymRYpXYiBGBCUBE60YBiyjzHNCJKU2CH7wSkSEoadfMAybAVIHXH-dvBve9_U44fj5KgI0_ij3r0SLncfvLgJ69kRrsllSq7-Y8CoA0qzWlP15vpUXxYp8-rZNNY0ubq9E_jMnldxAvF5kLzTivlTYrsqNy4FdFGOfX_IRzOjiKz42zvsG8b-A8-okYR9N1Ed-EshoDqfTOXLbb_hJ47WsTDPNw_MHRvmTtJtoSxsuxwJWLVt_Vk_wu3wcbmanA1mMbuEZsX4LYZ49GzXHNl0FiqmkV4G5TyicgnXTOv-3_EQ7JwYN3niLg6_eoHZNkkM8X4PSjbq_Oj6zY1-UvCcXHecl9lRJMUOD2XrlfYocy2sjmXon6qhoVFiWvlW1Oe1rJmVVZ7zS9kATn8iuDjYT2C7Soocn7Bq2GYGla4MmbogNrpu1wU0vyrcGOY6OP2NatIg8gjImNu4L-mubmeAdBd5BiTUapT9sOHK0Jb5c7UFpIe7l8LjxyHQsdk5Snrq43Q5yM9BTdTsrZPLOd5SNZ8WPNUucW7c6_-VeMQFdnb-GGLvu0KU2-ulnoVjfRsxTCJ4okuYF7gw3kvjz67nXRh0xZmJUDlYQBzc_t1b6F7m4kFmJAxP_BE-WbDawkOt01LH7fm_Jh3e4XGTs7VIb--2Fwk2rkkOEKs0Y6PbDFDCq4wtWYA==","format":"openai-responses-v1"},"sequence_number":4}
+
+data: {"type":"response.output_item.done","output_index":1,"item":{"id":"st_tmp_9l30h7yqjxj","type":"openrouter:advisor","status":"completed","model":"openrouter/auto","advice":"Confirmed: 2 + 2 = 4 in standard base-10 arithmetic; edge cases include alternate numeric bases or string concatenation in programming contexts.","prompt":"Sanity check: The user asks, “What is 2 + 2?” This is a simple arithmetic addition problem. Confirm expected answer and any edge cases about trick wording or constraints (they want one-line answer after consulting advisor)."},"sequence_number":5}
+
+:
+
+data: {"type":"response.output_item.added","output_index":2,"item":{"id":"msg_tmp_lgh9oez6z4","type":"message","status":"in_progress","role":"assistant","content":[]},"sequence_number":6}
+
+data: {"type":"response.content_part.added","output_index":2,"item_id":"msg_tmp_lgh9oez6z4","content_index":0,"part":{"type":"output_text","text":"","annotations":[],"logprobs":[]},"sequence_number":7}
+
+data: {"type":"response.output_text.delta","output_index":2,"item_id":"msg_tmp_lgh9oez6z4","content_index":0,"delta":"4","logprobs":[],"sequence_number":8}
+
+data: {"type":"response.output_text.done","output_index":2,"item_id":"msg_tmp_lgh9oez6z4","content_index":0,"text":"4","logprobs":[],"sequence_number":9}
+
+data: {"type":"response.content_part.done","output_index":2,"item_id":"msg_tmp_lgh9oez6z4","content_index":0,"part":{"type":"output_text","text":"4","annotations":[],"logprobs":[]},"sequence_number":10}
+
+data: {"type":"response.output_item.done","output_index":2,"item":{"id":"msg_tmp_lgh9oez6z4","type":"message","status":"completed","role":"assistant","content":[{"type":"output_text","text":"4","annotations":[],"logprobs":[]}]},"sequence_number":11}
+
+data: {"type":"response.completed","response":{"id":"gen-1784161874-CXX4U5I6Ej7Z5hTnf0wU","object":"response","created_at":1784161875,"model":"openai/gpt-5","status":"completed","completed_at":1784161886,"output":[{"id":"rs_04c1f2f9760ac552016a5826542be08195b407ec33ccb532a5","type":"reasoning","status":"completed","summary":[],"encrypted_content":"gAAAAABqWCZWwYJihrnJJ8PWs2Kr2--vNUpVKxgRMUXUycbFs9OAsL6LWc271KgXMbIhpNiQalAg4s_qG2xCr5iqCarK1TZfVRGjCuSrzKdi_oallqLZQ0AQSieXf156OL8hKrg7J0sBVF3GfD1EOzywBECgNox99YVryo7OAW_41K78dCZmeS-TcS90FAJEijNRpB9txlHFGydY2FKhsrSjZiHn8d7c2jNLOzS70LJ9RfItzSGztCIkrTMjd0vAdOERAnVfUgS4k7neFPrDLY5ugrHRQDnJ01iyNPt2HsJ8fN-A3Sv61e3O4oWOMJB7euSsltG7PQfjjoOWtcfCGfH7YcNVwQTxlY8_rdiLpngA-oCGpTlr1C0hL3BdzrypHJT5nuA3tVZWGyfCmCr-ss72ZDaiAFdr0b0_gFwxBIOD2Zh3XKDWKgogSOADbE3hzRwibwVJxwSCMITL6uUaCRTJ5ueL3g23uBQD57WD05rw67xhvGuaynvZxI_WzWE4XDbbyHSlqF22BpijRaM1V1H-msRt4kQwRmBJ79KMbOo8vGvod9dLGvrj_ll8xpmt_iy8ZHpAUMEqOTpqUIvIv5EfMqVUrELm4cuiLNBMz-th7yWrtlBBmh1rMKXdyzBVKqK1eRpfxD8KWqn4d4mFoptXDAup2mqIy_bXTEltobkVtsKl7tClxzr8bL0cLrH0Vy_ae7jdJ7Jyu-7SnnLKbaz2Dr9aqoDCYZDDv9lSBTsuBdiQEusIV_nFOlceKBePfsilxUBuWL8vAPPWz2vDk6Uv-L4xD6nCfAifumkKGWMMEzd1VtzrNasm8dPs3dAnKZ241mBiuxErPvJlpaj-Rzry3X-1FI3rUcjsS2sTPp9a-PymRYpXYiBGBCUBE60YBiyjzHNCJKU2CH7wSkSEoadfMAybAVIHXH-dvBve9_U44fj5KgI0_ij3r0SLncfvLgJ69kRrsllSq7-Y8CoA0qzWlP15vpUXxYp8-rZNNY0ubq9E_jMnldxAvF5kLzTivlTYrsqNy4FdFGOfX_IRzOjiKz42zvsG8b-A8-okYR9N1Ed-EshoDqfTOXLbb_hJ47WsTDPNw_MHRvmTtJtoSxsuxwJWLVt_Vk_wu3wcbmanA1mMbuEZsX4LYZ49GzXHNl0FiqmkV4G5TyicgnXTOv-3_EQ7JwYN3niLg6_eoHZNkkM8X4PSjbq_Oj6zY1-UvCcXHecl9lRJMUOD2XrlfYocy2sjmXon6qhoVFiWvlW1Oe1rJmVVZ7zS9kATn8iuDjYT2C7Soocn7Bq2GYGla4MmbogNrpu1wU0vyrcGOY6OP2NatIg8gjImNu4L-mubmeAdBd5BiTUapT9sOHK0Jb5c7UFpIe7l8LjxyHQsdk5Snrq43Q5yM9BTdTsrZPLOd5SNZ8WPNUucW7c6_-VeMQFdnb-GGLvu0KU2-ulnoVjfRsxTCJ4okuYF7gw3kvjz67nXRh0xZmJUDlYQBzc_t1b6F7m4kFmJAxP_BE-WbDawkOt01LH7fm_Jh3e4XGTs7VIb--2Fwk2rkkOEKs0Y6PbDFDCq4wtWYA==","format":"openai-responses-v1"},{"type":"openrouter:advisor","id":"st_tmp_9l30h7yqjxj","status":"completed","model":"openrouter/auto","advice":"Confirmed: 2 + 2 = 4 in standard base-10 arithmetic; edge cases include alternate numeric bases or string concatenation in programming contexts.","prompt":"Sanity check: The user asks, “What is 2 + 2?” This is a simple arithmetic addition problem. Confirm expected answer and any edge cases about trick wording or constraints (they want one-line answer after consulting advisor)."},{"id":"msg_tmp_lgh9oez6z4","type":"message","role":"assistant","status":"completed","content":[{"type":"output_text","text":"4","annotations":[],"logprobs":[]}]}],"error":null,"incomplete_details":null,"tools":[{"type":"function","name":"bash","description":"Run a bash command.","parameters":{"type":"object","properties":{"command":{"type":"string"}},"required":["command"]},"strict":null}],"tool_choice":"auto","parallel_tool_calls":true,"max_output_tokens":null,"temperature":1,"top_p":1,"presence_penalty":0,"frequency_penalty":0,"top_logprobs":0,"max_tool_calls":null,"metadata":{},"background":false,"previous_response_id":null,"service_tier":"auto","truncation":"disabled","store":false,"instructions":"You have an `openrouter:advisor` server tool and a `bash` function tool. Before answering, you MUST call the advisor tool once with a prompt asking for a sanity check, then give a one-line final answer. Do not call bash.","text":{"format":{"type":"text"}},"reasoning":{"effort":"low"},"safety_identifier":null,"prompt_cache_key":null,"usage":{"input_tokens":770,"input_tokens_details":{"cached_tokens":0},"output_tokens":186,"output_tokens_details":{"reasoning_tokens":64},"total_tokens":956,"cost":0.0046999,"cost_details":{"upstream_inference_cost":0.0028225,"upstream_inference_input_cost":0.0009625,"upstream_inference_output_cost":0.0018599999999999999},"server_tool_use_details":{"tool_calls_requested":1,"tool_calls_executed":1}}},"sequence_number":12}
+
+data: [DONE]
