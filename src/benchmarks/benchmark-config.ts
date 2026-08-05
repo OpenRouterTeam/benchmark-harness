@@ -10,6 +10,7 @@ import {
   TAU3_BENCH_BANKING_META,
   TAU_BENCH_AIRLINE_META,
 } from "./benchmark-meta";
+import { EvalSpecSchema } from "./custom-eval/spec";
 import { DEFAULT_STEP_LIMIT as DEEP_SWE_DEFAULT_STEP_LIMIT } from "./deep-swe/schema";
 import { DracoPanelConfigSchema } from "./draco/schemas";
 import { SearchLaneConfigSchema } from "./search/core/config";
@@ -164,6 +165,27 @@ export type IfStructBenchmarkConfig = z.infer<
   typeof IfStructBenchmarkConfigSchema
 >;
 
+/**
+ * Declarative custom eval: the run config carries the full EvalSpec (dataset +
+ * prompt + deterministic scorer), so user evals are data, not registry code.
+ */
+export const CustomEvalOptionsSchema = z.object({
+  spec: EvalSpecSchema,
+});
+
+export const CustomEvalBenchmarkConfigSchema = z.object({
+  benchmarkId: z.literal("custom_eval"),
+  ...ModelBenchmarkBaseSchema.shape,
+  ...CustomEvalOptionsSchema.shape,
+});
+export type CustomEvalBenchmarkConfig = z.infer<
+  typeof CustomEvalBenchmarkConfigSchema
+>;
+
+/**
+ * Options shared by the Modal-backed agentic benchmarks (SWE-Atlas tracks and
+ * DeepSWE). `stepLimit` is declared per benchmark because the defaults differ.
+ */
 const AgenticOptionsSchema = z.object({
   taskSubset: z.array(z.string()).optional(),
   maxAgentTimeoutSec: z.number().positive().optional(),
@@ -278,6 +300,7 @@ export const BenchmarkRunConfigSchema = z.discriminatedUnion("benchmarkId", [
   TerminalBenchConfigSchema,
   DracoBenchmarkConfigSchema,
   IfStructBenchmarkConfigSchema,
+  CustomEvalBenchmarkConfigSchema,
   SweAtlasQaConfigSchema,
   SweAtlasTwConfigSchema,
   SweAtlasRfConfigSchema,
@@ -314,6 +337,7 @@ export const BENCHMARK_OPTIONS_SCHEMAS = {
   mmmu_pro_vision: MmmuProVisionOptionsSchema,
   terminal_bench: TerminalBenchOptionsSchema,
   ifstruct: IfStructOptionsSchema,
+  custom_eval: CustomEvalOptionsSchema,
   swe_atlas_qa: SweAtlasOptionsSchema,
   swe_atlas_tw: SweAtlasOptionsSchema,
   swe_atlas_rf: SweAtlasOptionsSchema,

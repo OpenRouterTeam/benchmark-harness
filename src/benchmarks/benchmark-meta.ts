@@ -49,6 +49,13 @@ export const IFSTRUCT_META = {
   defaultEpochs: 1,
 } as const satisfies BenchmarkMeta;
 
+/** Declarative customer/internal eval defined entirely by its run config's EvalSpec. */
+export const CUSTOM_EVAL_META = {
+  id: "custom_eval",
+  defaultEpochs: 1,
+} as const satisfies BenchmarkMeta;
+
+/* defaultEpochs 3 mirrors the reference run scripts' `-k 3` (3 rollouts/task). */
 export const SWE_ATLAS_QA_META = {
   id: "swe_atlas_qa",
   defaultEpochs: 3,
@@ -103,6 +110,7 @@ const BENCHMARK_META: Readonly<Record<string, BenchmarkMeta>> = {
   [TERMINAL_BENCH_META.id]: TERMINAL_BENCH_META,
   [DRACO_META.id]: DRACO_META,
   [IFSTRUCT_META.id]: IFSTRUCT_META,
+  [CUSTOM_EVAL_META.id]: CUSTOM_EVAL_META,
   [SWE_ATLAS_QA_META.id]: SWE_ATLAS_QA_META,
   [SWE_ATLAS_TW_META.id]: SWE_ATLAS_TW_META,
   [SWE_ATLAS_RF_META.id]: SWE_ATLAS_RF_META,

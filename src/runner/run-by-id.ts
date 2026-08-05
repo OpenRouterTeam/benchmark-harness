@@ -148,13 +148,31 @@ export function runBenchmarkById(
 }
 
 export function datasetSizeById(
-  benchmarkId: string
+  benchmarkId: string,
+  benchmarkConfig?: BenchmarkRunConfig
 ): AsyncEither<number, string> {
   const benchmark = getBenchmark(benchmarkId);
   if (benchmark === undefined) {
     return Promise.resolve(Either.left(`Unknown benchmark "${benchmarkId}"`));
   }
-  const datasetLayer = benchmark.makeDatasetLayer();
+  /* Config-bound datasets (custom_eval) can only be sized through the run
+     config; probing the config-free layer would size a placeholder and
+     silently truncate the run to its first chunk. */
+  if (
+    benchmark.makeDatasetLayerForConfig !== undefined &&
+    benchmarkConfig === undefined
+  ) {
+    return Promise.resolve(
+      Either.left(
+        `benchmark "${benchmarkId}" needs a run config to resolve its dataset size`
+      )
+    );
+  }
+  const datasetLayer =
+    benchmark.makeDatasetLayerForConfig !== undefined &&
+    benchmarkConfig !== undefined
+      ? benchmark.makeDatasetLayerForConfig(benchmarkConfig)
+      : benchmark.makeDatasetLayer();
   const program = Dataset.pipe(flatMap((d) => d.size));
   return runHarnessPromise(program.pipe(provide(datasetLayer)))
     .then((size) => Either.right(size))
