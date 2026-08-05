@@ -25,7 +25,10 @@
     "./internal/log": "./src/internal/log.ts",
     "./internal/effect-logger": "./src/internal/effect-logger.ts",
     "./sample-result-store": "./src/harness/sample-result-store.ts",
-    "./request-context": "./src/harness/request-context.ts"
+    "./request-context": "./src/harness/request-context.ts",
+    "./benchmarks/eval-manifest": "./src/benchmarks/eval-manifest.ts",
+    "./benchmarks/manifests": "./src/benchmarks/manifests.ts",
+    "./benchmarks/custom-eval/spec": "./src/benchmarks/custom-eval/spec.ts"
   },
   "scripts": {
     "bench": "bun src/cli/index.ts",
