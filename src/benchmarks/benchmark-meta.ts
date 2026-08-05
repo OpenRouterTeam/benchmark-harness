@@ -55,6 +55,13 @@ export const CUSTOM_EVAL_META = {
   defaultEpochs: 1,
 } as const satisfies BenchmarkMeta;
 
+/** Full games vs Stockfish; deterministic per-ply engine evals, temperature 0. */
+export const CHESS_META = {
+  id: "chess",
+  defaultEpochs: 1,
+  temperature: 0,
+} as const satisfies BenchmarkMeta;
+
 /* defaultEpochs 3 mirrors the reference run scripts' `-k 3` (3 rollouts/task). */
 export const SWE_ATLAS_QA_META = {
   id: "swe_atlas_qa",
@@ -111,6 +118,7 @@ const BENCHMARK_META: Readonly<Record<string, BenchmarkMeta>> = {
   [DRACO_META.id]: DRACO_META,
   [IFSTRUCT_META.id]: IFSTRUCT_META,
   [CUSTOM_EVAL_META.id]: CUSTOM_EVAL_META,
+  [CHESS_META.id]: CHESS_META,
   [SWE_ATLAS_QA_META.id]: SWE_ATLAS_QA_META,
   [SWE_ATLAS_TW_META.id]: SWE_ATLAS_TW_META,
   [SWE_ATLAS_RF_META.id]: SWE_ATLAS_RF_META,
