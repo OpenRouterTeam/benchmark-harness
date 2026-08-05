@@ -65,19 +65,51 @@ describe("WANDR score aggregation", () => {
     expect(wandrRunLevelScores(result)).toEqual([]);
     expect(wandrPrimaryScore(result)).toBeUndefined();
   });
-  it("includes degraded samples as zero rewards in the aggregate denominator", () => {
+
+  it("excludes skipped (infrastructure-failure) samples from the mean and weight", () => {
     const result = resultWith([1, 0]);
     const validSample = result.sampleScores[0]!;
-    const degradedSample = result.sampleScores[1]!;
+    const skippedSample = result.sampleScores[1]!;
     const partialFailure = {
       ...result,
       sampleScores: [
         validSample,
         {
-          ...degradedSample,
+          ...skippedSample,
           score: {
-            ...degradedSample.score,
-            explanation: "Solver error: timeout",
+            ...skippedSample.score,
+            value: ScoreValue.Skipped,
+            explanation: "Solver error (skipped): timeout",
+          },
+        },
+      ],
+    };
+
+    expect(wandrRunLevelScores(partialFailure)).toEqual([
+      {
+        name: "wandr",
+        metrics: Object.fromEntries(
+          WANDR_REWARD_NAMES.map((name) => [name, { value: 1 }])
+        ),
+      },
+    ]);
+    expect(wandrPrimaryScore(partialFailure)).toEqual({ value: 1, weight: 1 });
+  });
+
+  it("counts evaluated samples without reward metadata as zero rewards", () => {
+    const result = resultWith([1, 0]);
+    const validSample = result.sampleScores[0]!;
+    const unparseableSample = result.sampleScores[1]!;
+    const partialFailure = {
+      ...result,
+      sampleScores: [
+        validSample,
+        {
+          ...unparseableSample,
+          score: {
+            ...unparseableSample.score,
+            value: ScoreValue.Incorrect,
+            explanation: "not reward json",
           },
         },
       ],
@@ -94,5 +126,26 @@ describe("WANDR score aggregation", () => {
       value: 0.5,
       weight: 2,
     });
+  });
+
+  it("returns no aggregate when every sample was skipped", () => {
+    const result = resultWith([1]);
+    const skippedSample = result.sampleScores[0]!;
+    const allSkipped = {
+      ...result,
+      sampleScores: [
+        {
+          ...skippedSample,
+          score: {
+            ...skippedSample.score,
+            value: ScoreValue.Skipped,
+            explanation: "Solver error (skipped): sandbox down",
+          },
+        },
+      ],
+    };
+
+    expect(wandrRunLevelScores(allSkipped)).toEqual([]);
+    expect(wandrPrimaryScore(allSkipped)).toBeUndefined();
   });
 });

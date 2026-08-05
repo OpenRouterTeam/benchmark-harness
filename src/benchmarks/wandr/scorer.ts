@@ -53,6 +53,18 @@ export const wandrScorer: ScorerService = (
   return succeed(score);
 };
 
+/**
+ * Samples that were actually evaluated. Skipped scores are infrastructure
+ * failures (degraded solver/model errors), excluded from the accuracy
+ * denominator by `aggregateScores` — the reward mean and primary-score weight
+ * must exclude them the same way.
+ */
+function scoredWandrSamples(result: RunResult): RunResult["sampleScores"] {
+  return result.sampleScores.filter(
+    (sample) => sample.score.value !== ScoreValue.Skipped
+  );
+}
+
 export function wandrRunLevelScores(result: RunResult): readonly {
   name: string;
   metrics: Readonly<
@@ -64,7 +76,7 @@ export function wandrRunLevelScores(result: RunResult): readonly {
     >
   >;
 }[] {
-  const rewards = result.sampleScores.flatMap((sample) => {
+  const rewards = scoredWandrSamples(result).flatMap((sample) => {
     const parsed = Either.try((): unknown =>
       JSON.parse(sample.score.explanation)
     );
@@ -97,12 +109,13 @@ export function wandrRunLevelScores(result: RunResult): readonly {
 export function wandrPrimaryScore(
   result: RunResult
 ): BenchmarkPrimaryScore | undefined {
-  if (result.sampleScores.length === 0) {
+  const weight = scoredWandrSamples(result).length;
+  if (weight === 0) {
     return undefined;
   }
   const metrics = wandrRunLevelScores(result)[0]?.metrics;
   return {
     value: metrics?.["soft_f1_full"]?.value ?? 0,
-    weight: result.sampleScores.length,
+    weight,
   };
 }

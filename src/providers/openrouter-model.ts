@@ -29,6 +29,7 @@ import type { GenerateConfig } from "../harness/model";
 import { Model, stripVariantSuffix } from "../harness/model";
 import type { ReasoningDetails } from "../harness/reasoning-details";
 import { hasReasoningDetails } from "../harness/reasoning-details";
+import { getBenchRequestContext } from "../harness/request-context";
 import { Either } from "../internal/either";
 import { unknownErrorToString } from "../internal/errors";
 import { isDefinedAndNotNull, isRecord } from "../internal/guards";
@@ -158,6 +159,7 @@ export function generate(
     : undefined;
   return gen(function* () {
     const startedAt = performance.now();
+    const requestContext = yield* getBenchRequestContext;
     const body = {
       model,
       messages: messages.map(toApiMessage),
@@ -177,6 +179,16 @@ export function generate(
       ...(sendSort && { provider: { sort: genConfig.sort } }),
       ...(autoRouterPlugin !== undefined && { plugins: [autoRouterPlugin] }),
       ...genConfig.extraBody,
+      /* Bench-gateway extension: identifies which (sample, epoch) issued the
+         call so the gateway's coalescing hash separates epochs. The gateway
+         strips `x_bench` before forwarding; OpenRouter ignores it if the
+         call goes direct. */
+      ...(requestContext !== undefined && {
+        x_bench: {
+          sample_id: requestContext.sampleId,
+          sample_epoch: requestContext.epoch,
+        },
+      }),
     };
     const request = HttpClientRequest.post(
       `${opts.baseUrl}/chat/completions`
