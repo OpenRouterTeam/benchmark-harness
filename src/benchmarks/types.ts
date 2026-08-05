@@ -17,6 +17,7 @@ export interface BenchmarkRunInput {
   readonly sessionId: string;
   readonly datasetRetry?: RetryConfig;
   readonly modelRetry?: RetryConfig;
+  /** Override the benchmark's default Model layer (e.g. TRINITY routing). */
   readonly modelLayer?: Layer<Model, Error, HttpClient.HttpClient>;
   readonly responsesModelLayer?: Layer<
     ResponsesModel,
@@ -33,6 +34,16 @@ export interface BenchmarkPrimaryScore {
 export interface Benchmark {
   readonly id: string;
   readonly makeDatasetLayer: (retryConfig?: RetryConfig) => Layer<Dataset>;
+  /**
+   * Config-aware dataset layer for benchmarks whose dataset lives in the run
+   * config (custom_eval). Size probing MUST use this when defined — the
+   * config-free `makeDatasetLayer` cannot know the real dataset and must not
+   * be allowed to answer for it.
+   */
+  readonly makeDatasetLayerForConfig?: (
+    config: BenchmarkRunConfig,
+    retryConfig?: RetryConfig
+  ) => Layer<Dataset>;
   readonly makeLayer: (
     input: BenchmarkRunInput
   ) => Layer<Dataset | Solver | Scorer, Error, HttpClient.HttpClient>;

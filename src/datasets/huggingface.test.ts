@@ -34,7 +34,7 @@ const headersByRequest: Record<string, string>[] = [];
 
 let restoreFetch: (() => void) | undefined;
 
-function stubFetch(response: unknown): void {
+function stubFetch(response: unknown, datasetInfo?: unknown): void {
   const original = globalThis.fetch;
   const stub: typeof fetch = (input, init) => {
     const req =
@@ -44,8 +44,11 @@ function stubFetch(response: unknown): void {
       headers[key] = value;
     });
     headersByRequest.push(headers);
+    const body = req.url.includes("/api/datasets/")
+      ? (datasetInfo ?? { sha: "abc" })
+      : response;
     return Promise.resolve(
-      new Response(JSON.stringify(response), {
+      new Response(JSON.stringify(body), {
         status: 200,
         headers: { "content-type": "application/json" },
       })
@@ -111,6 +114,72 @@ describe("makeHfDatasetLayer", () => {
     expect(headersByRequest[0]?.["authorization"]).toBeUndefined();
   });
 });
+
+describe("revision pinning", () => {
+  afterEach(() => {
+    restoreFetch?.();
+    headersByRequest.length = 0;
+  });
+
+  it("streams normally when the pinned revision matches upstream", async () => {
+    stubFetch(rowsPage({ numRowsTotal: 3, rows: 1 }), { sha: "pinned-sha" });
+    const layer = makeHfDatasetLayer({
+      dataset: "o/d",
+      config: "default",
+      split: "test",
+      revision: "pinned-sha",
+      recordToSample: (_record, index) => ({
+        id: String(index),
+        input: "",
+        target: { text: "" },
+      }),
+      hfToken: "",
+      retry: { baseDelayMs: 0 },
+    });
+    expect(await fetchOnceWithLayer(layer)).toBe(3);
+  });
+
+  it("fails closed with both SHAs when upstream moved past the pinned revision", async () => {
+    stubFetch(rowsPage({ numRowsTotal: 3, rows: 1 }), { sha: "newer-sha" });
+    const layer = makeHfDatasetLayer({
+      dataset: "o/d",
+      config: "default",
+      split: "test",
+      revision: "pinned-sha",
+      recordToSample: (_record, index) => ({
+        id: String(index),
+        input: "",
+        target: { text: "" },
+      }),
+      hfToken: "",
+      retry: { baseDelayMs: 0 },
+    });
+    await expect(fetchOnceWithLayer(layer)).rejects.toThrow(
+      /pinned pinned-sha.*newer-sha/s
+    );
+  });
+
+  it("skips verification entirely when no revision is pinned", async () => {
+    stubFetch(rowsPage({ numRowsTotal: 2, rows: 1 }));
+    const layer = makeHfDatasetLayer({
+      dataset: "o/d",
+      config: "default",
+      split: "test",
+      recordToSample: (_record, index) => ({
+        id: String(index),
+        input: "",
+        target: { text: "" },
+      }),
+      hfToken: "",
+      retry: { baseDelayMs: 0 },
+    });
+    expect(await fetchOnceWithLayer(layer)).toBe(2);
+    const infoCalls = headersByRequest.length;
+    /* one /rows call only — no dataset-info request was made */
+    expect(infoCalls).toBe(1);
+  });
+});
+
 describe("hfFetchRetrySchedule", () => {
   let restoreWarn: (() => void) | undefined;
   afterEach(() => {
