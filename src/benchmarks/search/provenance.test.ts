@@ -56,7 +56,7 @@ describe("search benchmark provenance", () => {
           prompt: {
             id: "dsqa_judge",
             sha256:
-              "7b9279e2d8dba2547eb6e1c00dcd7498150df3fdd3cace6b8e817ea67ae07f9c",
+              "9bdd0b9198244de8a78bf256b5332805d00c140e85b713f0e1878b3e4aa605a0",
           },
         },
       ],

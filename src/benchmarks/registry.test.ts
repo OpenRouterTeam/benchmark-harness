@@ -72,6 +72,8 @@ describe("benchmark registry", () => {
     const benchmark = getBenchmark("search_dsqa");
     expect(benchmark?.id).toBe("search_dsqa");
     expect(benchmark?.defaultEpochs).toBe(1);
+    expect(typeof benchmark?.runLevelScores).toBe("function");
+    expect(typeof benchmark?.primaryScore).toBe("function");
     const config = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "search_dsqa",
       model: "openai/gpt-5.4-nano",
