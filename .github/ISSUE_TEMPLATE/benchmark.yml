@@ -1,0 +1,32 @@
+name: Benchmark request
+description: Propose adding or porting a benchmark.
+title: "[Benchmark]: "
+labels:
+  - enhancement
+body:
+  - type: input
+    id: source
+    attributes:
+      label: Benchmark source
+      description: Paper, repository, or specification URL.
+    validations:
+      required: true
+  - type: input
+    id: license
+    attributes:
+      label: Dataset and code license
+      description: Include links to the applicable terms.
+    validations:
+      required: true
+  - type: textarea
+    id: evaluation
+    attributes:
+      label: Evaluation method
+      description: Describe the dataset, solver, scorer, and expected outputs.
+    validations:
+      required: true
+  - type: textarea
+    id: reproducibility
+    attributes:
+      label: Reproducibility
+      description: Provide a reference implementation, baseline, or expected scores when available.
