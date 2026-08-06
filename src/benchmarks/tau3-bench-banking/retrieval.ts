@@ -158,15 +158,17 @@ function scoreBm25Document({
   if (index.averageDocumentLength === 0) {
     return 0;
   }
-  return queryTokens.reduce((score, token) => {
+  let score = 0;
+  for (const token of queryTokens) {
     const frequency = document.termFrequencies.get(token) ?? 0;
     const idf = index.inverseDocumentFrequencies.get(token) ?? 0;
     const numerator = frequency * (BM25_K1 + 1);
     const lengthRatio = document.length / index.averageDocumentLength;
     const denominator =
       frequency + BM25_K1 * (1 - BM25_B + BM25_B * lengthRatio);
-    return score + idf * (numerator / denominator);
-  }, 0);
+    score += idf * (numerator / denominator);
+  }
+  return score;
 }
 
 export function searchGrep({

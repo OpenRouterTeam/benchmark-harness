@@ -137,9 +137,8 @@ describe("DSQA benchmark", () => {
     expect(calls).toBe(2);
     expect(state.output?.usage?.totalCost).toBeCloseTo(0.021, 5);
     expect(state.sample.metadata?.["verdict"]).toEqual(VERDICT);
-    expect((await runPromise(dsqaScorer(state, SAMPLE.target))).value).toBe(
-      ScoreValue.Correct
-    );
+    const dsqaResult = await runPromise(dsqaScorer(state, SAMPLE.target));
+    expect(dsqaResult.value).toBe(ScoreValue.Correct);
   });
   it("skips judging an empty generated answer", async () => {
     let calls = 0;

@@ -89,7 +89,10 @@ export function stagePut(
 }
 
 export class FsArtifactStore implements ArtifactStore {
-  constructor(private readonly runDir: string) {}
+  private readonly runDir: string;
+  constructor(runDir: string) {
+    this.runDir = runDir;
+  }
   readonly get = async (
     key: StageKey
   ): AsyncEither<string | undefined, string> => {
@@ -123,10 +126,12 @@ export class FsArtifactStore implements ArtifactStore {
 }
 
 export class GcsArtifactStore implements ArtifactStore {
-  constructor(
-    private readonly bucketName: string,
-    private readonly prefix: string
-  ) {}
+  private readonly bucketName: string;
+  private readonly prefix: string;
+  constructor(bucketName: string, prefix: string) {
+    this.bucketName = bucketName;
+    this.prefix = prefix;
+  }
   readonly get = async (
     key: StageKey
   ): AsyncEither<string | undefined, string> => {

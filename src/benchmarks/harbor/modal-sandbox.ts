@@ -157,7 +157,7 @@ export function makeModalSandboxLayer(
     sandboxId: string
   ): Effect<SandboxSessionInstance, SolverError> =>
     gen(function* attach() {
-      const app = yield* tryPromise({
+      yield* tryPromise({
         try: () => getApp(),
         catch: (e) => toSolverError("Failed to resolve Modal app", e),
       });
@@ -166,7 +166,6 @@ export function makeModalSandboxLayer(
         catch: (e) =>
           toSolverError(`Failed to reattach sandbox ${sandboxId}`, e),
       });
-      void app;
       const exec: SandboxExec = (argv, env, timeoutMs) =>
         gen(function* exec() {
           const proc = yield* tryPromise({

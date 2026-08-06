@@ -104,9 +104,10 @@ export function renderUserInstructions(
       .split("\n")
       .map((line) => `\t${line}`)
       .join("\n");
-  const lines: string[] = [];
-  lines.push(`Domain: ${instructions.domain}`);
-  lines.push(`Reason for call:\n${indent(instructions.reason_for_call)}`);
+  const lines: string[] = [
+    `Domain: ${instructions.domain}`,
+    `Reason for call:\n${indent(instructions.reason_for_call)}`,
+  ];
   if (isDefinedAndNotNull(instructions.known_info)) {
     lines.push(`Known info:\n${indent(instructions.known_info)}`);
   }

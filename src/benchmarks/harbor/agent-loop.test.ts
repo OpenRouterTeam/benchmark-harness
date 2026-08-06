@@ -78,9 +78,9 @@ function failingThenSucceedingSandbox(failTimes: number): {
           exitCode: 0,
         });
       }),
-    uploadFile: () => succeed(void 0),
-    downloadFile: () => succeed(void 0),
-    destroy: () => succeed(void 0),
+    uploadFile: () => succeed(undefined),
+    downloadFile: () => succeed(undefined),
+    destroy: () => succeed(undefined),
   };
   return {
     instance,

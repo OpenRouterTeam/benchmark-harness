@@ -1143,8 +1143,10 @@ export function registerDebitTools(): void {
       for (const cardId in cardsTable) {
         const card = cardsTable[cardId]!;
         if (card.account_id === accountId) {
-          const cardInfo: Record<string, unknown> = { card_id: cardId };
-          Object.assign(cardInfo, card);
+          const cardInfo: Record<string, unknown> = {
+            card_id: cardId,
+            ...card,
+          };
           if (
             "last_4_digits" in cardInfo &&
             !("card_number_last_4" in cardInfo)
