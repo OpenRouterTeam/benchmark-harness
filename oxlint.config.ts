@@ -1,11 +1,6 @@
 import { defineConfig } from "oxlint";
 import core from "ultracite/oxlint/core";
 
-/**
- * Start from Ultracite's Oxc preset, while deferring existing high-churn
- * conventions. Each rule stays explicitly documented here so it can be
- * re-enabled in a focused cleanup rather than silently forgotten.
- */
 export default defineConfig({
   extends: [core],
   ignorePatterns: core.ignorePatterns,
@@ -17,7 +12,6 @@ export default defineConfig({
   ],
   rules: {
     "openrouter/no-comments": "error",
-    // Existing project conventions; defer mechanical, repository-wide churn.
     "eslint/func-style": "off",
     "eslint/no-use-before-define": "off",
     "eslint/sort-keys": "off",
@@ -93,7 +87,6 @@ export default defineConfig({
     "unicorn/no-unreadable-array-destructuring": "off",
     "unicorn/throw-new-error": "off",
 
-    // Deferred audit candidates: visible as warnings, but not CI-blocking yet.
     "eslint/no-unused-vars": "warn",
     "eslint/no-new-func": "warn",
     "eslint/operator-assignment": "warn",
