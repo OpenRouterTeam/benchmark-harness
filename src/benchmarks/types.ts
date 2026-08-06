@@ -17,6 +17,8 @@ export interface BenchmarkRunInput {
   readonly sessionId: string;
   readonly datasetRetry?: RetryConfig;
   readonly modelRetry?: RetryConfig;
+  /** Caller-resolved model output limit; absent preserves configured behavior. */
+  readonly maxOutputTokensCeiling?: number;
   readonly modelLayer?: Layer<Model, Error, HttpClient.HttpClient>;
   readonly responsesModelLayer?: Layer<
     ResponsesModel,
