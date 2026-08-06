@@ -39,6 +39,7 @@ export const BenchmarkResultRowSchema = z.object({
   explanation: z.string().nullable(),
   scorer_trajectory: z.string().nullish(),
   response_items: z.string().nullish(),
+  request_body: z.string().nullish(),
   generation_ids: z.string().nullish(),
   messages: z.string().nullable(),
   metadata: z.string().nullable(),

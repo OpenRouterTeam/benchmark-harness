@@ -237,7 +237,7 @@ describe("searchSolver", () => {
       }),
       { model: "m", instructions: "i", lane: LANE }
     );
-    await runSolver(
+    const state = await runSolver(
       solver(initialTaskState({ id: "s", input: "q", target: { text: "t" } }))
     );
     expect(sent?.maxToolCalls).toBe(3);
@@ -250,6 +250,7 @@ describe("searchSolver", () => {
         },
       },
     ]);
+    expect(state.requestBody).toEqual(sent);
   });
   it("trims whitespace from the answer", async () => {
     const solver = searchSolver(

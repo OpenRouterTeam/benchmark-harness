@@ -190,6 +190,9 @@ function evaluateOne(
         ...(state.responseItems !== undefined && {
           responseItems: state.responseItems,
         }),
+        ...(state.requestBody !== undefined && {
+          requestBody: state.requestBody,
+        }),
         ...(state.sample.metadata && { metadata: state.sample.metadata }),
         input: sample.input,
         target: sample.target.text,

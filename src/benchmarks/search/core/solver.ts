@@ -48,6 +48,9 @@ export interface SearchSolverOptions {
   readonly reasoningEffort?: ReasoningEffort;
   readonly endpointId?: string;
   readonly sort?: ProviderSort;
+  readonly providerOrder?: readonly string[];
+  readonly providerOnly?: readonly string[];
+  readonly allowFallbacks?: boolean;
   readonly versionOverride?: string;
   readonly costQualityTradeoff?: number;
   readonly costTier?: CostTier;
@@ -90,6 +93,15 @@ export function searchSolver(
           reasoningEffort: opts.reasoningEffort,
         }),
         ...(sendSort && { sort: opts.sort }),
+        ...(opts.providerOrder !== undefined && {
+          providerOrder: opts.providerOrder,
+        }),
+        ...(opts.providerOnly !== undefined && {
+          providerOnly: opts.providerOnly,
+        }),
+        ...(opts.allowFallbacks !== undefined && {
+          allowFallbacks: opts.allowFallbacks,
+        }),
         ...(opts.costQualityTradeoff !== undefined && {
           costQualityTradeoff: opts.costQualityTradeoff,
         }),
@@ -226,6 +238,7 @@ function completedState({
         : []),
     ],
     responseItems: responseItemsForCall(request, result),
+    requestBody: { ...request },
     output: {
       completion: text,
       message: { role: MessageRole.Assistant, content: text },

@@ -1,5 +1,6 @@
 import type {
   AutoRouterPlugin,
+  ProviderPreferences,
   ResponsesRequest,
   WebFetchServerTool,
   WebFetchServerToolConfig,
@@ -27,6 +28,9 @@ export interface SearchRequestOptions {
   readonly temperature?: number;
   readonly reasoningEffort?: ReasoningEffort;
   readonly sort?: ProviderSort;
+  readonly providerOrder?: readonly string[];
+  readonly providerOnly?: readonly string[];
+  readonly allowFallbacks?: boolean;
   readonly costQualityTradeoff?: number;
   readonly costTier?: CostTier;
 }
@@ -125,7 +129,24 @@ export function buildSearchRequestBody(
       ...(opts.reasoningEffort !== undefined && {
         reasoning: { effort: opts.reasoningEffort },
       }),
-      ...(opts.sort !== undefined && { provider: { sort: opts.sort } }),
+      provider:
+        opts.sort !== undefined ||
+        opts.providerOrder !== undefined ||
+        opts.providerOnly !== undefined ||
+        opts.allowFallbacks !== undefined
+          ? (definedValues({
+              sort: opts.sort,
+              order:
+                opts.providerOrder === undefined
+                  ? undefined
+                  : [...opts.providerOrder],
+              only:
+                opts.providerOnly === undefined
+                  ? undefined
+                  : [...opts.providerOnly],
+              allowFallbacks: opts.allowFallbacks,
+            }) satisfies ProviderPreferences)
+          : undefined,
     }),
   };
   if (lane.webSearch === "plugin") {

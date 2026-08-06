@@ -7,6 +7,7 @@ export interface SampleScore {
   readonly score: Score;
   readonly messages?: readonly ChatMessage[];
   readonly responseItems?: readonly ResponseItem[];
+  readonly requestBody?: Readonly<Record<string, unknown>>;
   readonly generationIds?: readonly string[];
   readonly metadata?: Readonly<Record<string, unknown>>;
   readonly input?: string;

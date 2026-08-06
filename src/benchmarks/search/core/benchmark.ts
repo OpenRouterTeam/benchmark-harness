@@ -24,6 +24,7 @@ export const DEFAULT_SEARCH_MAX_OUTPUT_TOKENS = 128000;
 interface SearchBenchmarkLayerDefinition {
   readonly benchmarkId: string;
   readonly instructions: string;
+  readonly temperature: number;
   readonly makeDatasetLayer: (retry?: RetryConfig) => Layer<Dataset>;
   readonly makeSolver: (
     responses: ResponsesService,
@@ -36,12 +37,14 @@ interface SearchBenchmarkLayerDefinition {
 export function searchSolverOptionsFromConfig({
   config,
   instructions,
+  temperature,
   retry,
   maxOutputTokens = DEFAULT_SEARCH_MAX_OUTPUT_TOKENS,
   maxOutputTokensCeiling,
 }: {
   readonly config: SearchBenchmarkConfig;
   readonly instructions: string;
+  readonly temperature: number;
   readonly retry?: RetryConfig;
   readonly maxOutputTokens?: number;
   readonly maxOutputTokensCeiling?: number;
@@ -55,15 +58,22 @@ export function searchSolverOptionsFromConfig({
       maxOutputTokensCeiling === undefined
         ? requestedMaxOutputTokens
         : Math.min(requestedMaxOutputTokens, maxOutputTokensCeiling),
-    ...(config.temperature !== undefined && {
-      temperature: config.temperature,
-    }),
+    temperature: config.temperature ?? temperature,
     ...(config.timeoutMs !== undefined && { timeoutMs: config.timeoutMs }),
     ...(config.reasoningEffort !== undefined && {
       reasoningEffort: config.reasoningEffort,
     }),
     ...(config.endpointId !== undefined && { endpointId: config.endpointId }),
     ...(config.sort !== undefined && { sort: config.sort }),
+    ...(config.providerOrder !== undefined && {
+      providerOrder: config.providerOrder,
+    }),
+    ...(config.providerOnly !== undefined && {
+      providerOnly: config.providerOnly,
+    }),
+    ...(config.allowFallbacks !== undefined && {
+      allowFallbacks: config.allowFallbacks,
+    }),
     ...(config.cloudflareVersion !== undefined && {
       versionOverride: config.cloudflareVersion,
     }),
@@ -96,6 +106,7 @@ export function makeSearchBenchmarkLayer(
   const options = searchSolverOptionsFromConfig({
     config,
     instructions: definition.instructions,
+    temperature: definition.temperature,
     retry: input.modelRetry,
     maxOutputTokens: definition.maxOutputTokens,
     ...(input.maxOutputTokensCeiling !== undefined && {

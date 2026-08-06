@@ -117,6 +117,7 @@ export const DSQA_BENCHMARK: Benchmark = {
     makeSearchBenchmarkLayer(input, {
       benchmarkId: DSQA_BENCHMARK_ID,
       instructions: DEEP_RESEARCH_INSTRUCTIONS,
+      temperature: 0,
       makeDatasetLayer: makeDsqaDatasetLayer,
       makeSolver: makeDsqaSolver,
       scorer: dsqaScorer,
