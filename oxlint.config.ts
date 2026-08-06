@@ -9,7 +9,14 @@ import core from "ultracite/oxlint/core";
 export default defineConfig({
   extends: [core],
   ignorePatterns: core.ignorePatterns,
+  jsPlugins: [
+    {
+      name: "openrouter",
+      specifier: "./tools/oxlint/no-comments.js",
+    },
+  ],
   rules: {
+    "openrouter/no-comments": "error",
     // Existing project conventions; defer mechanical, repository-wide churn.
     "eslint/func-style": "off",
     "eslint/no-use-before-define": "off",
