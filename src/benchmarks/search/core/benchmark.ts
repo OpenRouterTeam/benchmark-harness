@@ -38,17 +38,23 @@ export function searchSolverOptionsFromConfig({
   instructions,
   retry,
   maxOutputTokens = DEFAULT_SEARCH_MAX_OUTPUT_TOKENS,
+  maxOutputTokensCeiling,
 }: {
   readonly config: SearchBenchmarkConfig;
   readonly instructions: string;
   readonly retry?: RetryConfig;
   readonly maxOutputTokens?: number;
+  readonly maxOutputTokensCeiling?: number;
 }): SearchSolverOptions {
+  const requestedMaxOutputTokens = config.maxTokens ?? maxOutputTokens;
   return {
     model: config.model,
     instructions,
     lane: config.lane,
-    maxOutputTokens: config.maxTokens ?? maxOutputTokens,
+    maxOutputTokens:
+      maxOutputTokensCeiling === undefined
+        ? requestedMaxOutputTokens
+        : Math.min(requestedMaxOutputTokens, maxOutputTokensCeiling),
     ...(config.temperature !== undefined && {
       temperature: config.temperature,
     }),
@@ -92,6 +98,9 @@ export function makeSearchBenchmarkLayer(
     instructions: definition.instructions,
     retry: input.modelRetry,
     maxOutputTokens: definition.maxOutputTokens,
+    ...(input.maxOutputTokensCeiling !== undefined && {
+      maxOutputTokensCeiling: input.maxOutputTokensCeiling,
+    }),
   });
   const solverLayer = effect(Solver)(
     gen(function* () {

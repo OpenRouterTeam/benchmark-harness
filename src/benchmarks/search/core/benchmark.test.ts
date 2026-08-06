@@ -4,6 +4,12 @@ import { ProviderSort, WebSearchEngine } from "../../../internal/enums";
 import { searchSolverOptionsFromConfig } from "./benchmark";
 import { buildSearchRequestBody } from "./request";
 describe("searchSolverOptionsFromConfig", () => {
+  const baseConfig = {
+    benchmarkId: "search_hle",
+    model: "model",
+    lane: { webSearch: "server-tool", engine: "auto" },
+  } as const;
+
   it("projects every shared search inference option", () => {
     const config = {
       benchmarkId: "search_hle",
@@ -51,13 +57,8 @@ describe("searchSolverOptionsFromConfig", () => {
     ).toBe(0.2);
   });
   it("omits temperature when the config omits an override", () => {
-    const config = {
-      benchmarkId: "search_hle",
-      model: "model",
-      lane: { webSearch: "server-tool", engine: "auto" },
-    } as const;
     const options = searchSolverOptionsFromConfig({
-      config,
+      config: baseConfig,
       instructions: "instructions",
       maxOutputTokens: 999,
     });
@@ -66,5 +67,45 @@ describe("searchSolverOptionsFromConfig", () => {
     expect(
       buildSearchRequestBody({ ...options, problem: "Q?" }).temperature
     ).toBeUndefined();
+  });
+
+  it("clamps the default output tokens to the supplied ceiling", () => {
+    const options = searchSolverOptionsFromConfig({
+      config: baseConfig,
+      instructions: "instructions",
+      maxOutputTokensCeiling: 32768,
+    });
+
+    expect(options.maxOutputTokens).toBe(32768);
+  });
+
+  it("clamps configured output tokens to the supplied ceiling", () => {
+    const options = searchSolverOptionsFromConfig({
+      config: { ...baseConfig, maxTokens: 64000 },
+      instructions: "instructions",
+      maxOutputTokensCeiling: 16000,
+    });
+
+    expect(options.maxOutputTokens).toBe(16000);
+  });
+
+  it("preserves configured output tokens below the supplied ceiling", () => {
+    const options = searchSolverOptionsFromConfig({
+      config: { ...baseConfig, maxTokens: 8000 },
+      instructions: "instructions",
+      maxOutputTokensCeiling: 16000,
+    });
+
+    expect(options.maxOutputTokens).toBe(8000);
+  });
+
+  it("preserves output tokens when no ceiling is supplied", () => {
+    const options = searchSolverOptionsFromConfig({
+      config: baseConfig,
+      instructions: "instructions",
+      maxOutputTokens: 999,
+    });
+
+    expect(options.maxOutputTokens).toBe(999);
   });
 });
