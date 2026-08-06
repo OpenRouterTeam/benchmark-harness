@@ -95,6 +95,7 @@ const COLUMN_SPECS = [
   { name: "explanation", type: "STRING", nullable: true },
   { name: "scorer_trajectory", type: "JSON", nullable: true },
   { name: "response_items", type: "JSON", nullable: true },
+  { name: "request_body", type: "JSON", nullable: true },
   { name: "generation_ids", type: "JSON", nullable: true },
   { name: "messages", type: "JSON", nullable: true },
   { name: "metadata", type: "JSON", nullable: true },
@@ -243,6 +244,9 @@ function cellValue(name: ColumnName, ctx: RowContext, s: SampleScore): unknown {
       return s.responseItems !== undefined && s.responseItems.length > 0
         ? JSON.stringify(s.responseItems)
         : null;
+    }
+    case "request_body": {
+      return s.requestBody !== undefined ? JSON.stringify(s.requestBody) : null;
     }
     case "generation_ids": {
       return s.generationIds !== undefined && s.generationIds.length > 0

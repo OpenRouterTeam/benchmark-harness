@@ -235,8 +235,43 @@ describe("runResultToParquet", () => {
   it("writes null response_items and generation_ids when the solver recorded none", () => {
     for (const row of rows) {
       expect(row.response_items).toBeNull();
+      expect(row.request_body).toBeNull();
       expect(row.generation_ids).toBeNull();
     }
+  });
+  it("round-trips the effective request body as JSON", async () => {
+    const requestBody = {
+      model: "openai/gpt-5.4-nano",
+      maxOutputTokens: 128000,
+      provider: {
+        order: ["openai", "azure"],
+        only: ["openai", "azure"],
+        allowFallbacks: false,
+      },
+      tools: [
+        {
+          type: "openrouter:web_search",
+          parameters: { excludedDomains: ["example.com"] },
+        },
+      ],
+    };
+    const bufferWithRequest = runResultToParquet({
+      result: {
+        metrics: METRICS,
+        usage: USAGE,
+        sampleScores: [
+          {
+            sampleId: "s0",
+            epoch: 0,
+            score: { value: ScoreValue.Correct, answer: "B", explanation: "" },
+            requestBody,
+          },
+        ],
+      },
+      meta: META,
+    });
+    const requestRows = await readRows(bufferWithRequest);
+    expect(JSON.parse(requestRows[0]!.request_body!)).toEqual(requestBody);
   });
   it("serializes generation ids as a JSON column", async () => {
     const bufferWithIds = runResultToParquet({
@@ -644,6 +679,7 @@ describe("BenchmarkResultRowSchema", () => {
     expect(parsed.right.benchmark_config).toBeUndefined();
     expect(parsed.right.scorer_trajectory).toBeUndefined();
     expect(parsed.right.response_items).toBeUndefined();
+    expect(parsed.right.request_body).toBeUndefined();
     expect(parsed.right.generation_ids).toBeUndefined();
   });
   it("parses a row with response_items present", () => {

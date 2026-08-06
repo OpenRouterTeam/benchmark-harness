@@ -225,6 +225,9 @@ export const SearchBenchmarkOptionsSchema = z.object({
   lane: SearchLaneConfigSchema.default(
     () => ({ webSearch: "server-tool", engine: "auto" }) as const
   ),
+  providerOrder: z.array(z.string()).optional(),
+  providerOnly: z.array(z.string()).optional(),
+  allowFallbacks: z.boolean().optional(),
 });
 
 export const BrowseCompBenchmarkConfigSchema = z.object({

@@ -21,11 +21,15 @@ describe("searchSolverOptionsFromConfig", () => {
       costQualityTradeoff: 4,
       timeoutMs: 456,
       sort: ProviderSort.Latency,
+      providerOrder: ["openai", "azure"],
+      providerOnly: ["openai", "azure"],
+      allowFallbacks: false,
       cloudflareVersion: "worker-version",
     } as const;
     const options = searchSolverOptionsFromConfig({
       config,
       instructions: "instructions",
+      temperature: 0,
       retry: {
         maxRetries: 2,
         baseDelayMs: 3,
@@ -43,6 +47,9 @@ describe("searchSolverOptionsFromConfig", () => {
       timeoutMs: 456,
       endpointId: "endpoint",
       sort: "latency",
+      providerOrder: ["openai", "azure"],
+      providerOnly: ["openai", "azure"],
+      allowFallbacks: false,
       versionOverride: "worker-version",
       retry: { maxRetries: 2, baseDelayMs: 3 },
     });
@@ -50,7 +57,7 @@ describe("searchSolverOptionsFromConfig", () => {
       buildSearchRequestBody({ ...options, problem: "Q?" }).temperature
     ).toBe(0.2);
   });
-  it("omits temperature when the config omits an override", () => {
+  it("uses the benchmark-declared temperature when the config omits an override", () => {
     const config = {
       benchmarkId: "search_hle",
       model: "model",
@@ -59,12 +66,13 @@ describe("searchSolverOptionsFromConfig", () => {
     const options = searchSolverOptionsFromConfig({
       config,
       instructions: "instructions",
+      temperature: 0,
       maxOutputTokens: 999,
     });
     expect(options.maxOutputTokens).toBe(999);
-    expect(options.temperature).toBeUndefined();
+    expect(options.temperature).toBe(0);
     expect(
       buildSearchRequestBody({ ...options, problem: "Q?" }).temperature
-    ).toBeUndefined();
+    ).toBe(0);
   });
 });

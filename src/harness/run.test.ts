@@ -232,6 +232,33 @@ describe("runBenchmark", () => {
     );
     expect(result.sampleScores[0]?.responseItems).toEqual(responseItems);
   });
+  it("carries the request body from TaskState into per-sample scores", async () => {
+    const requestBody = {
+      model: "model",
+      provider: { order: ["openai"], allowFallbacks: false },
+    } as const;
+    const solver: SolverService = (state) =>
+      effectSucceed({
+        ...state,
+        requestBody,
+        output: {
+          completion: "Answer: B",
+          message: { role: MessageRole.Assistant, content: "Answer: B" },
+        },
+        completed: true,
+      });
+    const layers = mergeAll(
+      fakeDatasetLayer(SAMPLES.slice(0, 1)),
+      layerSucceed(Solver, Solver.of(solver)),
+      layerSucceed(Scorer, Scorer.of(mcqScorer)),
+      noopProgressLayer,
+      noopCheckpointLayer
+    );
+    const result = await runPromise(
+      runBenchmark({ epochs: 1, maxConcurrency: 1 }).pipe(provide(layers))
+    );
+    expect(result.sampleScores[0]?.requestBody).toEqual(requestBody);
+  });
   it("respects a sample range (chunk slice)", async () => {
     const model = fakeModel(() => "Answer: B");
     const solver = generate(model.service, { temperature: 0 });

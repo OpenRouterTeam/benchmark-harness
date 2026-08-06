@@ -43,6 +43,7 @@ export const HLE_BENCHMARK: Benchmark = {
     makeSearchBenchmarkLayer(input, {
       benchmarkId: HLE_BENCHMARK_ID,
       instructions: DEEP_RESEARCH_INSTRUCTIONS,
+      temperature: HLE_TEMPERATURE,
       makeDatasetLayer: makeHleDatasetLayer,
       makeSolver: makeHleSolver,
       scorer: hleScorer,
