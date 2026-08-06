@@ -43,6 +43,7 @@ export const BROWSECOMP_BENCHMARK: Benchmark = {
     makeSearchBenchmarkLayer(input, {
       benchmarkId: BROWSECOMP_BENCHMARK_ID,
       instructions: DEEP_RESEARCH_INSTRUCTIONS,
+      temperature: BROWSECOMP_TEMPERATURE,
       makeDatasetLayer: makeBrowseCompDatasetLayer,
       makeSolver: makeBrowseCompSolver,
       scorer: browseCompScorer,

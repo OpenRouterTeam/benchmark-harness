@@ -172,6 +172,27 @@ describe("buildSearchRequestBody", () => {
     expect(body.temperature).toBe(0);
     expect(body.reasoning).toEqual({ effort: "high" });
   });
+  it("serializes deterministic provider routing through the SDK", () => {
+    const body = buildSearchRequestBody({
+      ...BASE,
+      lane: lane({}),
+      providerOrder: ["openai", "azure"],
+      providerOnly: ["openai", "azure"],
+      allowFallbacks: false,
+    });
+    expect(body.provider).toEqual({
+      order: ["openai", "azure"],
+      only: ["openai", "azure"],
+      allowFallbacks: false,
+    });
+    expect(JSON.parse(responsesRequestToJSON(body))).toMatchObject({
+      provider: {
+        order: ["openai", "azure"],
+        only: ["openai", "azure"],
+        allow_fallbacks: false,
+      },
+    });
+  });
   it("threads search-context and character caps into tool parameters", () => {
     const body = buildSearchRequestBody({
       ...BASE,

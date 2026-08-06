@@ -17,6 +17,7 @@ export interface BenchmarkRunInput {
   readonly sessionId: string;
   readonly datasetRetry?: RetryConfig;
   readonly modelRetry?: RetryConfig;
+  readonly maxOutputTokensCeiling?: number;
   readonly modelLayer?: Layer<Model, Error, HttpClient.HttpClient>;
   readonly responsesModelLayer?: Layer<
     ResponsesModel,

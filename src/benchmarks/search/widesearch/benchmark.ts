@@ -190,6 +190,7 @@ export const WIDESEARCH_BENCHMARK: Benchmark = {
     makeSearchBenchmarkLayer(input, {
       benchmarkId: WIDESEARCH_BENCHMARK_ID,
       instructions: WIDESEARCH_INSTRUCTIONS,
+      temperature: WIDESEARCH_TEMPERATURE,
       makeDatasetLayer: makeWideSearchDatasetLayer,
       makeSolver: makeWideSearchSolver,
       scorer: wideSearchScorer,

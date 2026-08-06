@@ -8,6 +8,10 @@ export const WIDESEARCH_JUDGE_CONFIG = {
   timeoutMs: 180000,
 } as const satisfies JudgeConfig;
 
+export const WIDESEARCH_ALIGNMENT_PROMPT_ID = "widesearch_alignment";
+
+export const WIDESEARCH_CELL_JUDGE_PROMPT_ID = "widesearch_cell_judge";
+
 export const ALIGNMENT_PROMPT = `Your task is to align two vocabularies. The inputs are the vocabulary to be aligned and the reference vocabulary respectively. Note that you need to perform semantic alignment (not positional alignment). If two strings are exactly the same, they must correspond to each other. These two strings are supposed to represent the same entity, with differences only in the expression forms and formats.
 
 
@@ -110,7 +114,7 @@ export function alignmentJudgeSpec(
           ? JSON.stringify(observed)
           : JSON.stringify(reference)
     ),
-    schemaName: "widesearch_alignment",
+    schemaName: WIDESEARCH_ALIGNMENT_PROMPT_ID,
     jsonSchema: {
       type: "object",
       additionalProperties: false,
@@ -152,7 +156,7 @@ export function cellJudgeSpec(
       (placeholder) =>
         placeholder === "{criterion}" ? criterion : JSON.stringify(values)
     ),
-    schemaName: "widesearch_cell_judge",
+    schemaName: WIDESEARCH_CELL_JUDGE_PROMPT_ID,
     jsonSchema: {
       type: "object",
       additionalProperties: false,

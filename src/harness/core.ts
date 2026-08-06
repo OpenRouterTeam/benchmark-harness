@@ -142,6 +142,7 @@ export interface TaskState {
   readonly sample: Sample;
   readonly messages: readonly ChatMessage[];
   readonly responseItems?: readonly ResponseItem[];
+  readonly requestBody?: Readonly<Record<string, unknown>>;
   readonly output?: ModelOutput;
   readonly completed: boolean;
   readonly epoch?: number;
