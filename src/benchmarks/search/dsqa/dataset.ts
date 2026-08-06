@@ -30,8 +30,9 @@ import { isRecord } from "../../../internal/guards";
 import { parseSchema, z } from "../../../internal/zod";
 import type { RetryConfig } from "../../../runtime/retry";
 
-export const DSQA_DATASET_URL =
-  "https://huggingface.co/datasets/google/deepsearchqa/resolve/b2623f8653065c2672de6d941fc5434cd652376c/DSQA-full.csv";
+export const DSQA_DATASET_REVISION = "b2623f8653065c2672de6d941fc5434cd652376c";
+
+export const DSQA_DATASET_URL = `https://huggingface.co/datasets/google/deepsearchqa/resolve/${DSQA_DATASET_REVISION}/DSQA-full.csv`;
 
 export const DSQA_DATASET_SHA256 =
   "25d48dcf7efa872e5467032e8b8eedf38d301f59a252d0da95cda584baa78396";
