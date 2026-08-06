@@ -256,15 +256,16 @@ describe("makeBrowseCompSolver", () => {
       model: "m",
       instructions: "research it",
       lane: makeLane(),
+      retry: { maxRetries: 0 },
     });
-    const state = await runPromise(
-      solver(initialTaskState(SAMPLE)).pipe(
-        provide(mergeAll(noopProgressLayer, noopCheckpointLayer))
+    await expect(
+      runPromise(
+        solver(initialTaskState(SAMPLE)).pipe(
+          provide(mergeAll(noopProgressLayer, noopCheckpointLayer))
+        )
       )
-    );
+    ).rejects.toThrow("search response had no answer text");
     expect(sent).toHaveLength(1);
-    const score = await runPromise(browseCompScorer(state, SAMPLE.target));
-    expect(score.value).toBe(ScoreValue.Incorrect);
   });
 });
 describe("browseCompRunLevelScores", () => {
