@@ -46,7 +46,6 @@ export interface RunBenchmarkInput {
   readonly checkpointStore?: CheckpointStoreService;
   readonly abortSignal?: AbortSignal;
   readonly resultStore?: ResultStoreService;
-  /** Caller-resolved model output limit; absent preserves configured behavior. */
   readonly maxOutputTokensCeiling?: number;
 }
 
