@@ -1,14 +1,19 @@
 import type { ResponsesRequest, StreamEvents } from "@openrouter/sdk/models";
 import type { Effect } from "effect/Effect";
-import { gen, mapError, retry, suspend } from "effect/Effect";
+import {
+  fail,
+  flatMap,
+  gen,
+  mapError,
+  retry,
+  succeed,
+  suspend,
+  timeoutFail,
+} from "effect/Effect";
 
 import type { CostTier, ReasoningEffort } from "../../../harness/constants";
-import type {
-  ModelError,
-  ResponseItem,
-  TaskState,
-} from "../../../harness/core";
-import { MessageRole } from "../../../harness/core";
+import type { ResponseItem, TaskState } from "../../../harness/core";
+import { MessageRole, ModelError } from "../../../harness/core";
 import type { ProgressReporterService } from "../../../harness/progress";
 import { ProgressReporter } from "../../../harness/progress";
 import type { SolverService } from "../../../harness/solver";
@@ -113,6 +118,7 @@ export function searchSolver(
           }),
         }),
         retryConfig: opts.retry,
+        timeoutMs: opts.timeoutMs ?? DEFAULT_SEARCH_TIMEOUT_MS,
       });
       return completedState({
         state,
@@ -128,14 +134,43 @@ function sendWithRetry({
   body,
   options,
   retryConfig,
+  timeoutMs,
 }: {
   readonly responses: ResponsesService;
   readonly body: ResponsesRequest;
   readonly options: () => ResponsesSendOptions;
   readonly retryConfig?: RetryConfig;
+  readonly timeoutMs: number;
 }): Effect<ResponsesResult, ModelError> {
   return suspend(() => responses.send(body, options())).pipe(
     mapError(toModelError),
+    timeoutFail({
+      duration: `${timeoutMs} millis`,
+      onTimeout: () =>
+        new ModelError({
+          status: 504,
+          message: `search response exceeded the ${timeoutMs}ms wall-clock deadline`,
+        }),
+    }),
+    flatMap((result) => {
+      if (result.status !== "completed") {
+        return fail(
+          new ModelError({
+            status: 503,
+            message: `search response ended with status ${result.status ?? "unknown"}`,
+          })
+        );
+      }
+      if (result.text.trim() === "") {
+        return fail(
+          new ModelError({
+            status: 503,
+            message: "search response had no answer text",
+          })
+        );
+      }
+      return succeed(result);
+    }),
     retry(rateLimitRetrySchedule(retryConfig ?? {}))
   );
 }

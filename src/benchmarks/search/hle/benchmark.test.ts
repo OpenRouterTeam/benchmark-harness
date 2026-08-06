@@ -239,16 +239,16 @@ describe("makeHleSolver", () => {
       model: "m",
       instructions: "research it",
       lane: makeLane(),
+      retry: { maxRetries: 0 },
     });
-    const state = await runPromise(
-      solver(initialTaskState(SAMPLE)).pipe(
-        provide(mergeAll(noopProgressLayer, noopCheckpointLayer))
+    await expect(
+      runPromise(
+        solver(initialTaskState(SAMPLE)).pipe(
+          provide(mergeAll(noopProgressLayer, noopCheckpointLayer))
+        )
       )
-    );
+    ).rejects.toThrow("search response had no answer text");
     expect(calls).toBe(1);
-    expect((await runPromise(hleScorer(state, SAMPLE.target))).value).toBe(
-      ScoreValue.Incorrect
-    );
   });
 });
 
