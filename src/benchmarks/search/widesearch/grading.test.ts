@@ -82,6 +82,23 @@ describe("gradeWideSearch", () => {
       f1_by_item: 1,
     });
   });
+  it("uses the pinned grading date for partial-year normalization", async () => {
+    const service: ResponsesService = {
+      send: () => succeed(fixtureResult("{}")),
+    };
+    const result = await runPromise(
+      gradeWideSearch({
+        responses: service,
+        judgeConfig: WIDESEARCH_JUDGE_CONFIG,
+        expectedText: expected({
+          rows: [{ name: "A", value: "1984" }],
+          valuePreprocess: ["norm_date"],
+        }),
+        predictedAnswer: "| Name | Value |\n| --- | --- |\n| A | 1984-07-01 |",
+      })
+    );
+    expect(result.grade.metrics.success_rate).toBe(1);
+  });
   it("returns zero metrics without cell judging when no rows match", async () => {
     const sent: ResponsesRequest[] = [];
     const service: ResponsesService = {

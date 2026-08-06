@@ -7,6 +7,8 @@ export const ANSWER_EQUIVALENCE_JUDGE_CONFIG = {
   temperature: 0,
 } as const satisfies JudgeConfig;
 
+export const ANSWER_EQUIVALENCE_JUDGE_PROMPT_ID = "answer_equivalence_judge";
+
 export const ANSWER_EQUIVALENCE_GRADER_PROMPT = `Judge whether the following [response] to [question] is correct or not based on the precise and unambiguous [correct_answer] below.
 
 [question]: {question}
@@ -94,7 +96,7 @@ export function answerEquivalenceJudgeSpec(fields: {
 }): JudgeCallSpec<AnswerEquivalenceVerdict> {
   return {
     userInput: renderAnswerEquivalenceGraderPrompt(fields),
-    schemaName: "answer_equivalence_judge",
+    schemaName: ANSWER_EQUIVALENCE_JUDGE_PROMPT_ID,
     jsonSchema: VERDICT_JSON_SCHEMA,
     parseVerdict: parseAnswerEquivalenceVerdict,
   };
