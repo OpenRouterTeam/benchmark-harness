@@ -46,6 +46,7 @@ export interface RunBenchmarkInput {
   readonly checkpointStore?: CheckpointStoreService;
   readonly abortSignal?: AbortSignal;
   readonly resultStore?: ResultStoreService;
+  /** @example `maxOutputTokensCeiling: endpoint.max_completion_tokens` */
   readonly maxOutputTokensCeiling?: number;
 }
 
