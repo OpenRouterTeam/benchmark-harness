@@ -29,7 +29,7 @@
   },
   "scripts": {
     "bench": "bun src/cli/index.ts",
-    "build": "tsc --project tsconfig.build.json",
+    "build": "tsgo --project tsconfig.build.json",
     "typecheck": "effect-tsgo diagnostics --project tsconfig.json",
     "test": "bun test",
     "lint": "bun run typecheck && bun run check",
