@@ -135,12 +135,15 @@ describe("DSQA benchmark", () => {
       model: "m",
       instructions: "research it",
       lane: makeLane(),
+      retry: { maxRetries: 0 },
     });
-    await runPromise(
-      solver(initialTaskState(SAMPLE)).pipe(
-        provide(mergeAll(noopProgressLayer, noopCheckpointLayer))
+    await expect(
+      runPromise(
+        solver(initialTaskState(SAMPLE)).pipe(
+          provide(mergeAll(noopProgressLayer, noopCheckpointLayer))
+        )
       )
-    );
+    ).rejects.toThrow("search response had no answer text");
     expect(calls).toBe(1);
   });
 });

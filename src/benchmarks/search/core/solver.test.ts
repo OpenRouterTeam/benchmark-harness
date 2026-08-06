@@ -9,6 +9,7 @@ import {
   runPromise,
   runPromiseExit,
   suspend,
+  tryPromise,
 } from "effect/Effect";
 import type { Exit } from "effect/Exit";
 import { isFailure } from "effect/Exit";
@@ -374,6 +375,89 @@ describe("searchSolver", () => {
       solver(initialTaskState({ id: "s", input: "q", target: { text: "t" } }))
     );
     expect(attempts).toBe(3);
+    expect(state.output?.completion).toBe("Exact Answer: 42");
+  });
+  it("retries non-completed and empty terminal responses", async () => {
+    let attempts = 0;
+    const service: ResponsesService = {
+      send: () =>
+        suspend(() => {
+          attempts += 1;
+          if (attempts === 1) {
+            return effectSucceed(
+              fixtureResult({ status: "incomplete", text: "partial" })
+            );
+          }
+          if (attempts === 2) {
+            return effectSucceed(fixtureResult({ text: "   " }));
+          }
+          return effectSucceed(fixtureResult({ text: "Exact Answer: 42" }));
+        }),
+    };
+    const solver = searchSolver(service, {
+      model: "m",
+      instructions: "i",
+      lane: LANE,
+      retry: { maxRetries: 3, baseDelayMs: 1 },
+    });
+    const state = await runSolver(
+      solver(initialTaskState({ id: "s", input: "q", target: { text: "t" } }))
+    );
+    expect(attempts).toBe(3);
+    expect(state.output?.completion).toBe("Exact Answer: 42");
+  });
+  it("aborts and retries an attempt that stalls mid-stream", async () => {
+    let attempts = 0;
+    let aborts = 0;
+    const service: ResponsesService = {
+      send: (_body, options) =>
+        tryPromise({
+          try: (signal) => {
+            attempts += 1;
+            if (attempts > 1) {
+              return Promise.resolve(
+                fixtureResult({ text: "Exact Answer: 42" })
+              );
+            }
+            options.onStreamEvent?.({
+              type: "response.output_item.added",
+              outputIndex: 0,
+              sequenceNumber: 1,
+              item: { type: "reasoning", id: "r-1", summary: [] },
+            });
+            const stalled = Promise.withResolvers<ResponsesResult>();
+            signal.addEventListener(
+              "abort",
+              () => {
+                aborts += 1;
+                stalled.reject(signal.reason);
+              },
+              { once: true }
+            );
+            return stalled.promise;
+          },
+          catch: (cause) =>
+            new ResponsesError({
+              message: String(cause),
+              retryable: true,
+            }),
+        }),
+    };
+    const solver = searchSolver(service, {
+      model: "m",
+      instructions: "i",
+      lane: LANE,
+      timeoutMs: 25,
+      retry: { maxRetries: 1, baseDelayMs: 1 },
+    });
+    const state = await runSolver(
+      solver({
+        ...initialTaskState({ id: "s", input: "q", target: { text: "t" } }),
+        epoch: 0,
+      })
+    );
+    expect(attempts).toBe(2);
+    expect(aborts).toBe(1);
     expect(state.output?.completion).toBe("Exact Answer: 42");
   });
   it("does not retry past maxRetries", async () => {

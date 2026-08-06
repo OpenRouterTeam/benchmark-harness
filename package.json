@@ -10,6 +10,7 @@
     "./benchmarks/registry": "./src/benchmarks/registry.ts",
     "./benchmarks/deep-swe/schema": "./src/benchmarks/deep-swe/schema.ts",
     "./benchmarks/search/core/config": "./src/benchmarks/search/core/config.ts",
+    "./benchmarks/search/provenance": "./src/benchmarks/search/provenance.ts",
     "./benchmarks/swe-atlas/schema": "./src/benchmarks/swe-atlas/schema.ts",
     "./benchmarks/terminal-bench/schema": "./src/benchmarks/terminal-bench/schema.ts",
     "./core": "./src/harness/core.ts",

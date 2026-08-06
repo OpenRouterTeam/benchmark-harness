@@ -6,7 +6,9 @@ export const DSQA_JUDGE_CONFIG = {
   judgeModel: "google/gemini-2.5-flash",
 } as const satisfies JudgeConfig;
 
-const DSQA_GRADER_PROMPT = `Evaluate whether the AI response answers the DeepSearchQA question correctly.
+export const DSQA_JUDGE_PROMPT_ID = "dsqa_judge";
+
+export const DSQA_GRADER_PROMPT = `Evaluate whether the AI response answers the DeepSearchQA question correctly.
 
 Prompt type: {prompt_type}
 Question: {question}
@@ -73,7 +75,7 @@ export function dsqaJudgeSpec(fields: {
 }): JudgeCallSpec<DsqaVerdict> {
   return {
     userInput: renderDsqaGraderPrompt(fields),
-    schemaName: "dsqa_judge",
+    schemaName: DSQA_JUDGE_PROMPT_ID,
     jsonSchema: DSQA_VERDICT_JSON_SCHEMA,
     parseVerdict: parseDsqaVerdict,
   };

@@ -29,6 +29,8 @@ export const WIDESEARCH_METRIC_NAMES = [
   "f1_by_item",
 ] as const;
 
+export const WIDESEARCH_GRADING_REFERENCE_DATE = "2026-07-18";
+
 export type WideSearchMetricName = ValueOf<typeof WIDESEARCH_METRIC_NAMES>;
 
 export type WideSearchMetrics = Readonly<Record<WideSearchMetricName, number>>;
@@ -130,7 +132,7 @@ export function gradeWideSearch({
   judgeConfig,
   expectedText,
   predictedAnswer,
-  referenceNow = new Date(),
+  referenceNow = new Date(WIDESEARCH_GRADING_REFERENCE_DATE),
 }: GradeWideSearchOptions): Effect<WideSearchGradingResult, ModelError> {
   return gen(function* gradeWideSearchEffect() {
     const expected = parseWideSearchExpected(expectedText);

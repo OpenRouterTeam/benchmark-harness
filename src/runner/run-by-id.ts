@@ -46,6 +46,7 @@ export interface RunBenchmarkInput {
   readonly checkpointStore?: CheckpointStoreService;
   readonly abortSignal?: AbortSignal;
   readonly resultStore?: ResultStoreService;
+  readonly maxOutputTokensCeiling?: number;
 }
 
 export interface RunBenchmarkOutput {
@@ -72,6 +73,9 @@ export function runBenchmarkById(
       datasetRetry: input.datasetRetry,
     }),
     ...(maxRetries !== undefined && { modelRetry: { maxRetries } }),
+    ...(input.maxOutputTokensCeiling !== undefined && {
+      maxOutputTokensCeiling: input.maxOutputTokensCeiling,
+    }),
   });
   const progressLayer = layerSucceed(
     ProgressReporter,
