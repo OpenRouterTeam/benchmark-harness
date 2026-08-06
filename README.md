@@ -6,3 +6,5 @@ OpenRouter's internal benchmarking harness, externalized for transparency. We po
 bun install
 OPENROUTER_API_KEY=... bun run bench -- --benchmark gpqa_diamond --model openai/gpt-4o-mini --limit 5
 ```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) before proposing changes. Report security issues privately as described in [SECURITY.md](SECURITY.md).

@@ -1,3 +1,5 @@
 .effect-tsgo/
 bench-results/
+dist/
 node_modules/
+*.tsbuildinfo
