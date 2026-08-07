@@ -80,12 +80,11 @@ export default defineConfig({
     "unicorn/prefer-regexp-test": "off",
     "unicorn/prefer-string-slice": "off",
     "unicorn/prefer-structured-clone": "off",
+    "unicorn/throw-new-error": "off",
     "unicorn/no-useless-collection-argument": "off",
     "unicorn/no-useless-spread": "off",
     "unicorn/no-useless-switch-case": "off",
-    "unicorn/no-typeof-undefined": "off",
     "unicorn/no-unreadable-array-destructuring": "off",
-    "unicorn/throw-new-error": "off",
 
     "eslint/no-new-func": "warn",
     "eslint/require-yield": "warn",

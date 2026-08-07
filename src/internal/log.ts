@@ -157,7 +157,7 @@ function sanitizeLogValue(
   ) {
     return value;
   }
-  if (typeof value === "undefined") {
+  if (value === undefined) {
     return undefined;
   }
   if (typeof value === "symbol" || typeof value === "function") {
