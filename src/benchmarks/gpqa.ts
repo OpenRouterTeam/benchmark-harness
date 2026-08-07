@@ -64,16 +64,17 @@ export function gpqaRecordToSample(
   const correctLetter = "ABCD"[correctPosition]!;
   const fill = (template: string, token: string, value: string): string =>
     template.replace(token, () => value);
-  const input = [
+  const tokens: [string, string][] = [
     ["{prompt}", question],
     ["{option_a}", shuffled[0]!],
     ["{option_b}", shuffled[1]!],
     ["{option_c}", shuffled[2]!],
     ["{option_d}", shuffled[3]!],
-  ].reduce(
-    (acc, [token, value]) => fill(acc, token!, value!),
-    MULTIPLE_CHOICE_PROMPT_TEMPLATE
-  );
+  ];
+  let input = MULTIPLE_CHOICE_PROMPT_TEMPLATE;
+  for (const [token, value] of tokens) {
+    input = fill(input, token, value);
+  }
   return {
     id: `gpqa_diamond-${index}`,
     input,

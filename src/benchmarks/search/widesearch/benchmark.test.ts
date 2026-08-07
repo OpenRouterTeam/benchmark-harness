@@ -200,9 +200,10 @@ describe("wideSearchScorer and run-level scores", () => {
         },
       },
     };
-    expect(
-      (await runPromise(wideSearchScorer(state, SAMPLE.target))).value
-    ).toBe(ScoreValue.Incorrect);
+    const wideSearchResult = await runPromise(
+      wideSearchScorer(state, SAMPLE.target)
+    );
+    expect(wideSearchResult.value).toBe(ScoreValue.Incorrect);
     const sampleScores: SampleScore[] = [
       {
         sampleId: "a",

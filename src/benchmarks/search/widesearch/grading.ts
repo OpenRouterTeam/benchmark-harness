@@ -472,14 +472,18 @@ function preprocessRows(
 ): MutableRow[] {
   return rows.map((row) =>
     Object.fromEntries(
-      Object.entries(row).map(([column, value]) => [
-        column,
-        (expected.pipeline[column]?.preprocess ?? []).reduce(
-          (current, preprocessor) =>
-            preprocessWideSearchValue(current, preprocessor, referenceNow),
-          value
-        ),
-      ])
+      Object.entries(row).map(([column, value]) => {
+        const preprocessors = expected.pipeline[column]?.preprocess ?? [];
+        let processed = value;
+        for (const preprocessor of preprocessors) {
+          processed = preprocessWideSearchValue(
+            processed,
+            preprocessor,
+            referenceNow
+          );
+        }
+        return [column, processed];
+      })
     )
   );
 }

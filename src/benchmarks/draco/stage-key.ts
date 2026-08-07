@@ -39,16 +39,16 @@ export function toolSurfaceSha(tools: readonly unknown[]): string {
 
 export function generationConfigSha(config: DracoPanelConfig): string {
   const {
-    judgeModel,
-    judgeRuns,
-    judgeTemperature,
-    judgeReasoningEffort,
-    criterionConcurrency,
-    name,
-    description,
-    timeout,
-    concurrency,
-    cacheNamespace,
+    judgeModel: _judgeModel,
+    judgeRuns: _judgeRuns,
+    judgeTemperature: _judgeTemperature,
+    judgeReasoningEffort: _judgeReasoningEffort,
+    criterionConcurrency: _criterionConcurrency,
+    name: _name,
+    description: _description,
+    timeout: _timeout,
+    concurrency: _concurrency,
+    cacheNamespace: _cacheNamespace,
     ...generationFields
   } = config;
   return createHash("sha256")

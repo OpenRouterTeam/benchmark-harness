@@ -78,12 +78,11 @@ function openBankAccount(
       const { status } = acc;
       if (
         (accType === "checking" || accType === "personal_checking") &&
-        (status === "OPEN" || status === "ACTIVE")
+        (status === "OPEN" || status === "ACTIVE") &&
+        getAccountAgeDays(acc) >= 14
       ) {
-        if (getAccountAgeDays(acc) >= 14) {
-          hasEligibleChecking = true;
-          break;
-        }
+        hasEligibleChecking = true;
+        break;
       }
     }
     if (!hasEligibleChecking) {
@@ -122,12 +121,11 @@ function openBankAccount(
       const { status } = acc;
       if (
         accType === "business_checking" &&
-        (status === "OPEN" || status === "ACTIVE")
+        (status === "OPEN" || status === "ACTIVE") &&
+        getAccountAgeDays(acc) >= 30
       ) {
-        if (getAccountAgeDays(acc) >= 30) {
-          hasEligibleBusinessChecking = true;
-          break;
-        }
+        hasEligibleBusinessChecking = true;
+        break;
       }
     }
     if (!hasEligibleBusinessChecking) {
