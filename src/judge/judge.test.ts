@@ -81,10 +81,14 @@ describe("judgeCall", () => {
       },
     };
     const result = await runPromise(
-      judgeCall(service, { judgeModel: "openai/gpt-4.1" }, {
-        ...SPEC,
-        jsonSchema: undefined,
-      })
+      judgeCall(
+        service,
+        { judgeModel: "openai/gpt-4.1" },
+        {
+          ...SPEC,
+          jsonSchema: undefined,
+        }
+      )
     );
     expect(result.verdict).toEqual({ verdict: "yes" });
     expect(sentText).toBeUndefined();

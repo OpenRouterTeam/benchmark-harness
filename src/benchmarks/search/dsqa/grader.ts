@@ -36,7 +36,6 @@ The value for \`"Answer Correctness"\` should be a dictionary containing \`"Expl
 Make sure you return a valid JSON string. Pay special attention to quotes, commas and special characters in the JSON string. Make sure to escape all special characters and quotes in the JSON string.
 
 
-
 **Example (Partial):**
 
 "\`\`\`json

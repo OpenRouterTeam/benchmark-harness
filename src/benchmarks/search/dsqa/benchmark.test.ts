@@ -174,7 +174,14 @@ describe("DSQA metrics", () => {
     [{ A: true, B: false }, ["C"], 0.5, 0.5, 0.5, 0],
     [{ A: false, B: false }, [], 0, 0, 0, 0],
     [{}, [], 0, 0, 0, 0],
-  ] as const)(
+  ] satisfies [
+    Record<string, boolean>,
+    string[],
+    number,
+    number,
+    number,
+    number,
+  ][])(
     "calculates paper metrics for %#",
     (correctnessDetails, excessiveAnswers, precision, recall, f1, correct) => {
       const grade = calculateDsqaGrade({
@@ -206,7 +213,11 @@ describe("DSQA metrics", () => {
   });
 
   it("macro-averages question metrics across epochs and uses F1 as primary", () => {
-    const score = (sampleId: string, epoch: number, f1Verdict: typeof VERDICT) =>
+    const score = (
+      sampleId: string,
+      epoch: number,
+      f1Verdict: typeof VERDICT
+    ) =>
       ({
         sampleId,
         epoch,
@@ -251,7 +262,9 @@ describe("DSQA metrics", () => {
     expect(dsqaRunLevelScores(run)[0]?.metrics["f1_score"]?.value).toBeCloseTo(
       5 / 12
     );
-    expect(dsqaRunLevelScores(run)[0]?.metrics["samples_judged"]?.value).toBe(2);
+    expect(dsqaRunLevelScores(run)[0]?.metrics["samples_judged"]?.value).toBe(
+      2
+    );
     expect(dsqaPrimaryScore(run)?.value).toBeCloseTo(5 / 12);
     expect(dsqaPrimaryScore(run)?.weight).toBe(2);
   });

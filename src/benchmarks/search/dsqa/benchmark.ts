@@ -65,9 +65,7 @@ const DsqaTrajectoryGradeSchema = z.object({
 
 type DsqaTrajectoryGrade = z.infer<typeof DsqaTrajectoryGradeSchema>;
 
-export function calculateDsqaGrade(
-  verdict: DsqaVerdict
-): DsqaTrajectoryGrade {
+export function calculateDsqaGrade(verdict: DsqaVerdict): DsqaTrajectoryGrade {
   const details = Object.values(verdict.correctness_details);
   const truePositives = details.filter(Boolean).length;
   const falseNegatives = details.length - truePositives;
@@ -214,13 +212,14 @@ function dsqaQuestionMetrics(result: RunResult): readonly DsqaMetrics[] {
       metricsBySample.set(sample.sampleId, [metrics]);
     }
   }
-  return [...metricsBySample.values()].map((metrics) =>
-    Object.fromEntries(
-      DSQA_METRIC_NAMES.map((name) => [
-        name,
-        metrics.reduce((sum, item) => sum + item[name], 0) / metrics.length,
-      ])
-    ) as DsqaMetrics
+  return [...metricsBySample.values()].map(
+    (metrics) =>
+      Object.fromEntries(
+        DSQA_METRIC_NAMES.map((name) => [
+          name,
+          metrics.reduce((sum, item) => sum + item[name], 0) / metrics.length,
+        ])
+      ) as DsqaMetrics
   );
 }
 
