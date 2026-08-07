@@ -68,7 +68,6 @@ export default defineConfig({
     "unicorn/no-object-as-default-parameter": "off",
     "unicorn/no-array-reverse": "off",
     "unicorn/no-new-array": "off",
-    "unicorn/prefer-array-find": "off",
     "unicorn/prefer-array-some": "off",
     "unicorn/prefer-array-index-of": "off",
     "unicorn/prefer-code-point": "off",
