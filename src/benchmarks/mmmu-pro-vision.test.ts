@@ -85,11 +85,9 @@ describe("mmmuProVisionRecordToSample", () => {
   });
   it("omits detail when imageDetail is not provided", () => {
     const sample = mmmuProVisionRecordToSample(VISION_RECORD, 0);
-    const imageParts = sample.contentParts!.filter(
-      (p) => p.type === "image_url"
-    );
+    const imagePart = sample.contentParts!.find((p) => p.type === "image_url");
     expect(
-      imageParts[0]!.type === "image_url" && imageParts[0]!.imageUrl.detail
+      imagePart!.type === "image_url" && imagePart!.imageUrl.detail
     ).toBeUndefined();
   });
 });
