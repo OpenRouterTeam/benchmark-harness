@@ -9,6 +9,8 @@ import {
 } from "../../../../test/helpers/noop-progress-layer";
 import type { Sample, TaskState } from "../../../harness/core";
 import { initialTaskState, ScoreValue } from "../../../harness/core";
+import type { SampleScore } from "../../../harness/metric";
+import type { RunResult } from "../../../harness/run";
 import { assertRight } from "../../../internal/testing";
 import { parseSchema } from "../../../internal/zod";
 import type {
@@ -17,7 +19,13 @@ import type {
 } from "../../../providers/responses-client";
 import type { SearchLaneConfig } from "../core/config";
 import { SearchLaneConfigSchema } from "../core/config";
-import { dsqaScorer, makeDsqaSolver } from "./benchmark";
+import {
+  calculateDsqaGrade,
+  dsqaPrimaryScore,
+  dsqaRunLevelScores,
+  dsqaScorer,
+  makeDsqaSolver,
+} from "./benchmark";
 
 const SAMPLE: Sample = {
   id: "dsqa-0",
@@ -28,9 +36,19 @@ const SAMPLE: Sample = {
 
 const VERDICT = {
   explanation: "Both expected countries were found.",
-  all_expected_answers_found: true,
+  correctness_details: { Belgium: true, France: true },
   excessive_answers: [],
 };
+
+function rawVerdict(verdict = VERDICT): string {
+  return JSON.stringify({
+    "Answer Correctness": {
+      Explanation: verdict.explanation,
+      "Correctness Details": verdict.correctness_details,
+      "Excessive Answers": verdict.excessive_answers,
+    },
+  });
+}
 
 function makeLane(): SearchLaneConfig {
   const result = parseSchema(SearchLaneConfigSchema, { engine: "exa" });
@@ -79,7 +97,10 @@ describe("DSQA benchmark", () => {
   it("scores missing expected or excessive answers as incorrect", async () => {
     const missing = await runPromise(
       dsqaScorer(
-        stateWithVerdict({ ...VERDICT, all_expected_answers_found: false }),
+        stateWithVerdict({
+          ...VERDICT,
+          correctness_details: { Belgium: true, France: false },
+        }),
         SAMPLE.target
       )
     );
@@ -97,13 +118,9 @@ describe("DSQA benchmark", () => {
     const service: ResponsesService = {
       send: (body) => {
         calls += 1;
+        const isJudge = body.model === "google/gemini-2.5-flash";
         return succeed(
-          fixtureResult(
-            body.text === undefined
-              ? "Belgium and France"
-              : JSON.stringify(VERDICT),
-            body.text !== undefined
-          )
+          fixtureResult(isJudge ? rawVerdict() : "Belgium and France", isJudge)
         );
       },
     };
@@ -119,6 +136,7 @@ describe("DSQA benchmark", () => {
     );
     expect(calls).toBe(2);
     expect(state.output?.usage?.totalCost).toBeCloseTo(0.021, 5);
+    expect(state.sample.metadata?.["verdict"]).toEqual(VERDICT);
     expect((await runPromise(dsqaScorer(state, SAMPLE.target))).value).toBe(
       ScoreValue.Correct
     );
@@ -145,5 +163,109 @@ describe("DSQA benchmark", () => {
       )
     ).rejects.toThrow("search response had no answer text");
     expect(calls).toBe(1);
+  });
+});
+
+describe("DSQA metrics", () => {
+  it.each([
+    [{ A: true, B: true }, [], 1, 1, 1, 1],
+    [{ A: true, B: false }, [], 1, 0.5, 2 / 3, 0],
+    [{ A: true, B: true }, ["C"], 2 / 3, 1, 0.8, 0],
+    [{ A: true, B: false }, ["C"], 0.5, 0.5, 0.5, 0],
+    [{ A: false, B: false }, [], 0, 0, 0, 0],
+    [{}, [], 0, 0, 0, 0],
+  ] satisfies [
+    Record<string, boolean>,
+    string[],
+    number,
+    number,
+    number,
+    number,
+  ][])(
+    "calculates paper metrics for %#",
+    (correctnessDetails, excessiveAnswers, precision, recall, f1, correct) => {
+      const grade = calculateDsqaGrade({
+        explanation: "grade",
+        correctness_details: correctnessDetails,
+        excessive_answers: excessiveAnswers,
+      });
+      expect(grade.metrics.precision).toBeCloseTo(precision);
+      expect(grade.metrics.recall).toBeCloseTo(recall);
+      expect(grade.metrics.f1_score).toBeCloseTo(f1);
+      expect(grade.metrics.fully_correct).toBe(correct);
+      expect(
+        Object.values(grade.metrics)
+          .slice(3)
+          .reduce((sum, value) => sum + value, 0)
+      ).toBe(1);
+    }
+  );
+
+  it("counts duplicate excessive answers as separate false positives", () => {
+    const grade = calculateDsqaGrade({
+      explanation: "grade",
+      correctness_details: { A: true },
+      excessive_answers: ["B", "B"],
+    });
+    expect(grade.metrics.precision).toBeCloseTo(1 / 3);
+    expect(grade.metrics.recall).toBe(1);
+    expect(grade.metrics.f1_score).toBeCloseTo(0.5);
+  });
+
+  it("macro-averages question metrics across epochs and uses F1 as primary", () => {
+    const score = (
+      sampleId: string,
+      epoch: number,
+      f1Verdict: typeof VERDICT
+    ) =>
+      ({
+        sampleId,
+        epoch,
+        score: {
+          value: ScoreValue.Incorrect,
+          answer: null,
+          explanation: "",
+          trajectory: {
+            kind: "judge_runs",
+            runs: [calculateDsqaGrade(f1Verdict)],
+          },
+        },
+      }) satisfies SampleScore;
+    const sampleScores = [
+      score("a", 0, VERDICT),
+      score("a", 1, {
+        ...VERDICT,
+        correctness_details: { Belgium: true, France: false },
+      }),
+      score("b", 0, {
+        ...VERDICT,
+        correctness_details: { Belgium: false, France: false },
+      }),
+    ];
+    const run: RunResult = {
+      metrics: {
+        accuracy: 0,
+        totalQuestions: 2,
+        correctAnswers: 0,
+        skippedQuestions: 0,
+      },
+      usage: {
+        inputTokens: 0,
+        outputTokens: 0,
+        totalTokens: 0,
+        reasoningTokens: 0,
+        totalCost: 0,
+        generationTimeMs: 0,
+      },
+      sampleScores,
+    };
+    expect(dsqaRunLevelScores(run)[0]?.metrics["f1_score"]?.value).toBeCloseTo(
+      5 / 12
+    );
+    expect(dsqaRunLevelScores(run)[0]?.metrics["samples_judged"]?.value).toBe(
+      2
+    );
+    expect(dsqaPrimaryScore(run)?.value).toBeCloseTo(5 / 12);
+    expect(dsqaPrimaryScore(run)?.weight).toBe(2);
   });
 });

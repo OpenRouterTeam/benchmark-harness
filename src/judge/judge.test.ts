@@ -72,6 +72,27 @@ describe("judgeCall", () => {
       },
     });
   });
+  it("omits structured-output config for an unstructured judge spec", async () => {
+    let sentText: unknown = "unset";
+    const service: ResponsesService = {
+      send: (body) => {
+        sentText = body.text;
+        return succeed(fixtureResult('{"verdict":"yes"}'));
+      },
+    };
+    const result = await runPromise(
+      judgeCall(
+        service,
+        { judgeModel: "openai/gpt-4.1" },
+        {
+          ...SPEC,
+          jsonSchema: undefined,
+        }
+      )
+    );
+    expect(result.verdict).toEqual({ verdict: "yes" });
+    expect(sentText).toBeUndefined();
+  });
   it("fails with ModelError when the verdict does not parse, without retrying", async () => {
     let calls = 0;
     const service: ResponsesService = {

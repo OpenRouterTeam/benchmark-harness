@@ -95,7 +95,7 @@ describe("answerEquivalenceJudgeSpec", () => {
     });
     expect(spec.schemaName).toBe("answer_equivalence_judge");
     expect(spec.userInput).toContain("[question]: Q?");
-    expect(spec.jsonSchema["required"]).toEqual([
+    expect(spec.jsonSchema?.["required"]).toEqual([
       "extracted_final_answer",
       "reasoning",
       "correct",
