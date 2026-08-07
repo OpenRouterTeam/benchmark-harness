@@ -1,0 +1,19 @@
+schema_version = "1.0"
+
+[task]
+name = "agent-dx/tool-calling-loop"
+description = "Build a TypeScript integration that runs a multi-turn tool-calling loop through the OpenRouter chat completions API."
+keywords = ["openrouter", "tool-calling", "typescript"]
+
+[metadata]
+difficulty = "medium"
+category = "integration"
+
+[agent]
+timeout_sec = 900.0
+
+[verifier]
+timeout_sec = 600.0
+
+[environment]
+docker_image = "node:24-bookworm"

@@ -1,0 +1,30 @@
+schema_version = "1.0"
+
+[task]
+name = "agent-dx/provider-pinning"
+description = "Build an integration that routes only to a pinned provider and fails closed instead of silently falling back elsewhere."
+keywords = [
+  "openrouter",
+  "provider-routing",
+  "pinning",
+  "allow-fallbacks",
+  "typescript",
+]
+
+[metadata]
+difficulty = "medium"
+category = "integration"
+
+[agent]
+timeout_sec = 900.0
+
+[verifier]
+timeout_sec = 600.0
+
+[environment]
+docker_image = "node:24-bookworm"
+
+[environment.env]
+PIN_MODEL = "meta-llama/llama-3.3-70b-instruct"
+PINNED_PROVIDER = "groq"
+BAD_PROVIDER = "openai"

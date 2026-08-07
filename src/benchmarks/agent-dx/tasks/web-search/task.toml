@@ -1,0 +1,19 @@
+schema_version = "1.0"
+
+[task]
+name = "agent-dx/web-search"
+description = "Build a TypeScript integration that answers a current-events question with citations using OpenRouter's web search."
+keywords = ["openrouter", "web-search", "citations", "typescript"]
+
+[metadata]
+difficulty = "medium"
+category = "integration"
+
+[agent]
+timeout_sec = 900.0
+
+[verifier]
+timeout_sec = 600.0
+
+[environment]
+docker_image = "node:24-bookworm"

@@ -85,17 +85,19 @@ function resolveRange(args: CliArgs):
   };
 }
 
-function resolveTotalEvaluations(
-  benchmarkId: string,
+function resolveTotalEvaluations(opts: {
+  benchmarkId: string;
+  benchmarkConfig: BenchmarkRunConfig;
   range:
     | {
         start?: number;
         end?: number;
       }
-    | undefined,
-  epochs: number
-): Promise<number | undefined> {
-  return datasetSizeById(benchmarkId).then((sizeResult) => {
+    | undefined;
+  epochs: number;
+}): Promise<number | undefined> {
+  const { benchmarkId, benchmarkConfig, range, epochs } = opts;
+  return datasetSizeById(benchmarkId, benchmarkConfig).then((sizeResult) => {
     if (Either.isLeft(sizeResult)) {
       return undefined;
     }
@@ -175,7 +177,12 @@ function main(): Promise<void> {
         `Running ${args.benchmark}${args.model !== undefined ? ` on ${args.model}` : ""}${args.solverConfig !== undefined ? ` (solver-config=${args.solverConfig})` : ""}${artifactDir !== undefined ? ` (artifact-dir=${artifactDir})` : ""} (epochs=${epochs}, concurrency=${args.concurrency}${range !== undefined ? `, range=${range.start ?? 0}..${range.end ?? "end"}` : ""}, session=${sessionId})...\n`
       );
       const total = yield* promise(() =>
-        resolveTotalEvaluations(args.benchmark, range, epochs)
+        resolveTotalEvaluations({
+          benchmarkId: args.benchmark,
+          benchmarkConfig: benchmarkRunConfig,
+          range,
+          epochs,
+        })
       );
       const bar = new SingleBar(
         {
@@ -381,6 +388,15 @@ export function buildBenchmarkConfig(opts: {
       return buildSchemaValidatedConfig({
         benchmarkId: "terminal_bench",
         model: requireModel("terminal_bench", model),
+        endpointId,
+        panelConfig,
+        costTier,
+      });
+    }
+    case "agent_dx": {
+      return buildSchemaValidatedConfig({
+        benchmarkId: "agent_dx",
+        model: requireModel("agent_dx", model),
         endpointId,
         panelConfig,
         costTier,

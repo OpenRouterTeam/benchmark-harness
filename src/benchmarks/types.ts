@@ -34,6 +34,10 @@ export interface BenchmarkPrimaryScore {
 export interface Benchmark {
   readonly id: string;
   readonly makeDatasetLayer: (retryConfig?: RetryConfig) => Layer<Dataset>;
+  readonly makeDatasetLayerForConfig?: (
+    config: BenchmarkRunConfig,
+    retryConfig?: RetryConfig
+  ) => Layer<Dataset>;
   readonly makeLayer: (
     input: BenchmarkRunInput
   ) => Layer<Dataset | Solver | Scorer, Error, HttpClient.HttpClient>;

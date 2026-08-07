@@ -42,6 +42,7 @@ export interface CreateSessionInput {
   readonly testScript: string;
   readonly instructionPath: string;
   readonly imageBuildSteps?: readonly string[];
+  readonly sandboxBufferSec?: number;
 }
 
 export class SandboxSession extends Tag(

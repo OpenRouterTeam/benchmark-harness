@@ -1,0 +1,22 @@
+schema_version = "1.0"
+
+[task]
+name = "agent-dx/preset-config"
+description = "Centralize model configuration in an OpenRouter preset and run inference through it instead of hardcoding a model."
+keywords = ["openrouter", "presets", "configuration", "typescript"]
+
+[metadata]
+difficulty = "medium"
+category = "integration"
+
+[agent]
+timeout_sec = 900.0
+
+[verifier]
+timeout_sec = 900.0
+
+[environment]
+docker_image = "node:24-bookworm"
+
+[environment.env]
+ADX_PRESET_SLUG = "agent-dx-bench-preset"

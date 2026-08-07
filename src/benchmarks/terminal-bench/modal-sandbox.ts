@@ -82,7 +82,10 @@ export function makeModalSandboxLayer(
           toSolverError(`Failed to build layered image ${input.imageTag}`, e),
       });
       const sandboxTimeoutMs =
-        (input.maxAgentTimeoutSec + input.maxTestTimeoutSec + 300) * 1000;
+        (input.maxAgentTimeoutSec +
+          input.maxTestTimeoutSec +
+          (input.sandboxBufferSec ?? 300)) *
+        1000;
       const sandbox = yield* tryPromise({
         try: () =>
           client.sandboxes.create(app, builtImage, {

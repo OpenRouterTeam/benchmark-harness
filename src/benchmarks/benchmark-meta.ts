@@ -39,6 +39,11 @@ export const TERMINAL_BENCH_META = {
   defaultEpochs: 1,
 } as const satisfies BenchmarkMeta;
 
+export const AGENT_DX_META = {
+  id: "agent_dx",
+  defaultEpochs: 1,
+} as const satisfies BenchmarkMeta;
+
 export const DRACO_META = {
   id: "draco",
   defaultEpochs: 1,
@@ -101,6 +106,7 @@ const BENCHMARK_META: Readonly<Record<string, BenchmarkMeta>> = {
   [TAU_BENCH_AIRLINE_META.id]: TAU_BENCH_AIRLINE_META,
   [TAU3_BENCH_BANKING_META.id]: TAU3_BENCH_BANKING_META,
   [TERMINAL_BENCH_META.id]: TERMINAL_BENCH_META,
+  [AGENT_DX_META.id]: AGENT_DX_META,
   [DRACO_META.id]: DRACO_META,
   [IFSTRUCT_META.id]: IFSTRUCT_META,
   [SWE_ATLAS_QA_META.id]: SWE_ATLAS_QA_META,

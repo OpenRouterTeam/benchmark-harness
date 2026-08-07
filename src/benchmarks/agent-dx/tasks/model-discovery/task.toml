@@ -1,0 +1,19 @@
+schema_version = "1.0"
+
+[task]
+name = "agent-dx/model-discovery"
+description = "Build a TypeScript integration that discovers a model matching capability and price constraints through the OpenRouter models API, then uses it."
+keywords = ["openrouter", "models", "discovery", "typescript"]
+
+[metadata]
+difficulty = "medium"
+category = "integration"
+
+[agent]
+timeout_sec = 900.0
+
+[verifier]
+timeout_sec = 600.0
+
+[environment]
+docker_image = "node:24-bookworm"
