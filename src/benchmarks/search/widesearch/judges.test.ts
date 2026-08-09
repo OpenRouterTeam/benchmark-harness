@@ -3,7 +3,7 @@ import { describe, expect, it } from "bun:test";
 import { assertLeft, assertRight } from "../../../internal/testing";
 import { alignmentJudgeSpec, cellJudgeSpec } from "./judges";
 describe("WideSearch judge specs", () => {
-  it("accepts partial alignments and rejects unknown or duplicate origins", () => {
+  it("accepts partial, duplicate, and out-of-vocabulary alignments", () => {
     const spec = alignmentJudgeSpec(["Alpha", "Beta"], ["A", "B"]);
     const valid = spec.parseVerdict(
       '{"alignments":[{"origin":"Alpha","transform":"A"}]}'
@@ -14,22 +14,42 @@ describe("WideSearch judge specs", () => {
     const duplicate = spec.parseVerdict(
       '{"alignments":[{"origin":"Alpha","transform":"A"},{"origin":"Alpha","transform":"B"}]}'
     );
+    const unknownTransform = spec.parseVerdict(
+      '{"alignments":[{"origin":"Alpha","transform":"Other"}]}'
+    );
+    const malformed = spec.parseVerdict(
+      '{"alignments":[{"origin":"Alpha","transform":1}]}'
+    );
     assertRight(valid);
-    assertLeft(unexpected);
-    assertLeft(duplicate);
+    assertRight(unexpected);
+    assertRight(duplicate);
+    assertRight(unknownTransform);
+    assertLeft(malformed);
     expect(valid.right).toEqual([{ origin: "Alpha", transform: "A" }]);
+    expect(duplicate.right).toEqual([
+      { origin: "Alpha", transform: "A" },
+      { origin: "Alpha", transform: "B" },
+    ]);
   });
-  it("accepts missing cell scores and rejects out-of-range or duplicate indices", () => {
+  it("accepts missing, out-of-range, and duplicate cell indices", () => {
     const spec = cellJudgeSpec(["a", "b"], ["x", "y"], "criterion");
     const valid = spec.parseVerdict('{"scores":[{"index":0,"score":1}]}');
     const outOfRange = spec.parseVerdict('{"scores":[{"index":2,"score":1}]}');
     const duplicate = spec.parseVerdict(
       '{"scores":[{"index":0,"score":1},{"index":0,"score":0}]}'
     );
+    const malformed = spec.parseVerdict(
+      '{"scores":[{"index":0,"score":2}]}'
+    );
     assertRight(valid);
-    assertLeft(outOfRange);
-    assertLeft(duplicate);
+    assertRight(outOfRange);
+    assertRight(duplicate);
+    assertLeft(malformed);
     expect(valid.right).toEqual([{ index: 0, score: 1 }]);
+    expect(duplicate.right).toEqual([
+      { index: 0, score: 1 },
+      { index: 0, score: 0 },
+    ]);
   });
   it("uses fixed schemas for large verdict sets", () => {
     const observed = Array.from(
