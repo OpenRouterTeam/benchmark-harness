@@ -38,9 +38,7 @@ describe("WideSearch judge specs", () => {
     const duplicate = spec.parseVerdict(
       '{"scores":[{"index":0,"score":1},{"index":0,"score":0}]}'
     );
-    const malformed = spec.parseVerdict(
-      '{"scores":[{"index":0,"score":2}]}'
-    );
+    const malformed = spec.parseVerdict('{"scores":[{"index":0,"score":2}]}');
     assertRight(valid);
     assertRight(outOfRange);
     assertRight(duplicate);
