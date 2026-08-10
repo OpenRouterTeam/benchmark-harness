@@ -109,19 +109,24 @@ describe("makeWideSearchSolver", () => {
         return succeed(fixtureResult("", 0.02));
       },
     };
-    await expect(
-      runPromise(
-        makeWideSearchSolver(service, {
-          model: "m",
-          instructions: "research it",
-          lane: lane(),
-          retry: { maxRetries: 0 },
-        })(initialTaskState(SAMPLE)).pipe(
-          provide(mergeAll(noopProgressLayer, noopCheckpointLayer))
-        )
+    const state = await runPromise(
+      makeWideSearchSolver(service, {
+        model: "m",
+        instructions: "research it",
+        lane: lane(),
+        retry: { maxRetries: 0 },
+      })(initialTaskState(SAMPLE)).pipe(
+        provide(mergeAll(noopProgressLayer, noopCheckpointLayer))
       )
-    ).rejects.toThrow("search response had no answer text");
+    );
+    const score = await runPromise(wideSearchScorer(state, SAMPLE.target));
     expect(sent).toHaveLength(1);
+    expect(state.output?.completion).toBe("");
+    expect(score.value).toBe(ScoreValue.Incorrect);
+    expect(score.trajectory).toMatchObject({
+      kind: "judge_runs",
+      runs: [{ metrics: { f1_by_item: 0 } }],
+    });
   });
   it("retries a transient cell-judge failure without repeating generation", async () => {
     let generationCalls = 0;

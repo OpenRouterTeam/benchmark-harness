@@ -200,6 +200,7 @@ describe("DSQA benchmark", () => {
     );
     const score = await runPromise(dsqaScorer(state, SAMPLE.target));
     expect(calls).toBe(2);
+    expect(state.output?.usage?.totalCost).toBeCloseTo(0.021, 5);
     expect(score.value).toBe(ScoreValue.Incorrect);
     expect(score.trajectory).toEqual({
       kind: "judge_runs",
@@ -224,6 +225,25 @@ describe("DSQA benchmark", () => {
         },
       ],
     });
+    const metrics = aggregateScores([{ sampleId: SAMPLE.id, epoch: 0, score }]);
+    const run: RunResult = {
+      metrics,
+      usage: {
+        inputTokens: 0,
+        outputTokens: 0,
+        totalTokens: 0,
+        reasoningTokens: 0,
+        totalCost: 0,
+        generationTimeMs: 0,
+      },
+      sampleScores: [{ sampleId: SAMPLE.id, epoch: 0, score }],
+    };
+    expect(metrics).toMatchObject({
+      accuracy: 0,
+      totalQuestions: 1,
+      skippedQuestions: 0,
+    });
+    expect(dsqaPrimaryScore(run)).toEqual({ value: 0, weight: 1 });
   });
 });
 
