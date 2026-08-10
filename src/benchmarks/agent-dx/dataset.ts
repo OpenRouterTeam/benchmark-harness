@@ -40,12 +40,6 @@ export function agentDxTasksDir(): string {
   return join(here, "agent-dx-tasks");
 }
 
-/**
- * Task ids double as directory names under the tasks root, so they must be
- * a single safe path segment. Rejecting everything else keeps
- * operator-supplied task subsets from resolving reads outside the tasks
- * directory.
- */
 const SAFE_TASK_ID = /^[a-z0-9][a-z0-9_-]*$/;
 
 export function loadTask(taskId: string, tasksDir: string): AgentDxTask {
