@@ -1,9 +1,11 @@
 import type { ResponsesRequest, StreamEvents } from "@openrouter/sdk/models";
 import type { Effect } from "effect/Effect";
 import {
+  catchTag,
   fail,
   flatMap,
   gen,
+  map,
   mapError,
   retry,
   succeed,
@@ -35,8 +37,11 @@ import { rateLimitRetrySchedule } from "../../../runtime/retry";
 import type { SearchLaneConfig } from "./config";
 import { makeSearchProgressTracker } from "./progress";
 import { buildSearchRequestBody } from "./request";
+import { mergeModelUsages } from "./usage";
 
 export const DEFAULT_SEARCH_TIMEOUT_MS = 420000;
+
+const EMPTY_SEARCH_RESPONSE_MESSAGE = "search response had no answer text";
 
 export interface SearchSolverOptions {
   readonly model: string;
@@ -116,7 +121,7 @@ export function searchSolver(
           versionOverride: opts.versionOverride,
         }),
       });
-      const result = yield* sendWithRetry({
+      const { result, attemptResults } = yield* sendWithRetry({
         responses,
         body,
         options: () => ({
@@ -136,6 +141,7 @@ export function searchSolver(
         state,
         request: body,
         result,
+        attemptResults,
         text: result.text.trim(),
       });
     });
@@ -153,7 +159,16 @@ function sendWithRetry({
   readonly options: () => ResponsesSendOptions;
   readonly retryConfig?: RetryConfig;
   readonly timeoutMs: number;
-}): Effect<ResponsesResult, ModelError> {
+}): Effect<
+  {
+    readonly result: ResponsesResult;
+    readonly attemptResults: readonly ResponsesResult[];
+  },
+  ModelError
+> {
+  const blankResults: ResponsesResult[] = [];
+  let lastBlankResult: ResponsesResult | undefined;
+  let lastBlankError: ModelError | undefined;
   return suspend(() => responses.send(body, options())).pipe(
     mapError(toModelError),
     timeoutFail({
@@ -174,16 +189,27 @@ function sendWithRetry({
         );
       }
       if (result.text.trim() === "") {
-        return fail(
-          new ModelError({
-            status: 503,
-            message: "search response had no answer text",
-          })
-        );
+        blankResults.push(result);
+        lastBlankResult = result;
+        lastBlankError = new ModelError({
+          status: 503,
+          message: EMPTY_SEARCH_RESPONSE_MESSAGE,
+        });
+        return fail(lastBlankError);
       }
       return succeed(result);
     }),
-    retry(rateLimitRetrySchedule(retryConfig ?? {}))
+    retry(rateLimitRetrySchedule(retryConfig ?? {})),
+    catchTag("ModelError", (error) =>
+      error === lastBlankError && lastBlankResult !== undefined
+        ? succeed(lastBlankResult)
+        : fail(error)
+    ),
+    map((result) => ({
+      result,
+      attemptResults:
+        result.text.trim() === "" ? blankResults : [...blankResults, result],
+    }))
   );
 }
 
@@ -205,18 +231,26 @@ function completedState({
   state,
   request,
   result,
+  attemptResults,
   text,
 }: {
   readonly state: TaskState;
   readonly request: ResponsesRequest;
   readonly result: ResponsesResult;
+  readonly attemptResults: readonly ResponsesResult[];
   readonly text: string;
 }): TaskState {
   const citations = extractCitations(result.output).map(({ url, title }) => ({
     url,
     title,
   }));
-  const usage = usageFromResponses(result.usage);
+  const usage = mergeModelUsages(
+    attemptResults.map((attempt) => usageFromResponses(attempt.usage))
+  );
+  const generationTimeMs = attemptResults.reduce(
+    (total, attempt) => total + attempt.generationTimeMs,
+    0
+  );
   const metadata: SearchSolverMetadata = {
     citations,
     responseStatus: result.status,
@@ -243,8 +277,8 @@ function completedState({
       completion: text,
       message: { role: MessageRole.Assistant, content: text },
       ...(usage !== undefined && { usage }),
-      ...(result.generationTimeMs > 0 && {
-        generationTimeMs: result.generationTimeMs,
+      ...(generationTimeMs > 0 && {
+        generationTimeMs,
       }),
     },
     completed: true,

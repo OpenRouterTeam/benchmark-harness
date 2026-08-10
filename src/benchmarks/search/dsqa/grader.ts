@@ -80,6 +80,12 @@ export const DsqaVerdictSchema = z.object({
 
 export type DsqaVerdict = z.infer<typeof DsqaVerdictSchema>;
 
+const DSQA_PARSE_FAILURE_VERDICT: DsqaVerdict = {
+  explanation: "Judge verdict could not be parsed.",
+  correctness_details: {},
+  excessive_answers: [],
+};
+
 const RawDsqaVerdictSchema = z.object({
   "Answer Correctness": z.object({
     Explanation: z.string(),
@@ -137,5 +143,6 @@ export function dsqaJudgeSpec(fields: {
     userInput: renderDsqaGraderPrompt(fields),
     schemaName: DSQA_JUDGE_PROMPT_ID,
     parseVerdict: parseDsqaVerdict,
+    parseFailureFallback: DSQA_PARSE_FAILURE_VERDICT,
   };
 }

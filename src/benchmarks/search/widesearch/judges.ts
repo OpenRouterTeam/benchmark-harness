@@ -134,7 +134,7 @@ export function alignmentJudgeSpec(
       },
       required: ["alignments"],
     },
-    parseVerdict: (text) => parseAlignmentVerdict(text, observed, reference),
+    parseVerdict: parseAlignmentVerdict,
     parseFailureFallback: EMPTY_ALIGNMENT_VERDICT,
   };
 }
@@ -176,61 +176,27 @@ export function cellJudgeSpec(
       },
       required: ["scores"],
     },
-    parseVerdict: (text) => parseCellVerdict(text, observed.length),
+    parseVerdict: parseCellVerdict,
     parseFailureFallback: EMPTY_CELL_JUDGE_VERDICT,
   };
 }
 
 function parseAlignmentVerdict(
-  text: string,
-  observed: readonly string[],
-  reference: readonly string[]
+  text: string
 ): Either.Either<AlignmentVerdict, string> {
   const parsed = parseJson(text, AlignmentVerdictSchema);
-  if (Either.isLeft(parsed)) {
-    return Either.left(parsed.left);
-  }
-  const origins = parsed.right.alignments.map((item) => item.origin);
-  const duplicate = origins.find(
-    (origin, index) => origins.indexOf(origin) !== index
-  );
-  if (duplicate !== undefined) {
-    return Either.left(`duplicate alignment origin: ${duplicate}`);
-  }
-  const unknown = origins.find((origin) => !observed.includes(origin));
-  if (unknown !== undefined) {
-    return Either.left(`unknown alignment origin: ${unknown}`);
-  }
-  const invalid = parsed.right.alignments.find(
-    (item) =>
-      item.transform !== item.origin && !reference.includes(item.transform)
-  );
-  return invalid === undefined
-    ? Either.right(parsed.right.alignments)
-    : Either.left(
-        `unknown alignment transform for ${invalid.origin}: ${invalid.transform}`
-      );
+  return Either.isLeft(parsed)
+    ? Either.left(parsed.left)
+    : Either.right(parsed.right.alignments);
 }
 
 function parseCellVerdict(
-  text: string,
-  itemCount: number
+  text: string
 ): Either.Either<CellJudgeVerdict, string> {
   const parsed = parseJson(text, CellJudgeVerdictSchema);
-  if (Either.isLeft(parsed)) {
-    return Either.left(parsed.left);
-  }
-  const indices = parsed.right.scores.map((item) => item.index);
-  const duplicate = indices.find(
-    (index, position) => indices.indexOf(index) !== position
-  );
-  if (duplicate !== undefined) {
-    return Either.left(`duplicate cell verdict index: ${duplicate}`);
-  }
-  const outOfRange = indices.find((index) => index >= itemCount);
-  return outOfRange === undefined
-    ? Either.right(parsed.right.scores)
-    : Either.left(`cell verdict index out of range: ${outOfRange}`);
+  return Either.isLeft(parsed)
+    ? Either.left(parsed.left)
+    : Either.right(parsed.right.scores);
 }
 
 function parseJson<T>(

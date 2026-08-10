@@ -10,6 +10,7 @@ import {
 import type { Sample, TaskState } from "../../../harness/core";
 import { initialTaskState, ScoreValue } from "../../../harness/core";
 import type { SampleScore } from "../../../harness/metric";
+import { aggregateScores } from "../../../harness/metric";
 import type { RunResult } from "../../../harness/run";
 import { assertRight } from "../../../internal/testing";
 import { parseSchema } from "../../../internal/zod";
@@ -140,7 +141,7 @@ describe("DSQA benchmark", () => {
     const dsqaResult = await runPromise(dsqaScorer(state, SAMPLE.target));
     expect(dsqaResult.value).toBe(ScoreValue.Correct);
   });
-  it("skips judging an empty generated answer", async () => {
+  it("scores a persistent completed blank answer as incorrect after retries", async () => {
     let calls = 0;
     const service: ResponsesService = {
       send: () => {
@@ -152,16 +153,97 @@ describe("DSQA benchmark", () => {
       model: "m",
       instructions: "research it",
       lane: makeLane(),
+      retry: { maxRetries: 2, baseDelayMs: 1 },
+    });
+    const state = await runPromise(
+      solver(initialTaskState(SAMPLE)).pipe(
+        provide(mergeAll(noopProgressLayer, noopCheckpointLayer))
+      )
+    );
+    const score = await runPromise(dsqaScorer(state, SAMPLE.target));
+    expect(calls).toBe(3);
+    expect(state.output?.completion).toBe("");
+    expect(score.value).toBe(ScoreValue.Incorrect);
+    expect(score.explanation).toBe("no verdict");
+    expect(
+      aggregateScores([{ sampleId: SAMPLE.id, epoch: 0, score }])
+    ).toMatchObject({
+      accuracy: 0,
+      totalQuestions: 1,
+      skippedQuestions: 0,
+    });
+  });
+  it("scores an unreadable judge verdict as incorrect with parse evidence", async () => {
+    let calls = 0;
+    const service: ResponsesService = {
+      send: (body) => {
+        calls += 1;
+        const isJudge = body.model === "google/gemini-2.5-flash";
+        return succeed(
+          fixtureResult(
+            isJudge ? "not valid JSON" : "Belgium and France",
+            isJudge
+          )
+        );
+      },
+    };
+    const solver = makeDsqaSolver(service, {
+      model: "m",
+      instructions: "research it",
+      lane: makeLane(),
       retry: { maxRetries: 0 },
     });
-    await expect(
-      runPromise(
-        solver(initialTaskState(SAMPLE)).pipe(
-          provide(mergeAll(noopProgressLayer, noopCheckpointLayer))
-        )
+    const state = await runPromise(
+      solver(initialTaskState(SAMPLE)).pipe(
+        provide(mergeAll(noopProgressLayer, noopCheckpointLayer))
       )
-    ).rejects.toThrow("search response had no answer text");
-    expect(calls).toBe(1);
+    );
+    const score = await runPromise(dsqaScorer(state, SAMPLE.target));
+    expect(calls).toBe(2);
+    expect(state.output?.usage?.totalCost).toBeCloseTo(0.021, 5);
+    expect(score.value).toBe(ScoreValue.Incorrect);
+    expect(score.trajectory).toEqual({
+      kind: "judge_runs",
+      runs: [
+        {
+          kind: "dsqa_grade",
+          verdict: {
+            explanation: "Judge verdict could not be parsed.",
+            correctness_details: {},
+            excessive_answers: [],
+          },
+          error: expect.stringContaining("judge verdict parse failed"),
+          metrics: {
+            precision: 0,
+            recall: 0,
+            f1_score: 0,
+            fully_correct: 0,
+            fully_incorrect: 1,
+            partially_correct: 0,
+            correct_with_extraneous_answers: 0,
+          },
+        },
+      ],
+    });
+    const metrics = aggregateScores([{ sampleId: SAMPLE.id, epoch: 0, score }]);
+    const run: RunResult = {
+      metrics,
+      usage: {
+        inputTokens: 0,
+        outputTokens: 0,
+        totalTokens: 0,
+        reasoningTokens: 0,
+        totalCost: 0,
+        generationTimeMs: 0,
+      },
+      sampleScores: [{ sampleId: SAMPLE.id, epoch: 0, score }],
+    };
+    expect(metrics).toMatchObject({
+      accuracy: 0,
+      totalQuestions: 1,
+      skippedQuestions: 0,
+    });
+    expect(dsqaPrimaryScore(run)).toEqual({ value: 0, weight: 1 });
   });
 });
 

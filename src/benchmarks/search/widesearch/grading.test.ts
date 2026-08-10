@@ -225,6 +225,30 @@ describe("gradeWideSearch", () => {
       totalCost: 0.03,
     });
   });
+  it("uses the last duplicate judge entry and ignores unrelated entries", async () => {
+    const replies = [
+      '{"alignments":[{"origin":"Alpha","transform":"Other"},{"origin":"Other","transform":"A"},{"origin":"Alpha","transform":"A"}]}',
+      '{"scores":[{"index":0,"score":0},{"index":1,"score":1},{"index":0,"score":1}]}',
+    ];
+    const service: ResponsesService = {
+      send: () => succeed(fixtureResult(replies.shift()!)),
+    };
+    const result = await runPromise(
+      gradeWideSearch({
+        responses: service,
+        judgeConfig: WIDESEARCH_JUDGE_CONFIG,
+        expectedText: expected({
+          uniqueMetric: ["exact_match"],
+          valueMetric: ["llm_judge"],
+        }),
+        predictedAnswer: "| Name | Value |\n|---|---|\n| Alpha | 3 |",
+      })
+    );
+    expect(result.grade.metrics.success_rate).toBe(1);
+    expect(
+      result.grade.judgeRuns.every((run) => run["error"] === undefined)
+    ).toBeTrue();
+  });
   it("deduplicates unique keys created by value alignment", async () => {
     const sent: ResponsesRequest[] = [];
     const service: ResponsesService = {

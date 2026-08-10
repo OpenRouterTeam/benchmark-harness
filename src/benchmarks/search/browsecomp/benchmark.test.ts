@@ -258,14 +258,15 @@ describe("makeBrowseCompSolver", () => {
       lane: makeLane(),
       retry: { maxRetries: 0 },
     });
-    await expect(
-      runPromise(
-        solver(initialTaskState(SAMPLE)).pipe(
-          provide(mergeAll(noopProgressLayer, noopCheckpointLayer))
-        )
+    const state = await runPromise(
+      solver(initialTaskState(SAMPLE)).pipe(
+        provide(mergeAll(noopProgressLayer, noopCheckpointLayer))
       )
-    ).rejects.toThrow("search response had no answer text");
+    );
+    const score = await runPromise(browseCompScorer(state, SAMPLE.target));
     expect(sent).toHaveLength(1);
+    expect(state.output?.completion).toBe("");
+    expect(score.value).toBe(ScoreValue.Incorrect);
   });
 });
 describe("browseCompRunLevelScores", () => {
