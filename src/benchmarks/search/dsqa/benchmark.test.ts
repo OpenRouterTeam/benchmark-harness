@@ -10,6 +10,7 @@ import {
 import type { Sample, TaskState } from "../../../harness/core";
 import { initialTaskState, ScoreValue } from "../../../harness/core";
 import type { SampleScore } from "../../../harness/metric";
+import { aggregateScores } from "../../../harness/metric";
 import type { RunResult } from "../../../harness/run";
 import { assertRight } from "../../../internal/testing";
 import { parseSchema } from "../../../internal/zod";
@@ -164,6 +165,13 @@ describe("DSQA benchmark", () => {
     expect(state.output?.completion).toBe("");
     expect(score.value).toBe(ScoreValue.Incorrect);
     expect(score.explanation).toBe("no verdict");
+    expect(
+      aggregateScores([{ sampleId: SAMPLE.id, epoch: 0, score }])
+    ).toMatchObject({
+      accuracy: 0,
+      totalQuestions: 1,
+      skippedQuestions: 0,
+    });
   });
   it("scores an unreadable judge verdict as incorrect with parse evidence", async () => {
     let calls = 0;
@@ -172,7 +180,10 @@ describe("DSQA benchmark", () => {
         calls += 1;
         const isJudge = body.model === "google/gemini-2.5-flash";
         return succeed(
-          fixtureResult(isJudge ? "not valid JSON" : "Belgium and France", isJudge)
+          fixtureResult(
+            isJudge ? "not valid JSON" : "Belgium and France",
+            isJudge
+          )
         );
       },
     };
