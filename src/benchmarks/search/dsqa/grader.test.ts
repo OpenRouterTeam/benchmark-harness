@@ -71,5 +71,10 @@ describe("DSQA grader", () => {
     });
     expect(spec.schemaName).toBe("dsqa_judge");
     expect(spec.jsonSchema).toBeUndefined();
+    expect(spec.parseFailureFallback).toEqual({
+      explanation: "Judge verdict could not be parsed.",
+      correctness_details: {},
+      excessive_answers: [],
+    });
   });
 });

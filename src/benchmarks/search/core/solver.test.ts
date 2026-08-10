@@ -406,6 +406,90 @@ describe("searchSolver", () => {
     expect(attempts).toBe(3);
     expect(state.output?.completion).toBe("Exact Answer: 42");
   });
+  it("returns the last completed blank response after retries are exhausted", async () => {
+    let attempts = 0;
+    const service: ResponsesService = {
+      send: () => {
+        attempts += 1;
+        return effectSucceed(
+          fixtureResult({
+            text: "   ",
+            generationTimeMs: 5,
+            usage: {
+              inputTokens: 10,
+              outputTokens: 0,
+              totalTokens: 10,
+              cost: 0.01,
+            },
+          })
+        );
+      },
+    };
+    const solver = searchSolver(service, {
+      model: "m",
+      instructions: "i",
+      lane: LANE,
+      retry: { maxRetries: 2, baseDelayMs: 1 },
+    });
+    const state = await runSolver(
+      solver(initialTaskState({ id: "s", input: "q", target: { text: "t" } }))
+    );
+    expect(attempts).toBe(3);
+    expect(state.output?.completion).toBe("");
+    expect(state.output?.usage?.totalCost).toBe(0.03);
+    expect(state.output?.generationTimeMs).toBe(15);
+  });
+  it("keeps exhausted incomplete responses on the failure path", async () => {
+    let attempts = 0;
+    const service: ResponsesService = {
+      send: () => {
+        attempts += 1;
+        return effectSucceed(
+          fixtureResult({ status: "incomplete", text: "partial" })
+        );
+      },
+    };
+    const solver = searchSolver(service, {
+      model: "m",
+      instructions: "i",
+      lane: LANE,
+      retry: { maxRetries: 2, baseDelayMs: 1 },
+    });
+    const exit = await runSolverExit(
+      solver(initialTaskState({ id: "s", input: "q", target: { text: "t" } }))
+    );
+    expect(attempts).toBe(3);
+    expect(isFailure(exit)).toBe(true);
+  });
+  it("does not recover a later provider error that matches the blank message", async () => {
+    let attempts = 0;
+    const service: ResponsesService = {
+      send: () =>
+        suspend(() => {
+          attempts += 1;
+          return attempts === 1
+            ? effectSucceed(fixtureResult({ text: "" }))
+            : effectFail(
+                new ResponsesError({
+                  message: "search response had no answer text",
+                  status: 503,
+                  retryable: true,
+                })
+              );
+        }),
+    };
+    const solver = searchSolver(service, {
+      model: "m",
+      instructions: "i",
+      lane: LANE,
+      retry: { maxRetries: 2, baseDelayMs: 1 },
+    });
+    const exit = await runSolverExit(
+      solver(initialTaskState({ id: "s", input: "q", target: { text: "t" } }))
+    );
+    expect(attempts).toBe(3);
+    expect(isFailure(exit)).toBe(true);
+  });
   it("aborts and retries an attempt that stalls mid-stream", async () => {
     let attempts = 0;
     let aborts = 0;
