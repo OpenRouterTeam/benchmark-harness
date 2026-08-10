@@ -82,6 +82,18 @@ describe("agent-dx dataset", () => {
     }
   });
 
+  it("rejects task ids that are not a single safe path segment", () => {
+    expect(() => loadTask("../outside", agentDxTasksDir())).toThrow(
+      'task id "../outside" is not a valid task name'
+    );
+    expect(() => loadTask("a/b", agentDxTasksDir())).toThrow(
+      "is not a valid task name"
+    );
+    expect(() => loadTask(".hidden", agentDxTasksDir())).toThrow(
+      "is not a valid task name"
+    );
+  });
+
   it("round-trips sample metadata through readAgentDxMeta", () => {
     const task = loadTask("basic-completion", agentDxTasksDir());
     const sample = taskToSample(task);
