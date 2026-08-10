@@ -24,6 +24,7 @@ import { DSQA_JUDGE_CONFIG, DsqaVerdictSchema, dsqaJudgeSpec } from "./grader";
 export const DSQA_BENCHMARK_ID = DSQA_META.id;
 
 const VERDICT_METADATA_KEY = "verdict" as const;
+const VERDICT_ERROR_METADATA_KEY = "verdict_error" as const;
 
 export const DSQA_METRIC_NAMES = [
   "precision",
@@ -61,11 +62,15 @@ const DsqaTrajectoryGradeSchema = z.object({
   kind: z.literal("dsqa_grade"),
   verdict: DsqaVerdictSchema,
   metrics: DsqaMetricsSchema,
+  error: z.string().optional(),
 });
 
 type DsqaTrajectoryGrade = z.infer<typeof DsqaTrajectoryGradeSchema>;
 
-export function calculateDsqaGrade(verdict: DsqaVerdict): DsqaTrajectoryGrade {
+export function calculateDsqaGrade(
+  verdict: DsqaVerdict,
+  error?: string
+): DsqaTrajectoryGrade {
   const details = Object.values(verdict.correctness_details);
   const truePositives = details.filter(Boolean).length;
   const falseNegatives = details.length - truePositives;
@@ -93,6 +98,7 @@ export function calculateDsqaGrade(verdict: DsqaVerdict): DsqaTrajectoryGrade {
   return {
     kind: "dsqa_grade",
     verdict,
+    ...(error !== undefined && { error }),
     metrics: {
       precision,
       recall,
@@ -143,6 +149,9 @@ function judgeStage(
           metadata: {
             ...state.sample.metadata,
             [VERDICT_METADATA_KEY]: judged.verdict,
+            ...(judged.parseError !== undefined && {
+              [VERDICT_ERROR_METADATA_KEY]: judged.parseError,
+            }),
           },
         },
       };
@@ -179,7 +188,11 @@ export function dsqaScorer(
     });
   }
   const verdict: DsqaVerdict = parsed.right;
-  const grade = calculateDsqaGrade(verdict);
+  const verdictError = state.sample.metadata?.[VERDICT_ERROR_METADATA_KEY];
+  const grade = calculateDsqaGrade(
+    verdict,
+    typeof verdictError === "string" ? verdictError : undefined
+  );
   return succeed({
     value:
       grade.metrics.fully_correct === 1

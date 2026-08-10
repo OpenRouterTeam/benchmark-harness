@@ -406,6 +406,37 @@ describe("searchSolver", () => {
     expect(attempts).toBe(3);
     expect(state.output?.completion).toBe("Exact Answer: 42");
   });
+  it("returns the last completed blank response after retries are exhausted", async () => {
+    let attempts = 0;
+    const service: ResponsesService = {
+      send: () => {
+        attempts += 1;
+        return effectSucceed(
+          fixtureResult({
+            text: "   ",
+            usage: {
+              inputTokens: 10,
+              outputTokens: 0,
+              totalTokens: 10,
+              cost: 0.01,
+            },
+          })
+        );
+      },
+    };
+    const solver = searchSolver(service, {
+      model: "m",
+      instructions: "i",
+      lane: LANE,
+      retry: { maxRetries: 2, baseDelayMs: 1 },
+    });
+    const state = await runSolver(
+      solver(initialTaskState({ id: "s", input: "q", target: { text: "t" } }))
+    );
+    expect(attempts).toBe(3);
+    expect(state.output?.completion).toBe("");
+    expect(state.output?.usage?.totalCost).toBe(0.01);
+  });
   it("aborts and retries an attempt that stalls mid-stream", async () => {
     let attempts = 0;
     let aborts = 0;

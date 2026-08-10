@@ -140,7 +140,7 @@ describe("DSQA benchmark", () => {
     const dsqaResult = await runPromise(dsqaScorer(state, SAMPLE.target));
     expect(dsqaResult.value).toBe(ScoreValue.Correct);
   });
-  it("skips judging an empty generated answer", async () => {
+  it("scores a persistent completed blank answer as incorrect after retries", async () => {
     let calls = 0;
     const service: ResponsesService = {
       send: () => {
@@ -152,16 +152,67 @@ describe("DSQA benchmark", () => {
       model: "m",
       instructions: "research it",
       lane: makeLane(),
+      retry: { maxRetries: 2, baseDelayMs: 1 },
+    });
+    const state = await runPromise(
+      solver(initialTaskState(SAMPLE)).pipe(
+        provide(mergeAll(noopProgressLayer, noopCheckpointLayer))
+      )
+    );
+    const score = await runPromise(dsqaScorer(state, SAMPLE.target));
+    expect(calls).toBe(3);
+    expect(state.output?.completion).toBe("");
+    expect(score.value).toBe(ScoreValue.Incorrect);
+    expect(score.explanation).toBe("no verdict");
+  });
+  it("scores an unreadable judge verdict as incorrect with parse evidence", async () => {
+    let calls = 0;
+    const service: ResponsesService = {
+      send: (body) => {
+        calls += 1;
+        const isJudge = body.model === "google/gemini-2.5-flash";
+        return succeed(
+          fixtureResult(isJudge ? "not valid JSON" : "Belgium and France", isJudge)
+        );
+      },
+    };
+    const solver = makeDsqaSolver(service, {
+      model: "m",
+      instructions: "research it",
+      lane: makeLane(),
       retry: { maxRetries: 0 },
     });
-    await expect(
-      runPromise(
-        solver(initialTaskState(SAMPLE)).pipe(
-          provide(mergeAll(noopProgressLayer, noopCheckpointLayer))
-        )
+    const state = await runPromise(
+      solver(initialTaskState(SAMPLE)).pipe(
+        provide(mergeAll(noopProgressLayer, noopCheckpointLayer))
       )
-    ).rejects.toThrow("search response had no answer text");
-    expect(calls).toBe(1);
+    );
+    const score = await runPromise(dsqaScorer(state, SAMPLE.target));
+    expect(calls).toBe(2);
+    expect(score.value).toBe(ScoreValue.Incorrect);
+    expect(score.trajectory).toEqual({
+      kind: "judge_runs",
+      runs: [
+        {
+          kind: "dsqa_grade",
+          verdict: {
+            explanation: "Judge verdict could not be parsed.",
+            correctness_details: {},
+            excessive_answers: [],
+          },
+          error: expect.stringContaining("judge verdict parse failed"),
+          metrics: {
+            precision: 0,
+            recall: 0,
+            f1_score: 0,
+            fully_correct: 0,
+            fully_incorrect: 1,
+            partially_correct: 0,
+            correct_with_extraneous_answers: 0,
+          },
+        },
+      ],
+    });
   });
 });
 

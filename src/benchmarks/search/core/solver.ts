@@ -1,6 +1,7 @@
 import type { ResponsesRequest, StreamEvents } from "@openrouter/sdk/models";
 import type { Effect } from "effect/Effect";
 import {
+  catchTag,
   fail,
   flatMap,
   gen,
@@ -37,6 +38,8 @@ import { makeSearchProgressTracker } from "./progress";
 import { buildSearchRequestBody } from "./request";
 
 export const DEFAULT_SEARCH_TIMEOUT_MS = 420000;
+
+const EMPTY_SEARCH_RESPONSE_MESSAGE = "search response had no answer text";
 
 export interface SearchSolverOptions {
   readonly model: string;
@@ -154,6 +157,7 @@ function sendWithRetry({
   readonly retryConfig?: RetryConfig;
   readonly timeoutMs: number;
 }): Effect<ResponsesResult, ModelError> {
+  let lastBlankResult: ResponsesResult | undefined;
   return suspend(() => responses.send(body, options())).pipe(
     mapError(toModelError),
     timeoutFail({
@@ -174,16 +178,23 @@ function sendWithRetry({
         );
       }
       if (result.text.trim() === "") {
+        lastBlankResult = result;
         return fail(
           new ModelError({
             status: 503,
-            message: "search response had no answer text",
+            message: EMPTY_SEARCH_RESPONSE_MESSAGE,
           })
         );
       }
       return succeed(result);
     }),
-    retry(rateLimitRetrySchedule(retryConfig ?? {}))
+    retry(rateLimitRetrySchedule(retryConfig ?? {})),
+    catchTag("ModelError", (error) =>
+      error.message === EMPTY_SEARCH_RESPONSE_MESSAGE &&
+      lastBlankResult !== undefined
+        ? succeed(lastBlankResult)
+        : fail(error)
+    )
   );
 }
 
