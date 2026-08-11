@@ -52,11 +52,12 @@ function fail(
   message: string,
   kind: "agent" | "platform" | "fixture" = "agent"
 ): never {
+  const singleLine = message.replaceAll(/\r?\n/g, "\\n");
   writeFileSync(
     "/logs/verifier/verdict.json",
-    JSON.stringify({ kind, detail: message })
+    JSON.stringify({ kind, detail: singleLine })
   );
-  console.error(`VERIFY FAIL: ${message}`);
+  console.error(`VERIFY FAIL: ${singleLine}`);
   process.exit(1);
 }
 
