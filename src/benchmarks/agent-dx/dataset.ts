@@ -42,7 +42,6 @@ export function agentDxTasksDir(): string {
 
 const SAFE_TASK_ID = /^[a-z0-9][a-z0-9_-]*$/;
 
-/** Guards filesystem joins: task ids come from sample metadata and run configs. */
 export function isSafeAgentDxTaskId(taskId: string): boolean {
   return SAFE_TASK_ID.test(taskId);
 }
