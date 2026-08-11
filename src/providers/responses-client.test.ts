@@ -328,14 +328,21 @@ describe("consumeStream", () => {
   });
 });
 describe("makeResponsesLayer", () => {
-  it("records the generation id from a completed response", async () => {
+  it("records the generation id and applies prompt caching to every request", async () => {
     const originalFetch = globalThis.fetch;
     const stream = await readStreamFixture();
-    globalThis.fetch = async () =>
-      new Response(stream, {
+    let capturedBody: unknown;
+    let capturedHeaders: Headers | undefined;
+    globalThis.fetch = async (input, init) => {
+      const request =
+        input instanceof Request ? input : new Request(input, init);
+      capturedBody = await request.clone().json();
+      capturedHeaders = request.headers;
+      return new Response(stream, {
         status: 200,
         headers: { "content-type": "text/event-stream" },
       });
+    };
     try {
       const ids = await runPromise(
         resetGenerationIds.pipe(
@@ -358,6 +365,16 @@ describe("makeResponsesLayer", () => {
         )
       );
       expect(ids).toEqual(["gen-1784161874-CXX4U5I6Ej7Z5hTnf0wU"]);
+      expect(capturedBody).toMatchObject({
+        cache_control: { type: "ephemeral" },
+        stream: true,
+      });
+      expect(capturedHeaders?.get("http-referer")).toBe(
+        "https://bench-harness.openrouter.ai/"
+      );
+      expect(capturedHeaders?.get("x-openrouter-title")).toBe(
+        "OpenRouter: Bench Harness"
+      );
     } finally {
       globalThis.fetch = originalFetch;
     }

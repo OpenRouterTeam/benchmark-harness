@@ -4,7 +4,15 @@ import type {
   ResponsesRequest,
   StreamEvents,
 } from "@openrouter/sdk/models";
+import {
+  ConnectionError,
+  InvalidRequestError,
+  RequestAbortedError,
+  RequestTimeoutError,
+  UnexpectedClientError,
+} from "@openrouter/sdk/models/errors/httpclienterrors";
 import { OpenRouterError } from "@openrouter/sdk/models/errors/openroutererror";
+import { SDKValidationError } from "@openrouter/sdk/models/errors/sdkvalidationerror";
 import { Responses as ResponsesClient } from "@openrouter/sdk/sdk/responses";
 import { Tag } from "effect/Context";
 import { TaggedError } from "effect/Data";
@@ -18,6 +26,10 @@ import { ModelError } from "../harness/core";
 import { isRecord } from "../internal/guards";
 import { z } from "../internal/zod";
 import { recordGenerationId } from "../runtime/generation-ids";
+import {
+  BENCH_HARNESS_APP_REFERRER,
+  BENCH_HARNESS_APP_TITLE,
+} from "./openrouter-model";
 import type { ModelErrorIdentifiers } from "./request-identifiers";
 import {
   appendModelErrorIdentifiers,
@@ -40,9 +52,11 @@ export const ResponsesResultSchema = z.object({
 export type ResponsesResult = z.infer<typeof ResponsesResultSchema>;
 
 export interface ResponsesSendOptions {
-  readonly timeoutMs: number;
+  readonly timeoutMs?: number;
   readonly versionOverride?: string;
   readonly extraHeaders?: Readonly<Record<string, string>>;
+  readonly extraBody?: Readonly<Record<string, unknown>>;
+  readonly onResponseIdentifiers?: (identifiers: ModelErrorIdentifiers) => void;
   readonly onStreamEvent?: (event: StreamEvents) => void;
 }
 
@@ -59,6 +73,7 @@ export class ResponsesError extends TaggedError("ResponsesError")<
   {
     readonly message: string;
     readonly status?: number;
+    readonly retryAfterMs?: number;
     readonly retryable: boolean;
   } & ModelErrorIdentifiers
 > {}
@@ -68,6 +83,9 @@ export function toModelError(error: ResponsesError): ModelError {
   return new ModelError({
     message: error.message,
     ...(status !== undefined && { status }),
+    ...(error.retryAfterMs !== undefined && {
+      retryAfterMs: error.retryAfterMs,
+    }),
     ...pickModelErrorIdentifiers(error),
   });
 }
@@ -104,10 +122,10 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
     let identifiers: ModelErrorIdentifiers = {};
     const httpClient = new HTTPClient({
       fetcher: async (input, init) => {
-        const response = await (init === undefined
-          ? fetch(input)
-          : fetch(input, init));
+        const request = await mergeExtraBody(input, init, options.extraBody);
+        const response = await fetch(request);
         identifiers = modelErrorIdentifiersFromFetchHeaders(response.headers);
+        options.onResponseIdentifiers?.(identifiers);
         return response;
       },
     });
@@ -120,6 +138,8 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
       }),
     });
     const headers: Record<string, string> = {
+      "HTTP-Referer": BENCH_HARNESS_APP_REFERRER,
+      "X-OpenRouter-Title": BENCH_HARNESS_APP_TITLE,
       ...options.extraHeaders,
       ...(options.versionOverride
         ? { [VERSION_OVERRIDE_HEADER]: `api="${options.versionOverride}"` }
@@ -131,8 +151,13 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
     return tryPromise({
       try: async (signal) => {
         identifiers = {};
+        const requestBody = {
+          ...body,
+          cacheControl: body.cacheControl ?? { type: "ephemeral" },
+          stream: true,
+        } satisfies ResponsesRequest;
         const stream = await client.send(
-          { responsesRequest: { ...body, stream: true } },
+          { responsesRequest: requestBody },
           {
             fetchOptions: { signal },
             ...(options.timeoutMs !== undefined && {
@@ -170,6 +195,31 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
   return layerSucceed(Responses, Responses.of({ send }));
 }
 
+async function mergeExtraBody(
+  input: string | URL | Request,
+  init: RequestInit | undefined,
+  extraBody: Readonly<Record<string, unknown>> | undefined
+): Promise<Request> {
+  const request = input instanceof Request ? input : new Request(input, init);
+  if (extraBody === undefined) {
+    return request;
+  }
+  const parsed: unknown = JSON.parse(await request.clone().text());
+  if (!isRecord(parsed)) {
+    return request;
+  }
+  return new Request(request, {
+    method: "POST",
+    body: JSON.stringify({
+      ...parsed,
+      ...extraBody,
+      ...(parsed["cache_control"] !== undefined && {
+        cache_control: parsed["cache_control"],
+      }),
+    }),
+  });
+}
+
 function isAsyncIterable(value: unknown): value is AsyncIterable<StreamEvents> {
   return (
     typeof value === "object" &&
@@ -191,37 +241,42 @@ export async function consumeStream(
     for await (const event of stream) {
       onEvent?.(event);
       const eventRecord: unknown = event;
-      const eventResponse = isRecord(eventRecord)
-        ? eventRecord["response"]
+      const rawEvent =
+        isRecord(eventRecord) && isRecord(eventRecord["raw"])
+          ? eventRecord["raw"]
+          : eventRecord;
+      const eventResponse = isRecord(rawEvent)
+        ? rawEvent["response"]
         : undefined;
       if (isRecord(eventResponse) && typeof eventResponse["id"] === "string") {
         Object.assign(identifiers, { generationId: eventResponse["id"] });
+      }
+      const rawType = isRecord(rawEvent) ? rawEvent["type"] : undefined;
+      if (rawType === "response.failed") {
+        throw new ResponsesError({
+          message: appendModelErrorIdentifiers(
+            `OpenRouter stream error: ${extractResponseError(eventResponse)}`,
+            identifiers
+          ),
+          retryable: true,
+          ...identifiers,
+        });
+      }
+      if (rawType === "error") {
+        throw new ResponsesError({
+          message: appendModelErrorIdentifiers(
+            `OpenRouter stream error: ${isRecord(rawEvent) ? String(rawEvent["message"]) : String(rawEvent)}`,
+            identifiers
+          ),
+          retryable: true,
+          ...identifiers,
+        });
       }
       switch (event.type) {
         case "response.completed":
         case "response.incomplete": {
           finalResponse = event.response;
           break;
-        }
-        case "response.failed": {
-          throw new ResponsesError({
-            message: appendModelErrorIdentifiers(
-              `OpenRouter stream error: ${extractResponseError(event.response)}`,
-              identifiers
-            ),
-            retryable: true,
-            ...identifiers,
-          });
-        }
-        case "error": {
-          throw new ResponsesError({
-            message: appendModelErrorIdentifiers(
-              `OpenRouter stream error: ${event.message}`,
-              identifiers
-            ),
-            retryable: true,
-            ...identifiers,
-          });
         }
       }
     }
@@ -426,14 +481,47 @@ function toResponsesError(
       ...identifiers,
       ...modelErrorIdentifiersFromFetchHeaders(cause.headers),
     };
+    const retryAfterMs = parseRetryAfter(cause.headers.get("retry-after"));
     return new ResponsesError({
       message: appendModelErrorIdentifiers(
         `OpenRouter HTTP ${cause.statusCode}: ${cause.body}`,
         errorIdentifiers
       ),
       status: cause.statusCode,
+      ...(retryAfterMs !== undefined && { retryAfterMs }),
       retryable: cause.statusCode === 429 || cause.statusCode >= 500,
       ...errorIdentifiers,
+    });
+  }
+  if (
+    cause instanceof RequestAbortedError ||
+    cause instanceof RequestTimeoutError
+  ) {
+    return new ResponsesError({
+      message: appendModelErrorIdentifiers(cause.message, identifiers),
+      status: 408,
+      retryable: true,
+      ...identifiers,
+    });
+  }
+  if (
+    cause instanceof ConnectionError ||
+    cause instanceof UnexpectedClientError ||
+    cause instanceof SDKValidationError
+  ) {
+    return new ResponsesError({
+      message: appendModelErrorIdentifiers(cause.message, identifiers),
+      status: 500,
+      retryable: true,
+      ...identifiers,
+    });
+  }
+  if (cause instanceof InvalidRequestError) {
+    return new ResponsesError({
+      message: appendModelErrorIdentifiers(cause.message, identifiers),
+      status: 400,
+      retryable: false,
+      ...identifiers,
     });
   }
   if (cause instanceof TypeError) {
@@ -455,6 +543,7 @@ function toResponsesError(
         "Wall-clock timeout (request aborted)",
         identifiers
       ),
+      status: 408,
       retryable: true,
       ...identifiers,
     });
@@ -467,4 +556,12 @@ function toResponsesError(
     retryable: false,
     ...identifiers,
   });
+}
+
+function parseRetryAfter(value: string | null): number | undefined {
+  if (value === null) {
+    return undefined;
+  }
+  const seconds = Number(value);
+  return Number.isFinite(seconds) && seconds >= 0 ? seconds * 1e3 : undefined;
 }
