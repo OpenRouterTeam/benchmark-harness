@@ -417,4 +417,36 @@ describe("makeResponsesLayer", () => {
       globalThis.fetch = originalFetch;
     }
   });
+  it("classifies malformed SSE as a retryable response failure", async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () =>
+      new Response("data: {not-json}\n\n", {
+        status: 200,
+        headers: { "content-type": "text/event-stream" },
+      });
+    try {
+      const exit = await runPromiseExit(
+        gen(function* run() {
+          const responses = yield* Responses;
+          return yield* responses.send(
+            { model: "m", input: [] },
+            { timeoutMs: 1000 }
+          );
+        }).pipe(
+          provide(
+            makeResponsesLayer({
+              apiKey: "sk-test",
+              baseUrl: "https://example.test",
+            })
+          )
+        )
+      );
+      assertFailure(exit);
+      const error = getOrThrow(failureOption(exit.cause));
+      expect(error.status).toBe(500);
+      expect(error.retryable).toBe(true);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
 });

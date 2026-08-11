@@ -211,6 +211,12 @@ describe("responses-model", () => {
               name: "bash",
               arguments: '{"command":"pwd"}',
             },
+            {
+              type: "openrouter:fusion",
+              failedModels: [{ model: "model-a", statusCode: 503 }],
+              failureReason: "all_panels_failed",
+              output: { statusCode: 200 },
+            },
           ],
           usage: null,
           text: "",
@@ -251,6 +257,12 @@ describe("responses-model", () => {
         call_id: "call-1",
         name: "bash",
         arguments: '{"command":"pwd"}',
+      },
+      {
+        type: "openrouter:fusion",
+        failed_models: [{ model: "model-a", status_code: 503 }],
+        failure_reason: "all_panels_failed",
+        output: { statusCode: 200 },
       },
     ]);
     expect(exit.value.functionCalls).toEqual([

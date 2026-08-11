@@ -524,6 +524,17 @@ function toResponsesError(
       ...identifiers,
     });
   }
+  if (
+    cause instanceof SyntaxError ||
+    (cause instanceof Error && cause.name === "ZodError")
+  ) {
+    return new ResponsesError({
+      message: appendModelErrorIdentifiers(cause.message, identifiers),
+      status: 500,
+      retryable: true,
+      ...identifiers,
+    });
+  }
   if (cause instanceof TypeError) {
     return new ResponsesError({
       message: appendModelErrorIdentifiers(

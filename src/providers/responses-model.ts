@@ -84,9 +84,10 @@ export class ResponsesModel extends Tag(
 export function makeResponsesModelLayer(
   config: ResponsesModelConfig
 ): Layer<ResponsesModel> {
+  const baseUrl = config.baseUrl ?? "https://openrouter.ai/api/v1";
   const responsesLayer = makeResponsesLayer({
     apiKey: config.apiKey,
-    ...(config.baseUrl !== undefined && { baseUrl: config.baseUrl }),
+    baseUrl,
     ...(config.sessionId !== undefined && { sessionId: config.sessionId }),
   });
   return effect(ResponsesModel)(
@@ -251,14 +252,41 @@ export function generate(
 function toLegacyOutputItem(
   item: Readonly<Record<string, unknown>>
 ): Record<string, unknown> {
-  const { callId, encryptedContent, ...legacyItem } = item;
-  return {
-    ...legacyItem,
-    ...(typeof callId === "string" && { call_id: callId }),
-    ...(typeof encryptedContent === "string" && {
-      encrypted_content: encryptedContent,
-    }),
-  };
+  return toWireRecord(item);
+}
+
+const WIRE_KEY_BY_SDK_KEY: Readonly<Record<string, string>> = {
+  callId: "call_id",
+  encryptedContent: "encrypted_content",
+  endIndex: "end_index",
+  failedModels: "failed_models",
+  failureReason: "failure_reason",
+  fileId: "file_id",
+  instanceName: "instance_name",
+  startIndex: "start_index",
+  statusCode: "status_code",
+  taskDescription: "task_description",
+  taskName: "task_name",
+};
+
+const RAW_PAYLOAD_KEYS = new Set(["arguments", "output"]);
+
+function toWireRecord(
+  record: Readonly<Record<string, unknown>>
+): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(record).map(([key, value]) => [
+      WIRE_KEY_BY_SDK_KEY[key] ?? key,
+      RAW_PAYLOAD_KEYS.has(key) ? value : toWireValue(value),
+    ])
+  );
+}
+
+function toWireValue(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(toWireValue);
+  }
+  return isRecord(value) ? toWireRecord(value) : value;
 }
 
 function toResponsesTurn(
