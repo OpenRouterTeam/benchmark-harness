@@ -34,6 +34,7 @@ import { assertRight } from "../../../internal/testing";
 import { parseSchema, z } from "../../../internal/zod";
 import type {
   ResponsesResult,
+  ResponsesSendOptions,
   ResponsesService,
 } from "../../../providers/responses-client";
 import { ResponsesError } from "../../../providers/responses-client";
@@ -61,10 +62,11 @@ function runSolverExit(
   return runPromiseExit(effect.pipe(provide(noopLayers)));
 }
 
-function makeLane(): SearchLaneConfig {
+function makeLane(overrides: Record<string, unknown> = {}): SearchLaneConfig {
   const result = parseSchema(SearchLaneConfigSchema, {
     engine: "exa",
     maxAgentTurns: 3,
+    ...overrides,
   });
   assertRight(result);
   return result.right;
@@ -251,6 +253,68 @@ describe("searchSolver", () => {
       },
     ]);
     expect(state.requestBody).toEqual(sent);
+  });
+  it("forwards provider flags as a joined header", async () => {
+    let sentOptions: ResponsesSendOptions | undefined;
+    const solver = searchSolver(
+      {
+        send: (_body, options) => {
+          sentOptions = options;
+          return effectSucceed(fixtureResult({ text: "x" }));
+        },
+      },
+      {
+        model: "m",
+        instructions: "i",
+        lane: makeLane({ providerFlags: ["alpha", "beta:value"] }),
+        endpointId: "endpoint",
+      }
+    );
+    await runSolver(
+      solver(initialTaskState({ id: "s", input: "q", target: { text: "t" } }))
+    );
+    expect(sentOptions?.extraHeaders).toEqual({
+      "X-OR-Endpoint-Id": "endpoint",
+      "X-Provider-Flags": "alpha,beta:value",
+    });
+  });
+  it("omits the provider flags header when flags are unset", async () => {
+    let sentOptions: ResponsesSendOptions | undefined;
+    const solver = searchSolver(
+      {
+        send: (_body, options) => {
+          sentOptions = options;
+          return effectSucceed(fixtureResult({ text: "x" }));
+        },
+      },
+      { model: "m", instructions: "i", lane: LANE }
+    );
+    await runSolver(
+      solver(initialTaskState({ id: "s", input: "q", target: { text: "t" } }))
+    );
+    expect(sentOptions?.extraHeaders).toBeUndefined();
+  });
+  it("forwards provider flags without an endpoint id", async () => {
+    let sentOptions: ResponsesSendOptions | undefined;
+    const solver = searchSolver(
+      {
+        send: (_body, options) => {
+          sentOptions = options;
+          return effectSucceed(fixtureResult({ text: "x" }));
+        },
+      },
+      {
+        model: "m",
+        instructions: "i",
+        lane: makeLane({ providerFlags: ["alpha"] }),
+      }
+    );
+    await runSolver(
+      solver(initialTaskState({ id: "s", input: "q", target: { text: "t" } }))
+    );
+    expect(sentOptions?.extraHeaders).toEqual({
+      "X-Provider-Flags": "alpha",
+    });
   });
   it("trims whitespace from the answer", async () => {
     const solver = searchSolver(

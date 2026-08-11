@@ -60,6 +60,7 @@ export const SearchLaneConfigSchema = z.object({
   allowedDomains: z.array(z.string()).optional(),
   excludedDomains: z.array(z.string()).optional(),
   searchPrompt: z.string().optional(),
+  providerFlags: z.array(z.string().min(1)).optional(),
   webFetch: WebFetchConfigSchema.optional(),
 });
 
