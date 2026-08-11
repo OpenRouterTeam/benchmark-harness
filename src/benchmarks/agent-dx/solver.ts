@@ -19,7 +19,11 @@ import type {
   SandboxSessionFactory,
   SandboxSessionInstance,
 } from "../terminal-bench/sandbox";
-import { agentDxTasksDir, readAgentDxMeta } from "./dataset";
+import {
+  agentDxTasksDir,
+  isSafeAgentDxTaskId,
+  readAgentDxMeta,
+} from "./dataset";
 import {
   COLLECT_EVIDENCE_SCRIPT,
   parseAlignmentEvidence,
@@ -192,6 +196,12 @@ function specSolver(
       ) {
         return yield* new SolverError({
           message: `benchmark config: invalid ADX_PRESET_SLUG "${presetSlugBase}": must match [A-Za-z0-9_-]+`,
+        });
+      }
+
+      if (!isSafeAgentDxTaskId(meta.taskId)) {
+        return yield* new SolverError({
+          message: `benchmark config: invalid agent-dx task id "${meta.taskId}" in sample metadata`,
         });
       }
 
