@@ -27,6 +27,7 @@ import { stripVariantSuffix } from "../harness/model";
 import { isRecord } from "../internal/guards";
 import type { RetryConfig } from "../runtime/retry";
 import { rateLimitRetrySchedule } from "../runtime/retry";
+import { buildAutoRouterPlugin } from "./auto-router-plugin";
 import type { ModelErrorIdentifiers } from "./request-identifiers";
 import { appendModelErrorIdentifiers } from "./request-identifiers";
 import type { ResponsesResult, ResponsesService } from "./responses-client";
@@ -124,34 +125,6 @@ export interface ResponsesGenerateOpts {
   readonly onStreamEvent?: (event: Record<string, unknown>) => void;
 }
 
-function buildAutoRouterPlugin(
-  baseModel: string,
-  genConfig: ResponsesGenerateConfig,
-  isAutoRouter: boolean
-):
-  | {
-      id: "auto-router" | "auto-beta-router";
-      costTier?: GenerateConfig["costTier"];
-      costQualityTradeoff?: number;
-    }
-  | undefined {
-  if (
-    !isAutoRouter ||
-    (genConfig.costTier === undefined &&
-      genConfig.costQualityTradeoff === undefined)
-  ) {
-    return undefined;
-  }
-  return {
-    id:
-      baseModel === "openrouter/auto-beta" ? "auto-beta-router" : "auto-router",
-    ...(genConfig.costTier !== undefined && { costTier: genConfig.costTier }),
-    ...(genConfig.costQualityTradeoff !== undefined && {
-      costQualityTradeoff: genConfig.costQualityTradeoff,
-    }),
-  };
-}
-
 export function generate(
   opts: ResponsesGenerateOpts,
   responses: ResponsesService
@@ -160,13 +133,7 @@ export function generate(
   const sendSort =
     genConfig.sort !== undefined && genConfig.endpointId === undefined;
   const baseModel = stripVariantSuffix(opts.model);
-  const isAutoRouter =
-    baseModel === "openrouter/auto" || baseModel === "openrouter/auto-beta";
-  const autoRouterPlugin = buildAutoRouterPlugin(
-    baseModel,
-    genConfig,
-    isAutoRouter
-  );
+  const autoRouterPlugin = buildAutoRouterPlugin(baseModel, genConfig);
   const body = {
     model: opts.model,
     input: toSdkInput(opts.input),
