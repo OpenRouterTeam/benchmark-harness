@@ -24,10 +24,11 @@ describe("agent-dx test scripts", () => {
 
   test("every task verifier budget covers the app runs plus verify headroom", () => {
     const VERIFY_HEADROOM_SEC = 180;
-    for (const [taskId, input] of Object.entries(AGENT_DX_TEST_SCRIPTS)) {
-      if (input.kind !== "app") {
-        continue;
-      }
+    const appTasks = Object.entries(AGENT_DX_TEST_SCRIPTS).flatMap(
+      ([taskId, input]) =>
+        input.kind === "app" ? [[taskId, input] as const] : []
+    );
+    for (const [taskId, input] of appTasks) {
       const budget = loadTask(taskId, agentDxTasksDir()).taskToml.verifier
         .timeout_sec;
       expect(budget, taskId).toBeGreaterThanOrEqual(

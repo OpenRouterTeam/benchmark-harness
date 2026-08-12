@@ -105,10 +105,11 @@ describe("agent-dx verifier conformance", () => {
       v.source.includes("async function fetchGeneration")
     );
     expect(defining.length).toBeGreaterThan(0);
-    for (const { taskId, source } of defining) {
-      if (FETCH_GENERATION_VARIANTS.some((variant) => variant === taskId)) {
-        continue;
-      }
+    const canonical = defining.filter(
+      ({ taskId }) =>
+        !FETCH_GENERATION_VARIANTS.some((variant) => variant === taskId)
+    );
+    for (const { taskId, source } of canonical) {
       expect(
         extractBlock(source, "async function fetchGeneration("),
         taskId

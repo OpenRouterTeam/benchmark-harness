@@ -89,7 +89,16 @@ function checkScaffold(): string | undefined {
   if (/\b(tsx|ts-node)\b/.test(packageJson)) {
     return "package.json uses a TypeScript loader (tsx/ts-node) instead of compiling with tsc";
   }
-  if (!packageJson.includes("tsc")) {
+  let scripts: Record<string, string> = {};
+  try {
+    const parsed = JSON.parse(packageJson) as {
+      scripts?: Record<string, string>;
+    };
+    scripts = parsed.scripts ?? {};
+  } catch {
+    return "package.json is not valid JSON";
+  }
+  if (!Object.values(scripts).some((command) => /\btsc\b/.test(command))) {
     return "package.json scripts never invoke tsc — the sources must be compiled";
   }
   const sources = sourceFiles("/app");
