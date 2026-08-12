@@ -846,6 +846,21 @@ describe("openrouter-model 2xx error envelope", () => {
     assertSuccess(exit);
     expect(fetchCalls.count).toBe(1);
   });
+  it("decodes a 200 body that omits required unused fields", async () => {
+    silenceWarnings();
+    const fetchCalls = { count: 0 };
+    const {
+      system_fingerprint: _systemFingerprint,
+      created: _created,
+      object: _object,
+      ...body
+    } = CHAT_RESULT;
+    restore = installBodyFetch(JSON.stringify(body), 1, fetchCalls);
+    const exit = await generateWithRetries(5);
+    assertSuccess(exit);
+    expect(exit.value.completion).toBe("Answer: A");
+    expect(fetchCalls.count).toBe(1);
+  });
   it("treats an envelope with null choices as an error envelope", async () => {
     silenceWarnings();
     const fetchCalls = { count: 0 };
