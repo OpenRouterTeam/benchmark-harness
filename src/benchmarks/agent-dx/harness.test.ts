@@ -75,6 +75,24 @@ describe("buildOpencodeImageSteps", () => {
     ).toThrow(/invalid opencodePackage/);
   });
 
+  it("rejects an opencode package with a leading dash that npm would parse as a flag", () => {
+    for (const pkg of [
+      "-g",
+      "--registry=http://attacker.test",
+      "@-scope/pkg",
+      "opencode-ai@-tag",
+    ]) {
+      expect(() =>
+        buildOpencodeImageSteps({
+          opencodePackage: pkg,
+          profile: "baseline",
+          skillsSource: "ignored",
+          docsSource: "ignored",
+        })
+      ).toThrow(/invalid opencodePackage/);
+    }
+  });
+
   it("rejects a docs source with shell metacharacters at the build-command boundary", () => {
     expect(() =>
       buildOpencodeImageSteps({

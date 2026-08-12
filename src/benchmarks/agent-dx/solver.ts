@@ -259,7 +259,7 @@ function specSolver(
           agentRun.exitCode === 0
             ? ""
             : prefixLines(
-                `agent harness exited ${agentRun.exitCode}. output: ${eventStream}\nstderr: ${redactKeyMaterial(agentStderr, secrets)}`,
+                `agent harness exited ${agentRun.exitCode}. last output: ${eventStream.slice(-2000)}\nstderr: ${redactKeyMaterial(agentStderr, secrets).slice(-2000)}`,
                 "[agent] "
               );
 

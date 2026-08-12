@@ -71,7 +71,7 @@ export const AGENT_DX_SKILLS_SOURCE_PATTERN =
   /^https:\/\/[\w.-]+(?:\/[\w.-]+)*(?:#[\w.][\w./-]*)?$/;
 
 export const AGENT_DX_OPENCODE_PACKAGE_PATTERN =
-  /^(?:@[\w.-]+\/)?[\w.-]+(?:@[\w.-]+)?$/;
+  /^(?:@[a-z0-9][\w.-]*\/)?[a-z0-9][\w.-]*(?:@[a-z0-9][\w.-]*)?$/i;
 
 export const DEFAULT_AGENT_DX_DOCS_SOURCE =
   "https://openrouter.ai/docs/llms-full.txt" as const;
