@@ -153,7 +153,10 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
         identifiers = {};
         const requestBody = {
           ...body,
-          cacheControl: body.cacheControl ?? { type: "ephemeral" },
+          ...(body.cacheControl === undefined &&
+            options.extraBody?.["cache_control"] === undefined && {
+              cacheControl: { type: "ephemeral" as const },
+            }),
           stream: true,
         } satisfies ResponsesRequest;
         const stream = await client.send(
@@ -204,7 +207,12 @@ async function mergeExtraBody(
   if (extraBody === undefined) {
     return request;
   }
-  const parsed: unknown = JSON.parse(await request.clone().text());
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(await request.clone().text());
+  } catch {
+    return request;
+  }
   if (!isRecord(parsed)) {
     return request;
   }
@@ -213,11 +221,12 @@ async function mergeExtraBody(
     body: JSON.stringify({
       ...parsed,
       ...extraBody,
-      ...(parsed["cache_control"] !== undefined && {
-        cache_control: parsed["cache_control"],
-      }),
     }),
   });
+}
+
+export function unwrapStreamEvent(event: unknown): unknown {
+  return isRecord(event) && isRecord(event["raw"]) ? event["raw"] : event;
 }
 
 function isAsyncIterable(value: unknown): value is AsyncIterable<StreamEvents> {
@@ -240,11 +249,7 @@ export async function consumeStream(
   try {
     for await (const event of stream) {
       onEvent?.(event);
-      const eventRecord: unknown = event;
-      const rawEvent =
-        isRecord(eventRecord) && isRecord(eventRecord["raw"])
-          ? eventRecord["raw"]
-          : eventRecord;
+      const rawEvent = unwrapStreamEvent(event);
       const eventResponse = isRecord(rawEvent)
         ? rawEvent["response"]
         : undefined;
@@ -524,10 +529,7 @@ function toResponsesError(
       ...identifiers,
     });
   }
-  if (
-    cause instanceof SyntaxError ||
-    (cause instanceof Error && cause.name === "ZodError")
-  ) {
+  if (cause instanceof SyntaxError || cause instanceof z.ZodError) {
     return new ResponsesError({
       message: appendModelErrorIdentifiers(cause.message, identifiers),
       status: 500,

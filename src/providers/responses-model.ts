@@ -1,4 +1,9 @@
-import type { ResponsesRequest, StreamEvents } from "@openrouter/sdk/models";
+import type {
+  InputsUnion,
+  ResponsesRequest,
+  StreamEvents,
+} from "@openrouter/sdk/models";
+import { camelCase, snakeCase } from "change-case";
 import { Tag } from "effect/Context";
 import { millis } from "effect/Duration";
 import type { Effect } from "effect/Effect";
@@ -30,6 +35,7 @@ import {
   makeResponsesLayer,
   Responses,
   toModelError,
+  unwrapStreamEvent,
   usageFromResponses,
 } from "./responses-client";
 
@@ -163,6 +169,7 @@ export function generate(
   );
   const body = {
     model: opts.model,
+    input: toSdkInput(opts.input),
     store: false,
     include: ["reasoning.encrypted_content"],
     ...(genConfig.instructions !== undefined && {
@@ -190,10 +197,7 @@ export function generate(
       "Cloudflare-Workers-Version-Overrides": genConfig.cloudflareVersion,
     }),
   };
-  const extraBody = {
-    input: [...opts.input],
-    ...genConfig.extraBody,
-  };
+  const extraBody = genConfig.extraBody;
   let identifiers: ModelErrorIdentifiers = {};
   const requestAttempt = suspend(() => {
     identifiers = {};
@@ -201,16 +205,12 @@ export function generate(
     return responses
       .send(body, {
         ...(Object.keys(extraHeaders).length > 0 && { extraHeaders }),
-        extraBody,
+        ...(extraBody !== undefined && { extraBody }),
         onResponseIdentifiers: (responseIdentifiers) => {
-          identifiers = responseIdentifiers;
+          identifiers = { ...identifiers, ...responseIdentifiers };
         },
         onStreamEvent: (event: StreamEvents) => {
-          const eventValue: unknown = event;
-          const rawEvent =
-            isRecord(eventValue) && isRecord(eventValue["raw"])
-              ? eventValue["raw"]
-              : eventValue;
+          const rawEvent = unwrapStreamEvent(event);
           if (isRecord(rawEvent)) {
             const response = rawEvent["response"];
             if (isRecord(response) && typeof response["id"] === "string") {
@@ -227,56 +227,55 @@ export function generate(
         )
       );
   });
-  const hasTimeout =
-    genConfig.timeoutMs !== undefined && genConfig.timeoutMs > 0;
-  const timedAttempt = hasTimeout
-    ? requestAttempt.pipe(
-        timeout(millis(genConfig.timeoutMs!)),
-        catchTag("TimeoutException", () =>
-          fail(
-            new ModelError({
-              status: 408,
-              message: appendModelErrorIdentifiers(
-                `Request timed out after ${genConfig.timeoutMs}ms`,
-                identifiers
-              ),
-              ...identifiers,
-            })
+  const timeoutMs = genConfig.timeoutMs;
+  const timedAttempt =
+    timeoutMs !== undefined && timeoutMs > 0
+      ? requestAttempt.pipe(
+          timeout(millis(timeoutMs)),
+          catchTag("TimeoutException", () =>
+            fail(
+              new ModelError({
+                status: 408,
+                message: appendModelErrorIdentifiers(
+                  `Request timed out after ${timeoutMs}ms`,
+                  identifiers
+                ),
+                ...identifiers,
+              })
+            )
           )
         )
-      )
-    : requestAttempt;
+      : requestAttempt;
   return timedAttempt.pipe(retry(rateLimitRetrySchedule(opts.retry ?? {})));
 }
 
-function toLegacyOutputItem(
-  item: Readonly<Record<string, unknown>>
-): Record<string, unknown> {
-  return toWireRecord(item);
+const RAW_PAYLOAD_KEYS = new Set(["arguments", "output"]);
+
+function toSdkInput(input: readonly ResponsesInputItem[]): InputsUnion {
+  return input.map(toSdkValue) as InputsUnion;
 }
 
-const WIRE_KEY_BY_SDK_KEY: Readonly<Record<string, string>> = {
-  callId: "call_id",
-  encryptedContent: "encrypted_content",
-  endIndex: "end_index",
-  failedModels: "failed_models",
-  failureReason: "failure_reason",
-  fileId: "file_id",
-  instanceName: "instance_name",
-  startIndex: "start_index",
-  statusCode: "status_code",
-  taskDescription: "task_description",
-  taskName: "task_name",
-};
-
-const RAW_PAYLOAD_KEYS = new Set(["arguments", "output"]);
+function toSdkValue(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(toSdkValue);
+  }
+  if (!isRecord(value)) {
+    return value;
+  }
+  return Object.fromEntries(
+    Object.entries(value).map(([key, nestedValue]) => [
+      camelCase(key),
+      RAW_PAYLOAD_KEYS.has(key) ? nestedValue : toSdkValue(nestedValue),
+    ])
+  );
+}
 
 function toWireRecord(
   record: Readonly<Record<string, unknown>>
 ): Record<string, unknown> {
   return Object.fromEntries(
     Object.entries(record).map(([key, value]) => [
-      WIRE_KEY_BY_SDK_KEY[key] ?? key,
+      snakeCase(key),
       RAW_PAYLOAD_KEYS.has(key) ? value : toWireValue(value),
     ])
   );
@@ -293,10 +292,10 @@ function toResponsesTurn(
   result: ResponsesResult,
   generationTimeMs: number
 ): ResponsesTurn {
-  const outputItems = result.output.map(toLegacyOutputItem);
+  const outputItems = result.output.map(toWireRecord);
   const usage = usageFromResponses(result.usage);
   const functionCalls = outputItems.flatMap((item) => {
-    const callId = item["callId"] ?? item["call_id"];
+    const callId = item["call_id"];
     if (
       item["type"] !== "function_call" ||
       typeof callId !== "string" ||

@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from "bun:test";
 import { readFile } from "node:fs/promises";
 
 import { FetchHttpClient } from "@effect/platform";
+import type { ResponsesRequest } from "@openrouter/sdk/models";
 import { failureOption } from "effect/Cause";
 import { flatMap, gen, provide, runPromiseExit, succeed } from "effect/Effect";
 import { provide as layerProvide } from "effect/Layer";
@@ -101,6 +102,42 @@ function readStreamFixture(): Promise<string> {
     "utf8"
   );
 }
+
+const FUNCTION_CALL_OUTPUT = {
+  type: "function_call",
+  id: "fc_1",
+  call_id: "call_1",
+  status: "completed",
+  name: "bash",
+  arguments: '{"command":"pwd"}',
+};
+
+function withFunctionCallOutput(stream: string): string {
+  return stream
+    .split("\n")
+    .map((line) => {
+      if (!line.startsWith("data: ") || line === "data: [DONE]") {
+        return line;
+      }
+      const event: unknown = JSON.parse(line.slice(6));
+      if (!isRecord(event) || event["type"] !== "response.completed") {
+        return line;
+      }
+      const response = event["response"];
+      if (!isRecord(response) || !Array.isArray(response["output"])) {
+        return line;
+      }
+      return `data: ${JSON.stringify({
+        ...event,
+        response: {
+          ...response,
+          output: [...response["output"], FUNCTION_CALL_OUTPUT],
+        },
+      })}`;
+    })
+    .join("\n");
+}
+
 describe("responses-model", () => {
   let restore: (() => void) | undefined;
   afterEach(() => {
@@ -109,7 +146,7 @@ describe("responses-model", () => {
   });
   it("builds a Responses request and parses output items, calls, text, and usage", async () => {
     const terminal = await readTerminalFixture();
-    const stream = await readStreamFixture();
+    const stream = withFunctionCallOutput(await readStreamFixture());
     const captured: {
       value: CapturedRequest | undefined;
     } = { value: undefined };
@@ -177,8 +214,13 @@ describe("responses-model", () => {
       provider: { sort: "price" },
       custom_field: "value",
     });
-    expect(exit.value.turn.outputItems).toEqual(terminal.output);
-    expect(exit.value.turn.functionCalls).toEqual([]);
+    expect(exit.value.turn.outputItems).toEqual([
+      ...terminal.output,
+      FUNCTION_CALL_OUTPUT,
+    ]);
+    expect(exit.value.turn.functionCalls).toEqual([
+      { callId: "call_1", name: "bash", arguments: '{"command":"pwd"}' },
+    ]);
     expect(exit.value.turn.text).toBe("4");
     expect(exit.value.turn.usage).toEqual(usageFromResponses(terminal.usage));
     expect(exit.value.generationIds).toEqual([
@@ -196,9 +238,11 @@ describe("responses-model", () => {
     expect(captured.value?.headers["x-session-id"]).toBe("session-1");
   });
   it("preserves legacy checkpoint items and maps SDK function calls", async () => {
+    let sentBody: ResponsesRequest | undefined;
     let sentOptions: ResponsesSendOptions | undefined;
     const responses: ResponsesService = {
-      send: (_body, options) => {
+      send: (body, options) => {
+        sentBody = body;
         sentOptions = options;
         return succeed({
           id: "resp-1",
@@ -215,6 +259,7 @@ describe("responses-model", () => {
               type: "openrouter:fusion",
               failedModels: [{ model: "model-a", statusCode: 503 }],
               failureReason: "all_panels_failed",
+              futureSdkField: "preserved",
               output: { statusCode: 200 },
             },
           ],
@@ -232,7 +277,12 @@ describe("responses-model", () => {
           model: "openai/gpt-5",
           input: [
             { type: "function_call_output", call_id: "call-0", output: "ok" },
-            { type: "reasoning", encrypted_content: "opaque" },
+            {
+              type: "reasoning",
+              id: "reasoning-1",
+              summary: [],
+              encrypted_content: "opaque",
+            },
           ],
           genConfig: {},
         },
@@ -240,17 +290,20 @@ describe("responses-model", () => {
       )
     );
     assertSuccess(exit);
-    expect(sentOptions?.extraBody?.["input"]).toEqual([
+    expect(sentBody?.input).toEqual([
       {
         type: "function_call_output",
-        call_id: "call-0",
+        callId: "call-0",
         output: "ok",
       },
       {
         type: "reasoning",
-        encrypted_content: "opaque",
+        id: "reasoning-1",
+        summary: [],
+        encryptedContent: "opaque",
       },
     ]);
+    expect(sentOptions?.extraBody).toBeUndefined();
     expect(exit.value.outputItems).toEqual([
       {
         type: "function_call",
@@ -262,6 +315,7 @@ describe("responses-model", () => {
         type: "openrouter:fusion",
         failed_models: [{ model: "model-a", status_code: 503 }],
         failure_reason: "all_panels_failed",
+        future_sdk_field: "preserved",
         output: { statusCode: 200 },
       },
     ]);

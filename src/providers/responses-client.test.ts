@@ -328,15 +328,15 @@ describe("consumeStream", () => {
   });
 });
 describe("makeResponsesLayer", () => {
-  it("records the generation id and applies prompt caching to every request", async () => {
+  it("records generation ids and applies default or explicit prompt caching", async () => {
     const originalFetch = globalThis.fetch;
     const stream = await readStreamFixture();
-    let capturedBody: unknown;
+    const capturedBodies: unknown[] = [];
     let capturedHeaders: Headers | undefined;
     globalThis.fetch = async (input, init) => {
       const request =
         input instanceof Request ? input : new Request(input, init);
-      capturedBody = await request.clone().json();
+      capturedBodies.push(await request.clone().json());
       capturedHeaders = request.headers;
       return new Response(stream, {
         status: 200,
@@ -353,6 +353,15 @@ describe("makeResponsesLayer", () => {
                 { model: "m", input: [] },
                 { timeoutMs: 1000 }
               );
+              yield* responses.send(
+                { model: "m", input: [] },
+                {
+                  timeoutMs: 1000,
+                  extraBody: {
+                    cache_control: { type: "ephemeral", ttl: "1h" },
+                  },
+                }
+              );
             })
           ),
           flatMap(() => getCollectedGenerationIds),
@@ -365,8 +374,12 @@ describe("makeResponsesLayer", () => {
         )
       );
       expect(ids).toEqual(["gen-1784161874-CXX4U5I6Ej7Z5hTnf0wU"]);
-      expect(capturedBody).toMatchObject({
+      expect(capturedBodies[0]).toMatchObject({
         cache_control: { type: "ephemeral" },
+        stream: true,
+      });
+      expect(capturedBodies[1]).toMatchObject({
+        cache_control: { type: "ephemeral", ttl: "1h" },
         stream: true,
       });
       expect(capturedHeaders?.get("http-referer")).toBe(
