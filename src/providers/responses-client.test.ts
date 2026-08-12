@@ -328,14 +328,21 @@ describe("consumeStream", () => {
   });
 });
 describe("makeResponsesLayer", () => {
-  it("records the generation id from a completed response", async () => {
+  it("records generation ids and applies default or explicit prompt caching", async () => {
     const originalFetch = globalThis.fetch;
     const stream = await readStreamFixture();
-    globalThis.fetch = async () =>
-      new Response(stream, {
+    const capturedBodies: unknown[] = [];
+    let capturedHeaders: Headers | undefined;
+    globalThis.fetch = async (input, init) => {
+      const request =
+        input instanceof Request ? input : new Request(input, init);
+      capturedBodies.push(await request.clone().json());
+      capturedHeaders = request.headers;
+      return new Response(stream, {
         status: 200,
         headers: { "content-type": "text/event-stream" },
       });
+    };
     try {
       const ids = await runPromise(
         resetGenerationIds.pipe(
@@ -345,6 +352,15 @@ describe("makeResponsesLayer", () => {
               yield* responses.send(
                 { model: "m", input: [] },
                 { timeoutMs: 1000 }
+              );
+              yield* responses.send(
+                { model: "m", input: [] },
+                {
+                  timeoutMs: 1000,
+                  extraBody: {
+                    cache_control: { type: "ephemeral", ttl: "1h" },
+                  },
+                }
               );
             })
           ),
@@ -358,6 +374,20 @@ describe("makeResponsesLayer", () => {
         )
       );
       expect(ids).toEqual(["gen-1784161874-CXX4U5I6Ej7Z5hTnf0wU"]);
+      expect(capturedBodies[0]).toMatchObject({
+        cache_control: { type: "ephemeral" },
+        stream: true,
+      });
+      expect(capturedBodies[1]).toMatchObject({
+        cache_control: { type: "ephemeral", ttl: "1h" },
+        stream: true,
+      });
+      expect(capturedHeaders?.get("http-referer")).toBe(
+        "https://bench-harness.openrouter.ai/"
+      );
+      expect(capturedHeaders?.get("x-openrouter-title")).toBe(
+        "OpenRouter: Bench Harness"
+      );
     } finally {
       globalThis.fetch = originalFetch;
     }
@@ -396,6 +426,38 @@ describe("makeResponsesLayer", () => {
       expect(error.xRequestId).toBe("req-456");
       expect(error.message).toContain("cf_ray=ray-123");
       expect(error.message).toContain("x_request_id=req-456");
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+  it("classifies malformed SSE as a retryable response failure", async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () =>
+      new Response("data: {not-json}\n\n", {
+        status: 200,
+        headers: { "content-type": "text/event-stream" },
+      });
+    try {
+      const exit = await runPromiseExit(
+        gen(function* run() {
+          const responses = yield* Responses;
+          return yield* responses.send(
+            { model: "m", input: [] },
+            { timeoutMs: 1000 }
+          );
+        }).pipe(
+          provide(
+            makeResponsesLayer({
+              apiKey: "sk-test",
+              baseUrl: "https://example.test",
+            })
+          )
+        )
+      );
+      assertFailure(exit);
+      const error = getOrThrow(failureOption(exit.cause));
+      expect(error.status).toBe(500);
+      expect(error.retryable).toBe(true);
     } finally {
       globalThis.fetch = originalFetch;
     }

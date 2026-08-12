@@ -2,8 +2,9 @@ import { afterEach, describe, expect, it } from "bun:test";
 import { readFile } from "node:fs/promises";
 
 import { FetchHttpClient } from "@effect/platform";
+import type { ResponsesRequest } from "@openrouter/sdk/models";
 import { failureOption } from "effect/Cause";
-import { flatMap, gen, provide, runPromiseExit } from "effect/Effect";
+import { flatMap, gen, provide, runPromiseExit, succeed } from "effect/Effect";
 import { provide as layerProvide } from "effect/Layer";
 import { getOrThrow } from "effect/Option";
 
@@ -16,8 +17,16 @@ import {
   getCollectedGenerationIds,
   resetGenerationIds,
 } from "../runtime/generation-ids";
+import type {
+  ResponsesSendOptions,
+  ResponsesService,
+} from "./responses-client";
 import { usageFromResponses } from "./responses-client";
-import { ResponsesModel, makeResponsesModelLayer } from "./responses-model";
+import {
+  generate,
+  ResponsesModel,
+  makeResponsesModelLayer,
+} from "./responses-model";
 
 interface CapturedRequest {
   readonly url: string;
@@ -64,49 +73,6 @@ function installFetchStub(
   };
 }
 
-const OUTPUT = [
-  {
-    type: "reasoning",
-    encrypted_content: "opaque-encrypted",
-  },
-  {
-    type: "openrouter:advisor",
-    advice: "keep going",
-  },
-  {
-    type: "function_call",
-    id: "fc_1",
-    call_id: "call_1",
-    name: "bash",
-    arguments: '{"command":"pwd"}',
-  },
-  {
-    type: "message",
-    content: [
-      { type: "output_text", text: "hello " },
-      { type: "output_text", text: "world" },
-    ],
-  },
-];
-
-const RESPONSE = JSON.stringify({
-  id: "resp_1",
-  output: OUTPUT,
-  usage: {
-    input_tokens: 10,
-    output_tokens: 5,
-    total_tokens: 15,
-    output_tokens_details: { reasoning_tokens: 2 },
-    cost: 0.01,
-  },
-});
-
-const SSE_RESPONSE = [
-  `data: ${JSON.stringify({ type: "response.output_item.added", output_index: 0 })}`,
-  `data: ${JSON.stringify({ type: "response.completed", response: JSON.parse(RESPONSE) })}`,
-  "",
-].join("\n\n");
-
 const TerminalFixtureSchema = z.object({
   output: z.array(z.record(z.string(), z.unknown())),
   usage: z.record(z.string(), z.unknown()),
@@ -136,6 +102,42 @@ function readStreamFixture(): Promise<string> {
     "utf8"
   );
 }
+
+const FUNCTION_CALL_OUTPUT = {
+  type: "function_call",
+  id: "fc_1",
+  call_id: "call_1",
+  status: "completed",
+  name: "bash",
+  arguments: '{"command":"pwd"}',
+};
+
+function withFunctionCallOutput(stream: string): string {
+  return stream
+    .split("\n")
+    .map((line) => {
+      if (!line.startsWith("data: ") || line === "data: [DONE]") {
+        return line;
+      }
+      const event: unknown = JSON.parse(line.slice(6));
+      if (!isRecord(event) || event["type"] !== "response.completed") {
+        return line;
+      }
+      const response = event["response"];
+      if (!isRecord(response) || !Array.isArray(response["output"])) {
+        return line;
+      }
+      return `data: ${JSON.stringify({
+        ...event,
+        response: {
+          ...response,
+          output: [...response["output"], FUNCTION_CALL_OUTPUT],
+        },
+      })}`;
+    })
+    .join("\n");
+}
+
 describe("responses-model", () => {
   let restore: (() => void) | undefined;
   afterEach(() => {
@@ -143,10 +145,12 @@ describe("responses-model", () => {
     restore = undefined;
   });
   it("builds a Responses request and parses output items, calls, text, and usage", async () => {
+    const terminal = await readTerminalFixture();
+    const stream = withFunctionCallOutput(await readStreamFixture());
     const captured: {
       value: CapturedRequest | undefined;
     } = { value: undefined };
-    restore = installFetchStub(SSE_RESPONSE, 200, captured);
+    restore = installFetchStub(stream, 200, captured);
     const input = [
       { role: "user", content: "solve this" },
       { type: "function_call_output", call_id: "call_0", output: "ok" },
@@ -193,6 +197,7 @@ describe("responses-model", () => {
       input,
       stream: true,
       store: false,
+      cache_control: { type: "ephemeral" },
       include: ["reasoning.encrypted_content"],
       instructions: "Use bash.",
       tools: [
@@ -209,19 +214,18 @@ describe("responses-model", () => {
       provider: { sort: "price" },
       custom_field: "value",
     });
-    expect(exit.value.turn.outputItems).toEqual(OUTPUT);
+    expect(exit.value.turn.outputItems).toEqual([
+      ...terminal.output,
+      FUNCTION_CALL_OUTPUT,
+    ]);
     expect(exit.value.turn.functionCalls).toEqual([
       { callId: "call_1", name: "bash", arguments: '{"command":"pwd"}' },
     ]);
-    expect(exit.value.turn.text).toBe("hello world");
-    expect(exit.value.turn.usage).toEqual({
-      inputTokens: 10,
-      outputTokens: 5,
-      totalTokens: 15,
-      reasoningTokens: 2,
-      totalCost: 0.01,
-    });
-    expect(exit.value.generationIds).toEqual(["resp_1"]);
+    expect(exit.value.turn.text).toBe("4");
+    expect(exit.value.turn.usage).toEqual(usageFromResponses(terminal.usage));
+    expect(exit.value.generationIds).toEqual([
+      "gen-1784161874-CXX4U5I6Ej7Z5hTnf0wU",
+    ]);
     expect(captured.value?.headers["http-referer"]).toBe(
       "https://bench-harness.openrouter.ai/"
     );
@@ -233,11 +237,101 @@ describe("responses-model", () => {
     ).toBe("ver-1");
     expect(captured.value?.headers["x-session-id"]).toBe("session-1");
   });
+  it("preserves legacy checkpoint items and maps SDK function calls", async () => {
+    let sentBody: ResponsesRequest | undefined;
+    let sentOptions: ResponsesSendOptions | undefined;
+    const responses: ResponsesService = {
+      send: (body, options) => {
+        sentBody = body;
+        sentOptions = options;
+        return succeed({
+          id: "resp-1",
+          model: "openai/gpt-5",
+          status: "completed",
+          output: [
+            {
+              type: "function_call",
+              callId: "call-1",
+              name: "bash",
+              arguments: '{"command":"pwd"}',
+            },
+            {
+              type: "openrouter:fusion",
+              failedModels: [{ model: "model-a", statusCode: 503 }],
+              failureReason: "all_panels_failed",
+              futureSdkField: "preserved",
+              output: { statusCode: 200 },
+            },
+          ],
+          usage: null,
+          text: "",
+          generationId: "resp-1",
+          provider: "OpenAI",
+          generationTimeMs: 1,
+        });
+      },
+    };
+    const exit = await runPromiseExit(
+      generate(
+        {
+          model: "openai/gpt-5",
+          input: [
+            { type: "function_call_output", call_id: "call-0", output: "ok" },
+            {
+              type: "reasoning",
+              id: "reasoning-1",
+              summary: [],
+              encrypted_content: "opaque",
+            },
+          ],
+          genConfig: {},
+        },
+        responses
+      )
+    );
+    assertSuccess(exit);
+    expect(sentBody?.input).toEqual([
+      {
+        type: "function_call_output",
+        callId: "call-0",
+        output: "ok",
+      },
+      {
+        type: "reasoning",
+        id: "reasoning-1",
+        summary: [],
+        encryptedContent: "opaque",
+      },
+    ]);
+    expect(sentOptions?.extraBody).toBeUndefined();
+    expect(exit.value.outputItems).toEqual([
+      {
+        type: "function_call",
+        call_id: "call-1",
+        name: "bash",
+        arguments: '{"command":"pwd"}',
+      },
+      {
+        type: "openrouter:fusion",
+        failed_models: [{ model: "model-a", status_code: 503 }],
+        failure_reason: "all_panels_failed",
+        future_sdk_field: "preserved",
+        output: { statusCode: 200 },
+      },
+    ]);
+    expect(exit.value.functionCalls).toEqual([
+      {
+        callId: "call-1",
+        name: "bash",
+        arguments: '{"command":"pwd"}',
+      },
+    ]);
+  });
   it("sends provider sort only when endpoint pinning is absent", async () => {
     const captured: {
       value: CapturedRequest | undefined;
     } = { value: undefined };
-    restore = installFetchStub(SSE_RESPONSE, 200, captured);
+    restore = installFetchStub(await readStreamFixture(), 200, captured);
     const layer = makeResponsesModelLayer({
       model: "openai/gpt-5",
       apiKey: "sk-test",
@@ -264,7 +358,7 @@ describe("responses-model", () => {
       const captured: {
         value: CapturedRequest | undefined;
       } = { value: undefined };
-      restore = installFetchStub(SSE_RESPONSE, 200, captured);
+      restore = installFetchStub(await readStreamFixture(), 200, captured);
       const layer = makeResponsesModelLayer({ model, apiKey: "sk-test" });
       const exit = await runPromiseExit(
         gen(function* run() {
@@ -282,7 +376,7 @@ describe("responses-model", () => {
     const captured: {
       value: CapturedRequest | undefined;
     } = { value: undefined };
-    restore = installFetchStub(SSE_RESPONSE, 200, captured);
+    restore = installFetchStub(await readStreamFixture(), 200, captured);
     const layer = makeResponsesModelLayer({
       model: "openrouter/auto",
       apiKey: "sk-test",
@@ -305,7 +399,7 @@ describe("responses-model", () => {
     const captured: {
       value: CapturedRequest | undefined;
     } = { value: undefined };
-    restore = installFetchStub(SSE_RESPONSE, 200, captured);
+    restore = installFetchStub(await readStreamFixture(), 200, captured);
     const layer = makeResponsesModelLayer({
       model: "openrouter/auto",
       apiKey: "sk-test",

@@ -1,44 +1,44 @@
-import { HttpClient, HttpClientRequest } from "@effect/platform";
-import type { HttpClientResponse as HttpClientResponseType } from "@effect/platform/HttpClientResponse";
+import type {
+  InputsUnion,
+  ResponsesRequest,
+  StreamEvents,
+} from "@openrouter/sdk/models";
+import { camelCase, snakeCase } from "change-case";
 import { Tag } from "effect/Context";
 import { millis } from "effect/Duration";
 import type { Effect } from "effect/Effect";
 import {
   catchTag,
   fail,
-  flatMap,
   gen,
+  map,
   mapError,
   retry,
-  succeed,
-  sync,
+  suspend,
   timeout,
 } from "effect/Effect";
 import type { Layer } from "effect/Layer";
-import { effect } from "effect/Layer";
-import { runForEach } from "effect/Stream";
+import { effect, provide } from "effect/Layer";
 
 import type { ModelUsage } from "../harness/core";
 import { ModelError } from "../harness/core";
 import type { GenerateConfig } from "../harness/model";
 import { stripVariantSuffix } from "../harness/model";
-import { Either } from "../internal/either";
 import { isRecord } from "../internal/guards";
-import { parseSchema, z } from "../internal/zod";
-import { recordGenerationId } from "../runtime/generation-ids";
 import type { RetryConfig } from "../runtime/retry";
 import { rateLimitRetrySchedule } from "../runtime/retry";
-import {
-  BENCH_HARNESS_APP_REFERRER,
-  BENCH_HARNESS_APP_TITLE,
-  normalizeBaseUrl,
-} from "./openrouter-model";
+import { buildAutoRouterPlugin } from "./auto-router-plugin";
 import type { ModelErrorIdentifiers } from "./request-identifiers";
+import { appendModelErrorIdentifiers } from "./request-identifiers";
+import type { ResponsesResult, ResponsesService } from "./responses-client";
 import {
-  appendModelErrorIdentifiers,
-  modelErrorIdentifiersFromHeaders,
-} from "./request-identifiers";
-import { extractMessageText, usageFromResponses } from "./responses-client";
+  extractMessageText,
+  makeResponsesLayer,
+  Responses,
+  toModelError,
+  unwrapStreamEvent,
+  usageFromResponses,
+} from "./responses-client";
 
 export type ResponsesInputItem = Record<string, unknown>;
 
@@ -90,13 +90,16 @@ export class ResponsesModel extends Tag(
 
 export function makeResponsesModelLayer(
   config: ResponsesModelConfig
-): Layer<ResponsesModel, never, HttpClient.HttpClient> {
-  const baseUrl = normalizeBaseUrl(
-    config.baseUrl ?? "https://openrouter.ai/api/v1"
-  );
+): Layer<ResponsesModel> {
+  const baseUrl = config.baseUrl ?? "https://openrouter.ai/api/v1";
+  const responsesLayer = makeResponsesLayer({
+    apiKey: config.apiKey,
+    baseUrl,
+    ...(config.sessionId !== undefined && { sessionId: config.sessionId }),
+  });
   return effect(ResponsesModel)(
     gen(function* () {
-      const client = yield* HttpClient.HttpClient;
+      const responses = yield* Responses;
       return ResponsesModel.of({
         generate: (input, generateConfig, options) =>
           generate(
@@ -104,161 +107,104 @@ export function makeResponsesModelLayer(
               model: config.model,
               input,
               genConfig: generateConfig,
-              sessionId: config.sessionId,
-              apiKey: config.apiKey,
-              baseUrl,
               retry: config.retry,
               onStreamEvent: options?.onStreamEvent,
             },
-            client
+            responses
           ),
       });
     })
-  );
+  ).pipe(provide(responsesLayer));
 }
 
 export interface ResponsesGenerateOpts {
   readonly model: string;
   readonly input: readonly ResponsesInputItem[];
   readonly genConfig: ResponsesGenerateConfig;
-  readonly sessionId?: string;
-  readonly apiKey: string;
-  readonly baseUrl: string;
   readonly retry?: RetryConfig;
   readonly onStreamEvent?: (event: Record<string, unknown>) => void;
 }
 
-function buildAutoRouterPlugin(
-  baseModel: string,
-  genConfig: ResponsesGenerateConfig,
-  isAutoRouter: boolean
-):
-  | {
-      id: "auto-router" | "auto-beta-router";
-      cost_tier?: GenerateConfig["costTier"];
-      cost_quality_tradeoff?: number;
-    }
-  | undefined {
-  if (
-    !isAutoRouter ||
-    (genConfig.costTier === undefined &&
-      genConfig.costQualityTradeoff === undefined)
-  ) {
-    return undefined;
-  }
-  return {
-    id:
-      baseModel === "openrouter/auto-beta" ? "auto-beta-router" : "auto-router",
-    ...(genConfig.costTier !== undefined && { cost_tier: genConfig.costTier }),
-    ...(genConfig.costQualityTradeoff !== undefined && {
-      cost_quality_tradeoff: genConfig.costQualityTradeoff,
-    }),
-  };
-}
-
 export function generate(
   opts: ResponsesGenerateOpts,
-  client: HttpClient.HttpClient
+  responses: ResponsesService
 ): Effect<ResponsesTurn, ModelError> {
   const { genConfig } = opts;
-  const headers: Record<string, string> = {
-    Authorization: `Bearer ${opts.apiKey}`,
-    "Content-Type": "application/json",
-    "HTTP-Referer": BENCH_HARNESS_APP_REFERRER,
-    "X-OpenRouter-Title": BENCH_HARNESS_APP_TITLE,
-  };
-  if (genConfig.endpointId !== undefined) {
-    headers["X-OR-Endpoint-Id"] = genConfig.endpointId;
-  }
-  if (genConfig.cloudflareVersion !== undefined) {
-    headers["Cloudflare-Workers-Version-Overrides"] =
-      genConfig.cloudflareVersion;
-  }
-  if (opts.sessionId !== undefined) {
-    headers["x-session-id"] = opts.sessionId;
-  }
   const sendSort =
     genConfig.sort !== undefined && genConfig.endpointId === undefined;
-  const hasTimeout =
-    genConfig.timeoutMs !== undefined && genConfig.timeoutMs > 0;
   const baseModel = stripVariantSuffix(opts.model);
-  const isAutoRouter =
-    baseModel === "openrouter/auto" || baseModel === "openrouter/auto-beta";
-  const autoRouterPlugin = buildAutoRouterPlugin(
-    baseModel,
-    genConfig,
-    isAutoRouter
-  );
-  return gen(function* () {
+  const autoRouterPlugin = buildAutoRouterPlugin(baseModel, genConfig);
+  const body = {
+    model: opts.model,
+    input: toSdkInput(opts.input),
+    store: false,
+    include: ["reasoning.encrypted_content"],
+    ...(genConfig.instructions !== undefined && {
+      instructions: genConfig.instructions,
+    }),
+    ...(genConfig.tools !== undefined &&
+      genConfig.tools.length > 0 && { tools: [...genConfig.tools] }),
+    ...(genConfig.reasoningEffort !== undefined && {
+      reasoning: { effort: genConfig.reasoningEffort },
+    }),
+    ...(genConfig.temperature !== undefined && {
+      temperature: genConfig.temperature,
+    }),
+    ...(genConfig.maxTokens !== undefined && {
+      maxOutputTokens: genConfig.maxTokens,
+    }),
+    ...(sendSort && { provider: { sort: genConfig.sort } }),
+    ...(autoRouterPlugin !== undefined && { plugins: [autoRouterPlugin] }),
+  } satisfies ResponsesRequest;
+  const extraHeaders = {
+    ...(genConfig.endpointId !== undefined && {
+      "X-OR-Endpoint-Id": genConfig.endpointId,
+    }),
+    ...(genConfig.cloudflareVersion !== undefined && {
+      "Cloudflare-Workers-Version-Overrides": genConfig.cloudflareVersion,
+    }),
+  };
+  const extraBody = genConfig.extraBody;
+  let identifiers: ModelErrorIdentifiers = {};
+  const requestAttempt = suspend(() => {
+    identifiers = {};
     const startedAt = performance.now();
-    let identifiers: ModelErrorIdentifiers = {};
-    const body = {
-      model: opts.model,
-      input: [...opts.input],
-      stream: true,
-      store: false,
-      cache_control: { type: "ephemeral" },
-      include: ["reasoning.encrypted_content"],
-      ...(genConfig.instructions !== undefined && {
-        instructions: genConfig.instructions,
-      }),
-      ...(genConfig.tools !== undefined &&
-        genConfig.tools.length > 0 && { tools: [...genConfig.tools] }),
-      ...(genConfig.reasoningEffort !== undefined && {
-        reasoning: { effort: genConfig.reasoningEffort },
-      }),
-      ...(genConfig.temperature !== undefined && {
-        temperature: genConfig.temperature,
-      }),
-      ...(genConfig.maxTokens !== undefined && {
-        max_output_tokens: genConfig.maxTokens,
-      }),
-      ...(sendSort && { provider: { sort: genConfig.sort } }),
-      ...(autoRouterPlugin !== undefined && { plugins: [autoRouterPlugin] }),
-      ...genConfig.extraBody,
-    };
-    const request = HttpClientRequest.post(`${opts.baseUrl}/responses`).pipe(
-      HttpClientRequest.setHeaders(headers),
-      HttpClientRequest.bodyUnsafeJson(body)
-    );
-    const requestAttempt = gen(function* () {
-      identifiers = {};
-      const response = yield* client.execute(request);
-      identifiers = modelErrorIdentifiersFromHeaders(response.headers);
-      if (response.status < 200 || response.status >= 300) {
-        const text = yield* response.text;
-        return yield* fail(
-          new ModelError({
-            status: response.status,
-            message: appendModelErrorIdentifiers(
-              `OpenRouter HTTP ${response.status}: ${text}`,
-              identifiers
-            ),
-            ...identifiers,
-            ...(response.status === 429 && {
-              retryAfterMs: parseRetryAfter(
-                response.headers["retry-after"] ?? null
-              ),
-            }),
-          })
-        );
-      }
-      const terminalResponse = yield* consumeSse(
-        response,
-        identifiers,
-        opts.onStreamEvent
+    return responses
+      .send(body, {
+        ...(Object.keys(extraHeaders).length > 0 && { extraHeaders }),
+        ...(extraBody !== undefined && { extraBody }),
+        onResponseIdentifiers: (responseIdentifiers) => {
+          identifiers = { ...identifiers, ...responseIdentifiers };
+        },
+        onStreamEvent: (event: StreamEvents) => {
+          const rawEvent = unwrapStreamEvent(event);
+          if (isRecord(rawEvent)) {
+            const response = rawEvent["response"];
+            if (isRecord(response) && typeof response["id"] === "string") {
+              identifiers = { ...identifiers, generationId: response["id"] };
+            }
+            opts.onStreamEvent?.(rawEvent);
+          }
+        },
+      })
+      .pipe(
+        mapError(toModelError),
+        map((result) =>
+          toResponsesTurn(result, Math.round(performance.now() - startedAt))
+        )
       );
-      return { json: terminalResponse, startedAt, identifiers };
-    });
-    return yield* hasTimeout
+  });
+  const timeoutMs = genConfig.timeoutMs;
+  const timedAttempt =
+    timeoutMs !== undefined && timeoutMs > 0
       ? requestAttempt.pipe(
-          timeout(millis(genConfig.timeoutMs!)),
+          timeout(millis(timeoutMs)),
           catchTag("TimeoutException", () =>
             fail(
               new ModelError({
                 status: 408,
                 message: appendModelErrorIdentifiers(
-                  `Request timed out after ${genConfig.timeoutMs}ms`,
+                  `Request timed out after ${timeoutMs}ms`,
                   identifiers
                 ),
                 ...identifiers,
@@ -267,182 +213,59 @@ export function generate(
           )
         )
       : requestAttempt;
-  }).pipe(
-    mapError(toModelError),
-    retry(rateLimitRetrySchedule(opts.retry ?? {})),
-    flatMap(({ json, startedAt, identifiers }) =>
-      decodeResult(json, startedAt, identifiers)
-    )
+  return timedAttempt.pipe(retry(rateLimitRetrySchedule(opts.retry ?? {})));
+}
+
+const RAW_PAYLOAD_KEYS = new Set(["arguments", "output"]);
+
+function toSdkInput(input: readonly ResponsesInputItem[]): InputsUnion {
+  return input.map(toSdkValue) as InputsUnion;
+}
+
+function toSdkValue(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(toSdkValue);
+  }
+  if (!isRecord(value)) {
+    return value;
+  }
+  return Object.fromEntries(
+    Object.entries(value).map(([key, nestedValue]) => [
+      camelCase(key),
+      RAW_PAYLOAD_KEYS.has(key) ? nestedValue : toSdkValue(nestedValue),
+    ])
   );
 }
 
-function consumeSse(
-  response: HttpClientResponseType,
-  initialIdentifiers: ModelErrorIdentifiers,
-  onStreamEvent?: (event: Record<string, unknown>) => void
-): Effect<unknown, ModelError> {
-  return gen(function* () {
-    const decoder = new TextDecoder();
-    let buffer = "";
-    let terminalResponse: unknown;
-    let streamError: ModelError | undefined;
-    const identifiers = initialIdentifiers;
-    const parseFrame = (frame: string): void => {
-      const data = frame
-        .split(/\r?\n/)
-        .filter((line) => line.startsWith("data:"))
-        .map((line) => line.slice(5).trimStart())
-        .join("\n");
-      if (data.length === 0 || data === "[DONE]") {
-        return;
-      }
-      const parsed = parseJson(data);
-      if (!isRecord(parsed)) {
-        streamError = new ModelError({
-          status: 500,
-          message: appendModelErrorIdentifiers(
-            "OpenRouter stream emitted invalid JSON",
-            identifiers
-          ),
-          ...identifiers,
-        });
-        return;
-      }
-      const eventResponse = parsed["response"];
-      const eventId =
-        isRecord(eventResponse) && typeof eventResponse["id"] === "string"
-          ? eventResponse["id"]
-          : undefined;
-      if (eventId !== undefined) {
-        Object.assign(identifiers, { generationId: eventId });
-      }
-      onStreamEvent?.(parsed);
-      const type = parsed["type"];
-      if (type === "response.failed" || type === "error") {
-        streamError = new ModelError({
-          status: 500,
-          message: appendModelErrorIdentifiers(
-            `OpenRouter stream error: ${streamErrorMessage(parsed)}`,
-            identifiers
-          ),
-          ...identifiers,
-        });
-        return;
-      }
-      if (type === "response.completed" || type === "response.incomplete") {
-        terminalResponse = parsed["response"];
-      }
-    };
-    yield* response.stream.pipe(
-      runForEach((chunk) =>
-        sync(() => {
-          buffer += decoder.decode(chunk, { stream: true });
-          const frames = buffer.split(/\r?\n\r?\n/);
-          buffer = frames.pop() ?? "";
-          for (const frame of frames) {
-            parseFrame(frame);
-          }
-        })
-      ),
-      mapError(
-        (cause) =>
-          new ModelError({
-            status: 500,
-            message: appendModelErrorIdentifiers(
-              `OpenRouter stream error: ${String(cause)}`,
-              identifiers
-            ),
-            ...identifiers,
-          })
-      )
-    );
-    buffer += decoder.decode();
-    if (buffer.length > 0) {
-      parseFrame(buffer);
-    }
-    if (streamError !== undefined) {
-      return yield* fail(streamError);
-    }
-    if (terminalResponse === undefined) {
-      return yield* fail(
-        new ModelError({
-          status: 500,
-          message: appendModelErrorIdentifiers(
-            "OpenRouter stream ended without a terminal response",
-            identifiers
-          ),
-          ...identifiers,
-        })
-      );
-    }
-    return terminalResponse;
-  }).pipe(
-    mapError((cause) =>
-      cause instanceof ModelError
-        ? cause
-        : new ModelError({
-            status: 500,
-            message: appendModelErrorIdentifiers(
-              `OpenRouter stream error: ${String(cause)}`,
-              initialIdentifiers
-            ),
-            ...initialIdentifiers,
-          })
-    )
+function toWireRecord(
+  record: Readonly<Record<string, unknown>>
+): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(record).map(([key, value]) => [
+      snakeCase(key),
+      RAW_PAYLOAD_KEYS.has(key) ? value : toWireValue(value),
+    ])
   );
 }
 
-function streamErrorMessage(event: Record<string, unknown>): string {
-  const response = event["response"];
-  if (
-    isRecord(response) &&
-    isRecord(response["error"]) &&
-    typeof response["error"]["message"] === "string"
-  ) {
-    return response["error"]["message"];
+function toWireValue(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(toWireValue);
   }
-  return typeof event["message"] === "string"
-    ? event["message"]
-    : String(response ?? event);
+  return isRecord(value) ? toWireRecord(value) : value;
 }
 
-function parseJson(data: string): unknown {
-  try {
-    return JSON.parse(data);
-  } catch {
-    return null;
-  }
-}
-
-const ResponsesResultSchema = z.object({
-  id: z.string().nullish(),
-  output: z.array(z.record(z.string(), z.unknown())),
-  usage: z.record(z.string(), z.unknown()).nullish(),
-});
-
-function decodeResult(
-  raw: unknown,
-  startedAt: number,
-  identifiers: ModelErrorIdentifiers
-): Effect<ResponsesTurn, ModelError> {
-  const parseResult = parseSchema(ResponsesResultSchema, raw);
-  if (Either.isLeft(parseResult)) {
-    return fail(
-      new ModelError({
-        message: appendModelErrorIdentifiers(
-          `OpenRouter response failed validation: ${parseResult.left.message}`,
-          identifiers
-        ),
-        ...identifiers,
-      })
-    );
-  }
-  const outputItems = parseResult.right.output;
-  const usage = usageFromResponses(parseResult.right.usage ?? null);
+function toResponsesTurn(
+  result: ResponsesResult,
+  generationTimeMs: number
+): ResponsesTurn {
+  const outputItems = result.output.map(toWireRecord);
+  const usage = usageFromResponses(result.usage);
   const functionCalls = outputItems.flatMap((item) => {
+    const callId = item["call_id"];
     if (
       item["type"] !== "function_call" ||
-      typeof item["call_id"] !== "string" ||
+      typeof callId !== "string" ||
       typeof item["name"] !== "string" ||
       typeof item["arguments"] !== "string"
     ) {
@@ -450,38 +273,17 @@ function decodeResult(
     }
     return [
       {
-        callId: item["call_id"],
+        callId,
         name: item["name"],
         arguments: item["arguments"],
       },
     ];
   });
-  return recordGenerationId(parseResult.right.id).pipe(
-    flatMap(() =>
-      succeed({
-        outputItems,
-        functionCalls,
-        text: extractMessageText(outputItems),
-        ...(usage !== undefined && { usage }),
-        generationTimeMs: Math.round(performance.now() - startedAt),
-      })
-    )
-  );
-}
-
-function toModelError(cause: unknown): ModelError {
-  if (cause instanceof ModelError) {
-    return cause;
-  }
-  return new ModelError({
-    message: `OpenRouter request failed: ${String(cause)}`,
-  });
-}
-
-function parseRetryAfter(value: string | null): number | undefined {
-  if (value === null) {
-    return undefined;
-  }
-  const seconds = Number(value);
-  return Number.isFinite(seconds) && seconds >= 0 ? seconds * 1e3 : undefined;
+  return {
+    outputItems,
+    functionCalls,
+    text: extractMessageText(outputItems),
+    ...(usage !== undefined && { usage }),
+    generationTimeMs,
+  };
 }

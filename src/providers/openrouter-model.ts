@@ -37,6 +37,10 @@ import { parseSchema, z } from "../internal/zod";
 import { recordGenerationId } from "../runtime/generation-ids";
 import type { RetryConfig } from "../runtime/retry";
 import { rateLimitRetrySchedule } from "../runtime/retry";
+import {
+  buildAutoRouterPlugin,
+  toWireAutoRouterPlugin,
+} from "./auto-router-plugin";
 import type { ModelErrorIdentifiers } from "./request-identifiers";
 import {
   appendModelErrorIdentifiers,
@@ -89,32 +93,6 @@ export function makeOpenRouterModelLayer(
   );
 }
 
-function buildAutoRouterPlugin(
-  baseModel: string,
-  genConfig: GenerateConfig
-):
-  | {
-      id: "auto-router" | "auto-beta-router";
-      cost_tier?: GenerateConfig["costTier"];
-      cost_quality_tradeoff?: number;
-      pin_model?: boolean;
-    }
-  | undefined {
-  const hasTier = genConfig.costTier !== undefined;
-  const hasCost = genConfig.costQualityTradeoff !== undefined;
-  const hasPin = genConfig.pinModel === true;
-  if (!hasTier && !hasCost && !hasPin) {
-    return undefined;
-  }
-  return {
-    id:
-      baseModel === "openrouter/auto-beta" ? "auto-beta-router" : "auto-router",
-    ...(hasTier && { cost_tier: genConfig.costTier }),
-    ...(hasCost && { cost_quality_tradeoff: genConfig.costQualityTradeoff }),
-    ...(hasPin && { pin_model: true }),
-  };
-}
-
 interface GenerateOpts {
   readonly model: string;
   readonly messages: readonly ChatMessage[];
@@ -151,11 +129,11 @@ export function generate(
   const hasTimeout =
     genConfig.timeoutMs !== undefined && genConfig.timeoutMs > 0;
   const baseModel = stripVariantSuffix(model);
-  const isAutoRouter =
-    baseModel === "openrouter/auto" || baseModel === "openrouter/auto-beta";
-  const autoRouterPlugin = isAutoRouter
-    ? buildAutoRouterPlugin(baseModel, genConfig)
-    : undefined;
+  const autoRouterPlugin = buildAutoRouterPlugin(baseModel, genConfig);
+  const wireAutoRouterPlugin =
+    autoRouterPlugin === undefined
+      ? undefined
+      : toWireAutoRouterPlugin(autoRouterPlugin);
   return gen(function* () {
     const startedAt = performance.now();
     const body = {
@@ -175,7 +153,9 @@ export function generate(
         reasoning_effort: genConfig.reasoningEffort,
       }),
       ...(sendSort && { provider: { sort: genConfig.sort } }),
-      ...(autoRouterPlugin !== undefined && { plugins: [autoRouterPlugin] }),
+      ...(wireAutoRouterPlugin !== undefined && {
+        plugins: [wireAutoRouterPlugin],
+      }),
       ...genConfig.extraBody,
     };
     const request = HttpClientRequest.post(
