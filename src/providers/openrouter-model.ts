@@ -408,7 +408,10 @@ function decodeResult(
   startedAt: number,
   identifiers: ResponseIdentifiers
 ): Effect<ModelOutput, ModelError> {
-  const parseResult = parseSchema(ChatResult$inboundSchema, raw);
+  const parseResult = parseSchema(
+    ChatResult$inboundSchema,
+    normalizeResultForSchema(raw)
+  );
   if (Either.isLeft(parseResult)) {
     return fail(
       new ModelError({
@@ -460,6 +463,18 @@ function decodeResult(
       })
     )
   );
+}
+
+function normalizeResultForSchema(raw: unknown): unknown {
+  if (!isRecord(raw)) {
+    return raw;
+  }
+  return {
+    ...raw,
+    ...(!("system_fingerprint" in raw) && { system_fingerprint: null }),
+    ...(!("created" in raw) && { created: 0 }),
+    ...(!("object" in raw) && { object: "chat.completion" }),
+  };
 }
 
 function extractReasoningDetails(raw: unknown): ReasoningDetails | undefined {
