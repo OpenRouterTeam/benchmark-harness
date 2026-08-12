@@ -199,6 +199,63 @@ describe("parseTraceEvents (claude-code stream-json)", () => {
     ]);
     expect(resourceUsageFromEvents(events).mcpToolCalls).toBe(1);
   });
+
+  it("marks tool events errored from tool_result blocks in user events", () => {
+    const stream = [
+      JSON.stringify({
+        type: "assistant",
+        message: {
+          content: [
+            {
+              type: "tool_use",
+              id: "toolu_ok",
+              name: "Bash",
+              input: { command: "bun run start" },
+            },
+            {
+              type: "tool_use",
+              id: "toolu_bad",
+              name: "Bash",
+              input: { command: "bun run test" },
+            },
+          ],
+        },
+      }),
+      JSON.stringify({
+        type: "user",
+        message: {
+          content: [
+            { type: "tool_result", tool_use_id: "toolu_ok", content: "done" },
+            {
+              type: "tool_result",
+              tool_use_id: "toolu_bad",
+              is_error: true,
+              content: [{ type: "text", text: "command failed: exit 1" }],
+            },
+            { type: "tool_result", tool_use_id: "toolu_unknown" },
+          ],
+        },
+      }),
+    ].join("\n");
+    const events = parseTraceEvents(stream);
+    expect(events).toEqual([
+      {
+        kind: "tool",
+        tool: "Bash",
+        input: JSON.stringify({ command: "bun run start" }),
+        outputPreview: "done",
+        errored: false,
+      },
+      {
+        kind: "tool",
+        tool: "Bash",
+        input: JSON.stringify({ command: "bun run test" }),
+        outputPreview: "command failed: exit 1",
+        errored: true,
+      },
+    ]);
+    expect(frictionFromEvents(events).erroredToolCalls).toBe(1);
+  });
 });
 
 describe("parseSubchecks", () => {

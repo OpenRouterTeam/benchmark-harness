@@ -142,6 +142,7 @@ export function resourceUsageFromMessages(
 
 export function parseTraceEvents(eventStream: string): TraceEvent[] {
   const events: TraceEvent[] = [];
+  const toolEventIndexById = new Map<string, number>();
   for (const line of eventStream.split("\n")) {
     const trimmed = line.trim();
     if (trimmed === "") {
@@ -176,17 +177,31 @@ export function parseTraceEvents(eventStream: string): TraceEvent[] {
           state["status"] === "error" || typeof state["error"] === "string",
       });
     } else if (event["type"] === "assistant") {
-      events.push(...claudeContentBlockEvents(event["message"]));
+      for (const { traceEvent, toolUseId } of claudeContentBlockEvents(
+        event["message"]
+      )) {
+        if (toolUseId !== undefined) {
+          toolEventIndexById.set(toolUseId, events.length);
+        }
+        events.push(traceEvent);
+      }
+    } else if (event["type"] === "user") {
+      applyClaudeToolResults(event["message"], events, toolEventIndexById);
     }
   }
   return events;
 }
 
-function claudeContentBlockEvents(message: unknown): TraceEvent[] {
+interface ClaudeBlockEvent {
+  readonly traceEvent: TraceEvent;
+  readonly toolUseId?: string;
+}
+
+function claudeContentBlockEvents(message: unknown): ClaudeBlockEvent[] {
   if (!isRecord(message) || !Array.isArray(message["content"])) {
     return [];
   }
-  const events: TraceEvent[] = [];
+  const events: ClaudeBlockEvent[] = [];
   for (const block of message["content"]) {
     if (!isRecord(block)) {
       continue;
@@ -196,23 +211,77 @@ function claudeContentBlockEvents(message: unknown): TraceEvent[] {
       typeof block["text"] === "string" &&
       block["text"] !== ""
     ) {
-      events.push({ kind: "text", text: block["text"] });
+      events.push({ traceEvent: { kind: "text", text: block["text"] } });
     } else if (
       block["type"] === "thinking" &&
       typeof block["thinking"] === "string" &&
       block["thinking"] !== ""
     ) {
-      events.push({ kind: "reasoning", text: block["thinking"] });
+      events.push({
+        traceEvent: { kind: "reasoning", text: block["thinking"] },
+      });
     } else if (block["type"] === "tool_use") {
       events.push({
-        kind: "tool",
-        tool: typeof block["name"] === "string" ? block["name"] : "unknown",
-        input: JSON.stringify(block["input"] ?? {}),
-        outputPreview: "",
+        traceEvent: {
+          kind: "tool",
+          tool: typeof block["name"] === "string" ? block["name"] : "unknown",
+          input: JSON.stringify(block["input"] ?? {}),
+          outputPreview: "",
+        },
+        ...(typeof block["id"] === "string" && { toolUseId: block["id"] }),
       });
     }
   }
   return events;
+}
+
+function applyClaudeToolResults(
+  message: unknown,
+  events: TraceEvent[],
+  toolEventIndexById: ReadonlyMap<string, number>
+): void {
+  if (!isRecord(message) || !Array.isArray(message["content"])) {
+    return;
+  }
+  for (const block of message["content"]) {
+    if (
+      !isRecord(block) ||
+      block["type"] !== "tool_result" ||
+      typeof block["tool_use_id"] !== "string"
+    ) {
+      continue;
+    }
+    const index = toolEventIndexById.get(block["tool_use_id"]);
+    const existing = index === undefined ? undefined : events[index];
+    if (index === undefined || existing?.kind !== "tool") {
+      continue;
+    }
+    events[index] = {
+      ...existing,
+      errored: block["is_error"] === true,
+      outputPreview:
+        existing.outputPreview === ""
+          ? claudeToolResultPreview(block["content"])
+          : existing.outputPreview,
+    };
+  }
+}
+
+function claudeToolResultPreview(content: unknown): string {
+  if (typeof content === "string") {
+    return content.slice(0, 400);
+  }
+  if (!Array.isArray(content)) {
+    return "";
+  }
+  const text = content
+    .filter(
+      (block): block is Record<string, unknown> =>
+        isRecord(block) && typeof block["text"] === "string"
+    )
+    .map((block) => block["text"])
+    .join("\n");
+  return text.slice(0, 400);
 }
 
 export function tracesFromResultRows(

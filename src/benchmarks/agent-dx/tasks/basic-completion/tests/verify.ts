@@ -61,7 +61,49 @@ async function fetchGeneration(id: string): Promise<GenerationRecord> {
       "platform"
     );
   }
+  if (lastError === "HTTP 404" && (await controlGenerationRetrievable())) {
+    fail(
+      `generation ${id} not found while a fresh control generation on the same key was retrievable — the id does not correspond to a real request`
+    );
+  }
   fail(`generation ${id} not retrievable: ${lastError}`, "platform");
+}
+
+async function controlGenerationRetrievable(): Promise<boolean> {
+  const completion = await fetch(`${OPENROUTER_BASE}/api/v1/chat/completions`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: process.env["ADX_MODEL"] ?? "openrouter/auto",
+      messages: [{ role: "user", content: "Control probe. Reply with: ok" }],
+      max_tokens: 8,
+    }),
+  });
+  if (!completion.ok) {
+    await completion.body?.cancel();
+    return false;
+  }
+  const body = (await completion.json()) as { id?: string };
+  if (typeof body.id !== "string") {
+    return false;
+  }
+  const url = `${OPENROUTER_BASE}/api/v1/generation?id=${encodeURIComponent(body.id)}`;
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    const response = await fetch(url, {
+      headers: { Authorization: `Bearer ${API_KEY}` },
+    });
+    await response.body?.cancel();
+    if (response.ok) {
+      return true;
+    }
+    await new Promise((resolve) => {
+      setTimeout(resolve, 4000);
+    });
+  }
+  return false;
 }
 
 async function main(): Promise<void> {

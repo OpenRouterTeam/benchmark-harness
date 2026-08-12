@@ -54,7 +54,49 @@ const CANONICAL_FETCH_GENERATION = `async function fetchGeneration(id: string): 
       "platform"
     );
   }
+  if (lastError === "HTTP 404" && (await controlGenerationRetrievable())) {
+    fail(
+      \`generation \${id} not found while a fresh control generation on the same key was retrievable — the id does not correspond to a real request\`
+    );
+  }
   fail(\`generation \${id} not retrievable: \${lastError}\`, "platform");
+}`;
+
+const CANONICAL_CONTROL_PROBE = `async function controlGenerationRetrievable(): Promise<boolean> {
+  const completion = await fetch(\`\${OPENROUTER_BASE}/api/v1/chat/completions\`, {
+    method: "POST",
+    headers: {
+      Authorization: \`Bearer \${API_KEY}\`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: process.env["ADX_MODEL"] ?? "openrouter/auto",
+      messages: [{ role: "user", content: "Control probe. Reply with: ok" }],
+      max_tokens: 8,
+    }),
+  });
+  if (!completion.ok) {
+    await completion.body?.cancel();
+    return false;
+  }
+  const body = (await completion.json()) as { id?: string };
+  if (typeof body.id !== "string") {
+    return false;
+  }
+  const url = \`\${OPENROUTER_BASE}/api/v1/generation?id=\${encodeURIComponent(body.id)}\`;
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    const response = await fetch(url, {
+      headers: { Authorization: \`Bearer \${API_KEY}\` },
+    });
+    await response.body?.cancel();
+    if (response.ok) {
+      return true;
+    }
+    await new Promise((resolve) => {
+      setTimeout(resolve, 4000);
+    });
+  }
+  return false;
 }`;
 
 const FETCH_GENERATION_VARIANTS = ["usage-attribution"] as const;
@@ -114,6 +156,19 @@ describe("agent-dx verifier conformance", () => {
         extractBlock(source, "async function fetchGeneration("),
         taskId
       ).toBe(CANONICAL_FETCH_GENERATION);
+    }
+  });
+
+  test("every fetchGeneration copy carries the canonical 404 control probe", () => {
+    const defining = verifierSources().filter((v) =>
+      v.source.includes("async function fetchGeneration")
+    );
+    expect(defining.length).toBeGreaterThan(0);
+    for (const { taskId, source } of defining) {
+      expect(
+        extractBlock(source, "async function controlGenerationRetrievable("),
+        taskId
+      ).toBe(CANONICAL_CONTROL_PROBE);
     }
   });
 });
