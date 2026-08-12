@@ -61,6 +61,18 @@ describe("compareArms", () => {
     expect(onlyCandidate?.baselinePassRate).toBeUndefined();
   });
 
+  it("reports an arm with no scored trials as unmeasured, not 0%", () => {
+    const comparison = compareArms(
+      arm("docs", []),
+      arm("skills", [{ taskId: "t", epoch: 0, passed: true }])
+    );
+    expect(comparison.baselinePassRate).toBeUndefined();
+    expect(comparison.passRateDelta).toBeUndefined();
+    expect(formatArmComparison(comparison)).toContain(
+      "| **all tasks** | n/a | 100% | n/a |"
+    );
+  });
+
   it("computes token and cost deltas from run totals", () => {
     const baseline = arm("docs", [], { totalTokens: 1000, totalCost: 0.5 });
     const candidate = arm("skills", [], { totalTokens: 800, totalCost: 0.3 });

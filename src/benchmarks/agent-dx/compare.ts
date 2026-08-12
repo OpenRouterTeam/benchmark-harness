@@ -35,9 +35,9 @@ export interface ArmComparison {
   readonly baselineLabel: string;
   readonly candidateLabel: string;
   readonly tasks: readonly TaskComparison[];
-  readonly baselinePassRate: number;
-  readonly candidatePassRate: number;
-  readonly passRateDelta: number;
+  readonly baselinePassRate: number | undefined;
+  readonly candidatePassRate: number | undefined;
+  readonly passRateDelta: number | undefined;
   readonly baselineQuality: number | undefined;
   readonly candidateQuality: number | undefined;
   readonly baselineSubcheckScore: number | undefined;
@@ -108,9 +108,8 @@ export function compareArms(
     };
   });
 
-  const baselinePassRate = passRate(baseline.trials.map((t) => t.passed)) ?? 0;
-  const candidatePassRate =
-    passRate(candidate.trials.map((t) => t.passed)) ?? 0;
+  const baselinePassRate = passRate(baseline.trials.map((t) => t.passed));
+  const candidatePassRate = passRate(candidate.trials.map((t) => t.passed));
 
   return {
     baselineLabel: baseline.label,
@@ -118,7 +117,10 @@ export function compareArms(
     tasks,
     baselinePassRate,
     candidatePassRate,
-    passRateDelta: candidatePassRate - baselinePassRate,
+    passRateDelta:
+      baselinePassRate !== undefined && candidatePassRate !== undefined
+        ? candidatePassRate - baselinePassRate
+        : undefined,
     baselineQuality: meanQuality(baseline.trials),
     candidateQuality: meanQuality(candidate.trials),
     baselineSubcheckScore: meanSubcheckScore(baseline.trials),
