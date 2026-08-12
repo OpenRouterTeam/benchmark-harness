@@ -4,6 +4,7 @@ import type { BenchmarkResultRow } from "../../results/parquet-schema";
 import {
   agentEventStreamFromMessages,
   formatTrialTrace,
+  frictionFromEvents,
   parseSubchecks,
   parseTraceEvents,
   resourceUsageFromEvents,
@@ -96,14 +97,69 @@ describe("parseTraceEvents", () => {
           path: "/opt/openrouter-docs",
         }),
         outputPreview: "Found 100 matches",
+        errored: false,
       },
       {
         kind: "tool",
         tool: "webfetch",
         input: JSON.stringify({ url: "https://openrouter.ai/docs" }),
         outputPreview: "docs",
+        errored: false,
       },
     ]);
+  });
+});
+
+describe("frictionFromEvents", () => {
+  const tool = (
+    name: string,
+    input: Record<string, string> = {},
+    errored = false
+  ) =>
+    ({
+      kind: "tool",
+      tool: name,
+      input: JSON.stringify(input),
+      outputPreview: "",
+      errored,
+    }) as const;
+
+  it("counts tool calls, errored calls, and app-run retries", () => {
+    const friction = frictionFromEvents([
+      { kind: "text", text: "thinking" },
+      tool("bash", { command: "npm install" }),
+      tool("bash", { command: "npm start" }, true),
+      tool("edit", { filePath: "/app/src/index.ts" }),
+      tool("bash", { command: "npm start" }),
+      tool("bash", { command: "npx tsc --noEmit" }),
+    ]);
+    expect(friction).toEqual({
+      toolCalls: 5,
+      erroredToolCalls: 1,
+      appRunRetries: 2,
+    });
+  });
+
+  it("reports zero retries for a single app run and marks error states", () => {
+    const events = parseTraceEvents(
+      JSON.stringify({
+        type: "tool_use",
+        part: {
+          type: "tool",
+          tool: "bash",
+          state: {
+            status: "error",
+            input: { command: "npm start" },
+            output: "crashed",
+          },
+        },
+      })
+    );
+    expect(frictionFromEvents(events)).toEqual({
+      toolCalls: 1,
+      erroredToolCalls: 1,
+      appRunRetries: 0,
+    });
   });
 });
 

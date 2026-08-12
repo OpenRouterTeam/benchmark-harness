@@ -11,6 +11,7 @@ export type TraceEvent =
       readonly tool: string;
       readonly input: string;
       readonly outputPreview: string;
+      readonly errored?: boolean;
     };
 
 export type Subchecks = Readonly<Record<string, boolean>>;
@@ -22,6 +23,12 @@ export interface ResourceUsage {
   readonly webFetches: number;
 }
 
+export interface FrictionDiagnostics {
+  readonly toolCalls: number;
+  readonly erroredToolCalls: number;
+  readonly appRunRetries: number;
+}
+
 export interface TrialTrace {
   readonly taskId: string;
   readonly epoch: number;
@@ -29,6 +36,7 @@ export interface TrialTrace {
   readonly events: readonly TraceEvent[];
   readonly subchecks: Subchecks;
   readonly resourceUsage: ResourceUsage;
+  readonly friction: FrictionDiagnostics;
   readonly verifierOutput: string;
 }
 
@@ -80,6 +88,32 @@ export function resourceUsageFromEvents(
     }
   }
   return { mcpToolCalls, skillInvocations, docsReads, webFetches };
+}
+
+const APP_RUN_PATTERN =
+  /\b(?:npm|bun|pnpm|yarn)\s+(?:run\s+\S+|start|test)\b|\bnode\s+\S|\btsc\b/;
+
+export function frictionFromEvents(
+  events: readonly TraceEvent[]
+): FrictionDiagnostics {
+  const toolEvents = events.filter((event) => event.kind === "tool");
+  const appRuns = toolEvents.filter(
+    (event) => SHELL_TOOLS.has(event.tool) && APP_RUN_PATTERN.test(event.input)
+  ).length;
+  return {
+    toolCalls: toolEvents.length,
+    erroredToolCalls: toolEvents.filter((event) => event.errored === true)
+      .length,
+    appRunRetries: Math.max(0, appRuns - 1),
+  };
+}
+
+export function frictionFromMessages(
+  messages: string | null
+): FrictionDiagnostics {
+  return frictionFromEvents(
+    parseTraceEvents(agentEventStreamFromMessages(messages))
+  );
 }
 
 export function agentEventStreamFromMessages(messages: string | null): string {
@@ -138,6 +172,8 @@ export function parseTraceEvents(eventStream: string): TraceEvent[] {
           typeof state["output"] === "string"
             ? state["output"].slice(0, 400)
             : "",
+        errored:
+          state["status"] === "error" || typeof state["error"] === "string",
       });
     } else if (event["type"] === "assistant") {
       events.push(...claudeContentBlockEvents(event["message"]));
@@ -192,6 +228,7 @@ export function tracesFromResultRows(
       events,
       subchecks: parseSubchecks(verifierOutput),
       resourceUsage: resourceUsageFromEvents(events),
+      friction: frictionFromEvents(events),
       verifierOutput,
     };
   });
@@ -212,6 +249,10 @@ export function formatTrialTrace(trace: TrialTrace): string {
   const usage = trace.resourceUsage;
   lines.push(
     `resources: mcp=${usage.mcpToolCalls} skills=${usage.skillInvocations} docs=${usage.docsReads} webfetch=${usage.webFetches}`
+  );
+  const friction = trace.friction;
+  lines.push(
+    `friction: tools=${friction.toolCalls} errored=${friction.erroredToolCalls} reruns=${friction.appRunRetries}`
   );
   lines.push("");
   for (const [index, event] of trace.events.entries()) {

@@ -7,9 +7,10 @@ import {
   runTotalsFromResultRows,
   verdictKindFromMetadata,
 } from "./result-row-metrics";
-import type { ResourceUsage } from "./trace";
+import type { FrictionDiagnostics, ResourceUsage } from "./trace";
 import {
   agentEventStreamFromMessages,
+  frictionFromEvents,
   parseTraceEvents,
   resourceUsageFromEvents,
 } from "./trace";
@@ -42,6 +43,7 @@ export interface AxTrial {
   readonly quality?: number;
   readonly subcheckScore?: number;
   readonly resources: ResourceUsage;
+  readonly friction: FrictionDiagnostics;
   readonly diagnostics?: RowDiagnostics;
   readonly failureDetail?: string;
 }
@@ -67,6 +69,7 @@ export interface AxCellScore {
 
 export interface AxRoutingSummary {
   readonly totals: ResourceUsage;
+  readonly friction: FrictionDiagnostics;
   readonly activation: {
     readonly mcp: number;
     readonly skills: number;
@@ -133,15 +136,15 @@ export function axTrialsFromResultRows(
     const { quality, subcheckScore } = qualityFromMetadata(row.metadata);
     const diagnostics = diagnosticsFromMetadata(row.metadata);
     const category = categorizeTrial(row);
+    const events = parseTraceEvents(agentEventStreamFromMessages(row.messages));
     return {
       taskId: row.sample_id,
       epoch: row.epoch,
       category,
       ...(quality !== undefined && { quality }),
       ...(subcheckScore !== undefined && { subcheckScore }),
-      resources: resourceUsageFromEvents(
-        parseTraceEvents(agentEventStreamFromMessages(row.messages))
-      ),
+      resources: resourceUsageFromEvents(events),
+      friction: frictionFromEvents(events),
       ...(Object.keys(diagnostics).length > 0 && { diagnostics }),
       ...(category !== "pass" &&
         row.explanation !== null && { failureDetail: row.explanation }),
@@ -269,6 +272,11 @@ export function routingSummary(trials: readonly AxTrial[]): AxRoutingSummary {
     docsReads: 0,
     webFetches: 0,
   };
+  let friction: FrictionDiagnostics = {
+    toolCalls: 0,
+    erroredToolCalls: 0,
+    appRunRetries: 0,
+  };
   for (const trial of trials) {
     totals = {
       mcpToolCalls: totals.mcpToolCalls + trial.resources.mcpToolCalls,
@@ -276,6 +284,12 @@ export function routingSummary(trials: readonly AxTrial[]): AxRoutingSummary {
         totals.skillInvocations + trial.resources.skillInvocations,
       docsReads: totals.docsReads + trial.resources.docsReads,
       webFetches: totals.webFetches + trial.resources.webFetches,
+    };
+    friction = {
+      toolCalls: friction.toolCalls + trial.friction.toolCalls,
+      erroredToolCalls:
+        friction.erroredToolCalls + trial.friction.erroredToolCalls,
+      appRunRetries: friction.appRunRetries + trial.friction.appRunRetries,
     };
   }
   const liveSourceTrials = trials.filter((trial) =>
@@ -290,6 +304,7 @@ export function routingSummary(trials: readonly AxTrial[]): AxRoutingSummary {
   };
   return {
     totals,
+    friction,
     activation,
     liveSourceTrials,
     memoryOnlyTrials: trials.length - liveSourceTrials,

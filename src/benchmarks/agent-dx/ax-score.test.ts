@@ -57,6 +57,7 @@ function trial(overrides: Partial<AxTrial>): AxTrial {
       docsReads: 0,
       webFetches: 0,
     },
+    friction: { toolCalls: 0, erroredToolCalls: 0, appRunRetries: 0 },
     ...overrides,
   };
 }
@@ -540,6 +541,11 @@ describe("routingSummary", () => {
     ]);
     expect(summary.totals.mcpToolCalls).toBe(3);
     expect(summary.totals.webFetches).toBe(2);
+    expect(summary.friction).toEqual({
+      toolCalls: 0,
+      erroredToolCalls: 0,
+      appRunRetries: 0,
+    });
     expect(summary.liveSourceTrials).toBe(2);
     expect(summary.memoryOnlyTrials).toBe(1);
     expect(summary.trialCount).toBe(3);
