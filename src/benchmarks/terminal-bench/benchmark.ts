@@ -16,6 +16,9 @@ import { TERMINAL_BENCH_META } from "../benchmark-meta";
 import type { Benchmark, BenchmarkRunInput } from "../types";
 import { makeTerminalBenchDatasetLayer } from "./dataset";
 import { makeModalSandboxLayer } from "./modal-sandbox";
+import { getOriHarness } from "./ori-harness";
+import type { OriSolverOpts } from "./ori-solver";
+import { oriSolver } from "./ori-solver";
 import { SandboxSession } from "./sandbox";
 import { terminalBenchScorer } from "./scorer";
 import type { TerminalBenchSolverOpts } from "./solver";
@@ -44,7 +47,44 @@ function makeTerminalBenchLayer(
     ...(benchmarkConfig.appendSystemPrompt !== undefined && {
       appendSystemPrompt: benchmarkConfig.appendSystemPrompt,
     }),
+    ...(benchmarkConfig.systemPrompt !== undefined && {
+      systemPrompt: benchmarkConfig.systemPrompt,
+    }),
+    ...(benchmarkConfig.allowedTools !== undefined && {
+      allowedTools: benchmarkConfig.allowedTools,
+    }),
+    ...(benchmarkConfig.disallowedTools !== undefined && {
+      disallowedTools: benchmarkConfig.disallowedTools,
+    }),
+    isolateAgentConfig: benchmarkConfig.isolateAgentConfig,
   };
+  const oriSolverOpts: OriSolverOpts = {
+    model: benchmarkConfig.model,
+    apiKey: input.apiKey,
+    sessionId: input.sessionId,
+    ...(benchmarkConfig.endpointId !== undefined && {
+      endpointId: benchmarkConfig.endpointId,
+    }),
+    ...(benchmarkConfig.agentPackage !== undefined && {
+      agentPackage: benchmarkConfig.agentPackage,
+    }),
+    oriInstallUrl: benchmarkConfig.oriInstallUrl,
+    ...(benchmarkConfig.appendSystemPrompt !== undefined && {
+      appendSystemPrompt: benchmarkConfig.appendSystemPrompt,
+    }),
+    ...(benchmarkConfig.systemPrompt !== undefined && {
+      systemPrompt: benchmarkConfig.systemPrompt,
+    }),
+    effort: benchmarkConfig.effort,
+    ...(benchmarkConfig.allowedTools !== undefined && {
+      allowedTools: benchmarkConfig.allowedTools,
+    }),
+    ...(benchmarkConfig.disallowedTools !== undefined && {
+      disallowedTools: benchmarkConfig.disallowedTools,
+    }),
+    isolateAgentConfig: benchmarkConfig.isolateAgentConfig,
+  };
+  const { agent } = benchmarkConfig;
   const datasetLayer = makeTerminalBenchDatasetLayer({
     ...(benchmarkConfig.taskSubset !== undefined && {
       taskSubset: benchmarkConfig.taskSubset,
@@ -59,7 +99,11 @@ function makeTerminalBenchLayer(
   const solverLayer = layerEffect(Solver)(
     gen(function* () {
       const sessionFactory = yield* SandboxSession;
-      return Solver.of(piSolver(sessionFactory, solverOpts));
+      return Solver.of(
+        agent === "pi"
+          ? piSolver(sessionFactory, solverOpts)
+          : oriSolver(sessionFactory, oriSolverOpts, getOriHarness(agent))
+      );
     })
   );
   const scorerLayer = layerSucceed(Scorer, Scorer.of(terminalBenchScorer));

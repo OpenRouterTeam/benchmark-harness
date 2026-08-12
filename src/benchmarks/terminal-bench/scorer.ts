@@ -28,6 +28,9 @@ export const terminalBenchScorer: ScorerService = (
     value: reward >= 1 ? ScoreValue.Correct : ScoreValue.Incorrect,
     answer: target.text,
     explanation: testOutput ?? "",
+    ...(testOutput !== undefined && {
+      trajectory: { kind: "verifier_log", log: testOutput } as const,
+    }),
   };
   return succeed(score);
 };

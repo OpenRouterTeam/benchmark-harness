@@ -1,12 +1,14 @@
 import { join } from "node:path";
 
-import { gen, tryPromise } from "effect/Effect";
+import { currentTimeMillis } from "effect/Clock";
+import { forEach, gen, tryPromise } from "effect/Effect";
 
-import type { ChatMessage, ModelUsage } from "../../harness/core";
+import type { ChatMessage, ModelUsage, ResponseItem } from "../../harness/core";
 import { MessageRole, SolverError } from "../../harness/core";
 import type { SolverService } from "../../harness/solver";
 import { Either } from "../../internal/either";
 import { isRecord } from "../../internal/guards";
+import { recordGenerationId } from "../../runtime/generation-ids";
 import { readTerminalBenchMeta } from "./dataset";
 import { buildPiModelsJson } from "./pi-custom-models";
 import type { SandboxSessionFactory } from "./sandbox";
@@ -22,6 +24,10 @@ export interface TerminalBenchSolverOpts {
   readonly thinking?: PiThinkingLevel;
   readonly piPackage?: string;
   readonly appendSystemPrompt?: string;
+  readonly systemPrompt?: string;
+  readonly allowedTools?: readonly string[];
+  readonly disallowedTools?: readonly string[];
+  readonly isolateAgentConfig?: boolean;
 }
 
 const NODE_VERSION = "22" as const;
@@ -39,6 +45,10 @@ export function piSolver(
   const piPackage = opts.piPackage ?? DEFAULT_PI_PACKAGE;
   const [provider, modelId] = parseModel(opts.model);
   const piModelsJson = buildPiModelsJson(provider, modelId, opts.sessionId);
+  const allowedTools = opts.allowedTools ?? [];
+  const disallowedTools = opts.disallowedTools ?? [];
+  const hasAllowedTools = allowedTools.length > 0;
+  const hasDisallowedTools = disallowedTools.length > 0;
   return (state) =>
     gen(function* () {
       const meta = readTerminalBenchMeta(state.sample.metadata);
@@ -80,26 +90,52 @@ export function piSolver(
         if (opts.appendSystemPrompt !== undefined) {
           piEnv["TB_APPEND_SYSTEM_PROMPT"] = opts.appendSystemPrompt;
         }
+        if (opts.systemPrompt !== undefined) {
+          piEnv["TB_SYSTEM_PROMPT"] = opts.systemPrompt;
+        }
+        if (hasAllowedTools) {
+          piEnv["TB_ALLOWED_TOOLS"] = allowedTools.join(",");
+        }
+        if (hasDisallowedTools) {
+          piEnv["TB_DISALLOWED_TOOLS"] = disallowedTools.join(",");
+        }
         if (piModelsJson !== undefined) {
           piEnv["TB_PI_MODELS_JSON"] = piModelsJson;
         }
+        const startedAt = yield* currentTimeMillis;
         const piRun = yield* session.exec(
           [
             "bash",
             "-c",
-            buildPiRunScript(
+            buildPiRunScript({
               thinking,
-              opts.appendSystemPrompt !== undefined,
-              piModelsJson !== undefined
-            ),
+              hasSystemPrompt: opts.systemPrompt !== undefined,
+              hasAppendSystemPrompt: opts.appendSystemPrompt !== undefined,
+              hasPiModelsJson: piModelsJson !== undefined,
+              hasAllowedTools,
+              hasDisallowedTools,
+              isolateAgentConfig: opts.isolateAgentConfig === true,
+            }),
           ],
           piEnv,
           meta.maxAgentTimeoutSec * 1000 + 30000
         );
+        const finishedAt = yield* currentTimeMillis;
         eventStream = piRun.stdout;
-        agentUsage = parseUsageFromEventStream(eventStream);
+        const piParse = parsePiEventStream(eventStream);
+        agentUsage = piParse.usage;
+        yield* forEach(piParse.generationIds, (id) => recordGenerationId(id), {
+          discard: true,
+        });
+        const failureReasons: string[] = [];
         if (piRun.exitCode !== 0) {
-          piExitDetail = `pi exited ${piRun.exitCode}. last output: ${eventStream.slice(-500)}`;
+          failureReasons.push(`exited ${piRun.exitCode}`);
+        }
+        if (piParse.apiErrors.length > 0) {
+          failureReasons.push(`api errors: ${piParse.apiErrors.join("; ")}`);
+        }
+        if (failureReasons.length > 0) {
+          piExitDetail = `pi ${failureReasons.join(", ")}. last output: ${eventStream.slice(-500)}`;
         }
         const testResult = yield* session.runTests();
         ({ reward } = testResult);
@@ -113,9 +149,20 @@ export function piSolver(
         return {
           sample: {
             ...state.sample,
-            metadata: { ...state.sample.metadata, reward, testOutput },
+            metadata: {
+              ...state.sample.metadata,
+              reward,
+              testOutput,
+              agent: "pi",
+              agentExitCode: piRun.exitCode,
+              agentIsError: piParse.apiErrors.length > 0,
+              generationIds: piParse.generationIds,
+              agentTurns: piParse.turns,
+              agentToolCalls: piParse.toolCalls,
+            },
           },
           messages,
+          responseItems: piParse.responseItems,
           output: {
             completion: eventStream,
             message: { role: MessageRole.Assistant, content: eventStream },
@@ -126,7 +173,7 @@ export function piSolver(
               reasoningTokens: 0,
               totalCost: 0,
             },
-            generationTimeMs: 0,
+            generationTimeMs: finishedAt - startedAt,
           },
           completed: true,
         };
@@ -161,14 +208,20 @@ export function parseModel(model: string): readonly [string, string] {
   return [provider, modelId] as const;
 }
 
-function buildPiRunScript(
-  thinking: PiThinkingLevel,
-  hasAppendSystemPrompt: boolean,
-  hasPiModelsJson: boolean
-): string {
+export interface PiRunScriptOptions {
+  readonly thinking: PiThinkingLevel;
+  readonly hasSystemPrompt: boolean;
+  readonly hasAppendSystemPrompt: boolean;
+  readonly hasPiModelsJson: boolean;
+  readonly hasAllowedTools: boolean;
+  readonly hasDisallowedTools: boolean;
+  readonly isolateAgentConfig: boolean;
+}
+
+function buildPiRunScript(options: PiRunScriptOptions): string {
   return [
     "set -euo pipefail",
-    ...(hasPiModelsJson
+    ...(options.hasPiModelsJson
       ? [
           "mkdir -p ~/.pi/agent",
           "printf '%s' \"$TB_PI_MODELS_JSON\" > ~/.pi/agent/models.json",
@@ -176,39 +229,91 @@ function buildPiRunScript(
       : []),
     "pi --print --mode json --no-session \\",
     '  --provider "$TB_PROVIDER" --model "$TB_MODEL" \\',
-    `  --thinking ${thinking} \\`,
-    ...(hasAppendSystemPrompt
+    `  --thinking ${options.thinking} \\`,
+    ...(options.hasSystemPrompt
+      ? ['  --system-prompt "$TB_SYSTEM_PROMPT" \\']
+      : []),
+    ...(options.hasAppendSystemPrompt
       ? ['  --append-system-prompt "$TB_APPEND_SYSTEM_PROMPT" \\']
+      : []),
+    ...(options.hasAllowedTools ? ['  --tools "$TB_ALLOWED_TOOLS" \\'] : []),
+    ...(options.hasDisallowedTools
+      ? ['  --exclude-tools "$TB_DISALLOWED_TOOLS" \\']
+      : []),
+    ...(options.isolateAgentConfig
+      ? [
+          "  --no-extensions \\",
+          "  --no-skills \\",
+          "  --no-prompt-templates \\",
+          "  --no-context-files \\",
+        ]
       : []),
     '  "$(cat /instruction.md)" \\',
     `  2>&1 </dev/null | grep -v '"type":"message_update"' | stdbuf -oL tee ${REMOTE_AGENT_LOG}`,
   ].join("\n");
 }
 
-function parseUsageFromEventStream(
-  eventStream: string
-): ModelUsage | undefined {
+export interface PiEventStreamParse {
+  readonly usage: ModelUsage | undefined;
+  readonly generationIds: readonly string[];
+  readonly apiErrors: readonly string[];
+  readonly turns: number;
+  readonly toolCalls: number;
+  readonly responseItems: readonly ResponseItem[];
+}
+
+export function parsePiEventStream(eventStream: string): PiEventStreamParse {
   let inputTokens = 0;
   let outputTokens = 0;
   let cacheRead = 0;
   let cacheWrite = 0;
+  let reasoningTokens = 0;
   let totalCost = 0;
+  let turns = 0;
+  let toolCalls = 0;
+  const generationIds: string[] = [];
+  const apiErrors: string[] = [];
+  const responseItems: ResponseItem[] = [];
   for (const line of eventStream.split("\n")) {
     const trimmed = line.trim();
     if (trimmed === "") {
       continue;
     }
     const parsed = Either.try(() => JSON.parse(trimmed));
-    if (
-      Either.isLeft(parsed) ||
-      !isRecord(parsed.right) ||
-      parsed.right["type"] !== "message_end"
-    ) {
+    if (Either.isLeft(parsed) || !isRecord(parsed.right)) {
       continue;
     }
-    const { message } = parsed.right;
+    const event = parsed.right;
+    responseItems.push(event);
+    const eventType = event["type"];
+    if (eventType === "turn_end") {
+      turns++;
+      continue;
+    }
+    if (eventType === "tool_execution_end") {
+      toolCalls++;
+      continue;
+    }
+    if (eventType !== "message_end") {
+      continue;
+    }
+    const { message } = event;
     if (!isRecord(message) || message["role"] !== "assistant") {
       continue;
+    }
+    const responseId = message["responseId"];
+    if (
+      typeof responseId === "string" &&
+      responseId.length > 0 &&
+      !generationIds.includes(responseId)
+    ) {
+      generationIds.push(responseId);
+    }
+    const errorMessage = message["errorMessage"];
+    if (typeof errorMessage === "string" && errorMessage.length > 0) {
+      apiErrors.push(errorMessage);
+    } else if (message["stopReason"] === "error") {
+      apiErrors.push("pi reported stopReason=error without an errorMessage");
     }
     const { usage } = message;
     if (!isRecord(usage)) {
@@ -220,24 +325,32 @@ function parseUsageFromEventStream(
       typeof usage["cacheRead"] === "number" ? usage["cacheRead"] : 0;
     cacheWrite +=
       typeof usage["cacheWrite"] === "number" ? usage["cacheWrite"] : 0;
+    reasoningTokens +=
+      typeof usage["reasoning"] === "number" ? usage["reasoning"] : 0;
     const { cost } = usage;
     if (isRecord(cost)) {
       totalCost += typeof cost["total"] === "number" ? cost["total"] : 0;
     }
   }
-  if (
-    inputTokens === 0 &&
-    outputTokens === 0 &&
-    cacheRead === 0 &&
-    cacheWrite === 0
-  ) {
-    return undefined;
-  }
+  const hasTokens =
+    inputTokens !== 0 ||
+    outputTokens !== 0 ||
+    cacheRead !== 0 ||
+    cacheWrite !== 0;
   return {
-    inputTokens: inputTokens + cacheRead + cacheWrite,
-    outputTokens,
-    totalTokens: inputTokens + outputTokens + cacheRead + cacheWrite,
-    reasoningTokens: 0,
-    totalCost,
+    usage: hasTokens
+      ? {
+          inputTokens: inputTokens + cacheRead + cacheWrite,
+          outputTokens,
+          totalTokens: inputTokens + outputTokens + cacheRead + cacheWrite,
+          reasoningTokens,
+          totalCost,
+        }
+      : undefined,
+    generationIds,
+    apiErrors,
+    turns,
+    toolCalls,
+    responseItems,
   };
 }

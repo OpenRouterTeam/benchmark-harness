@@ -16,8 +16,13 @@ import { SearchLaneConfigSchema } from "./search/core/config";
 import { DEFAULT_JUDGE_MODEL, DEFAULT_STEP_LIMIT } from "./swe-atlas/schema";
 import { BankingRetrievalConfigSchema } from "./tau3-bench-banking/retrieval-config";
 import {
+  CLAUDE_EFFORT_LEVELS,
+  DEFAULT_CLAUDE_EFFORT,
+  DEFAULT_ORI_INSTALL_URL,
   DEFAULT_PI_PACKAGE,
+  DEFAULT_TERMINAL_BENCH_AGENT,
   PI_THINKING_LEVELS,
+  TERMINAL_BENCH_AGENTS,
 } from "./terminal-bench/schema";
 import { WandrOptionsSchema } from "./wandr/schema";
 
@@ -135,6 +140,14 @@ export const TerminalBenchOptionsSchema = z.object({
   thinking: z.enum(PI_THINKING_LEVELS).default("medium"),
   piPackage: z.string().default(DEFAULT_PI_PACKAGE),
   appendSystemPrompt: z.string().optional(),
+  agent: z.enum(TERMINAL_BENCH_AGENTS).default(DEFAULT_TERMINAL_BENCH_AGENT),
+  agentPackage: z.string().optional(),
+  oriInstallUrl: z.string().default(DEFAULT_ORI_INSTALL_URL),
+  effort: z.enum(CLAUDE_EFFORT_LEVELS).default(DEFAULT_CLAUDE_EFFORT),
+  systemPrompt: z.string().optional(),
+  allowedTools: z.array(z.string()).optional(),
+  disallowedTools: z.array(z.string()).optional(),
+  isolateAgentConfig: z.boolean().default(false),
 });
 
 export const TerminalBenchConfigSchema = z.object({

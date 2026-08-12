@@ -18,6 +18,10 @@ import {
 import type { Sample, TaskState } from "../../harness/core";
 import { initialTaskState, ScoreValue } from "../../harness/core";
 import { Solver } from "../../harness/solver";
+import {
+  getCollectedGenerationIds,
+  resetGenerationIds,
+} from "../../runtime/generation-ids";
 import { readTerminalBenchMeta } from "./dataset";
 import { makeFakeSandboxLayer, SandboxSession } from "./sandbox";
 import { terminalBenchScorer } from "./scorer";
@@ -74,6 +78,49 @@ const PI_EVENT_STREAM = [
   }),
 ].join("\n");
 
+const PI_GENERATION_ID = "gen-1786486069-YL5yw4QMx5rf2VgScdIt";
+
+const PI_STREAM_WITH_RESPONSE_ID = [
+  JSON.stringify({
+    type: "message_end",
+    message: {
+      role: "assistant",
+      responseId: PI_GENERATION_ID,
+      model: "anthropic/claude-haiku-4.5",
+      provider: "openrouter",
+      stopReason: "stop",
+      errorMessage: null,
+      usage: {
+        input: 3761,
+        output: 44,
+        cacheRead: 0,
+        cacheWrite: 0,
+        reasoning: 31,
+        totalTokens: 3805,
+        cost: { total: 0.003981 },
+      },
+    },
+  }),
+].join("\n");
+
+const PI_STREAM_API_ERROR = JSON.stringify({
+  type: "message_end",
+  message: {
+    role: "assistant",
+    stopReason: "error",
+    errorMessage:
+      '400: {"message":"anthropic/bogus is not a valid model ID","code":400}',
+    content: [],
+    usage: {
+      input: 0,
+      output: 0,
+      cacheRead: 0,
+      cacheWrite: 0,
+      cost: { total: 0 },
+    },
+  },
+});
+
 const SOLVER_OPTS: TerminalBenchSolverOpts = {
   model: "openrouter/anthropic/claude-sonnet-4",
   apiKey: "sk-test",
@@ -114,6 +161,7 @@ describe("terminal-bench pi solver", () => {
     );
     expect(score.value).toBe(ScoreValue.Correct);
   });
+
   it("stashes reward=0 and scores Incorrect when tests fail", async () => {
     const layer = makeFakeSandboxLayer({
       reward: 0,
@@ -129,6 +177,186 @@ describe("terminal-bench pi solver", () => {
     );
     expect(score.value).toBe(ScoreValue.Incorrect);
   });
+
+  it("collects pi responseIds so the generation_ids column is populated", async () => {
+    const layer = makeFakeSandboxLayer({
+      reward: 1,
+      agentEventStream: PI_STREAM_WITH_RESPONSE_ID,
+      agentExitCode: 0,
+    });
+    const ids = await runPromise(
+      gen(function* () {
+        yield* resetGenerationIds;
+        const solver = yield* Solver;
+        yield* solver(sampleState());
+        return yield* getCollectedGenerationIds;
+      }).pipe(
+        provide(
+          layerMergeAll(
+            layerEffect(Solver)(
+              gen(function* () {
+                const sessionFactory = yield* SandboxSession;
+                return Solver.of(piSolver(sessionFactory, SOLVER_OPTS));
+              })
+            ).pipe(layerProvide(layer)),
+            noopProgressLayer,
+            noopCheckpointLayer
+          )
+        )
+      )
+    );
+    expect([...ids]).toEqual([PI_GENERATION_ID]);
+  });
+
+  it("parses pi reasoning tokens instead of reporting zero", async () => {
+    const layer = makeFakeSandboxLayer({
+      reward: 1,
+      agentEventStream: PI_STREAM_WITH_RESPONSE_ID,
+      agentExitCode: 0,
+    });
+    const finalState = await runPiSolver(layer);
+    expect(finalState.output?.usage?.reasoningTokens).toBe(31);
+    expect(finalState.output?.usage?.totalCost).toBe(0.003981);
+  });
+
+  it("surfaces a pi api error that would otherwise look like a zero-cost run", async () => {
+    const layer = makeFakeSandboxLayer({
+      reward: 0,
+      testOutput: "1 failed",
+      agentEventStream: PI_STREAM_API_ERROR,
+      agentExitCode: 0,
+    });
+    const finalState = await runPiSolver(layer);
+    const meta = readTerminalBenchMeta(finalState.sample.metadata);
+    expect(meta?.testOutput).toContain("api errors");
+    expect(meta?.testOutput).toContain("is not a valid model ID");
+    expect(finalState.sample.metadata?.["agentIsError"]).toBe(true);
+  });
+
+  it("counts pi turns and tool calls from the event stream", async () => {
+    const stream = [
+      JSON.stringify({ type: "turn_start" }),
+      JSON.stringify({ type: "tool_execution_start" }),
+      JSON.stringify({ type: "tool_execution_end" }),
+      JSON.stringify({ type: "tool_execution_end" }),
+      JSON.stringify({ type: "turn_end" }),
+      JSON.stringify({ type: "turn_end" }),
+      PI_STREAM_WITH_RESPONSE_ID,
+    ].join("\n");
+    const layer = makeFakeSandboxLayer({
+      reward: 1,
+      agentEventStream: stream,
+      agentExitCode: 0,
+    });
+    const finalState = await runPiSolver(layer);
+    expect(finalState.sample.metadata?.["agentTurns"]).toBe(2);
+    expect(finalState.sample.metadata?.["agentToolCalls"]).toBe(2);
+  });
+
+  it("keeps pi stream events as responseItems", async () => {
+    const layer = makeFakeSandboxLayer({
+      reward: 1,
+      agentEventStream: PI_STREAM_WITH_RESPONSE_ID,
+      agentExitCode: 0,
+    });
+    const finalState = await runPiSolver(layer);
+    expect(finalState.responseItems).toHaveLength(1);
+    expect(finalState.responseItems?.[0]?.["type"]).toBe("message_end");
+  });
+
+  it("measures a wall-clock generationTimeMs for pi", async () => {
+    const layer = makeFakeSandboxLayer({
+      reward: 1,
+      agentEventStream: PI_STREAM_WITH_RESPONSE_ID,
+      agentExitCode: 0,
+    });
+    const finalState = await runPiSolver(layer);
+    const elapsed = finalState.output?.generationTimeMs;
+    expect(typeof elapsed).toBe("number");
+    expect(elapsed).toBeGreaterThanOrEqual(0);
+  });
+
+  it("passes a pi system prompt override and tool lists through the environment", async () => {
+    const execCalls: NonNullable<
+      Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]
+    > = [];
+    const layer = makeFakeSandboxLayer({
+      reward: 1,
+      execCalls,
+      agentExitCode: 0,
+    });
+    await runPiSolver(layer, {
+      ...SOLVER_OPTS,
+      systemPrompt: "You are terse.",
+      allowedTools: ["bash", "edit"],
+      disallowedTools: ["write"],
+    });
+    const piCall = execCalls[0];
+    if (piCall === undefined) {
+      throw new Error("fake sandbox did not capture the pi invocation");
+    }
+    expect(piCall.env["TB_SYSTEM_PROMPT"]).toBe("You are terse.");
+    expect(piCall.env["TB_ALLOWED_TOOLS"]).toBe("bash,edit");
+    expect(piCall.env["TB_DISALLOWED_TOOLS"]).toBe("write");
+    expect(piCall.argv[2]).toContain('--system-prompt "$TB_SYSTEM_PROMPT"');
+    expect(piCall.argv[2]).toContain('--tools "$TB_ALLOWED_TOOLS"');
+    expect(piCall.argv[2]).toContain('--exclude-tools "$TB_DISALLOWED_TOOLS"');
+  });
+
+  it("applies pi config isolation flags only when requested", async () => {
+    const withoutCalls: NonNullable<
+      Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]
+    > = [];
+    await runPiSolver(
+      makeFakeSandboxLayer({
+        reward: 1,
+        execCalls: withoutCalls,
+        agentExitCode: 0,
+      })
+    );
+    expect(withoutCalls[0]?.argv[2]).not.toContain("--no-context-files");
+    const withCalls: NonNullable<
+      Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]
+    > = [];
+    await runPiSolver(
+      makeFakeSandboxLayer({
+        reward: 1,
+        execCalls: withCalls,
+        agentExitCode: 0,
+      }),
+      { ...SOLVER_OPTS, isolateAgentConfig: true }
+    );
+    const script = withCalls[0]?.argv[2] ?? "";
+    expect(script).toContain("--no-extensions");
+    expect(script).toContain("--no-skills");
+    expect(script).toContain("--no-prompt-templates");
+    expect(script).toContain("--no-context-files");
+  });
+
+  it("supports the max thinking level", async () => {
+    const execCalls: NonNullable<
+      Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]
+    > = [];
+    const layer = makeFakeSandboxLayer({
+      reward: 1,
+      execCalls,
+      agentExitCode: 0,
+    });
+    await runPiSolver(layer, { ...SOLVER_OPTS, thinking: "max" });
+    expect(execCalls[0]?.argv[2]).toContain("--thinking max");
+  });
+
+  it("labels the pi path in metadata so harnesses are separable", async () => {
+    const layer = makeFakeSandboxLayer({
+      reward: 1,
+      agentEventStream: PI_STREAM_WITH_RESPONSE_ID,
+      agentExitCode: 0,
+    });
+    const finalState = await runPiSolver(layer);
+    expect(finalState.sample.metadata?.["agent"]).toBe("pi");
+    expect(finalState.sample.metadata?.["agentExitCode"]).toBe(0);
+  });
+
   it("parses usage from the pi event stream", async () => {
     const layer = makeFakeSandboxLayer({
       reward: 1,
@@ -146,6 +374,7 @@ describe("terminal-bench pi solver", () => {
     expect(output.usage.reasoningTokens).toBe(0);
     expect(output.usage.totalCost).toBe(0.01);
   });
+
   it("runs pi without an appended system prompt by default", async () => {
     const execCalls: NonNullable<
       Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]
@@ -163,6 +392,7 @@ describe("terminal-bench pi solver", () => {
     expect(piCall.argv[2]).not.toContain("--append-system-prompt");
     expect(piCall.env).not.toHaveProperty("TB_APPEND_SYSTEM_PROMPT");
   });
+
   it("passes an appended system prompt to pi through the exec environment", async () => {
     const appendSystemPrompt = "Work like a caveman: keep it simple.";
     const execCalls: NonNullable<
@@ -183,6 +413,7 @@ describe("terminal-bench pi solver", () => {
     );
     expect(piCall.env["TB_APPEND_SYSTEM_PROMPT"]).toBe(appendSystemPrompt);
   });
+
   it("does not write a pi models.json for non-openrouter providers", async () => {
     const execCalls: NonNullable<
       Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]
@@ -203,6 +434,7 @@ describe("terminal-bench pi solver", () => {
     expect(piCall.argv[2]).not.toContain("models.json");
     expect(piCall.env).not.toHaveProperty("TB_PI_MODELS_JSON");
   });
+
   it("normalizes bare OpenRouter router models and preserves other model forms", () => {
     expect(parseModel("openrouter/auto-beta")).toEqual([
       "openrouter",
@@ -224,6 +456,7 @@ describe("terminal-bench pi solver", () => {
       'terminal-bench pi solver requires a model in "provider/model" form'
     );
   });
+
   it("writes a provider-level anthropic cache compat for concrete openrouter models", async () => {
     const execCalls: NonNullable<
       Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]
@@ -257,6 +490,7 @@ describe("terminal-bench pi solver", () => {
       },
     });
   });
+
   it("normalizes a bare OpenRouter router model before invoking pi", async () => {
     const execCalls: NonNullable<
       Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]
@@ -293,6 +527,7 @@ describe("terminal-bench pi solver", () => {
       },
     });
   });
+
   it("writes a pi models.json into the agent dir for openrouter router models", async () => {
     const execCalls: NonNullable<
       Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]
@@ -335,6 +570,7 @@ describe("terminal-bench pi solver", () => {
       },
     });
   });
+
   it("writes a session header for an unknown preset model", async () => {
     const execCalls: NonNullable<
       Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]

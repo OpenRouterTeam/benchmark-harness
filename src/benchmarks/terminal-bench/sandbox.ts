@@ -154,7 +154,11 @@ export function makeFakeSandboxLayer(
           timeoutMs,
         });
         const joined = argv.join(" ");
-        if (joined.includes("pi ") || joined.includes("pi --print")) {
+        if (
+          joined.includes("pi ") ||
+          joined.includes("pi --print") ||
+          joined.includes("ori claude")
+        ) {
           return succeed({
             stdout: behavior.agentEventStream ?? "",
             stderr: "",
