@@ -12,12 +12,12 @@ import {
 import type { Dataset } from "../../harness/dataset";
 import { Scorer } from "../../harness/scorer";
 import { Solver } from "../../harness/solver";
+import { getOriHarness } from "../agent-cli/harness";
 import { TERMINAL_BENCH_META } from "../benchmark-meta";
 import { makeModalSandboxLayer } from "../harbor/modal-sandbox";
 import { SandboxSession } from "../harbor/sandbox";
 import type { Benchmark, BenchmarkRunInput } from "../types";
 import { makeTerminalBenchDatasetLayer } from "./dataset";
-import { getOriHarness } from "./ori-harness";
 import type { OriSolverOpts } from "./ori-solver";
 import { oriSolver } from "./ori-solver";
 import { terminalBenchScorer } from "./scorer";

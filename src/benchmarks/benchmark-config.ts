@@ -7,6 +7,13 @@ import { ProviderSort } from "../internal/enums";
 import type { ValueOf } from "../internal/guards";
 import { z, zDefaultedText, zInt } from "../internal/zod";
 import {
+  CLAUDE_EFFORT_LEVELS,
+  DEFAULT_CLAUDE_EFFORT,
+  DEFAULT_HARBOR_AGENT,
+  DEFAULT_ORI_INSTALL_URL,
+  HARBOR_AGENTS,
+} from "./agent-cli/schema";
+import {
   TAU3_BENCH_BANKING_META,
   TAU_BENCH_AIRLINE_META,
 } from "./benchmark-meta";
@@ -16,9 +23,6 @@ import { SearchLaneConfigSchema } from "./search/core/config";
 import { DEFAULT_JUDGE_MODEL, DEFAULT_STEP_LIMIT } from "./swe-atlas/schema";
 import { BankingRetrievalConfigSchema } from "./tau3-bench-banking/retrieval-config";
 import {
-  CLAUDE_EFFORT_LEVELS,
-  DEFAULT_CLAUDE_EFFORT,
-  DEFAULT_ORI_INSTALL_URL,
   DEFAULT_PI_PACKAGE,
   DEFAULT_TERMINAL_BENCH_AGENT,
   PI_THINKING_LEVELS,
@@ -183,6 +187,15 @@ const AgenticOptionsSchema = z.object({
   taskSubset: z.array(z.string()).optional(),
   maxAgentTimeoutSec: z.number().positive().optional(),
   modalEnv: z.string().default("main"),
+  agent: z.enum(HARBOR_AGENTS).default(DEFAULT_HARBOR_AGENT),
+  agentPackage: z.string().optional(),
+  oriInstallUrl: z.string().default(DEFAULT_ORI_INSTALL_URL),
+  effort: z.enum(CLAUDE_EFFORT_LEVELS).default(DEFAULT_CLAUDE_EFFORT),
+  systemPrompt: z.string().optional(),
+  appendSystemPrompt: z.string().optional(),
+  allowedTools: z.array(z.string()).optional(),
+  disallowedTools: z.array(z.string()).optional(),
+  isolateAgentConfig: z.boolean().default(false),
 });
 
 export const SweAtlasOptionsSchema = z.object({

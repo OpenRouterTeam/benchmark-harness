@@ -15,6 +15,7 @@ import {
   void as effectVoid,
 } from "effect/Effect";
 
+import type { ModelUsage } from "../../harness/core";
 import { MessageRole, SolverError } from "../../harness/core";
 import { CheckpointStore, ProgressReporter } from "../../harness/progress";
 import type { SolverService } from "../../harness/solver";
@@ -25,6 +26,11 @@ import type {
   ResponsesModelService,
 } from "../../providers/responses-model";
 import { responsesMessage } from "../../providers/responses-model";
+import { getOriHarness } from "../agent-cli/harness";
+import type { AgentCliOpts } from "../agent-cli/runner";
+import { agentCliMetadata, runAgentCli } from "../agent-cli/runner";
+import type { HarborAgent } from "../agent-cli/schema";
+import { DEFAULT_ORI_INSTALL_URL, isOriAgent } from "../agent-cli/schema";
 import type { InferenceOverride } from "../benchmark-config";
 import { AGENT_ENV, probeSystemInfo, runAgentLoop } from "../harbor/agent-loop";
 import {
@@ -52,6 +58,8 @@ const PER_COMMAND_TIMEOUT_SEC = 1800;
 
 const SANDBOX_TIMEOUT_MARGIN_SEC = 300;
 
+export const REMOTE_AGENT_INSTRUCTION = "/instruction.md" as const;
+
 export const REMOTE_PRE_ARTIFACTS_SCRIPT =
   "/tmp/.deep-swe-pre-artifacts.sh" as const;
 
@@ -66,6 +74,8 @@ export interface DeepSweSolverOpts {
   readonly stepLimit: number;
   readonly inference?: InferenceOverride;
   readonly sessionId?: string;
+  readonly agent?: HarborAgent;
+  readonly agentCli?: AgentCliOpts;
 }
 
 export function makeDeepSweSolver(
@@ -89,6 +99,14 @@ export function makeDeepSweSolver(
           }),
       });
       const task = loadTask(meta.taskId, tasksRoot);
+      const agent = opts.agent ?? "native";
+      const cliHarness = isOriAgent(agent) ? getOriHarness(agent) : undefined;
+      const cliOpts: AgentCliOpts = opts.agentCli ?? {
+        model: opts.model,
+        apiKey: opts.apiKey,
+        ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
+        ...(opts.sessionId !== undefined && { sessionId: opts.sessionId }),
+      };
       const reporter = yield* ProgressReporter;
       const checkpointStore = yield* CheckpointStore;
       const epoch = state.epoch;
@@ -106,6 +124,12 @@ export function makeDeepSweSolver(
       const createAgentSession = () =>
         sessionFactory.create({
           imageTag: meta.dockerImage,
+          ...(cliHarness !== undefined && {
+            imageBuildSteps: cliHarness.imageBuildSteps(
+              cliOpts.agentPackage ?? cliHarness.defaultPackage,
+              cliOpts.oriInstallUrl ?? DEFAULT_ORI_INSTALL_URL
+            ),
+          }),
           timeoutSec: meta.maxAgentTimeoutSec + SANDBOX_TIMEOUT_MARGIN_SEC,
           cpus: meta.cpus,
           memoryMb: meta.memoryMb,
@@ -118,11 +142,20 @@ export function makeDeepSweSolver(
               remotePath: REMOTE_PRE_ARTIFACTS_SCRIPT,
               kind: "file",
             },
+            ...(cliHarness !== undefined
+              ? [
+                  {
+                    localPath: task.instructionPath,
+                    remotePath: REMOTE_AGENT_INSTRUCTION,
+                    kind: "file" as const,
+                  },
+                ]
+              : []),
           ],
         });
       let attachSucceeded = true;
       const agentSession: SandboxSessionInstance =
-        checkpoint !== null
+        checkpoint !== null && cliHarness === undefined
           ? yield* sessionFactory.attach(checkpoint.sandboxId).pipe(
               catchAll(() => {
                 attachSucceeded = false;
@@ -155,6 +188,65 @@ export function makeDeepSweSolver(
         ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
       };
       const result = yield* gen(function* () {
+        if (cliHarness !== undefined) {
+          const cliRun = yield* runAgentCli({
+            session: agentSession,
+            harness: cliHarness,
+            opts: cliOpts,
+            instructionPath: REMOTE_AGENT_INSTRUCTION,
+            timeoutMs: meta.maxAgentTimeoutSec * 1000 + 30000,
+          });
+          const cliPatch = yield* extractPatch(agentSession);
+          const cliVerifierSession = yield* sessionFactory.create({
+            imageTag: meta.dockerImage,
+            timeoutSec: meta.maxTestTimeoutSec + SANDBOX_TIMEOUT_MARGIN_SEC,
+            cpus: meta.cpus,
+            memoryMb: meta.memoryMb,
+            allowInternet: meta.allowInternet,
+            workdir: DEEP_SWE_WORKDIR,
+            keepAliveCommand: DEEP_SWE_KEEP_ALIVE_COMMAND,
+            uploads: [
+              {
+                localPath: task.testDir,
+                remotePath: REMOTE_TEST_DIR,
+                kind: "dir",
+              },
+            ],
+          });
+          const cliVerifier = yield* gen(function* () {
+            yield* deliverPatch(cliVerifierSession, task, cliPatch);
+            return yield* runVerifier(cliVerifierSession, meta);
+          }).pipe(ensureDestroy(cliVerifierSession));
+          const cliCompletion = cliRun.finalText ?? cliRun.rawStream;
+          return {
+            sample: {
+              ...state.sample,
+              metadata: {
+                ...state.sample.metadata,
+                reward: cliVerifier.reward,
+                verifierOutput: cliRun.failureDetail
+                  ? `${cliRun.failureDetail}\n\n${cliVerifier.output}`
+                  : cliVerifier.output,
+                ...agentCliMetadata(cliHarness.id, cliRun),
+              },
+            },
+            messages: [
+              { role: MessageRole.User, content: state.sample.input },
+              ...cliRun.assistantMessages,
+            ],
+            responseItems: cliRun.responseItems,
+            output: {
+              completion: cliCompletion,
+              message: {
+                role: MessageRole.Assistant,
+                content: cliCompletion,
+              },
+              usage: cliRun.usage ?? ZERO_AGENT_USAGE,
+              generationTimeMs: cliRun.generationTimeMs ?? 0,
+            },
+            completed: true,
+          };
+        }
         const systemInfo = yield* probeSystemInfo(agentSession);
         const loop = yield* runAgentLoop({
           model,
@@ -358,3 +450,11 @@ function runVerifier(
     };
   });
 }
+
+const ZERO_AGENT_USAGE: ModelUsage = {
+  inputTokens: 0,
+  outputTokens: 0,
+  totalTokens: 0,
+  reasoningTokens: 0,
+  totalCost: 0,
+};

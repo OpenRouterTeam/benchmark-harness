@@ -13,6 +13,8 @@ const NVM_INSTALL_URL =
 export const ORI_INSTALL_DIR = "/usr/local/bin" as const;
 
 export interface OriRunScriptOptions {
+  readonly instructionPath: string;
+  readonly logPath: string;
   readonly effort: ClaudeEffortLevel;
   readonly hasSystemPrompt: boolean;
   readonly hasAppendSystemPrompt: boolean;
@@ -248,7 +250,7 @@ const CLAUDE_HARNESS: OriHarnessDef = {
       "export HOME=/root",
       "mkdir -p /logs/agent",
       'ori claude --model "$TB_MODEL" -- \\',
-      '  -p "$(cat /instruction.md)" \\',
+      `  -p "$(cat ${options.instructionPath})" \\`,
       "  --output-format stream-json \\",
       "  --verbose \\",
       "  --permission-mode bypassPermissions \\",
@@ -268,7 +270,7 @@ const CLAUDE_HARNESS: OriHarnessDef = {
       ...(options.isolateAgentConfig
         ? ["  --exclude-dynamic-system-prompt-sections \\"]
         : []),
-      "  2>&1 </dev/null | stdbuf -oL tee /logs/agent/claude.txt",
+      `  2>&1 </dev/null | stdbuf -oL tee ${options.logPath}`,
     ].join("\n"),
   parseRun: parseClaudeStream,
 };

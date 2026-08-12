@@ -30,7 +30,7 @@ import {
   getCollectedGenerationIds,
   resetGenerationIds,
 } from "../../runtime/generation-ids";
-import { getOriHarness } from "./ori-harness";
+import { getOriHarness } from "../agent-cli/harness";
 import { oriSolver } from "./ori-solver";
 import { terminalBenchScorer } from "./scorer";
 import { seedTasksDir } from "./tasks-source";

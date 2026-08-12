@@ -1,6 +1,7 @@
 import type { Effect } from "effect/Effect";
 import { gen, tryPromise } from "effect/Effect";
 
+import type { ModelUsage } from "../../harness/core";
 import { MessageRole, SolverError } from "../../harness/core";
 import type { SolverService } from "../../harness/solver";
 import { definedValues } from "../../internal/guards";
@@ -9,6 +10,11 @@ import type {
   ResponsesModelService,
 } from "../../providers/responses-model";
 import { responsesMessage } from "../../providers/responses-model";
+import { getOriHarness } from "../agent-cli/harness";
+import type { AgentCliOpts } from "../agent-cli/runner";
+import { agentCliMetadata, runAgentCli } from "../agent-cli/runner";
+import type { HarborAgent } from "../agent-cli/schema";
+import { DEFAULT_ORI_INSTALL_URL, isOriAgent } from "../agent-cli/schema";
 import type { InferenceOverride } from "../benchmark-config";
 import { AGENT_ENV, probeSystemInfo, runAgentLoop } from "../harbor/agent-loop";
 import {
@@ -39,6 +45,14 @@ const PER_COMMAND_TIMEOUT_SEC = {
 
 const SANDBOX_TIMEOUT_MARGIN_SEC = 300;
 
+const ZERO_AGENT_USAGE: ModelUsage = {
+  inputTokens: 0,
+  outputTokens: 0,
+  totalTokens: 0,
+  reasoningTokens: 0,
+  totalCost: 0,
+};
+
 export const REMOTE_INSTRUCTION = "/instruction.md" as const;
 
 export const REMOTE_REWARD_PATH = "/logs/verifier/reward.txt" as const;
@@ -59,6 +73,8 @@ export interface SweAtlasSolverOpts {
   readonly judgeModel: string;
   readonly stepLimit: number;
   readonly inference?: InferenceOverride;
+  readonly agent?: HarborAgent;
+  readonly agentCli?: AgentCliOpts;
 }
 
 export function makeSweAtlasSolver(
@@ -82,8 +98,21 @@ export function makeSweAtlasSolver(
           }),
       });
       const task = loadTask(meta.taskId, meta.track, tasksRoot);
+      const agent = opts.agent ?? "native";
+      const cliHarness = isOriAgent(agent) ? getOriHarness(agent) : undefined;
+      const cliOpts: AgentCliOpts = opts.agentCli ?? {
+        model: opts.model,
+        apiKey: opts.apiKey,
+        ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
+      };
       const session = yield* sessionFactory.create({
         imageTag: meta.dockerImage,
+        ...(cliHarness !== undefined && {
+          imageBuildSteps: cliHarness.imageBuildSteps(
+            cliOpts.agentPackage ?? cliHarness.defaultPackage,
+            cliOpts.oriInstallUrl ?? DEFAULT_ORI_INSTALL_URL
+          ),
+        }),
         timeoutSec:
           meta.maxAgentTimeoutSec +
           meta.maxTestTimeoutSec +
@@ -111,6 +140,45 @@ export function makeSweAtlasSolver(
         ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
       };
       try {
+        if (cliHarness !== undefined) {
+          const run = yield* runAgentCli({
+            session,
+            harness: cliHarness,
+            opts: cliOpts,
+            instructionPath: REMOTE_INSTRUCTION,
+            timeoutMs: meta.maxAgentTimeoutSec * 1000 + 30000,
+          });
+          const cliVerifier = yield* runVerifier({ session, meta, opts });
+          const cliCompletion = run.finalText ?? run.rawStream;
+          return {
+            sample: {
+              ...state.sample,
+              metadata: {
+                ...state.sample.metadata,
+                reward: cliVerifier.reward,
+                verifierOutput: run.failureDetail
+                  ? `${run.failureDetail}\n\n${cliVerifier.output}`
+                  : cliVerifier.output,
+                ...agentCliMetadata(cliHarness.id, run),
+              },
+            },
+            messages: [
+              { role: MessageRole.User, content: state.sample.input },
+              ...run.assistantMessages,
+            ],
+            responseItems: run.responseItems,
+            output: {
+              completion: cliCompletion,
+              message: {
+                role: MessageRole.Assistant,
+                content: cliCompletion,
+              },
+              usage: run.usage ?? ZERO_AGENT_USAGE,
+              generationTimeMs: run.generationTimeMs ?? 0,
+            },
+            completed: true,
+          };
+        }
         const systemInfo = yield* probeSystemInfo(session);
         const loop = yield* runAgentLoop({
           model,

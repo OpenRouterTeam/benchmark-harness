@@ -26,8 +26,8 @@ import {
   getCollectedGenerationIds,
   resetGenerationIds,
 } from "../../runtime/generation-ids";
+import { getOriHarness, ORI_HARNESSES } from "../agent-cli/harness";
 import { readTerminalBenchMeta } from "./dataset";
-import { getOriHarness, ORI_HARNESSES } from "./ori-harness";
 import type { OriSolverOpts } from "./ori-solver";
 import { oriSolver } from "./ori-solver";
 import { DEFAULT_CLAUDE_PACKAGE } from "./schema";

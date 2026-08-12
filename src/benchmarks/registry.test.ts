@@ -256,6 +256,60 @@ describe("benchmark registry", () => {
     assertLeft(result);
   });
 
+  it("defaults harbor benchmarks to the native agent loop", () => {
+    for (const benchmarkId of [
+      "swe_atlas_qa",
+      "swe_atlas_tw",
+      "swe_atlas_rf",
+      "deep_swe",
+    ] as const) {
+      const result = parseSchema(BenchmarkRunConfigSchema, {
+        benchmarkId,
+        model: "anthropic/claude-opus-4.5",
+      });
+      assertRight(result);
+      if (!("agent" in result.right)) {
+        throw new Error(`${benchmarkId} config is missing an agent field`);
+      }
+      expect(result.right.agent).toBe("native");
+    }
+  });
+
+  it("accepts an ori agent for harbor benchmarks", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "deep_swe",
+      model: "anthropic/claude-opus-5",
+      agent: "claude",
+      effort: "high",
+      isolateAgentConfig: true,
+    });
+    assertRight(result);
+    if (result.right.benchmarkId !== "deep_swe") {
+      throw new Error("expected deep_swe config");
+    }
+    expect(result.right.agent).toBe("claude");
+    expect(result.right.effort).toBe("high");
+    expect(result.right.isolateAgentConfig).toBe(true);
+  });
+
+  it("rejects pi as a harbor agent since only terminal-bench runs it", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "deep_swe",
+      model: "anthropic/claude-opus-5",
+      agent: "pi",
+    });
+    assertLeft(result);
+  });
+
+  it("leaves wandr without an agent selector", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "wandr",
+      model: "openai/gpt-5.5",
+    });
+    assertRight(result);
+    expect("agent" in result.right).toBe(false);
+  });
+
   it("returns undefined for an unknown benchmark", () => {
     expect(getBenchmark("does_not_exist")).toBeUndefined();
   });

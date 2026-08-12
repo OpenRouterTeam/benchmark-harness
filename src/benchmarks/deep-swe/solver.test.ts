@@ -180,6 +180,126 @@ const SOLVER_OPTS = {
   stepLimit: 10,
   endpointId: "ep-pinned",
 } as const;
+const CLAUDE_STREAM = [
+  JSON.stringify({
+    type: "assistant",
+    message: {
+      id: "gen-1786484980-DeepSweCliRun000000",
+      role: "assistant",
+      model: "anthropic/claude-opus-4.5",
+      content: [
+        { type: "text", text: "Patched." },
+        { type: "tool_use", id: "t1", name: "Bash", input: {} },
+        { type: "tool_use", id: "t2", name: "Edit", input: {} },
+      ],
+    },
+  }),
+  JSON.stringify({
+    type: "result",
+    subtype: "success",
+    is_error: false,
+    result: "Patched.",
+    num_turns: 5,
+    duration_ms: 9876,
+    total_cost_usd: 1.25,
+    usage: {
+      input_tokens: 200,
+      output_tokens: 30,
+      output_tokens_details: { thinking_tokens: 11 },
+    },
+  }),
+].join("\n");
+
+function fakeCliSandbox(
+  log: SandboxLog,
+  rewardJson: string
+): Layer<SandboxSession> {
+  return makeFakeSandboxLayer({
+    onCreate: (input) => log.creates.push(input),
+    onUploadFile: (localPath, remotePath) =>
+      log.uploads.push({ localPath, remotePath }),
+    execHandler: (argv, env): ExecResult => {
+      log.calls.push({ argv, env });
+      const joined = argv.join(" ");
+      if (joined.includes("ori claude")) {
+        return { stdout: CLAUDE_STREAM, stderr: "", exitCode: 0 };
+      }
+      if (joined.includes("base64")) {
+        return { stdout: PATCH_BASE64, stderr: "", exitCode: 0 };
+      }
+      if (joined.includes("reward.json")) {
+        return { stdout: rewardJson, stderr: "", exitCode: 0 };
+      }
+      return { stdout: "ok", stderr: "", exitCode: 0 };
+    },
+  });
+}
+
+describe("deep-swe claude agent via ori", () => {
+  it("runs the agent cli, extracts the patch, and verifies in a separate sandbox", async () => {
+    const log = newLog();
+    const record = newConfigRecord();
+    const finalState = await runDeepSweSolver(
+      scriptedModel(record),
+      fakeCliSandbox(log, '{"reward": 1}'),
+      { ...SOLVER_OPTS, agent: "claude" }
+    );
+    expect(record.configs).toHaveLength(0);
+    expect(log.creates).toHaveLength(2);
+    const meta = readDeepSweMeta(finalState.sample.metadata);
+    expect(meta?.reward).toBe(1);
+    const score = await runPromise(
+      deepSweScorer(finalState, finalState.sample.target)
+    );
+    expect(score.value).toBe(ScoreValue.Correct);
+  });
+
+  it("installs the agent and uploads the instruction into the agent sandbox", async () => {
+    const log = newLog();
+    await runDeepSweSolver(
+      scriptedModel(newConfigRecord()),
+      fakeCliSandbox(log, '{"reward": 1}'),
+      { ...SOLVER_OPTS, agent: "claude" }
+    );
+    const agentCreate = log.creates[0];
+    expect(agentCreate?.imageBuildSteps?.join("\n")).toContain(
+      "@anthropic-ai/claude-code"
+    );
+    const remotePaths = (agentCreate?.uploads ?? []).map((u) => u.remotePath);
+    expect(remotePaths).toContain("/instruction.md");
+  });
+
+  it("does not install an agent on the native path", async () => {
+    const log = newLog();
+    await runDeepSweSolver(
+      scriptedModel(newConfigRecord()),
+      fakeSandbox(log, '{"reward": 1}')
+    );
+    expect(log.creates[0]?.imageBuildSteps).toBeUndefined();
+    const remotePaths = (log.creates[0]?.uploads ?? []).map(
+      (u) => u.remotePath
+    );
+    expect(remotePaths).not.toContain("/instruction.md");
+  });
+
+  it("carries agent usage and counters into the result", async () => {
+    const log = newLog();
+    const finalState = await runDeepSweSolver(
+      scriptedModel(newConfigRecord()),
+      fakeCliSandbox(log, '{"reward": 1}'),
+      { ...SOLVER_OPTS, agent: "claude" }
+    );
+    expect(finalState.output?.usage?.totalCost).toBe(1.25);
+    expect(finalState.output?.usage?.reasoningTokens).toBe(11);
+    expect(finalState.output?.generationTimeMs).toBe(9876);
+    expect(finalState.sample.metadata?.["agentTurns"]).toBe(5);
+    expect(finalState.sample.metadata?.["agentToolCalls"]).toBe(2);
+    expect(finalState.sample.metadata?.["generationIds"]).toEqual([
+      "gen-1786484980-DeepSweCliRun000000",
+    ]);
+  });
+});
+
 describe("deep-swe solver", () => {
   it("runs the agent loop, then a separate verifier sandbox, and stashes reward=1 → Correct", async () => {
     const log = newLog();

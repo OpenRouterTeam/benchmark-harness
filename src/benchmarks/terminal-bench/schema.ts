@@ -1,6 +1,15 @@
 import type { ValueOf } from "../../internal/guards";
 import { z } from "../../internal/zod";
 
+export {
+  CLAUDE_EFFORT_LEVELS,
+  DEFAULT_CLAUDE_EFFORT,
+  DEFAULT_CLAUDE_PACKAGE,
+  DEFAULT_ORI_INSTALL_URL,
+  ORI_AGENTS,
+} from "../agent-cli/schema";
+export type { ClaudeEffortLevel, OriAgent } from "../agent-cli/schema";
+
 export const TaskTomlSchema = z.object({
   schema_version: z.string(),
   task: z.object({
@@ -66,18 +75,6 @@ export type PiThinkingLevel = ValueOf<typeof PI_THINKING_LEVELS>;
 
 export const DEFAULT_PI_THINKING: PiThinkingLevel = "medium";
 
-export const CLAUDE_EFFORT_LEVELS = [
-  "low",
-  "medium",
-  "high",
-  "xhigh",
-  "max",
-] as const;
-
-export type ClaudeEffortLevel = ValueOf<typeof CLAUDE_EFFORT_LEVELS>;
-
-export const DEFAULT_CLAUDE_EFFORT: ClaudeEffortLevel = "medium";
-
 export const DEFAULT_PI_PACKAGE =
   "@earendil-works/pi-coding-agent@latest" as const;
 
@@ -86,13 +83,3 @@ export const TERMINAL_BENCH_AGENTS = ["pi", "claude"] as const;
 export type TerminalBenchAgent = ValueOf<typeof TERMINAL_BENCH_AGENTS>;
 
 export const DEFAULT_TERMINAL_BENCH_AGENT: TerminalBenchAgent = "pi";
-
-export const ORI_AGENTS = ["claude"] as const;
-
-export type OriAgent = ValueOf<typeof ORI_AGENTS>;
-
-export const DEFAULT_ORI_INSTALL_URL =
-  "https://openrouter.ai/labs/ori/install.sh" as const;
-
-export const DEFAULT_CLAUDE_PACKAGE =
-  "@anthropic-ai/claude-code@latest" as const;
