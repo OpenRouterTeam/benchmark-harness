@@ -2,7 +2,7 @@ import { ScoreValue } from "../../harness/core";
 import type { BenchmarkResultRow } from "../../results/parquet-schema";
 import {
   qualityFromMetadata,
-  runTotalsFromResultRows,
+  runTotalsFromResultParts,
 } from "./result-row-metrics";
 
 export interface ArmTrial {
@@ -48,11 +48,12 @@ export interface ArmComparison {
   readonly totalCostDelta: number;
 }
 
-export function armRunFromResultRows(
+export function armRunFromResultParts(
   label: string,
-  rows: readonly BenchmarkResultRow[]
+  parts: readonly (readonly BenchmarkResultRow[])[]
 ): ArmRun {
-  const { totalCost, totalTokens } = runTotalsFromResultRows(rows);
+  const { totalCost, totalTokens } = runTotalsFromResultParts(parts);
+  const rows = parts.flat();
   return {
     label,
     trials: rows

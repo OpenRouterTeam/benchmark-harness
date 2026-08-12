@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 
 import type { ArmRun } from "./compare";
 import {
-  armRunFromResultRows,
+  armRunFromResultParts,
   compareArms,
   formatArmComparison,
 } from "./compare";
@@ -171,7 +171,7 @@ describe("formatArmComparison", () => {
   });
 });
 
-describe("armRunFromResultRows", () => {
+describe("armRunFromResultParts", () => {
   it("maps parquet rows into trials with failure diagnostics", () => {
     const row = {
       format_version: 1,
@@ -208,7 +208,7 @@ describe("armRunFromResultRows", () => {
       explanation: "VERIFY FAIL: no tool_calls finish",
     };
 
-    const run = armRunFromResultRows("docs", [row, failedRow]);
+    const run = armRunFromResultParts("docs", [[row, failedRow]]);
     expect(run.trials).toEqual([
       { taskId: "basic-completion", epoch: 0, passed: true },
       {
@@ -222,7 +222,7 @@ describe("armRunFromResultRows", () => {
     expect(run.totalCost).toBeCloseTo(0.01, 10);
   });
 
-  it("sums run-level totals across parts of a multi-part result file", () => {
+  it("sums exact run-level totals across parts, even when part totals collide", () => {
     const partA = {
       format_version: 1,
       task: "agent_dx",
@@ -260,9 +260,13 @@ describe("armRunFromResultRows", () => {
     };
     const partBSibling = { ...partB, sample_id: "streaming-usage" };
 
-    const run = armRunFromResultRows("docs", [partA, partB, partBSibling]);
+    const run = armRunFromResultParts("docs", [[partA], [partB, partBSibling]]);
     expect(run.totalTokens).toBe(400);
     expect(run.totalCost).toBeCloseTo(0.03, 10);
+
+    const collidingTwin = armRunFromResultParts("docs", [[partA], [partA]]);
+    expect(collidingTwin.totalTokens).toBe(300);
+    expect(collidingTwin.totalCost).toBeCloseTo(0.02, 10);
   });
 
   it("reads judge quality and subcheck partial credit out of row metadata", () => {
@@ -299,7 +303,7 @@ describe("armRunFromResultRows", () => {
       }),
     };
 
-    const run = armRunFromResultRows("docs", [row]);
+    const run = armRunFromResultParts("docs", [[row]]);
     expect(run.trials[0]?.quality).toBeCloseTo(0.75, 10);
     expect(run.trials[0]?.subcheckScore).toBeCloseTo(0.75, 10);
   });
@@ -335,7 +339,7 @@ describe("armRunFromResultRows", () => {
     };
 
     expect(
-      armRunFromResultRows("docs", [row]).trials[0]?.quality
+      armRunFromResultParts("docs", [[row]]).trials[0]?.quality
     ).toBeUndefined();
   });
 });

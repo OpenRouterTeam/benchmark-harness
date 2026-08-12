@@ -344,6 +344,7 @@ describe("buildClaudeCodeRunScript", () => {
     expect(script).toContain('ANTHROPIC_AUTH_TOKEN="$OPENROUTER_API_KEY"');
     expect(script).toContain('export ANTHROPIC_API_KEY=""');
     expect(script).toContain("export IS_SANDBOX=1");
+    expect(script).toContain("export CLAUDE_CODE_DISABLE_BUNDLED_SKILLS=1");
     expect(script).toContain("--output-format stream-json");
     expect(script).not.toContain(".mcp.json");
   });

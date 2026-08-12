@@ -65,6 +65,7 @@ export interface AxCellScore {
   readonly totalCost: number;
   readonly totalTokens: number;
   readonly costPerPass: number | undefined;
+  readonly tokensPerPass: number | undefined;
 }
 
 export interface AxRoutingSummary {
@@ -169,20 +170,20 @@ export function didJudgeGradeTrials(trials: readonly AxTrial[]): boolean {
 }
 
 export function efficiencyScore(
-  costPerPass: number,
-  refCostPerPass: number
+  spendPerPass: number,
+  refSpendPerPass: number
 ): number {
-  if (refCostPerPass <= 0 || costPerPass <= 0) {
+  if (refSpendPerPass <= 0 || spendPerPass <= 0) {
     return 1;
   }
   return Math.min(
     1,
-    refCostPerPass / Math.min(costPerPass, refCostPerPass * 4)
+    refSpendPerPass / Math.min(spendPerPass, refSpendPerPass * 4)
   );
 }
 
 export interface ComputeAxOpts {
-  readonly refCostPerPass?: number;
+  readonly refTokensPerPass?: number;
   readonly totals?: RunTotals;
 }
 
@@ -222,9 +223,11 @@ export function computeAxScore(
     opts.totals ?? runTotalsFromResultRows(rows);
   const costPerPass =
     counts.pass > 0 && totalCost > 0 ? totalCost / counts.pass : undefined;
+  const tokensPerPass =
+    counts.pass > 0 && totalTokens > 0 ? totalTokens / counts.pass : undefined;
   const efficiency =
-    opts.refCostPerPass !== undefined && costPerPass !== undefined
-      ? efficiencyScore(costPerPass, opts.refCostPerPass)
+    opts.refTokensPerPass !== undefined && tokensPerPass !== undefined
+      ? efficiencyScore(tokensPerPass, opts.refTokensPerPass)
       : undefined;
 
   const components: AxComponents = {
@@ -245,16 +248,17 @@ export function computeAxScore(
     totalCost,
     totalTokens,
     costPerPass,
+    tokensPerPass,
   };
 }
 
 export function withEfficiencyReference(
   score: AxCellScore,
-  refCostPerPass: number
+  refTokensPerPass: number
 ): AxCellScore {
   const efficiency =
-    score.costPerPass !== undefined
-      ? efficiencyScore(score.costPerPass, refCostPerPass)
+    score.tokensPerPass !== undefined
+      ? efficiencyScore(score.tokensPerPass, refTokensPerPass)
       : undefined;
   const { efficiency: _staleEfficiency, ...otherComponents } = score.components;
   const components: AxComponents = {
@@ -312,11 +316,11 @@ export function routingSummary(trials: readonly AxTrial[]): AxRoutingSummary {
   };
 }
 
-export function medianCostPerPass(
-  cells: readonly { readonly costPerPass: number | undefined }[]
+export function medianTokensPerPass(
+  cells: readonly { readonly tokensPerPass: number | undefined }[]
 ): number | undefined {
   const values = cells
-    .map((cell) => cell.costPerPass)
+    .map((cell) => cell.tokensPerPass)
     .filter((value): value is number => value !== undefined)
     .toSorted((a, b) => a - b);
   if (values.length === 0) {

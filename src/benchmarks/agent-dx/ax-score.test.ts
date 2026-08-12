@@ -10,7 +10,7 @@ import {
   didJudgeGradeTrials,
   withEfficiencyReference,
   efficiencyScore,
-  medianCostPerPass,
+  medianTokensPerPass,
   routingSummary,
   trialQuality,
 } from "./ax-score";
@@ -375,7 +375,7 @@ describe("computeAxScore", () => {
     const score = computeAxScore(
       [row({ metadata: JSON.stringify({ quality: 0.5 }) })],
       {
-        refCostPerPass: 0.5,
+        refTokensPerPass: 1000,
       }
     );
     expect(score.ax).toBeCloseTo(
@@ -455,6 +455,7 @@ describe("computeAxScore", () => {
     expect(score.totalCost).toBeCloseTo(0.6, 10);
     expect(score.totalTokens).toBe(150);
     expect(score.costPerPass).toBeCloseTo(0.2, 10);
+    expect(score.tokensPerPass).toBe(50);
   });
 
   it("sums parts with colliding timestamps but distinct totals", () => {
@@ -471,24 +472,34 @@ describe("computeAxScore", () => {
     expect(score.totalTokens).toBe(150);
   });
 
-  it("leaves cost-per-pass and efficiency undefined when no spend was recorded", () => {
+  it("leaves per-pass rates and efficiency undefined when no usage was recorded", () => {
     const score = computeAxScore([row({ total_cost: 0, total_tokens: 0 })], {
-      refCostPerPass: 0.5,
+      refTokensPerPass: 1000,
     });
     expect(score.costPerPass).toBeUndefined();
+    expect(score.tokensPerPass).toBeUndefined();
     expect(score.components.efficiency).toBeUndefined();
     expect(score.appliedWeights.efficiency).toBeUndefined();
+  });
+
+  it("scores efficiency from tokens even when no cost was billed", () => {
+    const score = computeAxScore([row({ total_cost: 0, total_tokens: 2000 })], {
+      refTokensPerPass: 1000,
+    });
+    expect(score.costPerPass).toBeUndefined();
+    expect(score.tokensPerPass).toBe(2000);
+    expect(score.components.efficiency).toBeCloseTo(0.5, 10);
   });
 
   it("applies an efficiency reference to a provisional score without re-deriving trials", () => {
     const provisional = computeAxScore([
       row({ metadata: JSON.stringify({ quality: 0.5 }) }),
     ]);
-    const withRef = withEfficiencyReference(provisional, 0.5);
+    const withRef = withEfficiencyReference(provisional, 1000);
     const direct = computeAxScore(
       [row({ metadata: JSON.stringify({ quality: 0.5 }) })],
       {
-        refCostPerPass: 0.5,
+        refTokensPerPass: 1000,
       }
     );
     expect(withRef.ax).toBe(direct.ax);
@@ -497,18 +508,18 @@ describe("computeAxScore", () => {
     expect(withRef.trials).toBe(provisional.trials);
   });
 
-  it("drops a previously applied efficiency when the score has no recorded spend", () => {
+  it("drops a previously applied efficiency when the score has no recorded usage", () => {
     const scored = withEfficiencyReference(
       computeAxScore([row({ total_cost: 0.4, total_tokens: 100 })]),
-      0.5
+      50
     );
     expect(scored.components.efficiency).toBeDefined();
-    const noSpend = withEfficiencyReference(
-      { ...scored, costPerPass: undefined },
-      0.9
+    const noUsage = withEfficiencyReference(
+      { ...scored, tokensPerPass: undefined },
+      90
     );
-    expect(noSpend.components.efficiency).toBeUndefined();
-    expect(noSpend.appliedWeights.efficiency).toBeUndefined();
+    expect(noUsage.components.efficiency).toBeUndefined();
+    expect(noUsage.appliedWeights.efficiency).toBeUndefined();
   });
 
   it("returns undefined ax when nothing is computable", () => {
@@ -605,16 +616,18 @@ describe("didJudgeGradeTrials", () => {
   });
 });
 
-describe("medianCostPerPass", () => {
+describe("medianTokensPerPass", () => {
   it("takes the median of defined values", () => {
     expect(
-      medianCostPerPass([
-        { costPerPass: 3 },
-        { costPerPass: 1 },
-        { costPerPass: 2 },
+      medianTokensPerPass([
+        { tokensPerPass: 3 },
+        { tokensPerPass: 1 },
+        { tokensPerPass: 2 },
       ])
     ).toBe(2);
-    expect(medianCostPerPass([{ costPerPass: 1 }, { costPerPass: 3 }])).toBe(2);
-    expect(medianCostPerPass([{ costPerPass: undefined }])).toBeUndefined();
+    expect(
+      medianTokensPerPass([{ tokensPerPass: 1 }, { tokensPerPass: 3 }])
+    ).toBe(2);
+    expect(medianTokensPerPass([{ tokensPerPass: undefined }])).toBeUndefined();
   });
 });

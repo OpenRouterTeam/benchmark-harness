@@ -202,6 +202,7 @@ export function buildClaudeCodeRunScript(input: {
     'export ANTHROPIC_API_KEY=""',
     'export ANTHROPIC_MODEL="$ADX_MODEL"',
     "export IS_SANDBOX=1",
+    "export CLAUDE_CODE_DISABLE_BUNDLED_SKILLS=1",
     ...(usesMcp(profile)
       ? [
           writeFileStep(mcpConfig, "/app/.mcp.json"),
