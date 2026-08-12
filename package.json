@@ -14,6 +14,8 @@
     "./benchmarks/search/provenance": "./src/benchmarks/search/provenance.ts",
     "./benchmarks/swe-atlas/schema": "./src/benchmarks/swe-atlas/schema.ts",
     "./benchmarks/terminal-bench/schema": "./src/benchmarks/terminal-bench/schema.ts",
+    "./benchmarks/terminal-bench/sandbox": "./src/benchmarks/terminal-bench/sandbox.ts",
+    "./benchmarks/terminal-bench/modal-sandbox": "./src/benchmarks/terminal-bench/modal-sandbox.ts",
     "./core": "./src/harness/core.ts",
     "./constants": "./src/harness/constants.ts",
     "./dataset": "./src/harness/dataset.ts",
