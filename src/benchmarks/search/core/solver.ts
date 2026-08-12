@@ -112,11 +112,21 @@ export function searchSolver(
         }),
         ...(opts.costTier !== undefined && { costTier: opts.costTier }),
       });
+      const extraHeaders =
+        opts.endpointId === undefined && !opts.lane.providerFlags?.length
+          ? undefined
+          : {
+              ...(opts.endpointId !== undefined && {
+                "X-OR-Endpoint-Id": opts.endpointId,
+              }),
+              ...(opts.lane.providerFlags !== undefined &&
+                opts.lane.providerFlags.length > 0 && {
+                  "X-Provider-Flags": opts.lane.providerFlags.join(","),
+                }),
+            };
       const sendOptions = (): ResponsesSendOptions => ({
         timeoutMs: opts.timeoutMs ?? DEFAULT_SEARCH_TIMEOUT_MS,
-        ...(opts.endpointId !== undefined && {
-          extraHeaders: { "X-OR-Endpoint-Id": opts.endpointId },
-        }),
+        ...(extraHeaders !== undefined && { extraHeaders }),
         ...(opts.versionOverride !== undefined && {
           versionOverride: opts.versionOverride,
         }),
