@@ -97,7 +97,16 @@ function checkScaffold(): string | undefined {
     return "no TypeScript sources found in the project";
   }
   const hasTopLevelAwait = sources.some((path) =>
-    /^await\s|\nawait\s/.test(readFileSync(path, "utf8"))
+    readFileSync(path, "utf8")
+      .split("\n")
+      .some(
+        (line) =>
+          /^\S/.test(line) &&
+          !line.startsWith("//") &&
+          !line.startsWith("/*") &&
+          !/\b(?:function|=>)/.test(line) &&
+          /\bawait\b/.test(line)
+      )
   );
   if (!hasTopLevelAwait) {
     return "no top-level await found in any TypeScript source module";
