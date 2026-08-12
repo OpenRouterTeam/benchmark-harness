@@ -1,16 +1,18 @@
-import { join } from "node:path";
-
 import { forEach, gen, tryPromise } from "effect/Effect";
 
 import type { ChatMessage, ModelUsage } from "../../harness/core";
 import { MessageRole, SolverError } from "../../harness/core";
 import type { SolverService } from "../../harness/solver";
 import { recordGenerationId } from "../../runtime/generation-ids";
+import type { SandboxSessionFactory } from "../harbor/sandbox";
 import { readTerminalBenchMeta } from "./dataset";
 import type { OriHarnessDef } from "./ori-harness";
-import type { SandboxSessionFactory } from "./sandbox";
 import type { ClaudeEffortLevel } from "./schema";
 import { DEFAULT_CLAUDE_EFFORT, DEFAULT_ORI_INSTALL_URL } from "./schema";
+import {
+  createTerminalBenchSession,
+  runTerminalBenchVerifier,
+} from "./session";
 import { ensureTasksCheckedOut } from "./tasks-source";
 
 const AGENT_TIMEOUT_MARGIN_MS = 30000;
@@ -67,13 +69,10 @@ export function oriSolver(
             message: `Failed to check out terminal-bench tasks: ${String(e)}`,
           }),
       });
-      const session = yield* sessionFactory.create({
-        imageTag: meta.dockerImage,
-        maxAgentTimeoutSec: meta.maxAgentTimeoutSec,
-        maxTestTimeoutSec: meta.maxTestTimeoutSec,
-        testDir: join(tasksDir, meta.taskId, "tests"),
-        testScript: join(tasksDir, meta.taskId, "tests", "test.sh"),
-        instructionPath: join(tasksDir, meta.taskId, "instruction.md"),
+      const session = yield* createTerminalBenchSession({
+        sessionFactory,
+        meta,
+        tasksDir,
         imageBuildSteps: harness.imageBuildSteps(agentPackage, oriInstallUrl),
       });
       try {
@@ -127,7 +126,7 @@ export function oriSolver(
           apiErrorStatus: parsed.apiErrorStatus,
           eventStream,
         });
-        const testResult = yield* session.runTests();
+        const testResult = yield* runTerminalBenchVerifier(session, meta);
         const { reward } = testResult;
         const testOutput = failureDetail
           ? `${failureDetail}\n\n${testResult.output}`

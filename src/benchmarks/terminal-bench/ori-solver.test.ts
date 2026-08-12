@@ -15,6 +15,10 @@ import {
   noopProgressLayer,
   noopCheckpointLayer,
 } from "../../../test/helpers/noop-progress-layer";
+import {
+  makeTerminalBenchFakeSandboxLayer,
+  SandboxSession,
+} from "../../../test/helpers/terminal-bench-sandbox";
 import type { Sample, TaskState } from "../../harness/core";
 import { initialTaskState, ScoreValue } from "../../harness/core";
 import { Solver } from "../../harness/solver";
@@ -26,13 +30,12 @@ import { readTerminalBenchMeta } from "./dataset";
 import { getOriHarness, ORI_HARNESSES } from "./ori-harness";
 import type { OriSolverOpts } from "./ori-solver";
 import { oriSolver } from "./ori-solver";
-import { makeFakeSandboxLayer, SandboxSession } from "./sandbox";
 import { DEFAULT_CLAUDE_PACKAGE } from "./schema";
 import { terminalBenchScorer } from "./scorer";
 import { seedTasksDir } from "./tasks-source";
 
 type ExecCalls = NonNullable<
-  Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]
+  Parameters<typeof makeTerminalBenchFakeSandboxLayer>[0]["execCalls"]
 >;
 
 const SOLVER_OPTS: OriSolverOpts = {
@@ -165,7 +168,7 @@ function sampleState(): ReturnType<typeof initialTaskState> {
 
 describe("terminal-bench ori solver", () => {
   it("stashes reward=1 and scores Correct when tests pass", async () => {
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       testOutput: "1 passed",
       agentEventStream: CLAUDE_STREAM,
@@ -183,7 +186,7 @@ describe("terminal-bench ori solver", () => {
   });
 
   it("records the agent identity in sample metadata", async () => {
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       agentEventStream: CLAUDE_STREAM,
       agentExitCode: 0,
@@ -195,7 +198,7 @@ describe("terminal-bench ori solver", () => {
   });
 
   it("extracts complete usage including reasoning tokens, cost and server tool use", async () => {
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       agentEventStream: CLAUDE_STREAM,
       agentExitCode: 0,
@@ -214,7 +217,7 @@ describe("terminal-bench ori solver", () => {
   });
 
   it("populates generationTimeMs from the reported duration", async () => {
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       agentEventStream: CLAUDE_STREAM,
       agentExitCode: 0,
@@ -224,7 +227,7 @@ describe("terminal-bench ori solver", () => {
   });
 
   it("collects every generation id so the parquet column is populated", async () => {
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       agentEventStream: CLAUDE_STREAM,
       agentExitCode: 0,
@@ -236,7 +239,7 @@ describe("terminal-bench ori solver", () => {
   });
 
   it("also stashes generation ids in metadata for direct inspection", async () => {
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       agentEventStream: CLAUDE_STREAM,
       agentExitCode: 0,
@@ -249,7 +252,7 @@ describe("terminal-bench ori solver", () => {
   });
 
   it("reconstructs assistant messages with reasoning instead of dumping raw jsonl", async () => {
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       agentEventStream: CLAUDE_STREAM,
       agentExitCode: 0,
@@ -264,7 +267,7 @@ describe("terminal-bench ori solver", () => {
   });
 
   it("keeps every raw stream event in responseItems", async () => {
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       agentEventStream: CLAUDE_STREAM,
       agentExitCode: 0,
@@ -276,7 +279,7 @@ describe("terminal-bench ori solver", () => {
   });
 
   it("uses the final result text as the completion", async () => {
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       agentEventStream: CLAUDE_STREAM,
       agentExitCode: 0,
@@ -286,7 +289,7 @@ describe("terminal-bench ori solver", () => {
   });
 
   it("falls back to zeroed usage when the stream carries no result event", async () => {
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 0,
       agentEventStream: "not json at all\n{broken",
       agentExitCode: 0,
@@ -303,7 +306,7 @@ describe("terminal-bench ori solver", () => {
   });
 
   it("still runs the verifier and records detail when the agent exits non-zero", async () => {
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 0,
       testOutput: "1 failed",
       agentEventStream: "boom",
@@ -325,7 +328,7 @@ describe("terminal-bench ori solver", () => {
       result: "overloaded",
       usage: { input_tokens: 1, output_tokens: 0 },
     });
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 0,
       testOutput: "1 failed",
       agentEventStream: errorStream,
@@ -340,7 +343,7 @@ describe("terminal-bench ori solver", () => {
 
   it("passes the model and api key through the exec environment", async () => {
     const execCalls: ExecCalls = [];
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       execCalls,
       agentExitCode: 0,
@@ -358,7 +361,7 @@ describe("terminal-bench ori solver", () => {
 
   it("requests stream-json so generation ids are emitted", async () => {
     const execCalls: ExecCalls = [];
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       execCalls,
       agentExitCode: 0,
@@ -375,7 +378,7 @@ describe("terminal-bench ori solver", () => {
   it("forwards an appended system prompt through the environment", async () => {
     const appendSystemPrompt = "Keep it simple.";
     const execCalls: ExecCalls = [];
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       execCalls,
       agentExitCode: 0,
@@ -394,7 +397,7 @@ describe("terminal-bench ori solver", () => {
   it("applies the effort level and defaults to medium", async () => {
     const defaultCalls: ExecCalls = [];
     await runOriSolver(
-      makeFakeSandboxLayer({
+      makeTerminalBenchFakeSandboxLayer({
         reward: 1,
         execCalls: defaultCalls,
         agentExitCode: 0,
@@ -403,7 +406,7 @@ describe("terminal-bench ori solver", () => {
     expect(defaultCalls[0]?.argv[2]).toContain("--effort medium");
     const maxCalls: ExecCalls = [];
     await runOriSolver(
-      makeFakeSandboxLayer({
+      makeTerminalBenchFakeSandboxLayer({
         reward: 1,
         execCalls: maxCalls,
         agentExitCode: 0,
@@ -415,7 +418,7 @@ describe("terminal-bench ori solver", () => {
 
   it("passes a claude system prompt override and tool lists through the environment", async () => {
     const execCalls: ExecCalls = [];
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       execCalls,
       agentExitCode: 0,
@@ -443,7 +446,7 @@ describe("terminal-bench ori solver", () => {
   it("applies claude config isolation only when requested", async () => {
     const withoutCalls: ExecCalls = [];
     await runOriSolver(
-      makeFakeSandboxLayer({
+      makeTerminalBenchFakeSandboxLayer({
         reward: 1,
         execCalls: withoutCalls,
         agentExitCode: 0,
@@ -454,7 +457,7 @@ describe("terminal-bench ori solver", () => {
     );
     const withCalls: ExecCalls = [];
     await runOriSolver(
-      makeFakeSandboxLayer({
+      makeTerminalBenchFakeSandboxLayer({
         reward: 1,
         execCalls: withCalls,
         agentExitCode: 0,
@@ -491,7 +494,7 @@ describe("terminal-bench ori solver", () => {
         usage: { input_tokens: 5, output_tokens: 5 },
       }),
     ].join("\n");
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       agentEventStream: stream,
       agentExitCode: 0,

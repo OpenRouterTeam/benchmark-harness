@@ -14,6 +14,10 @@ import {
   noopProgressLayer,
   noopCheckpointLayer,
 } from "../../../test/helpers/noop-progress-layer";
+import {
+  makeTerminalBenchFakeSandboxLayer,
+  SandboxSession,
+} from "../../../test/helpers/terminal-bench-sandbox";
 import type { Sample } from "../../harness/core";
 import { initialTaskState } from "../../harness/core";
 import { Solver } from "../../harness/solver";
@@ -28,7 +32,6 @@ import {
 } from "../../runtime/generation-ids";
 import { getOriHarness } from "./ori-harness";
 import { oriSolver } from "./ori-solver";
-import { makeFakeSandboxLayer, SandboxSession } from "./sandbox";
 import { terminalBenchScorer } from "./scorer";
 import { seedTasksDir } from "./tasks-source";
 
@@ -86,7 +89,7 @@ function sampleState(): ReturnType<typeof initialTaskState> {
 }
 
 async function runOriSampleToParquetRow() {
-  const sandboxLayer = makeFakeSandboxLayer({
+  const sandboxLayer = makeTerminalBenchFakeSandboxLayer({
     reward: 1,
     testOutput: "1 passed",
     agentEventStream: CLAUDE_STREAM,

@@ -15,6 +15,10 @@ import {
   noopProgressLayer,
   noopCheckpointLayer,
 } from "../../../test/helpers/noop-progress-layer";
+import {
+  makeTerminalBenchFakeSandboxLayer,
+  SandboxSession,
+} from "../../../test/helpers/terminal-bench-sandbox";
 import type { Sample, TaskState } from "../../harness/core";
 import { initialTaskState, ScoreValue } from "../../harness/core";
 import { Solver } from "../../harness/solver";
@@ -23,7 +27,6 @@ import {
   resetGenerationIds,
 } from "../../runtime/generation-ids";
 import { readTerminalBenchMeta } from "./dataset";
-import { makeFakeSandboxLayer, SandboxSession } from "./sandbox";
 import { terminalBenchScorer } from "./scorer";
 import type { TerminalBenchSolverOpts } from "./solver";
 import { parseModel, piSolver } from "./solver";
@@ -127,7 +130,9 @@ const SOLVER_OPTS: TerminalBenchSolverOpts = {
   thinking: "medium",
 };
 
-function sampleState(): ReturnType<typeof initialTaskState> {
+function sampleState(
+  metadataOverrides?: Readonly<Record<string, unknown>>
+): ReturnType<typeof initialTaskState> {
   const sample: Sample = {
     id: "terminal_bench-adaptive-rejection-sampler",
     input: "implement an adaptive rejection sampler",
@@ -139,13 +144,129 @@ function sampleState(): ReturnType<typeof initialTaskState> {
       maxTestTimeoutSec: 900,
       difficulty: "medium",
       category: "scientific-computing",
+      ...metadataOverrides,
     },
   };
   return initialTaskState(sample);
 }
+
+async function runPiSolverWithSample(
+  sandboxLayer: Layer<SandboxSession>,
+  metadataOverrides: Readonly<Record<string, unknown>>
+): Promise<TaskState> {
+  const solverLayer = layerEffect(Solver)(
+    gen(function* () {
+      const sessionFactory = yield* SandboxSession;
+      return Solver.of(piSolver(sessionFactory, SOLVER_OPTS));
+    })
+  );
+  return runPromise(
+    gen(function* () {
+      const solver = yield* Solver;
+      return yield* solver(sampleState(metadataOverrides));
+    }).pipe(
+      provide(
+        layerMergeAll(
+          solverLayer.pipe(layerProvide(sandboxLayer)),
+          noopProgressLayer,
+          noopCheckpointLayer
+        )
+      )
+    )
+  );
+}
+describe("terminal-bench harbor sandbox convergence", () => {
+  it("honors the resources and network policy the task declares", async () => {
+    const creates: NonNullable<
+      Parameters<typeof makeTerminalBenchFakeSandboxLayer>[0]["creates"]
+    > = [];
+    await runPiSolverWithSample(
+      makeTerminalBenchFakeSandboxLayer({
+        reward: 1,
+        creates,
+        agentExitCode: 0,
+      }),
+      { cpus: 4, memoryMb: 8192, allowInternet: false }
+    );
+    const create = creates[0];
+    if (create === undefined) {
+      throw new Error("fake sandbox did not capture the session creation");
+    }
+    expect(create.cpus).toBe(4);
+    expect(create.memoryMb).toBe(8192);
+    expect(create.allowInternet).toBe(false);
+  });
+
+  it("defaults resources when a task omits them", async () => {
+    const creates: NonNullable<
+      Parameters<typeof makeTerminalBenchFakeSandboxLayer>[0]["creates"]
+    > = [];
+    await runPiSolver(
+      makeTerminalBenchFakeSandboxLayer({
+        reward: 1,
+        creates,
+        agentExitCode: 0,
+      })
+    );
+    const create = creates[0];
+    if (create === undefined) {
+      throw new Error("fake sandbox did not capture the session creation");
+    }
+    expect(create.cpus).toBe(1);
+    expect(create.memoryMb).toBe(2048);
+    expect(create.allowInternet).toBe(true);
+  });
+
+  it("uploads the task tests and instruction into the sandbox", async () => {
+    const creates: NonNullable<
+      Parameters<typeof makeTerminalBenchFakeSandboxLayer>[0]["creates"]
+    > = [];
+    await runPiSolver(
+      makeTerminalBenchFakeSandboxLayer({
+        reward: 1,
+        creates,
+        agentExitCode: 0,
+      })
+    );
+    const uploads = creates[0]?.uploads ?? [];
+    expect(uploads).toHaveLength(2);
+    expect(uploads[0]).toMatchObject({ remotePath: "/tests", kind: "dir" });
+    expect(uploads[1]).toMatchObject({
+      remotePath: "/instruction.md",
+      kind: "file",
+    });
+  });
+
+  it("sizes the sandbox timeout to cover agent plus verifier", async () => {
+    const creates: NonNullable<
+      Parameters<typeof makeTerminalBenchFakeSandboxLayer>[0]["creates"]
+    > = [];
+    await runPiSolver(
+      makeTerminalBenchFakeSandboxLayer({
+        reward: 1,
+        creates,
+        agentExitCode: 0,
+      })
+    );
+    expect(creates[0]?.timeoutSec).toBe(900 + 900 + 300);
+    expect(creates[0]?.workdir).toBe("/app");
+  });
+
+  it("reads a json reward document the way harbor does", async () => {
+    const layer = makeTerminalBenchFakeSandboxLayer({
+      reward: 1,
+      testOutput: "ok",
+      agentEventStream: PI_STREAM_WITH_RESPONSE_ID,
+      agentExitCode: 0,
+    });
+    const finalState = await runPiSolver(layer);
+    expect(readTerminalBenchMeta(finalState.sample.metadata)?.reward).toBe(1);
+  });
+});
+
 describe("terminal-bench pi solver", () => {
   it("stashes reward=1 and scores Correct when tests pass", async () => {
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       testOutput: "1 passed",
       agentEventStream: PI_EVENT_STREAM,
@@ -163,7 +284,7 @@ describe("terminal-bench pi solver", () => {
   });
 
   it("stashes reward=0 and scores Incorrect when tests fail", async () => {
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 0,
       testOutput: "1 failed",
       agentEventStream: PI_EVENT_STREAM,
@@ -179,7 +300,7 @@ describe("terminal-bench pi solver", () => {
   });
 
   it("collects pi responseIds so the generation_ids column is populated", async () => {
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       agentEventStream: PI_STREAM_WITH_RESPONSE_ID,
       agentExitCode: 0,
@@ -209,7 +330,7 @@ describe("terminal-bench pi solver", () => {
   });
 
   it("parses pi reasoning tokens instead of reporting zero", async () => {
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       agentEventStream: PI_STREAM_WITH_RESPONSE_ID,
       agentExitCode: 0,
@@ -220,7 +341,7 @@ describe("terminal-bench pi solver", () => {
   });
 
   it("surfaces a pi api error that would otherwise look like a zero-cost run", async () => {
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 0,
       testOutput: "1 failed",
       agentEventStream: PI_STREAM_API_ERROR,
@@ -243,7 +364,7 @@ describe("terminal-bench pi solver", () => {
       JSON.stringify({ type: "turn_end" }),
       PI_STREAM_WITH_RESPONSE_ID,
     ].join("\n");
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       agentEventStream: stream,
       agentExitCode: 0,
@@ -254,7 +375,7 @@ describe("terminal-bench pi solver", () => {
   });
 
   it("keeps pi stream events as responseItems", async () => {
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       agentEventStream: PI_STREAM_WITH_RESPONSE_ID,
       agentExitCode: 0,
@@ -265,7 +386,7 @@ describe("terminal-bench pi solver", () => {
   });
 
   it("measures a wall-clock generationTimeMs for pi", async () => {
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       agentEventStream: PI_STREAM_WITH_RESPONSE_ID,
       agentExitCode: 0,
@@ -278,9 +399,9 @@ describe("terminal-bench pi solver", () => {
 
   it("passes a pi system prompt override and tool lists through the environment", async () => {
     const execCalls: NonNullable<
-      Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]
+      Parameters<typeof makeTerminalBenchFakeSandboxLayer>[0]["execCalls"]
     > = [];
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       execCalls,
       agentExitCode: 0,
@@ -305,10 +426,10 @@ describe("terminal-bench pi solver", () => {
 
   it("applies pi config isolation flags only when requested", async () => {
     const withoutCalls: NonNullable<
-      Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]
+      Parameters<typeof makeTerminalBenchFakeSandboxLayer>[0]["execCalls"]
     > = [];
     await runPiSolver(
-      makeFakeSandboxLayer({
+      makeTerminalBenchFakeSandboxLayer({
         reward: 1,
         execCalls: withoutCalls,
         agentExitCode: 0,
@@ -316,10 +437,10 @@ describe("terminal-bench pi solver", () => {
     );
     expect(withoutCalls[0]?.argv[2]).not.toContain("--no-context-files");
     const withCalls: NonNullable<
-      Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]
+      Parameters<typeof makeTerminalBenchFakeSandboxLayer>[0]["execCalls"]
     > = [];
     await runPiSolver(
-      makeFakeSandboxLayer({
+      makeTerminalBenchFakeSandboxLayer({
         reward: 1,
         execCalls: withCalls,
         agentExitCode: 0,
@@ -335,9 +456,9 @@ describe("terminal-bench pi solver", () => {
 
   it("supports the max thinking level", async () => {
     const execCalls: NonNullable<
-      Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]
+      Parameters<typeof makeTerminalBenchFakeSandboxLayer>[0]["execCalls"]
     > = [];
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       execCalls,
       agentExitCode: 0,
@@ -347,7 +468,7 @@ describe("terminal-bench pi solver", () => {
   });
 
   it("labels the pi path in metadata so harnesses are separable", async () => {
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       agentEventStream: PI_STREAM_WITH_RESPONSE_ID,
       agentExitCode: 0,
@@ -358,7 +479,7 @@ describe("terminal-bench pi solver", () => {
   });
 
   it("parses usage from the pi event stream", async () => {
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       agentEventStream: PI_EVENT_STREAM,
       agentExitCode: 0,
@@ -377,9 +498,9 @@ describe("terminal-bench pi solver", () => {
 
   it("runs pi without an appended system prompt by default", async () => {
     const execCalls: NonNullable<
-      Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]
+      Parameters<typeof makeTerminalBenchFakeSandboxLayer>[0]["execCalls"]
     > = [];
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       execCalls,
       agentExitCode: 0,
@@ -396,9 +517,9 @@ describe("terminal-bench pi solver", () => {
   it("passes an appended system prompt to pi through the exec environment", async () => {
     const appendSystemPrompt = "Work like a caveman: keep it simple.";
     const execCalls: NonNullable<
-      Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]
+      Parameters<typeof makeTerminalBenchFakeSandboxLayer>[0]["execCalls"]
     > = [];
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       execCalls,
       agentExitCode: 0,
@@ -416,9 +537,9 @@ describe("terminal-bench pi solver", () => {
 
   it("does not write a pi models.json for non-openrouter providers", async () => {
     const execCalls: NonNullable<
-      Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]
+      Parameters<typeof makeTerminalBenchFakeSandboxLayer>[0]["execCalls"]
     > = [];
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       execCalls,
       agentExitCode: 0,
@@ -459,9 +580,9 @@ describe("terminal-bench pi solver", () => {
 
   it("writes a provider-level anthropic cache compat for concrete openrouter models", async () => {
     const execCalls: NonNullable<
-      Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]
+      Parameters<typeof makeTerminalBenchFakeSandboxLayer>[0]["execCalls"]
     > = [];
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       execCalls,
       agentExitCode: 0,
@@ -493,9 +614,9 @@ describe("terminal-bench pi solver", () => {
 
   it("normalizes a bare OpenRouter router model before invoking pi", async () => {
     const execCalls: NonNullable<
-      Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]
+      Parameters<typeof makeTerminalBenchFakeSandboxLayer>[0]["execCalls"]
     > = [];
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       execCalls,
       agentExitCode: 0,
@@ -530,9 +651,9 @@ describe("terminal-bench pi solver", () => {
 
   it("writes a pi models.json into the agent dir for openrouter router models", async () => {
     const execCalls: NonNullable<
-      Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]
+      Parameters<typeof makeTerminalBenchFakeSandboxLayer>[0]["execCalls"]
     > = [];
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       execCalls,
       agentExitCode: 0,
@@ -573,9 +694,9 @@ describe("terminal-bench pi solver", () => {
 
   it("writes a session header for an unknown preset model", async () => {
     const execCalls: NonNullable<
-      Parameters<typeof makeFakeSandboxLayer>[0]["execCalls"]
+      Parameters<typeof makeTerminalBenchFakeSandboxLayer>[0]["execCalls"]
     > = [];
-    const layer = makeFakeSandboxLayer({
+    const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       execCalls,
       agentExitCode: 0,

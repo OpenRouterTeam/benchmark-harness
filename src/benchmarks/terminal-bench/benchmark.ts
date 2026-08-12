@@ -13,18 +13,20 @@ import type { Dataset } from "../../harness/dataset";
 import { Scorer } from "../../harness/scorer";
 import { Solver } from "../../harness/solver";
 import { TERMINAL_BENCH_META } from "../benchmark-meta";
+import { makeModalSandboxLayer } from "../harbor/modal-sandbox";
+import { SandboxSession } from "../harbor/sandbox";
 import type { Benchmark, BenchmarkRunInput } from "../types";
 import { makeTerminalBenchDatasetLayer } from "./dataset";
-import { makeModalSandboxLayer } from "./modal-sandbox";
 import { getOriHarness } from "./ori-harness";
 import type { OriSolverOpts } from "./ori-solver";
 import { oriSolver } from "./ori-solver";
-import { SandboxSession } from "./sandbox";
 import { terminalBenchScorer } from "./scorer";
 import type { TerminalBenchSolverOpts } from "./solver";
 import { piSolver } from "./solver";
 
 export const TERMINAL_BENCH_ID = TERMINAL_BENCH_META.id;
+
+const TERMINAL_BENCH_APP_NAME = "openrouter-terminal-bench" as const;
 
 function makeTerminalBenchLayer(
   input: BenchmarkRunInput
@@ -94,6 +96,7 @@ function makeTerminalBenchLayer(
     }),
   });
   const sandboxLayer: Layer<SandboxSession> = makeModalSandboxLayer({
+    appName: TERMINAL_BENCH_APP_NAME,
     environment: benchmarkConfig.modalEnv,
   });
   const solverLayer = layerEffect(Solver)(

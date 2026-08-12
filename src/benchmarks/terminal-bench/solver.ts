@@ -1,5 +1,3 @@
-import { join } from "node:path";
-
 import { currentTimeMillis } from "effect/Clock";
 import { forEach, gen, tryPromise } from "effect/Effect";
 
@@ -9,11 +7,15 @@ import type { SolverService } from "../../harness/solver";
 import { Either } from "../../internal/either";
 import { isRecord } from "../../internal/guards";
 import { recordGenerationId } from "../../runtime/generation-ids";
+import type { SandboxSessionFactory } from "../harbor/sandbox";
 import { readTerminalBenchMeta } from "./dataset";
 import { buildPiModelsJson } from "./pi-custom-models";
-import type { SandboxSessionFactory } from "./sandbox";
 import type { PiThinkingLevel } from "./schema";
 import { DEFAULT_PI_PACKAGE, DEFAULT_PI_THINKING } from "./schema";
+import {
+  createTerminalBenchSession,
+  runTerminalBenchVerifier,
+} from "./session";
 import { ensureTasksCheckedOut } from "./tasks-source";
 
 export interface TerminalBenchSolverOpts {
@@ -64,13 +66,10 @@ export function piSolver(
             message: `Failed to check out terminal-bench tasks: ${String(e)}`,
           }),
       });
-      const session = yield* sessionFactory.create({
-        imageTag: meta.dockerImage,
-        maxAgentTimeoutSec: meta.maxAgentTimeoutSec,
-        maxTestTimeoutSec: meta.maxTestTimeoutSec,
-        testDir: join(tasksDir, meta.taskId, "tests"),
-        testScript: join(tasksDir, meta.taskId, "tests", "test.sh"),
-        instructionPath: join(tasksDir, meta.taskId, "instruction.md"),
+      const session = yield* createTerminalBenchSession({
+        sessionFactory,
+        meta,
+        tasksDir,
         imageBuildSteps: buildPiImageSteps(piPackage),
       });
       let reward = 0;
@@ -137,7 +136,7 @@ export function piSolver(
         if (failureReasons.length > 0) {
           piExitDetail = `pi ${failureReasons.join(", ")}. last output: ${eventStream.slice(-500)}`;
         }
-        const testResult = yield* session.runTests();
+        const testResult = yield* runTerminalBenchVerifier(session, meta);
         ({ reward } = testResult);
         testOutput = piExitDetail
           ? `${piExitDetail}\n\n${testResult.output}`
