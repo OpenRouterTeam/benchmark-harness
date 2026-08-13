@@ -20,6 +20,12 @@ import {
   BENCH_HARNESS_APP_TITLE,
 } from "../../providers/openrouter-model";
 import { recordGenerationId } from "../../runtime/generation-ids";
+import {
+  buildResponseCacheSalt,
+  getCurrentEpoch,
+  RESPONSE_CACHE_HEADER,
+  RESPONSE_CACHE_SALT_FIELD,
+} from "../../runtime/response-cache";
 import type { UserModelConfig } from "./types";
 import { USER_SIM_GUIDELINES } from "./user-sim-guidelines";
 
@@ -117,25 +123,32 @@ export class UserSimulator {
   private readonly callModelOnce = (
     model: string
   ): Effect<UserModelResponse, SimError, HttpClient.HttpClient> => {
-    const request = HttpClientRequest.post(
-      `${this.baseUrl}/chat/completions`
-    ).pipe(
-      HttpClientRequest.setHeaders({
-        Authorization: `Bearer ${this.config.apiKey}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": BENCH_HARNESS_APP_REFERRER,
-        "X-OpenRouter-Title": BENCH_HARNESS_APP_TITLE,
-        ...(this.config.sessionId !== undefined && {
-          "x-session-id": this.config.sessionId,
-        }),
-      }),
-      HttpClientRequest.bodyUnsafeJson({
-        model,
-        messages: this.messages,
-        temperature: 0,
-      })
-    );
+    const { baseUrl, config, messages } = this;
     return gen(function* () {
+      const epoch = yield* getCurrentEpoch;
+      const cacheSalt = buildResponseCacheSalt(config.sessionId, epoch);
+      const request = HttpClientRequest.post(
+        `${baseUrl}/chat/completions`
+      ).pipe(
+        HttpClientRequest.setHeaders({
+          Authorization: `Bearer ${config.apiKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": BENCH_HARNESS_APP_REFERRER,
+          "X-OpenRouter-Title": BENCH_HARNESS_APP_TITLE,
+          [RESPONSE_CACHE_HEADER]: "true",
+          ...(config.sessionId !== undefined && {
+            "x-session-id": config.sessionId,
+          }),
+        }),
+        HttpClientRequest.bodyUnsafeJson({
+          model,
+          messages,
+          temperature: 0,
+          ...(cacheSalt !== undefined && {
+            [RESPONSE_CACHE_SALT_FIELD]: cacheSalt,
+          }),
+        })
+      );
       const client = yield* HttpClient.HttpClient;
       const response = yield* client.execute(request);
       if (response.status < 200 || response.status >= 300) {

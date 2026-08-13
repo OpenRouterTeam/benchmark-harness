@@ -35,6 +35,12 @@ import { isDefinedAndNotNull, isRecord } from "../internal/guards";
 import { wLog } from "../internal/log";
 import { parseSchema, z } from "../internal/zod";
 import { recordGenerationId } from "../runtime/generation-ids";
+import {
+  buildResponseCacheSalt,
+  getCurrentEpoch,
+  RESPONSE_CACHE_HEADER,
+  RESPONSE_CACHE_SALT_FIELD,
+} from "../runtime/response-cache";
 import type { RetryConfig } from "../runtime/retry";
 import { rateLimitRetrySchedule } from "../runtime/retry";
 import {
@@ -113,6 +119,7 @@ export function generate(
     "Content-Type": "application/json",
     "HTTP-Referer": BENCH_HARNESS_APP_REFERRER,
     "X-OpenRouter-Title": BENCH_HARNESS_APP_TITLE,
+    [RESPONSE_CACHE_HEADER]: "true",
   };
   if (genConfig.endpointId !== undefined) {
     headers["X-OR-Endpoint-Id"] = genConfig.endpointId;
@@ -136,6 +143,8 @@ export function generate(
       : toWireAutoRouterPlugin(autoRouterPlugin);
   return gen(function* () {
     const startedAt = performance.now();
+    const epoch = yield* getCurrentEpoch;
+    const cacheSalt = buildResponseCacheSalt(opts.sessionId, epoch);
     const body = {
       model,
       messages: messages.map(toApiMessage),
@@ -155,6 +164,9 @@ export function generate(
       ...(sendSort && { provider: { sort: genConfig.sort } }),
       ...(wireAutoRouterPlugin !== undefined && {
         plugins: [wireAutoRouterPlugin],
+      }),
+      ...(cacheSalt !== undefined && {
+        [RESPONSE_CACHE_SALT_FIELD]: cacheSalt,
       }),
       ...genConfig.extraBody,
     };

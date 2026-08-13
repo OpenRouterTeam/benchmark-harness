@@ -28,6 +28,7 @@ import {
   getCollectedGenerationIds,
   resetGenerationIds,
 } from "../runtime/generation-ids";
+import { setCurrentEpoch } from "../runtime/response-cache";
 import { makeOpenRouterModelLayer } from "./openrouter-model";
 
 const CHAT_RESULT = {
@@ -290,6 +291,82 @@ describe("openrouter-model request parity", () => {
     expect(
       captured.value?.headers["cloudflare-workers-version-overrides"]
     ).toBeUndefined();
+  });
+});
+describe("openrouter-model response caching", () => {
+  let restore: (() => void) | undefined;
+  afterEach(() => {
+    restore?.();
+    restore = undefined;
+  });
+  it("always sends the response-cache header", async () => {
+    const captured = newHolder();
+    restore = installFetchCapture(captured);
+    const layer = makeOpenRouterModelLayer({
+      model: "openai/gpt-4o",
+      apiKey: "sk-test",
+    });
+    await runPromiseExit(
+      gen(function* run() {
+        const model = yield* Model;
+        yield* model.generate(MESSAGES, {});
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    expect(captured.value?.headers["x-openrouter-cache"]).toBe("true");
+  });
+  it("sends a session- and epoch-scoped cache_salt body field", async () => {
+    const captured = newHolder();
+    restore = installFetchCapture(captured);
+    const layer = makeOpenRouterModelLayer({
+      model: "openai/gpt-4o",
+      apiKey: "sk-test",
+      sessionId: "wf-123",
+    });
+    await runPromiseExit(
+      gen(function* run() {
+        yield* setCurrentEpoch(1);
+        const model = yield* Model;
+        yield* model.generate(MESSAGES, {});
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    expect(captured.value?.body["cache_salt"]).toBe("wf-123:epoch-1");
+  });
+  it("varies the cache_salt across epochs", async () => {
+    const captured = newHolder();
+    restore = installFetchCapture(captured);
+    const layer = makeOpenRouterModelLayer({
+      model: "openai/gpt-4o",
+      apiKey: "sk-test",
+      sessionId: "wf-123",
+    });
+    const salts: unknown[] = [];
+    await runPromiseExit(
+      gen(function* run() {
+        const model = yield* Model;
+        yield* setCurrentEpoch(0);
+        yield* model.generate(MESSAGES, {});
+        salts.push(captured.value?.body["cache_salt"]);
+        yield* setCurrentEpoch(1);
+        yield* model.generate(MESSAGES, {});
+        salts.push(captured.value?.body["cache_salt"]);
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    expect(salts).toEqual(["wf-123:epoch-0", "wf-123:epoch-1"]);
+  });
+  it("omits cache_salt when session id and epoch are unset", async () => {
+    const captured = newHolder();
+    restore = installFetchCapture(captured);
+    const layer = makeOpenRouterModelLayer({
+      model: "openai/gpt-4o",
+      apiKey: "sk-test",
+    });
+    await runPromiseExit(
+      gen(function* run() {
+        const model = yield* Model;
+        yield* model.generate(MESSAGES, {});
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    expect(captured.value?.body["cache_salt"]).toBeUndefined();
   });
 });
 describe("openrouter-model auto-router plugin", () => {

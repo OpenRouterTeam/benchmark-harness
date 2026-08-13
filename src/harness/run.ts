@@ -22,6 +22,7 @@ import {
   getCollectedGenerationIds,
   resetGenerationIds,
 } from "../runtime/generation-ids";
+import { setCurrentEpoch } from "../runtime/response-cache";
 import type {
   DatasetError,
   ModelError,
@@ -239,6 +240,7 @@ function evaluateOne(
     })
   );
   return resetGenerationIds.pipe(
+    effectFlatMap(() => setCurrentEpoch(epoch)),
     effectFlatMap(() =>
       evaluation.pipe(
         effectFlatMap((outcome) =>

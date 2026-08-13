@@ -27,6 +27,12 @@ import { isRecord } from "../internal/guards";
 import { z } from "../internal/zod";
 import { recordGenerationId } from "../runtime/generation-ids";
 import {
+  buildResponseCacheSalt,
+  getCurrentEpoch,
+  RESPONSE_CACHE_HEADER,
+  RESPONSE_CACHE_SALT_FIELD,
+} from "../runtime/response-cache";
+import {
   BENCH_HARNESS_APP_REFERRER,
   BENCH_HARNESS_APP_TITLE,
 } from "./openrouter-model";
@@ -117,12 +123,13 @@ function normalizeBaseUrl(baseUrl: string): string {
 export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
   const send = (
     body: ResponsesRequest,
-    options: ResponsesSendOptions
+    options: ResponsesSendOptions,
+    effectiveExtraBody: Readonly<Record<string, unknown>> | undefined
   ): Effect<ResponsesResult, ResponsesError> => {
     let identifiers: ModelErrorIdentifiers = {};
     const httpClient = new HTTPClient({
       fetcher: async (input, init) => {
-        const request = await mergeExtraBody(input, init, options.extraBody);
+        const request = await mergeExtraBody(input, init, effectiveExtraBody);
         const response = await fetch(request);
         identifiers = modelErrorIdentifiersFromFetchHeaders(response.headers);
         options.onResponseIdentifiers?.(identifiers);
@@ -147,6 +154,7 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
       ...(config.sessionId !== undefined && {
         "x-session-id": config.sessionId,
       }),
+      [RESPONSE_CACHE_HEADER]: "true",
     };
     return tryPromise({
       try: async (signal) => {
@@ -154,7 +162,7 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
         const requestBody = {
           ...body,
           ...(body.cacheControl === undefined &&
-            options.extraBody?.["cache_control"] === undefined && {
+            effectiveExtraBody?.["cache_control"] === undefined && {
               cacheControl: { type: "ephemeral" as const },
             }),
           stream: true,
@@ -195,7 +203,25 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
       )
     );
   };
-  return layerSucceed(Responses, Responses.of({ send }));
+  const sendWithCacheSalt = (
+    body: ResponsesRequest,
+    options: ResponsesSendOptions
+  ): Effect<ResponsesResult, ResponsesError> => {
+    return getCurrentEpoch.pipe(
+      flatMap((epoch) => {
+        const cacheSalt = buildResponseCacheSalt(config.sessionId, epoch);
+        const effectiveExtraBody =
+          cacheSalt === undefined
+            ? options.extraBody
+            : {
+                [RESPONSE_CACHE_SALT_FIELD]: cacheSalt,
+                ...options.extraBody,
+              };
+        return send(body, options, effectiveExtraBody);
+      })
+    );
+  };
+  return layerSucceed(Responses, Responses.of({ send: sendWithCacheSalt }));
 }
 
 async function mergeExtraBody(
