@@ -28,6 +28,13 @@ describe("buildSearchRequestBody", () => {
       lane: lane({ engine: "exa", maxAgentTurns: 25, maxResults: 10 }),
     });
     expect(body.model).toBe(BASE.model);
+    expect(body.input).toEqual([
+      {
+        type: "message",
+        role: "user",
+        content: BASE.problem,
+      },
+    ]);
     expect(body.maxToolCalls).toBe(25);
     expect(body.plugins).toBeUndefined();
     expect(body.tools).toEqual([

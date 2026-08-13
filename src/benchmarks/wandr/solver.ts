@@ -38,6 +38,7 @@ import type {
   ResponsesGenerateConfig,
   ResponsesModelService,
 } from "../../providers/responses-model";
+import { responsesMessage } from "../../providers/responses-model";
 import type { InferenceOverride } from "../benchmark-config";
 import { AGENT_ENV, runAgentLoop } from "../harbor/agent-loop";
 import { BASH_RESPONSES_TOOL_DEFINITION } from "../harbor/prompts";
@@ -232,13 +233,13 @@ export function makeWandrSolver(
           model,
           session: agentSession,
           initialInput: [
-            {
-              role: "user",
-              content: buildWandrInstanceMessage(
+            responsesMessage(
+              "user",
+              buildWandrInstanceMessage(
                 state.sample.input,
                 meta.requiredFilePaths
-              ),
-            },
+              )
+            ),
           ],
           genConfig: generationConfig,
           stepLimit: options.stepLimit,

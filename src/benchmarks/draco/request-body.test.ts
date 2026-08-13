@@ -160,6 +160,9 @@ describe("buildSoloBody", () => {
   it("builds a tooled solo body with instructions + tools + budget prefix", () => {
     const body = buildSoloBody("Q?", config());
     expect(body.model).toBe("openai/gpt-4o-mini");
+    expect(body.input).toEqual([
+      expect.objectContaining({ type: "message", role: "user" }),
+    ]);
     expect(body.instructions).toEqual(expect.any(String));
     expect(body.maxToolCalls).toBe(16);
     expect(body.maxOutputTokens).toBe(16384);
@@ -193,6 +196,9 @@ describe("buildFusionBody", () => {
       })
     );
     expect(body.model).toBe("openrouter/fusion");
+    expect(body.input).toEqual([
+      expect.objectContaining({ type: "message", role: "user" }),
+    ]);
     expect(body.instructions).toEqual(expect.stringContaining("Use Fusion."));
     const fusionTool = (body.tools ?? []).find(isFusion)!;
     const params = fusionTool.parameters ?? {};

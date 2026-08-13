@@ -18,6 +18,7 @@ import { getOrNull } from "effect/Option";
 
 import type { ValueOf } from "../../internal/guards";
 import { isRecord } from "../../internal/guards";
+import { responsesMessage } from "../../providers/responses-model";
 import {
   AGENT_SYSTEM_PROMPT,
   FUSION_CLASSIFIER_DIRECTIVE,
@@ -313,10 +314,7 @@ export function buildFusionBody(
     model: "openrouter/fusion",
     instructions: FUSION_CLASSIFIER_DIRECTIVE + AGENT_SYSTEM_PROMPT,
     input: [
-      {
-        role: "user" as const,
-        content: buildInputPrefix(MAX_TOOL_CALLS) + problem,
-      },
+      responsesMessage("user", buildInputPrefix(MAX_TOOL_CALLS) + problem),
     ],
     maxToolCalls: MAX_TOOL_CALLS,
     maxOutputTokens: MAX_OUTPUT_TOKENS,
@@ -334,7 +332,7 @@ export function buildSoloBody(
   const input = hasTools ? buildInputPrefix(MAX_TOOL_CALLS) + problem : problem;
   return {
     model: config.model,
-    input: [{ role: "user" as const, content: input }],
+    input: [responsesMessage("user", input)],
     maxToolCalls: MAX_TOOL_CALLS,
     maxOutputTokens: MAX_OUTPUT_TOKENS,
     ...(hasTools && { instructions: AGENT_SYSTEM_PROMPT, tools }),
