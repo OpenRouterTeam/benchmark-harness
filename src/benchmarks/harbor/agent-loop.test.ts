@@ -90,7 +90,9 @@ function failingThenSucceedingSandbox(failTimes: number): {
   };
 }
 
-const INITIAL_INPUT = [{ role: "user", content: "do the task" }];
+const INITIAL_INPUT = [
+  { type: "message", role: "user", content: "do the task" },
+];
 
 const GEN_CONFIG = { instructions: "Use bash." };
 

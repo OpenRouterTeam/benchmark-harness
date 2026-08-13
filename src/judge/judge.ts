@@ -14,6 +14,7 @@ import {
   toModelError,
   usageFromResponses,
 } from "../providers/responses-client";
+import { responsesMessage } from "../providers/responses-model";
 import type { RetryConfig } from "../runtime/retry";
 import { rateLimitRetrySchedule } from "../runtime/retry";
 
@@ -61,7 +62,7 @@ export function judgeCall<T>(
         };
   const body: ResponsesRequest = {
     model: config.judgeModel,
-    input: [{ role: "user" as const, content: spec.userInput }],
+    input: [responsesMessage("user", spec.userInput)],
     ...(text !== undefined && { text }),
     ...(spec.instructions !== undefined && { instructions: spec.instructions }),
     ...(config.temperature !== undefined && {
