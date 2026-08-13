@@ -26,6 +26,8 @@ import {
   getCurrentRetryAttempt,
   RESPONSE_CACHE_HEADER,
   RESPONSE_CACHE_SALT_FIELD,
+  RESPONSE_CACHE_STATUS_HEADER,
+  RESPONSE_CACHE_STATUS_HIT,
   withRetryAttemptSalt,
 } from "../../runtime/response-cache";
 import type { UserModelConfig } from "./types";
@@ -186,7 +188,11 @@ export class UserSimulator {
           })
         );
       }
-      yield* recordGenerationId(parsed.right.id);
+      yield* recordGenerationId(
+        parsed.right.id,
+        response.headers[RESPONSE_CACHE_STATUS_HEADER] ===
+          RESPONSE_CACHE_STATUS_HIT
+      );
       const message = parsed.right.choices[0]?.message;
       const content = message?.content ?? "";
       return {

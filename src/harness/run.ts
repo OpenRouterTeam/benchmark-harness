@@ -18,10 +18,8 @@ import {
   zipWithIndex as streamZipWithIndex,
 } from "effect/Stream";
 
-import {
-  getCollectedGenerationIds,
-  resetGenerationIds,
-} from "../runtime/generation-ids";
+import { resetGenerationIds } from "../runtime/generation-ids";
+import { resolveCollectedGenerationIds } from "../runtime/generation-resolver";
 import { setCurrentEpoch } from "../runtime/response-cache";
 import type {
   DatasetError,
@@ -244,7 +242,7 @@ function evaluateOne(
     effectFlatMap(() =>
       evaluation.pipe(
         effectFlatMap((outcome) =>
-          getCollectedGenerationIds.pipe(
+          resolveCollectedGenerationIds.pipe(
             effectMap((ids) =>
               ids.length > 0
                 ? {

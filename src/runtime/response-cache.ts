@@ -5,6 +5,10 @@ import { get, set, unsafeMake } from "effect/FiberRef";
 
 export const RESPONSE_CACHE_HEADER = "x-openrouter-cache";
 
+export const RESPONSE_CACHE_STATUS_HEADER = "x-openrouter-cache-status";
+
+export const RESPONSE_CACHE_STATUS_HIT = "HIT";
+
 export const RESPONSE_CACHE_SALT_FIELD = "cache_salt";
 
 export const currentEpochRef: FiberRef<number | undefined> = unsafeMake<

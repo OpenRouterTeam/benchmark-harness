@@ -3,11 +3,26 @@ import { describe, expect, it } from "bun:test";
 import { all, flatMap, forEach, runPromise } from "effect/Effect";
 
 import {
+  getCollectedGenerationIdEntries,
   getCollectedGenerationIds,
   recordGenerationId,
   resetGenerationIds,
 } from "./generation-ids";
 describe("generation id collector", () => {
+  it("flags cache-hit ids in collected entries", async () => {
+    const entries = await runPromise(
+      resetGenerationIds.pipe(
+        flatMap(() => recordGenerationId("gen-real")),
+        flatMap(() => recordGenerationId("gen-dummy", true)),
+        flatMap(() => getCollectedGenerationIdEntries)
+      )
+    );
+    const sorted = [...entries].toSorted((a, b) => a.id.localeCompare(b.id));
+    expect(sorted).toEqual([
+      { id: "gen-dummy", isCacheHit: true },
+      { id: "gen-real", isCacheHit: false },
+    ]);
+  });
   it("records, ignores empty ids, and resets", async () => {
     const ids = await runPromise(
       resetGenerationIds.pipe(

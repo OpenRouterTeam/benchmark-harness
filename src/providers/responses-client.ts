@@ -32,6 +32,8 @@ import {
   getCurrentRetryAttempt,
   RESPONSE_CACHE_HEADER,
   RESPONSE_CACHE_SALT_FIELD,
+  RESPONSE_CACHE_STATUS_HEADER,
+  RESPONSE_CACHE_STATUS_HIT,
 } from "../runtime/response-cache";
 import {
   BENCH_HARNESS_APP_REFERRER,
@@ -128,11 +130,15 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
     effectiveExtraBody: Readonly<Record<string, unknown>> | undefined
   ): Effect<ResponsesResult, ResponsesError> => {
     let identifiers: ModelErrorIdentifiers = {};
+    let isCacheHit = false;
     const httpClient = new HTTPClient({
       fetcher: async (input, init) => {
         const request = await mergeExtraBody(input, init, effectiveExtraBody);
         const response = await fetch(request);
         identifiers = modelErrorIdentifiersFromFetchHeaders(response.headers);
+        isCacheHit =
+          response.headers.get(RESPONSE_CACHE_STATUS_HEADER) ===
+          RESPONSE_CACHE_STATUS_HIT;
         options.onResponseIdentifiers?.(identifiers);
         return response;
       },
@@ -190,7 +196,9 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
     }).pipe(
       flatMap((result) =>
         result
-          ? recordGenerationId(result.generationId).pipe(map(() => result))
+          ? recordGenerationId(result.generationId, isCacheHit).pipe(
+              map(() => result)
+            )
           : fail(
               new ResponsesError({
                 message: appendModelErrorIdentifiers(
