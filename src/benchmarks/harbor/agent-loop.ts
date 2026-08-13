@@ -24,6 +24,7 @@ import type {
   ResponsesInputItem,
   ResponsesModelService,
 } from "../../providers/responses-model";
+import { responsesMessage } from "../../providers/responses-model";
 import type { RetryConfig } from "../../runtime/retry";
 import { transientSolverRetrySchedule } from "../../runtime/retry";
 import { makeHarborStreamTracker } from "./agent-progress";
@@ -241,7 +242,7 @@ function handleFormatError(
     );
   }
   if (commands.length === 0) {
-    input.push({ role: MessageRole.User, content: NO_TOOL_CALL_NUDGE });
+    input.push(responsesMessage(MessageRole.User, NO_TOOL_CALL_NUDGE));
   }
   return consecutiveFormatErrors + 1;
 }

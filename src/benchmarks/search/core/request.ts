@@ -12,6 +12,7 @@ import type { CostTier, ReasoningEffort } from "../../../harness/constants";
 import type { ProviderSort } from "../../../internal/enums";
 import { definedValues } from "../../../internal/guards";
 import { buildAutoRouterPlugin } from "../../../providers/auto-router-plugin";
+import { responsesMessage } from "../../../providers/responses-model";
 import { BENCHMARK_LEAK_EXCLUDED_DOMAINS } from "./blocklist";
 import type { SearchLaneConfig, WebFetchConfig } from "./config";
 
@@ -113,7 +114,7 @@ export function buildSearchRequestBody(
   const base: ResponsesRequest = {
     model: opts.model,
     instructions: opts.instructions,
-    input: [{ role: "user" as const, content: opts.problem }],
+    input: [responsesMessage("user", opts.problem)],
     ...definedValues({
       maxOutputTokens: opts.maxOutputTokens,
       temperature: opts.temperature,

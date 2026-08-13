@@ -24,6 +24,7 @@ import type {
   ResponsesGenerateConfig,
   ResponsesModelService,
 } from "../../providers/responses-model";
+import { responsesMessage } from "../../providers/responses-model";
 import type { InferenceOverride } from "../benchmark-config";
 import { AGENT_ENV, probeSystemInfo, runAgentLoop } from "../harbor/agent-loop";
 import {
@@ -159,10 +160,10 @@ export function makeDeepSweSolver(
           model,
           session: agentSession,
           initialInput: [
-            {
-              role: "user",
-              content: buildInstanceMessage(state.sample.input, systemInfo),
-            },
+            responsesMessage(
+              "user",
+              buildInstanceMessage(state.sample.input, systemInfo)
+            ),
           ],
           genConfig,
           stepLimit: opts.stepLimit,

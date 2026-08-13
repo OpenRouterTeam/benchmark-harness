@@ -8,6 +8,7 @@ import type {
   ResponsesGenerateConfig,
   ResponsesModelService,
 } from "../../providers/responses-model";
+import { responsesMessage } from "../../providers/responses-model";
 import type { InferenceOverride } from "../benchmark-config";
 import { AGENT_ENV, probeSystemInfo, runAgentLoop } from "../harbor/agent-loop";
 import {
@@ -115,14 +116,10 @@ export function makeSweAtlasSolver(
           model,
           session,
           initialInput: [
-            {
-              role: "user",
-              content: buildInstanceMessage(
-                meta.track,
-                state.sample.input,
-                systemInfo
-              ),
-            },
+            responsesMessage(
+              "user",
+              buildInstanceMessage(meta.track, state.sample.input, systemInfo)
+            ),
           ],
           genConfig,
           stepLimit: opts.stepLimit,

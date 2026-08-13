@@ -227,7 +227,7 @@ describe("searchSolver", () => {
       )
     );
     expect(state.responseItems).toEqual([
-      { role: "user", content: "Who?" },
+      { type: "message", role: "user", content: "Who?" },
       ...output,
     ]);
   });

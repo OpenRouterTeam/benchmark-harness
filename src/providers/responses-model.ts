@@ -1,4 +1,5 @@
 import type {
+  EasyInputMessage,
   InputsUnion,
   ResponsesRequest,
   StreamEvents,
@@ -42,6 +43,19 @@ import {
 } from "./responses-client";
 
 export type ResponsesInputItem = Record<string, unknown>;
+
+export type ResponsesMessageRole =
+  | "user"
+  | "assistant"
+  | "system"
+  | "developer";
+
+export function responsesMessage(
+  role: ResponsesMessageRole,
+  content: string
+): EasyInputMessage {
+  return { type: "message", role, content };
+}
 
 export interface ResponsesFunctionTool {
   readonly type: "function";

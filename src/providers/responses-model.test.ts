@@ -26,6 +26,7 @@ import {
   generate,
   ResponsesModel,
   makeResponsesModelLayer,
+  responsesMessage,
 } from "./responses-model";
 
 interface CapturedRequest {
@@ -139,6 +140,14 @@ function withFunctionCallOutput(stream: string): string {
 }
 
 describe("responses-model", () => {
+  it("constructs explicit Responses message items", () => {
+    expect(responsesMessage("user", "solve this")).toEqual({
+      type: "message",
+      role: "user",
+      content: "solve this",
+    });
+  });
+
   let restore: (() => void) | undefined;
   afterEach(() => {
     restore?.();
