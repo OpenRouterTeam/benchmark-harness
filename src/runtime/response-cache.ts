@@ -7,9 +7,6 @@ export const RESPONSE_CACHE_HEADER = "x-openrouter-cache";
 
 export const RESPONSE_CACHE_SALT_FIELD = "cache_salt";
 
-export const RESPONSE_CACHE_SOURCE_GENERATION_HEADER =
-  "x-openrouter-cache-source-generation-id";
-
 export const currentEpochRef: FiberRef<number | undefined> = unsafeMake<
   number | undefined
 >(undefined);

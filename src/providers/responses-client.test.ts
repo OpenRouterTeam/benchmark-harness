@@ -506,41 +506,4 @@ describe("makeResponsesLayer", () => {
       globalThis.fetch = originalFetch;
     }
   });
-  it("records the source generation id from cache-hit responses", async () => {
-    const originalFetch = globalThis.fetch;
-    const stream = await readStreamFixture();
-    globalThis.fetch = async () =>
-      new Response(stream, {
-        status: 200,
-        headers: {
-          "content-type": "text/event-stream",
-          "x-openrouter-cache-source-generation-id": "gen-original",
-        },
-      });
-    try {
-      const ids = await runPromise(
-        resetGenerationIds.pipe(
-          flatMap(() =>
-            gen(function* run() {
-              const responses = yield* Responses;
-              yield* responses.send(
-                { model: "m", input: [] },
-                { timeoutMs: 1000 }
-              );
-            })
-          ),
-          flatMap(() => getCollectedGenerationIds),
-          provide(
-            makeResponsesLayer({
-              apiKey: "sk-test",
-              baseUrl: "https://example.test",
-            })
-          )
-        )
-      );
-      expect(ids).toEqual(["gen-original"]);
-    } finally {
-      globalThis.fetch = originalFetch;
-    }
-  });
 });

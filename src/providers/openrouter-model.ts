@@ -41,7 +41,6 @@ import {
   getCurrentRetryAttempt,
   RESPONSE_CACHE_HEADER,
   RESPONSE_CACHE_SALT_FIELD,
-  RESPONSE_CACHE_SOURCE_GENERATION_HEADER,
   withRetryAttemptSalt,
 } from "../runtime/response-cache";
 import type { RetryConfig } from "../runtime/retry";
@@ -226,14 +225,7 @@ export function generate(
       logUnusableBody(rawBody, envelopeError, identifiers);
       return yield* fail(envelopeError);
     }
-    const sourceGenerationId =
-      response.headers[RESPONSE_CACHE_SOURCE_GENERATION_HEADER];
-    return yield* decodeResult(
-      json,
-      startedAt,
-      identifiers,
-      sourceGenerationId
-    ).pipe(
+    return yield* decodeResult(json, startedAt, identifiers).pipe(
       tapError((error) =>
         sync(() => {
           logUnusableBody(rawBody, error, identifiers);
@@ -414,8 +406,7 @@ function toApiMessage(message: ChatMessage) {
 function decodeResult(
   raw: unknown,
   startedAt: number,
-  identifiers: ResponseIdentifiers,
-  sourceGenerationId?: string
+  identifiers: ResponseIdentifiers
 ): Effect<ModelOutput, ModelError> {
   const parseResult = parseSchema(
     ChatResult$inboundSchema,
@@ -455,7 +446,7 @@ function decodeResult(
   const reasoningDetails = extractReasoningDetails(raw);
   const usage = toModelUsage(result.usage);
   const toolCalls = choice.message.toolCalls ?? [];
-  return recordGenerationId(sourceGenerationId ?? result.id).pipe(
+  return recordGenerationId(result.id).pipe(
     flatMap(() =>
       succeed({
         completion,
