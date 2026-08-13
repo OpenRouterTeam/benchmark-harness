@@ -7,6 +7,7 @@ import {
   getCollectedGenerationIds,
   recordGenerationId,
   resetGenerationIds,
+  withAuxiliaryUsage,
 } from "./generation-ids";
 describe("generation id collector", () => {
   it("flags cache-hit ids in collected entries", async () => {
@@ -19,8 +20,24 @@ describe("generation id collector", () => {
     );
     const sorted = [...entries].toSorted((a, b) => a.id.localeCompare(b.id));
     expect(sorted).toEqual([
-      { id: "gen-dummy", isCacheHit: true },
-      { id: "gen-real", isCacheHit: false },
+      { id: "gen-dummy", isCacheHit: true, countsTowardUsage: true },
+      { id: "gen-real", isCacheHit: false, countsTowardUsage: true },
+    ]);
+  });
+  it("marks ids recorded inside withAuxiliaryUsage as not counting toward usage", async () => {
+    const entries = await runPromise(
+      resetGenerationIds.pipe(
+        flatMap(() => recordGenerationId("gen-solver", true)),
+        flatMap(() =>
+          withAuxiliaryUsage(recordGenerationId("gen-judge", true))
+        ),
+        flatMap(() => getCollectedGenerationIdEntries)
+      )
+    );
+    const sorted = [...entries].toSorted((a, b) => a.id.localeCompare(b.id));
+    expect(sorted).toEqual([
+      { id: "gen-judge", isCacheHit: true, countsTowardUsage: false },
+      { id: "gen-solver", isCacheHit: true, countsTowardUsage: true },
     ]);
   });
   it("records, ignores empty ids, and resets", async () => {

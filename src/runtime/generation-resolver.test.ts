@@ -2,7 +2,11 @@ import { afterEach, describe, expect, it } from "bun:test";
 
 import { flatMap, provideService, runPromise, succeed } from "effect/Effect";
 
-import { recordGenerationId, resetGenerationIds } from "./generation-ids";
+import {
+  recordGenerationId,
+  resetGenerationIds,
+  withAuxiliaryUsage,
+} from "./generation-ids";
 import type {
   GenerationResolverService,
   ReplayedUsage,
@@ -94,6 +98,42 @@ describe("resolveCollectedGenerations", () => {
       generationTimeMs: 2400,
     });
   });
+  it("resolves auxiliary cache-hit ids without counting their usage", async () => {
+    const requested: { id: string; includeUsage: boolean | undefined }[] = [];
+    const resolver: GenerationResolverService = {
+      resolveSourceGeneration: (generationId, options) => {
+        requested.push({
+          id: generationId,
+          includeUsage: options?.includeUsage,
+        });
+        return succeed({
+          sourceId: `source-of-${generationId}`,
+          ...(options?.includeUsage === false ? {} : { usage: SOURCE_USAGE }),
+        });
+      },
+    };
+    const resolved = await runPromise(
+      resetGenerationIds.pipe(
+        flatMap(() => recordGenerationId("gen-solver", true)),
+        flatMap(() =>
+          withAuxiliaryUsage(recordGenerationId("gen-judge", true))
+        ),
+        flatMap(() => resolveCollectedGenerations),
+        provideService(GenerationResolver, resolver)
+      )
+    );
+    expect([...requested].toSorted((a, b) => a.id.localeCompare(b.id))).toEqual(
+      [
+        { id: "gen-judge", includeUsage: false },
+        { id: "gen-solver", includeUsage: true },
+      ]
+    );
+    expect([...resolved.ids].toSorted()).toEqual([
+      "source-of-gen-judge",
+      "source-of-gen-solver",
+    ]);
+    expect(resolved.replayedUsage).toEqual(SOURCE_USAGE);
+  });
   it("keeps the dummy id and reports no usage when resolution returns undefined", async () => {
     const resolver: GenerationResolverService = {
       resolveSourceGeneration: () => succeed(undefined),
@@ -157,6 +197,24 @@ describe("makeOpenRouterGenerationResolver", () => {
     expect(getCalls()).toEqual([
       "https://example.com/api/v1/generation?id=gen-dummy",
       "https://example.com/api/v1/generation?id=gen-original",
+    ]);
+  });
+  it("skips the source usage lookup when includeUsage is false", async () => {
+    const getCalls = mockFetch(() =>
+      jsonResponse({ data: { response_cache_source_id: "gen-original" } })
+    );
+    const resolver = makeOpenRouterGenerationResolver({
+      apiKey: "test-key",
+      baseUrl: "https://example.com",
+      pollIntervalMs: 1,
+      maxAttempts: 1,
+    });
+    const resolved = await runPromise(
+      resolver.resolveSourceGeneration("gen-dummy", { includeUsage: false })
+    );
+    expect(resolved).toEqual({ sourceId: "gen-original" });
+    expect(getCalls()).toEqual([
+      "https://example.com/api/v1/generation?id=gen-dummy",
     ]);
   });
   it("polls until the generation row lands", async () => {

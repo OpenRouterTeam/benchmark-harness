@@ -40,7 +40,8 @@ export interface ResolvedSourceGeneration {
 
 export interface GenerationResolverService {
   readonly resolveSourceGeneration: (
-    generationId: string
+    generationId: string,
+    options?: { readonly includeUsage?: boolean }
   ) => Effect<ResolvedSourceGeneration | undefined>;
 }
 
@@ -171,15 +172,17 @@ export function makeOpenRouterGenerationResolver(
       )
     );
   return {
-    resolveSourceGeneration: (generationId) =>
+    resolveSourceGeneration: (generationId, options) =>
       lookupSourceId(generationId).pipe(
         flatMap((sourceId) =>
-          lookupSourceUsage(sourceId).pipe(
-            map((usage): ResolvedSourceGeneration => ({
-              sourceId,
-              ...(usage !== undefined && { usage }),
-            }))
-          )
+          options?.includeUsage === false
+            ? succeed<ResolvedSourceGeneration>({ sourceId })
+            : lookupSourceUsage(sourceId).pipe(
+                map((usage): ResolvedSourceGeneration => ({
+                  sourceId,
+                  ...(usage !== undefined && { usage }),
+                }))
+              )
         ),
         catchAll((error) =>
           sync(() => {
@@ -209,16 +212,20 @@ function resolveEntry(
   resolver: GenerationResolverService
 ): Effect<ResolvedEntry> {
   return entry.isCacheHit
-    ? resolver.resolveSourceGeneration(entry.id).pipe(
-        map((resolved): ResolvedEntry =>
-          resolved === undefined
-            ? { id: entry.id }
-            : {
-                id: resolved.sourceId,
-                ...(resolved.usage && { usage: resolved.usage }),
-              }
+    ? resolver
+        .resolveSourceGeneration(entry.id, {
+          includeUsage: entry.countsTowardUsage,
+        })
+        .pipe(
+          map((resolved): ResolvedEntry =>
+            resolved === undefined
+              ? { id: entry.id }
+              : {
+                  id: resolved.sourceId,
+                  ...(resolved.usage && { usage: resolved.usage }),
+                }
+          )
         )
-      )
     : succeed({ id: entry.id });
 }
 

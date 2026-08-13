@@ -19,7 +19,10 @@ import {
   BENCH_HARNESS_APP_REFERRER,
   BENCH_HARNESS_APP_TITLE,
 } from "../../providers/openrouter-model";
-import { recordGenerationId } from "../../runtime/generation-ids";
+import {
+  recordGenerationId,
+  withAuxiliaryUsage,
+} from "../../runtime/generation-ids";
 import {
   buildResponseCacheSalt,
   getCurrentCallSalt,
@@ -115,12 +118,12 @@ export class UserSimulator {
     const config = this.config;
     return gen(function* () {
       const response = yield* retrySalted(
-        callModelOnce(config.model),
+        withAuxiliaryUsage(callModelOnce(config.model)),
         USER_SIM_RESPONSE_RETRY_SCHEDULE
       ).pipe(
         catchAll(() =>
           retrySalted(
-            callModelOnce(USER_FALLBACK_MODEL),
+            withAuxiliaryUsage(callModelOnce(USER_FALLBACK_MODEL)),
             USER_SIM_RESPONSE_RETRY_SCHEDULE
           )
         )
