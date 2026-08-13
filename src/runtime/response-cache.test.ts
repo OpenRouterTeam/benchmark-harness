@@ -1,8 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { TaggedError } from "effect/Data";
-import { all, fail, flatMap, retry, runPromise, suspend } from "effect/Effect";
-import { recurs } from "effect/Schedule";
+import { all, flatMap, runPromise } from "effect/Effect";
 
 import {
   buildResponseCacheSalt,
@@ -11,7 +9,6 @@ import {
   getCurrentRetryAttempt,
   setCurrentEpoch,
   withCallCacheSalt,
-  withRetryAttemptSalt,
 } from "./response-cache";
 
 describe("buildResponseCacheSalt", () => {
@@ -57,38 +54,9 @@ describe("withCallCacheSalt", () => {
   });
 });
 
-class BoomError extends TaggedError("BoomError")<{
-  readonly message: string;
-}> {}
-
-describe("withRetryAttemptSalt", () => {
-  it("exposes an attempt index that increments on each retry", async () => {
-    const seen: (number | undefined)[] = [];
-    const failing = withRetryAttemptSalt(
-      getCurrentRetryAttempt.pipe(
-        flatMap((attempt) =>
-          suspend(() => {
-            seen.push(attempt);
-            return fail(new BoomError({ message: "boom" }));
-          })
-        )
-      )
-    ).pipe(retry(recurs(2)));
-    await expect(runPromise(failing)).rejects.toThrow("boom");
-    expect(seen).toEqual([0, 1, 2]);
-  });
-  it("defaults to undefined outside withRetryAttemptSalt", async () => {
+describe("currentRetryAttemptRef", () => {
+  it("defaults to undefined", async () => {
     expect(await runPromise(getCurrentRetryAttempt)).toBeUndefined();
-  });
-  it("restarts at zero for a fresh wrapped effect", async () => {
-    const first = await runPromise(
-      withRetryAttemptSalt(getCurrentRetryAttempt)
-    );
-    const second = await runPromise(
-      withRetryAttemptSalt(getCurrentRetryAttempt)
-    );
-    expect(first).toBe(0);
-    expect(second).toBe(0);
   });
 });
 

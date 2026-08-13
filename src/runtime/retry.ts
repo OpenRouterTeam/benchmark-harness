@@ -1,6 +1,6 @@
 import type { DurationInput } from "effect/Duration";
 import type { Effect } from "effect/Effect";
-import { logWarning, succeed } from "effect/Effect";
+import { locally, logWarning, retry, succeed, suspend } from "effect/Effect";
 import type { Schedule } from "effect/Schedule";
 import {
   exponential,
@@ -23,6 +23,7 @@ import {
   SolverError,
 } from "../harness/core";
 import { unknownErrorToString } from "../internal/errors";
+import { currentRetryAttemptRef } from "./response-cache";
 
 type EvalError = ModelError | SolverError;
 
@@ -97,6 +98,29 @@ export function withRetryAttemptLogging<Error>(
     })),
     onDecision(logRetryDecision)
   );
+}
+
+function withRetryAttemptSalt<A, E, R>(
+  effect: Effect<A, E, R>
+): Effect<A, E, R> {
+  let attempt = -1;
+  return suspend(() => {
+    attempt += 1;
+    return locally(effect, currentRetryAttemptRef, attempt);
+  });
+}
+
+export function retrySalted<A, In, E extends In, R>(
+  effect: Effect<A, E, R>,
+  schedule: Schedule<
+    {
+      readonly error: In;
+      readonly attempt: number;
+    },
+    In
+  >
+): Effect<A, E, R> {
+  return withRetryAttemptSalt(effect).pipe(retry(schedule));
 }
 
 function errorTagFrom(error: unknown): string {

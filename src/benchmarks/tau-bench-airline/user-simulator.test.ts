@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it, spyOn } from "bun:test";
 import assert from "node:assert/strict";
 
 import { FetchHttpClient } from "@effect/platform";
@@ -6,6 +6,7 @@ import { flatMap, provide, runPromise } from "effect/Effect";
 
 import type { CapturedRequest } from "../../../test/helpers/fetch-sequence";
 import { installFetchSequence } from "../../../test/helpers/fetch-sequence";
+import { runHarnessPromise } from "../../internal/effect-logger";
 import { isRecord } from "../../internal/guards";
 import {
   getCollectedGenerationIds,
@@ -247,6 +248,46 @@ describe("UserSimulator", () => {
         expect(callCount).toBe(3);
       } finally {
         globalThis.fetch = originalFetch;
+      }
+    }
+  );
+  it.serial(
+    "logs a structured retry warning for each user-sim retry",
+    async () => {
+      const warn = spyOn(console, "warn").mockImplementation(() => {});
+      const originalFetch = globalThis.fetch;
+      let callCount = 0;
+      const responses = [
+        { choices: [{ message: { content: null } }] },
+        { choices: [{ message: { content: null } }] },
+        { choices: [{ message: { content: "Recovered" } }] },
+      ];
+      globalThis.fetch = async () => {
+        const response = responses[callCount] ?? responses.at(-1);
+        callCount++;
+        return Response.json(response);
+      };
+      try {
+        const simulator = new UserSimulator({
+          apiKey: "sk-test",
+          model: "openai/gpt-4o-mini",
+          baseUrl: "https://example.test",
+        });
+        simulator.reset("scenario", "Hi");
+        const result = await runHarnessPromise(
+          simulator.generateInitial().pipe(provide(FetchHttpClient.layer))
+        );
+        expect(result).toBe("Recovered");
+        expect(warn).toHaveBeenCalledTimes(2);
+        expect(warn.mock.calls[0]?.[0]).toBe("Retrying after transient error");
+        expect(warn.mock.calls[0]?.[1]).toMatchObject({
+          attempt: 1,
+          error_tag: "UserSimError",
+        });
+        expect(warn.mock.calls[1]?.[1]).toMatchObject({ attempt: 2 });
+      } finally {
+        globalThis.fetch = originalFetch;
+        warn.mockRestore();
       }
     }
   );

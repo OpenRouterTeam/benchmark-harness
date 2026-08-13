@@ -8,7 +8,6 @@ import {
   flatMap,
   gen,
   mapError,
-  retry,
   succeed,
   sync,
   tapError,
@@ -44,10 +43,11 @@ import {
   RESPONSE_CACHE_SALT_FIELD,
   RESPONSE_CACHE_STATUS_HEADER,
   RESPONSE_CACHE_STATUS_HIT,
-  withRetryAttemptSalt,
+  RESPONSE_CACHE_TTL_HEADER,
+  RESPONSE_CACHE_TTL_SECONDS,
 } from "../runtime/response-cache";
 import type { RetryConfig } from "../runtime/retry";
-import { rateLimitRetrySchedule } from "../runtime/retry";
+import { rateLimitRetrySchedule, retrySalted } from "../runtime/retry";
 import {
   buildAutoRouterPlugin,
   toWireAutoRouterPlugin,
@@ -125,6 +125,7 @@ export function generate(
     "HTTP-Referer": BENCH_HARNESS_APP_REFERRER,
     "X-OpenRouter-Title": BENCH_HARNESS_APP_TITLE,
     [RESPONSE_CACHE_HEADER]: "true",
+    [RESPONSE_CACHE_TTL_HEADER]: `${RESPONSE_CACHE_TTL_SECONDS}`,
   };
   if (genConfig.endpointId !== undefined) {
     headers["X-OR-Endpoint-Id"] = genConfig.endpointId;
@@ -241,9 +242,9 @@ export function generate(
       )
     );
   });
-  return withRetryAttemptSalt(attempt).pipe(
-    mapError(toModelError),
-    retry(rateLimitRetrySchedule(opts.retry ?? {}))
+  return retrySalted(
+    attempt.pipe(mapError(toModelError)),
+    rateLimitRetrySchedule(opts.retry ?? {})
   );
 }
 

@@ -26,6 +26,8 @@ import {
   getCurrentRetryAttempt,
   RESPONSE_CACHE_HEADER,
   RESPONSE_CACHE_SALT_FIELD,
+  RESPONSE_CACHE_TTL_HEADER,
+  RESPONSE_CACHE_TTL_SECONDS,
 } from "../../runtime/response-cache";
 import type { UserModelConfig } from "./types";
 import {
@@ -188,6 +190,7 @@ export class UserSimulator {
           "HTTP-Referer": BENCH_HARNESS_APP_REFERRER,
           "X-OpenRouter-Title": BENCH_HARNESS_APP_TITLE,
           [RESPONSE_CACHE_HEADER]: "true",
+          [RESPONSE_CACHE_TTL_HEADER]: `${RESPONSE_CACHE_TTL_SECONDS}`,
           ...(this.config.sessionId !== undefined && {
             "x-session-id": this.config.sessionId,
           }),

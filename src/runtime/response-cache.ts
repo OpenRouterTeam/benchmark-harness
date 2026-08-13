@@ -1,9 +1,13 @@
 import type { Effect } from "effect/Effect";
-import { locally, suspend } from "effect/Effect";
+import { locally } from "effect/Effect";
 import type { FiberRef } from "effect/FiberRef";
 import { get, set, unsafeMake } from "effect/FiberRef";
 
 export const RESPONSE_CACHE_HEADER = "x-openrouter-cache";
+
+export const RESPONSE_CACHE_TTL_HEADER = "x-openrouter-cache-ttl";
+
+export const RESPONSE_CACHE_TTL_SECONDS = 7200;
 
 export const RESPONSE_CACHE_STATUS_HEADER = "x-openrouter-cache-status";
 
@@ -41,16 +45,6 @@ export function withCallCacheSalt<A, E, R>(
   effect: Effect<A, E, R>
 ): Effect<A, E, R> {
   return locally(effect, currentCallSaltRef, callSalt);
-}
-
-export function withRetryAttemptSalt<A, E, R>(
-  effect: Effect<A, E, R>
-): Effect<A, E, R> {
-  let attempt = -1;
-  return suspend(() => {
-    attempt += 1;
-    return locally(effect, currentRetryAttemptRef, attempt);
-  });
 }
 
 export function buildResponseCacheSalt(

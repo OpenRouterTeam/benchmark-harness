@@ -35,6 +35,8 @@ import {
   RESPONSE_CACHE_SALT_FIELD,
   RESPONSE_CACHE_STATUS_HEADER,
   RESPONSE_CACHE_STATUS_HIT,
+  RESPONSE_CACHE_TTL_HEADER,
+  RESPONSE_CACHE_TTL_SECONDS,
 } from "../runtime/response-cache";
 import {
   BENCH_HARNESS_APP_REFERRER,
@@ -163,6 +165,7 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
         "x-session-id": config.sessionId,
       }),
       [RESPONSE_CACHE_HEADER]: "true",
+      [RESPONSE_CACHE_TTL_HEADER]: `${RESPONSE_CACHE_TTL_SECONDS}`,
     };
     return tryPromise({
       try: async (signal) => {

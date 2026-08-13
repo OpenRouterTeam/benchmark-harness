@@ -24,10 +24,24 @@ import { parseSchema, z } from "../internal/zod";
 import type { GenerationIdEntry } from "./generation-ids";
 import { getCollectedGenerationIdEntries } from "./generation-ids";
 
+export interface ReplayedUsage {
+  readonly inputTokens: number;
+  readonly outputTokens: number;
+  readonly totalTokens: number;
+  readonly reasoningTokens: number;
+  readonly totalCost: number;
+  readonly generationTimeMs: number;
+}
+
+export interface ResolvedSourceGeneration {
+  readonly sourceId: string;
+  readonly usage?: ReplayedUsage;
+}
+
 export interface GenerationResolverService {
-  readonly resolveSourceGenerationId: (
+  readonly resolveSourceGeneration: (
     generationId: string
-  ) => Effect<string | undefined>;
+  ) => Effect<ResolvedSourceGeneration | undefined>;
 }
 
 export class GenerationResolver extends Tag(
@@ -37,8 +51,15 @@ export class GenerationResolver extends Tag(
 const GenerationLookupSchema = z.object({
   data: z.object({
     response_cache_source_id: z.string().nullish(),
+    tokens_prompt: z.number().nullish(),
+    tokens_completion: z.number().nullish(),
+    native_tokens_reasoning: z.number().nullish(),
+    total_cost: z.number().nullish(),
+    generation_time: z.number().nullish(),
   }),
 });
+
+type GenerationLookupData = z.infer<typeof GenerationLookupSchema>["data"];
 
 class GenerationLookupError extends TaggedError("GenerationLookupError")<{
   readonly message: string;
@@ -60,15 +81,32 @@ function normalizeBaseUrl(baseUrl: string): string {
   return trimmed.endsWith("/api/v1") ? trimmed : `${trimmed}/api/v1`;
 }
 
+function usageFromLookup(data: GenerationLookupData): ReplayedUsage {
+  const inputTokens = data.tokens_prompt ?? 0;
+  const outputTokens = data.tokens_completion ?? 0;
+  return {
+    inputTokens,
+    outputTokens,
+    totalTokens: inputTokens + outputTokens,
+    reasoningTokens: data.native_tokens_reasoning ?? 0,
+    totalCost: data.total_cost ?? 0,
+    generationTimeMs: data.generation_time ?? 0,
+  };
+}
+
 export function makeOpenRouterGenerationResolver(
   config: GenerationResolverConfig
 ): GenerationResolverService {
   const baseUrl = normalizeBaseUrl(config.baseUrl ?? "https://openrouter.ai");
   const pollIntervalMs = config.pollIntervalMs ?? DEFAULT_POLL_INTERVAL_MS;
   const maxAttempts = config.maxAttempts ?? DEFAULT_MAX_ATTEMPTS;
+  const pollSchedule = () =>
+    spaced(`${pollIntervalMs} millis`).pipe(
+      intersect(recurs(Math.max(maxAttempts - 1, 0)))
+    );
   const lookupOnce = (
     generationId: string
-  ): Effect<string, GenerationLookupError> =>
+  ): Effect<GenerationLookupData, GenerationLookupError> =>
     tryPromise({
       try: async (signal) => {
         const response = await fetch(
@@ -89,14 +127,21 @@ export function makeOpenRouterGenerationResolver(
     }).pipe(
       flatMap((json) => {
         const parsed = parseSchema(GenerationLookupSchema, json);
-        if (Either.isLeft(parsed)) {
-          return fail(
-            new GenerationLookupError({
-              message: unknownErrorToString(parsed.left),
-            })
-          );
-        }
-        const sourceId = parsed.right.data.response_cache_source_id;
+        return Either.isLeft(parsed)
+          ? fail(
+              new GenerationLookupError({
+                message: unknownErrorToString(parsed.left),
+              })
+            )
+          : succeed(parsed.right.data);
+      })
+    );
+  const lookupSourceId = (
+    generationId: string
+  ): Effect<string, GenerationLookupError> =>
+    lookupOnce(generationId).pipe(
+      flatMap((data) => {
+        const sourceId = data.response_cache_source_id;
         return sourceId === null ||
           sourceId === undefined ||
           sourceId.length === 0
@@ -106,17 +151,36 @@ export function makeOpenRouterGenerationResolver(
               })
             )
           : succeed(sourceId);
-      })
+      }),
+      retry(pollSchedule())
+    );
+  const lookupSourceUsage = (
+    sourceId: string
+  ): Effect<ReplayedUsage | undefined> =>
+    lookupOnce(sourceId).pipe(
+      retry(pollSchedule()),
+      map((data): ReplayedUsage | undefined => usageFromLookup(data)),
+      catchAll((error) =>
+        sync(() => {
+          wLog("Failed to fetch source generation usage", {
+            generation_id: sourceId,
+            error: error.message,
+          });
+          return undefined;
+        })
+      )
     );
   return {
-    resolveSourceGenerationId: (generationId) =>
-      lookupOnce(generationId).pipe(
-        retry(
-          spaced(`${pollIntervalMs} millis`).pipe(
-            intersect(recurs(Math.max(maxAttempts - 1, 0)))
+    resolveSourceGeneration: (generationId) =>
+      lookupSourceId(generationId).pipe(
+        flatMap((sourceId) =>
+          lookupSourceUsage(sourceId).pipe(
+            map((usage): ResolvedSourceGeneration => ({
+              sourceId,
+              ...(usage !== undefined && { usage }),
+            }))
           )
         ),
-        map((sourceId): string | undefined => sourceId),
         catchAll((error) =>
           sync(() => {
             wLog("Failed to resolve cache-hit source generation id", {
@@ -130,28 +194,73 @@ export function makeOpenRouterGenerationResolver(
   };
 }
 
+export interface ResolvedGenerations {
+  readonly ids: readonly string[];
+  readonly replayedUsage?: ReplayedUsage;
+}
+
+interface ResolvedEntry {
+  readonly id: string;
+  readonly usage?: ReplayedUsage;
+}
+
 function resolveEntry(
   entry: GenerationIdEntry,
   resolver: GenerationResolverService
-): Effect<string> {
+): Effect<ResolvedEntry> {
   return entry.isCacheHit
-    ? resolver
-        .resolveSourceGenerationId(entry.id)
-        .pipe(map((sourceId) => sourceId ?? entry.id))
-    : succeed(entry.id);
+    ? resolver.resolveSourceGeneration(entry.id).pipe(
+        map((resolved): ResolvedEntry =>
+          resolved === undefined
+            ? { id: entry.id }
+            : {
+                id: resolved.sourceId,
+                ...(resolved.usage && { usage: resolved.usage }),
+              }
+        )
+      )
+    : succeed({ id: entry.id });
 }
 
-export const resolveCollectedGenerationIds: Effect<readonly string[]> = gen(
+function sumReplayedUsage(
+  acc: ReplayedUsage | undefined,
+  usage: ReplayedUsage | undefined
+): ReplayedUsage | undefined {
+  if (usage === undefined) {
+    return acc;
+  }
+  if (acc === undefined) {
+    return usage;
+  }
+  return {
+    inputTokens: acc.inputTokens + usage.inputTokens,
+    outputTokens: acc.outputTokens + usage.outputTokens,
+    totalTokens: acc.totalTokens + usage.totalTokens,
+    reasoningTokens: acc.reasoningTokens + usage.reasoningTokens,
+    totalCost: acc.totalCost + usage.totalCost,
+    generationTimeMs: acc.generationTimeMs + usage.generationTimeMs,
+  };
+}
+
+export const resolveCollectedGenerations: Effect<ResolvedGenerations> = gen(
   function* () {
     const entries = yield* getCollectedGenerationIdEntries;
     const resolver = yield* serviceOption(GenerationResolver);
     if (isNone(resolver) || entries.every((entry) => !entry.isCacheHit)) {
-      return entries.map((entry) => entry.id);
+      return { ids: entries.map((entry) => entry.id) };
     }
-    return yield* forEach(
+    const resolved = yield* forEach(
       entries,
       (entry) => resolveEntry(entry, resolver.value),
       { concurrency: RESOLVE_CONCURRENCY }
     );
+    let replayedUsage: ReplayedUsage | undefined;
+    for (const entry of resolved) {
+      replayedUsage = sumReplayedUsage(replayedUsage, entry.usage);
+    }
+    return {
+      ids: resolved.map((entry) => entry.id),
+      ...(replayedUsage !== undefined && { replayedUsage }),
+    };
   }
 );

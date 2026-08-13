@@ -5,8 +5,8 @@ import {
 } from "@effect/platform";
 import { TaggedError } from "effect/Data";
 import type { Effect } from "effect/Effect";
-import { catchAll, fail, gen, retry } from "effect/Effect";
-import { fixed, intersect, recurs, whileInput } from "effect/Schedule";
+import { catchAll, fail, gen } from "effect/Effect";
+import { fixed, passthrough, whileInput } from "effect/Schedule";
 
 import type { ReasoningDetails } from "../../harness/reasoning-details";
 import {
@@ -29,8 +29,10 @@ import {
   RESPONSE_CACHE_SALT_FIELD,
   RESPONSE_CACHE_STATUS_HEADER,
   RESPONSE_CACHE_STATUS_HIT,
-  withRetryAttemptSalt,
+  RESPONSE_CACHE_TTL_HEADER,
+  RESPONSE_CACHE_TTL_SECONDS,
 } from "../../runtime/response-cache";
+import { retrySalted, withRetryAttemptLogging } from "../../runtime/retry";
 import type { UserModelConfig } from "./types";
 import { USER_SIM_GUIDELINES } from "./user-sim-guidelines";
 
@@ -55,12 +57,17 @@ class UserSimError extends TaggedError("UserSimError")<{
 
 type SimError = UserSimError | HttpClientError.HttpClientError;
 
-const USER_SIM_RESPONSE_RETRY_SCHEDULE = fixed("100 millis").pipe(
-  intersect(recurs(2)),
-  whileInput(
-    (error: SimError) =>
-      error instanceof UserSimError && error.retryable === true
-  )
+const USER_SIM_MAX_RETRIES = 2;
+
+const USER_SIM_RESPONSE_RETRY_SCHEDULE = withRetryAttemptLogging(
+  fixed("100 millis").pipe(
+    whileInput(
+      (error: SimError) =>
+        error instanceof UserSimError && error.retryable === true
+    ),
+    passthrough
+  ),
+  USER_SIM_MAX_RETRIES
 );
 
 function buildUserSystemPrompt(scenarioInstructions: string): string {
@@ -107,13 +114,14 @@ export class UserSimulator {
     const messages = this.messages;
     const config = this.config;
     return gen(function* () {
-      const response = yield* withRetryAttemptSalt(
-        callModelOnce(config.model)
+      const response = yield* retrySalted(
+        callModelOnce(config.model),
+        USER_SIM_RESPONSE_RETRY_SCHEDULE
       ).pipe(
-        retry(USER_SIM_RESPONSE_RETRY_SCHEDULE),
         catchAll(() =>
-          withRetryAttemptSalt(callModelOnce(USER_FALLBACK_MODEL)).pipe(
-            retry(USER_SIM_RESPONSE_RETRY_SCHEDULE)
+          retrySalted(
+            callModelOnce(USER_FALLBACK_MODEL),
+            USER_SIM_RESPONSE_RETRY_SCHEDULE
           )
         )
       );
@@ -150,6 +158,7 @@ export class UserSimulator {
           "HTTP-Referer": BENCH_HARNESS_APP_REFERRER,
           "X-OpenRouter-Title": BENCH_HARNESS_APP_TITLE,
           [RESPONSE_CACHE_HEADER]: "true",
+          [RESPONSE_CACHE_TTL_HEADER]: `${RESPONSE_CACHE_TTL_SECONDS}`,
           ...(config.sessionId !== undefined && {
             "x-session-id": config.sessionId,
           }),
