@@ -13,6 +13,7 @@ import {
 } from "@openrouter/sdk/models/errors/httpclienterrors";
 import { OpenRouterError } from "@openrouter/sdk/models/errors/openroutererror";
 import { SDKValidationError } from "@openrouter/sdk/models/errors/sdkvalidationerror";
+import { streamEventsFromJSON } from "@openrouter/sdk/models/streamevents";
 import { Responses as ResponsesClient } from "@openrouter/sdk/sdk/responses";
 import { Tag } from "effect/Context";
 import { TaggedError } from "effect/Data";
@@ -23,8 +24,9 @@ import { succeed as layerSucceed } from "effect/Layer";
 
 import type { Citation, ModelUsage } from "../harness/core";
 import { ModelError } from "../harness/core";
+import { Either } from "../internal/either";
 import { isRecord } from "../internal/guards";
-import { z } from "../internal/zod";
+import { parseSchema, z } from "../internal/zod";
 import { recordGenerationId } from "../runtime/generation-ids";
 import {
   BENCH_HARNESS_APP_REFERRER,
@@ -50,6 +52,27 @@ export const ResponsesResultSchema = z.object({
 });
 
 export type ResponsesResult = z.infer<typeof ResponsesResultSchema>;
+
+const RawResponsesTerminalEventSchema = z.object({
+  type: z.union([
+    z.literal("response.completed"),
+    z.literal("response.incomplete"),
+  ]),
+  response: z
+    .object({
+      id: z.string(),
+      model: z.string(),
+      output: z.array(z.record(z.string(), z.unknown())),
+      status: z.string(),
+      usage: z.record(z.string(), z.unknown()).nullable().optional(),
+    })
+    .passthrough(),
+  sequence_number: z.number().int().optional(),
+});
+
+type RawResponsesTerminalEvent = z.infer<
+  typeof RawResponsesTerminalEventSchema
+>;
 
 export interface ResponsesSendOptions {
   readonly timeoutMs?: number;
@@ -238,6 +261,44 @@ function isAsyncIterable(value: unknown): value is AsyncIterable<StreamEvents> {
   );
 }
 
+function normalizeRawTerminalEvent(
+  event: RawResponsesTerminalEvent
+): RawResponsesTerminalEvent {
+  const usage = event.response.usage;
+  return {
+    ...event,
+    sequence_number: event.sequence_number ?? 0,
+    response: {
+      ...event.response,
+      completed_at: event.response["completed_at"] ?? null,
+      created_at: event.response["created_at"] ?? 0,
+      error: event.response["error"] ?? null,
+      frequency_penalty: event.response["frequency_penalty"] ?? null,
+      incomplete_details: event.response["incomplete_details"] ?? null,
+      instructions: event.response["instructions"] ?? null,
+      metadata: event.response["metadata"] ?? null,
+      parallel_tool_calls: event.response["parallel_tool_calls"] ?? false,
+      presence_penalty: event.response["presence_penalty"] ?? null,
+      temperature: event.response["temperature"] ?? null,
+      tool_choice: event.response["tool_choice"] ?? "auto",
+      tools: event.response["tools"] ?? [],
+      top_p: event.response["top_p"] ?? null,
+      ...(usage !== undefined &&
+        usage !== null && {
+          usage: {
+            ...usage,
+            input_tokens_details: usage["input_tokens_details"] ?? {
+              cached_tokens: 0,
+            },
+            output_tokens_details: usage["output_tokens_details"] ?? {
+              reasoning_tokens: 0,
+            },
+          },
+        }),
+    },
+  };
+}
+
 export async function consumeStream(
   stream: AsyncIterable<StreamEvents>,
   onEvent?: (event: StreamEvents) => void,
@@ -282,6 +343,31 @@ export async function consumeStream(
         case "response.incomplete": {
           finalResponse = event.response;
           break;
+        }
+        default: {
+          const parsedRawEvent = parseSchema(
+            RawResponsesTerminalEventSchema,
+            rawEvent
+          );
+          if (Either.isLeft(parsedRawEvent)) {
+            break;
+          }
+          const parsedTerminalEvent = streamEventsFromJSON(
+            JSON.stringify(normalizeRawTerminalEvent(parsedRawEvent.right))
+          );
+          if (!parsedTerminalEvent.ok) {
+            break;
+          }
+          switch (parsedTerminalEvent.value.type) {
+            case "response.completed": {
+              finalResponse = parsedTerminalEvent.value.response;
+              break;
+            }
+            case "response.incomplete": {
+              finalResponse = parsedTerminalEvent.value.response;
+              break;
+            }
+          }
         }
       }
     }

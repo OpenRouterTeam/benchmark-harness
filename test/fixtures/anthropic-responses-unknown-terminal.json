@@ -1,0 +1,41 @@
+{
+  "type": "response.completed",
+  "response": {
+    "id": "resp_gen-1786655075-eVP4Gc0sViFYYwAW3jR0",
+    "model": "anthropic/claude-opus-4.8",
+    "object": "response",
+    "output": [
+      {
+        "content": [
+          {
+            "text": "I'll run that command for you.",
+            "type": "output_text"
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message"
+      },
+      {
+        "arguments": "{\"command\": \"printf 'anthropic-tool-first'\"}",
+        "call_id": "toolu_01Q7DaGvVv8A3zKATEfxEmHY",
+        "id": "fc_1",
+        "name": "bash",
+        "status": "completed",
+        "type": "function_call"
+      }
+    ],
+    "status": "completed",
+    "usage": {
+      "input_tokens": 414,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 69,
+      "output_tokens_details": {
+        "reasoning_tokens": 0
+      },
+      "total_tokens": 483
+    }
+  }
+}

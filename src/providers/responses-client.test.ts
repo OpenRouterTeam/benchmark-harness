@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 
 import type { StreamEvents } from "@openrouter/sdk/models";
 import { OpenRouterError } from "@openrouter/sdk/models/errors/openroutererror";
+import { streamEventsFromJSON } from "@openrouter/sdk/models/streamevents";
 import { failureOption } from "effect/Cause";
 import {
   flatMap,
@@ -61,6 +62,21 @@ async function readStreamFixture(): Promise<string> {
     ),
     "utf8"
   );
+}
+
+async function readUnknownTerminalFixture(): Promise<StreamEvents> {
+  const raw = await readFile(
+    new URL(
+      "../../test/fixtures/anthropic-responses-unknown-terminal.json",
+      import.meta.url
+    ),
+    "utf8"
+  );
+  const parsed = streamEventsFromJSON(raw);
+  if (!parsed.ok) {
+    throw parsed.error;
+  }
+  return parsed.value;
 }
 describe("extractMessageText", () => {
   it("concatenates output_text from message items", () => {
@@ -216,6 +232,29 @@ describe("usageFromResponses", () => {
   });
 });
 describe("consumeStream", () => {
+  it("accepts an SDK-unknown terminal event from its raw payload", async () => {
+    const event = await readUnknownTerminalFixture();
+    expect(event).toMatchObject({
+      type: "UNKNOWN",
+      isUnknown: true,
+    });
+    async function* stream(): AsyncGenerator<StreamEvents> {
+      yield event;
+    }
+
+    const result = await consumeStream(stream());
+
+    expect(result).toMatchObject({
+      id: "resp_gen-1786655075-eVP4Gc0sViFYYwAW3jR0",
+      model: "anthropic/claude-opus-4.8",
+      status: "completed",
+      usage: {
+        inputTokens: 414,
+        outputTokens: 69,
+        totalTokens: 483,
+      },
+    });
+  });
   it("forwards every stream event to onEvent, including the terminal one", async () => {
     const events: StreamEvents[] = [
       {
