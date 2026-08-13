@@ -29,8 +29,10 @@ import { recordGenerationId } from "../runtime/generation-ids";
 import {
   buildResponseCacheSalt,
   getCurrentEpoch,
+  getCurrentRetryAttempt,
   RESPONSE_CACHE_HEADER,
   RESPONSE_CACHE_SALT_FIELD,
+  RESPONSE_CACHE_SOURCE_GENERATION_HEADER,
 } from "../runtime/response-cache";
 import {
   BENCH_HARNESS_APP_REFERRER,
@@ -127,11 +129,15 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
     effectiveExtraBody: Readonly<Record<string, unknown>> | undefined
   ): Effect<ResponsesResult, ResponsesError> => {
     let identifiers: ModelErrorIdentifiers = {};
+    let sourceGenerationId: string | null = null;
     const httpClient = new HTTPClient({
       fetcher: async (input, init) => {
         const request = await mergeExtraBody(input, init, effectiveExtraBody);
         const response = await fetch(request);
         identifiers = modelErrorIdentifiersFromFetchHeaders(response.headers);
+        sourceGenerationId = response.headers.get(
+          RESPONSE_CACHE_SOURCE_GENERATION_HEADER
+        );
         options.onResponseIdentifiers?.(identifiers);
         return response;
       },
@@ -189,7 +195,9 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
     }).pipe(
       flatMap((result) =>
         result
-          ? recordGenerationId(result.generationId).pipe(map(() => result))
+          ? recordGenerationId(sourceGenerationId ?? result.generationId).pipe(
+              map(() => result)
+            )
           : fail(
               new ResponsesError({
                 message: appendModelErrorIdentifiers(
@@ -208,8 +216,17 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
     options: ResponsesSendOptions
   ): Effect<ResponsesResult, ResponsesError> => {
     return getCurrentEpoch.pipe(
-      flatMap((epoch) => {
-        const cacheSalt = buildResponseCacheSalt(config.sessionId, epoch);
+      flatMap((epoch) =>
+        getCurrentRetryAttempt.pipe(
+          map((retryAttempt) => ({ epoch, retryAttempt }))
+        )
+      ),
+      flatMap(({ epoch, retryAttempt }) => {
+        const cacheSalt = buildResponseCacheSalt(
+          config.sessionId,
+          epoch,
+          retryAttempt
+        );
         const effectiveExtraBody =
           cacheSalt === undefined
             ? options.extraBody

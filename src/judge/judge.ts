@@ -14,6 +14,7 @@ import {
   toModelError,
   usageFromResponses,
 } from "../providers/responses-client";
+import { withRetryAttemptSalt } from "../runtime/response-cache";
 import type { RetryConfig } from "../runtime/retry";
 import { rateLimitRetrySchedule } from "../runtime/retry";
 
@@ -77,7 +78,7 @@ export function judgeCall<T>(
       versionOverride: config.versionOverride,
     }),
   };
-  return responses.send(body, sendOptions).pipe(
+  return withRetryAttemptSalt(responses.send(body, sendOptions)).pipe(
     mapError(toModelError),
     retry(rateLimitRetrySchedule(config.retry ?? {})),
     flatMap((result) => {

@@ -23,8 +23,11 @@ import { recordGenerationId } from "../../runtime/generation-ids";
 import {
   buildResponseCacheSalt,
   getCurrentEpoch,
+  getCurrentRetryAttempt,
   RESPONSE_CACHE_HEADER,
   RESPONSE_CACHE_SALT_FIELD,
+  RESPONSE_CACHE_SOURCE_GENERATION_HEADER,
+  withRetryAttemptSalt,
 } from "../../runtime/response-cache";
 import type { UserModelConfig } from "./types";
 import { USER_SIM_GUIDELINES } from "./user-sim-guidelines";
@@ -102,10 +105,12 @@ export class UserSimulator {
     const messages = this.messages;
     const config = this.config;
     return gen(function* () {
-      const response = yield* callModelOnce(config.model).pipe(
+      const response = yield* withRetryAttemptSalt(
+        callModelOnce(config.model)
+      ).pipe(
         retry(USER_SIM_RESPONSE_RETRY_SCHEDULE),
         catchAll(() =>
-          callModelOnce(USER_FALLBACK_MODEL).pipe(
+          withRetryAttemptSalt(callModelOnce(USER_FALLBACK_MODEL)).pipe(
             retry(USER_SIM_RESPONSE_RETRY_SCHEDULE)
           )
         )
@@ -126,7 +131,12 @@ export class UserSimulator {
     const { baseUrl, config, messages } = this;
     return gen(function* () {
       const epoch = yield* getCurrentEpoch;
-      const cacheSalt = buildResponseCacheSalt(config.sessionId, epoch);
+      const retryAttempt = yield* getCurrentRetryAttempt;
+      const cacheSalt = buildResponseCacheSalt(
+        config.sessionId,
+        epoch,
+        retryAttempt
+      );
       const request = HttpClientRequest.post(
         `${baseUrl}/chat/completions`
       ).pipe(
@@ -177,7 +187,10 @@ export class UserSimulator {
           })
         );
       }
-      yield* recordGenerationId(parsed.right.id);
+      yield* recordGenerationId(
+        response.headers[RESPONSE_CACHE_SOURCE_GENERATION_HEADER] ??
+          parsed.right.id
+      );
       const message = parsed.right.choices[0]?.message;
       const content = message?.content ?? "";
       return {

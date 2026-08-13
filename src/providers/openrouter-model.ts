@@ -38,8 +38,11 @@ import { recordGenerationId } from "../runtime/generation-ids";
 import {
   buildResponseCacheSalt,
   getCurrentEpoch,
+  getCurrentRetryAttempt,
   RESPONSE_CACHE_HEADER,
   RESPONSE_CACHE_SALT_FIELD,
+  RESPONSE_CACHE_SOURCE_GENERATION_HEADER,
+  withRetryAttemptSalt,
 } from "../runtime/response-cache";
 import type { RetryConfig } from "../runtime/retry";
 import { rateLimitRetrySchedule } from "../runtime/retry";
@@ -141,10 +144,15 @@ export function generate(
     autoRouterPlugin === undefined
       ? undefined
       : toWireAutoRouterPlugin(autoRouterPlugin);
-  return gen(function* () {
+  const attempt = gen(function* () {
     const startedAt = performance.now();
     const epoch = yield* getCurrentEpoch;
-    const cacheSalt = buildResponseCacheSalt(opts.sessionId, epoch);
+    const retryAttempt = yield* getCurrentRetryAttempt;
+    const cacheSalt = buildResponseCacheSalt(
+      opts.sessionId,
+      epoch,
+      retryAttempt
+    );
     const body = {
       model,
       messages: messages.map(toApiMessage),
@@ -218,14 +226,22 @@ export function generate(
       logUnusableBody(rawBody, envelopeError, identifiers);
       return yield* fail(envelopeError);
     }
-    return yield* decodeResult(json, startedAt, identifiers).pipe(
+    const sourceGenerationId =
+      response.headers[RESPONSE_CACHE_SOURCE_GENERATION_HEADER];
+    return yield* decodeResult(
+      json,
+      startedAt,
+      identifiers,
+      sourceGenerationId
+    ).pipe(
       tapError((error) =>
         sync(() => {
           logUnusableBody(rawBody, error, identifiers);
         })
       )
     );
-  }).pipe(
+  });
+  return withRetryAttemptSalt(attempt).pipe(
     mapError(toModelError),
     retry(rateLimitRetrySchedule(opts.retry ?? {}))
   );
@@ -398,7 +414,8 @@ function toApiMessage(message: ChatMessage) {
 function decodeResult(
   raw: unknown,
   startedAt: number,
-  identifiers: ResponseIdentifiers
+  identifiers: ResponseIdentifiers,
+  sourceGenerationId?: string
 ): Effect<ModelOutput, ModelError> {
   const parseResult = parseSchema(
     ChatResult$inboundSchema,
@@ -438,7 +455,7 @@ function decodeResult(
   const reasoningDetails = extractReasoningDetails(raw);
   const usage = toModelUsage(result.usage);
   const toolCalls = choice.message.toolCalls ?? [];
-  return recordGenerationId(result.id).pipe(
+  return recordGenerationId(sourceGenerationId ?? result.id).pipe(
     flatMap(() =>
       succeed({
         completion,

@@ -25,6 +25,7 @@ import { ModelError } from "../harness/core";
 import type { GenerateConfig } from "../harness/model";
 import { stripVariantSuffix } from "../harness/model";
 import { isRecord } from "../internal/guards";
+import { withRetryAttemptSalt } from "../runtime/response-cache";
 import type { RetryConfig } from "../runtime/retry";
 import { rateLimitRetrySchedule } from "../runtime/retry";
 import { buildAutoRouterPlugin } from "./auto-router-plugin";
@@ -213,7 +214,9 @@ export function generate(
           )
         )
       : requestAttempt;
-  return timedAttempt.pipe(retry(rateLimitRetrySchedule(opts.retry ?? {})));
+  return withRetryAttemptSalt(timedAttempt).pipe(
+    retry(rateLimitRetrySchedule(opts.retry ?? {}))
+  );
 }
 
 const RAW_PAYLOAD_KEYS = new Set(["arguments", "output"]);

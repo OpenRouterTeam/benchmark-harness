@@ -32,6 +32,7 @@ import {
   toModelError,
   usageFromResponses,
 } from "../../../providers/responses-client";
+import { withRetryAttemptSalt } from "../../../runtime/response-cache";
 import type { RetryConfig } from "../../../runtime/retry";
 import { rateLimitRetrySchedule } from "../../../runtime/retry";
 import type { SearchLaneConfig } from "./config";
@@ -179,7 +180,9 @@ function sendWithRetry({
   const blankResults: ResponsesResult[] = [];
   let lastBlankResult: ResponsesResult | undefined;
   let lastBlankError: ModelError | undefined;
-  return suspend(() => responses.send(body, options())).pipe(
+  return withRetryAttemptSalt(
+    suspend(() => responses.send(body, options()))
+  ).pipe(
     mapError(toModelError),
     timeoutFail({
       duration: `${timeoutMs} millis`,

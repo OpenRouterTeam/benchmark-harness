@@ -353,6 +353,77 @@ describe("openrouter-model response caching", () => {
     );
     expect(salts).toEqual(["wf-123:epoch-0", "wf-123:epoch-1"]);
   });
+  it("appends the retry attempt to cache_salt on in-process retries", async () => {
+    const salts: unknown[] = [];
+    const original = globalThis.fetch;
+    let callCount = 0;
+    const stub: typeof fetch = async (input, init) => {
+      const req = input instanceof Request ? input : new Request(input, init);
+      const rawBody = await req.clone().text();
+      salts.push(parseJsonObject(rawBody)["cache_salt"]);
+      callCount += 1;
+      if (callCount === 1) {
+        return new Response(JSON.stringify({ error: { message: "slow" } }), {
+          status: 429,
+          headers: { "content-type": "application/json", "retry-after": "0" },
+        });
+      }
+      return new Response(CHAT_RESULT_JSON, {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    };
+    globalThis.fetch = stub;
+    restore = () => {
+      globalThis.fetch = original;
+    };
+    const layer = makeOpenRouterModelLayer({
+      model: "openai/gpt-4o",
+      apiKey: "sk-test",
+      sessionId: "wf-123",
+      retry: { maxRetries: 2, baseDelayMs: 1 },
+    });
+    await runPromiseExit(
+      gen(function* run() {
+        yield* setCurrentEpoch(1);
+        const model = yield* Model;
+        yield* model.generate(MESSAGES, {});
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    expect(salts).toEqual(["wf-123:epoch-1", "wf-123:epoch-1:attempt-1"]);
+  });
+  it("records the source generation id from cache-hit responses", async () => {
+    const original = globalThis.fetch;
+    const stub: typeof fetch = async () =>
+      new Response(CHAT_RESULT_JSON, {
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-openrouter-cache-source-generation-id": "gen-original",
+        },
+      });
+    globalThis.fetch = stub;
+    restore = () => {
+      globalThis.fetch = original;
+    };
+    const layer = makeOpenRouterModelLayer({
+      model: "openai/gpt-4o",
+      apiKey: "sk-test",
+    });
+    const ids = await runPromise(
+      resetGenerationIds.pipe(
+        flatMap(() =>
+          gen(function* run() {
+            const model = yield* Model;
+            yield* model.generate(MESSAGES, {});
+          })
+        ),
+        flatMap(() => getCollectedGenerationIds),
+        provide(layer.pipe(layerProvide(FetchHttpClient.layer)))
+      )
+    );
+    expect(ids).toEqual(["gen-original"]);
+  });
   it("omits cache_salt when session id and epoch are unset", async () => {
     const captured = newHolder();
     restore = installFetchCapture(captured);
