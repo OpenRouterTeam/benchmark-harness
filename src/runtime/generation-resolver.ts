@@ -15,7 +15,7 @@ import {
   tryPromise,
 } from "effect/Effect";
 import { isNone } from "effect/Option";
-import { intersect, recurs, spaced } from "effect/Schedule";
+import { intersect, recurs, spaced, whileInput } from "effect/Schedule";
 
 import { Either } from "../internal/either";
 import { unknownErrorToString } from "../internal/errors";
@@ -64,7 +64,12 @@ type GenerationLookupData = z.infer<typeof GenerationLookupSchema>["data"];
 
 class GenerationLookupError extends TaggedError("GenerationLookupError")<{
   readonly message: string;
+  readonly retryable: boolean;
 }> {}
+
+function isRetryableLookupStatus(status: number): boolean {
+  return status === 404 || status === 408 || status === 429 || status >= 500;
+}
 
 export interface GenerationResolverConfig {
   readonly apiKey: string;
@@ -103,13 +108,16 @@ export function makeOpenRouterGenerationResolver(
   const maxAttempts = config.maxAttempts ?? DEFAULT_MAX_ATTEMPTS;
   const pollSchedule = () =>
     spaced(`${pollIntervalMs} millis`).pipe(
-      intersect(recurs(Math.max(maxAttempts - 1, 0)))
+      intersect(recurs(Math.max(maxAttempts - 1, 0))),
+      whileInput((error: GenerationLookupError) => error.retryable)
     );
   const lookupOnce = (
     generationId: string
   ): Effect<GenerationLookupData, GenerationLookupError> =>
     tryPromise({
-      try: async (signal) => {
+      try: async (
+        signal
+      ): Promise<{ readonly status: number } | { readonly json: unknown }> => {
         const response = await fetch(
           `${baseUrl}/generation?id=${encodeURIComponent(generationId)}`,
           {
@@ -119,19 +127,31 @@ export function makeOpenRouterGenerationResolver(
         );
         if (!response.ok) {
           await response.body?.cancel();
-          throw new Error(`generation lookup returned ${response.status}`);
+          return { status: response.status };
         }
-        return (await response.json()) as unknown;
+        return { json: (await response.json()) as unknown };
       },
       catch: (cause) =>
-        new GenerationLookupError({ message: unknownErrorToString(cause) }),
+        new GenerationLookupError({
+          message: unknownErrorToString(cause),
+          retryable: true,
+        }),
     }).pipe(
-      flatMap((json) => {
-        const parsed = parseSchema(GenerationLookupSchema, json);
+      flatMap((result) => {
+        if ("status" in result) {
+          return fail(
+            new GenerationLookupError({
+              message: `generation lookup returned ${result.status}`,
+              retryable: isRetryableLookupStatus(result.status),
+            })
+          );
+        }
+        const parsed = parseSchema(GenerationLookupSchema, result.json);
         return Either.isLeft(parsed)
           ? fail(
               new GenerationLookupError({
                 message: unknownErrorToString(parsed.left),
+                retryable: false,
               })
             )
           : succeed(parsed.right.data);
@@ -149,6 +169,7 @@ export function makeOpenRouterGenerationResolver(
           ? fail(
               new GenerationLookupError({
                 message: "response_cache_source_id not present yet",
+                retryable: true,
               })
             )
           : succeed(sourceId);

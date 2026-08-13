@@ -242,6 +242,20 @@ describe("makeOpenRouterGenerationResolver", () => {
       3
     );
   });
+  it("does not retry permanent lookup failures", async () => {
+    const getCalls = mockFetch(() => jsonResponse({ error: "denied" }, 401));
+    const resolver = makeOpenRouterGenerationResolver({
+      apiKey: "test-key",
+      baseUrl: "https://example.com",
+      pollIntervalMs: 1,
+      maxAttempts: 5,
+    });
+    const resolved = await runPromise(
+      resolver.resolveSourceGeneration("gen-dummy")
+    );
+    expect(resolved).toBeUndefined();
+    expect(getCalls().length).toBe(1);
+  });
   it("returns undefined after exactly maxAttempts lookups when the source id never becomes available", async () => {
     const getCalls = mockFetch(() =>
       jsonResponse({ data: { response_cache_source_id: null } })
