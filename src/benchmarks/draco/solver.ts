@@ -40,6 +40,7 @@ import {
   toModelError,
   usageFromResponses,
 } from "../../providers/responses-client";
+import { withCallCacheSalt } from "../../runtime/response-cache";
 import type { StageKey, ArtifactStore } from "./artifact-store";
 import { stageGet, stagePut, ArtifactStoreService } from "./artifact-store";
 import { buildGenerationResult } from "./generation";
@@ -409,16 +410,19 @@ function gradeOneCriterion(opts: {
       }
     }
     const responses = yield* Responses;
-    const judged = yield* judgeCall(responses, dracoJudgeConfig(config), {
-      instructions: JUDGE_SYSTEM_PROMPT,
-      userInput: judgePrompt,
-      schemaName: "draco_verdict",
-      jsonSchema: DRACO_VERDICT_JSON_SCHEMA,
-      parseVerdict: (text) =>
-        Either.right(
-          text.trim().length === 0 ? null : parseSingleVerdict(text)
-        ),
-    });
+    const judged = yield* withCallCacheSalt(
+      `judge-run-${runNum}`,
+      judgeCall(responses, dracoJudgeConfig(config), {
+        instructions: JUDGE_SYSTEM_PROMPT,
+        userInput: judgePrompt,
+        schemaName: "draco_verdict",
+        jsonSchema: DRACO_VERDICT_JSON_SCHEMA,
+        parseVerdict: (text) =>
+          Either.right(
+            text.trim().length === 0 ? null : parseSingleVerdict(text)
+          ),
+      })
+    );
     const cost = judged.usage?.totalCost ?? null;
     let gradeResult: GradeOneResult;
     if (judged.verdict === null) {

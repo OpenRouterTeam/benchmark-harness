@@ -1,14 +1,16 @@
 import { describe, expect, it } from "bun:test";
 
 import { TaggedError } from "effect/Data";
-import { fail, flatMap, retry, runPromise, suspend } from "effect/Effect";
+import { all, fail, flatMap, retry, runPromise, suspend } from "effect/Effect";
 import { recurs } from "effect/Schedule";
 
 import {
   buildResponseCacheSalt,
+  getCurrentCallSalt,
   getCurrentEpoch,
   getCurrentRetryAttempt,
   setCurrentEpoch,
+  withCallCacheSalt,
   withRetryAttemptSalt,
 } from "./response-cache";
 
@@ -35,6 +37,23 @@ describe("buildResponseCacheSalt", () => {
   });
   it("appends the attempt segment without session or epoch", () => {
     expect(buildResponseCacheSalt(undefined, undefined, 2)).toBe("attempt-2");
+  });
+  it("places the call salt between the epoch and attempt segments", () => {
+    expect(buildResponseCacheSalt("wf-123", 2, 1, "judge-run-3")).toBe(
+      "wf-123:epoch-2:judge-run-3:attempt-1"
+    );
+  });
+});
+
+describe("withCallCacheSalt", () => {
+  it("scopes the call salt to the wrapped effect", async () => {
+    const salts = await runPromise(
+      all([
+        withCallCacheSalt("judge-run-2", getCurrentCallSalt),
+        getCurrentCallSalt,
+      ])
+    );
+    expect(salts).toEqual(["judge-run-2", undefined]);
   });
 });
 

@@ -28,6 +28,7 @@ import { z } from "../internal/zod";
 import { recordGenerationId } from "../runtime/generation-ids";
 import {
   buildResponseCacheSalt,
+  getCurrentCallSalt,
   getCurrentEpoch,
   getCurrentRetryAttempt,
   RESPONSE_CACHE_HEADER,
@@ -219,14 +220,19 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
     return getCurrentEpoch.pipe(
       flatMap((epoch) =>
         getCurrentRetryAttempt.pipe(
-          map((retryAttempt) => ({ epoch, retryAttempt }))
+          flatMap((retryAttempt) =>
+            getCurrentCallSalt.pipe(
+              map((callSalt) => ({ epoch, retryAttempt, callSalt }))
+            )
+          )
         )
       ),
-      flatMap(({ epoch, retryAttempt }) => {
+      flatMap(({ epoch, retryAttempt, callSalt }) => {
         const cacheSalt = buildResponseCacheSalt(
           config.sessionId,
           epoch,
-          retryAttempt
+          retryAttempt,
+          callSalt
         );
         const effectiveExtraBody =
           cacheSalt === undefined

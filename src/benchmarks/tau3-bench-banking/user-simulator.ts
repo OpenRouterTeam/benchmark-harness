@@ -21,7 +21,9 @@ import {
 } from "../../providers/openrouter-model";
 import {
   buildResponseCacheSalt,
+  getCurrentCallSalt,
   getCurrentEpoch,
+  getCurrentRetryAttempt,
   RESPONSE_CACHE_HEADER,
   RESPONSE_CACHE_SALT_FIELD,
 } from "../../runtime/response-cache";
@@ -155,7 +157,14 @@ export class UserSimulator {
   ): Effect<SimulatorTurn, SimError, HttpClient.HttpClient> {
     return gen(this, function* (this: UserSimulator) {
       const epoch = yield* getCurrentEpoch;
-      const cacheSalt = buildResponseCacheSalt(this.config.sessionId, epoch);
+      const retryAttempt = yield* getCurrentRetryAttempt;
+      const callSalt = yield* getCurrentCallSalt;
+      const cacheSalt = buildResponseCacheSalt(
+        this.config.sessionId,
+        epoch,
+        retryAttempt,
+        callSalt
+      );
       const requestBody: Record<string, unknown> = {
         model,
         messages: this.messages,

@@ -37,6 +37,7 @@ import { parseSchema, z } from "../internal/zod";
 import { recordGenerationId } from "../runtime/generation-ids";
 import {
   buildResponseCacheSalt,
+  getCurrentCallSalt,
   getCurrentEpoch,
   getCurrentRetryAttempt,
   RESPONSE_CACHE_HEADER,
@@ -149,10 +150,12 @@ export function generate(
     const startedAt = performance.now();
     const epoch = yield* getCurrentEpoch;
     const retryAttempt = yield* getCurrentRetryAttempt;
+    const callSalt = yield* getCurrentCallSalt;
     const cacheSalt = buildResponseCacheSalt(
       opts.sessionId,
       epoch,
-      retryAttempt
+      retryAttempt,
+      callSalt
     );
     const body = {
       model,

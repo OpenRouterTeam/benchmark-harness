@@ -29,6 +29,20 @@ export const getCurrentRetryAttempt: Effect<number | undefined> = get(
   currentRetryAttemptRef
 );
 
+export const currentCallSaltRef: FiberRef<string | undefined> = unsafeMake<
+  string | undefined
+>(undefined);
+
+export const getCurrentCallSalt: Effect<string | undefined> =
+  get(currentCallSaltRef);
+
+export function withCallCacheSalt<A, E, R>(
+  callSalt: string,
+  effect: Effect<A, E, R>
+): Effect<A, E, R> {
+  return locally(effect, currentCallSaltRef, callSalt);
+}
+
 export function withRetryAttemptSalt<A, E, R>(
   effect: Effect<A, E, R>
 ): Effect<A, E, R> {
@@ -42,11 +56,13 @@ export function withRetryAttemptSalt<A, E, R>(
 export function buildResponseCacheSalt(
   sessionId: string | undefined,
   epoch: number | undefined,
-  retryAttempt?: number
+  retryAttempt?: number,
+  callSalt?: string
 ): string | undefined {
   const parts = [
     ...(sessionId !== undefined ? [sessionId] : []),
     ...(epoch !== undefined ? [`epoch-${epoch}`] : []),
+    ...(callSalt !== undefined ? [callSalt] : []),
     ...(retryAttempt !== undefined && retryAttempt > 0
       ? [`attempt-${retryAttempt}`]
       : []),

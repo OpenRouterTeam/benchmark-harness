@@ -22,6 +22,7 @@ import {
 import { recordGenerationId } from "../../runtime/generation-ids";
 import {
   buildResponseCacheSalt,
+  getCurrentCallSalt,
   getCurrentEpoch,
   getCurrentRetryAttempt,
   RESPONSE_CACHE_HEADER,
@@ -133,10 +134,12 @@ export class UserSimulator {
     return gen(function* () {
       const epoch = yield* getCurrentEpoch;
       const retryAttempt = yield* getCurrentRetryAttempt;
+      const callSalt = yield* getCurrentCallSalt;
       const cacheSalt = buildResponseCacheSalt(
         config.sessionId,
         epoch,
-        retryAttempt
+        retryAttempt,
+        callSalt
       );
       const request = HttpClientRequest.post(
         `${baseUrl}/chat/completions`
