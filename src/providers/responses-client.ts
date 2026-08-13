@@ -13,6 +13,7 @@ import {
 } from "@openrouter/sdk/models/errors/httpclienterrors";
 import { OpenRouterError } from "@openrouter/sdk/models/errors/openroutererror";
 import { SDKValidationError } from "@openrouter/sdk/models/errors/sdkvalidationerror";
+import { outputItemsFromJSON } from "@openrouter/sdk/models/outputitems";
 import { streamEventsFromJSON } from "@openrouter/sdk/models/streamevents";
 import { Responses as ResponsesClient } from "@openrouter/sdk/sdk/responses";
 import { Tag } from "effect/Context";
@@ -26,6 +27,7 @@ import type { Citation, ModelUsage } from "../harness/core";
 import { ModelError } from "../harness/core";
 import { Either } from "../internal/either";
 import { isRecord } from "../internal/guards";
+import { wLog } from "../internal/log";
 import { parseSchema, z } from "../internal/zod";
 import { recordGenerationId } from "../runtime/generation-ids";
 import {
@@ -299,6 +301,85 @@ function normalizeRawTerminalEvent(
   };
 }
 
+function outputItemRawType(value: unknown): string {
+  if (!isRecord(value)) {
+    return typeof value;
+  }
+  const raw = value["raw"];
+  if (isRecord(raw) && typeof raw["type"] === "string") {
+    return raw["type"];
+  }
+  return typeof value["type"] === "string" ? value["type"] : typeof value;
+}
+
+function logUnrecoverableOutputItem(
+  item: unknown,
+  responseId: string,
+  index: number
+): void {
+  wLog("Unable to recover Responses output item", {
+    item_index: index,
+    raw_type: outputItemRawType(item),
+    response_id: responseId,
+  });
+}
+
+export function recoverOutputItems(
+  output: readonly unknown[],
+  responseId: string
+): Record<string, unknown>[] {
+  const recovered: Record<string, unknown>[] = [];
+  for (const [index, item] of output.entries()) {
+    if (
+      !isRecord(item) ||
+      (item["type"] !== "UNKNOWN" &&
+        item["isUnknown"] !== true &&
+        item["is_unknown"] !== true)
+    ) {
+      if (isRecord(item)) {
+        recovered.push(item);
+      } else {
+        logUnrecoverableOutputItem(item, responseId, index);
+      }
+      continue;
+    }
+    const raw = item["raw"];
+    if (!isRecord(raw)) {
+      logUnrecoverableOutputItem(item, responseId, index);
+      continue;
+    }
+    const candidate = {
+      ...raw,
+      ...(typeof raw["id"] !== "string" && {
+        id: `synthetic-${responseId}-${index}`,
+      }),
+    };
+    let parsed: ReturnType<typeof outputItemsFromJSON>;
+    try {
+      parsed = outputItemsFromJSON(JSON.stringify(candidate));
+    } catch {
+      logUnrecoverableOutputItem(item, responseId, index);
+      continue;
+    }
+    if (!parsed.ok) {
+      logUnrecoverableOutputItem(item, responseId, index);
+      continue;
+    }
+    const parsedValue: unknown = parsed.value;
+    if (
+      !isRecord(parsedValue) ||
+      parsedValue["type"] === "UNKNOWN" ||
+      parsedValue["isUnknown"] === true ||
+      parsedValue["is_unknown"] === true
+    ) {
+      logUnrecoverableOutputItem(item, responseId, index);
+      continue;
+    }
+    recovered.push(parsedValue);
+  }
+  return recovered;
+}
+
 export async function consumeStream(
   stream: AsyncIterable<StreamEvents>,
   onEvent?: (event: StreamEvents) => void,
@@ -350,12 +431,25 @@ export async function consumeStream(
             rawEvent
           );
           if (Either.isLeft(parsedRawEvent)) {
+            if (
+              rawType === "response.completed" ||
+              rawType === "response.incomplete"
+            ) {
+              wLog("Unable to recover Responses terminal event", {
+                raw_type: rawType,
+                response_id: identifiers.generationId,
+              });
+            }
             break;
           }
           const parsedTerminalEvent = streamEventsFromJSON(
             JSON.stringify(normalizeRawTerminalEvent(parsedRawEvent.right))
           );
           if (!parsedTerminalEvent.ok) {
+            wLog("Unable to recover Responses terminal event", {
+              raw_type: rawType,
+              response_id: identifiers.generationId,
+            });
             break;
           }
           switch (parsedTerminalEvent.value.type) {
@@ -381,6 +475,7 @@ export async function consumeStream(
     return null;
   }
   const { output } = finalResponse;
+  const recoveredOutput = recoverOutputItems(output, finalResponse.id);
   const usage = finalResponse.usage ?? null;
   const { id } = finalResponse;
   const providerRaw: unknown = finalResponse;
@@ -392,9 +487,9 @@ export async function consumeStream(
     id,
     model: finalResponse.model,
     status: finalResponse.status,
-    output,
+    output: recoveredOutput,
     usage,
-    text: extractMessageText(output),
+    text: extractMessageText(recoveredOutput),
     generationId: id,
     provider,
     generationTimeMs: Math.round(performance.now() - startedAt),

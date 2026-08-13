@@ -1,0 +1,15 @@
+{
+  "raw": {
+    "content": [
+      {
+        "text": "deterministic completion turn 1deterministic completion turn 1",
+        "type": "output_text"
+      }
+    ],
+    "role": "assistant",
+    "status": "completed",
+    "type": "message"
+  },
+  "type": "UNKNOWN",
+  "is_unknown": true
+}
