@@ -113,7 +113,7 @@ export function makeOpenRouterGenerationResolver(
       lookupOnce(generationId).pipe(
         retry(
           spaced(`${pollIntervalMs} millis`).pipe(
-            intersect(recurs(maxAttempts))
+            intersect(recurs(Math.max(maxAttempts - 1, 0)))
           )
         ),
         map((sourceId): string | undefined => sourceId),

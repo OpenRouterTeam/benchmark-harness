@@ -119,8 +119,10 @@ describe("makeOpenRouterGenerationResolver", () => {
     expect(sourceId).toBe("gen-original");
     expect(getCalls().length).toBe(3);
   });
-  it("returns undefined when the source id never becomes available", async () => {
-    mockFetch(() => jsonResponse({ data: { response_cache_source_id: null } }));
+  it("returns undefined after exactly maxAttempts lookups when the source id never becomes available", async () => {
+    const getCalls = mockFetch(() =>
+      jsonResponse({ data: { response_cache_source_id: null } })
+    );
     const resolver = makeOpenRouterGenerationResolver({
       apiKey: "test-key",
       baseUrl: "https://example.com",
@@ -131,5 +133,6 @@ describe("makeOpenRouterGenerationResolver", () => {
       resolver.resolveSourceGenerationId("gen-dummy")
     );
     expect(sourceId).toBeUndefined();
+    expect(getCalls().length).toBe(2);
   });
 });
