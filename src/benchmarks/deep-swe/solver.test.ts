@@ -269,7 +269,7 @@ describe("deep-swe claude agent via ori", () => {
     expect(remotePaths).toContain("/instruction.md");
   });
 
-  it("does not install an agent on the native path", async () => {
+  it("does not install an agent on the mini-swe path", async () => {
     const log = newLog();
     await runDeepSweSolver(
       scriptedModel(newConfigRecord()),

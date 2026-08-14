@@ -211,7 +211,7 @@ function fakeCliSandbox(log: ExecLog, reward: string): Layer<SandboxSession> {
 }
 
 describe("swe-atlas claude agent via ori", () => {
-  it("runs the agent cli instead of the native loop and still scores from the verifier", async () => {
+  it("runs the agent cli instead of the mini-swe loop and still scores from the verifier", async () => {
     const log: ExecLog = { calls: [], creates: [] };
     const record = newConfigRecord();
     const finalState = await runSweAtlasSolver(
@@ -258,7 +258,7 @@ describe("swe-atlas claude agent via ori", () => {
     ]);
   });
 
-  it("leaves the native path untouched when no agent is selected", async () => {
+  it("leaves the mini-swe path untouched when no agent is selected", async () => {
     const log: ExecLog = { calls: [], creates: [] };
     const record = newConfigRecord();
     await runSweAtlasSolver(scriptedModel(record), fakeSandbox(log, "1"));

@@ -269,7 +269,7 @@ describe("benchmark registry", () => {
     assertLeft(result);
   });
 
-  it("defaults harbor benchmarks to the native agent loop", () => {
+  it("defaults harbor benchmarks to the mini-swe agent loop", () => {
     for (const benchmarkId of [
       "swe_atlas_qa",
       "swe_atlas_tw",
@@ -284,7 +284,7 @@ describe("benchmark registry", () => {
       if (!("agent" in result.right)) {
         throw new Error(`${benchmarkId} config is missing an agent field`);
       }
-      expect(result.right.agent).toBe("native");
+      expect(result.right.agent).toBe("mini_swe");
     }
   });
 

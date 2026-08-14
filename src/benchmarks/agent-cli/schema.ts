@@ -4,11 +4,11 @@ export const ORI_AGENTS = ["pi", "claude"] as const;
 
 export type OriAgent = ValueOf<typeof ORI_AGENTS>;
 
-export const HARBOR_AGENTS = ["native", "pi", "claude"] as const;
+export const HARBOR_AGENTS = ["mini_swe", "pi", "claude"] as const;
 
 export type HarborAgent = ValueOf<typeof HARBOR_AGENTS>;
 
-export const DEFAULT_HARBOR_AGENT: HarborAgent = "native";
+export const DEFAULT_HARBOR_AGENT: HarborAgent = "mini_swe";
 
 export const ORI_REASONING_EFFORTS = [
   "none",
@@ -37,5 +37,5 @@ export type OriChannel = ValueOf<typeof ORI_CHANNELS>;
 export const DEFAULT_ORI_CHANNEL: OriChannel = "stable";
 
 export function isOriAgent(agent: HarborAgent): agent is OriAgent {
-  return agent !== "native";
+  return agent !== "mini_swe";
 }

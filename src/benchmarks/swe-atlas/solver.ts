@@ -102,7 +102,7 @@ export function makeSweAtlasSolver(
           }),
       });
       const task = loadTask(meta.taskId, meta.track, tasksRoot);
-      const agent = opts.agent ?? "native";
+      const agent = opts.agent ?? "mini_swe";
       const cliHarness = isOriAgent(agent) ? getOriHarness(agent) : undefined;
       const cliOpts: AgentCliOpts = opts.agentCli ?? {
         model: opts.model,
