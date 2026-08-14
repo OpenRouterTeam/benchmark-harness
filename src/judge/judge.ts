@@ -15,7 +15,6 @@ import {
   usageFromResponses,
 } from "../providers/responses-client";
 import { responsesMessage } from "../providers/responses-model";
-import { withAuxiliaryUsage } from "../runtime/generation-ids";
 import type { RetryConfig } from "../runtime/retry";
 import { rateLimitRetrySchedule, retrySalted } from "../runtime/retry";
 
@@ -80,9 +79,7 @@ export function judgeCall<T>(
     }),
   };
   return retrySalted(
-    withAuxiliaryUsage(responses.send(body, sendOptions)).pipe(
-      mapError(toModelError)
-    ),
+    responses.send(body, sendOptions).pipe(mapError(toModelError)),
     rateLimitRetrySchedule(config.retry ?? {})
   ).pipe(
     flatMap((result) => {

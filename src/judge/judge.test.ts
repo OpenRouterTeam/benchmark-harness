@@ -2,10 +2,12 @@ import { describe, expect, it } from "bun:test";
 
 import {
   fail as effectFail,
+  flatMap,
   runPromise,
   runPromiseExit,
   succeed,
   suspend,
+  zipRight,
 } from "effect/Effect";
 import { isFailure } from "effect/Exit";
 
@@ -16,6 +18,11 @@ import type {
   ResponsesService,
 } from "../providers/responses-client";
 import { ResponsesError } from "../providers/responses-client";
+import {
+  getCollectedGenerationIdEntries,
+  recordGenerationId,
+  resetGenerationIds,
+} from "../runtime/generation-ids";
 import { judgeCall } from "./judge";
 
 const VerdictSchema = z.object({ verdict: z.enum(["yes", "no"]) });
@@ -92,6 +99,23 @@ describe("judgeCall", () => {
     );
     expect(result.verdict).toEqual({ verdict: "yes" });
     expect(sentText).toBeUndefined();
+  });
+  it("records generation ids that count toward usage", async () => {
+    const service: ResponsesService = {
+      send: () =>
+        recordGenerationId("gen-judge", true).pipe(
+          zipRight(succeed(fixtureResult('{"verdict":"yes"}')))
+        ),
+    };
+    const entries = await runPromise(
+      resetGenerationIds.pipe(
+        flatMap(() => judgeCall(service, { judgeModel: "j" }, SPEC)),
+        flatMap(() => getCollectedGenerationIdEntries)
+      )
+    );
+    expect(entries).toEqual([
+      { id: "gen-judge", isCacheHit: true, countsTowardUsage: true },
+    ]);
   });
   it("fails with ModelError when the verdict does not parse, without retrying", async () => {
     let calls = 0;
