@@ -37,10 +37,19 @@ export interface AgentCliRunResult extends OriAgentRun {
   readonly failureDetail: string;
 }
 
+export function normalizeAgentModel(model: string): string {
+  const routingPrefix = "openrouter/";
+  if (!model.startsWith(routingPrefix)) {
+    return model;
+  }
+  const rest = model.slice(routingPrefix.length);
+  return rest.includes("/") ? rest : model;
+}
+
 export function buildAgentCliEnv(opts: AgentCliOpts): Record<string, string> {
   const env: Record<string, string> = {
     OPENROUTER_API_KEY: opts.apiKey,
-    TB_MODEL: opts.model,
+    TB_MODEL: normalizeAgentModel(opts.model),
   };
   if (opts.endpointId !== undefined) {
     env["OPENROUTER_ENDPOINT_ID"] = opts.endpointId;

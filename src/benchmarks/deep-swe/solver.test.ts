@@ -254,6 +254,24 @@ describe("deep-swe claude agent via ori", () => {
     expect(score.value).toBe(ScoreValue.Correct);
   });
 
+  it("tells the agent that work is graded from git commits", async () => {
+    const log = newLog();
+    await runDeepSweSolver(
+      scriptedModel(newConfigRecord()),
+      fakeCliSandbox(log, '{"reward": 1}'),
+      { ...SOLVER_OPTS, agent: "claude" }
+    );
+    const agentCall = log.calls.find((c) =>
+      c.argv.join(" ").includes("ori claude")
+    );
+    if (agentCall === undefined) {
+      throw new Error("no agent invocation captured");
+    }
+    const appended = agentCall.env["TB_APPEND_SYSTEM_PROMPT"] ?? "";
+    expect(appended).toContain("git commits");
+    expect(appended).toContain("Uncommitted changes are discarded");
+  });
+
   it("installs the agent and uploads the instruction into the agent sandbox", async () => {
     const log = newLog();
     await runDeepSweSolver(

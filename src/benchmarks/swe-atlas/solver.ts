@@ -32,7 +32,10 @@ import type {
 } from "../harbor/sandbox";
 import { REMOTE_TEST_DIR, REMOTE_VERIFIER_SCRIPT } from "../harbor/sandbox";
 import { loadTask, readSweAtlasMeta } from "./dataset";
-import { buildInstanceMessage } from "./prompts";
+import {
+  buildAgentCliSubmissionProtocol,
+  buildInstanceMessage,
+} from "./prompts";
 import type { SweAtlasTrack } from "./schema";
 import { JUDGE_BASE_URL, TRACK_SANDBOX } from "./schema";
 import { ensureTasksCheckedOut } from "./tasks-source";
@@ -104,10 +107,17 @@ export function makeSweAtlasSolver(
       const task = loadTask(meta.taskId, meta.track, tasksRoot);
       const agent = opts.agent ?? "mini_swe";
       const cliHarness = isOriAgent(agent) ? getOriHarness(agent) : undefined;
-      const cliOpts: AgentCliOpts = opts.agentCli ?? {
+      const baseCliOpts: AgentCliOpts = opts.agentCli ?? {
         model: opts.model,
         apiKey: opts.apiKey,
         ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
+      };
+      const cliOpts: AgentCliOpts = {
+        ...baseCliOpts,
+        appendSystemPrompt: joinAgentPrompts(
+          buildAgentCliSubmissionProtocol(meta.track),
+          baseCliOpts.appendSystemPrompt
+        ),
       };
       const session = yield* sessionFactory.create({
         imageTag: meta.dockerImage,
@@ -272,4 +282,13 @@ function runVerifier(input: RunVerifierInput): Effect<
       output: `${run.stdout}\n${run.stderr}`.trim(),
     };
   });
+}
+
+function joinAgentPrompts(
+  protocol: string,
+  callerPrompt: string | undefined
+): string {
+  return callerPrompt === undefined || callerPrompt.length === 0
+    ? protocol
+    : `${protocol}\n\n${callerPrompt}`;
 }

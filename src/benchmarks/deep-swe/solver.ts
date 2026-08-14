@@ -49,7 +49,7 @@ import type {
 import { REMOTE_TEST_DIR, REMOTE_VERIFIER_SCRIPT } from "../harbor/sandbox";
 import type { DeepSweSampleMeta } from "./dataset";
 import { loadTask, readDeepSweMeta } from "./dataset";
-import { buildInstanceMessage } from "./prompts";
+import { AGENT_CLI_SUBMISSION_PROTOCOL, buildInstanceMessage } from "./prompts";
 import type { DeepSweTask } from "./schema";
 import { DEEP_SWE_KEEP_ALIVE_COMMAND, DEEP_SWE_WORKDIR } from "./schema";
 import { ensureTasksCheckedOut } from "./tasks-source";
@@ -105,11 +105,19 @@ export function makeDeepSweSolver(
       const task = loadTask(meta.taskId, tasksRoot);
       const agent = opts.agent ?? "mini_swe";
       const cliHarness = isOriAgent(agent) ? getOriHarness(agent) : undefined;
-      const cliOpts: AgentCliOpts = opts.agentCli ?? {
+      const baseCliOpts: AgentCliOpts = opts.agentCli ?? {
         model: opts.model,
         apiKey: opts.apiKey,
         ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
         ...(opts.sessionId !== undefined && { sessionId: opts.sessionId }),
+      };
+      const cliOpts: AgentCliOpts = {
+        ...baseCliOpts,
+        appendSystemPrompt:
+          baseCliOpts.appendSystemPrompt === undefined ||
+          baseCliOpts.appendSystemPrompt.length === 0
+            ? AGENT_CLI_SUBMISSION_PROTOCOL
+            : `${AGENT_CLI_SUBMISSION_PROTOCOL}\n\n${baseCliOpts.appendSystemPrompt}`,
       };
       const reporter = yield* ProgressReporter;
       const checkpointStore = yield* CheckpointStore;

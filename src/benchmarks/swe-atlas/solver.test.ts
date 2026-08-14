@@ -228,6 +228,48 @@ describe("swe-atlas claude agent via ori", () => {
     expect(score.value).toBe(ScoreValue.Correct);
   });
 
+  it("tells the agent the track's submission protocol", async () => {
+    const log: ExecLog = { calls: [], creates: [] };
+    await runSweAtlasSolver(
+      scriptedModel(newConfigRecord()),
+      fakeCliSandbox(log, "1"),
+      { ...SOLVER_OPTS, agent: "claude" }
+    );
+    const agentCall = log.calls.find((c) =>
+      c.argv.join(" ").includes("ori claude")
+    );
+    if (agentCall === undefined) {
+      throw new Error("no agent invocation captured");
+    }
+    const appended = agentCall.env["TB_APPEND_SYSTEM_PROMPT"] ?? "";
+    expect(appended).toContain("/logs/agent/answer.txt");
+    expect(appended).toContain("<<FINAL_ANSWER>>");
+    expect(agentCall.argv[2]).toContain("--append-system-prompt");
+  });
+
+  it("keeps a caller-supplied prompt alongside the protocol", async () => {
+    const log: ExecLog = { calls: [], creates: [] };
+    await runSweAtlasSolver(
+      scriptedModel(newConfigRecord()),
+      fakeCliSandbox(log, "1"),
+      {
+        ...SOLVER_OPTS,
+        agent: "claude",
+        agentCli: {
+          model: "anthropic/claude-opus-4.5",
+          apiKey: "sk-test",
+          appendSystemPrompt: "Be terse.",
+        },
+      }
+    );
+    const agentCall = log.calls.find((c) =>
+      c.argv.join(" ").includes("ori claude")
+    );
+    const appended = agentCall?.env["TB_APPEND_SYSTEM_PROMPT"] ?? "";
+    expect(appended).toContain("<<FINAL_ANSWER>>");
+    expect(appended).toContain("Be terse.");
+  });
+
   it("installs the agent into the task image", async () => {
     const log: ExecLog = { calls: [], creates: [] };
     await runSweAtlasSolver(

@@ -690,6 +690,45 @@ describe("terminal-bench pi via ori", () => {
     expect(elapsed).not.toBeUndefined();
   });
 
+  it("strips the legacy openrouter routing prefix from the model id", async () => {
+    const execCalls: ExecCalls = [];
+    const layer = makeTerminalBenchFakeSandboxLayer({
+      reward: 1,
+      execCalls,
+      agentExitCode: 0,
+    });
+    const solverLayer = layerEffect(Solver)(
+      gen(function* () {
+        const sessionFactory = yield* SandboxSession;
+        return Solver.of(
+          oriSolver(
+            sessionFactory,
+            {
+              ...SOLVER_OPTS,
+              model: "openrouter/anthropic/claude-sonnet-4",
+            },
+            getOriHarness("pi")
+          )
+        );
+      })
+    );
+    await runPromise(
+      gen(function* () {
+        const solver = yield* Solver;
+        return yield* solver(sampleState());
+      }).pipe(
+        provide(
+          layerMergeAll(
+            solverLayer.pipe(layerProvide(layer)),
+            noopProgressLayer,
+            noopCheckpointLayer
+          )
+        )
+      )
+    );
+    expect(execCalls[0]?.env["TB_MODEL"]).toBe("anthropic/claude-sonnet-4");
+  });
+
   it("installs pi and ori into the image", () => {
     const steps = ORI_HARNESSES.pi.imageBuildSteps({
       agentPackage: "@earendil-works/pi-coding-agent@latest",
