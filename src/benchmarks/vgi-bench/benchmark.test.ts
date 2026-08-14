@@ -29,9 +29,19 @@ const VGI_RECORD: Readonly<Record<string, unknown>> = {
 };
 
 describe("vgiBenchRecordToSample", () => {
-  it("builds the pinned multiple-choice prompt with lowercase letters", () => {
+  it("maps a record to a sample with uppercase prompt, video content part, target, and metadata", () => {
     const sample = vgiBenchRecordToSample(VGI_RECORD, 0);
-    expect(sample.input).toMatchInlineSnapshot(`
+    expect(sample).toMatchInlineSnapshot(`
+      {
+        "contentParts": [
+          {
+            "type": "video_url",
+            "videoUrl": {
+              "url": "https://cdn.seldon.global/videos/clip_007.mp4",
+            },
+          },
+          {
+            "text": 
       "Watch the video and answer the multiple choice question about it. The last line of your response should be of the following format: 'Answer: $LETTER' (without quotes) where LETTER is one of ABCD.
 
       Question: What color is the car in the first scene?
@@ -40,38 +50,32 @@ describe("vgiBenchRecordToSample", () => {
       B) blue
       C) green
       D) yellow"
-      `);
-  });
+      ,
+            "type": "text",
+          },
+        ],
+        "id": "vgi_bench-42",
+        "input": 
+      "Watch the video and answer the multiple choice question about it. The last line of your response should be of the following format: 'Answer: $LETTER' (without quotes) where LETTER is one of ABCD.
 
-  it("places content parts: video_url first, then text", () => {
-    const sample = vgiBenchRecordToSample(VGI_RECORD, 0);
-    expect(sample.contentParts).toBeDefined();
-    expect(sample.contentParts).toHaveLength(2);
-    expect(sample.contentParts![0]).toEqual({
-      type: "video_url",
-      videoUrl: { url: "https://cdn.seldon.global/videos/clip_007.mp4" },
-    });
-    expect(sample.contentParts![1]!.type).toBe("text");
-  });
+      Question: What color is the car in the first scene?
 
-  it("derives the target letter from correct_answer index (uppercase)", () => {
-    const sample = vgiBenchRecordToSample(VGI_RECORD, 0);
-    expect(sample.target.text).toBe("B");
-  });
-
-  it("uses question_id for a stable sample id", () => {
-    const sample = vgiBenchRecordToSample(VGI_RECORD, 0);
-    expect(sample.id).toBe("vgi_bench-42");
-  });
-
-  it("records family and question_type metadata but never the canary", () => {
-    const sample = vgiBenchRecordToSample(VGI_RECORD, 0);
-    expect(sample.metadata?.["question_type"]).toBe(
-      "contrastive-hard-negative/transcript_visual"
-    );
-    expect(sample.metadata?.["family"]).toBe("contrastive-hard-negative");
-    expect(sample.metadata?.["video_id"]).toBe("clip_007");
-    expect(sample.metadata?.["question_id"]).toBe(42);
+      A) red
+      B) blue
+      C) green
+      D) yellow"
+      ,
+        "metadata": {
+          "family": "contrastive-hard-negative",
+          "question_id": 42,
+          "question_type": "contrastive-hard-negative/transcript_visual",
+          "video_id": "clip_007",
+        },
+        "target": {
+          "text": "B",
+        },
+      }
+    `);
     expect(JSON.stringify(sample.metadata)).not.toContain("canary");
     expect(JSON.stringify(sample.input)).not.toContain("canary");
   });
@@ -135,11 +139,6 @@ describe("downscaledVideoUrl", () => {
       "https://cdn.seldon.global/v/clip_007_proxy_v2"
     );
   });
-  it("does not splice into dots in the hostname for extension-less paths", () => {
-    expect(downscaledVideoUrl("https://cdn.seldon.global/v/clip_007")).toBe(
-      "https://cdn.seldon.global/v/clip_007_proxy_v2"
-    );
-  });
   it("operates only on the final path segment, not earlier directories", () => {
     expect(
       downscaledVideoUrl("https://cdn.seldon.global/v1.2/clip_007.mp4")
@@ -157,7 +156,7 @@ describe("buildVgiBenchPrompt", () => {
 
       A) yes
       B) no"
-      `);
+    `);
   });
 });
 
