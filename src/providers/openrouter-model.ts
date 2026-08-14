@@ -365,6 +365,14 @@ function toApiContentItem(part: ContentPart) {
         },
       };
     }
+    case "video_url": {
+      return {
+        type: "video_url",
+        video_url: {
+          url: part.videoUrl.url,
+        },
+      };
+    }
     default: {
       return part satisfies never;
     }

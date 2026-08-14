@@ -17,6 +17,7 @@ import { TAU_BENCH_AIRLINE_BENCHMARK } from "./tau-bench-airline/benchmark";
 import { TAU3_BENCH_BANKING_BENCHMARK } from "./tau3-bench-banking/benchmark";
 import { TERMINAL_BENCH_BENCHMARK } from "./terminal-bench/benchmark";
 import type { Benchmark } from "./types";
+import { VGI_BENCH_BENCHMARK } from "./vgi-bench/benchmark";
 import { WANDR_BENCHMARK } from "./wandr/benchmark";
 
 const BENCHMARKS: Record<string, Benchmark> = {
@@ -37,6 +38,7 @@ const BENCHMARKS: Record<string, Benchmark> = {
   [HLE_BENCHMARK.id]: HLE_BENCHMARK,
   [DSQA_BENCHMARK.id]: DSQA_BENCHMARK,
   [WIDESEARCH_BENCHMARK.id]: WIDESEARCH_BENCHMARK,
+  [VGI_BENCH_BENCHMARK.id]: VGI_BENCH_BENCHMARK,
 };
 
 export function getBenchmark(id: string): Benchmark | undefined {

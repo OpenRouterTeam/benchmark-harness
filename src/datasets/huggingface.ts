@@ -80,6 +80,7 @@ export interface HfDatasetConfig {
   readonly pageSize?: number;
   readonly retry?: RetryConfig;
   readonly hfToken?: string;
+  readonly revision?: string;
 }
 
 export const HfImageSchema = z.object({
@@ -141,6 +142,9 @@ export function makeHfPageFetcher(
             split: config.split,
             offset,
             length,
+            ...(config.revision !== undefined && {
+              revision: config.revision,
+            }),
           },
           ...(hfToken !== undefined &&
             hfToken !== "" && {

@@ -55,9 +55,17 @@ export const ImageContentPartSchema = z.object({
   }),
 });
 
+export const VideoContentPartSchema = z.object({
+  type: z.literal("video_url"),
+  videoUrl: z.object({
+    url: z.string(),
+  }),
+});
+
 export const ContentPartSchema = z.discriminatedUnion("type", [
   TextContentPartSchema,
   ImageContentPartSchema,
+  VideoContentPartSchema,
 ]);
 
 export const ChatMessageSchema = z
@@ -94,7 +102,14 @@ export interface ImageContentPart {
   };
 }
 
-export type ContentPart = TextContentPart | ImageContentPart;
+export interface VideoContentPart {
+  readonly type: "video_url";
+  readonly videoUrl: {
+    readonly url: string;
+  };
+}
+
+export type ContentPart = TextContentPart | ImageContentPart | VideoContentPart;
 
 export type ChatMessage = z.infer<typeof ChatMessageSchema>;
 

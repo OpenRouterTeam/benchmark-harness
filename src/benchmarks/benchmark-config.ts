@@ -266,6 +266,19 @@ export type WideSearchBenchmarkConfig = z.infer<
   typeof WideSearchBenchmarkConfigSchema
 >;
 
+export const VgiBenchOptionsSchema = z.object({
+  downscaledVideos: z.boolean().default(false),
+  datasetRevision: z.string().optional(),
+});
+
+export const VgiBenchmarkConfigSchema = z.object({
+  benchmarkId: z.literal("vgi_bench"),
+  ...FixedTemperatureBenchmarkBaseSchema.shape,
+  ...VgiBenchOptionsSchema.shape,
+});
+
+export type VgiBenchmarkConfig = z.infer<typeof VgiBenchmarkConfigSchema>;
+
 export type SearchBenchmarkConfig =
   | BrowseCompBenchmarkConfig
   | HleBenchmarkConfig
@@ -290,6 +303,7 @@ export const BenchmarkRunConfigSchema = z.discriminatedUnion("benchmarkId", [
   HleBenchmarkConfigSchema,
   DsqaBenchmarkConfigSchema,
   WideSearchBenchmarkConfigSchema,
+  VgiBenchmarkConfigSchema,
 ]);
 
 export type BenchmarkRunConfig = z.infer<typeof BenchmarkRunConfigSchema>;
@@ -326,6 +340,7 @@ export const BENCHMARK_OPTIONS_SCHEMAS = {
   search_hle: SearchBenchmarkOptionsSchema,
   search_dsqa: SearchBenchmarkOptionsSchema,
   search_widesearch: SearchBenchmarkOptionsSchema,
+  vgi_bench: VgiBenchOptionsSchema,
 } as const satisfies Record<ModelBenchmarkId, z.ZodObject<z.ZodRawShape>>;
 
 const SEARCH_BENCHMARK_ID_SET: ReadonlySet<string> = new Set([
