@@ -15,6 +15,8 @@ import {
 
 const EXIT_DETAIL_TAIL_CHARS = 500;
 
+export const ORI_SESSION_ID_ENV = "ORI_OPENROUTER_SESSION_ID" as const;
+
 export interface AgentCliOpts {
   readonly model: string;
   readonly apiKey: string;
@@ -55,7 +57,7 @@ export function buildAgentCliEnv(opts: AgentCliOpts): Record<string, string> {
     env["OPENROUTER_ENDPOINT_ID"] = opts.endpointId;
   }
   if (opts.sessionId !== undefined) {
-    env["OPENROUTER_SESSION_ID"] = opts.sessionId;
+    env[ORI_SESSION_ID_ENV] = opts.sessionId;
   }
   if (opts.systemPrompt !== undefined) {
     env["TB_SYSTEM_PROMPT"] = opts.systemPrompt;
