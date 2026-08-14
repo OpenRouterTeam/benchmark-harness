@@ -80,7 +80,7 @@ export interface GenerationResolverConfig {
 }
 
 const DEFAULT_POLL_INTERVAL_MS = 5000;
-const DEFAULT_MAX_ATTEMPTS = 2;
+const DEFAULT_MAX_ATTEMPTS = 12;
 const RESOLVE_CONCURRENCY = 8;
 
 function normalizeBaseUrl(baseUrl: string): string {
