@@ -246,6 +246,45 @@ describe("openrouter-model request parity", () => {
     expect(captured.value?.body["provider"]).toBeUndefined();
     expect(captured.value?.headers["x-or-endpoint-id"]).toBe("ep-1");
   });
+  it("serializes a video_url content part by url", async () => {
+    const captured = newHolder();
+    restore = installFetchCapture(captured);
+    const layer = makeOpenRouterModelLayer({
+      model: "google/gemini-2.5-flash",
+      apiKey: "sk-test",
+    });
+    const messages = [
+      {
+        role: MessageRole.User,
+        content: "",
+        contentParts: [
+          {
+            type: "video_url" as const,
+            videoUrl: { url: "https://cdn.seldon.global/v/clip.mp4" },
+          },
+          { type: "text" as const, text: "describe the video" },
+        ],
+      },
+    ];
+    await runPromiseExit(
+      gen(function* run() {
+        const model = yield* Model;
+        yield* model.generate(messages, {});
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    const sentMessages = captured.value?.body["messages"] as unknown[];
+    expect(sentMessages).toBeDefined();
+    expect(sentMessages[0]).toEqual({
+      role: "user",
+      content: [
+        {
+          type: "video_url",
+          video_url: { url: "https://cdn.seldon.global/v/clip.mp4" },
+        },
+        { type: "text", text: "describe the video" },
+      ],
+    });
+  });
   it("sends reasoning_effort, maxTokens, temperature", async () => {
     const captured = newHolder();
     restore = installFetchCapture(captured);

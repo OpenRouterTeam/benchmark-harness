@@ -424,7 +424,8 @@ export function buildBenchmarkConfig(opts: {
     case "search_browsecomp":
     case "search_hle":
     case "search_dsqa":
-    case "search_widesearch": {
+    case "search_widesearch":
+    case "vgi_bench": {
       return buildSchemaValidatedConfig({
         benchmarkId,
         model: requireModel(benchmarkId, model),

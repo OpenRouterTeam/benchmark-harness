@@ -94,6 +94,11 @@ export const WIDESEARCH_META = {
   defaultEpochs: 1,
 } as const satisfies BenchmarkMeta;
 
+export const VGI_BENCH_META = {
+  id: "vgi_bench",
+  defaultEpochs: 1,
+} as const satisfies BenchmarkMeta;
+
 const BENCHMARK_META: Readonly<Record<string, BenchmarkMeta>> = {
   [GPQA_META.id]: GPQA_META,
   [MMLU_PRO_META.id]: MMLU_PRO_META,
@@ -112,6 +117,7 @@ const BENCHMARK_META: Readonly<Record<string, BenchmarkMeta>> = {
   [HLE_META.id]: HLE_META,
   [DSQA_META.id]: DSQA_META,
   [WIDESEARCH_META.id]: WIDESEARCH_META,
+  [VGI_BENCH_META.id]: VGI_BENCH_META,
 };
 
 export function getBenchmarkMeta(id: string): BenchmarkMeta | undefined {

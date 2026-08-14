@@ -324,6 +324,12 @@ function contentPartToPojo(part: ContentPart): Record<string, unknown> {
     case "text": {
       return { type: "text", text: part.text };
     }
+    case "video_url": {
+      return {
+        type: "video_url",
+        video_url: { url: part.videoUrl.url },
+      };
+    }
     default: {
       part satisfies never;
       throw new Error(`Unhandled content part type: ${part}`);
