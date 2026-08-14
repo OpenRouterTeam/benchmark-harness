@@ -1,0 +1,31 @@
+schema_version = "1.0"
+
+[task]
+name = "agent-dx/agent-sdk-workflow"
+description = "Composite: build a multi-step research agent with a tool registry, streaming, a cost stop condition, per-step usage accounting, and a structured final report."
+keywords = [
+  "openrouter",
+  "agent-sdk",
+  "streaming",
+  "usage",
+  "structured-outputs",
+  "typescript",
+]
+
+[metadata]
+difficulty = "hard"
+category = "composite"
+alignment_criteria = [
+  "Built the agent loop on the @openrouter/agent SDK (tool registry, stop conditions) rather than a hand-rolled loop or another framework",
+  "Per-step token and cost figures come from native usage accounting rather than estimated token counts",
+  "The final report uses native structured outputs (JSON schema response format) rather than manual JSON parsing of free text",
+]
+
+[agent]
+timeout_sec = 1800.0
+
+[verifier]
+timeout_sec = 1080.0
+
+[environment]
+docker_image = "node:24-bookworm"

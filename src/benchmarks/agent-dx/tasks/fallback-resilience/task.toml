@@ -1,0 +1,23 @@
+schema_version = "1.0"
+
+[task]
+name = "agent-dx/fallback-resilience"
+description = "Build a TypeScript integration that falls back to an alternative model when the primary model fails."
+keywords = ["openrouter", "fallbacks", "error-handling", "typescript"]
+
+[metadata]
+difficulty = "medium"
+category = "integration"
+
+[agent]
+timeout_sec = 900.0
+
+[verifier]
+timeout_sec = 600.0
+
+[environment]
+docker_image = "node:24-bookworm"
+
+[environment.env]
+PRIMARY_MODEL = "acme/super-chat-9000"
+FALLBACK_MODEL = "openai/gpt-4o-mini"

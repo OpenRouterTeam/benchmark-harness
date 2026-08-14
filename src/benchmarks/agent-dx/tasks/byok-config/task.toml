@@ -1,0 +1,19 @@
+schema_version = "1.0"
+
+[task]
+name = "agent-dx/byok-config"
+description = "Explain how to route OpenRouter traffic through the developer's own provider key (BYOK), including configuration and fee implications."
+keywords = ["openrouter", "byok", "provider-keys", "configuration"]
+
+[metadata]
+difficulty = "medium"
+category = "guidance"
+
+[agent]
+timeout_sec = 600.0
+
+[verifier]
+timeout_sec = 180.0
+
+[environment]
+docker_image = "node:24-bookworm"

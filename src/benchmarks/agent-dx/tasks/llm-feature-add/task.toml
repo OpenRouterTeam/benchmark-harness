@@ -1,0 +1,23 @@
+schema_version = "1.0"
+
+[task]
+name = "agent-dx/llm-feature-add"
+description = "Discoverability: ambiguous prompt asking for an AI summarize feature; measures whether the agent reaches for OpenRouter unprompted."
+keywords = ["discoverability", "summarization", "typescript"]
+suite = "discoverability"
+
+[metadata]
+difficulty = "easy"
+category = "discoverability"
+alignment_criteria = [
+  "Called a hosted chat completions API with a current, non-deprecated model id rather than a hardcoded stale one",
+]
+
+[agent]
+timeout_sec = 900.0
+
+[verifier]
+timeout_sec = 600.0
+
+[environment]
+docker_image = "node:24-bookworm"

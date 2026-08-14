@@ -1,0 +1,5 @@
+Compliance requires that our traffic for a specific workload only ever goes to one approved provider — silently falling back to a different provider is a contract violation. Build a minimal TypeScript Node project in the current directory that calls the model in the PIN_MODEL environment variable through the OpenRouter chat completions API, routed exclusively to the provider named in the PINNED_PROVIDER environment variable, with fallback to other providers disabled.
+
+To prove the pinning fails closed, the program must then make a second request for the same model pinned exclusively to the provider in the BAD_PROVIDER environment variable (which does not serve this model). That request must fail with a clear error rather than being served by some other provider.
+
+The API key is in the OPENROUTER_API_KEY environment variable. `npm start` should ask "What is the boiling point of water at sea level in Celsius?" on the pinned request and print the raw API response as JSON, then print `PIN_FAILED <short reason>` for the second request after it is rejected.

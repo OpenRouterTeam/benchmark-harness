@@ -7,6 +7,21 @@ import { ProviderSort } from "../internal/enums";
 import type { ValueOf } from "../internal/guards";
 import { z, zDefaultedText, zInt } from "../internal/zod";
 import {
+  AGENT_DX_DOCS_SOURCE_PATTERN,
+  AGENT_DX_HARNESSES,
+  AGENT_DX_PROFILES,
+  AGENT_DX_SANDBOX_KEY_MODES,
+  AGENT_DX_SKILLS_SOURCE_PATTERN,
+  AGENT_DX_SUITES,
+  DEFAULT_AGENT_DX_DOCS_SOURCE,
+  DEFAULT_AGENT_DX_HARNESS,
+  DEFAULT_AGENT_DX_PROFILE,
+  DEFAULT_AGENT_DX_SANDBOX_KEY_MODE,
+  DEFAULT_AGENT_DX_SKILLS_SOURCE,
+  DEFAULT_AGENT_DX_SUITE,
+  DEFAULT_OPENCODE_PACKAGE,
+} from "./agent-dx/schema";
+import {
   TAU3_BENCH_BANKING_META,
   TAU_BENCH_AIRLINE_META,
 } from "./benchmark-meta";
@@ -142,6 +157,42 @@ export const TerminalBenchConfigSchema = z.object({
 });
 
 export type TerminalBenchConfig = z.infer<typeof TerminalBenchConfigSchema>;
+
+export const AgentDxOptionsSchema = z.object({
+  harness: z.enum(AGENT_DX_HARNESSES).default(DEFAULT_AGENT_DX_HARNESS),
+  profile: z.enum(AGENT_DX_PROFILES).default(DEFAULT_AGENT_DX_PROFILE),
+  opencodePackage: z.string().default(DEFAULT_OPENCODE_PACKAGE),
+  skillsSource: z
+    .string()
+    .regex(
+      AGENT_DX_SKILLS_SOURCE_PATTERN,
+      "must be an https git URL with optional #ref"
+    )
+    .default(DEFAULT_AGENT_DX_SKILLS_SOURCE),
+  skillsVariant: z.string().max(64).optional(),
+  docsSource: z
+    .string()
+    .regex(AGENT_DX_DOCS_SOURCE_PATTERN, "must be a plain https URL")
+    .default(DEFAULT_AGENT_DX_DOCS_SOURCE),
+  docsAddendum: z.string().optional(),
+  mcpAddendum: z.string().optional(),
+  judgeModel: z.string().nullish(),
+  suite: z.enum(AGENT_DX_SUITES).default(DEFAULT_AGENT_DX_SUITE),
+  sandboxKey: z
+    .enum(AGENT_DX_SANDBOX_KEY_MODES)
+    .default(DEFAULT_AGENT_DX_SANDBOX_KEY_MODE),
+  taskSubset: z.array(z.string()).optional(),
+  maxAgentTimeoutSec: z.number().positive().optional(),
+  modalEnv: z.string().default("main"),
+});
+
+export const AgentDxConfigSchema = z.object({
+  benchmarkId: z.literal("agent_dx"),
+  ...ModelBenchmarkBaseSchema.shape,
+  ...AgentDxOptionsSchema.shape,
+});
+
+export type AgentDxConfig = z.infer<typeof AgentDxConfigSchema>;
 
 export const DracoBenchmarkConfigSchema = z.object({
   benchmarkId: z.literal("draco"),
@@ -279,6 +330,7 @@ export const BenchmarkRunConfigSchema = z.discriminatedUnion("benchmarkId", [
   Tau3BenchBankingConfigSchema,
   MmmuProVisionBenchmarkConfigSchema,
   TerminalBenchConfigSchema,
+  AgentDxConfigSchema,
   DracoBenchmarkConfigSchema,
   IfStructBenchmarkConfigSchema,
   SweAtlasQaConfigSchema,
@@ -316,6 +368,7 @@ export const BENCHMARK_OPTIONS_SCHEMAS = {
   tau3_bench_banking: Tau3BenchBankingOptionsSchema,
   mmmu_pro_vision: MmmuProVisionOptionsSchema,
   terminal_bench: TerminalBenchOptionsSchema,
+  agent_dx: AgentDxOptionsSchema,
   ifstruct: IfStructOptionsSchema,
   swe_atlas_qa: SweAtlasOptionsSchema,
   swe_atlas_tw: SweAtlasOptionsSchema,
