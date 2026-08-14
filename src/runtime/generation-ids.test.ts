@@ -26,18 +26,21 @@ describe("generation id collector", () => {
         isCacheHit: true,
         countsTowardUsage: true,
         isResolvedSource: false,
+        shouldResolveChildren: false,
       },
       {
         id: "gen-real",
         isCacheHit: false,
         countsTowardUsage: true,
         isResolvedSource: false,
+        shouldResolveChildren: false,
       },
       {
         id: "gen-source",
         isCacheHit: true,
         countsTowardUsage: true,
         isResolvedSource: true,
+        shouldResolveChildren: false,
       },
     ]);
   });
@@ -58,12 +61,31 @@ describe("generation id collector", () => {
         isCacheHit: true,
         countsTowardUsage: false,
         isResolvedSource: false,
+        shouldResolveChildren: false,
       },
       {
         id: "gen-solver",
         isCacheHit: true,
         countsTowardUsage: true,
         isResolvedSource: false,
+        shouldResolveChildren: false,
+      },
+    ]);
+  });
+  it("flags generation roots whose child ids should be resolved", async () => {
+    const entries = await runPromise(
+      resetGenerationIds.pipe(
+        flatMap(() => recordGenerationId("gen-root", false, false, true)),
+        flatMap(() => getCollectedGenerationIdEntries)
+      )
+    );
+    expect(entries).toEqual([
+      {
+        id: "gen-root",
+        isCacheHit: false,
+        countsTowardUsage: true,
+        isResolvedSource: false,
+        shouldResolveChildren: true,
       },
     ]);
   });

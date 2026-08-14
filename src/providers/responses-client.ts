@@ -94,6 +94,7 @@ export interface ResponsesSendOptions {
   readonly extraBody?: Readonly<Record<string, unknown>>;
   readonly onResponseIdentifiers?: (identifiers: ModelErrorIdentifiers) => void;
   readonly onStreamEvent?: (event: StreamEvents) => void;
+  readonly resolveGenerationChildren?: boolean;
 }
 
 export interface ResponsesConfig {
@@ -232,7 +233,8 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
                 ? cacheSourceId
                 : result.generationId,
               isCacheHit,
-              isCacheHit && cacheSourceId !== undefined
+              isCacheHit && cacheSourceId !== undefined,
+              options.resolveGenerationChildren ?? false
             ).pipe(map(() => result))
           : fail(
               new ResponsesError({

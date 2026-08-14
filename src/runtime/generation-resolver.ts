@@ -35,14 +35,17 @@ export interface ReplayedUsage {
 }
 
 export interface ResolvedSourceGeneration {
-  readonly sourceId: string;
+  readonly sourceIds: readonly string[];
   readonly usage?: ReplayedUsage;
 }
 
 export interface GenerationResolverService {
   readonly resolveSourceGeneration: (
     generationId: string,
-    options?: { readonly includeUsage?: boolean }
+    options?: {
+      readonly includeUsage?: boolean;
+      readonly includeRelated?: boolean;
+    }
   ) => Effect<ResolvedSourceGeneration | undefined>;
 }
 
@@ -58,6 +61,7 @@ const GenerationLookupSchema = z.object({
     native_tokens_reasoning: z.number().nullish(),
     total_cost: z.number().nullish(),
     generation_time: z.number().nullish(),
+    related_generation_ids: z.array(z.string()).nullish(),
   }),
 });
 
@@ -82,6 +86,7 @@ export interface GenerationResolverConfig {
 const DEFAULT_POLL_INTERVAL_MS = 5000;
 const DEFAULT_MAX_ATTEMPTS = 12;
 const RESOLVE_CONCURRENCY = 8;
+const MAX_RELATED_DEPTH = 16;
 
 function normalizeBaseUrl(baseUrl: string): string {
   const trimmed = baseUrl.replace(/\/+$/u, "");
@@ -125,14 +130,15 @@ export function makeOpenRouterGenerationResolver(
       whileInput((error: GenerationLookupError) => error.retryable)
     );
   const lookupOnce = (
-    generationId: string
+    generationId: string,
+    includeRelated: boolean
   ): Effect<GenerationLookupData, GenerationLookupError> =>
     tryPromise({
       try: async (
         signal
       ): Promise<{ readonly status: number } | { readonly json: unknown }> => {
         const response = await fetch(
-          `${baseUrl}/generation?id=${encodeURIComponent(generationId)}`,
+          `${baseUrl}/generation?id=${encodeURIComponent(generationId)}${includeRelated ? "&include_related=true" : ""}`,
           {
             headers: { Authorization: `Bearer ${config.apiKey}` },
             signal,
@@ -171,61 +177,101 @@ export function makeOpenRouterGenerationResolver(
       })
     );
   const lookupGeneration = (
-    generationId: string
+    generationId: string,
+    includeRelated = false
   ): Effect<GenerationLookupData, GenerationLookupError> =>
-    lookupOnce(generationId).pipe(retry(pollSchedule(maxAttempts)));
-  const lookupSourceUsage = (
-    sourceId: string
-  ): Effect<ReplayedUsage | undefined> =>
-    lookupGeneration(sourceId).pipe(
-      map((data): ReplayedUsage | undefined => usageFromLookup(data, sourceId)),
+    lookupOnce(generationId, includeRelated).pipe(
+      retry(pollSchedule(maxAttempts))
+    );
+  const resolveSourceGeneration = (
+    generationId: string,
+    options:
+      | {
+          readonly includeUsage?: boolean;
+          readonly includeRelated?: boolean;
+        }
+      | undefined,
+    visited: ReadonlySet<string>,
+    depth: number
+  ): Effect<ResolvedSourceGeneration | undefined> => {
+    if (depth >= MAX_RELATED_DEPTH || visited.has(generationId)) {
+      return sync(() => {
+        wLog("Generation relation resolution reached a cycle or depth limit", {
+          generation_id: generationId,
+        });
+        return undefined;
+      });
+    }
+    const nextVisited = new Set(visited).add(generationId);
+    const includeRelated = options?.includeRelated === true;
+    return lookupGeneration(generationId, includeRelated).pipe(
+      flatMap((data) => {
+        const cacheSourceId = data.response_cache_source_id;
+        if (cacheSourceId !== null && cacheSourceId !== undefined) {
+          if (options?.includeUsage === false && !includeRelated) {
+            return succeed<ResolvedSourceGeneration>({
+              sourceIds: [cacheSourceId],
+            });
+          }
+          return resolveSourceGeneration(
+            cacheSourceId,
+            options,
+            nextVisited,
+            depth + 1
+          ).pipe(
+            map(
+              (resolved): ResolvedSourceGeneration =>
+                resolved ?? { sourceIds: [cacheSourceId] }
+            )
+          );
+        }
+        const relatedIds = includeRelated
+          ? (data.related_generation_ids ?? [])
+          : [];
+        if (relatedIds.length === 0) {
+          return succeed<ResolvedSourceGeneration>({
+            sourceIds: [generationId],
+            ...(options?.includeUsage === false
+              ? {}
+              : { usage: usageFromLookup(data, generationId) }),
+          });
+        }
+        return forEach(
+          relatedIds,
+          (relatedId) =>
+            resolveSourceGeneration(relatedId, options, nextVisited, depth + 1),
+          { concurrency: RESOLVE_CONCURRENCY }
+        ).pipe(
+          map((resolved) => {
+            if (resolved.some((entry) => entry === undefined)) {
+              return undefined;
+            }
+            const entries = resolved.filter(isDefinedAndNotNull);
+            let usage: ReplayedUsage | undefined;
+            for (const entry of entries) {
+              usage = sumReplayedUsage(usage, entry.usage);
+            }
+            return {
+              sourceIds: entries.flatMap((entry) => entry.sourceIds),
+              ...(usage !== undefined && { usage }),
+            } satisfies ResolvedSourceGeneration;
+          })
+        );
+      }),
       catchAll((error) =>
         sync(() => {
-          wLog("Failed to fetch source generation usage", {
-            generation_id: sourceId,
+          wLog("Failed to resolve generation relations", {
+            generation_id: generationId,
             error: error.message,
           });
           return undefined;
         })
       )
     );
+  };
   return {
     resolveSourceGeneration: (generationId, options) =>
-      lookupGeneration(generationId).pipe(
-        flatMap((data) => {
-          const dummySourceId = data.response_cache_source_id;
-          const sourceId =
-            dummySourceId === null ||
-            dummySourceId === undefined ||
-            dummySourceId.length === 0
-              ? generationId
-              : dummySourceId;
-          if (options?.includeUsage === false) {
-            return succeed<ResolvedSourceGeneration>({ sourceId });
-          }
-          if (sourceId === generationId) {
-            return succeed<ResolvedSourceGeneration>({
-              sourceId,
-              usage: usageFromLookup(data, generationId),
-            });
-          }
-          return lookupSourceUsage(sourceId).pipe(
-            map((usage): ResolvedSourceGeneration => ({
-              sourceId,
-              ...(usage !== undefined && { usage }),
-            }))
-          );
-        }),
-        catchAll((error) =>
-          sync(() => {
-            wLog("Failed to resolve cache-hit source generation", {
-              generation_id: generationId,
-              error: error.message,
-            });
-            return undefined;
-          })
-        )
-      ),
+      resolveSourceGeneration(generationId, options, new Set(), 0),
   };
 }
 
@@ -235,7 +281,7 @@ export interface ResolvedGenerations {
 }
 
 interface ResolvedEntry {
-  readonly id: string;
+  readonly ids: readonly string[];
   readonly usage?: ReplayedUsage;
 }
 
@@ -244,24 +290,25 @@ function resolveEntry(
   resolver: GenerationResolverService
 ): Effect<ResolvedEntry> {
   if (entry.isResolvedSource && !entry.countsTowardUsage) {
-    return succeed({ id: entry.id });
+    return succeed({ ids: [entry.id] });
   }
-  return entry.isCacheHit
+  return entry.isCacheHit || entry.shouldResolveChildren
     ? resolver
         .resolveSourceGeneration(entry.id, {
-          includeUsage: entry.countsTowardUsage,
+          includeUsage: entry.isCacheHit && entry.countsTowardUsage,
+          includeRelated: entry.shouldResolveChildren,
         })
         .pipe(
           map((resolved): ResolvedEntry =>
             resolved === undefined
-              ? { id: entry.id }
+              ? { ids: [entry.id] }
               : {
-                  id: resolved.sourceId,
+                  ids: resolved.sourceIds,
                   ...(resolved.usage && { usage: resolved.usage }),
                 }
           )
         )
-    : succeed({ id: entry.id });
+    : succeed({ ids: [entry.id] });
 }
 
 function sumReplayedUsage(
@@ -288,7 +335,12 @@ export const resolveCollectedGenerations: Effect<ResolvedGenerations> = gen(
   function* () {
     const entries = yield* getCollectedGenerationIdEntries;
     const resolver = yield* serviceOption(GenerationResolver);
-    if (isNone(resolver) || entries.every((entry) => !entry.isCacheHit)) {
+    if (
+      isNone(resolver) ||
+      entries.every(
+        (entry) => !entry.isCacheHit && !entry.shouldResolveChildren
+      )
+    ) {
       return { ids: entries.map((entry) => entry.id) };
     }
     const resolved = yield* forEach(
@@ -301,7 +353,7 @@ export const resolveCollectedGenerations: Effect<ResolvedGenerations> = gen(
       replayedUsage = sumReplayedUsage(replayedUsage, entry.usage);
     }
     return {
-      ids: resolved.map((entry) => entry.id),
+      ids: resolved.flatMap((entry) => entry.ids),
       ...(replayedUsage !== undefined && { replayedUsage }),
     };
   }
