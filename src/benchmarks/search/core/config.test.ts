@@ -22,6 +22,7 @@ describe("SearchLaneConfigSchema", () => {
     const result = parseSchema(SearchLaneConfigSchema, {
       webSearch: "server-tool",
       engine: "perplexity",
+      mode: "fast",
       maxAgentTurns: 25,
       maxResults: 10,
       maxTotalResults: 100,
@@ -29,12 +30,16 @@ describe("SearchLaneConfigSchema", () => {
     });
     assertRight(result);
     expect(result.right.maxAgentTurns).toBe(25);
+    expect(result.right.mode).toBe("fast");
   });
   it("rejects maxAgentTurns above the server hard cap", () => {
     expect(rejects({ maxAgentTurns: MAX_SERVER_TOOL_CALLS + 1 })).toBe(true);
   });
   it("rejects unknown engines", () => {
     expect(rejects({ engine: "bing" })).toBe(true);
+  });
+  it("rejects unknown modes", () => {
+    expect(rejects({ mode: "slow" })).toBe(true);
   });
   it("rejects maxResults beyond 25", () => {
     expect(rejects({ maxResults: 26 })).toBe(true);
