@@ -310,9 +310,7 @@ describe("makeOpenRouterGenerationResolver", () => {
     expect(getCalls().length).toBe(1);
   });
   it("warns when the source generation has no usage fields", async () => {
-    const warn = spyOn(console, "warn").mockImplementation(() => {
-      // capture warnings
-    });
+    const warn = spyOn(console, "warn").mockImplementation(() => undefined);
     try {
       mockFetch(() =>
         jsonResponse({ data: { response_cache_source_id: null } })
