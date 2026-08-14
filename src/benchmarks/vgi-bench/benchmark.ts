@@ -86,12 +86,19 @@ function rewriteVideoBaseUrl(url: string, base: string | undefined): string {
   return `${trimmedBase}${parsed.pathname}`;
 }
 
-function downscaledVideoUrl(url: string): string {
-  const dot = url.lastIndexOf(".");
-  if (dot === -1) {
-    return `${url}${PROXY_SUFFIX}`;
-  }
-  return `${url.slice(0, dot)}${PROXY_SUFFIX}.${url.slice(dot + 1)}`;
+export function downscaledVideoUrl(url: string): string {
+  const parsed = new URL(url);
+  const pathname = parsed.pathname;
+  const slash = pathname.lastIndexOf("/");
+  const dir = slash !== -1 ? pathname.slice(0, slash + 1) : "";
+  const filename = slash !== -1 ? pathname.slice(slash + 1) : pathname;
+  const dot = filename.lastIndexOf(".");
+  const rewritten =
+    dot === -1
+      ? `${filename}${PROXY_SUFFIX}`
+      : `${filename.slice(0, dot)}${PROXY_SUFFIX}.${filename.slice(dot + 1)}`;
+  parsed.pathname = `${dir}${rewritten}`;
+  return parsed.toString();
 }
 
 export interface VgiBenchRecordToSampleOptions {
