@@ -30,16 +30,18 @@ const VGI_RECORD: Readonly<Record<string, unknown>> = {
 describe("vgiBenchRecordToSample", () => {
   it("builds the pinned multiple-choice prompt with lowercase letters", () => {
     const sample = vgiBenchRecordToSample(VGI_RECORD, 0);
-    expect(sample.input).toContain("a) red");
-    expect(sample.input).toContain("b) blue");
-    expect(sample.input).toContain("c) green");
-    expect(sample.input).toContain("d) yellow");
-    expect(sample.input).toContain(
-      "Reply with the letter of the correct answer only."
-    );
-    expect(sample.input).toContain(
-      "Question: What color is the car in the first scene?"
-    );
+    expect(sample.input).toMatchInlineSnapshot(`
+      "Watch the video and answer the multiple-choice question about it.
+
+      Question: What color is the car in the first scene?
+
+      a) red
+      b) blue
+      c) green
+      d) yellow
+
+      Reply with the letter of the correct answer only."
+      `);
   });
 
   it("places content parts: video_url first, then text", () => {
@@ -136,13 +138,16 @@ describe("vgiBenchRecordToSample", () => {
 describe("buildVgiBenchPrompt", () => {
   it("matches the pinned official prompt verbatim", () => {
     const prompt = buildVgiBenchPrompt("Is the sky blue?", ["yes", "no"]);
-    expect(prompt).toBe(
-      "Watch the video and answer the multiple-choice question about it.\n\n" +
-        "Question: Is the sky blue?\n\n" +
-        "a) yes\n" +
-        "b) no\n\n" +
-        "Reply with the letter of the correct answer only."
-    );
+    expect(prompt).toMatchInlineSnapshot(`
+      "Watch the video and answer the multiple-choice question about it.
+
+      Question: Is the sky blue?
+
+      a) yes
+      b) no
+
+      Reply with the letter of the correct answer only."
+      `);
   });
 });
 
