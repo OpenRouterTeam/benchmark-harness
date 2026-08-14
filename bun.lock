@@ -7,7 +7,7 @@
       "dependencies": {
         "@effect/platform": "0.95.0",
         "@google-cloud/storage": "7.19.0",
-        "@openrouter/sdk": "1.2.34",
+        "@openrouter/sdk": "1.2.14",
         "change-case": "5.4.4",
         "chrono-node": "2.9.0",
         "cli-progress": "3.12.0",
@@ -95,7 +95,7 @@
 
     "@nodable/entities": ["@nodable/entities@3.0.0", "", {}, "sha512-8L9xFeTYKhm49xfIypoe2W5wV1m/3Z58kT+7kR9A8OyFxcPduI4VmxaUMQyKYrRjUoLLSXv6EKKID5Tvj9cUVw=="],
 
-    "@openrouter/sdk": ["@openrouter/sdk@1.2.34", "", { "dependencies": { "zod": "^3.25.0 || ^4.0.0" } }, "sha512-KdbGP/emkkdl+UG7GXJyMsImSlirCsDe2V2zdoOBAV/FS+omDwIbhWdO6N5nxGTtz6bESgE9fi3MsbMCHaSxYw=="],
+    "@openrouter/sdk": ["@openrouter/sdk@1.2.14", "", { "dependencies": { "zod": "^3.25.0 || ^4.0.0" } }, "sha512-eL8PH3vBbqTaCNpYLHF7sfuyDYYBH0lqKVz7wQWx/sHYGlfkOdIIgLwoxSPZiNNE15kfef9BX3WXCjyvHydq4Q=="],
 
     "@oxfmt/binding-android-arm-eabi": ["@oxfmt/binding-android-arm-eabi@0.62.0", "", { "os": "android", "cpu": "arm" }, "sha512-pdsv0C4gPjJ8H1+sd8u0BDx+yLACTL+rgeMIOL1ln4ihSnhw8CWXtYWgvcSkyTfgGBIzFKab+d8rx9Xl4en/Kw=="],
 
