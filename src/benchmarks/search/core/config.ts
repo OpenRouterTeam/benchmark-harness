@@ -1,3 +1,5 @@
+import { WebSearchMode } from "@openrouter/sdk/models";
+
 import {
   MAX_SERVER_TOOL_CALLS,
   WEB_SEARCH_MAX_CHARACTERS_MAX,
@@ -31,6 +33,10 @@ export const SEARCH_CONTEXT_SIZES = ["low", "medium", "high"] as const;
 
 export type SearchContextSize = ValueOf<typeof SEARCH_CONTEXT_SIZES>;
 
+export const SearchModeSchema = z.enum(WebSearchMode);
+
+export type SearchMode = z.infer<typeof SearchModeSchema>;
+
 export const WebFetchConfigSchema = z.object({
   fetchEngine: FetchEngineSchema.optional(),
   maxFetchUses: z.number().int().min(1).optional(),
@@ -42,6 +48,7 @@ export type WebFetchConfig = z.infer<typeof WebFetchConfigSchema>;
 export const SearchLaneConfigSchema = z.object({
   webSearch: z.enum(SEARCH_SURFACES).default("server-tool"),
   engine: SearchEngineSchema.default("auto"),
+  mode: SearchModeSchema.optional(),
   maxAgentTurns: z.number().int().min(1).max(MAX_SERVER_TOOL_CALLS).optional(),
   maxResults: z
     .number()

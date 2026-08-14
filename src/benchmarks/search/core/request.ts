@@ -41,6 +41,7 @@ function toSearchToolParams(
 ): WebSearchServerToolConfig | undefined {
   const params = definedValues({
     engine: lane.engine === "auto" ? undefined : lane.engine,
+    mode: lane.mode,
     maxResults: lane.maxResults,
     maxTotalResults: lane.maxTotalResults,
     searchContextSize: lane.searchContextSize,
@@ -92,6 +93,7 @@ function buildWebPlugin(lane: SearchLaneConfig): WebSearchPlugin {
     id: "web",
     ...definedValues({
       engine: lane.engine === "auto" ? undefined : lane.engine,
+      mode: lane.mode,
       maxResults: lane.maxResults,
       searchPrompt: lane.searchPrompt,
       includeDomains:
