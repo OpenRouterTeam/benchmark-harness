@@ -268,7 +268,6 @@ export type WideSearchBenchmarkConfig = z.infer<
 
 export const VgiBenchOptionsSchema = z.object({
   downscaledVideos: z.boolean().default(false),
-  videoBaseUrl: z.string().optional(),
   datasetRevision: z.string().optional(),
 });
 

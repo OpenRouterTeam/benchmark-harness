@@ -87,16 +87,6 @@ describe("vgiBenchRecordToSample", () => {
     expect(sample.metadata?.["family"]).toBe("near-duplicate-moments");
   });
 
-  it("rewrites the video url to a local base url", () => {
-    const sample = vgiBenchRecordToSample(VGI_RECORD, 0, {
-      videoBaseUrl: "http://localhost:8080/",
-    });
-    expect(sample.contentParts![0]).toEqual({
-      type: "video_url",
-      videoUrl: { url: "http://localhost:8080/videos/clip_007.mp4" },
-    });
-  });
-
   it("substitutes the downscaled proxy video when requested", () => {
     const sample = vgiBenchRecordToSample(VGI_RECORD, 0, {
       downscaledVideos: true,
@@ -108,19 +98,6 @@ describe("vgiBenchRecordToSample", () => {
       },
     });
     expect(sample.metadata?.["downscaled_videos"]).toBe(true);
-  });
-
-  it("combines downscaled videos with a local base url", () => {
-    const sample = vgiBenchRecordToSample(VGI_RECORD, 0, {
-      downscaledVideos: true,
-      videoBaseUrl: "http://localhost:8080",
-    });
-    expect(sample.contentParts![0]).toEqual({
-      type: "video_url",
-      videoUrl: {
-        url: "http://localhost:8080/videos/clip_007_proxy_v2.mp4",
-      },
-    });
   });
 
   it("throws on an out-of-range correct_answer", () => {
@@ -228,17 +205,15 @@ describe("VGI-Bench registry", () => {
     expect(result.right.downscaledVideos).toBe(false);
   });
 
-  it("parses vgi_bench config with downscaled videos and a base url", () => {
+  it("parses vgi_bench config with downscaled videos and a revision", () => {
     const result = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "vgi_bench",
       model: "google/gemini-2.5-flash",
       downscaledVideos: true,
-      videoBaseUrl: "http://localhost:8080",
       datasetRevision: "v1.0.0",
     });
     assertRight(result);
     expect(result.right.downscaledVideos).toBe(true);
-    expect(result.right.videoBaseUrl).toBe("http://localhost:8080");
     expect(result.right.datasetRevision).toBe("v1.0.0");
   });
 

@@ -77,15 +77,6 @@ function asStringArray(value: unknown, field: string): readonly string[] {
   });
 }
 
-function rewriteVideoBaseUrl(url: string, base: string | undefined): string {
-  if (base === undefined) {
-    return url;
-  }
-  const trimmedBase = base.replace(/\/+$/u, "");
-  const parsed = new URL(url);
-  return `${trimmedBase}${parsed.pathname}`;
-}
-
 export function downscaledVideoUrl(url: string): string {
   const parsed = new URL(url);
   const pathname = parsed.pathname;
@@ -103,7 +94,6 @@ export function downscaledVideoUrl(url: string): string {
 
 export interface VgiBenchRecordToSampleOptions {
   readonly downscaledVideos?: boolean;
-  readonly videoBaseUrl?: string;
 }
 
 export function vgiBenchRecordToSample(
@@ -117,7 +107,6 @@ export function vgiBenchRecordToSample(
   if (opts?.downscaledVideos === true) {
     videoUrl = downscaledVideoUrl(videoUrl);
   }
-  videoUrl = rewriteVideoBaseUrl(videoUrl, opts?.videoBaseUrl);
   const question = asString(record["question"], "question");
   const questionType = asString(record["question_type"], "question_type");
   const answers = asStringArray(record["answers"], "answers");
@@ -169,9 +158,6 @@ export function makeVgiBenchDatasetLayer(
       vgiBenchRecordToSample(record, idx, {
         ...(opts?.downscaledVideos !== undefined && {
           downscaledVideos: opts.downscaledVideos,
-        }),
-        ...(opts?.videoBaseUrl !== undefined && {
-          videoBaseUrl: opts.videoBaseUrl,
         }),
       }),
     ...(opts?.revision !== undefined && { revision: opts.revision }),
@@ -278,9 +264,6 @@ const VGI_BENCH_CHAT_BENCHMARK = defineChatBenchmark({
   makeDatasetLayerForConfig: (config, retryConfig) =>
     makeVgiBenchDatasetLayer({
       downscaledVideos: config.downscaledVideos,
-      ...(config.videoBaseUrl !== undefined && {
-        videoBaseUrl: config.videoBaseUrl,
-      }),
       ...(config.datasetRevision !== undefined
         ? { revision: config.datasetRevision }
         : { revision: VGI_BENCH_DEFAULT_REVISION }),

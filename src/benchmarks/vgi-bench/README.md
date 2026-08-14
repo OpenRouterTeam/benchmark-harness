@@ -22,7 +22,6 @@ Mirrors the official public-split protocol (`vgibench/prompts.py`, `vgibench/run
 | option | type | default | description |
 | --- | --- | --- | --- |
 | `downscaledVideos` | boolean | `false` | Substitute `<name>_proxy_v2.mp4` re-encodes (≤ ~50 MB, 256 frames / 1280 px) where they exist. Disclosure recorded in results. |
-| `videoBaseUrl` | string | — | Serve videos from a local mirror (air-gapped runs): `cdn.seldon.global/<name>.mp4` → `<base>/<name>.mp4`. |
 | `datasetRevision` | string | `v1.0.1` | Override the pinned HF dataset tag. |
 
 ## Video ingestion caveat
