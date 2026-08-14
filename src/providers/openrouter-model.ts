@@ -41,6 +41,7 @@ import {
   getCurrentRetryAttempt,
   RESPONSE_CACHE_HEADER,
   RESPONSE_CACHE_SALT_FIELD,
+  RESPONSE_CACHE_SOURCE_ID_HEADER,
   RESPONSE_CACHE_STATUS_HEADER,
   RESPONSE_CACHE_STATUS_HIT,
   RESPONSE_CACHE_TTL_HEADER,
@@ -234,7 +235,14 @@ export function generate(
     const isCacheHit =
       response.headers[RESPONSE_CACHE_STATUS_HEADER] ===
       RESPONSE_CACHE_STATUS_HIT;
-    return yield* decodeResult(json, startedAt, identifiers, isCacheHit).pipe(
+    const cacheSourceId = response.headers[RESPONSE_CACHE_SOURCE_ID_HEADER];
+    return yield* decodeResult(
+      json,
+      startedAt,
+      identifiers,
+      isCacheHit,
+      cacheSourceId
+    ).pipe(
       tapError((error) =>
         sync(() => {
           logUnusableBody(rawBody, error, identifiers);
@@ -416,7 +424,8 @@ function decodeResult(
   raw: unknown,
   startedAt: number,
   identifiers: ResponseIdentifiers,
-  isCacheHit: boolean
+  isCacheHit: boolean,
+  cacheSourceId?: string
 ): Effect<ModelOutput, ModelError> {
   const parseResult = parseSchema(
     ChatResult$inboundSchema,
@@ -456,7 +465,12 @@ function decodeResult(
   const reasoningDetails = extractReasoningDetails(raw);
   const usage = toModelUsage(result.usage);
   const toolCalls = choice.message.toolCalls ?? [];
-  return recordGenerationId(result.id, isCacheHit).pipe(
+  const hasSourceId = isCacheHit && cacheSourceId !== undefined;
+  return recordGenerationId(
+    hasSourceId ? cacheSourceId : result.id,
+    isCacheHit,
+    hasSourceId
+  ).pipe(
     flatMap(() =>
       succeed({
         completion,

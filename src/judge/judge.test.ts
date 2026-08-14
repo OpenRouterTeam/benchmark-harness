@@ -114,7 +114,12 @@ describe("judgeCall", () => {
       )
     );
     expect(entries).toEqual([
-      { id: "gen-judge", isCacheHit: true, countsTowardUsage: true },
+      {
+        id: "gen-judge",
+        isCacheHit: true,
+        countsTowardUsage: true,
+        isResolvedSource: false,
+      },
     ]);
   });
   it("fails with ModelError when the verdict does not parse, without retrying", async () => {

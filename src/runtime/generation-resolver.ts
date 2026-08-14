@@ -79,8 +79,7 @@ export interface GenerationResolverConfig {
 }
 
 const DEFAULT_POLL_INTERVAL_MS = 5000;
-const DEFAULT_MAX_ATTEMPTS = 12;
-const USAGE_LOOKUP_MAX_ATTEMPTS = 2;
+const DEFAULT_MAX_ATTEMPTS = 2;
 const RESOLVE_CONCURRENCY = 8;
 
 function normalizeBaseUrl(baseUrl: string): string {
@@ -158,30 +157,14 @@ export function makeOpenRouterGenerationResolver(
           : succeed(parsed.right.data);
       })
     );
-  const lookupSourceId = (
+  const lookupGeneration = (
     generationId: string
-  ): Effect<string, GenerationLookupError> =>
-    lookupOnce(generationId).pipe(
-      flatMap((data) => {
-        const sourceId = data.response_cache_source_id;
-        return sourceId === null ||
-          sourceId === undefined ||
-          sourceId.length === 0
-          ? fail(
-              new GenerationLookupError({
-                message: "response_cache_source_id not present yet",
-                retryable: true,
-              })
-            )
-          : succeed(sourceId);
-      }),
-      retry(pollSchedule(maxAttempts))
-    );
+  ): Effect<GenerationLookupData, GenerationLookupError> =>
+    lookupOnce(generationId).pipe(retry(pollSchedule(maxAttempts)));
   const lookupSourceUsage = (
     sourceId: string
   ): Effect<ReplayedUsage | undefined> =>
-    lookupOnce(sourceId).pipe(
-      retry(pollSchedule(USAGE_LOOKUP_MAX_ATTEMPTS)),
+    lookupGeneration(sourceId).pipe(
       map((data): ReplayedUsage | undefined => usageFromLookup(data)),
       catchAll((error) =>
         sync(() => {
@@ -195,20 +178,34 @@ export function makeOpenRouterGenerationResolver(
     );
   return {
     resolveSourceGeneration: (generationId, options) =>
-      lookupSourceId(generationId).pipe(
-        flatMap((sourceId) =>
-          options?.includeUsage === false
-            ? succeed<ResolvedSourceGeneration>({ sourceId })
-            : lookupSourceUsage(sourceId).pipe(
-                map((usage): ResolvedSourceGeneration => ({
-                  sourceId,
-                  ...(usage !== undefined && { usage }),
-                }))
-              )
-        ),
+      lookupGeneration(generationId).pipe(
+        flatMap((data) => {
+          const dummySourceId = data.response_cache_source_id;
+          const sourceId =
+            dummySourceId === null ||
+            dummySourceId === undefined ||
+            dummySourceId.length === 0
+              ? generationId
+              : dummySourceId;
+          if (options?.includeUsage === false) {
+            return succeed<ResolvedSourceGeneration>({ sourceId });
+          }
+          if (sourceId === generationId) {
+            return succeed<ResolvedSourceGeneration>({
+              sourceId,
+              usage: usageFromLookup(data),
+            });
+          }
+          return lookupSourceUsage(sourceId).pipe(
+            map((usage): ResolvedSourceGeneration => ({
+              sourceId,
+              ...(usage !== undefined && { usage }),
+            }))
+          );
+        }),
         catchAll((error) =>
           sync(() => {
-            wLog("Failed to resolve cache-hit source generation id", {
+            wLog("Failed to resolve cache-hit source generation", {
               generation_id: generationId,
               error: error.message,
             });
@@ -233,6 +230,9 @@ function resolveEntry(
   entry: GenerationIdEntry,
   resolver: GenerationResolverService
 ): Effect<ResolvedEntry> {
+  if (entry.isResolvedSource && !entry.countsTowardUsage) {
+    return succeed({ id: entry.id });
+  }
   return entry.isCacheHit
     ? resolver
         .resolveSourceGeneration(entry.id, {

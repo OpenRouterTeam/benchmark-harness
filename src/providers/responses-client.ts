@@ -33,6 +33,7 @@ import {
   getCurrentRetryAttempt,
   RESPONSE_CACHE_HEADER,
   RESPONSE_CACHE_SALT_FIELD,
+  RESPONSE_CACHE_SOURCE_ID_HEADER,
   RESPONSE_CACHE_STATUS_HEADER,
   RESPONSE_CACHE_STATUS_HIT,
   RESPONSE_CACHE_TTL_HEADER,
@@ -134,6 +135,7 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
   ): Effect<ResponsesResult, ResponsesError> => {
     let identifiers: ModelErrorIdentifiers = {};
     let isCacheHit = false;
+    let cacheSourceId: string | undefined;
     const httpClient = new HTTPClient({
       fetcher: async (input, init) => {
         const request = await mergeExtraBody(input, init, effectiveExtraBody);
@@ -142,6 +144,8 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
         isCacheHit =
           response.headers.get(RESPONSE_CACHE_STATUS_HEADER) ===
           RESPONSE_CACHE_STATUS_HIT;
+        cacheSourceId =
+          response.headers.get(RESPONSE_CACHE_SOURCE_ID_HEADER) ?? undefined;
         options.onResponseIdentifiers?.(identifiers);
         return response;
       },
@@ -200,9 +204,13 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
     }).pipe(
       flatMap((result) =>
         result
-          ? recordGenerationId(result.generationId, isCacheHit).pipe(
-              map(() => result)
-            )
+          ? recordGenerationId(
+              isCacheHit && cacheSourceId !== undefined
+                ? cacheSourceId
+                : result.generationId,
+              isCacheHit,
+              isCacheHit && cacheSourceId !== undefined
+            ).pipe(map(() => result))
           : fail(
               new ResponsesError({
                 message: appendModelErrorIdentifiers(

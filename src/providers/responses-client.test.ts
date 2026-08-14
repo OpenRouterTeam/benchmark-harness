@@ -18,6 +18,7 @@ import { assertFailure } from "../../test/helpers/exit-asserts";
 import { assertRight } from "../internal/testing";
 import { parseSchema, z } from "../internal/zod";
 import {
+  getCollectedGenerationIdEntries,
   getCollectedGenerationIds,
   resetGenerationIds,
 } from "../runtime/generation-ids";
@@ -389,6 +390,51 @@ describe("makeResponsesLayer", () => {
       expect(capturedHeaders?.get("x-openrouter-title")).toBe(
         "OpenRouter: Bench Harness"
       );
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+  it("records the cache source id from the response header on cache hits", async () => {
+    const originalFetch = globalThis.fetch;
+    const stream = await readStreamFixture();
+    globalThis.fetch = async () =>
+      new Response(stream, {
+        status: 200,
+        headers: {
+          "content-type": "text/event-stream",
+          "x-openrouter-cache-status": "HIT",
+          "x-openrouter-cache-source-id": "gen-source",
+        },
+      });
+    try {
+      const entries = await runPromise(
+        resetGenerationIds.pipe(
+          flatMap(() =>
+            gen(function* run() {
+              const responses = yield* Responses;
+              yield* responses.send(
+                { model: "m", input: [] },
+                { timeoutMs: 1000 }
+              );
+            })
+          ),
+          flatMap(() => getCollectedGenerationIdEntries),
+          provide(
+            makeResponsesLayer({
+              apiKey: "sk-test",
+              baseUrl: "https://example.test",
+            })
+          )
+        )
+      );
+      expect(entries).toEqual([
+        {
+          id: "gen-source",
+          isCacheHit: true,
+          countsTowardUsage: true,
+          isResolvedSource: true,
+        },
+      ]);
     } finally {
       globalThis.fetch = originalFetch;
     }

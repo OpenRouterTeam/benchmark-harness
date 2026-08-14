@@ -30,6 +30,7 @@ import {
   getCurrentRetryAttempt,
   RESPONSE_CACHE_HEADER,
   RESPONSE_CACHE_SALT_FIELD,
+  RESPONSE_CACHE_SOURCE_ID_HEADER,
   RESPONSE_CACHE_STATUS_HEADER,
   RESPONSE_CACHE_STATUS_HIT,
   RESPONSE_CACHE_TTL_HEADER,
@@ -203,10 +204,15 @@ export class UserSimulator {
           })
         );
       }
-      yield* recordGenerationId(
-        parsed.right.id,
+      const isCacheHit =
         response.headers[RESPONSE_CACHE_STATUS_HEADER] ===
-          RESPONSE_CACHE_STATUS_HIT
+        RESPONSE_CACHE_STATUS_HIT;
+      const cacheSourceId = response.headers[RESPONSE_CACHE_SOURCE_ID_HEADER];
+      const hasSourceId = isCacheHit && cacheSourceId !== undefined;
+      yield* recordGenerationId(
+        hasSourceId ? cacheSourceId : parsed.right.id,
+        isCacheHit,
+        hasSourceId
       );
       const message = parsed.right.choices[0]?.message;
       const content = message?.content ?? "";

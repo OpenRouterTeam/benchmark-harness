@@ -17,6 +17,9 @@ export const cacheHitGenerationIdCollector = unsafeMakeHashSet<string>(empty());
 export const auxiliaryUsageGenerationIdCollector =
   unsafeMakeHashSet<string>(empty());
 
+export const resolvedSourceGenerationIdCollector =
+  unsafeMakeHashSet<string>(empty());
+
 export const auxiliaryUsageRef: FiberRef<boolean> = unsafeMake(false);
 
 export function withAuxiliaryUsage<A, E, R>(
@@ -27,7 +30,8 @@ export function withAuxiliaryUsage<A, E, R>(
 
 export function recordGenerationId(
   id: string | null | undefined,
-  isCacheHit = false
+  isCacheHit = false,
+  isResolvedSource = false
 ): Effect<void> {
   if (id === null || id === undefined || id.length === 0) {
     return succeed(undefined);
@@ -38,6 +42,11 @@ export function recordGenerationId(
     record = record.pipe(
       zipRight(update(cacheHitGenerationIdCollector, add(generationId)))
     );
+    if (isResolvedSource) {
+      record = record.pipe(
+        zipRight(update(resolvedSourceGenerationIdCollector, add(generationId)))
+      );
+    }
   }
   return get(auxiliaryUsageRef).pipe(
     flatMap((isAuxiliary) =>
@@ -57,7 +66,8 @@ export const resetGenerationIds: Effect<void> = set(
   empty<string>()
 ).pipe(
   zipRight(set(cacheHitGenerationIdCollector, empty<string>())),
-  zipRight(set(auxiliaryUsageGenerationIdCollector, empty<string>()))
+  zipRight(set(auxiliaryUsageGenerationIdCollector, empty<string>())),
+  zipRight(set(resolvedSourceGenerationIdCollector, empty<string>()))
 );
 
 export const getCollectedGenerationIds: Effect<readonly string[]> = get(
@@ -68,6 +78,7 @@ export interface GenerationIdEntry {
   readonly id: string;
   readonly isCacheHit: boolean;
   readonly countsTowardUsage: boolean;
+  readonly isResolvedSource: boolean;
 }
 
 export const getCollectedGenerationIdEntries: Effect<
@@ -76,12 +87,14 @@ export const getCollectedGenerationIdEntries: Effect<
   get(generationIdCollector),
   get(cacheHitGenerationIdCollector),
   get(auxiliaryUsageGenerationIdCollector),
+  get(resolvedSourceGenerationIdCollector),
 ]).pipe(
-  map(([ids, cacheHitIds, auxiliaryIds]) =>
+  map(([ids, cacheHitIds, auxiliaryIds, resolvedSourceIds]) =>
     [...ids].map((id) => ({
       id,
       isCacheHit: has(cacheHitIds, id),
       countsTowardUsage: !has(auxiliaryIds, id),
+      isResolvedSource: has(resolvedSourceIds, id),
     }))
   )
 );

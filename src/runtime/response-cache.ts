@@ -13,6 +13,8 @@ export const RESPONSE_CACHE_STATUS_HEADER = "x-openrouter-cache-status";
 
 export const RESPONSE_CACHE_STATUS_HIT = "HIT";
 
+export const RESPONSE_CACHE_SOURCE_ID_HEADER = "x-openrouter-cache-source-id";
+
 export const RESPONSE_CACHE_SALT_FIELD = "cache_salt";
 
 export const currentEpochRef: FiberRef<number | undefined> = unsafeMake<

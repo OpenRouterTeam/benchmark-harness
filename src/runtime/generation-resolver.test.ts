@@ -148,6 +148,34 @@ describe("resolveCollectedGenerations", () => {
     expect(resolved.ids).toEqual(["gen-dummy"]);
     expect(resolved.replayedUsage).toBeUndefined();
   });
+  it("skips resolution for auxiliary ids whose source is already resolved", async () => {
+    const requested: string[] = [];
+    const resolver: GenerationResolverService = {
+      resolveSourceGeneration: (generationId, options) => {
+        requested.push(generationId);
+        return succeed({
+          sourceId: generationId,
+          ...(options?.includeUsage === false ? {} : { usage: SOURCE_USAGE }),
+        });
+      },
+    };
+    const resolved = await runPromise(
+      resetGenerationIds.pipe(
+        flatMap(() => recordGenerationId("gen-solver-source", true, true)),
+        flatMap(() =>
+          withAuxiliaryUsage(recordGenerationId("gen-judge-source", true, true))
+        ),
+        flatMap(() => resolveCollectedGenerations),
+        provideService(GenerationResolver, resolver)
+      )
+    );
+    expect(requested).toEqual(["gen-solver-source"]);
+    expect([...resolved.ids].toSorted()).toEqual([
+      "gen-judge-source",
+      "gen-solver-source",
+    ]);
+    expect(resolved.replayedUsage).toEqual(SOURCE_USAGE);
+  });
   it("omits usage for entries that resolve without usage", async () => {
     const resolver: GenerationResolverService = {
       resolveSourceGeneration: (generationId) =>
@@ -256,10 +284,33 @@ describe("makeOpenRouterGenerationResolver", () => {
     expect(resolved).toBeUndefined();
     expect(getCalls().length).toBe(1);
   });
-  it("returns undefined after exactly maxAttempts lookups when the source id never becomes available", async () => {
+  it("treats a record without response_cache_source_id as the source itself", async () => {
     const getCalls = mockFetch(() =>
-      jsonResponse({ data: { response_cache_source_id: null } })
+      jsonResponse({
+        data: {
+          response_cache_source_id: null,
+          tokens_prompt: 10,
+          tokens_completion: 25,
+          native_tokens_reasoning: 5,
+          total_cost: 0.0015,
+          generation_time: 1200,
+        },
+      })
     );
+    const resolver = makeOpenRouterGenerationResolver({
+      apiKey: "test-key",
+      baseUrl: "https://example.com",
+      pollIntervalMs: 1,
+      maxAttempts: 2,
+    });
+    const resolved = await runPromise(
+      resolver.resolveSourceGeneration("gen-source")
+    );
+    expect(resolved).toEqual({ sourceId: "gen-source", usage: SOURCE_USAGE });
+    expect(getCalls().length).toBe(1);
+  });
+  it("returns undefined after exactly maxAttempts lookups when the row never lands", async () => {
+    const getCalls = mockFetch(() => jsonResponse({ error: "not found" }, 404));
     const resolver = makeOpenRouterGenerationResolver({
       apiKey: "test-key",
       baseUrl: "https://example.com",
@@ -288,6 +339,6 @@ describe("makeOpenRouterGenerationResolver", () => {
       resolver.resolveSourceGeneration("gen-dummy")
     );
     expect(resolved).toEqual({ sourceId: "gen-original" });
-    expect(getCalls().length).toBe(3);
+    expect(getCalls().length).toBe(2);
   });
 });
