@@ -80,7 +80,8 @@ export interface GenerationResolverConfig {
 
 const DEFAULT_POLL_INTERVAL_MS = 5000;
 const DEFAULT_MAX_ATTEMPTS = 12;
-const RESOLVE_CONCURRENCY = 4;
+const USAGE_LOOKUP_MAX_ATTEMPTS = 2;
+const RESOLVE_CONCURRENCY = 8;
 
 function normalizeBaseUrl(baseUrl: string): string {
   const trimmed = baseUrl.replace(/\/+$/u, "");
@@ -106,9 +107,9 @@ export function makeOpenRouterGenerationResolver(
   const baseUrl = normalizeBaseUrl(config.baseUrl ?? "https://openrouter.ai");
   const pollIntervalMs = config.pollIntervalMs ?? DEFAULT_POLL_INTERVAL_MS;
   const maxAttempts = config.maxAttempts ?? DEFAULT_MAX_ATTEMPTS;
-  const pollSchedule = () =>
+  const pollSchedule = (attempts: number) =>
     spaced(`${pollIntervalMs} millis`).pipe(
-      intersect(recurs(Math.max(maxAttempts - 1, 0))),
+      intersect(recurs(Math.max(attempts - 1, 0))),
       whileInput((error: GenerationLookupError) => error.retryable)
     );
   const lookupOnce = (
@@ -174,13 +175,13 @@ export function makeOpenRouterGenerationResolver(
             )
           : succeed(sourceId);
       }),
-      retry(pollSchedule())
+      retry(pollSchedule(maxAttempts))
     );
   const lookupSourceUsage = (
     sourceId: string
   ): Effect<ReplayedUsage | undefined> =>
     lookupOnce(sourceId).pipe(
-      retry(pollSchedule()),
+      retry(pollSchedule(USAGE_LOOKUP_MAX_ATTEMPTS)),
       map((data): ReplayedUsage | undefined => usageFromLookup(data)),
       catchAll((error) =>
         sync(() => {

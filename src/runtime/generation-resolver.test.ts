@@ -288,6 +288,6 @@ describe("makeOpenRouterGenerationResolver", () => {
       resolver.resolveSourceGeneration("gen-dummy")
     );
     expect(resolved).toEqual({ sourceId: "gen-original" });
-    expect(getCalls().length).toBe(2);
+    expect(getCalls().length).toBe(3);
   });
 });
