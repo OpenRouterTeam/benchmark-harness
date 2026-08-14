@@ -356,6 +356,7 @@ describe("terminal-bench ori solver", () => {
     expect(agentCall.env["TB_MODEL"]).toBe("anthropic/claude-opus-5");
     expect(agentCall.env["OPENROUTER_API_KEY"]).toBe("sk-test");
     expect(agentCall.argv[2]).toContain('ori claude --model "$TB_MODEL"');
+    expect(agentCall.argv[2]).toContain("export IS_SANDBOX=1");
     expect(agentCall.argv[2]).toContain("--permission-mode bypassPermissions");
   });
 

@@ -257,6 +257,7 @@ const CLAUDE_HARNESS: OriHarnessDef = {
     [
       "set -euo pipefail",
       "export HOME=/root",
+      "export IS_SANDBOX=1",
       "mkdir -p /logs/agent",
       'ori claude --model "$TB_MODEL" \\',
       `  --reasoning-effort ${options.reasoningEffort} -- \\`,
