@@ -19,6 +19,7 @@ import { intersect, recurs, spaced, whileInput } from "effect/Schedule";
 
 import { Either } from "../internal/either";
 import { unknownErrorToString } from "../internal/errors";
+import { isDefinedAndNotNull } from "../internal/guards";
 import { wLog } from "../internal/log";
 import { parseSchema, z } from "../internal/zod";
 import type { GenerationIdEntry } from "./generation-ids";
@@ -87,7 +88,19 @@ function normalizeBaseUrl(baseUrl: string): string {
   return trimmed.endsWith("/api/v1") ? trimmed : `${trimmed}/api/v1`;
 }
 
-function usageFromLookup(data: GenerationLookupData): ReplayedUsage {
+function usageFromLookup(
+  data: GenerationLookupData,
+  generationId: string
+): ReplayedUsage {
+  const hasUsageFields =
+    isDefinedAndNotNull(data.tokens_prompt) ||
+    isDefinedAndNotNull(data.tokens_completion) ||
+    isDefinedAndNotNull(data.total_cost);
+  if (!hasUsageFields) {
+    wLog("Source generation has no usage fields, folding zeros", {
+      generation_id: generationId,
+    });
+  }
   const inputTokens = data.tokens_prompt ?? 0;
   const outputTokens = data.tokens_completion ?? 0;
   return {
@@ -165,7 +178,7 @@ export function makeOpenRouterGenerationResolver(
     sourceId: string
   ): Effect<ReplayedUsage | undefined> =>
     lookupGeneration(sourceId).pipe(
-      map((data): ReplayedUsage | undefined => usageFromLookup(data)),
+      map((data): ReplayedUsage | undefined => usageFromLookup(data, sourceId)),
       catchAll((error) =>
         sync(() => {
           wLog("Failed to fetch source generation usage", {
@@ -193,7 +206,7 @@ export function makeOpenRouterGenerationResolver(
           if (sourceId === generationId) {
             return succeed<ResolvedSourceGeneration>({
               sourceId,
-              usage: usageFromLookup(data),
+              usage: usageFromLookup(data, generationId),
             });
           }
           return lookupSourceUsage(sourceId).pipe(

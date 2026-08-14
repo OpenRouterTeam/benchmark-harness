@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "bun:test";
+import { afterEach, describe, expect, it, spyOn } from "bun:test";
 
 import { flatMap, provideService, runPromise, succeed } from "effect/Effect";
 
@@ -308,6 +308,41 @@ describe("makeOpenRouterGenerationResolver", () => {
     );
     expect(resolved).toEqual({ sourceId: "gen-source", usage: SOURCE_USAGE });
     expect(getCalls().length).toBe(1);
+  });
+  it("warns when the source generation has no usage fields", async () => {
+    const warn = spyOn(console, "warn").mockImplementation(() => {
+      // capture warnings
+    });
+    try {
+      mockFetch(() =>
+        jsonResponse({ data: { response_cache_source_id: null } })
+      );
+      const resolver = makeOpenRouterGenerationResolver({
+        apiKey: "test-key",
+        baseUrl: "https://example.com",
+        pollIntervalMs: 1,
+        maxAttempts: 1,
+      });
+      const resolved = await runPromise(
+        resolver.resolveSourceGeneration("gen-source")
+      );
+      expect(resolved?.usage).toEqual({
+        inputTokens: 0,
+        outputTokens: 0,
+        totalTokens: 0,
+        reasoningTokens: 0,
+        totalCost: 0,
+        generationTimeMs: 0,
+      });
+      const messages = warn.mock.calls.map((call) => String(call[0]));
+      expect(
+        messages.some((message) =>
+          message.includes("Source generation has no usage fields")
+        )
+      ).toBe(true);
+    } finally {
+      warn.mockRestore();
+    }
   });
   it("returns undefined after exactly maxAttempts lookups when the row never lands", async () => {
     const getCalls = mockFetch(() => jsonResponse({ error: "not found" }, 404));
