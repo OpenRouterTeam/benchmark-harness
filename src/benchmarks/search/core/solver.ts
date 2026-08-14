@@ -7,7 +7,6 @@ import {
   gen,
   map,
   mapError,
-  retry,
   succeed,
   suspend,
   timeoutFail,
@@ -33,7 +32,7 @@ import {
   usageFromResponses,
 } from "../../../providers/responses-client";
 import type { RetryConfig } from "../../../runtime/retry";
-import { rateLimitRetrySchedule } from "../../../runtime/retry";
+import { rateLimitRetrySchedule, retrySalted } from "../../../runtime/retry";
 import type { SearchLaneConfig } from "./config";
 import { makeSearchProgressTracker } from "./progress";
 import { buildSearchRequestBody } from "./request";
@@ -179,37 +178,40 @@ function sendWithRetry({
   const blankResults: ResponsesResult[] = [];
   let lastBlankResult: ResponsesResult | undefined;
   let lastBlankError: ModelError | undefined;
-  return suspend(() => responses.send(body, options())).pipe(
-    mapError(toModelError),
-    timeoutFail({
-      duration: `${timeoutMs} millis`,
-      onTimeout: () =>
-        new ModelError({
-          status: 504,
-          message: `search response exceeded the ${timeoutMs}ms wall-clock deadline`,
-        }),
-    }),
-    flatMap((result) => {
-      if (result.status !== "completed") {
-        return fail(
+  return retrySalted(
+    suspend(() => responses.send(body, options())).pipe(
+      mapError(toModelError),
+      timeoutFail({
+        duration: `${timeoutMs} millis`,
+        onTimeout: () =>
           new ModelError({
+            status: 504,
+            message: `search response exceeded the ${timeoutMs}ms wall-clock deadline`,
+          }),
+      }),
+      flatMap((result) => {
+        if (result.status !== "completed") {
+          return fail(
+            new ModelError({
+              status: 503,
+              message: `search response ended with status ${result.status ?? "unknown"}`,
+            })
+          );
+        }
+        if (result.text.trim() === "") {
+          blankResults.push(result);
+          lastBlankResult = result;
+          lastBlankError = new ModelError({
             status: 503,
-            message: `search response ended with status ${result.status ?? "unknown"}`,
-          })
-        );
-      }
-      if (result.text.trim() === "") {
-        blankResults.push(result);
-        lastBlankResult = result;
-        lastBlankError = new ModelError({
-          status: 503,
-          message: EMPTY_SEARCH_RESPONSE_MESSAGE,
-        });
-        return fail(lastBlankError);
-      }
-      return succeed(result);
-    }),
-    retry(rateLimitRetrySchedule(retryConfig ?? {})),
+            message: EMPTY_SEARCH_RESPONSE_MESSAGE,
+          });
+          return fail(lastBlankError);
+        }
+        return succeed(result);
+      })
+    ),
+    rateLimitRetrySchedule(retryConfig ?? {})
+  ).pipe(
     catchTag("ModelError", (error) =>
       error === lastBlankError && lastBlankResult !== undefined
         ? succeed(lastBlankResult)

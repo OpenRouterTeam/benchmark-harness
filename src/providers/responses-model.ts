@@ -14,7 +14,6 @@ import {
   gen,
   map,
   mapError,
-  retry,
   suspend,
   timeout,
 } from "effect/Effect";
@@ -27,7 +26,7 @@ import type { GenerateConfig } from "../harness/model";
 import { stripVariantSuffix } from "../harness/model";
 import { isRecord } from "../internal/guards";
 import type { RetryConfig } from "../runtime/retry";
-import { rateLimitRetrySchedule } from "../runtime/retry";
+import { rateLimitRetrySchedule, retrySalted } from "../runtime/retry";
 import { buildAutoRouterPlugin } from "./auto-router-plugin";
 import type { ModelErrorIdentifiers } from "./request-identifiers";
 import { appendModelErrorIdentifiers } from "./request-identifiers";
@@ -227,7 +226,7 @@ export function generate(
           )
         )
       : requestAttempt;
-  return timedAttempt.pipe(retry(rateLimitRetrySchedule(opts.retry ?? {})));
+  return retrySalted(timedAttempt, rateLimitRetrySchedule(opts.retry ?? {}));
 }
 
 const RAW_PAYLOAD_KEYS = new Set(["arguments", "output"]);

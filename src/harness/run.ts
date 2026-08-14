@@ -18,10 +18,10 @@ import {
   zipWithIndex as streamZipWithIndex,
 } from "effect/Stream";
 
-import {
-  getCollectedGenerationIds,
-  resetGenerationIds,
-} from "../runtime/generation-ids";
+import { resetGenerationIds } from "../runtime/generation-ids";
+import type { ReplayedUsage } from "../runtime/generation-resolver";
+import { resolveCollectedGenerations } from "../runtime/generation-resolver";
+import { setCurrentEpoch } from "../runtime/response-cache";
 import type {
   DatasetError,
   ModelError,
@@ -162,6 +162,29 @@ function finalizeRun(acc: FoldAccumulator): RunResult {
   };
 }
 
+function applyReplayedUsage(
+  outcome: EvalOutcome,
+  replayed: ReplayedUsage | undefined
+): EvalOutcome {
+  if (replayed === undefined) {
+    return outcome;
+  }
+  const u = outcome.usage;
+  return {
+    ...outcome,
+    usage: {
+      ...u,
+      inputTokens: (u?.inputTokens ?? 0) + replayed.inputTokens,
+      outputTokens: (u?.outputTokens ?? 0) + replayed.outputTokens,
+      totalTokens: (u?.totalTokens ?? 0) + replayed.totalTokens,
+      reasoningTokens: (u?.reasoningTokens ?? 0) + replayed.reasoningTokens,
+      totalCost: (u?.totalCost ?? 0) + replayed.totalCost,
+    },
+    generationTimeMs:
+      (outcome.generationTimeMs ?? 0) + replayed.generationTimeMs,
+  };
+}
+
 interface EvaluateOneOpts {
   readonly sampleEpoch: SampleEpoch;
   readonly degradeSolverErrors: boolean;
@@ -239,21 +262,26 @@ function evaluateOne(
     })
   );
   return resetGenerationIds.pipe(
+    effectFlatMap(() => setCurrentEpoch(epoch)),
     effectFlatMap(() =>
       evaluation.pipe(
         effectFlatMap((outcome) =>
-          getCollectedGenerationIds.pipe(
-            effectMap((ids) =>
-              ids.length > 0
+          resolveCollectedGenerations.pipe(
+            effectMap((resolved) => {
+              const withUsage = applyReplayedUsage(
+                outcome,
+                resolved.replayedUsage
+              );
+              return resolved.ids.length > 0
                 ? {
-                    ...outcome,
+                    ...withUsage,
                     sampleScore: {
-                      ...outcome.sampleScore,
-                      generationIds: [...new Set(ids)],
+                      ...withUsage.sampleScore,
+                      generationIds: [...new Set(resolved.ids)],
                     },
                   }
-                : outcome
-            )
+                : withUsage;
+            })
           )
         )
       )

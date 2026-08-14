@@ -5,10 +5,12 @@ import { join } from "node:path";
 
 import type { ResponsesRequest } from "@openrouter/sdk/models";
 import {
+  flatMap,
   gen,
   provide,
   runPromise,
   succeed as effectSucceed,
+  zipRight,
 } from "effect/Effect";
 import {
   effect,
@@ -29,6 +31,12 @@ import type {
   ResponsesSendOptions,
 } from "../../providers/responses-client";
 import { Responses } from "../../providers/responses-client";
+import type { GenerationIdEntry } from "../../runtime/generation-ids";
+import {
+  getCollectedGenerationIdEntries,
+  recordGenerationId,
+  resetGenerationIds,
+} from "../../runtime/generation-ids";
 import {
   ArtifactStoreService,
   makeFsArtifactStoreLayer,
@@ -76,7 +84,9 @@ function fixtureResponsesLayer(
       provider: "fixture",
       generationTimeMs: 0,
     };
-    return effectSucceed(result);
+    return recordGenerationId(`gen-${model}`).pipe(
+      zipRight(effectSucceed(result))
+    );
   };
   return layerSucceed(Responses, Responses.of({ send }));
 }
@@ -104,6 +114,7 @@ async function runSolver(
 ): Promise<{
   calls: string[];
   state: ReturnType<typeof initialTaskState>;
+  generationIdEntries: readonly GenerationIdEntry[];
 }> {
   const calls: string[] = [];
   const responsesLayer = fixtureResponsesLayer(
@@ -119,21 +130,29 @@ async function runSolver(
       return Solver.of(dracoSolver(responses, artifactStore, { config }));
     })
   );
-  const state = await runPromise(
-    gen(function* () {
-      const solver = yield* Solver;
-      return yield* solver(sample());
-    }).pipe(
-      provide(
-        mergeAll(
-          solverLayer.pipe(layerProvide(infraLayer)),
-          noopProgressLayer,
-          noopCheckpointLayer
+  const { state, generationIdEntries } = await runPromise(
+    resetGenerationIds
+      .pipe(
+        flatMap(() =>
+          gen(function* () {
+            const solver = yield* Solver;
+            const solvedState = yield* solver(sample());
+            const entries = yield* getCollectedGenerationIdEntries;
+            return { state: solvedState, generationIdEntries: entries };
+          })
         )
       )
-    )
+      .pipe(
+        provide(
+          mergeAll(
+            solverLayer.pipe(layerProvide(infraLayer)),
+            noopProgressLayer,
+            noopCheckpointLayer
+          )
+        )
+      )
   );
-  return { calls, state };
+  return { calls, state, generationIdEntries };
 }
 
 function productionFusionConfig(
@@ -165,6 +184,29 @@ describe("dracoSolver production-fusion cache reuse", () => {
       const judgeCalls = calls.filter((m) => m.startsWith("judge/"));
       expect(genCalls).toHaveLength(1);
       expect(judgeCalls).toHaveLength(1);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+  it("marks judge generation ids as auxiliary and generation ids as counted", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "draco-prod-"));
+    try {
+      const { generationIdEntries } = await runSolver(
+        dir,
+        productionFusionConfig()
+      );
+      const judgeEntries = generationIdEntries.filter((entry) =>
+        entry.id.startsWith("gen-judge/")
+      );
+      const genEntries = generationIdEntries.filter(
+        (entry) => !entry.id.startsWith("gen-judge/")
+      );
+      expect(judgeEntries.length).toBeGreaterThan(0);
+      expect(genEntries.length).toBeGreaterThan(0);
+      expect(judgeEntries.every((entry) => !entry.countsTowardUsage)).toBe(
+        true
+      );
+      expect(genEntries.every((entry) => entry.countsTowardUsage)).toBe(true);
     } finally {
       await rm(dir, { recursive: true, force: true });
     }

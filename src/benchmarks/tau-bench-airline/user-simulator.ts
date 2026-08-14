@@ -5,8 +5,8 @@ import {
 } from "@effect/platform";
 import { TaggedError } from "effect/Data";
 import type { Effect } from "effect/Effect";
-import { catchAll, fail, gen, retry } from "effect/Effect";
-import { fixed, intersect, recurs, whileInput } from "effect/Schedule";
+import { catchAll, fail, gen } from "effect/Effect";
+import { fixed, passthrough, whileInput } from "effect/Schedule";
 
 import type { ReasoningDetails } from "../../harness/reasoning-details";
 import {
@@ -19,7 +19,24 @@ import {
   BENCH_HARNESS_APP_REFERRER,
   BENCH_HARNESS_APP_TITLE,
 } from "../../providers/openrouter-model";
-import { recordGenerationId } from "../../runtime/generation-ids";
+import {
+  recordGenerationId,
+  withAuxiliaryUsage,
+} from "../../runtime/generation-ids";
+import {
+  buildResponseCacheSalt,
+  getCurrentCallSalt,
+  getCurrentEpoch,
+  getCurrentRetryAttempt,
+  RESPONSE_CACHE_HEADER,
+  RESPONSE_CACHE_SALT_FIELD,
+  RESPONSE_CACHE_SOURCE_ID_HEADER,
+  RESPONSE_CACHE_STATUS_HEADER,
+  RESPONSE_CACHE_STATUS_HIT,
+  RESPONSE_CACHE_TTL_HEADER,
+  RESPONSE_CACHE_TTL_SECONDS,
+} from "../../runtime/response-cache";
+import { retrySalted, withRetryAttemptLogging } from "../../runtime/retry";
 import type { UserModelConfig } from "./types";
 import { USER_SIM_GUIDELINES } from "./user-sim-guidelines";
 
@@ -44,12 +61,17 @@ class UserSimError extends TaggedError("UserSimError")<{
 
 type SimError = UserSimError | HttpClientError.HttpClientError;
 
-const USER_SIM_RESPONSE_RETRY_SCHEDULE = fixed("100 millis").pipe(
-  intersect(recurs(2)),
-  whileInput(
-    (error: SimError) =>
-      error instanceof UserSimError && error.retryable === true
-  )
+const USER_SIM_MAX_RETRIES = 2;
+
+const USER_SIM_RESPONSE_RETRY_SCHEDULE = withRetryAttemptLogging(
+  fixed("100 millis").pipe(
+    whileInput(
+      (error: SimError) =>
+        error instanceof UserSimError && error.retryable === true
+    ),
+    passthrough
+  ),
+  USER_SIM_MAX_RETRIES
 );
 
 function buildUserSystemPrompt(scenarioInstructions: string): string {
@@ -96,11 +118,14 @@ export class UserSimulator {
     const messages = this.messages;
     const config = this.config;
     return gen(function* () {
-      const response = yield* callModelOnce(config.model).pipe(
-        retry(USER_SIM_RESPONSE_RETRY_SCHEDULE),
+      const response = yield* retrySalted(
+        withAuxiliaryUsage(callModelOnce(config.model)),
+        USER_SIM_RESPONSE_RETRY_SCHEDULE
+      ).pipe(
         catchAll(() =>
-          callModelOnce(USER_FALLBACK_MODEL).pipe(
-            retry(USER_SIM_RESPONSE_RETRY_SCHEDULE)
+          retrySalted(
+            withAuxiliaryUsage(callModelOnce(USER_FALLBACK_MODEL)),
+            USER_SIM_RESPONSE_RETRY_SCHEDULE
           )
         )
       );
@@ -117,25 +142,40 @@ export class UserSimulator {
   private readonly callModelOnce = (
     model: string
   ): Effect<UserModelResponse, SimError, HttpClient.HttpClient> => {
-    const request = HttpClientRequest.post(
-      `${this.baseUrl}/chat/completions`
-    ).pipe(
-      HttpClientRequest.setHeaders({
-        Authorization: `Bearer ${this.config.apiKey}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": BENCH_HARNESS_APP_REFERRER,
-        "X-OpenRouter-Title": BENCH_HARNESS_APP_TITLE,
-        ...(this.config.sessionId !== undefined && {
-          "x-session-id": this.config.sessionId,
-        }),
-      }),
-      HttpClientRequest.bodyUnsafeJson({
-        model,
-        messages: this.messages,
-        temperature: 0,
-      })
-    );
+    const { baseUrl, config, messages } = this;
     return gen(function* () {
+      const epoch = yield* getCurrentEpoch;
+      const retryAttempt = yield* getCurrentRetryAttempt;
+      const callSalt = yield* getCurrentCallSalt;
+      const cacheSalt = buildResponseCacheSalt(
+        config.sessionId,
+        epoch,
+        retryAttempt,
+        callSalt
+      );
+      const request = HttpClientRequest.post(
+        `${baseUrl}/chat/completions`
+      ).pipe(
+        HttpClientRequest.setHeaders({
+          Authorization: `Bearer ${config.apiKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": BENCH_HARNESS_APP_REFERRER,
+          "X-OpenRouter-Title": BENCH_HARNESS_APP_TITLE,
+          [RESPONSE_CACHE_HEADER]: "true",
+          [RESPONSE_CACHE_TTL_HEADER]: `${RESPONSE_CACHE_TTL_SECONDS}`,
+          ...(config.sessionId !== undefined && {
+            "x-session-id": config.sessionId,
+          }),
+        }),
+        HttpClientRequest.bodyUnsafeJson({
+          model,
+          messages,
+          temperature: 0,
+          ...(cacheSalt !== undefined && {
+            [RESPONSE_CACHE_SALT_FIELD]: cacheSalt,
+          }),
+        })
+      );
       const client = yield* HttpClient.HttpClient;
       const response = yield* client.execute(request);
       if (response.status < 200 || response.status >= 300) {
@@ -164,7 +204,16 @@ export class UserSimulator {
           })
         );
       }
-      yield* recordGenerationId(parsed.right.id);
+      const isCacheHit =
+        response.headers[RESPONSE_CACHE_STATUS_HEADER] ===
+        RESPONSE_CACHE_STATUS_HIT;
+      const cacheSourceId = response.headers[RESPONSE_CACHE_SOURCE_ID_HEADER];
+      const hasSourceId = isCacheHit && cacheSourceId !== undefined;
+      yield* recordGenerationId(
+        hasSourceId ? cacheSourceId : parsed.right.id,
+        isCacheHit,
+        hasSourceId
+      );
       const message = parsed.right.choices[0]?.message;
       const content = message?.content ?? "";
       return {

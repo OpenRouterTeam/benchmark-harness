@@ -8,7 +8,6 @@ import {
   flatMap,
   gen,
   mapError,
-  retry,
   succeed,
   sync,
   tapError,
@@ -35,8 +34,21 @@ import { isDefinedAndNotNull, isRecord } from "../internal/guards";
 import { wLog } from "../internal/log";
 import { parseSchema, z } from "../internal/zod";
 import { recordGenerationId } from "../runtime/generation-ids";
+import {
+  buildResponseCacheSalt,
+  getCurrentCallSalt,
+  getCurrentEpoch,
+  getCurrentRetryAttempt,
+  RESPONSE_CACHE_HEADER,
+  RESPONSE_CACHE_SALT_FIELD,
+  RESPONSE_CACHE_SOURCE_ID_HEADER,
+  RESPONSE_CACHE_STATUS_HEADER,
+  RESPONSE_CACHE_STATUS_HIT,
+  RESPONSE_CACHE_TTL_HEADER,
+  RESPONSE_CACHE_TTL_SECONDS,
+} from "../runtime/response-cache";
 import type { RetryConfig } from "../runtime/retry";
-import { rateLimitRetrySchedule } from "../runtime/retry";
+import { rateLimitRetrySchedule, retrySalted } from "../runtime/retry";
 import {
   buildAutoRouterPlugin,
   toWireAutoRouterPlugin,
@@ -113,6 +125,8 @@ export function generate(
     "Content-Type": "application/json",
     "HTTP-Referer": BENCH_HARNESS_APP_REFERRER,
     "X-OpenRouter-Title": BENCH_HARNESS_APP_TITLE,
+    [RESPONSE_CACHE_HEADER]: "true",
+    [RESPONSE_CACHE_TTL_HEADER]: `${RESPONSE_CACHE_TTL_SECONDS}`,
   };
   if (genConfig.endpointId !== undefined) {
     headers["X-OR-Endpoint-Id"] = genConfig.endpointId;
@@ -134,8 +148,17 @@ export function generate(
     autoRouterPlugin === undefined
       ? undefined
       : toWireAutoRouterPlugin(autoRouterPlugin);
-  return gen(function* () {
+  const attempt = gen(function* () {
     const startedAt = performance.now();
+    const epoch = yield* getCurrentEpoch;
+    const retryAttempt = yield* getCurrentRetryAttempt;
+    const callSalt = yield* getCurrentCallSalt;
+    const cacheSalt = buildResponseCacheSalt(
+      opts.sessionId,
+      epoch,
+      retryAttempt,
+      callSalt
+    );
     const body = {
       model,
       messages: messages.map(toApiMessage),
@@ -155,6 +178,9 @@ export function generate(
       ...(sendSort && { provider: { sort: genConfig.sort } }),
       ...(wireAutoRouterPlugin !== undefined && {
         plugins: [wireAutoRouterPlugin],
+      }),
+      ...(cacheSalt !== undefined && {
+        [RESPONSE_CACHE_SALT_FIELD]: cacheSalt,
       }),
       ...genConfig.extraBody,
     };
@@ -206,16 +232,27 @@ export function generate(
       logUnusableBody(rawBody, envelopeError, identifiers);
       return yield* fail(envelopeError);
     }
-    return yield* decodeResult(json, startedAt, identifiers).pipe(
+    const isCacheHit =
+      response.headers[RESPONSE_CACHE_STATUS_HEADER] ===
+      RESPONSE_CACHE_STATUS_HIT;
+    const cacheSourceId = response.headers[RESPONSE_CACHE_SOURCE_ID_HEADER];
+    return yield* decodeResult(
+      json,
+      startedAt,
+      identifiers,
+      isCacheHit,
+      cacheSourceId
+    ).pipe(
       tapError((error) =>
         sync(() => {
           logUnusableBody(rawBody, error, identifiers);
         })
       )
     );
-  }).pipe(
-    mapError(toModelError),
-    retry(rateLimitRetrySchedule(opts.retry ?? {}))
+  });
+  return retrySalted(
+    attempt.pipe(mapError(toModelError)),
+    rateLimitRetrySchedule(opts.retry ?? {})
   );
 }
 
@@ -386,7 +423,9 @@ function toApiMessage(message: ChatMessage) {
 function decodeResult(
   raw: unknown,
   startedAt: number,
-  identifiers: ResponseIdentifiers
+  identifiers: ResponseIdentifiers,
+  isCacheHit: boolean,
+  cacheSourceId?: string
 ): Effect<ModelOutput, ModelError> {
   const parseResult = parseSchema(
     ChatResult$inboundSchema,
@@ -426,7 +465,12 @@ function decodeResult(
   const reasoningDetails = extractReasoningDetails(raw);
   const usage = toModelUsage(result.usage);
   const toolCalls = choice.message.toolCalls ?? [];
-  return recordGenerationId(result.id).pipe(
+  const hasSourceId = isCacheHit && cacheSourceId !== undefined;
+  return recordGenerationId(
+    hasSourceId ? cacheSourceId : result.id,
+    isCacheHit,
+    hasSourceId
+  ).pipe(
     flatMap(() =>
       succeed({
         completion,

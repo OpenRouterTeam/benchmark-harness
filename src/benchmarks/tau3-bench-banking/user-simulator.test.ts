@@ -3,11 +3,12 @@ import assert from "node:assert/strict";
 
 import { FetchHttpClient, HttpClient } from "@effect/platform";
 import type { Effect } from "effect/Effect";
-import { provide, runPromise } from "effect/Effect";
+import { flatMap, provide, runPromise } from "effect/Effect";
 
 import type { CapturedRequest } from "../../../test/helpers/fetch-sequence";
 import { installFetchSequence } from "../../../test/helpers/fetch-sequence";
 import { isRecord } from "../../internal/guards";
+import { setCurrentEpoch } from "../../runtime/response-cache";
 import { UserSimulator } from "./user-simulator";
 
 const TEST_API_KEY = "test-key-123";
@@ -145,6 +146,32 @@ describe("UserSimulator", () => {
       };
       await runSim(sim.generateInitial());
       expect(authorization).toBe(`Bearer ${TEST_API_KEY}`);
+    });
+    it("sends the response-cache headers and an epoch-scoped cache_salt", async () => {
+      const sim = new UserSimulator(createTestConfig());
+      sim.reset("Help", "Hi");
+      let cacheHeader: string | null = null;
+      let ttlHeader: string | null = null;
+      let capturedBody: unknown;
+      global.fetch = async (input, init) => {
+        const request = new Request(input, init);
+        cacheHeader = request.headers.get("x-openrouter-cache");
+        ttlHeader = request.headers.get("x-openrouter-cache-ttl");
+        capturedBody = await request.clone().json();
+        return new Response(
+          JSON.stringify({
+            choices: [{ message: { content: "Hi" } }],
+          }),
+          { status: 200 }
+        );
+      };
+      await runSim(
+        setCurrentEpoch(2).pipe(flatMap(() => sim.generateInitial()))
+      );
+      expect(cacheHeader).toBe("true");
+      expect(ttlHeader).toBe("7200");
+      assert(isRecord(capturedBody));
+      expect(capturedBody["cache_salt"]).toBe(`${TEST_SESSION}:epoch-2`);
     });
   });
   describe("step", () => {

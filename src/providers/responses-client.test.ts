@@ -19,9 +19,11 @@ import { assertFailure } from "../../test/helpers/exit-asserts";
 import { assertRight } from "../internal/testing";
 import { parseSchema, z } from "../internal/zod";
 import {
+  getCollectedGenerationIdEntries,
   getCollectedGenerationIds,
   resetGenerationIds,
 } from "../runtime/generation-ids";
+import { setCurrentEpoch } from "../runtime/response-cache";
 import type { ModelErrorIdentifiers } from "./request-identifiers";
 import {
   consumeStream,
@@ -431,6 +433,51 @@ describe("makeResponsesLayer", () => {
       globalThis.fetch = originalFetch;
     }
   });
+  it("records the cache source id from the response header on cache hits", async () => {
+    const originalFetch = globalThis.fetch;
+    const stream = await readStreamFixture();
+    globalThis.fetch = async () =>
+      new Response(stream, {
+        status: 200,
+        headers: {
+          "content-type": "text/event-stream",
+          "x-openrouter-cache-status": "HIT",
+          "x-openrouter-cache-source-id": "gen-source",
+        },
+      });
+    try {
+      const entries = await runPromise(
+        resetGenerationIds.pipe(
+          flatMap(() =>
+            gen(function* run() {
+              const responses = yield* Responses;
+              yield* responses.send(
+                { model: "m", input: [] },
+                { timeoutMs: 1000 }
+              );
+            })
+          ),
+          flatMap(() => getCollectedGenerationIdEntries),
+          provide(
+            makeResponsesLayer({
+              apiKey: "sk-test",
+              baseUrl: "https://example.test",
+            })
+          )
+        )
+      );
+      expect(entries).toEqual([
+        {
+          id: "gen-source",
+          isCacheHit: true,
+          countsTowardUsage: true,
+          isResolvedSource: true,
+        },
+      ]);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
   it("preserves response headers on a failed SDK stream", async () => {
     const originalFetch = globalThis.fetch;
     globalThis.fetch = async () =>
@@ -497,6 +544,49 @@ describe("makeResponsesLayer", () => {
       const error = getOrThrow(failureOption(exit.cause));
       expect(error.status).toBe(500);
       expect(error.retryable).toBe(true);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+  it("sends the response-cache header and an epoch-scoped cache_salt", async () => {
+    const originalFetch = globalThis.fetch;
+    const stream = await readStreamFixture();
+    const capturedBodies: unknown[] = [];
+    let capturedHeaders: Headers | undefined;
+    globalThis.fetch = async (input, init) => {
+      const request =
+        input instanceof Request ? input : new Request(input, init);
+      capturedBodies.push(await request.clone().json());
+      capturedHeaders = request.headers;
+      return new Response(stream, {
+        status: 200,
+        headers: { "content-type": "text/event-stream" },
+      });
+    };
+    try {
+      await runPromise(
+        gen(function* run() {
+          yield* setCurrentEpoch(2);
+          const responses = yield* Responses;
+          yield* responses.send(
+            { model: "m", input: [] },
+            { timeoutMs: 1000, extraBody: { top_k: 5 } }
+          );
+        }).pipe(
+          provide(
+            makeResponsesLayer({
+              apiKey: "sk-test",
+              baseUrl: "https://example.test",
+              sessionId: "wf-123",
+            })
+          )
+        )
+      );
+      expect(capturedHeaders?.get("x-openrouter-cache")).toBe("true");
+      expect(capturedBodies[0]).toMatchObject({
+        cache_salt: "wf-123:epoch-2",
+        top_k: 5,
+      });
     } finally {
       globalThis.fetch = originalFetch;
     }

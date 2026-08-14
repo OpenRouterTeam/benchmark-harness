@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, spyOn } from "bun:test";
 import {
   exit as exitEffect,
   fail,
+  flatMap,
   retry,
   succeed,
   suspend,
@@ -11,7 +12,12 @@ import {
 import { assertFailure } from "../../test/helpers/exit-asserts";
 import { ModelError, SolverError } from "../harness/core";
 import { runHarnessPromise } from "../internal/effect-logger";
-import { rateLimitRetrySchedule, transientSolverRetrySchedule } from "./retry";
+import { getCurrentRetryAttempt } from "./response-cache";
+import {
+  rateLimitRetrySchedule,
+  retrySalted,
+  transientSolverRetrySchedule,
+} from "./retry";
 
 const schedule = rateLimitRetrySchedule({ maxRetries: 5, baseDelayMs: 0 });
 
@@ -174,5 +180,43 @@ describe("transientSolverRetrySchedule", () => {
       error_tag: "SolverError",
       error_message: "sandbox unavailable",
     });
+  });
+});
+describe("retrySalted", () => {
+  it("increments the retry-attempt salt on each retry and logs each retry", async () => {
+    const warn = spyOn(console, "warn").mockImplementation(() => {});
+    warnSpies.push(warn);
+    const seen: (number | undefined)[] = [];
+    let attempts = 0;
+    const flaky = getCurrentRetryAttempt.pipe(
+      flatMap((attempt) =>
+        suspend(() => {
+          seen.push(attempt);
+          attempts++;
+          return attempts < 3 ? fail(rateLimit) : succeed(attempts);
+        })
+      )
+    );
+    const result = await runHarnessPromise(
+      retrySalted(
+        flaky,
+        rateLimitRetrySchedule({ maxRetries: 5, baseDelayMs: 0 })
+      )
+    );
+    expect(result).toBe(3);
+    expect(seen).toEqual([0, 1, 2]);
+    expect(warn).toHaveBeenCalledTimes(2);
+    expect(warn.mock.calls[0]?.[1]).toMatchObject({ attempt: 1 });
+    expect(warn.mock.calls[1]?.[1]).toMatchObject({ attempt: 2 });
+  });
+  it("restarts the attempt salt at zero for each fresh call", async () => {
+    const first = await runHarnessPromise(
+      retrySalted(getCurrentRetryAttempt, rateLimitRetrySchedule({}))
+    );
+    const second = await runHarnessPromise(
+      retrySalted(getCurrentRetryAttempt, rateLimitRetrySchedule({}))
+    );
+    expect(first).toBe(0);
+    expect(second).toBe(0);
   });
 });

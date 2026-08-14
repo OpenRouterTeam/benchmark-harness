@@ -27,6 +27,10 @@ import type { AsyncEither } from "../internal/either";
 import { Either } from "../internal/either";
 import { wLog } from "../internal/log";
 import type { ResultStoreService } from "../results/result-store";
+import {
+  GenerationResolver,
+  makeOpenRouterGenerationResolver,
+} from "../runtime/generation-resolver";
 import type { RetryConfig } from "../runtime/retry";
 
 export interface RunBenchmarkInput {
@@ -102,10 +106,18 @@ export function runBenchmarkById(
   const fullBenchmarkLayer = benchmarkLayer.pipe(
     layerProvide(FetchHttpClient.layer)
   );
+  const resolverLayer = layerSucceed(
+    GenerationResolver,
+    makeOpenRouterGenerationResolver({
+      apiKey: input.apiKey,
+      ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
+    })
+  );
   const layers = layerMergeAll(
     fullBenchmarkLayer,
     progressLayer,
-    checkpointLayer
+    checkpointLayer,
+    resolverLayer
   );
   const runOpts =
     input.abortSignal !== undefined ? { signal: input.abortSignal } : undefined;

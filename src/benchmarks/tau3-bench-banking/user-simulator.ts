@@ -19,6 +19,16 @@ import {
   BENCH_HARNESS_APP_REFERRER,
   BENCH_HARNESS_APP_TITLE,
 } from "../../providers/openrouter-model";
+import {
+  buildResponseCacheSalt,
+  getCurrentCallSalt,
+  getCurrentEpoch,
+  getCurrentRetryAttempt,
+  RESPONSE_CACHE_HEADER,
+  RESPONSE_CACHE_SALT_FIELD,
+  RESPONSE_CACHE_TTL_HEADER,
+  RESPONSE_CACHE_TTL_SECONDS,
+} from "../../runtime/response-cache";
 import type { UserModelConfig } from "./types";
 import {
   USER_SIM_GUIDELINES,
@@ -148,12 +158,24 @@ export class UserSimulator {
     model: string
   ): Effect<SimulatorTurn, SimError, HttpClient.HttpClient> {
     return gen(this, function* (this: UserSimulator) {
+      const epoch = yield* getCurrentEpoch;
+      const retryAttempt = yield* getCurrentRetryAttempt;
+      const callSalt = yield* getCurrentCallSalt;
+      const cacheSalt = buildResponseCacheSalt(
+        this.config.sessionId,
+        epoch,
+        retryAttempt,
+        callSalt
+      );
       const requestBody: Record<string, unknown> = {
         model,
         messages: this.messages,
         temperature: 0,
         ...(this.config.userReasoningEffort !== undefined && {
           reasoning_effort: this.config.userReasoningEffort,
+        }),
+        ...(cacheSalt !== undefined && {
+          [RESPONSE_CACHE_SALT_FIELD]: cacheSalt,
         }),
       };
       if (this.availableTools.length > 0) {
@@ -167,6 +189,8 @@ export class UserSimulator {
           "Content-Type": "application/json",
           "HTTP-Referer": BENCH_HARNESS_APP_REFERRER,
           "X-OpenRouter-Title": BENCH_HARNESS_APP_TITLE,
+          [RESPONSE_CACHE_HEADER]: "true",
+          [RESPONSE_CACHE_TTL_HEADER]: `${RESPONSE_CACHE_TTL_SECONDS}`,
           ...(this.config.sessionId !== undefined && {
             "x-session-id": this.config.sessionId,
           }),
