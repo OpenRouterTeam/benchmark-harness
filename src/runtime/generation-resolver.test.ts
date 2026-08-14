@@ -201,8 +201,8 @@ describe("makeOpenRouterGenerationResolver", () => {
         : jsonResponse({
             data: {
               response_cache_source_id: null,
-              tokens_prompt: 10,
-              tokens_completion: 25,
+              native_tokens_prompt: 10,
+              native_tokens_completion: 25,
               native_tokens_reasoning: 5,
               total_cost: 0.0015,
               generation_time: 1200,
@@ -289,8 +289,8 @@ describe("makeOpenRouterGenerationResolver", () => {
       jsonResponse({
         data: {
           response_cache_source_id: null,
-          tokens_prompt: 10,
-          tokens_completion: 25,
+          native_tokens_prompt: 10,
+          native_tokens_completion: 25,
           native_tokens_reasoning: 5,
           total_cost: 0.0015,
           generation_time: 1200,

@@ -53,8 +53,8 @@ export class GenerationResolver extends Tag(
 const GenerationLookupSchema = z.object({
   data: z.object({
     response_cache_source_id: z.string().nullish(),
-    tokens_prompt: z.number().nullish(),
-    tokens_completion: z.number().nullish(),
+    native_tokens_prompt: z.number().nullish(),
+    native_tokens_completion: z.number().nullish(),
     native_tokens_reasoning: z.number().nullish(),
     total_cost: z.number().nullish(),
     generation_time: z.number().nullish(),
@@ -93,16 +93,16 @@ function usageFromLookup(
   generationId: string
 ): ReplayedUsage {
   const hasUsageFields =
-    isDefinedAndNotNull(data.tokens_prompt) ||
-    isDefinedAndNotNull(data.tokens_completion) ||
+    isDefinedAndNotNull(data.native_tokens_prompt) ||
+    isDefinedAndNotNull(data.native_tokens_completion) ||
     isDefinedAndNotNull(data.total_cost);
   if (!hasUsageFields) {
     wLog("Source generation has no usage fields, folding zeros", {
       generation_id: generationId,
     });
   }
-  const inputTokens = data.tokens_prompt ?? 0;
-  const outputTokens = data.tokens_completion ?? 0;
+  const inputTokens = data.native_tokens_prompt ?? 0;
+  const outputTokens = data.native_tokens_completion ?? 0;
   return {
     inputTokens,
     outputTokens,
