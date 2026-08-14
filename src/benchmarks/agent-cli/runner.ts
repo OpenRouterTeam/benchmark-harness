@@ -5,8 +5,12 @@ import type { SolverError } from "../../harness/core";
 import { recordGenerationId } from "../../runtime/generation-ids";
 import type { SandboxSessionInstance } from "../harbor/sandbox";
 import type { OriAgentRun, OriHarnessDef } from "./harness";
-import type { ClaudeEffortLevel } from "./schema";
-import { DEFAULT_CLAUDE_EFFORT } from "./schema";
+import type { OriChannel, OriReasoningEffort } from "./schema";
+import {
+  DEFAULT_ORI_CHANNEL,
+  DEFAULT_ORI_INSTALL_URL,
+  DEFAULT_ORI_REASONING_EFFORT,
+} from "./schema";
 
 const EXIT_DETAIL_TAIL_CHARS = 500;
 
@@ -19,7 +23,8 @@ export interface AgentCliOpts {
   readonly oriInstallUrl?: string;
   readonly systemPrompt?: string;
   readonly appendSystemPrompt?: string;
-  readonly effort?: ClaudeEffortLevel;
+  readonly agentReasoningEffort?: OriReasoningEffort;
+  readonly oriChannel?: OriChannel;
   readonly allowedTools?: readonly string[];
   readonly disallowedTools?: readonly string[];
   readonly isolateAgentConfig?: boolean;
@@ -59,6 +64,17 @@ export function buildAgentCliEnv(opts: AgentCliOpts): Record<string, string> {
   return env;
 }
 
+export function agentImageBuildSteps(
+  harness: OriHarnessDef,
+  opts: AgentCliOpts
+): string[] {
+  return harness.imageBuildSteps({
+    agentPackage: opts.agentPackage ?? harness.defaultPackage,
+    oriInstallUrl: opts.oriInstallUrl ?? DEFAULT_ORI_INSTALL_URL,
+    oriChannel: opts.oriChannel ?? DEFAULT_ORI_CHANNEL,
+  });
+}
+
 export function runAgentCli(input: {
   readonly session: SandboxSessionInstance;
   readonly harness: OriHarnessDef;
@@ -70,7 +86,7 @@ export function runAgentCli(input: {
   const script = harness.buildRunScript({
     instructionPath,
     logPath: harness.remoteLogPath,
-    effort: opts.effort ?? DEFAULT_CLAUDE_EFFORT,
+    reasoningEffort: opts.agentReasoningEffort ?? DEFAULT_ORI_REASONING_EFFORT,
     hasSystemPrompt: opts.systemPrompt !== undefined,
     hasAppendSystemPrompt: opts.appendSystemPrompt !== undefined,
     hasAllowedTools: (opts.allowedTools ?? []).length > 0,

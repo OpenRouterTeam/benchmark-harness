@@ -2,7 +2,7 @@ import type { ChatMessage, ModelUsage, ResponseItem } from "../../harness/core";
 import { MessageRole } from "../../harness/core";
 import { Either } from "../../internal/either";
 import { isRecord } from "../../internal/guards";
-import type { ClaudeEffortLevel, OriAgent } from "./schema";
+import type { OriAgent, OriChannel, OriReasoningEffort } from "./schema";
 import { DEFAULT_CLAUDE_PACKAGE } from "./schema";
 
 const NODE_VERSION = "22" as const;
@@ -12,15 +12,24 @@ const NVM_INSTALL_URL =
 
 export const ORI_INSTALL_DIR = "/usr/local/bin" as const;
 
+export const DEFAULT_PI_AGENT_PACKAGE =
+  "@earendil-works/pi-coding-agent@latest" as const;
+
 export interface OriRunScriptOptions {
   readonly instructionPath: string;
   readonly logPath: string;
-  readonly effort: ClaudeEffortLevel;
+  readonly reasoningEffort: OriReasoningEffort;
   readonly hasSystemPrompt: boolean;
   readonly hasAppendSystemPrompt: boolean;
   readonly hasAllowedTools: boolean;
   readonly hasDisallowedTools: boolean;
   readonly isolateAgentConfig: boolean;
+}
+
+export interface OriImageStepsOptions {
+  readonly agentPackage: string;
+  readonly oriInstallUrl: string;
+  readonly oriChannel: OriChannel;
 }
 
 export interface OriAgentRun {
@@ -41,10 +50,7 @@ export interface OriHarnessDef {
   readonly defaultPackage: string;
   readonly binaryName: string;
   readonly remoteLogPath: string;
-  readonly imageBuildSteps: (
-    agentPackage: string,
-    oriInstallUrl: string
-  ) => string[];
+  readonly imageBuildSteps: (options: OriImageStepsOptions) => string[];
   readonly buildRunScript: (options: OriRunScriptOptions) => string;
   readonly parseRun: (stdout: string) => OriAgentRun;
 }
@@ -52,14 +58,17 @@ export interface OriHarnessDef {
 function buildImageSteps(opts: {
   agentPackage: string;
   oriInstallUrl: string;
+  oriChannel: OriChannel;
   binaryName: string;
 }): string[] {
+  const channelPrefix =
+    opts.oriChannel === "stable" ? "" : `ORI_CHANNEL=${opts.oriChannel} `;
   return [
     "RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates git",
     "ENV NVM_DIR=/root/.nvm",
     `RUN curl -o- ${NVM_INSTALL_URL} | bash`,
     `RUN . /root/.nvm/nvm.sh && nvm install ${NODE_VERSION} && npm install -g ${opts.agentPackage} && ln -sf $(which ${opts.binaryName}) /usr/local/bin/${opts.binaryName} && ln -sf $(which node) /usr/local/bin/node && ln -sf $(which npm) /usr/local/bin/npm`,
-    `RUN curl -fsSL ${opts.oriInstallUrl} | ORI_INSTALL_DIR=${ORI_INSTALL_DIR} bash`,
+    `RUN curl -fsSL ${opts.oriInstallUrl} | ${channelPrefix}ORI_INSTALL_DIR=${ORI_INSTALL_DIR} bash`,
     `RUN ori --version && ${opts.binaryName} --version`,
   ];
 }
@@ -242,19 +251,19 @@ const CLAUDE_HARNESS: OriHarnessDef = {
   defaultPackage: DEFAULT_CLAUDE_PACKAGE,
   binaryName: "claude",
   remoteLogPath: "/logs/agent/claude.txt",
-  imageBuildSteps: (agentPackage, oriInstallUrl) =>
-    buildImageSteps({ agentPackage, oriInstallUrl, binaryName: "claude" }),
+  imageBuildSteps: (options) =>
+    buildImageSteps({ ...options, binaryName: "claude" }),
   buildRunScript: (options) =>
     [
       "set -euo pipefail",
       "export HOME=/root",
       "mkdir -p /logs/agent",
-      'ori claude --model "$TB_MODEL" -- \\',
+      'ori claude --model "$TB_MODEL" \\',
+      `  --reasoning-effort ${options.reasoningEffort} -- \\`,
       `  -p "$(cat ${options.instructionPath})" \\`,
       "  --output-format stream-json \\",
       "  --verbose \\",
       "  --permission-mode bypassPermissions \\",
-      `  --effort ${options.effort} \\`,
       ...(options.hasSystemPrompt
         ? ['  --system-prompt "$TB_SYSTEM_PROMPT" \\']
         : []),
@@ -275,10 +284,176 @@ const CLAUDE_HARNESS: OriHarnessDef = {
   parseRun: parseClaudeStream,
 };
 
+const ORI_PI_HARNESS: OriHarnessDef = {
+  id: "pi",
+  defaultPackage: DEFAULT_PI_AGENT_PACKAGE,
+  binaryName: "pi",
+  remoteLogPath: "/logs/agent/pi.txt",
+  imageBuildSteps: (options) =>
+    buildImageSteps({ ...options, binaryName: "pi" }),
+  buildRunScript: (options) =>
+    [
+      "set -euo pipefail",
+      "export HOME=/root",
+      "mkdir -p /logs/agent",
+      'ori pi --model "$TB_MODEL" \\',
+      `  --reasoning-effort ${options.reasoningEffort} -- \\`,
+      "  --print --mode json --no-session \\",
+      ...(options.hasSystemPrompt
+        ? ['  --system-prompt "$TB_SYSTEM_PROMPT" \\']
+        : []),
+      ...(options.hasAppendSystemPrompt
+        ? ['  --append-system-prompt "$TB_APPEND_SYSTEM_PROMPT" \\']
+        : []),
+      ...(options.hasAllowedTools ? ['  --tools "$TB_ALLOWED_TOOLS" \\'] : []),
+      ...(options.hasDisallowedTools
+        ? ['  --exclude-tools "$TB_DISALLOWED_TOOLS" \\']
+        : []),
+      ...(options.isolateAgentConfig
+        ? [
+            "  --no-extensions \\",
+            "  --no-skills \\",
+            "  --no-prompt-templates \\",
+            "  --no-context-files \\",
+          ]
+        : []),
+      `  "$(cat ${options.instructionPath})" \\`,
+      `  2>&1 </dev/null | grep -v '"type":"message_update"' | stdbuf -oL tee ${options.logPath}`,
+    ].join("\n"),
+  parseRun: parsePiStream,
+};
+
 export const ORI_HARNESSES: Readonly<Record<OriAgent, OriHarnessDef>> = {
   claude: CLAUDE_HARNESS,
+  pi: ORI_PI_HARNESS,
 };
 
 export function getOriHarness(agent: OriAgent): OriHarnessDef {
   return ORI_HARNESSES[agent];
+}
+
+function parsePiStream(stdout: string): OriAgentRun {
+  let inputTokens = 0;
+  let outputTokens = 0;
+  let cacheRead = 0;
+  let cacheWrite = 0;
+  let reasoningTokens = 0;
+  let totalCost = 0;
+  let turns = 0;
+  let toolCalls = 0;
+  let isError = false;
+  let apiErrorStatus: string | undefined;
+  let finalText: string | undefined;
+  const generationIds: string[] = [];
+  const assistantMessages: ChatMessage[] = [];
+  const responseItems: ResponseItem[] = [];
+  for (const line of stdout.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith("{")) {
+      continue;
+    }
+    const parsed = Either.try(() => JSON.parse(trimmed));
+    if (Either.isLeft(parsed) || !isRecord(parsed.right)) {
+      continue;
+    }
+    const event = parsed.right;
+    responseItems.push(event);
+    const eventType = event["type"];
+    if (eventType === "turn_end") {
+      turns++;
+      continue;
+    }
+    if (eventType === "tool_execution_end") {
+      toolCalls++;
+      continue;
+    }
+    if (eventType !== "message_end") {
+      continue;
+    }
+    const { message } = event;
+    if (!isRecord(message) || message["role"] !== "assistant") {
+      continue;
+    }
+    const responseId = message["responseId"];
+    if (
+      typeof responseId === "string" &&
+      responseId.length > 0 &&
+      !generationIds.includes(responseId)
+    ) {
+      generationIds.push(responseId);
+    }
+    const errorMessage = message["errorMessage"];
+    if (typeof errorMessage === "string" && errorMessage.length > 0) {
+      isError = true;
+      apiErrorStatus = errorMessage;
+    } else if (message["stopReason"] === "error") {
+      isError = true;
+    }
+    const text = textFromPiContent(message["content"]);
+    if (text.length > 0) {
+      finalText = text;
+      assistantMessages.push({ role: MessageRole.Assistant, content: text });
+    }
+    const { usage } = message;
+    if (!isRecord(usage)) {
+      continue;
+    }
+    inputTokens += typeof usage["input"] === "number" ? usage["input"] : 0;
+    outputTokens += typeof usage["output"] === "number" ? usage["output"] : 0;
+    cacheRead +=
+      typeof usage["cacheRead"] === "number" ? usage["cacheRead"] : 0;
+    cacheWrite +=
+      typeof usage["cacheWrite"] === "number" ? usage["cacheWrite"] : 0;
+    reasoningTokens +=
+      typeof usage["reasoning"] === "number" ? usage["reasoning"] : 0;
+    const { cost } = usage;
+    if (isRecord(cost)) {
+      totalCost += typeof cost["total"] === "number" ? cost["total"] : 0;
+    }
+  }
+  const hasTokens =
+    inputTokens !== 0 ||
+    outputTokens !== 0 ||
+    cacheRead !== 0 ||
+    cacheWrite !== 0;
+  return {
+    usage: hasTokens
+      ? {
+          inputTokens: inputTokens + cacheRead + cacheWrite,
+          outputTokens,
+          totalTokens: inputTokens + outputTokens + cacheRead + cacheWrite,
+          reasoningTokens,
+          totalCost,
+        }
+      : undefined,
+    generationIds,
+    generationTimeMs: undefined,
+    finalText,
+    assistantMessages,
+    responseItems,
+    isError,
+    apiErrorStatus,
+    turns: turns > 0 ? turns : undefined,
+    toolCalls,
+  };
+}
+
+function textFromPiContent(content: unknown): string {
+  if (typeof content === "string") {
+    return content;
+  }
+  if (!Array.isArray(content)) {
+    return "";
+  }
+  const parts: string[] = [];
+  for (const block of content) {
+    if (!isRecord(block)) {
+      continue;
+    }
+    const text = block["text"];
+    if (block["type"] === "text" && typeof text === "string") {
+      parts.push(text);
+    }
+  }
+  return parts.join("");
 }

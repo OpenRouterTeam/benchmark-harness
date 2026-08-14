@@ -394,7 +394,7 @@ describe("terminal-bench ori solver", () => {
     expect(agentCall.env["TB_APPEND_SYSTEM_PROMPT"]).toBe(appendSystemPrompt);
   });
 
-  it("applies the effort level and defaults to medium", async () => {
+  it("applies the ori reasoning effort and defaults to medium", async () => {
     const defaultCalls: ExecCalls = [];
     await runOriSolver(
       makeTerminalBenchFakeSandboxLayer({
@@ -403,7 +403,7 @@ describe("terminal-bench ori solver", () => {
         agentExitCode: 0,
       })
     );
-    expect(defaultCalls[0]?.argv[2]).toContain("--effort medium");
+    expect(defaultCalls[0]?.argv[2]).toContain("--reasoning-effort medium");
     const maxCalls: ExecCalls = [];
     await runOriSolver(
       makeTerminalBenchFakeSandboxLayer({
@@ -411,9 +411,9 @@ describe("terminal-bench ori solver", () => {
         execCalls: maxCalls,
         agentExitCode: 0,
       }),
-      { ...SOLVER_OPTS, effort: "max" }
+      { ...SOLVER_OPTS, agentReasoningEffort: "max" }
     );
-    expect(maxCalls[0]?.argv[2]).toContain("--effort max");
+    expect(maxCalls[0]?.argv[2]).toContain("--reasoning-effort max");
   });
 
   it("passes a claude system prompt override and tool lists through the environment", async () => {
@@ -505,20 +505,22 @@ describe("terminal-bench ori solver", () => {
   });
 
   it("installs ori and the claude package in the image", () => {
-    const steps = ORI_HARNESSES.claude.imageBuildSteps(
-      DEFAULT_CLAUDE_PACKAGE,
-      "https://openrouter.ai/labs/ori/install.sh"
-    );
+    const steps = ORI_HARNESSES.claude.imageBuildSteps({
+      agentPackage: DEFAULT_CLAUDE_PACKAGE,
+      oriInstallUrl: "https://openrouter.ai/labs/ori/install.sh",
+      oriChannel: "stable",
+    });
     expect(steps.join("\n")).toContain(DEFAULT_CLAUDE_PACKAGE);
     expect(steps.join("\n")).toContain("ORI_INSTALL_DIR=/usr/local/bin bash");
     expect(steps.at(-1)).toBe("RUN ori --version && claude --version");
   });
 
   it("honors an agent package override", () => {
-    const steps = ORI_HARNESSES.claude.imageBuildSteps(
-      "@anthropic-ai/claude-code@1.2.3",
-      "https://openrouter.ai/labs/ori/install.sh"
-    );
+    const steps = ORI_HARNESSES.claude.imageBuildSteps({
+      agentPackage: "@anthropic-ai/claude-code@1.2.3",
+      oriInstallUrl: "https://openrouter.ai/labs/ori/install.sh",
+      oriChannel: "stable",
+    });
     expect(steps.join("\n")).toContain("@anthropic-ai/claude-code@1.2.3");
     expect(steps.join("\n")).not.toContain("claude-code@latest");
   });
@@ -565,3 +567,137 @@ function makeFakeTasksDir(): string {
   );
   return dir;
 }
+
+describe("terminal-bench pi via ori", () => {
+  const PI_STREAM = [
+    JSON.stringify({ type: "turn_end" }),
+    JSON.stringify({ type: "tool_execution_end" }),
+    JSON.stringify({
+      type: "message_end",
+      message: {
+        role: "assistant",
+        responseId: "gen-1786730156-Pvo7AI2n4sxz8jRnYAEf",
+        stopReason: "stop",
+        errorMessage: null,
+        content: [{ type: "text", text: "HARNESSPROBE" }],
+        usage: {
+          input: 1969,
+          output: 47,
+          cacheRead: 0,
+          cacheWrite: 0,
+          reasoning: 33,
+          cost: { total: 0.002204 },
+        },
+      },
+    }),
+  ].join("\n");
+
+  async function runPi(opts?: Partial<OriSolverOpts>) {
+    const layer = makeTerminalBenchFakeSandboxLayer({
+      reward: 1,
+      testOutput: "1 passed",
+      agentEventStream: PI_STREAM,
+      agentExitCode: 0,
+    });
+    const solverLayer = layerEffect(Solver)(
+      gen(function* () {
+        const sessionFactory = yield* SandboxSession;
+        return Solver.of(
+          oriSolver(
+            sessionFactory,
+            { ...SOLVER_OPTS, ...opts },
+            getOriHarness("pi")
+          )
+        );
+      })
+    );
+    return runPromise(
+      gen(function* () {
+        const solver = yield* Solver;
+        return yield* solver(sampleState());
+      }).pipe(
+        provide(
+          layerMergeAll(
+            solverLayer.pipe(layerProvide(layer)),
+            noopProgressLayer,
+            noopCheckpointLayer
+          )
+        )
+      )
+    );
+  }
+
+  it("parses pi usage, cost, reasoning tokens and generation ids", async () => {
+    const finalState = await runPi();
+    const usage = finalState.output?.usage;
+    expect(usage?.inputTokens).toBe(1969);
+    expect(usage?.reasoningTokens).toBe(33);
+    expect(usage?.totalCost).toBe(0.002204);
+    expect(finalState.sample.metadata?.["generationIds"]).toEqual([
+      "gen-1786730156-Pvo7AI2n4sxz8jRnYAEf",
+    ]);
+    expect(finalState.sample.metadata?.["agent"]).toBe("pi");
+    expect(finalState.sample.metadata?.["agentTurns"]).toBe(1);
+    expect(finalState.sample.metadata?.["agentToolCalls"]).toBe(1);
+  });
+
+  it("launches pi through ori with the unified reasoning effort flag", async () => {
+    const execCalls: ExecCalls = [];
+    const layer = makeTerminalBenchFakeSandboxLayer({
+      reward: 1,
+      execCalls,
+      agentExitCode: 0,
+    });
+    const solverLayer = layerEffect(Solver)(
+      gen(function* () {
+        const sessionFactory = yield* SandboxSession;
+        return Solver.of(
+          oriSolver(
+            sessionFactory,
+            { ...SOLVER_OPTS, agentReasoningEffort: "xhigh" },
+            getOriHarness("pi")
+          )
+        );
+      })
+    );
+    await runPromise(
+      gen(function* () {
+        const solver = yield* Solver;
+        return yield* solver(sampleState());
+      }).pipe(
+        provide(
+          layerMergeAll(
+            solverLayer.pipe(layerProvide(layer)),
+            noopProgressLayer,
+            noopCheckpointLayer
+          )
+        )
+      )
+    );
+    const script = execCalls[0]?.argv[2] ?? "";
+    expect(script).toContain('ori pi --model "$TB_MODEL"');
+    expect(script).toContain("--reasoning-effort xhigh --");
+    expect(script).toContain("--print --mode json --no-session");
+    expect(script).not.toContain("--provider");
+    expect(script).not.toContain("models.json");
+  });
+
+  it("installs pi and ori into the image", () => {
+    const steps = ORI_HARNESSES.pi.imageBuildSteps({
+      agentPackage: "@earendil-works/pi-coding-agent@latest",
+      oriInstallUrl: "https://openrouter.ai/labs/ori/install.sh",
+      oriChannel: "stable",
+    });
+    expect(steps.join("\n")).toContain("@earendil-works/pi-coding-agent");
+    expect(steps.at(-1)).toBe("RUN ori --version && pi --version");
+  });
+
+  it("can install ori from the alpha channel when asked", () => {
+    const steps = ORI_HARNESSES.pi.imageBuildSteps({
+      agentPackage: "pi@1",
+      oriInstallUrl: "https://openrouter.ai/labs/ori/install.sh",
+      oriChannel: "alpha",
+    });
+    expect(steps.join("\n")).toContain("ORI_CHANNEL=alpha");
+  });
+});

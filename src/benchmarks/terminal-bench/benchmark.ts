@@ -20,9 +20,8 @@ import type { Benchmark, BenchmarkRunInput } from "../types";
 import { makeTerminalBenchDatasetLayer } from "./dataset";
 import type { OriSolverOpts } from "./ori-solver";
 import { oriSolver } from "./ori-solver";
+import type { OriReasoningEffort, PiThinkingLevel } from "./schema";
 import { terminalBenchScorer } from "./scorer";
-import type { TerminalBenchSolverOpts } from "./solver";
-import { piSolver } from "./solver";
 
 export const TERMINAL_BENCH_ID = TERMINAL_BENCH_META.id;
 
@@ -37,29 +36,14 @@ function makeTerminalBenchLayer(
       new Error("terminal_bench received mismatched benchmarkConfig")
     );
   }
-  const solverOpts: TerminalBenchSolverOpts = {
-    model: benchmarkConfig.model,
-    apiKey: input.apiKey,
-    sessionId: input.sessionId,
-    ...(benchmarkConfig.endpointId !== undefined && {
-      endpointId: benchmarkConfig.endpointId,
-    }),
-    thinking: benchmarkConfig.thinking,
-    piPackage: benchmarkConfig.piPackage,
-    ...(benchmarkConfig.appendSystemPrompt !== undefined && {
-      appendSystemPrompt: benchmarkConfig.appendSystemPrompt,
-    }),
-    ...(benchmarkConfig.systemPrompt !== undefined && {
-      systemPrompt: benchmarkConfig.systemPrompt,
-    }),
-    ...(benchmarkConfig.allowedTools !== undefined && {
-      allowedTools: benchmarkConfig.allowedTools,
-    }),
-    ...(benchmarkConfig.disallowedTools !== undefined && {
-      disallowedTools: benchmarkConfig.disallowedTools,
-    }),
-    isolateAgentConfig: benchmarkConfig.isolateAgentConfig,
-  };
+  const { agent } = benchmarkConfig;
+  const legacyAgentPackage =
+    benchmarkConfig.agentPackage ??
+    (agent === "pi" ? benchmarkConfig.piPackage : undefined);
+  const effectiveReasoningEffort =
+    benchmarkConfig.thinking !== undefined
+      ? legacyThinkingToReasoningEffort(benchmarkConfig.thinking)
+      : benchmarkConfig.agentReasoningEffort;
   const oriSolverOpts: OriSolverOpts = {
     model: benchmarkConfig.model,
     apiKey: input.apiKey,
@@ -67,8 +51,8 @@ function makeTerminalBenchLayer(
     ...(benchmarkConfig.endpointId !== undefined && {
       endpointId: benchmarkConfig.endpointId,
     }),
-    ...(benchmarkConfig.agentPackage !== undefined && {
-      agentPackage: benchmarkConfig.agentPackage,
+    ...(legacyAgentPackage !== undefined && {
+      agentPackage: legacyAgentPackage,
     }),
     oriInstallUrl: benchmarkConfig.oriInstallUrl,
     ...(benchmarkConfig.appendSystemPrompt !== undefined && {
@@ -77,7 +61,8 @@ function makeTerminalBenchLayer(
     ...(benchmarkConfig.systemPrompt !== undefined && {
       systemPrompt: benchmarkConfig.systemPrompt,
     }),
-    effort: benchmarkConfig.effort,
+    agentReasoningEffort: effectiveReasoningEffort,
+    oriChannel: benchmarkConfig.oriChannel,
     ...(benchmarkConfig.allowedTools !== undefined && {
       allowedTools: benchmarkConfig.allowedTools,
     }),
@@ -86,7 +71,6 @@ function makeTerminalBenchLayer(
     }),
     isolateAgentConfig: benchmarkConfig.isolateAgentConfig,
   };
-  const { agent } = benchmarkConfig;
   const datasetLayer = makeTerminalBenchDatasetLayer({
     ...(benchmarkConfig.taskSubset !== undefined && {
       taskSubset: benchmarkConfig.taskSubset,
@@ -103,9 +87,7 @@ function makeTerminalBenchLayer(
     gen(function* () {
       const sessionFactory = yield* SandboxSession;
       return Solver.of(
-        agent === "pi"
-          ? piSolver(sessionFactory, solverOpts)
-          : oriSolver(sessionFactory, oriSolverOpts, getOriHarness(agent))
+        oriSolver(sessionFactory, oriSolverOpts, getOriHarness(agent))
       );
     })
   );
@@ -125,3 +107,9 @@ export const TERMINAL_BENCH_BENCHMARK: Benchmark = {
   degradeSolverErrors: true,
   makeLayer: makeTerminalBenchLayer,
 };
+
+function legacyThinkingToReasoningEffort(
+  thinking: PiThinkingLevel
+): OriReasoningEffort {
+  return thinking === "off" ? "none" : thinking;
+}

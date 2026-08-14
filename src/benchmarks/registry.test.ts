@@ -166,12 +166,11 @@ describe("benchmark registry", () => {
       throw new Error("expected terminal_bench config");
     }
     expect(result.right.agent).toBe("pi");
-    expect(result.right.piPackage).toBe(
-      "@earendil-works/pi-coding-agent@latest"
-    );
+    expect(result.right.piPackage).toBeUndefined();
     expect(result.right.oriInstallUrl).toBe(
       "https://openrouter.ai/labs/ori/install.sh"
     );
+    expect(result.right.oriChannel).toBe("stable");
   });
 
   it("parses an ori agent selection for terminal-bench", () => {
@@ -196,34 +195,48 @@ describe("benchmark registry", () => {
     if (result.right.benchmarkId !== "terminal_bench") {
       throw new Error("expected terminal_bench config");
     }
-    expect(result.right.thinking).toBe("medium");
-    expect(result.right.effort).toBe("medium");
+    expect(result.right.thinking).toBeUndefined();
+    expect(result.right.agentReasoningEffort).toBe("medium");
+    expect(result.right.oriChannel).toBe("stable");
     expect(result.right.isolateAgentConfig).toBe(false);
     expect(result.right.systemPrompt).toBeUndefined();
     expect(result.right.allowedTools).toBeUndefined();
     expect(result.right.disallowedTools).toBeUndefined();
   });
 
-  it("accepts the max reasoning level for both agents", () => {
-    const pi = parseSchema(BenchmarkRunConfigSchema, {
+  it("accepts the max reasoning level", () => {
+    const parsed = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "terminal_bench",
       model: "anthropic/claude-opus-5",
       thinking: "max",
-      effort: "max",
+      agentReasoningEffort: "max",
     });
-    assertRight(pi);
-    if (pi.right.benchmarkId !== "terminal_bench") {
+    assertRight(parsed);
+    if (parsed.right.benchmarkId !== "terminal_bench") {
       throw new Error("expected terminal_bench config");
     }
-    expect(pi.right.thinking).toBe("max");
-    expect(pi.right.effort).toBe("max");
+    expect(parsed.right.thinking).toBe("max");
+    expect(parsed.right.agentReasoningEffort).toBe("max");
   });
 
-  it("rejects a claude effort level pi-only levels would allow", () => {
+  it("accepts none as an agent reasoning effort, which ori maps per harness", () => {
+    const parsed = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "terminal_bench",
+      model: "anthropic/claude-opus-5",
+      agentReasoningEffort: "none",
+    });
+    assertRight(parsed);
+    if (parsed.right.benchmarkId !== "terminal_bench") {
+      throw new Error("expected terminal_bench config");
+    }
+    expect(parsed.right.agentReasoningEffort).toBe("none");
+  });
+
+  it("rejects an unknown agent reasoning effort", () => {
     const result = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "terminal_bench",
       model: "anthropic/claude-opus-5",
-      effort: "off",
+      agentReasoningEffort: "off",
     });
     assertLeft(result);
   });
@@ -280,7 +293,7 @@ describe("benchmark registry", () => {
       benchmarkId: "deep_swe",
       model: "anthropic/claude-opus-5",
       agent: "claude",
-      effort: "high",
+      agentReasoningEffort: "high",
       isolateAgentConfig: true,
     });
     assertRight(result);
@@ -288,15 +301,28 @@ describe("benchmark registry", () => {
       throw new Error("expected deep_swe config");
     }
     expect(result.right.agent).toBe("claude");
-    expect(result.right.effort).toBe("high");
+    expect(result.right.agentReasoningEffort).toBe("high");
     expect(result.right.isolateAgentConfig).toBe(true);
   });
 
-  it("rejects pi as a harbor agent since only terminal-bench runs it", () => {
+  it("accepts pi as a harbor agent now that ori launches it", () => {
     const result = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "deep_swe",
       model: "anthropic/claude-opus-5",
       agent: "pi",
+    });
+    assertRight(result);
+    if (result.right.benchmarkId !== "deep_swe") {
+      throw new Error("expected deep_swe config");
+    }
+    expect(result.right.agent).toBe("pi");
+  });
+
+  it("rejects an agent no harness implements", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "deep_swe",
+      model: "anthropic/claude-opus-5",
+      agent: "codex",
     });
     assertLeft(result);
   });

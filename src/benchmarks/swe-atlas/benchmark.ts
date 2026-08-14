@@ -87,7 +87,8 @@ function makeSweAtlasLayer(
               agentPackage: benchmarkConfig.agentPackage,
             }),
             oriInstallUrl: benchmarkConfig.oriInstallUrl,
-            effort: benchmarkConfig.effort,
+            agentReasoningEffort: benchmarkConfig.agentReasoningEffort,
+            oriChannel: benchmarkConfig.oriChannel,
             ...(benchmarkConfig.systemPrompt !== undefined && {
               systemPrompt: benchmarkConfig.systemPrompt,
             }),

@@ -7,11 +7,13 @@ import { ProviderSort } from "../internal/enums";
 import type { ValueOf } from "../internal/guards";
 import { z, zDefaultedText, zInt } from "../internal/zod";
 import {
-  CLAUDE_EFFORT_LEVELS,
-  DEFAULT_CLAUDE_EFFORT,
   DEFAULT_HARBOR_AGENT,
+  DEFAULT_ORI_CHANNEL,
   DEFAULT_ORI_INSTALL_URL,
+  DEFAULT_ORI_REASONING_EFFORT,
   HARBOR_AGENTS,
+  ORI_CHANNELS,
+  ORI_REASONING_EFFORTS,
 } from "./agent-cli/schema";
 import {
   TAU3_BENCH_BANKING_META,
@@ -23,7 +25,6 @@ import { SearchLaneConfigSchema } from "./search/core/config";
 import { DEFAULT_JUDGE_MODEL, DEFAULT_STEP_LIMIT } from "./swe-atlas/schema";
 import { BankingRetrievalConfigSchema } from "./tau3-bench-banking/retrieval-config";
 import {
-  DEFAULT_PI_PACKAGE,
   DEFAULT_TERMINAL_BENCH_AGENT,
   PI_THINKING_LEVELS,
   TERMINAL_BENCH_AGENTS,
@@ -141,13 +142,16 @@ export const TerminalBenchOptionsSchema = z.object({
   maxAgentTimeoutSec: z.number().positive().optional(),
   taskSubset: z.array(z.string()).optional(),
   modalEnv: z.string().default("main"),
-  thinking: z.enum(PI_THINKING_LEVELS).default("medium"),
-  piPackage: z.string().default(DEFAULT_PI_PACKAGE),
+  thinking: z.enum(PI_THINKING_LEVELS).optional(),
+  piPackage: z.string().optional(),
   appendSystemPrompt: z.string().optional(),
   agent: z.enum(TERMINAL_BENCH_AGENTS).default(DEFAULT_TERMINAL_BENCH_AGENT),
   agentPackage: z.string().optional(),
   oriInstallUrl: z.string().default(DEFAULT_ORI_INSTALL_URL),
-  effort: z.enum(CLAUDE_EFFORT_LEVELS).default(DEFAULT_CLAUDE_EFFORT),
+  agentReasoningEffort: z
+    .enum(ORI_REASONING_EFFORTS)
+    .default(DEFAULT_ORI_REASONING_EFFORT),
+  oriChannel: z.enum(ORI_CHANNELS).default(DEFAULT_ORI_CHANNEL),
   systemPrompt: z.string().optional(),
   allowedTools: z.array(z.string()).optional(),
   disallowedTools: z.array(z.string()).optional(),
@@ -190,7 +194,10 @@ const AgenticOptionsSchema = z.object({
   agent: z.enum(HARBOR_AGENTS).default(DEFAULT_HARBOR_AGENT),
   agentPackage: z.string().optional(),
   oriInstallUrl: z.string().default(DEFAULT_ORI_INSTALL_URL),
-  effort: z.enum(CLAUDE_EFFORT_LEVELS).default(DEFAULT_CLAUDE_EFFORT),
+  agentReasoningEffort: z
+    .enum(ORI_REASONING_EFFORTS)
+    .default(DEFAULT_ORI_REASONING_EFFORT),
+  oriChannel: z.enum(ORI_CHANNELS).default(DEFAULT_ORI_CHANNEL),
   systemPrompt: z.string().optional(),
   appendSystemPrompt: z.string().optional(),
   allowedTools: z.array(z.string()).optional(),

@@ -93,6 +93,38 @@ describe("bench-harness CLI", () => {
     });
   });
 
+  it("still accepts the legacy thinking field for terminal_bench", () => {
+    const config = buildBenchmarkConfig({
+      benchmarkId: "terminal_bench",
+      model: "anthropic/claude-opus-5",
+      panelConfig: { thinking: "off", piPackage: "pi@9" },
+      artifactDir: undefined,
+      endpointId: undefined,
+      imageDetail: undefined,
+    });
+    expect(config).toMatchObject({
+      benchmarkId: "terminal_bench",
+      thinking: "off",
+      piPackage: "pi@9",
+    });
+  });
+
+  it("defaults terminal_bench to the unified ori reasoning effort", () => {
+    const config = buildBenchmarkConfig({
+      benchmarkId: "terminal_bench",
+      model: "anthropic/claude-opus-5",
+      panelConfig: undefined,
+      artifactDir: undefined,
+      endpointId: undefined,
+      imageDetail: undefined,
+    });
+    expect(config).toMatchObject({
+      benchmarkId: "terminal_bench",
+      agentReasoningEffort: "medium",
+      oriChannel: "stable",
+    });
+  });
+
   it("rejects an unknown terminal_bench agent", () => {
     expect(() =>
       buildBenchmarkConfig({

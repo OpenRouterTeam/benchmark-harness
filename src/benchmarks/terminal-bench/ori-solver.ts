@@ -5,10 +5,13 @@ import { MessageRole, SolverError } from "../../harness/core";
 import type { SolverService } from "../../harness/solver";
 import type { OriHarnessDef } from "../agent-cli/harness";
 import type { AgentCliOpts } from "../agent-cli/runner";
-import { agentCliMetadata, runAgentCli } from "../agent-cli/runner";
+import {
+  agentCliMetadata,
+  agentImageBuildSteps,
+  runAgentCli,
+} from "../agent-cli/runner";
 import type { SandboxSessionFactory } from "../harbor/sandbox";
 import { readTerminalBenchMeta } from "./dataset";
-import { DEFAULT_ORI_INSTALL_URL } from "./schema";
 import {
   createTerminalBenchSession,
   REMOTE_INSTRUCTION,
@@ -33,8 +36,6 @@ export function oriSolver(
   opts: OriSolverOpts,
   harness: OriHarnessDef
 ): SolverService {
-  const agentPackage = opts.agentPackage ?? harness.defaultPackage;
-  const oriInstallUrl = opts.oriInstallUrl ?? DEFAULT_ORI_INSTALL_URL;
   return (state) =>
     gen(function* () {
       const meta = readTerminalBenchMeta(state.sample.metadata);
@@ -54,7 +55,7 @@ export function oriSolver(
         sessionFactory,
         meta,
         tasksDir,
-        imageBuildSteps: harness.imageBuildSteps(agentPackage, oriInstallUrl),
+        imageBuildSteps: agentImageBuildSteps(harness, opts),
       });
       try {
         const run = yield* runAgentCli({

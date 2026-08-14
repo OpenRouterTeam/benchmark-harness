@@ -2,13 +2,13 @@ import type { ValueOf } from "../../internal/guards";
 import { z } from "../../internal/zod";
 
 export {
-  CLAUDE_EFFORT_LEVELS,
-  DEFAULT_CLAUDE_EFFORT,
   DEFAULT_CLAUDE_PACKAGE,
   DEFAULT_ORI_INSTALL_URL,
+  DEFAULT_ORI_REASONING_EFFORT,
   ORI_AGENTS,
+  ORI_REASONING_EFFORTS,
 } from "../agent-cli/schema";
-export type { ClaudeEffortLevel, OriAgent } from "../agent-cli/schema";
+export type { OriAgent, OriReasoningEffort } from "../agent-cli/schema";
 
 export const TaskTomlSchema = z.object({
   schema_version: z.string(),

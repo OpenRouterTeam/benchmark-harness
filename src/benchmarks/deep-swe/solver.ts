@@ -28,9 +28,13 @@ import type {
 import { responsesMessage } from "../../providers/responses-model";
 import { getOriHarness } from "../agent-cli/harness";
 import type { AgentCliOpts } from "../agent-cli/runner";
-import { agentCliMetadata, runAgentCli } from "../agent-cli/runner";
+import {
+  agentCliMetadata,
+  agentImageBuildSteps,
+  runAgentCli,
+} from "../agent-cli/runner";
 import type { HarborAgent } from "../agent-cli/schema";
-import { DEFAULT_ORI_INSTALL_URL, isOriAgent } from "../agent-cli/schema";
+import { isOriAgent } from "../agent-cli/schema";
 import type { InferenceOverride } from "../benchmark-config";
 import { AGENT_ENV, probeSystemInfo, runAgentLoop } from "../harbor/agent-loop";
 import {
@@ -125,10 +129,7 @@ export function makeDeepSweSolver(
         sessionFactory.create({
           imageTag: meta.dockerImage,
           ...(cliHarness !== undefined && {
-            imageBuildSteps: cliHarness.imageBuildSteps(
-              cliOpts.agentPackage ?? cliHarness.defaultPackage,
-              cliOpts.oriInstallUrl ?? DEFAULT_ORI_INSTALL_URL
-            ),
+            imageBuildSteps: agentImageBuildSteps(cliHarness, cliOpts),
           }),
           timeoutSec: meta.maxAgentTimeoutSec + SANDBOX_TIMEOUT_MARGIN_SEC,
           cpus: meta.cpus,
