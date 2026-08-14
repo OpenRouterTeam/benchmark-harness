@@ -7,7 +7,11 @@ import { gen, promise, runSync, sync } from "effect/Effect";
 import { getOrNull } from "effect/Option";
 
 import type { BenchmarkRunConfig } from "../benchmarks/benchmark-config";
-import { BenchmarkRunConfigSchema } from "../benchmarks/benchmark-config";
+import {
+  BenchmarkRunConfigSchema,
+  isModelBenchmarkId,
+  knownBenchmarkOptionKeys,
+} from "../benchmarks/benchmark-config";
 import { DracoPanelConfigSchema } from "../benchmarks/draco/schemas";
 import { benchmarkIds, getBenchmark } from "../benchmarks/registry";
 import type { CostTier } from "../harness/constants";
@@ -304,6 +308,17 @@ function buildSchemaValidatedConfig(opts: {
     ...(costTier !== undefined && { costTier }),
   };
   if (typeof panelConfig === "object" && panelConfig !== null) {
+    const known = isModelBenchmarkId(benchmarkId)
+      ? knownBenchmarkOptionKeys(benchmarkId)
+      : undefined;
+    const unknown = known
+      ? Object.keys(panelConfig).filter((k) => !known.has(k))
+      : [];
+    if (unknown.length > 0) {
+      throw new Error(
+        `Unknown ${benchmarkId} solver-config option(s): ${unknown.sort().join(", ")}`
+      );
+    }
     for (const [k, v] of Object.entries(panelConfig)) {
       if (k !== "benchmarkId" && k !== "model") {
         merged[k] = v;

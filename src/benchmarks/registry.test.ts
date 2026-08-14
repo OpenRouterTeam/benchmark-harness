@@ -166,7 +166,6 @@ describe("benchmark registry", () => {
       throw new Error("expected terminal_bench config");
     }
     expect(result.right.agent).toBe("pi");
-    expect(result.right.piPackage).toBeUndefined();
     expect(result.right.oriInstallUrl).toBe(
       "https://openrouter.ai/labs/ori/install.sh"
     );
@@ -195,7 +194,6 @@ describe("benchmark registry", () => {
     if (result.right.benchmarkId !== "terminal_bench") {
       throw new Error("expected terminal_bench config");
     }
-    expect(result.right.thinking).toBeUndefined();
     expect(result.right.agentReasoningEffort).toBe("medium");
     expect(result.right.oriChannel).toBe("stable");
     expect(result.right.isolateAgentConfig).toBe(false);
@@ -208,14 +206,12 @@ describe("benchmark registry", () => {
     const parsed = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "terminal_bench",
       model: "anthropic/claude-opus-5",
-      thinking: "max",
       agentReasoningEffort: "max",
     });
     assertRight(parsed);
     if (parsed.right.benchmarkId !== "terminal_bench") {
       throw new Error("expected terminal_bench config");
     }
-    expect(parsed.right.thinking).toBe("max");
     expect(parsed.right.agentReasoningEffort).toBe("max");
   });
 

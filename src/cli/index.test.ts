@@ -93,22 +93,6 @@ describe("bench-harness CLI", () => {
     });
   });
 
-  it("still accepts the legacy thinking field for terminal_bench", () => {
-    const config = buildBenchmarkConfig({
-      benchmarkId: "terminal_bench",
-      model: "anthropic/claude-opus-5",
-      panelConfig: { thinking: "off", piPackage: "pi@9" },
-      artifactDir: undefined,
-      endpointId: undefined,
-      imageDetail: undefined,
-    });
-    expect(config).toMatchObject({
-      benchmarkId: "terminal_bench",
-      thinking: "off",
-      piPackage: "pi@9",
-    });
-  });
-
   it("defaults terminal_bench to the unified ori reasoning effort", () => {
     const config = buildBenchmarkConfig({
       benchmarkId: "terminal_bench",
@@ -122,6 +106,58 @@ describe("bench-harness CLI", () => {
       benchmarkId: "terminal_bench",
       agentReasoningEffort: "medium",
       oriChannel: "stable",
+    });
+  });
+
+  it("rejects the removed legacy thinking field", () => {
+    expect(() =>
+      buildBenchmarkConfig({
+        benchmarkId: "terminal_bench",
+        model: "anthropic/claude-opus-5",
+        panelConfig: { thinking: "high" },
+        artifactDir: undefined,
+        endpointId: undefined,
+        imageDetail: undefined,
+      })
+    ).toThrow("Unknown terminal_bench solver-config option(s): thinking");
+  });
+
+  it("rejects a misspelled option instead of silently defaulting it", () => {
+    expect(() =>
+      buildBenchmarkConfig({
+        benchmarkId: "terminal_bench",
+        model: "anthropic/claude-opus-5",
+        panelConfig: { agentReasoningEfort: "max" },
+        artifactDir: undefined,
+        endpointId: undefined,
+        imageDetail: undefined,
+      })
+    ).toThrow("agentReasoningEfort");
+  });
+
+  it("still accepts every documented option and base inference override", () => {
+    const config = buildBenchmarkConfig({
+      benchmarkId: "terminal_bench",
+      model: "anthropic/claude-opus-5",
+      panelConfig: {
+        agent: "claude",
+        agentReasoningEffort: "xhigh",
+        oriChannel: "alpha",
+        systemPrompt: "terse",
+        allowedTools: ["Bash"],
+        isolateAgentConfig: true,
+        taskSubset: ["fix-git"],
+        maxTokens: 1000,
+      },
+      artifactDir: undefined,
+      endpointId: undefined,
+      imageDetail: undefined,
+    });
+    expect(config).toMatchObject({
+      agent: "claude",
+      agentReasoningEffort: "xhigh",
+      oriChannel: "alpha",
+      maxTokens: 1000,
     });
   });
 

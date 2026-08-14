@@ -61,23 +61,6 @@ export interface TerminalBenchTask {
 
 export const TERMINAL_BENCH_VERSION = "2.1" as const;
 
-export const PI_THINKING_LEVELS = [
-  "off",
-  "minimal",
-  "low",
-  "medium",
-  "high",
-  "xhigh",
-  "max",
-] as const;
-
-export type PiThinkingLevel = ValueOf<typeof PI_THINKING_LEVELS>;
-
-export const DEFAULT_PI_THINKING: PiThinkingLevel = "medium";
-
-export const DEFAULT_PI_PACKAGE =
-  "@earendil-works/pi-coding-agent@latest" as const;
-
 export const TERMINAL_BENCH_AGENTS = ["pi", "claude"] as const;
 
 export type TerminalBenchAgent = ValueOf<typeof TERMINAL_BENCH_AGENTS>;

@@ -26,7 +26,6 @@ import { DEFAULT_JUDGE_MODEL, DEFAULT_STEP_LIMIT } from "./swe-atlas/schema";
 import { BankingRetrievalConfigSchema } from "./tau3-bench-banking/retrieval-config";
 import {
   DEFAULT_TERMINAL_BENCH_AGENT,
-  PI_THINKING_LEVELS,
   TERMINAL_BENCH_AGENTS,
 } from "./terminal-bench/schema";
 import { WandrOptionsSchema } from "./wandr/schema";
@@ -142,8 +141,6 @@ export const TerminalBenchOptionsSchema = z.object({
   maxAgentTimeoutSec: z.number().positive().optional(),
   taskSubset: z.array(z.string()).optional(),
   modalEnv: z.string().default("main"),
-  thinking: z.enum(PI_THINKING_LEVELS).optional(),
-  piPackage: z.string().optional(),
   appendSystemPrompt: z.string().optional(),
   agent: z.enum(TERMINAL_BENCH_AGENTS).default(DEFAULT_TERMINAL_BENCH_AGENT),
   agentPackage: z.string().optional(),
@@ -389,6 +386,20 @@ export function isSearchBenchmarkConfig(
   config: BenchmarkRunConfig
 ): config is SearchBenchmarkConfig {
   return SEARCH_BENCHMARK_ID_SET.has(config.benchmarkId);
+}
+
+export function knownBenchmarkOptionKeys(
+  benchmarkId: ModelBenchmarkId
+): ReadonlySet<string> {
+  return new Set([
+    ...Object.keys(BENCHMARK_OPTIONS_SCHEMAS[benchmarkId].shape),
+    ...Object.keys(ModelBenchmarkBaseSchema.shape),
+    "benchmarkId",
+  ]);
+}
+
+export function isModelBenchmarkId(id: string): id is ModelBenchmarkId {
+  return Object.hasOwn(BENCHMARK_OPTIONS_SCHEMAS, id);
 }
 
 export function modelFromConfig(

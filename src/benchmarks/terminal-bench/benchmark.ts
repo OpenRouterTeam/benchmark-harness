@@ -20,7 +20,6 @@ import type { Benchmark, BenchmarkRunInput } from "../types";
 import { makeTerminalBenchDatasetLayer } from "./dataset";
 import type { OriSolverOpts } from "./ori-solver";
 import { oriSolver } from "./ori-solver";
-import type { OriReasoningEffort, PiThinkingLevel } from "./schema";
 import { terminalBenchScorer } from "./scorer";
 
 export const TERMINAL_BENCH_ID = TERMINAL_BENCH_META.id;
@@ -37,13 +36,6 @@ function makeTerminalBenchLayer(
     );
   }
   const { agent } = benchmarkConfig;
-  const legacyAgentPackage =
-    benchmarkConfig.agentPackage ??
-    (agent === "pi" ? benchmarkConfig.piPackage : undefined);
-  const effectiveReasoningEffort =
-    benchmarkConfig.thinking !== undefined
-      ? legacyThinkingToReasoningEffort(benchmarkConfig.thinking)
-      : benchmarkConfig.agentReasoningEffort;
   const oriSolverOpts: OriSolverOpts = {
     model: benchmarkConfig.model,
     apiKey: input.apiKey,
@@ -51,8 +43,8 @@ function makeTerminalBenchLayer(
     ...(benchmarkConfig.endpointId !== undefined && {
       endpointId: benchmarkConfig.endpointId,
     }),
-    ...(legacyAgentPackage !== undefined && {
-      agentPackage: legacyAgentPackage,
+    ...(benchmarkConfig.agentPackage !== undefined && {
+      agentPackage: benchmarkConfig.agentPackage,
     }),
     oriInstallUrl: benchmarkConfig.oriInstallUrl,
     ...(benchmarkConfig.appendSystemPrompt !== undefined && {
@@ -61,7 +53,7 @@ function makeTerminalBenchLayer(
     ...(benchmarkConfig.systemPrompt !== undefined && {
       systemPrompt: benchmarkConfig.systemPrompt,
     }),
-    agentReasoningEffort: effectiveReasoningEffort,
+    agentReasoningEffort: benchmarkConfig.agentReasoningEffort,
     oriChannel: benchmarkConfig.oriChannel,
     ...(benchmarkConfig.allowedTools !== undefined && {
       allowedTools: benchmarkConfig.allowedTools,
@@ -107,9 +99,3 @@ export const TERMINAL_BENCH_BENCHMARK: Benchmark = {
   degradeSolverErrors: true,
   makeLayer: makeTerminalBenchLayer,
 };
-
-function legacyThinkingToReasoningEffort(
-  thinking: PiThinkingLevel
-): OriReasoningEffort {
-  return thinking === "off" ? "none" : thinking;
-}
