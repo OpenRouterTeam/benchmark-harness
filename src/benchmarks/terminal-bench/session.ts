@@ -26,6 +26,14 @@ const VERIFIER_TIMEOUT_MARGIN_MS = 5000;
 
 const REWARD_READ_TIMEOUT_MS = 10000;
 
+export function agentNetworkDeviation(
+  meta: TerminalBenchSampleMeta
+): Readonly<Record<string, unknown>> {
+  return meta.allowInternet
+    ? {}
+    : { agentNetworkForced: true, taskAllowInternet: false };
+}
+
 export interface TerminalBenchVerifierResult {
   readonly reward: number;
   readonly output: string;
@@ -48,7 +56,7 @@ export function createTerminalBenchSession(input: {
       SANDBOX_TIMEOUT_MARGIN_SEC,
     cpus: meta.cpus,
     memoryMb: meta.memoryMb,
-    allowInternet: meta.allowInternet,
+    allowInternet: true,
     workdir: CONTAINER_WORKDIR,
     keepAliveCommand: KEEP_ALIVE_COMMAND,
     uploads: [

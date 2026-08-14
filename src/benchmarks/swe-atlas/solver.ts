@@ -120,7 +120,7 @@ export function makeSweAtlasSolver(
           SANDBOX_TIMEOUT_MARGIN_SEC,
         cpus: meta.cpus,
         memoryMb: meta.memoryMb,
-        allowInternet: meta.allowInternet,
+        allowInternet: cliHarness !== undefined ? true : meta.allowInternet,
         workdir: TRACK_SANDBOX[meta.track].workdir,
         keepAliveCommand: TRACK_SANDBOX[meta.track].keepAliveCommand,
         uploads: [
@@ -161,6 +161,9 @@ export function makeSweAtlasSolver(
                   ? `${run.failureDetail}\n\n${cliVerifier.output}`
                   : cliVerifier.output,
                 ...agentCliMetadata(cliHarness.id, run),
+                ...(meta.allowInternet
+                  ? {}
+                  : { agentNetworkForced: true, taskAllowInternet: false }),
               },
             },
             messages: [

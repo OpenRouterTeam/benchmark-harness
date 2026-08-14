@@ -134,7 +134,7 @@ export function makeDeepSweSolver(
           timeoutSec: meta.maxAgentTimeoutSec + SANDBOX_TIMEOUT_MARGIN_SEC,
           cpus: meta.cpus,
           memoryMb: meta.memoryMb,
-          allowInternet: meta.allowInternet,
+          allowInternet: cliHarness !== undefined ? true : meta.allowInternet,
           workdir: DEEP_SWE_WORKDIR,
           keepAliveCommand: DEEP_SWE_KEEP_ALIVE_COMMAND,
           uploads: [
@@ -229,6 +229,9 @@ export function makeDeepSweSolver(
                   ? `${cliRun.failureDetail}\n\n${cliVerifier.output}`
                   : cliVerifier.output,
                 ...agentCliMetadata(cliHarness.id, cliRun),
+                ...(meta.allowInternet
+                  ? {}
+                  : { agentNetworkForced: true, taskAllowInternet: false }),
               },
             },
             messages: [

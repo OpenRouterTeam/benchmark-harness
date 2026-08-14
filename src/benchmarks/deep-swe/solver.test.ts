@@ -282,6 +282,48 @@ describe("deep-swe claude agent via ori", () => {
     expect(remotePaths).not.toContain("/instruction.md");
   });
 
+  it("gives the in-sandbox agent network access even when the task forbids it", async () => {
+    const log = newLog();
+    const finalState = await runDeepSweSolver(
+      scriptedModel(newConfigRecord()),
+      fakeCliSandbox(log, '{"reward": 1}'),
+      { ...SOLVER_OPTS, agent: "claude" }
+    );
+    expect(log.creates[0]?.allowInternet).toBe(true);
+    expect(finalState.sample.metadata?.["agentNetworkForced"]).toBe(true);
+    expect(finalState.sample.metadata?.["taskAllowInternet"]).toBe(false);
+  });
+
+  it("keeps the verifier sandbox on the task's declared network policy", async () => {
+    const log = newLog();
+    await runDeepSweSolver(
+      scriptedModel(newConfigRecord()),
+      fakeCliSandbox(log, '{"reward": 1}'),
+      { ...SOLVER_OPTS, agent: "claude" }
+    );
+    expect(log.creates).toHaveLength(2);
+    expect(log.creates[1]?.allowInternet).toBe(false);
+  });
+
+  it("leaves the mini-swe agent sandbox on the declared policy", async () => {
+    const log = newLog();
+    await runDeepSweSolver(
+      scriptedModel(newConfigRecord()),
+      fakeSandbox(log, '{"reward": 1}')
+    );
+    expect(log.creates[0]?.allowInternet).toBe(false);
+  });
+
+  it("reports a non-zero generation time even without a duration field", async () => {
+    const log = newLog();
+    const finalState = await runDeepSweSolver(
+      scriptedModel(newConfigRecord()),
+      fakeCliSandbox(log, '{"reward": 1}'),
+      { ...SOLVER_OPTS, agent: "claude" }
+    );
+    expect(finalState.output?.generationTimeMs).toBe(9876);
+  });
+
   it("carries agent usage and counters into the result", async () => {
     const log = newLog();
     const finalState = await runDeepSweSolver(

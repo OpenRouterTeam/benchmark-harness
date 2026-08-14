@@ -13,6 +13,7 @@ import {
 import type { SandboxSessionFactory } from "../harbor/sandbox";
 import { readTerminalBenchMeta } from "./dataset";
 import {
+  agentNetworkDeviation,
   createTerminalBenchSession,
   REMOTE_INSTRUCTION,
   runTerminalBenchVerifier,
@@ -83,6 +84,7 @@ export function oriSolver(
               reward,
               testOutput,
               ...agentCliMetadata(harness.id, run),
+              ...agentNetworkDeviation(meta),
             },
           },
           messages,

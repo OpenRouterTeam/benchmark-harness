@@ -1,3 +1,4 @@
+import { currentTimeMillis } from "effect/Clock";
 import type { Effect } from "effect/Effect";
 import { forEach, gen } from "effect/Effect";
 
@@ -94,17 +95,20 @@ export function runAgentCli(input: {
     isolateAgentConfig: opts.isolateAgentConfig === true,
   });
   return gen(function* () {
+    const startedAt = yield* currentTimeMillis;
     const run = yield* session.exec(
       ["bash", "-c", script],
       buildAgentCliEnv(opts),
       timeoutMs
     );
+    const elapsedMs = (yield* currentTimeMillis) - startedAt;
     const parsed = harness.parseRun(run.stdout);
     yield* forEach(parsed.generationIds, (id) => recordGenerationId(id), {
       discard: true,
     });
     return {
       ...parsed,
+      generationTimeMs: parsed.generationTimeMs ?? elapsedMs,
       exitCode: run.exitCode,
       rawStream: run.stdout,
       failureDetail: buildFailureDetail({

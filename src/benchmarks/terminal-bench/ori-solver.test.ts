@@ -682,6 +682,14 @@ describe("terminal-bench pi via ori", () => {
     expect(script).not.toContain("models.json");
   });
 
+  it("reports a wall-clock generation time since pi emits no duration", async () => {
+    const finalState = await runPi();
+    const elapsed = finalState.output?.generationTimeMs;
+    expect(typeof elapsed).toBe("number");
+    expect(elapsed).toBeGreaterThanOrEqual(0);
+    expect(elapsed).not.toBeUndefined();
+  });
+
   it("installs pi and ori into the image", () => {
     const steps = ORI_HARNESSES.pi.imageBuildSteps({
       agentPackage: "@earendil-works/pi-coding-agent@latest",
