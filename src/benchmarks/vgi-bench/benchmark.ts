@@ -21,7 +21,7 @@ import { defineChatBenchmark } from "../define-chat-benchmark";
 import { mcqScorer } from "../scorers/mcq/scorer";
 import type { Benchmark } from "../types";
 
-export const VGI_BENCH_DATASET_PATH = "Seldon-Technologies/VGIBench";
+const VGI_BENCH_DATASET_PATH = "Seldon-Technologies/VGIBench";
 
 const VGI_BENCH_CONFIG = "default";
 const VGI_BENCH_SPLIT = "train";
@@ -32,7 +32,7 @@ const PROXY_SUFFIX = "_proxy_v2";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-export const VGI_BENCH_TEMPERATURE = 0;
+const VGI_BENCH_TEMPERATURE = 0;
 
 export function buildVgiBenchPrompt(
   question: string,
@@ -147,7 +147,7 @@ interface VgiBenchDatasetOpts extends VgiBenchRecordToSampleOptions {
   readonly revision?: string;
 }
 
-export function makeVgiBenchDatasetLayer(
+function makeVgiBenchDatasetLayer(
   opts?: VgiBenchDatasetOpts
 ): Layer<DatasetTag> {
   const config: HfDatasetConfig = {
@@ -166,7 +166,7 @@ export function makeVgiBenchDatasetLayer(
   return makeHfDatasetLayer(config);
 }
 
-export function vgiBenchSolver(
+function vgiBenchSolver(
   model: ModelService,
   opts?: {
     readonly endpointId?: string;
