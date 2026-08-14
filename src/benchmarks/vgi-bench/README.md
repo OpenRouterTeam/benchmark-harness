@@ -10,12 +10,12 @@
 
 ## Evaluation method
 
-Mirrors the official public-split protocol (`vgibench/prompts.py`, `vgibench/run.py`, `vgibench/score.py`):
+Adapts the official public-split protocol (`vgibench/prompts.py`, `vgibench/run.py`, `vgibench/score.py`) to this harness's shared `mcqScorer`:
 
 - `temperature = 0`, single user turn, no system message.
-- Each sample sends the video **by URL** as a `video_url` content part, followed by the pinned multiple-choice prompt.
-- Prompt lists options as `a) … b) …`, ending with "Reply with the letter of the correct answer only." (frozen).
-- Scoring: exact-match on the parsed answer letter via `vgiBenchScorer` (`src/benchmarks/vgi-bench/scorer.ts`), which mirrors the official `vgibench/prompts.py::parse_answer` — it prefers an explicit `answer:` line, then falls back to the first standalone letter (case-insensitive, bounded by the option count). A dedicated scorer is used instead of the shared `mcqScorer` because the official prompt asks for a bare letter (e.g. `d)`), which `mcqScorer` (built for prompts that require `Answer: $LETTER`) cannot parse. Parse failures, errored calls, and unanswered questions all count as wrong; accuracy is over the whole split. Per-family and per-question-type breakdowns are exposed via `runLevelScores`.
+- Each sample sends the video **by URL** as a `video_url` content part, followed by the multiple-choice prompt.
+- Prompt lists options as `A) … B) …` and asks for `Answer: $LETTER` on the last line. This differs from the official harness (which asks for a bare letter) so the shared `mcqScorer` can be used for robust answer extraction.
+- Scoring: exact-match on the parsed answer letter via the shared `mcqScorer`, which requires an explicit `Answer:` line or a bare letter on its own line — it will not grab stray single letters from explanatory prose. Parse failures, errored calls, and unanswered questions all count as wrong; accuracy is over the whole split. Per-family and per-question-type breakdowns are exposed via `runLevelScores`.
 
 ## Config options
 

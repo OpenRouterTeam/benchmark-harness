@@ -18,8 +18,8 @@ import type {
 } from "../benchmark-config";
 import { VGI_BENCH_META } from "../benchmark-meta";
 import { defineChatBenchmark } from "../define-chat-benchmark";
+import { mcqScorer } from "../scorers/mcq/scorer";
 import type { Benchmark } from "../types";
-import { vgiBenchScorer } from "./scorer";
 
 export const VGI_BENCH_DATASET_PATH = "Seldon-Technologies/VGIBench";
 
@@ -30,7 +30,7 @@ export const VGI_BENCH_DEFAULT_REVISION = "v1.0.1";
 
 const PROXY_SUFFIX = "_proxy_v2";
 
-const LETTERS = "abcdefghijklmnopqrstuvwxyz";
+const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 export const VGI_BENCH_TEMPERATURE = 0;
 
@@ -41,11 +41,12 @@ export function buildVgiBenchPrompt(
   const options = answers
     .map((answer, index) => `${LETTERS[index]!}) ${answer}`)
     .join("\n");
+  const letters = answers.map((_, index) => LETTERS[index]!).join("");
   return (
-    "Watch the video and answer the multiple-choice question about it.\n\n" +
+    "Watch the video and answer the multiple choice question about it. " +
+    `The last line of your response should be of the following format: 'Answer: $LETTER' (without quotes) where LETTER is one of ${letters}.\n\n` +
     `Question: ${question}\n\n` +
-    `${options}\n\n` +
-    "Reply with the letter of the correct answer only."
+    `${options}`
   );
 }
 
@@ -127,14 +128,13 @@ export function vgiBenchRecordToSample(
   return {
     id: `vgi_bench-${questionId}`,
     input: prompt,
-    target: { text: LETTERS[correctAnswer]!.toUpperCase() },
+    target: { text: LETTERS[correctAnswer]! },
     contentParts,
     metadata: {
       question_id: questionId,
       video_id: videoId,
       question_type: questionType,
       family,
-      num_options: answers.length,
       ...(opts?.downscaledVideos === true && {
         downscaled_videos: true,
       }),
@@ -269,7 +269,7 @@ const VGI_BENCH_CHAT_BENCHMARK = defineChatBenchmark({
         : { revision: VGI_BENCH_DEFAULT_REVISION }),
       ...(retryConfig !== undefined && { retry: retryConfig }),
     }),
-  scorer: vgiBenchScorer,
+  scorer: mcqScorer,
   makeSolver: (model, config) =>
     vgiBenchSolver(model, {
       ...(config.endpointId !== undefined && { endpointId: config.endpointId }),

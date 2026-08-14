@@ -32,16 +32,14 @@ describe("vgiBenchRecordToSample", () => {
   it("builds the pinned multiple-choice prompt with lowercase letters", () => {
     const sample = vgiBenchRecordToSample(VGI_RECORD, 0);
     expect(sample.input).toMatchInlineSnapshot(`
-      "Watch the video and answer the multiple-choice question about it.
+      "Watch the video and answer the multiple choice question about it. The last line of your response should be of the following format: 'Answer: $LETTER' (without quotes) where LETTER is one of ABCD.
 
       Question: What color is the car in the first scene?
 
-      a) red
-      b) blue
-      c) green
-      d) yellow
-
-      Reply with the letter of the correct answer only."
+      A) red
+      B) blue
+      C) green
+      D) yellow"
       `);
   });
 
@@ -74,7 +72,6 @@ describe("vgiBenchRecordToSample", () => {
     expect(sample.metadata?.["family"]).toBe("contrastive-hard-negative");
     expect(sample.metadata?.["video_id"]).toBe("clip_007");
     expect(sample.metadata?.["question_id"]).toBe(42);
-    expect(sample.metadata?.["num_options"]).toBe(4);
     expect(JSON.stringify(sample.metadata)).not.toContain("canary");
     expect(JSON.stringify(sample.input)).not.toContain("canary");
   });
@@ -151,17 +148,15 @@ describe("downscaledVideoUrl", () => {
 });
 
 describe("buildVgiBenchPrompt", () => {
-  it("matches the pinned official prompt verbatim", () => {
+  it("builds the prompt with uppercase letters and Answer format", () => {
     const prompt = buildVgiBenchPrompt("Is the sky blue?", ["yes", "no"]);
     expect(prompt).toMatchInlineSnapshot(`
-      "Watch the video and answer the multiple-choice question about it.
+      "Watch the video and answer the multiple choice question about it. The last line of your response should be of the following format: 'Answer: $LETTER' (without quotes) where LETTER is one of AB.
 
       Question: Is the sky blue?
 
-      a) yes
-      b) no
-
-      Reply with the letter of the correct answer only."
+      A) yes
+      B) no"
       `);
   });
 });
