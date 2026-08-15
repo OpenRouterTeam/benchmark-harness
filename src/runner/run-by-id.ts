@@ -31,6 +31,7 @@ import {
   GenerationResolver,
   makeOpenRouterGenerationResolver,
 } from "../runtime/generation-resolver";
+import { withRunAttempt } from "../runtime/response-cache";
 import type { RetryConfig } from "../runtime/retry";
 
 export interface RunBenchmarkInput {
@@ -45,6 +46,7 @@ export interface RunBenchmarkInput {
     readonly end?: number;
   };
   readonly sessionId: string;
+  readonly runAttempt?: number;
   readonly datasetRetry?: RetryConfig;
   readonly progressReporter?: ProgressReporterService;
   readonly checkpointStore?: CheckpointStoreService;
@@ -101,6 +103,9 @@ export function runBenchmarkById(
       benchmark: input.benchmarkId,
       session_id: input.sessionId,
       ...(model !== undefined && { model }),
+      ...(input.runAttempt !== undefined && {
+        run_attempt: `${input.runAttempt}`,
+      }),
     },
   };
   const fullBenchmarkLayer = benchmarkLayer.pipe(
@@ -121,8 +126,11 @@ export function runBenchmarkById(
   );
   const runOpts =
     input.abortSignal !== undefined ? { signal: input.abortSignal } : undefined;
+  const program = runBenchmark(runConfig).pipe(provide(layers));
   return runHarnessPromise(
-    runBenchmark(runConfig).pipe(provide(layers)),
+    input.runAttempt === undefined
+      ? program
+      : withRunAttempt(input.runAttempt, program),
     runOpts
   )
     .then((result) => {
