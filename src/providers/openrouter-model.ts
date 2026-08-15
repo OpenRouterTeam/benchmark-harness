@@ -42,7 +42,7 @@ import {
   getCurrentRunAttempt,
   logUnexpectedResponseCacheMiss,
   RESPONSE_CACHE_HEADER,
-  RESPONSE_CACHE_SALT_FIELD,
+  RESPONSE_CACHE_SALT_HEADER,
   RESPONSE_CACHE_SOURCE_ID_HEADER,
   RESPONSE_CACHE_STATUS_HEADER,
   RESPONSE_CACHE_STATUS_HIT,
@@ -192,15 +192,17 @@ export function generate(
       ...(wireAutoRouterPlugin !== undefined && {
         plugins: [wireAutoRouterPlugin],
       }),
-      ...(cacheSalt !== undefined && {
-        [RESPONSE_CACHE_SALT_FIELD]: cacheSalt,
-      }),
       ...genConfig.extraBody,
     };
     const request = HttpClientRequest.post(
       `${opts.baseUrl}/chat/completions`
     ).pipe(
-      HttpClientRequest.setHeaders(headers),
+      HttpClientRequest.setHeaders({
+        ...headers,
+        ...(cacheSalt !== undefined && {
+          [RESPONSE_CACHE_SALT_HEADER]: cacheSalt,
+        }),
+      }),
       HttpClientRequest.bodyUnsafeJson(body)
     );
     const response = yield* hasTimeout

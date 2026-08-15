@@ -37,7 +37,7 @@ import {
   getCurrentRunAttempt,
   logUnexpectedResponseCacheMiss,
   RESPONSE_CACHE_HEADER,
-  RESPONSE_CACHE_SALT_FIELD,
+  RESPONSE_CACHE_SALT_HEADER,
   RESPONSE_CACHE_SOURCE_ID_HEADER,
   RESPONSE_CACHE_STATUS_HEADER,
   RESPONSE_CACHE_STATUS_HIT,
@@ -157,7 +157,6 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
   const send = (
     body: ResponsesRequest,
     options: ResponsesSendOptions,
-    effectiveExtraBody: Readonly<Record<string, unknown>> | undefined,
     attemptState: ResponseCacheAttemptState
   ): Effect<ResponsesResult, ResponsesError> => {
     let identifiers: ModelErrorIdentifiers = {};
@@ -166,7 +165,7 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
     let cacheSourceId: string | undefined;
     const httpClient = new HTTPClient({
       fetcher: async (input, init) => {
-        const request = await mergeExtraBody(input, init, effectiveExtraBody);
+        const request = await mergeExtraBody(input, init, options.extraBody);
         const response = await fetch(request);
         identifiers = modelErrorIdentifiersFromFetchHeaders(response.headers);
         cacheStatus =
@@ -198,6 +197,9 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
       }),
       [RESPONSE_CACHE_HEADER]: "true",
       [RESPONSE_CACHE_TTL_HEADER]: `${RESPONSE_CACHE_TTL_SECONDS}`,
+      ...(attemptState.cacheSalt !== undefined && {
+        [RESPONSE_CACHE_SALT_HEADER]: attemptState.cacheSalt,
+      }),
     };
     return tryPromise({
       try: async (signal) => {
@@ -205,7 +207,7 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
         const requestBody = {
           ...body,
           ...(body.cacheControl === undefined &&
-            effectiveExtraBody?.["cache_control"] === undefined && {
+            options.extraBody?.["cache_control"] === undefined && {
               cacheControl: { type: "ephemeral" as const },
             }),
           stream: true,
@@ -280,18 +282,7 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
           retryAttempt,
           callSalt
         );
-        const effectiveExtraBody =
-          cacheSalt === undefined
-            ? options.extraBody
-            : {
-                [RESPONSE_CACHE_SALT_FIELD]: cacheSalt,
-                ...options.extraBody,
-              };
-        return send(body, options, effectiveExtraBody, {
-          runAttempt,
-          retryAttempt,
-          cacheSalt,
-        });
+        return send(body, options, { runAttempt, retryAttempt, cacheSalt });
       })
     );
   };

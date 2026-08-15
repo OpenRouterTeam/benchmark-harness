@@ -29,7 +29,7 @@ import {
   getCurrentEpoch,
   getCurrentRetryAttempt,
   RESPONSE_CACHE_HEADER,
-  RESPONSE_CACHE_SALT_FIELD,
+  RESPONSE_CACHE_SALT_HEADER,
   RESPONSE_CACHE_SOURCE_ID_HEADER,
   RESPONSE_CACHE_STATUS_HEADER,
   RESPONSE_CACHE_STATUS_HIT,
@@ -162,6 +162,9 @@ export class UserSimulator {
           "HTTP-Referer": BENCH_HARNESS_APP_REFERRER,
           "X-OpenRouter-Title": BENCH_HARNESS_APP_TITLE,
           [RESPONSE_CACHE_HEADER]: "true",
+          ...(cacheSalt !== undefined && {
+            [RESPONSE_CACHE_SALT_HEADER]: cacheSalt,
+          }),
           [RESPONSE_CACHE_TTL_HEADER]: `${RESPONSE_CACHE_TTL_SECONDS}`,
           ...(config.sessionId !== undefined && {
             "x-session-id": config.sessionId,
@@ -171,9 +174,6 @@ export class UserSimulator {
           model,
           messages,
           temperature: 0,
-          ...(cacheSalt !== undefined && {
-            [RESPONSE_CACHE_SALT_FIELD]: cacheSalt,
-          }),
         })
       );
       const client = yield* HttpClient.HttpClient;

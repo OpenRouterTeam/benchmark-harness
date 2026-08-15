@@ -477,7 +477,7 @@ describe("openrouter-model response caching", () => {
     );
     expect(captured.value?.headers["x-openrouter-cache"]).toBe("true");
   });
-  it("sends a session- and epoch-scoped cache_salt body field", async () => {
+  it("sends a session- and epoch-scoped cache salt header", async () => {
     const captured = newHolder();
     restore = installFetchCapture(captured);
     const layer = makeOpenRouterModelLayer({
@@ -492,9 +492,12 @@ describe("openrouter-model response caching", () => {
         yield* model.generate(MESSAGES, {});
       }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
     );
-    expect(captured.value?.body["cache_salt"]).toBe("wf-123:epoch-1");
+    expect(captured.value?.headers["x-openrouter-cache-salt"]).toBe(
+      "wf-123:epoch-1"
+    );
+    expect(captured.value?.body["cache_salt"]).toBeUndefined();
   });
-  it("varies the cache_salt across epochs", async () => {
+  it("varies the cache salt header across epochs", async () => {
     const captured = newHolder();
     restore = installFetchCapture(captured);
     const layer = makeOpenRouterModelLayer({
@@ -508,22 +511,21 @@ describe("openrouter-model response caching", () => {
         const model = yield* Model;
         yield* setCurrentEpoch(0);
         yield* model.generate(MESSAGES, {});
-        salts.push(captured.value?.body["cache_salt"]);
+        salts.push(captured.value?.headers["x-openrouter-cache-salt"]);
         yield* setCurrentEpoch(1);
         yield* model.generate(MESSAGES, {});
-        salts.push(captured.value?.body["cache_salt"]);
+        salts.push(captured.value?.headers["x-openrouter-cache-salt"]);
       }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
     );
     expect(salts).toEqual(["wf-123:epoch-0", "wf-123:epoch-1"]);
   });
-  it("appends the retry attempt to cache_salt on in-process retries", async () => {
+  it("appends the retry attempt to the cache salt header on in-process retries", async () => {
     const salts: unknown[] = [];
     const original = globalThis.fetch;
     let callCount = 0;
     const stub: typeof fetch = async (input, init) => {
       const req = input instanceof Request ? input : new Request(input, init);
-      const rawBody = await req.clone().text();
-      salts.push(parseJsonObject(rawBody)["cache_salt"]);
+      salts.push(req.headers.get("x-openrouter-cache-salt"));
       callCount += 1;
       if (callCount === 1) {
         return new Response(JSON.stringify({ error: { message: "slow" } }), {
@@ -555,7 +557,7 @@ describe("openrouter-model response caching", () => {
     );
     expect(salts).toEqual(["wf-123:epoch-1", "wf-123:epoch-1:attempt-1"]);
   });
-  it("omits cache_salt when session id and epoch are unset", async () => {
+  it("omits the cache salt header when session id and epoch are unset", async () => {
     const captured = newHolder();
     restore = installFetchCapture(captured);
     const layer = makeOpenRouterModelLayer({
@@ -568,6 +570,7 @@ describe("openrouter-model response caching", () => {
         yield* model.generate(MESSAGES, {});
       }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
     );
+    expect(captured.value?.headers["x-openrouter-cache-salt"]).toBeUndefined();
     expect(captured.value?.body["cache_salt"]).toBeUndefined();
   });
 });
