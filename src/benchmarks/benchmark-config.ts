@@ -37,6 +37,8 @@ export const InferenceOverrideSchema = z.object({
   costTier: z.enum(COST_TIERS).optional(),
   timeoutMs: z.number().optional(),
   sort: z.nativeEnum(ProviderSort).optional(),
+  providerOnly: z.array(z.string()).optional(),
+  allowFallbacks: z.boolean().optional(),
   cloudflareVersion: z.string().optional(),
   costQualityTradeoff: z.number().int().min(0).max(10).optional(),
   pinModel: z.boolean().optional(),

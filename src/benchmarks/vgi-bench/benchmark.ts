@@ -278,6 +278,8 @@ const VGI_BENCH_CHAT_BENCHMARK = defineChatBenchmark({
         reasoningEffort: config.reasoningEffort,
         timeoutMs: config.timeoutMs,
         sort: config.sort,
+        providerOnly: config.providerOnly,
+        allowFallbacks: config.allowFallbacks,
         cloudflareVersion: config.cloudflareVersion,
         costTier: config.costTier,
         costQualityTradeoff: config.costQualityTradeoff,

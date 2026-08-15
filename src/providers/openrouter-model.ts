@@ -140,6 +140,16 @@ export function generate(
   }
   const sendSort =
     genConfig.sort !== undefined && genConfig.endpointId === undefined;
+  const providerPreferences = {
+    ...(sendSort && { sort: genConfig.sort }),
+    ...(genConfig.providerOnly !== undefined && {
+      only: [...genConfig.providerOnly],
+    }),
+    ...(genConfig.allowFallbacks !== undefined && {
+      allow_fallbacks: genConfig.allowFallbacks,
+    }),
+  };
+  const sendProvider = Object.keys(providerPreferences).length > 0;
   const hasTimeout =
     genConfig.timeoutMs !== undefined && genConfig.timeoutMs > 0;
   const baseModel = stripVariantSuffix(model);
@@ -175,7 +185,7 @@ export function generate(
       ...(genConfig.reasoningEffort !== undefined && {
         reasoning_effort: genConfig.reasoningEffort,
       }),
-      ...(sendSort && { provider: { sort: genConfig.sort } }),
+      ...(sendProvider && { provider: providerPreferences }),
       ...(wireAutoRouterPlugin !== undefined && {
         plugins: [wireAutoRouterPlugin],
       }),

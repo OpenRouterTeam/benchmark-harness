@@ -160,6 +160,8 @@ export const IFSTRUCT_BENCHMARK: Benchmark = defineChatBenchmark({
         reasoningEffort: config.reasoningEffort,
         timeoutMs: config.timeoutMs,
         sort: config.sort,
+        providerOnly: config.providerOnly,
+        allowFallbacks: config.allowFallbacks,
         cloudflareVersion: config.cloudflareVersion,
         costTier: config.costTier,
         costQualityTradeoff: config.costQualityTradeoff,

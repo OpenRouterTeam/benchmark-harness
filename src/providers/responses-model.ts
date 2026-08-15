@@ -145,6 +145,16 @@ export function generate(
   const { genConfig } = opts;
   const sendSort =
     genConfig.sort !== undefined && genConfig.endpointId === undefined;
+  const providerPreferences = {
+    ...(sendSort && { sort: genConfig.sort }),
+    ...(genConfig.providerOnly !== undefined && {
+      only: [...genConfig.providerOnly],
+    }),
+    ...(genConfig.allowFallbacks !== undefined && {
+      allowFallbacks: genConfig.allowFallbacks,
+    }),
+  };
+  const sendProvider = Object.keys(providerPreferences).length > 0;
   const baseModel = stripVariantSuffix(opts.model);
   const autoRouterPlugin = buildAutoRouterPlugin(baseModel, genConfig);
   const body = {
@@ -166,7 +176,7 @@ export function generate(
     ...(genConfig.maxTokens !== undefined && {
       maxOutputTokens: genConfig.maxTokens,
     }),
-    ...(sendSort && { provider: { sort: genConfig.sort } }),
+    ...(sendProvider && { provider: providerPreferences }),
     ...(autoRouterPlugin !== undefined && { plugins: [autoRouterPlugin] }),
   } satisfies ResponsesRequest;
   const extraHeaders = {
