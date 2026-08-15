@@ -25,7 +25,7 @@ import {
   getCurrentEpoch,
   getCurrentRetryAttempt,
   RESPONSE_CACHE_HEADER,
-  RESPONSE_CACHE_SALT_FIELD,
+  RESPONSE_CACHE_SALT_HEADER,
   RESPONSE_CACHE_TTL_HEADER,
   RESPONSE_CACHE_TTL_SECONDS,
 } from "../../runtime/response-cache";
@@ -174,9 +174,6 @@ export class UserSimulator {
         ...(this.config.userReasoningEffort !== undefined && {
           reasoning_effort: this.config.userReasoningEffort,
         }),
-        ...(cacheSalt !== undefined && {
-          [RESPONSE_CACHE_SALT_FIELD]: cacheSalt,
-        }),
       };
       if (this.availableTools.length > 0) {
         requestBody.tools = [...this.availableTools];
@@ -190,6 +187,9 @@ export class UserSimulator {
           "HTTP-Referer": BENCH_HARNESS_APP_REFERRER,
           "X-OpenRouter-Title": BENCH_HARNESS_APP_TITLE,
           [RESPONSE_CACHE_HEADER]: "true",
+          ...(cacheSalt !== undefined && {
+            [RESPONSE_CACHE_SALT_HEADER]: cacheSalt,
+          }),
           [RESPONSE_CACHE_TTL_HEADER]: `${RESPONSE_CACHE_TTL_SECONDS}`,
           ...(this.config.sessionId !== undefined && {
             "x-session-id": this.config.sessionId,

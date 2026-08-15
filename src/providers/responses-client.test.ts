@@ -548,7 +548,7 @@ describe("makeResponsesLayer", () => {
       globalThis.fetch = originalFetch;
     }
   });
-  it("sends the response-cache header and an epoch-scoped cache_salt", async () => {
+  it("sends response-cache headers with an epoch-scoped salt", async () => {
     const originalFetch = globalThis.fetch;
     const stream = await readStreamFixture();
     const capturedBodies: unknown[] = [];
@@ -583,10 +583,13 @@ describe("makeResponsesLayer", () => {
         )
       );
       expect(capturedHeaders?.get("x-openrouter-cache")).toBe("true");
+      expect(capturedHeaders?.get("x-openrouter-cache-salt")).toBe(
+        "wf-123:epoch-2"
+      );
       expect(capturedBodies[0]).toMatchObject({
-        cache_salt: "wf-123:epoch-2",
         top_k: 5,
       });
+      expect(capturedBodies[0]).not.toHaveProperty("cache_salt");
     } finally {
       globalThis.fetch = originalFetch;
     }

@@ -12,6 +12,7 @@ import {
   getCollectedGenerationIds,
   resetGenerationIds,
 } from "../../runtime/generation-ids";
+import { setCurrentEpoch } from "../../runtime/response-cache";
 import { UserSimulator } from "./user-simulator";
 describe("UserSimulator", () => {
   it.serial(
@@ -43,6 +44,34 @@ describe("UserSimulator", () => {
       }
     }
   );
+  it.serial("sends the cache salt as a header, not a body field", async () => {
+    const requests: CapturedRequest[] = [];
+    const restore = installFetchSequence(
+      [{ id: "tau-user-gen-1", choices: [{ message: { content: "Hello" } }] }],
+      requests
+    );
+    try {
+      const simulator = new UserSimulator({
+        apiKey: "sk-test",
+        model: "openai/gpt-4o-mini",
+        baseUrl: "https://example.test",
+        sessionId: "wf-123",
+      });
+      simulator.reset("scenario", "Hi");
+      await runPromise(
+        setCurrentEpoch(2).pipe(
+          flatMap(() => simulator.generateInitial()),
+          provide(FetchHttpClient.layer)
+        )
+      );
+      expect(requests[0]?.headers["x-openrouter-cache-salt"]).toBe(
+        "wf-123:epoch-2"
+      );
+      expect(requests[0]?.body["cache_salt"]).toBeUndefined();
+    } finally {
+      restore();
+    }
+  });
   it.serial(
     "replays opaque reasoning_details and omits absent details",
     async () => {
