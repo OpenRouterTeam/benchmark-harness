@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it, spyOn } from "bun:test";
 import { strict as assert } from "node:assert";
 import { readFile } from "node:fs/promises";
 
@@ -23,7 +23,7 @@ import {
   getCollectedGenerationIds,
   resetGenerationIds,
 } from "../runtime/generation-ids";
-import { setCurrentEpoch } from "../runtime/response-cache";
+import { setCurrentEpoch, withRunAttempt } from "../runtime/response-cache";
 import type { ModelErrorIdentifiers } from "./request-identifiers";
 import {
   consumeStream,
@@ -591,6 +591,56 @@ describe("makeResponsesLayer", () => {
       });
       expect(capturedBodies[0]).not.toHaveProperty("cache_salt");
     } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+  it("warns when a retried run misses the response cache", async () => {
+    const originalFetch = globalThis.fetch;
+    const stream = await readStreamFixture();
+    globalThis.fetch = async () =>
+      new Response(stream, {
+        status: 200,
+        headers: {
+          "content-type": "text/event-stream",
+          "x-openrouter-cache-status": "MISS",
+        },
+      });
+    const warn = spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      await runPromise(
+        withRunAttempt(
+          2,
+          gen(function* run() {
+            yield* setCurrentEpoch(2);
+            const responses = yield* Responses;
+            yield* responses.send(
+              { model: "m", input: [] },
+              { timeoutMs: 1000 }
+            );
+          })
+        ).pipe(
+          provide(
+            makeResponsesLayer({
+              apiKey: "sk-test",
+              baseUrl: "https://example.test",
+              sessionId: "wf-123",
+            })
+          )
+        )
+      );
+      expect(warn).toHaveBeenCalledTimes(1);
+      const [message, context] = warn.mock.calls[0] ?? [];
+      expect(message).toBe(
+        "Expected response cache hit on run retry but missed"
+      );
+      expect(context).toMatchObject({
+        run_attempt: 2,
+        cache_salt: "wf-123:epoch-2",
+        cache_status: "MISS",
+        model: "m",
+      });
+    } finally {
+      warn.mockRestore();
       globalThis.fetch = originalFetch;
     }
   });

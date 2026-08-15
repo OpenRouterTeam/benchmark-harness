@@ -29,7 +29,7 @@ import {
   getCollectedGenerationIds,
   resetGenerationIds,
 } from "../runtime/generation-ids";
-import { setCurrentEpoch } from "../runtime/response-cache";
+import { setCurrentEpoch, withRunAttempt } from "../runtime/response-cache";
 import { makeOpenRouterModelLayer } from "./openrouter-model";
 
 const CHAT_RESULT = {
@@ -1178,5 +1178,77 @@ describe("openrouter-model 2xx error envelope", () => {
     assertSuccess(exit);
     expect(fetchCalls.count).toBe(2);
     expect(warnContextFor(warn)["raw_body"]).toBe(body);
+  });
+});
+
+describe("openrouter-model response cache miss logging", () => {
+  let restore: (() => void) | undefined;
+  let warn: Mock<(...args: unknown[]) => void> | undefined;
+  afterEach(() => {
+    restore?.();
+    restore = undefined;
+    warn?.mockRestore();
+    warn = undefined;
+  });
+  function installCacheStatusFetch(cacheStatus: string): () => void {
+    const original = globalThis.fetch;
+    globalThis.fetch = async () =>
+      new Response(CHAT_RESULT_JSON, {
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-openrouter-cache-status": cacheStatus,
+        },
+      });
+    return () => {
+      globalThis.fetch = original;
+    };
+  }
+  function generateOnRunAttempt(
+    runAttempt: number
+  ): Promise<Exit<ModelOutput, ModelError>> {
+    const layer = makeOpenRouterModelLayer({
+      model: "openai/gpt-4o",
+      apiKey: "sk-test",
+      sessionId: "wf-123",
+    });
+    return runPromiseExit(
+      withRunAttempt(
+        runAttempt,
+        gen(function* run() {
+          const model = yield* Model;
+          return yield* model.generate(MESSAGES, {});
+        })
+      ).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+  }
+  it("warns when a retried run misses the response cache", async () => {
+    warn = spyOn(console, "warn").mockImplementation(() => {});
+    restore = installCacheStatusFetch("MISS");
+    const exit = await generateOnRunAttempt(2);
+    assertSuccess(exit);
+    expect(warn).toHaveBeenCalledTimes(1);
+    const [message, context] = warn.mock.calls[0] ?? [];
+    expect(message).toBe("Expected response cache hit on run retry but missed");
+    expect(context).toMatchObject({
+      run_attempt: 2,
+      cache_salt: "wf-123",
+      cache_status: "MISS",
+      model: "openai/gpt-4o",
+    });
+  });
+  it("stays silent when a retried run hits the response cache", async () => {
+    warn = spyOn(console, "warn").mockImplementation(() => {});
+    restore = installCacheStatusFetch("HIT");
+    const exit = await generateOnRunAttempt(2);
+    assertSuccess(exit);
+    expect(warn).not.toHaveBeenCalled();
+  });
+  it("stays silent on the first run attempt", async () => {
+    warn = spyOn(console, "warn").mockImplementation(() => {});
+    restore = installCacheStatusFetch("MISS");
+    const exit = await generateOnRunAttempt(1);
+    assertSuccess(exit);
+    expect(warn).not.toHaveBeenCalled();
   });
 });

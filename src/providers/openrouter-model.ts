@@ -39,6 +39,8 @@ import {
   getCurrentCallSalt,
   getCurrentEpoch,
   getCurrentRetryAttempt,
+  getCurrentRunAttempt,
+  logUnexpectedResponseCacheMiss,
   RESPONSE_CACHE_HEADER,
   RESPONSE_CACHE_SALT_HEADER,
   RESPONSE_CACHE_SOURCE_ID_HEADER,
@@ -162,6 +164,7 @@ export function generate(
     const startedAt = performance.now();
     const epoch = yield* getCurrentEpoch;
     const retryAttempt = yield* getCurrentRetryAttempt;
+    const runAttempt = yield* getCurrentRunAttempt;
     const callSalt = yield* getCurrentCallSalt;
     const cacheSalt = buildResponseCacheSalt(
       opts.sessionId,
@@ -248,6 +251,17 @@ export function generate(
       response.headers[RESPONSE_CACHE_STATUS_HEADER] ===
       RESPONSE_CACHE_STATUS_HIT;
     const cacheSourceId = response.headers[RESPONSE_CACHE_SOURCE_ID_HEADER];
+    logUnexpectedResponseCacheMiss({
+      isCacheHit,
+      runAttempt,
+      retryAttempt,
+      cacheSalt,
+      model,
+      ...(response.headers[RESPONSE_CACHE_STATUS_HEADER] !== undefined && {
+        cacheStatus: response.headers[RESPONSE_CACHE_STATUS_HEADER],
+      }),
+      ...identifiers,
+    });
     return yield* decodeResult(
       json,
       startedAt,

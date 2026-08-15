@@ -18,7 +18,7 @@ import { Responses as ResponsesClient } from "@openrouter/sdk/sdk/responses";
 import { Tag } from "effect/Context";
 import { TaggedError } from "effect/Data";
 import type { Effect } from "effect/Effect";
-import { fail, flatMap, map, tryPromise } from "effect/Effect";
+import { all, fail, flatMap, map, sync, tap, tryPromise } from "effect/Effect";
 import type { Layer } from "effect/Layer";
 import { succeed as layerSucceed } from "effect/Layer";
 
@@ -28,11 +28,14 @@ import { Either } from "../internal/either";
 import { isRecord } from "../internal/guards";
 import { parseSchema, z } from "../internal/zod";
 import { recordGenerationId } from "../runtime/generation-ids";
+import type { ResponseCacheAttemptState } from "../runtime/response-cache";
 import {
   buildResponseCacheSalt,
   getCurrentCallSalt,
   getCurrentEpoch,
   getCurrentRetryAttempt,
+  getCurrentRunAttempt,
+  logUnexpectedResponseCacheMiss,
   RESPONSE_CACHE_HEADER,
   RESPONSE_CACHE_SALT_HEADER,
   RESPONSE_CACHE_SOURCE_ID_HEADER,
@@ -154,19 +157,20 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
   const send = (
     body: ResponsesRequest,
     options: ResponsesSendOptions,
-    cacheSalt: string | undefined
+    attemptState: ResponseCacheAttemptState
   ): Effect<ResponsesResult, ResponsesError> => {
     let identifiers: ModelErrorIdentifiers = {};
     let isCacheHit = false;
+    let cacheStatus: string | undefined;
     let cacheSourceId: string | undefined;
     const httpClient = new HTTPClient({
       fetcher: async (input, init) => {
         const request = await mergeExtraBody(input, init, options.extraBody);
         const response = await fetch(request);
         identifiers = modelErrorIdentifiersFromFetchHeaders(response.headers);
-        isCacheHit =
-          response.headers.get(RESPONSE_CACHE_STATUS_HEADER) ===
-          RESPONSE_CACHE_STATUS_HIT;
+        cacheStatus =
+          response.headers.get(RESPONSE_CACHE_STATUS_HEADER) ?? undefined;
+        isCacheHit = cacheStatus === RESPONSE_CACHE_STATUS_HIT;
         cacheSourceId =
           response.headers.get(RESPONSE_CACHE_SOURCE_ID_HEADER) ?? undefined;
         options.onResponseIdentifiers?.(identifiers);
@@ -193,8 +197,8 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
       }),
       [RESPONSE_CACHE_HEADER]: "true",
       [RESPONSE_CACHE_TTL_HEADER]: `${RESPONSE_CACHE_TTL_SECONDS}`,
-      ...(cacheSalt !== undefined && {
-        [RESPONSE_CACHE_SALT_HEADER]: cacheSalt,
+      ...(attemptState.cacheSalt !== undefined && {
+        [RESPONSE_CACHE_SALT_HEADER]: attemptState.cacheSalt,
       }),
     };
     return tryPromise({
@@ -228,6 +232,17 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
       },
       catch: (cause) => toResponsesError(cause, identifiers),
     }).pipe(
+      tap(() =>
+        sync(() => {
+          logUnexpectedResponseCacheMiss({
+            ...attemptState,
+            isCacheHit,
+            ...(typeof body.model === "string" && { model: body.model }),
+            ...(cacheStatus !== undefined && { cacheStatus }),
+            ...identifiers,
+          });
+        })
+      ),
       flatMap((result) =>
         result
           ? recordGenerationId(
@@ -254,24 +269,20 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
     body: ResponsesRequest,
     options: ResponsesSendOptions
   ): Effect<ResponsesResult, ResponsesError> => {
-    return getCurrentEpoch.pipe(
-      flatMap((epoch) =>
-        getCurrentRetryAttempt.pipe(
-          flatMap((retryAttempt) =>
-            getCurrentCallSalt.pipe(
-              map((callSalt) => ({ epoch, retryAttempt, callSalt }))
-            )
-          )
-        )
-      ),
-      flatMap(({ epoch, retryAttempt, callSalt }) => {
+    return all({
+      epoch: getCurrentEpoch,
+      retryAttempt: getCurrentRetryAttempt,
+      runAttempt: getCurrentRunAttempt,
+      callSalt: getCurrentCallSalt,
+    }).pipe(
+      flatMap(({ epoch, retryAttempt, runAttempt, callSalt }) => {
         const cacheSalt = buildResponseCacheSalt(
           config.sessionId,
           epoch,
           retryAttempt,
           callSalt
         );
-        return send(body, options, cacheSalt);
+        return send(body, options, { runAttempt, retryAttempt, cacheSalt });
       })
     );
   };
