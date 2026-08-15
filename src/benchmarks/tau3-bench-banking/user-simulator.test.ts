@@ -147,15 +147,17 @@ describe("UserSimulator", () => {
       await runSim(sim.generateInitial());
       expect(authorization).toBe(`Bearer ${TEST_API_KEY}`);
     });
-    it("sends the response-cache headers and an epoch-scoped cache_salt", async () => {
+    it("sends the response-cache headers and an epoch-scoped salt", async () => {
       const sim = new UserSimulator(createTestConfig());
       sim.reset("Help", "Hi");
       let cacheHeader: string | null = null;
+      let saltHeader: string | null = null;
       let ttlHeader: string | null = null;
       let capturedBody: unknown;
       global.fetch = async (input, init) => {
         const request = new Request(input, init);
         cacheHeader = request.headers.get("x-openrouter-cache");
+        saltHeader = request.headers.get("x-openrouter-cache-salt");
         ttlHeader = request.headers.get("x-openrouter-cache-ttl");
         capturedBody = await request.clone().json();
         return new Response(
@@ -169,9 +171,10 @@ describe("UserSimulator", () => {
         setCurrentEpoch(2).pipe(flatMap(() => sim.generateInitial()))
       );
       expect(cacheHeader).toBe("true");
+      expect(saltHeader).toBe(`${TEST_SESSION}:epoch-2`);
       expect(ttlHeader).toBe("7200");
       assert(isRecord(capturedBody));
-      expect(capturedBody["cache_salt"]).toBe(`${TEST_SESSION}:epoch-2`);
+      expect(capturedBody["cache_salt"]).toBeUndefined();
     });
   });
   describe("step", () => {
