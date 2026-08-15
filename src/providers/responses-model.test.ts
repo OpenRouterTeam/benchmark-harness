@@ -359,6 +359,31 @@ describe("responses-model", () => {
     expect(captured.value?.body["provider"]).toBeUndefined();
     expect(captured.value?.headers["x-or-endpoint-id"]).toBe("endpoint-1");
   });
+  it("sends provider.only with fallbacks disabled on pinned runs", async () => {
+    const captured: {
+      value: CapturedRequest | undefined;
+    } = { value: undefined };
+    restore = installFetchStub(await readStreamFixture(), 200, captured);
+    const layer = makeResponsesModelLayer({
+      model: "openai/gpt-5",
+      apiKey: "sk-test",
+      retry: { baseDelayMs: 0, maxRetries: 0 },
+    });
+    const exit = await runPromiseExit(
+      gen(function* run() {
+        const model = yield* ResponsesModel;
+        return yield* model.generate([], {
+          providerOnly: ["google-vertex"],
+          allowFallbacks: false,
+        });
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    assertSuccess(exit);
+    expect(captured.value?.body["provider"]).toEqual({
+      only: ["google-vertex"],
+      allow_fallbacks: false,
+    });
+  });
   for (const [model, pluginId] of [
     ["openrouter/auto", "auto-router"],
     ["openrouter/auto-beta", "auto-beta-router"],

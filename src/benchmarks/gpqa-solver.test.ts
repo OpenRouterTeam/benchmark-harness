@@ -81,6 +81,8 @@ describe("gpqaSolver inference overrides (openbench parity)", () => {
         reasoningEffort: "low",
         timeoutMs: 5000,
         sort: ProviderSort.Price,
+        providerOnly: ["google-vertex"],
+        allowFallbacks: false,
         cloudflareVersion: "ver-1",
       },
     });
@@ -90,6 +92,8 @@ describe("gpqaSolver inference overrides (openbench parity)", () => {
       reasoningEffort: "low",
       timeoutMs: 5000,
       sort: ProviderSort.Price,
+      providerOnly: ["google-vertex"],
+      allowFallbacks: false,
       cloudflareVersion: "ver-1",
       endpointId: "ep-1",
     });

@@ -127,6 +127,50 @@ describe("openrouter-model request parity", () => {
     );
     expect(captured.value?.body["provider"]).toEqual({ sort: "price" });
   });
+  it("sends provider.only with fallbacks disabled on pinned runs", async () => {
+    const captured = newHolder();
+    restore = installFetchCapture(captured);
+    const layer = makeOpenRouterModelLayer({
+      model: "openai/gpt-4o",
+      apiKey: "sk-test",
+    });
+    await runPromiseExit(
+      gen(function* run() {
+        const model = yield* Model;
+        yield* model.generate(MESSAGES, {
+          providerOnly: ["google-vertex"],
+          allowFallbacks: false,
+        });
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    expect(captured.value?.body["provider"]).toEqual({
+      only: ["google-vertex"],
+      allow_fallbacks: false,
+    });
+  });
+  it("merges sort with provider.only on pinned runs", async () => {
+    const captured = newHolder();
+    restore = installFetchCapture(captured);
+    const layer = makeOpenRouterModelLayer({
+      model: "openai/gpt-4o",
+      apiKey: "sk-test",
+    });
+    await runPromiseExit(
+      gen(function* run() {
+        const model = yield* Model;
+        yield* model.generate(MESSAGES, {
+          sort: ProviderSort.Price,
+          providerOnly: ["google-vertex"],
+          allowFallbacks: false,
+        });
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    expect(captured.value?.body["provider"]).toEqual({
+      sort: "price",
+      only: ["google-vertex"],
+      allow_fallbacks: false,
+    });
+  });
   it("records the chat completion generation id", async () => {
     const captured = newHolder();
     restore = installFetchCapture(captured);
