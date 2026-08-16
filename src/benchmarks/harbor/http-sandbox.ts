@@ -377,6 +377,8 @@ function makeInstance(
     exec,
     uploadFile: (localPath, remotePath) =>
       uploadFileToHost(config, hostUrl, localId, localPath, remotePath),
+    uploadDir: (localDir, remoteDir) =>
+      uploadDir(config, hostUrl, localId, localDir, remoteDir),
     downloadFile: (remotePath, localPath) =>
       downloadFileFromHost(config, hostUrl, localId, remotePath, localPath),
     terminate: () => destroyOnHost(config, hostUrl, localId),

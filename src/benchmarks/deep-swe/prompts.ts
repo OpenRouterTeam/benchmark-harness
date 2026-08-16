@@ -69,3 +69,5 @@ cd /app && git status && git diff --stat
 \`\`\`
 `;
 }
+
+export const AGENT_CLI_SUBMISSION_PROTOCOL = `Your work is graded from your git commits, not from the working tree and not from your final message. Create a branch from the starting commit and commit everything you want graded before you finish. Uncommitted changes are discarded, so an uncommitted fix scores zero however correct it is.`;

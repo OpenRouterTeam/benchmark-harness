@@ -138,6 +138,8 @@ export function makeModalSandboxLayer(
           exec,
           uploadFile: (localPath, remotePath) =>
             sandbox.filesystem.copyFromLocal(localPath, remotePath),
+          uploadDir: (localDir, remoteDir) =>
+            uploadDir(sandbox.filesystem, localDir, remoteDir),
           terminate: () => sandbox.terminate(),
           downloadFile: (remotePath, localPath) =>
             sandbox.filesystem.copyToLocal(remotePath, localPath),
@@ -191,6 +193,8 @@ export function makeModalSandboxLayer(
         exec,
         uploadFile: (localPath, remotePath) =>
           sandbox.filesystem.copyFromLocal(localPath, remotePath),
+        uploadDir: (localDir, remoteDir) =>
+          uploadDir(sandbox.filesystem, localDir, remoteDir),
         terminate: () => sandbox.terminate(),
         downloadFile: (remotePath, localPath) =>
           sandbox.filesystem.copyToLocal(remotePath, localPath),

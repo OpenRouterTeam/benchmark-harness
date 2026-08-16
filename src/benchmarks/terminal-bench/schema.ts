@@ -1,6 +1,15 @@
 import type { ValueOf } from "../../internal/guards";
 import { z } from "../../internal/zod";
 
+export {
+  DEFAULT_CLAUDE_PACKAGE,
+  DEFAULT_ORI_INSTALL_URL,
+  DEFAULT_ORI_REASONING_EFFORT,
+  ORI_AGENTS,
+  ORI_REASONING_EFFORTS,
+} from "../agent-cli/schema";
+export type { OriAgent, OriReasoningEffort } from "../agent-cli/schema";
+
 export const TaskTomlSchema = z.object({
   schema_version: z.string(),
   task: z.object({
@@ -52,18 +61,8 @@ export interface TerminalBenchTask {
 
 export const TERMINAL_BENCH_VERSION = "2.1" as const;
 
-export const PI_THINKING_LEVELS = [
-  "off",
-  "minimal",
-  "low",
-  "medium",
-  "high",
-  "xhigh",
-] as const;
+export const TERMINAL_BENCH_AGENTS = ["pi", "claude"] as const;
 
-export type PiThinkingLevel = ValueOf<typeof PI_THINKING_LEVELS>;
+export type TerminalBenchAgent = ValueOf<typeof TERMINAL_BENCH_AGENTS>;
 
-export const DEFAULT_PI_THINKING: PiThinkingLevel = "medium";
-
-export const DEFAULT_PI_PACKAGE =
-  "@earendil-works/pi-coding-agent@latest" as const;
+export const DEFAULT_TERMINAL_BENCH_AGENT: TerminalBenchAgent = "pi";

@@ -82,15 +82,24 @@ export interface TerminalBenchSampleMeta {
   readonly maxTestTimeoutSec: number;
   readonly difficulty: string;
   readonly category: string;
+  readonly cpus: number;
+  readonly memoryMb: number;
+  readonly gpus: number;
+  readonly allowInternet: boolean;
   reward?: number;
   testOutput?: string;
 }
+
+export const DEFAULT_TERMINAL_BENCH_CPUS = 1;
+
+export const DEFAULT_TERMINAL_BENCH_MEMORY_MB = 2048;
 
 export function taskToSample(
   task: TerminalBenchTask,
   maxAgentTimeoutSecOverride?: number
 ): Sample {
   const instruction = readFileSync(task.instructionPath, "utf8");
+  const { environment } = task.taskToml;
   return {
     id: `${TERMINAL_BENCH_DATASET_ID}-${task.id}`,
     input: instruction,
@@ -103,6 +112,10 @@ export function taskToSample(
       maxTestTimeoutSec: task.taskToml.verifier.timeout_sec,
       difficulty: task.taskToml.metadata.difficulty,
       category: task.taskToml.metadata.category,
+      cpus: environment.cpus,
+      memoryMb: environment.memory_mb,
+      gpus: environment.gpus,
+      allowInternet: environment.allow_internet,
     },
   };
 }
@@ -129,6 +142,10 @@ export function readTerminalBenchMeta(
   const category = metadata["category"];
   const reward = metadata["reward"];
   const testOutput = metadata["testOutput"];
+  const cpus = metadata["cpus"];
+  const memoryMb = metadata["memoryMb"];
+  const gpus = metadata["gpus"];
+  const allowInternet = metadata["allowInternet"];
   return {
     taskId,
     dockerImage,
@@ -136,6 +153,13 @@ export function readTerminalBenchMeta(
     maxTestTimeoutSec,
     difficulty: typeof difficulty === "string" ? difficulty : "unknown",
     category: typeof category === "string" ? category : "unknown",
+    cpus: typeof cpus === "number" ? cpus : DEFAULT_TERMINAL_BENCH_CPUS,
+    memoryMb:
+      typeof memoryMb === "number"
+        ? memoryMb
+        : DEFAULT_TERMINAL_BENCH_MEMORY_MB,
+    gpus: typeof gpus === "number" ? gpus : 0,
+    allowInternet: typeof allowInternet === "boolean" ? allowInternet : true,
     ...(typeof reward === "number" && { reward }),
     ...(typeof testOutput === "string" && { testOutput }),
   };

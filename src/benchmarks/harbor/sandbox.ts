@@ -35,6 +35,10 @@ export interface SandboxSessionInstance {
     localPath: string,
     remotePath: string
   ) => Effect<void, SolverError>;
+  readonly uploadDir: (
+    localDir: string,
+    remoteDir: string
+  ) => Effect<void, SolverError>;
   readonly downloadFile: (
     remotePath: string,
     localPath: string
@@ -91,6 +95,7 @@ export interface MakeSessionInstanceInput {
   readonly sandboxId: string;
   readonly exec: SandboxExec;
   readonly uploadFile: (localPath: string, remotePath: string) => Promise<void>;
+  readonly uploadDir: (localDir: string, remoteDir: string) => Promise<void>;
   readonly downloadFile: (
     remotePath: string,
     localPath: string
@@ -109,6 +114,12 @@ export function makeSessionInstance(
         try: () => input.uploadFile(localPath, remotePath),
         catch: (e) =>
           toSolverError(`Failed to upload ${localPath} to ${remotePath}`, e),
+      }),
+    uploadDir: (localDir, remoteDir) =>
+      tryPromise({
+        try: () => input.uploadDir(localDir, remoteDir),
+        catch: (e) =>
+          toSolverError(`Failed to upload ${localDir} to ${remoteDir}`, e),
       }),
     downloadFile: (remotePath, localPath) =>
       tryPromise({
@@ -137,6 +148,7 @@ export interface FakeSandboxBehavior {
   ) => ExecResult;
   readonly onCreate?: (input: CreateSessionInput) => void;
   readonly onUploadFile?: (localPath: string, remotePath: string) => void;
+  readonly onUploadDir?: (localDir: string, remoteDir: string) => void;
   readonly onDownloadFile?: (remotePath: string, localPath: string) => void;
   readonly onDestroy?: () => void;
 }
@@ -154,6 +166,8 @@ export function makeFakeSandboxLayer(
         sync(() => behavior.execHandler(argv, env, timeoutMs)),
       uploadFile: (localPath, remotePath) =>
         sync(() => behavior.onUploadFile?.(localPath, remotePath)),
+      uploadDir: (localDir, remoteDir) =>
+        sync(() => behavior.onUploadDir?.(localDir, remoteDir)),
       downloadFile: (remotePath, localPath) =>
         sync(() => behavior.onDownloadFile?.(remotePath, localPath)),
       destroy: () => sync(() => behavior.onDestroy?.()),
@@ -168,6 +182,8 @@ export function makeFakeSandboxLayer(
         sync(() => behavior.execHandler(argv, env, timeoutMs)),
       uploadFile: (localPath, remotePath) =>
         sync(() => behavior.onUploadFile?.(localPath, remotePath)),
+      uploadDir: (localDir, remoteDir) =>
+        sync(() => behavior.onUploadDir?.(localDir, remoteDir)),
       downloadFile: (remotePath, localPath) =>
         sync(() => behavior.onDownloadFile?.(remotePath, localPath)),
       destroy: () => sync(() => behavior.onDestroy?.()),

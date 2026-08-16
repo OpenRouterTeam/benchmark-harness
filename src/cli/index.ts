@@ -6,8 +6,13 @@ import { option, string } from "effect/Config";
 import { gen, promise, runSync, sync } from "effect/Effect";
 import { getOrNull } from "effect/Option";
 
+import { isSafeOriSessionId } from "../benchmarks/agent-cli/runner";
 import type { BenchmarkRunConfig } from "../benchmarks/benchmark-config";
-import { BenchmarkRunConfigSchema } from "../benchmarks/benchmark-config";
+import {
+  BenchmarkRunConfigSchema,
+  isModelBenchmarkId,
+  knownBenchmarkOptionKeys,
+} from "../benchmarks/benchmark-config";
 import { DracoPanelConfigSchema } from "../benchmarks/draco/schemas";
 import { benchmarkIds, getBenchmark } from "../benchmarks/registry";
 import type { CostTier } from "../harness/constants";
@@ -108,7 +113,14 @@ function resolveTotalEvaluations(
 
 function resolveSessionId(): string {
   const envOpt = runSync(string("BENCH_CHILD_WORKFLOW_ID").pipe(option));
-  return getOrNull(envOpt) ?? runSync(sync(() => crypto.randomUUID()));
+  const raw = getOrNull(envOpt);
+  const fromEnv = raw === null || raw.length === 0 ? null : raw;
+  if (fromEnv !== null && !isSafeOriSessionId(fromEnv)) {
+    throw new Error(
+      `BENCH_CHILD_WORKFLOW_ID contains a control character, which ori replaces with a fresh UUID and silently detaches the run from its generations (got ${JSON.stringify(fromEnv)}).`
+    );
+  }
+  return fromEnv ?? runSync(sync(() => crypto.randomUUID()));
 }
 
 function resolveApiKey(): string {
@@ -304,6 +316,17 @@ function buildSchemaValidatedConfig(opts: {
     ...(costTier !== undefined && { costTier }),
   };
   if (typeof panelConfig === "object" && panelConfig !== null) {
+    const known = isModelBenchmarkId(benchmarkId)
+      ? knownBenchmarkOptionKeys(benchmarkId)
+      : undefined;
+    const unknown = known
+      ? Object.keys(panelConfig).filter((k) => !known.has(k))
+      : [];
+    if (unknown.length > 0) {
+      throw new Error(
+        `Unknown ${benchmarkId} solver-config option(s): ${unknown.sort().join(", ")}`
+      );
+    }
     for (const [k, v] of Object.entries(panelConfig)) {
       if (k !== "benchmarkId" && k !== "model") {
         merged[k] = v;
