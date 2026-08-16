@@ -68,6 +68,7 @@ interface ExecLog {
     env: Readonly<Record<string, string>>;
   }[];
   readonly creates: CreateSessionInput[];
+  readonly uploadedDirs?: { localDir: string; remoteDir: string }[];
 }
 
 function newConfigRecord(): {
@@ -79,6 +80,8 @@ function newConfigRecord(): {
 function fakeSandbox(log: ExecLog, reward: string): Layer<SandboxSession> {
   return makeFakeSandboxLayer({
     onCreate: (input) => log.creates.push(input),
+    onUploadDir: (localDir, remoteDir) =>
+      log.uploadedDirs?.push({ localDir, remoteDir }),
     execHandler: (argv, env): ExecResult => {
       log.calls.push({ argv, env });
       const joined = argv.join(" ");
@@ -196,6 +199,8 @@ const CLAUDE_STREAM = [
 function fakeCliSandbox(log: ExecLog, reward: string): Layer<SandboxSession> {
   return makeFakeSandboxLayer({
     onCreate: (input) => log.creates.push(input),
+    onUploadDir: (localDir, remoteDir) =>
+      log.uploadedDirs?.push({ localDir, remoteDir }),
     execHandler: (argv, env): ExecResult => {
       log.calls.push({ argv, env });
       const joined = argv.join(" ");
@@ -209,6 +214,31 @@ function fakeCliSandbox(log: ExecLog, reward: string): Layer<SandboxSession> {
     },
   });
 }
+
+describe("swe-atlas grading test isolation", () => {
+  it("keeps the grading tests out of the agent sandbox", async () => {
+    const log: ExecLog = { calls: [], creates: [] };
+    await runSweAtlasSolver(
+      scriptedModel(newConfigRecord()),
+      fakeSandbox(log, "1")
+    );
+    const remotePaths = (log.creates[0]?.uploads ?? []).map(
+      (u) => u.remotePath
+    );
+    expect(remotePaths).toEqual(["/instruction.md"]);
+    expect(remotePaths).not.toContain("/tests");
+  });
+
+  it("uploads the grading tests only when the verifier runs", async () => {
+    const log: ExecLog = { calls: [], creates: [], uploadedDirs: [] };
+    await runSweAtlasSolver(
+      scriptedModel(newConfigRecord()),
+      fakeSandbox(log, "1")
+    );
+    expect(log.uploadedDirs).toHaveLength(1);
+    expect(log.uploadedDirs?.[0]?.remoteDir).toBe("/tests");
+  });
+});
 
 describe("swe-atlas claude agent via ori", () => {
   it("runs the agent cli instead of the mini-swe loop and still scores from the verifier", async () => {

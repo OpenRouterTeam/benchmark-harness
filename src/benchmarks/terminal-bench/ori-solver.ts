@@ -66,7 +66,11 @@ export function oriSolver(
           instructionPath: REMOTE_INSTRUCTION,
           timeoutMs: meta.maxAgentTimeoutSec * 1000 + AGENT_TIMEOUT_MARGIN_MS,
         });
-        const testResult = yield* runTerminalBenchVerifier(session, meta);
+        const testResult = yield* runTerminalBenchVerifier(
+          session,
+          meta,
+          tasksDir
+        );
         const { reward } = testResult;
         const testOutput = run.failureDetail
           ? `${run.failureDetail}\n\n${testResult.output}`

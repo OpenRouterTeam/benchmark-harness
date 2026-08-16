@@ -61,11 +61,6 @@ export function createTerminalBenchSession(input: {
     keepAliveCommand: KEEP_ALIVE_COMMAND,
     uploads: [
       {
-        localPath: join(taskDir, "tests"),
-        remotePath: REMOTE_TEST_DIR,
-        kind: "dir",
-      },
-      {
         localPath: join(taskDir, "instruction.md"),
         remotePath: REMOTE_INSTRUCTION,
         kind: "file",
@@ -76,11 +71,16 @@ export function createTerminalBenchSession(input: {
 
 export function runTerminalBenchVerifier(
   session: SandboxSessionInstance,
-  meta: TerminalBenchSampleMeta
+  meta: TerminalBenchSampleMeta,
+  tasksDir: string
 ): Effect<TerminalBenchVerifierResult, SolverError> {
   const verifierTimeoutMs =
     Math.round(meta.maxTestTimeoutSec * 1000) + VERIFIER_TIMEOUT_MARGIN_MS;
   return gen(function* () {
+    yield* session.uploadDir(
+      join(tasksDir, meta.taskId, "tests"),
+      REMOTE_TEST_DIR
+    );
     const run = yield* session.exec(
       [
         "bash",

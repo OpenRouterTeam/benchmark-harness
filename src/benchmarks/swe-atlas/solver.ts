@@ -139,7 +139,6 @@ export function makeSweAtlasSolver(
             remotePath: REMOTE_INSTRUCTION,
             kind: "file",
           },
-          { localPath: task.testDir, remotePath: REMOTE_TEST_DIR, kind: "dir" },
         ],
       });
       const genConfig: ResponsesGenerateConfig = {
@@ -159,7 +158,12 @@ export function makeSweAtlasSolver(
             instructionPath: REMOTE_INSTRUCTION,
             timeoutMs: meta.maxAgentTimeoutSec * 1000 + 30000,
           });
-          const cliVerifier = yield* runVerifier({ session, meta, opts });
+          const cliVerifier = yield* runVerifier({
+            session,
+            meta,
+            opts,
+            testDir: task.testDir,
+          });
           const cliCompletion = run.finalText ?? run.rawStream;
           return {
             sample: {
@@ -208,7 +212,12 @@ export function makeSweAtlasSolver(
           perCommandTimeoutMs:
             PER_COMMAND_TIMEOUT_SEC[meta.track] * 1000 + 30000,
         });
-        const verifier = yield* runVerifier({ session, meta, opts });
+        const verifier = yield* runVerifier({
+          session,
+          meta,
+          opts,
+          testDir: task.testDir,
+        });
         const finalContent = loop.finalText;
         return {
           sample: {
@@ -236,6 +245,7 @@ export function makeSweAtlasSolver(
 }
 
 interface RunVerifierInput {
+  readonly testDir: string;
   readonly session: SandboxSessionInstance;
   readonly meta: {
     readonly maxTestTimeoutSec: number;
@@ -262,6 +272,7 @@ function runVerifier(input: RunVerifierInput): Effect<
     OPENAI_API_BASE: JUDGE_BASE_URL,
   };
   return gen(function* () {
+    yield* session.uploadDir(input.testDir, REMOTE_TEST_DIR);
     yield* session.exec(["bash", "-lc", JUDGE_BOOTSTRAP], judgeEnv, 300000);
     const run = yield* session.exec(
       [

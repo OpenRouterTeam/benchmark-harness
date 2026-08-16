@@ -22,6 +22,7 @@ export interface FakeTerminalBenchBehavior {
   readonly agentExitCode?: number;
   readonly execCalls?: FakeTerminalBenchExecCall[];
   readonly creates?: CreateSessionInput[];
+  readonly uploadedDirs?: { localDir: string; remoteDir: string }[];
 }
 
 const AGENT_COMMAND_MARKERS = ["pi --print", "pi ", "ori claude"] as const;
@@ -36,6 +37,9 @@ export function makeTerminalBenchFakeSandboxLayer(
   return makeFakeSandboxLayer({
     onCreate: (input) => {
       behavior.creates?.push(input);
+    },
+    onUploadDir: (localDir, remoteDir) => {
+      behavior.uploadedDirs?.push({ localDir, remoteDir });
     },
     execHandler: (argv, env, timeoutMs): ExecResult => {
       behavior.execCalls?.push({ argv: [...argv], env: { ...env }, timeoutMs });

@@ -185,6 +185,38 @@ describe("terminal-bench ori solver", () => {
     expect(score.value).toBe(ScoreValue.Correct);
   });
 
+  it("keeps the grading tests out of the agent sandbox", async () => {
+    const creates: NonNullable<
+      Parameters<typeof makeTerminalBenchFakeSandboxLayer>[0]["creates"]
+    > = [];
+    const layer = makeTerminalBenchFakeSandboxLayer({
+      reward: 1,
+      creates,
+      agentEventStream: CLAUDE_STREAM,
+      agentExitCode: 0,
+    });
+    await runOriSolver(layer);
+    const remotePaths = (creates[0]?.uploads ?? []).map((u) => u.remotePath);
+    expect(remotePaths).toEqual(["/instruction.md"]);
+    expect(remotePaths).not.toContain("/tests");
+  });
+
+  it("uploads the grading tests only when the verifier runs", async () => {
+    const uploadedDirs: NonNullable<
+      Parameters<typeof makeTerminalBenchFakeSandboxLayer>[0]["uploadedDirs"]
+    > = [];
+    const layer = makeTerminalBenchFakeSandboxLayer({
+      reward: 1,
+      uploadedDirs,
+      agentEventStream: CLAUDE_STREAM,
+      agentExitCode: 0,
+    });
+    await runOriSolver(layer);
+    expect(uploadedDirs).toHaveLength(1);
+    expect(uploadedDirs[0]?.remoteDir).toBe("/tests");
+    expect(uploadedDirs[0]?.localDir).toContain("adaptive-rejection-sampler");
+  });
+
   it("records the agent identity in sample metadata", async () => {
     const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
