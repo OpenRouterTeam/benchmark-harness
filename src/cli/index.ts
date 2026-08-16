@@ -6,6 +6,7 @@ import { option, string } from "effect/Config";
 import { gen, promise, runSync, sync } from "effect/Effect";
 import { getOrNull } from "effect/Option";
 
+import { isSafeOriSessionId } from "../benchmarks/agent-cli/runner";
 import type { BenchmarkRunConfig } from "../benchmarks/benchmark-config";
 import {
   BenchmarkRunConfigSchema,
@@ -112,7 +113,13 @@ function resolveTotalEvaluations(
 
 function resolveSessionId(): string {
   const envOpt = runSync(string("BENCH_CHILD_WORKFLOW_ID").pipe(option));
-  return getOrNull(envOpt) ?? runSync(sync(() => crypto.randomUUID()));
+  const fromEnv = getOrNull(envOpt);
+  if (fromEnv !== null && !isSafeOriSessionId(fromEnv)) {
+    throw new Error(
+      `BENCH_CHILD_WORKFLOW_ID contains a control character, which ori replaces with a fresh UUID and silently detaches the run from its generations (got ${JSON.stringify(fromEnv)}).`
+    );
+  }
+  return fromEnv ?? runSync(sync(() => crypto.randomUUID()));
 }
 
 function resolveApiKey(): string {

@@ -3,7 +3,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { gen, provide, runPromise } from "effect/Effect";
+import { either, gen, provide, runPromise } from "effect/Effect";
 import type { Layer } from "effect/Layer";
 import {
   effect as layerEffect,
@@ -728,6 +728,78 @@ describe("terminal-bench pi via ori", () => {
       )
     );
     expect(execCalls[0]?.env["TB_MODEL"]).toBe("anthropic/claude-sonnet-4");
+  });
+
+  it("sends the session id under the name ori forwards as X-Session-Id", async () => {
+    const execCalls: ExecCalls = [];
+    const layer = makeTerminalBenchFakeSandboxLayer({
+      reward: 1,
+      execCalls,
+      agentExitCode: 0,
+    });
+    const solverLayer = layerEffect(Solver)(
+      gen(function* () {
+        const sessionFactory = yield* SandboxSession;
+        return Solver.of(
+          oriSolver(
+            sessionFactory,
+            { ...SOLVER_OPTS, sessionId: "run-1234" },
+            getOriHarness("pi")
+          )
+        );
+      })
+    );
+    await runPromise(
+      gen(function* () {
+        const solver = yield* Solver;
+        return yield* solver(sampleState());
+      }).pipe(
+        provide(
+          layerMergeAll(
+            solverLayer.pipe(layerProvide(layer)),
+            noopProgressLayer,
+            noopCheckpointLayer
+          )
+        )
+      )
+    );
+    expect(execCalls[0]?.env["ORI_OPENROUTER_SESSION_ID"]).toBe("run-1234");
+  });
+
+  it("refuses a session id ori would silently replace", async () => {
+    const layer = makeTerminalBenchFakeSandboxLayer({
+      reward: 1,
+      agentEventStream: PI_STREAM,
+      agentExitCode: 0,
+    });
+    const solverLayer = layerEffect(Solver)(
+      gen(function* () {
+        const sessionFactory = yield* SandboxSession;
+        return Solver.of(
+          oriSolver(
+            sessionFactory,
+            { ...SOLVER_OPTS, sessionId: "run\n1234" },
+            getOriHarness("pi")
+          )
+        );
+      })
+    );
+    const outcome = await runPromise(
+      gen(function* () {
+        const solver = yield* Solver;
+        return yield* solver(sampleState());
+      }).pipe(
+        provide(
+          layerMergeAll(
+            solverLayer.pipe(layerProvide(layer)),
+            noopProgressLayer,
+            noopCheckpointLayer
+          )
+        ),
+        either
+      )
+    );
+    expect(outcome._tag).toBe("Left");
   });
 
   it("installs pi and ori into the image", () => {

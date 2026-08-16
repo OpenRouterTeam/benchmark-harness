@@ -2,7 +2,7 @@ import { currentTimeMillis } from "effect/Clock";
 import type { Effect } from "effect/Effect";
 import { forEach, gen } from "effect/Effect";
 
-import type { SolverError } from "../../harness/core";
+import { SolverError } from "../../harness/core";
 import { recordGenerationId } from "../../runtime/generation-ids";
 import type { SandboxSessionInstance } from "../harbor/sandbox";
 import type { OriAgentRun, OriHarnessDef } from "./harness";
@@ -16,6 +16,23 @@ import {
 const EXIT_DETAIL_TAIL_CHARS = 500;
 
 export const ORI_SESSION_ID_ENV = "ORI_OPENROUTER_SESSION_ID" as const;
+
+const CONTROL_CHAR_MAX = 0x1f;
+
+const DELETE_CHAR = 0x7f;
+
+export function isSafeOriSessionId(sessionId: string): boolean {
+  if (sessionId.length === 0) {
+    return false;
+  }
+  for (const char of sessionId) {
+    const code = char.codePointAt(0) ?? 0;
+    if (code <= CONTROL_CHAR_MAX || code === DELETE_CHAR) {
+      return false;
+    }
+  }
+  return true;
+}
 
 export interface AgentCliOpts {
   readonly model: string;
@@ -56,7 +73,7 @@ export function buildAgentCliEnv(opts: AgentCliOpts): Record<string, string> {
   if (opts.endpointId !== undefined) {
     env["OPENROUTER_ENDPOINT_ID"] = opts.endpointId;
   }
-  if (opts.sessionId !== undefined) {
+  if (opts.sessionId !== undefined && isSafeOriSessionId(opts.sessionId)) {
     env[ORI_SESSION_ID_ENV] = opts.sessionId;
   }
   if (opts.systemPrompt !== undefined) {
@@ -106,6 +123,11 @@ export function runAgentCli(input: {
     isolateAgentConfig: opts.isolateAgentConfig === true,
   });
   return gen(function* () {
+    if (opts.sessionId !== undefined && !isSafeOriSessionId(opts.sessionId)) {
+      return yield* new SolverError({
+        message: `sessionId contains a control character, which ori replaces with a fresh UUID and silently detaches the run from its generations (id=${JSON.stringify(opts.sessionId)})`,
+      });
+    }
     const startedAt = yield* currentTimeMillis;
     const run = yield* session.exec(
       ["bash", "-c", script],
