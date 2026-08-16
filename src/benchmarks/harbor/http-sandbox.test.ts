@@ -19,6 +19,7 @@ interface FakeHostOptions {
   readonly createRejections?: number;
   readonly createOutcome?: "running" | "failed" | "stopped";
   readonly execExitCode?: number;
+  readonly hostUrlOverride?: string;
 }
 
 interface RecordedRequest {
@@ -70,7 +71,10 @@ function makeFakeHost(options: FakeHostOptions = {}): FakeHost {
         return json({ error: "no capacity" }, 429);
       }
       sandboxCounter += 1;
-      return json({ sandboxId: `sbx-${sandboxCounter}`, hostUrl: HOST_URL });
+      return json({
+        sandboxId: `sbx-${sandboxCounter}`,
+        hostUrl: options.hostUrlOverride ?? HOST_URL,
+      });
     }
     const sandboxMatch = url.pathname.match(/^\/v1\/sandboxes\/([^/]+)$/);
     if (sandboxMatch?.[1] !== undefined && method === "GET") {
@@ -129,11 +133,15 @@ function makeFakeHost(options: FakeHostOptions = {}): FakeHost {
   return { fetchFn, requests, execs, files, destroyed };
 }
 
-function makeLayer(host: FakeHost): ReturnType<typeof makeHttpSandboxLayer> {
+function makeLayer(
+  host: FakeHost,
+  overrides: { readonly allowInsecureHttp?: boolean } = {}
+): ReturnType<typeof makeHttpSandboxLayer> {
   return makeHttpSandboxLayer({
     baseUrl: BASE_URL,
     authToken: AUTH_TOKEN,
     allowedHostSuffixes: ["sandbox-host-1.internal"],
+    allowInsecureHttp: overrides.allowInsecureHttp ?? true,
     fetchFn: host.fetchFn,
     pollIntervalMs: 1,
     createTimeoutMs: 5000,
@@ -158,6 +166,18 @@ function createSession(host: FakeHost, input: CreateSessionInput) {
       const session = yield* SandboxSession;
       return yield* session.create(input);
     }).pipe(provide(makeLayer(host)))
+  );
+}
+
+function createSessionExit(
+  host: FakeHost,
+  overrides: { readonly allowInsecureHttp?: boolean } = {}
+) {
+  return runPromiseExit(
+    gen(function* () {
+      const session = yield* SandboxSession;
+      return yield* session.create(CREATE_INPUT);
+    }).pipe(provide(makeLayer(host, overrides)))
   );
 }
 
@@ -213,6 +233,26 @@ describe("makeHttpSandboxLayer create", () => {
         return yield* session.create(CREATE_INPUT);
       }).pipe(provide(makeLayer(host)))
     );
+
+    expect(exit._tag).toBe("Failure");
+    expect(host.destroyed).toEqual(["sbx-1"]);
+  });
+
+  it("destroys the created sandbox when its host URL is outside the allowed set", async () => {
+    const host = makeFakeHost({
+      hostUrlOverride: "http://evil.example.com",
+    });
+
+    const exit = await createSessionExit(host);
+
+    expect(exit._tag).toBe("Failure");
+    expect(host.destroyed).toEqual(["sbx-1"]);
+  });
+
+  it("rejects a plain-http host URL and destroys the sandbox when insecure is not allowed", async () => {
+    const host = makeFakeHost();
+
+    const exit = await createSessionExit(host, { allowInsecureHttp: false });
 
     expect(exit._tag).toBe("Failure");
     expect(host.destroyed).toEqual(["sbx-1"]);

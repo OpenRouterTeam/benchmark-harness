@@ -1,13 +1,30 @@
 import { describe, expect, it } from "bun:test";
 
+import { runPromiseExit, scoped } from "effect/Effect";
+import type { Exit } from "effect/Exit";
+import type { Layer } from "effect/Layer";
+import { build } from "effect/Layer";
+
+import type { SandboxSession } from "./sandbox";
 import {
   makeHarborSandboxLayer,
   SANDBOX_BACKEND_ENV,
+  SANDBOX_HTTP_ALLOW_INSECURE_ENV,
   SANDBOX_HTTP_TOKEN_ENV,
   SANDBOX_HTTP_URL_ENV,
 } from "./sandbox-layer";
 
 const MODAL_CONFIG = { appName: "openrouter-test" };
+
+function buildLayer(
+  layer: Layer<SandboxSession, Error>
+): Promise<Exit<unknown, Error>> {
+  return runPromiseExit(scoped(build(layer)));
+}
+
+function causeText(exit: Exit<unknown, Error>): string {
+  return exit._tag === "Failure" ? String(exit.cause) : "";
+}
 
 describe("makeHarborSandboxLayer", () => {
   it("defaults to the Modal backend when no env is set", () => {
@@ -16,39 +33,76 @@ describe("makeHarborSandboxLayer", () => {
     expect(layer).toBeDefined();
   });
 
-  it("builds the HTTP backend when configured", () => {
+  it("builds the HTTP backend for an https URL", async () => {
+    const layer = makeHarborSandboxLayer(MODAL_CONFIG, {
+      [SANDBOX_BACKEND_ENV]: "http",
+      [SANDBOX_HTTP_URL_ENV]: "https://sandbox-lb.internal",
+      [SANDBOX_HTTP_TOKEN_ENV]: "token",
+    });
+
+    const exit = await buildLayer(layer);
+
+    expect(exit._tag).toBe("Success");
+  });
+
+  it("builds the HTTP backend for a plain-http URL when insecure is allowed", async () => {
+    const layer = makeHarborSandboxLayer(MODAL_CONFIG, {
+      [SANDBOX_BACKEND_ENV]: "http",
+      [SANDBOX_HTTP_URL_ENV]: "http://sandbox-lb.internal",
+      [SANDBOX_HTTP_TOKEN_ENV]: "token",
+      [SANDBOX_HTTP_ALLOW_INSECURE_ENV]: "1",
+    });
+
+    const exit = await buildLayer(layer);
+
+    expect(exit._tag).toBe("Success");
+  });
+
+  it("fails for a plain-http URL when insecure is not allowed", async () => {
     const layer = makeHarborSandboxLayer(MODAL_CONFIG, {
       [SANDBOX_BACKEND_ENV]: "http",
       [SANDBOX_HTTP_URL_ENV]: "http://sandbox-lb.internal",
       [SANDBOX_HTTP_TOKEN_ENV]: "token",
     });
 
-    expect(layer).toBeDefined();
+    const exit = await buildLayer(layer);
+
+    expect(exit._tag).toBe("Failure");
+    expect(causeText(exit)).toContain(SANDBOX_HTTP_ALLOW_INSECURE_ENV);
   });
 
-  it("throws when the HTTP backend has no URL", () => {
-    expect(() =>
-      makeHarborSandboxLayer(MODAL_CONFIG, {
-        [SANDBOX_BACKEND_ENV]: "http",
-        [SANDBOX_HTTP_TOKEN_ENV]: "token",
-      })
-    ).toThrow(SANDBOX_HTTP_URL_ENV);
+  it("fails when the HTTP backend has no URL", async () => {
+    const layer = makeHarborSandboxLayer(MODAL_CONFIG, {
+      [SANDBOX_BACKEND_ENV]: "http",
+      [SANDBOX_HTTP_TOKEN_ENV]: "token",
+    });
+
+    const exit = await buildLayer(layer);
+
+    expect(exit._tag).toBe("Failure");
+    expect(causeText(exit)).toContain(SANDBOX_HTTP_URL_ENV);
   });
 
-  it("throws when the HTTP backend has no token", () => {
-    expect(() =>
-      makeHarborSandboxLayer(MODAL_CONFIG, {
-        [SANDBOX_BACKEND_ENV]: "http",
-        [SANDBOX_HTTP_URL_ENV]: "http://sandbox-lb.internal",
-      })
-    ).toThrow(SANDBOX_HTTP_TOKEN_ENV);
+  it("fails when the HTTP backend has no token", async () => {
+    const layer = makeHarborSandboxLayer(MODAL_CONFIG, {
+      [SANDBOX_BACKEND_ENV]: "http",
+      [SANDBOX_HTTP_URL_ENV]: "https://sandbox-lb.internal",
+    });
+
+    const exit = await buildLayer(layer);
+
+    expect(exit._tag).toBe("Failure");
+    expect(causeText(exit)).toContain(SANDBOX_HTTP_TOKEN_ENV);
   });
 
-  it("throws on an unknown backend value", () => {
-    expect(() =>
-      makeHarborSandboxLayer(MODAL_CONFIG, {
-        [SANDBOX_BACKEND_ENV]: "kubernetes",
-      })
-    ).toThrow("kubernetes");
+  it("fails on an unknown backend value", async () => {
+    const layer = makeHarborSandboxLayer(MODAL_CONFIG, {
+      [SANDBOX_BACKEND_ENV]: "kubernetes",
+    });
+
+    const exit = await buildLayer(layer);
+
+    expect(exit._tag).toBe("Failure");
+    expect(causeText(exit)).toContain("kubernetes");
   });
 });

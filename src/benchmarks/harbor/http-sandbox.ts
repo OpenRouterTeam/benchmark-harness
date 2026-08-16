@@ -14,6 +14,7 @@ import {
 import type { Layer } from "effect/Layer";
 import { succeed } from "effect/Layer";
 import type { ZodType } from "zod";
+import { object as zodObject, string as zodString } from "zod";
 
 import type { SolverError } from "../../harness/core";
 import { firstZodIssueMessage, parseSchema } from "../../internal/zod";
@@ -42,6 +43,7 @@ export interface HttpSandboxConfig {
   readonly baseUrl: string;
   readonly authToken: string;
   readonly allowedHostSuffixes?: readonly string[];
+  readonly allowInsecureHttp?: boolean;
   readonly fetchFn?: typeof fetch;
   readonly pollIntervalMs?: number;
   readonly createTimeoutMs?: number;
@@ -63,6 +65,7 @@ interface ResolvedConfig {
   readonly baseUrl: string;
   readonly authToken: string;
   readonly allowedHostSuffixes: readonly string[];
+  readonly allowInsecureHttp: boolean;
   readonly fetchFn: typeof fetch;
   readonly pollIntervalMs: number;
   readonly createTimeoutMs: number;
@@ -164,6 +167,11 @@ function assertAllowedHostUrl(config: ResolvedConfig, hostUrl: string): void {
   } catch {
     throw new HttpSandboxError(`host URL ${hostUrl} is not a valid URL`);
   }
+  if (parsed.protocol !== "https:" && !config.allowInsecureHttp) {
+    throw new HttpSandboxError(
+      `host URL ${hostUrl} must use https (set allowInsecureHttp for private networks)`
+    );
+  }
   if (parsed.origin === new URL(config.baseUrl).origin) {
     return;
   }
@@ -178,6 +186,21 @@ function assertAllowedHostUrl(config: ResolvedConfig, hostUrl: string): void {
   }
 }
 
+const LeakedSandboxSchema = zodObject({ sandboxId: zodString() });
+
+async function destroyLeakedSandbox(
+  config: ResolvedConfig,
+  raw: unknown
+): Promise<void> {
+  const parsed = parseSchema(LeakedSandboxSchema, raw);
+  if (parsed._tag === "Left") {
+    return;
+  }
+  await destroyOnHost(config, config.baseUrl, parsed.right.sandboxId).catch(
+    () => undefined
+  );
+}
+
 async function createOnHost(
   config: ResolvedConfig,
   request: CreateSandboxRequest
@@ -190,8 +213,20 @@ async function createOnHost(
     attempt < config.capacityRetryMaxAttempts;
     attempt += 1
   ) {
+    let raw: unknown;
     try {
-      const raw = await requestJson(config, url, { method: "POST", body });
+      raw = await requestJson(config, url, { method: "POST", body });
+    } catch (error) {
+      lastError = error;
+      const isCapacity =
+        error instanceof HttpSandboxError && isCapacityStatus(error.status);
+      if (!isCapacity || attempt === config.capacityRetryMaxAttempts - 1) {
+        throw error;
+      }
+      await sleep(config.capacityRetryDelayMs);
+      continue;
+    }
+    try {
       const parsed = parseResponse(
         CreateSandboxResponseSchema,
         raw,
@@ -201,13 +236,8 @@ async function createOnHost(
       assertAllowedHostUrl(config, hostUrl);
       return { hostUrl, localId: parsed.sandboxId };
     } catch (error) {
-      lastError = error;
-      const isCapacity =
-        error instanceof HttpSandboxError && isCapacityStatus(error.status);
-      if (!isCapacity || attempt === config.capacityRetryMaxAttempts - 1) {
-        throw error;
-      }
-      await sleep(config.capacityRetryDelayMs);
+      await destroyLeakedSandbox(config, raw);
+      throw error;
     }
   }
   throw lastError ?? new HttpSandboxError("create sandbox: no attempts made");
@@ -401,6 +431,7 @@ export function makeHttpSandboxService(
     baseUrl: stripTrailingSlash(input.baseUrl),
     authToken: input.authToken,
     allowedHostSuffixes: input.allowedHostSuffixes ?? [],
+    allowInsecureHttp: input.allowInsecureHttp ?? false,
     fetchFn: input.fetchFn ?? fetch,
     pollIntervalMs: input.pollIntervalMs ?? DEFAULT_POLL_INTERVAL_MS,
     createTimeoutMs: input.createTimeoutMs ?? DEFAULT_CREATE_TIMEOUT_MS,

@@ -71,7 +71,7 @@ function makeTerminalBenchLayer(
       maxAgentTimeoutSec: benchmarkConfig.maxAgentTimeoutSec,
     }),
   });
-  const sandboxLayer: Layer<SandboxSession> = makeHarborSandboxLayer({
+  const sandboxLayer: Layer<SandboxSession, Error> = makeHarborSandboxLayer({
     appName: TERMINAL_BENCH_APP_NAME,
     environment: benchmarkConfig.modalEnv,
   });
