@@ -212,17 +212,13 @@ async function destroyLeakedSandbox(
       if (candidate !== config.baseUrl) {
         destroyUrls.unshift(candidate);
       }
-    } catch {
-      // never send credentials to a host that failed validation
-    }
+    } catch {}
   }
   for (const url of destroyUrls) {
     try {
       await destroyOnHost(config, url, sandboxId);
       return;
-    } catch {
-      // try the next candidate
-    }
+    } catch {}
   }
   wLog(
     `failed to clean up leaked sandbox ${sandboxId} (tried ${destroyUrls.join(", ")})`
