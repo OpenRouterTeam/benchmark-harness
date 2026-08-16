@@ -7,6 +7,7 @@ import {
   describeFailure,
   extensionOf,
   hashManifest,
+  normalizeKeyPrefix,
   readOptions,
 } from "./mirror-vgi-bench-media";
 
@@ -73,6 +74,19 @@ describe("readOptions", () => {
   test("rejects invalid numeric flags", () => {
     expect(() => readOptions(["--concurrency=0"])).toThrow();
     expect(() => readOptions(["--limit=abc"])).toThrow();
+  });
+});
+
+describe("normalizeKeyPrefix", () => {
+  test("appends a single trailing slash to a real prefix", () => {
+    expect(normalizeKeyPrefix("vgi-bench")).toBe("vgi-bench/");
+    expect(normalizeKeyPrefix("/vgi-bench/v1/")).toBe("vgi-bench/v1/");
+  });
+
+  test("treats blank and slash-only prefixes as absent", () => {
+    expect(normalizeKeyPrefix(undefined)).toBe("");
+    expect(normalizeKeyPrefix("  ")).toBe("");
+    expect(normalizeKeyPrefix("///")).toBe("");
   });
 });
 

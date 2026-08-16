@@ -112,18 +112,20 @@ function readEnv(): MirrorEnv {
     /\/+$/,
     ""
   );
-  const rawPrefix = process.env["BENCH_MEDIA_KEY_PREFIX"] ?? "";
-  const keyPrefix =
-    rawPrefix === "" ? "" : `${rawPrefix.replaceAll(/^\/+|\/+$/g, "")}/`;
   return {
     endpoint: requireEnv("BENCH_MEDIA_S3_ENDPOINT"),
     bucket: requireEnv("BENCH_MEDIA_S3_BUCKET"),
     accessKeyId: requireEnv("BENCH_MEDIA_S3_ACCESS_KEY_ID"),
     secretAccessKey: requireEnv("BENCH_MEDIA_S3_SECRET_ACCESS_KEY"),
     publicBaseUrl,
-    keyPrefix,
+    keyPrefix: normalizeKeyPrefix(process.env["BENCH_MEDIA_KEY_PREFIX"]),
     hfToken: process.env["HF_TOKEN"],
   };
+}
+
+export function normalizeKeyPrefix(rawPrefix: string | undefined): string {
+  const stripped = (rawPrefix ?? "").trim().replaceAll(/^\/+|\/+$/g, "");
+  return stripped === "" ? "" : `${stripped}/`;
 }
 
 export function readOptions(argv: readonly string[]): MirrorOptions {
@@ -234,9 +236,11 @@ async function resolveSourceUrl(
   candidates: readonly SourceCandidate[]
 ): Promise<SourceCandidate | undefined> {
   for (const candidate of candidates) {
-    const response = await fetch(candidate.url, { method: "HEAD" });
-    await response.body?.cancel();
-    if (response.ok) {
+    const response = await fetch(candidate.url, { method: "HEAD" }).catch(
+      () => undefined
+    );
+    await response?.body?.cancel();
+    if (response?.ok === true) {
       return candidate;
     }
   }
