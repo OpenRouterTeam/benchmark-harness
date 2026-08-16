@@ -1,7 +1,7 @@
 import type { Layer } from "effect/Layer";
 import { fail as layerFail } from "effect/Layer";
 
-import { makeHttpSandboxLayer } from "./http-sandbox";
+import { isPrivateHostname, makeHttpSandboxLayer } from "./http-sandbox";
 import type { ModalSandboxConfig } from "./modal-sandbox";
 import { makeModalSandboxLayer } from "./modal-sandbox";
 import type { SandboxSession } from "./sandbox";
@@ -57,6 +57,16 @@ export function makeHarborSandboxLayer(
       )
     );
   }
+  if (allowInsecureHttp && baseUrl.startsWith("http://")) {
+    const hostname = hostnameOf(baseUrl);
+    if (hostname === undefined || !isPrivateHostname(hostname)) {
+      return layerFail(
+        new Error(
+          `${SANDBOX_HTTP_URL_ENV} uses plain http on a non-private host; ${SANDBOX_HTTP_ALLOW_INSECURE_ENV}=1 only permits loopback, RFC 1918, and .internal hosts`
+        )
+      );
+    }
+  }
   const allowedHostSuffixes = (env[SANDBOX_HTTP_HOST_SUFFIXES_ENV] ?? "")
     .split(",")
     .map((suffix) => suffix.trim())
@@ -67,4 +77,12 @@ export function makeHarborSandboxLayer(
     allowedHostSuffixes,
     allowInsecureHttp,
   });
+}
+
+function hostnameOf(url: string): string | undefined {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return undefined;
+  }
 }

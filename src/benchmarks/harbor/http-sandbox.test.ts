@@ -251,13 +251,27 @@ describe("makeHttpSandboxLayer create", () => {
     expect(host.destroyed).toEqual(["sbx-1"]);
   });
 
-  it("rejects a plain-http host URL and destroys the sandbox when insecure is not allowed", async () => {
+  it("rejects a plain-http base URL before sending any request when insecure is not allowed", async () => {
     const host = makeFakeHost();
 
     const exit = await createSessionExit(host, { allowInsecureHttp: false });
 
     expect(exit._tag).toBe("Failure");
+    expect(host.requests).toHaveLength(0);
+    expect(host.destroyed).toEqual([]);
+  });
+
+  it("rejects a plain-http host URL on a public host even when insecure http is allowed", async () => {
+    const host = makeFakeHost({
+      hostUrlOverride: "http://sandbox-host-1.example.com",
+    });
+
+    const exit = await createSessionExit(host, { allowInsecureHttp: true });
+
+    expect(exit._tag).toBe("Failure");
     expect(host.destroyed).toEqual(["sbx-1"]);
+    const origins = new Set(host.requests.map((r) => r.origin));
+    expect(origins).toEqual(new Set([new URL(BASE_URL).origin]));
   });
 
   it("rejects a non-http(s) host URL even when insecure http is allowed", async () => {

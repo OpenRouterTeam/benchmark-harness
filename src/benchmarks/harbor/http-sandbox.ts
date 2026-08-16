@@ -161,6 +161,22 @@ function isCapacityStatus(status: number | undefined): boolean {
   return status === 429 || status === 503;
 }
 
+const PRIVATE_IPV4_PATTERN =
+  /^(?:10\.|127\.|169\.254\.|192\.168\.|172\.(?:1[6-9]|2\d|3[01])\.)/;
+
+export function isPrivateHostname(hostname: string): boolean {
+  if (hostname === "localhost" || hostname.endsWith(".localhost")) {
+    return true;
+  }
+  if (hostname.endsWith(".internal")) {
+    return true;
+  }
+  if (hostname === "[::1]") {
+    return true;
+  }
+  return PRIVATE_IPV4_PATTERN.test(hostname);
+}
+
 function assertAllowedHostUrl(config: ResolvedConfig, hostUrl: string): void {
   let parsed: URL;
   try {
@@ -168,13 +184,17 @@ function assertAllowedHostUrl(config: ResolvedConfig, hostUrl: string): void {
   } catch {
     throw new HttpSandboxError(`host URL ${hostUrl} is not a valid URL`);
   }
-  const isAllowedProtocol =
-    parsed.protocol === "https:" ||
-    (config.allowInsecureHttp && parsed.protocol === "http:");
-  if (!isAllowedProtocol) {
-    throw new HttpSandboxError(
-      `host URL ${hostUrl} must use https (set allowInsecureHttp to permit http on private networks)`
-    );
+  if (parsed.protocol !== "https:") {
+    if (!(config.allowInsecureHttp && parsed.protocol === "http:")) {
+      throw new HttpSandboxError(
+        `host URL ${hostUrl} must use https (set allowInsecureHttp to permit http on private networks)`
+      );
+    }
+    if (!isPrivateHostname(parsed.hostname)) {
+      throw new HttpSandboxError(
+        `host URL ${hostUrl} uses plain http on a non-private host; the bearer token is only sent over http to loopback, RFC 1918, or .internal hosts`
+      );
+    }
   }
   if (parsed.origin === new URL(config.baseUrl).origin) {
     return;
@@ -229,6 +249,7 @@ async function createOnHost(
   config: ResolvedConfig,
   request: CreateSandboxRequest
 ): Promise<{ hostUrl: string; localId: string }> {
+  assertAllowedHostUrl(config, config.baseUrl);
   const url = `${config.baseUrl}/v1/sandboxes`;
   const body = JSON.stringify(request);
   let lastError: unknown;

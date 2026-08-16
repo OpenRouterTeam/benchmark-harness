@@ -66,6 +66,33 @@ describe("makeHarborSandboxLayer", () => {
     expect(exit._tag).toBe("Success");
   });
 
+  it("fails for a plain-http URL on a public host even when insecure is allowed", async () => {
+    const layer = makeHarborSandboxLayer(MODAL_CONFIG, {
+      [SANDBOX_BACKEND_ENV]: "http",
+      [SANDBOX_HTTP_URL_ENV]: "http://sandbox-lb.example.com",
+      [SANDBOX_HTTP_TOKEN_ENV]: "token",
+      [SANDBOX_HTTP_ALLOW_INSECURE_ENV]: "1",
+    });
+
+    const exit = await buildLayer(layer);
+
+    expect(exit._tag).toBe("Failure");
+    expect(causeText(exit)).toContain("non-private host");
+  });
+
+  it("builds the HTTP backend for a plain-http localhost URL when insecure is allowed", async () => {
+    const layer = makeHarborSandboxLayer(MODAL_CONFIG, {
+      [SANDBOX_BACKEND_ENV]: "http",
+      [SANDBOX_HTTP_URL_ENV]: "http://localhost:8700",
+      [SANDBOX_HTTP_TOKEN_ENV]: "token",
+      [SANDBOX_HTTP_ALLOW_INSECURE_ENV]: "1",
+    });
+
+    const exit = await buildLayer(layer);
+
+    expect(exit._tag).toBe("Success");
+  });
+
   it("fails for a plain-http URL when insecure is not allowed", async () => {
     const layer = makeHarborSandboxLayer(MODAL_CONFIG, {
       [SANDBOX_BACKEND_ENV]: "http",
