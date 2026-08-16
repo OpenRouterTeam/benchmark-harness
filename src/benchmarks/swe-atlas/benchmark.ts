@@ -21,8 +21,8 @@ import {
   SWE_ATLAS_RF_META,
   SWE_ATLAS_TW_META,
 } from "../benchmark-meta";
-import { makeModalSandboxLayer } from "../harbor/modal-sandbox";
 import { SandboxSession } from "../harbor/sandbox";
+import { makeHarborSandboxLayer } from "../harbor/sandbox-layer";
 import type { Benchmark, BenchmarkRunInput } from "../types";
 import { makeSweAtlasDatasetLayer, SWE_ATLAS_DATASET_IDS } from "./dataset";
 import type { SweAtlasTrack } from "./schema";
@@ -60,7 +60,7 @@ function makeSweAtlasLayer(
       sessionId: input.sessionId,
       ...(input.modelRetry !== undefined && { retry: input.modelRetry }),
     });
-  const sandboxLayer = makeModalSandboxLayer({
+  const sandboxLayer = makeHarborSandboxLayer({
     appName: "openrouter-swe-atlas",
     environment: benchmarkConfig.modalEnv,
   });

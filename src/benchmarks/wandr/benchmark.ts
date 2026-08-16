@@ -18,8 +18,8 @@ import {
 } from "../../providers/responses-model";
 import type { InferenceOverride, WandrConfig } from "../benchmark-config";
 import { WANDR_META } from "../benchmark-meta";
-import { makeModalSandboxLayer } from "../harbor/modal-sandbox";
 import { SandboxSession } from "../harbor/sandbox";
+import { makeHarborSandboxLayer } from "../harbor/sandbox-layer";
 import type { Benchmark, BenchmarkRunInput } from "../types";
 import { makeWandrDatasetLayer } from "./dataset";
 import { WANDR_DATASET_ID } from "./schema";
@@ -69,7 +69,7 @@ function makeWandrLayer(
       sessionId: input.sessionId,
       ...(input.modelRetry !== undefined && { retry: input.modelRetry }),
     });
-  const sandboxLayer = makeModalSandboxLayer({
+  const sandboxLayer = makeHarborSandboxLayer({
     appName: "openrouter-wandr",
     environment: benchmarkConfig.modalEnv,
   });

@@ -17,8 +17,8 @@ import {
   ResponsesModel,
 } from "../../providers/responses-model";
 import { DEEP_SWE_META } from "../benchmark-meta";
-import { makeModalSandboxLayer } from "../harbor/modal-sandbox";
 import { SandboxSession } from "../harbor/sandbox";
+import { makeHarborSandboxLayer } from "../harbor/sandbox-layer";
 import type { Benchmark, BenchmarkRunInput } from "../types";
 import { DEEP_SWE_DATASET_ID, makeDeepSweDatasetLayer } from "./dataset";
 import { deepSweScorer } from "./scorer";
@@ -52,7 +52,7 @@ function makeDeepSweLayer(
       sessionId: input.sessionId,
       ...(input.modelRetry !== undefined && { retry: input.modelRetry }),
     });
-  const sandboxLayer = makeModalSandboxLayer({
+  const sandboxLayer = makeHarborSandboxLayer({
     appName: "openrouter-deep-swe",
     environment: benchmarkConfig.modalEnv,
   });

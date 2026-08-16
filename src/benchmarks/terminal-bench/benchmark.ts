@@ -15,8 +15,8 @@ import { Solver } from "../../harness/solver";
 import { TERMINAL_BENCH_META } from "../benchmark-meta";
 import type { Benchmark, BenchmarkRunInput } from "../types";
 import { makeTerminalBenchDatasetLayer } from "./dataset";
-import { makeModalSandboxLayer } from "./modal-sandbox";
 import { SandboxSession } from "./sandbox";
+import { makeTerminalBenchSandboxLayer } from "./sandbox-layer";
 import { terminalBenchScorer } from "./scorer";
 import type { TerminalBenchSolverOpts } from "./solver";
 import { piSolver } from "./solver";
@@ -53,7 +53,7 @@ function makeTerminalBenchLayer(
       maxAgentTimeoutSec: benchmarkConfig.maxAgentTimeoutSec,
     }),
   });
-  const sandboxLayer: Layer<SandboxSession> = makeModalSandboxLayer({
+  const sandboxLayer: Layer<SandboxSession> = makeTerminalBenchSandboxLayer({
     environment: benchmarkConfig.modalEnv,
   });
   const solverLayer = layerEffect(Solver)(

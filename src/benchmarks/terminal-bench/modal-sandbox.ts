@@ -23,7 +23,7 @@ import {
   toSolverError,
 } from "./sandbox";
 
-interface ModalSandboxConfig {
+export interface ModalSandboxConfig {
   readonly environment?: string;
   readonly tokenId?: string;
   readonly tokenSecret?: string;
