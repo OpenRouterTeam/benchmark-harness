@@ -123,7 +123,11 @@ export function runAgentCli(input: {
     isolateAgentConfig: opts.isolateAgentConfig === true,
   });
   return gen(function* () {
-    if (opts.sessionId !== undefined && !isSafeOriSessionId(opts.sessionId)) {
+    if (
+      opts.sessionId !== undefined &&
+      opts.sessionId.length > 0 &&
+      !isSafeOriSessionId(opts.sessionId)
+    ) {
       return yield* new SolverError({
         message: `sessionId contains a control character, which ori replaces with a fresh UUID and silently detaches the run from its generations (id=${JSON.stringify(opts.sessionId)})`,
       });

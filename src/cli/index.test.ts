@@ -109,6 +109,29 @@ describe("bench-harness CLI", () => {
     });
   });
 
+  it("treats an empty run identifier as unset rather than malformed", () => {
+    const prev = process.env["BENCH_CHILD_WORKFLOW_ID"];
+    process.env["BENCH_CHILD_WORKFLOW_ID"] = "";
+    try {
+      expect(() =>
+        buildBenchmarkConfig({
+          benchmarkId: "terminal_bench",
+          model: "anthropic/claude-opus-5",
+          panelConfig: undefined,
+          artifactDir: undefined,
+          endpointId: undefined,
+          imageDetail: undefined,
+        })
+      ).not.toThrow();
+    } finally {
+      if (prev === undefined) {
+        delete process.env["BENCH_CHILD_WORKFLOW_ID"];
+      } else {
+        process.env["BENCH_CHILD_WORKFLOW_ID"] = prev;
+      }
+    }
+  });
+
   it("rejects the removed legacy thinking field", () => {
     expect(() =>
       buildBenchmarkConfig({

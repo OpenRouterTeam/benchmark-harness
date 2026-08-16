@@ -353,7 +353,11 @@ export function makeDeepSweSolver(
           },
           completed: true,
         };
-      }).pipe(ensureDestroy(agentSession, { skipOnInterrupt: true }));
+      }).pipe(
+        ensureDestroy(agentSession, {
+          skipOnInterrupt: cliHarness === undefined,
+        })
+      );
       return result;
     });
 }

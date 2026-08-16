@@ -113,7 +113,8 @@ function resolveTotalEvaluations(
 
 function resolveSessionId(): string {
   const envOpt = runSync(string("BENCH_CHILD_WORKFLOW_ID").pipe(option));
-  const fromEnv = getOrNull(envOpt);
+  const raw = getOrNull(envOpt);
+  const fromEnv = raw === null || raw.length === 0 ? null : raw;
   if (fromEnv !== null && !isSafeOriSessionId(fromEnv)) {
     throw new Error(
       `BENCH_CHILD_WORKFLOW_ID contains a control character, which ori replaces with a fresh UUID and silently detaches the run from its generations (got ${JSON.stringify(fromEnv)}).`

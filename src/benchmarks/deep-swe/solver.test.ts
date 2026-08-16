@@ -212,10 +212,12 @@ const CLAUDE_STREAM = [
 
 function fakeCliSandbox(
   log: SandboxLog,
-  rewardJson: string
+  rewardJson: string,
+  onDestroy?: () => void
 ): Layer<SandboxSession> {
   return makeFakeSandboxLayer({
     onCreate: (input) => log.creates.push(input),
+    ...(onDestroy !== undefined && { onDestroy }),
     onUploadFile: (localPath, remotePath) =>
       log.uploads.push({ localPath, remotePath }),
     execHandler: (argv, env): ExecResult => {
@@ -340,6 +342,19 @@ describe("deep-swe claude agent via ori", () => {
       { ...SOLVER_OPTS, agent: "claude" }
     );
     expect(finalState.output?.generationTimeMs).toBe(9876);
+  });
+
+  it("does not retain an unreachable sandbox on the cli path", async () => {
+    const log = newLog();
+    let destroyed = 0;
+    await runDeepSweSolver(
+      scriptedModel(newConfigRecord()),
+      fakeCliSandbox(log, '{"reward": 1}', () => {
+        destroyed += 1;
+      }),
+      { ...SOLVER_OPTS, agent: "claude" }
+    );
+    expect(destroyed).toBeGreaterThan(0);
   });
 
   it("carries agent usage and counters into the result", async () => {
