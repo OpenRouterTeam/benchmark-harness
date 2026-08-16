@@ -24,6 +24,7 @@ interface FakeHostOptions {
 
 interface RecordedRequest {
   readonly method: string;
+  readonly origin: string;
   readonly path: string;
   readonly authorization: string | null;
   readonly redirect: RequestRedirect | undefined;
@@ -61,6 +62,7 @@ function makeFakeHost(options: FakeHostOptions = {}): FakeHost {
     const headers = new Headers(init?.headers);
     requests.push({
       method,
+      origin: url.origin,
       path: url.pathname,
       authorization: headers.get("authorization"),
       redirect: init?.redirect,
@@ -256,6 +258,32 @@ describe("makeHttpSandboxLayer create", () => {
 
     expect(exit._tag).toBe("Failure");
     expect(host.destroyed).toEqual(["sbx-1"]);
+  });
+
+  it("rejects a non-http(s) host URL even when insecure http is allowed", async () => {
+    const host = makeFakeHost({
+      hostUrlOverride: "ftp://sandbox-host-1.internal",
+    });
+
+    const exit = await createSessionExit(host, { allowInsecureHttp: true });
+
+    expect(exit._tag).toBe("Failure");
+    expect(host.destroyed).toEqual(["sbx-1"]);
+    const origins = new Set(host.requests.map((r) => r.origin));
+    expect(origins).toEqual(new Set([new URL(BASE_URL).origin]));
+  });
+
+  it("never sends the cleanup request to a disallowed host URL", async () => {
+    const host = makeFakeHost({
+      hostUrlOverride: "http://evil.example.com",
+    });
+
+    const exit = await createSessionExit(host);
+
+    expect(exit._tag).toBe("Failure");
+    expect(host.destroyed).toEqual(["sbx-1"]);
+    const origins = new Set(host.requests.map((r) => r.origin));
+    expect(origins).toEqual(new Set([new URL(BASE_URL).origin]));
   });
 
   it("uploads configured files before returning", async () => {

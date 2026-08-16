@@ -17,6 +17,7 @@ import type { ZodType } from "zod";
 import { object as zodObject, string as zodString } from "zod";
 
 import type { SolverError } from "../../harness/core";
+import { wLog } from "../../internal/log";
 import { firstZodIssueMessage, parseSchema } from "../../internal/zod";
 import type {
   CreateSandboxRequest,
@@ -167,9 +168,12 @@ function assertAllowedHostUrl(config: ResolvedConfig, hostUrl: string): void {
   } catch {
     throw new HttpSandboxError(`host URL ${hostUrl} is not a valid URL`);
   }
-  if (parsed.protocol !== "https:" && !config.allowInsecureHttp) {
+  const isAllowedProtocol =
+    parsed.protocol === "https:" ||
+    (config.allowInsecureHttp && parsed.protocol === "http:");
+  if (!isAllowedProtocol) {
     throw new HttpSandboxError(
-      `host URL ${hostUrl} must use https (set allowInsecureHttp for private networks)`
+      `host URL ${hostUrl} must use https (set allowInsecureHttp to permit http on private networks)`
     );
   }
   if (parsed.origin === new URL(config.baseUrl).origin) {
@@ -186,7 +190,10 @@ function assertAllowedHostUrl(config: ResolvedConfig, hostUrl: string): void {
   }
 }
 
-const LeakedSandboxSchema = zodObject({ sandboxId: zodString() });
+const LeakedSandboxSchema = zodObject({
+  sandboxId: zodString(),
+  hostUrl: zodString().optional().catch(undefined),
+});
 
 async function destroyLeakedSandbox(
   config: ResolvedConfig,
@@ -196,8 +203,29 @@ async function destroyLeakedSandbox(
   if (parsed._tag === "Left") {
     return;
   }
-  await destroyOnHost(config, config.baseUrl, parsed.right.sandboxId).catch(
-    () => undefined
+  const { sandboxId, hostUrl } = parsed.right;
+  const destroyUrls = [config.baseUrl];
+  if (hostUrl !== undefined) {
+    const candidate = stripTrailingSlash(hostUrl);
+    try {
+      assertAllowedHostUrl(config, candidate);
+      if (candidate !== config.baseUrl) {
+        destroyUrls.unshift(candidate);
+      }
+    } catch {
+      // never send credentials to a host that failed validation
+    }
+  }
+  for (const url of destroyUrls) {
+    try {
+      await destroyOnHost(config, url, sandboxId);
+      return;
+    } catch {
+      // try the next candidate
+    }
+  }
+  wLog(
+    `failed to clean up leaked sandbox ${sandboxId} (tried ${destroyUrls.join(", ")})`
   );
 }
 
