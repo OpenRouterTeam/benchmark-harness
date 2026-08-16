@@ -3,6 +3,7 @@ import { describe, expect, test } from "bun:test";
 import { VGI_BENCH_DEFAULT_REVISION } from "../src/benchmarks/vgi-bench/benchmark";
 import type { ManifestEntry } from "./mirror-vgi-bench-media";
 import {
+  describeFailure,
   extensionOf,
   hashManifest,
   readOptions,
@@ -71,6 +72,18 @@ describe("readOptions", () => {
   test("rejects invalid numeric flags", () => {
     expect(() => readOptions(["--concurrency=0"])).toThrow();
     expect(() => readOptions(["--limit=abc"])).toThrow();
+  });
+});
+
+describe("describeFailure", () => {
+  test("reports the message of an error", () => {
+    expect(describeFailure(new Error("Download failed with 503"))).toBe(
+      "Download failed with 503"
+    );
+  });
+
+  test("stringifies non-error causes", () => {
+    expect(describeFailure("socket hang up")).toBe("socket hang up");
   });
 });
 

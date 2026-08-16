@@ -81,11 +81,18 @@ interface Manifest {
   readonly questionCount: number;
   readonly manifestHash: string;
   readonly videos: readonly ManifestEntry[];
-  readonly unresolved: readonly {
-    videoId: string;
-    attempted: readonly string[];
-  }[];
+  readonly unresolved: readonly UnresolvedEntry[];
 }
+
+interface UnresolvedEntry {
+  readonly videoId: string;
+  readonly attempted: readonly string[];
+  readonly reason: string;
+}
+
+type MirrorOutcome =
+  | { readonly kind: "mirrored"; readonly entry: ManifestEntry }
+  | { readonly kind: "unresolved"; readonly reason: string };
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -222,15 +229,22 @@ async function resolveSourceUrl(
   return undefined;
 }
 
+export function describeFailure(cause: unknown): string {
+  return cause instanceof Error ? cause.message : String(cause);
+}
+
 async function mirrorVideo(
   video: SourceVideo,
   env: MirrorEnv,
   options: MirrorOptions,
   s3: S3Client
-): Promise<ManifestEntry | undefined> {
+): Promise<MirrorOutcome> {
   const source = await resolveSourceUrl(video);
   if (source === undefined) {
-    return undefined;
+    return {
+      kind: "unresolved",
+      reason: "no candidate URL responded with 2xx",
+    };
   }
   const extension = extensionOf(source.url);
   const contentType = CONTENT_TYPES[extension] ?? "application/octet-stream";
@@ -253,17 +267,17 @@ async function mirrorVideo(
     sha256,
   };
   if (options.dryRun) {
-    return entry;
+    return { kind: "mirrored", entry };
   }
   const target = s3.file(key);
   if (!options.force) {
     const existing = await target.stat().catch(() => undefined);
     if (existing !== undefined && existing.size === bytes.byteLength) {
-      return entry;
+      return { kind: "mirrored", entry };
     }
   }
   await target.write(bytes, { type: contentType });
-  return entry;
+  return { kind: "mirrored", entry };
 }
 
 async function mapWithConcurrency<T, R>(
@@ -318,26 +332,40 @@ async function main(): Promise<void> {
     videos,
     options.concurrency,
     async (video) => {
-      const entry = await mirrorVideo(video, env, options, s3);
+      const outcome = await mirrorVideo(video, env, options, s3).catch(
+        (cause: unknown): MirrorOutcome => ({
+          kind: "unresolved",
+          reason: describeFailure(cause),
+        })
+      );
       done += 1;
       process.stderr.write(
-        `[${done}/${videos.length}] ${video.videoId} ${entry === undefined ? "UNRESOLVED" : entry.sourceKind}\n`
+        `[${done}/${videos.length}] ${video.videoId} ${
+          outcome.kind === "mirrored"
+            ? outcome.entry.sourceKind
+            : `UNRESOLVED ${outcome.reason}`
+        }\n`
       );
-      return { video, entry };
+      return { video, outcome };
     }
   );
-  const entries = outcomes
-    .map((outcome) => outcome.entry)
-    .filter((entry): entry is ManifestEntry => entry !== undefined);
-  const unresolved = outcomes
-    .filter((outcome) => outcome.entry === undefined)
-    .map((outcome) => ({
-      videoId: outcome.video.videoId,
-      attempted: [
-        downscaledVideoUrl(outcome.video.originalUrl),
-        outcome.video.originalUrl,
-      ],
-    }));
+  const entries = outcomes.flatMap(({ outcome }) =>
+    outcome.kind === "mirrored" ? [outcome.entry] : []
+  );
+  const unresolved = outcomes.flatMap(({ video, outcome }) =>
+    outcome.kind === "mirrored"
+      ? []
+      : [
+          {
+            videoId: video.videoId,
+            attempted: [
+              downscaledVideoUrl(video.originalUrl),
+              video.originalUrl,
+            ],
+            reason: outcome.reason,
+          },
+        ]
+  );
   const manifest: Manifest = {
     dataset: VGI_BENCH_DATASET_PATH,
     config: VGI_BENCH_CONFIG,
