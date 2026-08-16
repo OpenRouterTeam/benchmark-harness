@@ -1,6 +1,13 @@
 import { currentTimeMillis } from "effect/Clock";
 import type { Effect } from "effect/Effect";
-import { forEach, gen } from "effect/Effect";
+import {
+  catchAll,
+  catchAllDefect,
+  forEach,
+  gen,
+  map,
+  succeed,
+} from "effect/Effect";
 
 import { SolverError } from "../../harness/core";
 import { recordGenerationId } from "../../runtime/generation-ids";
@@ -16,6 +23,45 @@ import {
 const EXIT_DETAIL_TAIL_CHARS = 500;
 
 export const ORI_SESSION_ID_ENV = "ORI_OPENROUTER_SESSION_ID" as const;
+
+export const AGENT_EXEC_UNAVAILABLE_EXIT = -1;
+
+const LOG_RECOVERY_TIMEOUT_MS = 60000;
+
+function recoverAfterExecFailure(
+  session: SandboxSessionInstance,
+  harness: OriHarnessDef,
+  execError: string
+): Effect<
+  {
+    readonly stdout: string;
+    readonly exitCode: number;
+    readonly execError: string;
+  },
+  never
+> {
+  return recoverAgentLog(session, harness.remoteLogPath).pipe(
+    map((stdout) => ({
+      stdout,
+      exitCode: AGENT_EXEC_UNAVAILABLE_EXIT,
+      execError,
+    }))
+  );
+}
+
+function unknownToMessage(value: unknown): string {
+  return value instanceof Error ? value.message : String(value);
+}
+
+function recoverAgentLog(
+  session: SandboxSessionInstance,
+  logPath: string
+): Effect<string, never> {
+  return session.exec(["cat", logPath], {}, LOG_RECOVERY_TIMEOUT_MS).pipe(
+    map((read) => read.stdout),
+    catchAll(() => succeed(""))
+  );
+}
 
 const CONTROL_CHAR_MAX = 0x1f;
 
@@ -133,12 +179,19 @@ export function runAgentCli(input: {
       });
     }
     const startedAt = yield* currentTimeMillis;
-    const run = yield* session.exec(
-      ["bash", "-c", script],
-      buildAgentCliEnv(opts),
-      timeoutMs
-    );
+    const outcome = yield* session
+      .exec(["bash", "-c", script], buildAgentCliEnv(opts), timeoutMs)
+      .pipe(
+        map((run) => ({ stdout: run.stdout, exitCode: run.exitCode })),
+        catchAll((cause) =>
+          recoverAfterExecFailure(session, harness, cause.message)
+        ),
+        catchAllDefect((defect) =>
+          recoverAfterExecFailure(session, harness, unknownToMessage(defect))
+        )
+      );
     const elapsedMs = (yield* currentTimeMillis) - startedAt;
+    const run = outcome;
     const parsed = harness.parseRun(run.stdout);
     yield* forEach(parsed.generationIds, (id) => recordGenerationId(id), {
       discard: true,
@@ -154,6 +207,9 @@ export function runAgentCli(input: {
         isError: parsed.isError,
         apiErrorStatus: parsed.apiErrorStatus,
         eventStream: run.stdout,
+        ...("execError" in run && run.execError !== undefined
+          ? { execError: run.execError }
+          : {}),
       }),
     };
   });
@@ -165,12 +221,22 @@ export function buildFailureDetail(input: {
   readonly isError: boolean;
   readonly apiErrorStatus: string | undefined;
   readonly eventStream: string;
+  readonly execError?: string;
 }): string {
-  const { agentId, exitCode, isError, apiErrorStatus, eventStream } = input;
-  if (exitCode === 0 && !isError && apiErrorStatus === undefined) {
+  const { agentId, exitCode, isError, apiErrorStatus, eventStream, execError } =
+    input;
+  if (
+    exitCode === 0 &&
+    !isError &&
+    apiErrorStatus === undefined &&
+    execError === undefined
+  ) {
     return "";
   }
   const reasons: string[] = [];
+  if (execError !== undefined) {
+    reasons.push(`exec did not complete: ${execError}`);
+  }
   if (exitCode !== 0) {
     reasons.push(`exited ${exitCode}`);
   }

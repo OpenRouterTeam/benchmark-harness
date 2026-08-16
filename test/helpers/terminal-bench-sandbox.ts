@@ -23,6 +23,8 @@ export interface FakeTerminalBenchBehavior {
   readonly execCalls?: FakeTerminalBenchExecCall[];
   readonly creates?: CreateSessionInput[];
   readonly uploadedDirs?: { localDir: string; remoteDir: string }[];
+  readonly failAgentExec?: boolean;
+  readonly recoveredLog?: string;
 }
 
 const AGENT_COMMAND_MARKERS = ["pi --print", "pi ", "ori claude"] as const;
@@ -44,7 +46,17 @@ export function makeTerminalBenchFakeSandboxLayer(
     execHandler: (argv, env, timeoutMs): ExecResult => {
       behavior.execCalls?.push({ argv: [...argv], env: { ...env }, timeoutMs });
       const joined = argv.join(" ");
+      if (joined.startsWith("cat /logs/agent/")) {
+        return {
+          stdout: behavior.recoveredLog ?? "",
+          stderr: "",
+          exitCode: 0,
+        };
+      }
       if (isAgentCommand(joined)) {
+        if (behavior.failAgentExec === true) {
+          throw new Error("Deadline exceeded while streaming stdio for exec");
+        }
         return {
           stdout: behavior.agentEventStream ?? "",
           stderr: "",

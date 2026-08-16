@@ -217,6 +217,24 @@ describe("terminal-bench ori solver", () => {
     expect(uploadedDirs[0]?.localDir).toContain("adaptive-rejection-sampler");
   });
 
+  it("recovers cost and generation ids when the agent exec never returns", async () => {
+    const layer = makeTerminalBenchFakeSandboxLayer({
+      reward: 0,
+      testOutput: "1 failed",
+      failAgentExec: true,
+      recoveredLog: CLAUDE_STREAM,
+      agentExitCode: 0,
+    });
+    const finalState = await runOriSolver(layer);
+    expect(finalState.output?.usage?.totalCost).toBe(0.0222525);
+    expect(finalState.sample.metadata?.["generationIds"]).toEqual([
+      GENERATION_ID,
+      SECOND_GENERATION_ID,
+    ]);
+    const meta = readTerminalBenchMeta(finalState.sample.metadata);
+    expect(meta?.testOutput).toContain("exec did not complete");
+  });
+
   it("records the agent identity in sample metadata", async () => {
     const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
