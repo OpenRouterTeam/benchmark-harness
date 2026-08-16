@@ -33,6 +33,7 @@ interface RecordedRequest {
 interface FakeHost {
   readonly fetchFn: typeof fetch;
   readonly requests: RecordedRequest[];
+  readonly createBodies: { timeoutSec: number }[];
   readonly execs: { argv: string[]; env: Record<string, string> }[];
   readonly files: Map<string, Uint8Array>;
   readonly destroyed: string[];
@@ -40,6 +41,7 @@ interface FakeHost {
 
 function makeFakeHost(options: FakeHostOptions = {}): FakeHost {
   const requests: RecordedRequest[] = [];
+  const createBodies: { timeoutSec: number }[] = [];
   const execs: { argv: string[]; env: Record<string, string> }[] = [];
   const files = new Map<string, Uint8Array>();
   const destroyed: string[] = [];
@@ -68,6 +70,9 @@ function makeFakeHost(options: FakeHostOptions = {}): FakeHost {
       redirect: init?.redirect,
     });
     if (method === "POST" && url.pathname === "/v1/sandboxes") {
+      createBodies.push(
+        JSON.parse(String(init?.body)) as { timeoutSec: number }
+      );
       if (createRejectionsLeft > 0) {
         createRejectionsLeft -= 1;
         return json({ error: "no capacity" }, 429);
@@ -132,7 +137,7 @@ function makeFakeHost(options: FakeHostOptions = {}): FakeHost {
     }
     return json({ error: `unhandled ${method} ${url.pathname}` }, 500);
   }) as typeof fetch;
-  return { fetchFn, requests, execs, files, destroyed };
+  return { fetchFn, requests, createBodies, execs, files, destroyed };
 }
 
 function makeLayer(
@@ -194,6 +199,14 @@ describe("makeHttpSandboxLayer create", () => {
       localId: "sbx-1",
     });
     expect(host.execs.map((e) => e.argv[0])).toEqual(["mkdir", "true"]);
+  });
+
+  it("rounds fractional timeouts up to whole seconds on the wire", async () => {
+    const host = makeFakeHost();
+
+    await createSession(host, { ...CREATE_INPUT, timeoutSec: 599.2 });
+
+    expect(host.createBodies.map((b) => b.timeoutSec)).toEqual([600]);
   });
 
   it("sends the bearer token on every request", async () => {

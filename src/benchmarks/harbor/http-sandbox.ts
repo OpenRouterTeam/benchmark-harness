@@ -516,7 +516,7 @@ export function makeHttpSandboxService(
           sessionInput.imageBuildSteps.length > 0 && {
             imageBuildSteps: [...sessionInput.imageBuildSteps],
           }),
-        timeoutSec: sessionInput.timeoutSec,
+        timeoutSec: Math.ceil(sessionInput.timeoutSec),
         cpus: sessionInput.cpus,
         memoryMb: sessionInput.memoryMb,
         allowInternet: sessionInput.allowInternet,
