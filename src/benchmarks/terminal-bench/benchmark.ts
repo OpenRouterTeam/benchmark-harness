@@ -12,16 +12,19 @@ import {
 import type { Dataset } from "../../harness/dataset";
 import { Scorer } from "../../harness/scorer";
 import { Solver } from "../../harness/solver";
+import { getOriHarness } from "../agent-cli/harness";
 import { TERMINAL_BENCH_META } from "../benchmark-meta";
+import { makeModalSandboxLayer } from "../harbor/modal-sandbox";
+import { SandboxSession } from "../harbor/sandbox";
 import type { Benchmark, BenchmarkRunInput } from "../types";
 import { makeTerminalBenchDatasetLayer } from "./dataset";
-import { makeModalSandboxLayer } from "./modal-sandbox";
-import { SandboxSession } from "./sandbox";
+import type { OriSolverOpts } from "./ori-solver";
+import { oriSolver } from "./ori-solver";
 import { terminalBenchScorer } from "./scorer";
-import type { TerminalBenchSolverOpts } from "./solver";
-import { piSolver } from "./solver";
 
 export const TERMINAL_BENCH_ID = TERMINAL_BENCH_META.id;
+
+const TERMINAL_BENCH_APP_NAME = "openrouter-terminal-bench" as const;
 
 function makeTerminalBenchLayer(
   input: BenchmarkRunInput
@@ -32,18 +35,33 @@ function makeTerminalBenchLayer(
       new Error("terminal_bench received mismatched benchmarkConfig")
     );
   }
-  const solverOpts: TerminalBenchSolverOpts = {
+  const { agent } = benchmarkConfig;
+  const oriSolverOpts: OriSolverOpts = {
     model: benchmarkConfig.model,
     apiKey: input.apiKey,
     sessionId: input.sessionId,
     ...(benchmarkConfig.endpointId !== undefined && {
       endpointId: benchmarkConfig.endpointId,
     }),
-    thinking: benchmarkConfig.thinking,
-    piPackage: benchmarkConfig.piPackage,
+    ...(benchmarkConfig.agentPackage !== undefined && {
+      agentPackage: benchmarkConfig.agentPackage,
+    }),
+    oriInstallUrl: benchmarkConfig.oriInstallUrl,
     ...(benchmarkConfig.appendSystemPrompt !== undefined && {
       appendSystemPrompt: benchmarkConfig.appendSystemPrompt,
     }),
+    ...(benchmarkConfig.systemPrompt !== undefined && {
+      systemPrompt: benchmarkConfig.systemPrompt,
+    }),
+    agentReasoningEffort: benchmarkConfig.agentReasoningEffort,
+    oriChannel: benchmarkConfig.oriChannel,
+    ...(benchmarkConfig.allowedTools !== undefined && {
+      allowedTools: benchmarkConfig.allowedTools,
+    }),
+    ...(benchmarkConfig.disallowedTools !== undefined && {
+      disallowedTools: benchmarkConfig.disallowedTools,
+    }),
+    isolateAgentConfig: benchmarkConfig.isolateAgentConfig,
   };
   const datasetLayer = makeTerminalBenchDatasetLayer({
     ...(benchmarkConfig.taskSubset !== undefined && {
@@ -54,12 +72,15 @@ function makeTerminalBenchLayer(
     }),
   });
   const sandboxLayer: Layer<SandboxSession> = makeModalSandboxLayer({
+    appName: TERMINAL_BENCH_APP_NAME,
     environment: benchmarkConfig.modalEnv,
   });
   const solverLayer = layerEffect(Solver)(
     gen(function* () {
       const sessionFactory = yield* SandboxSession;
-      return Solver.of(piSolver(sessionFactory, solverOpts));
+      return Solver.of(
+        oriSolver(sessionFactory, oriSolverOpts, getOriHarness(agent))
+      );
     })
   );
   const scorerLayer = layerSucceed(Scorer, Scorer.of(terminalBenchScorer));

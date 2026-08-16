@@ -102,4 +102,30 @@ NETWORK("terminal-bench task.toml schema (checked-out tree)", () => {
     expect(meta?.maxAgentTimeoutSec).toBeGreaterThan(0);
     expect(["easy", "medium", "hard"]).toContain(meta?.difficulty);
   });
+
+  it("taskToSample carries the declared resources and network policy", () => {
+    const task = loadTask("adaptive-rejection-sampler", tasksDir);
+    const meta = readTerminalBenchMeta(taskToSample(task).metadata);
+    expect(meta?.cpus).toBe(task.taskToml.environment.cpus);
+    expect(meta?.memoryMb).toBe(task.taskToml.environment.memory_mb);
+    expect(meta?.gpus).toBe(task.taskToml.environment.gpus);
+    expect(meta?.allowInternet).toBe(task.taskToml.environment.allow_internet);
+  });
+
+  it("preserves every task's declared cpus and memory rather than defaulting", () => {
+    const ids = listTaskIds(tasksDir);
+    const mismatched = ids.filter((id) => {
+      const task = loadTask(id, tasksDir);
+      const meta = readTerminalBenchMeta(taskToSample(task).metadata);
+      return (
+        meta?.cpus !== task.taskToml.environment.cpus ||
+        meta?.memoryMb !== task.taskToml.environment.memory_mb
+      );
+    });
+    expect(mismatched).toEqual([]);
+    const aboveDefaultMemory = ids.filter(
+      (id) => loadTask(id, tasksDir).taskToml.environment.memory_mb > 2048
+    );
+    expect(aboveDefaultMemory.length).toBeGreaterThan(0);
+  });
 });

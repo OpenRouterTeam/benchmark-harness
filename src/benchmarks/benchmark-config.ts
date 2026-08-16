@@ -7,6 +7,15 @@ import { ProviderSort } from "../internal/enums";
 import type { ValueOf } from "../internal/guards";
 import { z, zDefaultedText, zInt } from "../internal/zod";
 import {
+  DEFAULT_HARBOR_AGENT,
+  DEFAULT_ORI_CHANNEL,
+  DEFAULT_ORI_INSTALL_URL,
+  DEFAULT_ORI_REASONING_EFFORT,
+  HARBOR_AGENTS,
+  ORI_CHANNELS,
+  ORI_REASONING_EFFORTS,
+} from "./agent-cli/schema";
+import {
   TAU3_BENCH_BANKING_META,
   TAU_BENCH_AIRLINE_META,
 } from "./benchmark-meta";
@@ -16,8 +25,8 @@ import { SearchLaneConfigSchema } from "./search/core/config";
 import { DEFAULT_JUDGE_MODEL, DEFAULT_STEP_LIMIT } from "./swe-atlas/schema";
 import { BankingRetrievalConfigSchema } from "./tau3-bench-banking/retrieval-config";
 import {
-  DEFAULT_PI_PACKAGE,
-  PI_THINKING_LEVELS,
+  DEFAULT_TERMINAL_BENCH_AGENT,
+  TERMINAL_BENCH_AGENTS,
 } from "./terminal-bench/schema";
 import { WandrOptionsSchema } from "./wandr/schema";
 
@@ -132,9 +141,18 @@ export const TerminalBenchOptionsSchema = z.object({
   maxAgentTimeoutSec: z.number().positive().optional(),
   taskSubset: z.array(z.string()).optional(),
   modalEnv: z.string().default("main"),
-  thinking: z.enum(PI_THINKING_LEVELS).default("medium"),
-  piPackage: z.string().default(DEFAULT_PI_PACKAGE),
   appendSystemPrompt: z.string().optional(),
+  agent: z.enum(TERMINAL_BENCH_AGENTS).default(DEFAULT_TERMINAL_BENCH_AGENT),
+  agentPackage: z.string().optional(),
+  oriInstallUrl: z.string().default(DEFAULT_ORI_INSTALL_URL),
+  agentReasoningEffort: z
+    .enum(ORI_REASONING_EFFORTS)
+    .default(DEFAULT_ORI_REASONING_EFFORT),
+  oriChannel: z.enum(ORI_CHANNELS).default(DEFAULT_ORI_CHANNEL),
+  systemPrompt: z.string().optional(),
+  allowedTools: z.array(z.string()).optional(),
+  disallowedTools: z.array(z.string()).optional(),
+  isolateAgentConfig: z.boolean().default(false),
 });
 
 export const TerminalBenchConfigSchema = z.object({
@@ -170,6 +188,18 @@ const AgenticOptionsSchema = z.object({
   taskSubset: z.array(z.string()).optional(),
   maxAgentTimeoutSec: z.number().positive().optional(),
   modalEnv: z.string().default("main"),
+  agent: z.enum(HARBOR_AGENTS).default(DEFAULT_HARBOR_AGENT),
+  agentPackage: z.string().optional(),
+  oriInstallUrl: z.string().default(DEFAULT_ORI_INSTALL_URL),
+  agentReasoningEffort: z
+    .enum(ORI_REASONING_EFFORTS)
+    .default(DEFAULT_ORI_REASONING_EFFORT),
+  oriChannel: z.enum(ORI_CHANNELS).default(DEFAULT_ORI_CHANNEL),
+  systemPrompt: z.string().optional(),
+  appendSystemPrompt: z.string().optional(),
+  allowedTools: z.array(z.string()).optional(),
+  disallowedTools: z.array(z.string()).optional(),
+  isolateAgentConfig: z.boolean().default(false),
 });
 
 export const SweAtlasOptionsSchema = z.object({
@@ -356,6 +386,20 @@ export function isSearchBenchmarkConfig(
   config: BenchmarkRunConfig
 ): config is SearchBenchmarkConfig {
   return SEARCH_BENCHMARK_ID_SET.has(config.benchmarkId);
+}
+
+export function knownBenchmarkOptionKeys(
+  benchmarkId: ModelBenchmarkId
+): ReadonlySet<string> {
+  return new Set([
+    ...Object.keys(BENCHMARK_OPTIONS_SCHEMAS[benchmarkId].shape),
+    ...Object.keys(ModelBenchmarkBaseSchema.shape),
+    "benchmarkId",
+  ]);
+}
+
+export function isModelBenchmarkId(id: string): id is ModelBenchmarkId {
+  return Object.hasOwn(BENCHMARK_OPTIONS_SCHEMAS, id);
 }
 
 export function modelFromConfig(

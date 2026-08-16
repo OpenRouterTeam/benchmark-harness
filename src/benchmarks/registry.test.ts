@@ -17,6 +17,7 @@ describe("benchmark registry", () => {
     restoreNetwork?.();
     restoreNetwork = undefined;
   });
+
   it("resolves gpqa_diamond with a complete definition", () => {
     const b = getBenchmark("gpqa_diamond");
     expect(b).toBeDefined();
@@ -26,6 +27,7 @@ describe("benchmark registry", () => {
     expect(typeof b?.makeLayer).toBe("function");
     expect(typeof b?.makeDatasetLayer).toBe("function");
   });
+
   it("dispatches runBenchmarkById through the registry entry", async () => {
     restoreNetwork = blockNetwork();
     const result = await runBenchmarkById({
@@ -41,6 +43,7 @@ describe("benchmark registry", () => {
     });
     assertLeft(result);
   });
+
   it("resolves all swe-atlas tracks as distinct benchmarks", () => {
     for (const id of [
       "swe_atlas_qa",
@@ -53,6 +56,7 @@ describe("benchmark registry", () => {
       expect(typeof b?.makeDatasetLayer).toBe("function");
     }
   });
+
   it("registers search_hle with the default search lane", () => {
     const benchmark = getBenchmark("search_hle");
     expect(benchmark?.id).toBe("search_hle");
@@ -68,6 +72,7 @@ describe("benchmark registry", () => {
       lane: { webSearch: "server-tool", engine: "auto" },
     });
   });
+
   it("registers search_dsqa with workflow metadata and the default search lane", () => {
     const benchmark = getBenchmark("search_dsqa");
     expect(benchmark?.id).toBe("search_dsqa");
@@ -85,6 +90,7 @@ describe("benchmark registry", () => {
       lane: { webSearch: "server-tool", engine: "auto" },
     });
   });
+
   it("narrows parsed benchmark configs to the search family", () => {
     expect(
       isSearchBenchmarkConfig({
@@ -97,6 +103,7 @@ describe("benchmark registry", () => {
       isSearchBenchmarkConfig({ benchmarkId: "gpqa_diamond", model: "model" })
     ).toBe(false);
   });
+
   it("registers WideSearch with the default search lane", () => {
     const benchmark = getBenchmark("search_widesearch");
     expect(benchmark?.id).toBe("search_widesearch");
@@ -113,6 +120,7 @@ describe("benchmark registry", () => {
       lane: { webSearch: "server-tool", engine: "auto" },
     });
   });
+
   it("registers WANDR with research-tool defaults and fractional scoring", () => {
     const benchmark = getBenchmark("wandr");
     const config = parseSchema(BenchmarkRunConfigSchema, {
@@ -133,6 +141,7 @@ describe("benchmark registry", () => {
       ],
     });
   });
+
   it("parses a swe-atlas config and fills judge/step/modal defaults", () => {
     const result = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "swe_atlas_qa",
@@ -146,13 +155,192 @@ describe("benchmark registry", () => {
     expect(result.right.stepLimit).toBe(250);
     expect(result.right.modalEnv).toBe("main");
   });
+
+  it("defaults terminal-bench to the pi agent and the ori install url", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "terminal_bench",
+      model: "anthropic/claude-opus-5",
+    });
+    assertRight(result);
+    if (result.right.benchmarkId !== "terminal_bench") {
+      throw new Error("expected terminal_bench config");
+    }
+    expect(result.right.agent).toBe("pi");
+    expect(result.right.oriInstallUrl).toBe(
+      "https://openrouter.ai/labs/ori/install.sh"
+    );
+    expect(result.right.oriChannel).toBe("stable");
+  });
+
+  it("parses an ori agent selection for terminal-bench", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "terminal_bench",
+      model: "anthropic/claude-opus-5",
+      agent: "claude",
+    });
+    assertRight(result);
+    if (result.right.benchmarkId !== "terminal_bench") {
+      throw new Error("expected terminal_bench config");
+    }
+    expect(result.right.agent).toBe("claude");
+  });
+
+  it("exposes the full terminal-bench agent control surface with defaults", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "terminal_bench",
+      model: "anthropic/claude-opus-5",
+    });
+    assertRight(result);
+    if (result.right.benchmarkId !== "terminal_bench") {
+      throw new Error("expected terminal_bench config");
+    }
+    expect(result.right.agentReasoningEffort).toBe("medium");
+    expect(result.right.oriChannel).toBe("stable");
+    expect(result.right.isolateAgentConfig).toBe(false);
+    expect(result.right.systemPrompt).toBeUndefined();
+    expect(result.right.allowedTools).toBeUndefined();
+    expect(result.right.disallowedTools).toBeUndefined();
+  });
+
+  it("accepts the max reasoning level", () => {
+    const parsed = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "terminal_bench",
+      model: "anthropic/claude-opus-5",
+      agentReasoningEffort: "max",
+    });
+    assertRight(parsed);
+    if (parsed.right.benchmarkId !== "terminal_bench") {
+      throw new Error("expected terminal_bench config");
+    }
+    expect(parsed.right.agentReasoningEffort).toBe("max");
+  });
+
+  it("accepts none as an agent reasoning effort, which ori maps per harness", () => {
+    const parsed = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "terminal_bench",
+      model: "anthropic/claude-opus-5",
+      agentReasoningEffort: "none",
+    });
+    assertRight(parsed);
+    if (parsed.right.benchmarkId !== "terminal_bench") {
+      throw new Error("expected terminal_bench config");
+    }
+    expect(parsed.right.agentReasoningEffort).toBe("none");
+  });
+
+  it("rejects an unknown agent reasoning effort", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "terminal_bench",
+      model: "anthropic/claude-opus-5",
+      agentReasoningEffort: "off",
+    });
+    assertLeft(result);
+  });
+
+  it("parses tool allow and deny lists", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "terminal_bench",
+      model: "anthropic/claude-opus-5",
+      allowedTools: ["Bash", "Edit"],
+      disallowedTools: ["WebSearch"],
+      isolateAgentConfig: true,
+      systemPrompt: "terse",
+    });
+    assertRight(result);
+    if (result.right.benchmarkId !== "terminal_bench") {
+      throw new Error("expected terminal_bench config");
+    }
+    expect(result.right.allowedTools).toEqual(["Bash", "Edit"]);
+    expect(result.right.disallowedTools).toEqual(["WebSearch"]);
+    expect(result.right.isolateAgentConfig).toBe(true);
+    expect(result.right.systemPrompt).toBe("terse");
+  });
+
+  it("rejects an agent that is not wired up", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "terminal_bench",
+      model: "openai/gpt-5.4",
+      agent: "codex",
+    });
+    assertLeft(result);
+  });
+
+  it("defaults harbor benchmarks to the mini-swe agent loop", () => {
+    for (const benchmarkId of [
+      "swe_atlas_qa",
+      "swe_atlas_tw",
+      "swe_atlas_rf",
+      "deep_swe",
+    ] as const) {
+      const result = parseSchema(BenchmarkRunConfigSchema, {
+        benchmarkId,
+        model: "anthropic/claude-opus-4.5",
+      });
+      assertRight(result);
+      if (!("agent" in result.right)) {
+        throw new Error(`${benchmarkId} config is missing an agent field`);
+      }
+      expect(result.right.agent).toBe("mini_swe");
+    }
+  });
+
+  it("accepts an ori agent for harbor benchmarks", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "deep_swe",
+      model: "anthropic/claude-opus-5",
+      agent: "claude",
+      agentReasoningEffort: "high",
+      isolateAgentConfig: true,
+    });
+    assertRight(result);
+    if (result.right.benchmarkId !== "deep_swe") {
+      throw new Error("expected deep_swe config");
+    }
+    expect(result.right.agent).toBe("claude");
+    expect(result.right.agentReasoningEffort).toBe("high");
+    expect(result.right.isolateAgentConfig).toBe(true);
+  });
+
+  it("accepts pi as a harbor agent now that ori launches it", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "deep_swe",
+      model: "anthropic/claude-opus-5",
+      agent: "pi",
+    });
+    assertRight(result);
+    if (result.right.benchmarkId !== "deep_swe") {
+      throw new Error("expected deep_swe config");
+    }
+    expect(result.right.agent).toBe("pi");
+  });
+
+  it("rejects an agent no harness implements", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "deep_swe",
+      model: "anthropic/claude-opus-5",
+      agent: "codex",
+    });
+    assertLeft(result);
+  });
+
+  it("leaves wandr without an agent selector", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "wandr",
+      model: "openai/gpt-5.5",
+    });
+    assertRight(result);
+    expect("agent" in result.right).toBe(false);
+  });
+
   it("returns undefined for an unknown benchmark", () => {
     expect(getBenchmark("does_not_exist")).toBeUndefined();
   });
+
   it("lists registered benchmark ids", () => {
     expect(benchmarkIds()).toContain("gpqa_diamond");
     expect(benchmarkIds()).toContain("draco");
   });
+
   it("meta mirrors registry id + defaultEpochs for every benchmark", () => {
     for (const id of benchmarkIds()) {
       const b = getBenchmark(id);
@@ -162,6 +350,7 @@ describe("benchmark registry", () => {
       expect(meta?.defaultEpochs).toBe(b?.defaultEpochs);
     }
   });
+
   it("meta and registry agree on the registered id set", () => {
     const metaIds = benchmarkIds().filter(
       (id) => getBenchmarkMeta(id) !== undefined

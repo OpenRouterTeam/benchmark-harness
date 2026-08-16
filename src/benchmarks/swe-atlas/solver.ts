@@ -1,6 +1,7 @@
 import type { Effect } from "effect/Effect";
 import { gen, tryPromise } from "effect/Effect";
 
+import type { ModelUsage } from "../../harness/core";
 import { MessageRole, SolverError } from "../../harness/core";
 import type { SolverService } from "../../harness/solver";
 import { definedValues } from "../../internal/guards";
@@ -9,6 +10,15 @@ import type {
   ResponsesModelService,
 } from "../../providers/responses-model";
 import { responsesMessage } from "../../providers/responses-model";
+import { getOriHarness } from "../agent-cli/harness";
+import type { AgentCliOpts } from "../agent-cli/runner";
+import {
+  agentCliMetadata,
+  agentImageBuildSteps,
+  runAgentCli,
+} from "../agent-cli/runner";
+import type { HarborAgent } from "../agent-cli/schema";
+import { isOriAgent } from "../agent-cli/schema";
 import type { InferenceOverride } from "../benchmark-config";
 import { AGENT_ENV, probeSystemInfo, runAgentLoop } from "../harbor/agent-loop";
 import {
@@ -22,7 +32,10 @@ import type {
 } from "../harbor/sandbox";
 import { REMOTE_TEST_DIR, REMOTE_VERIFIER_SCRIPT } from "../harbor/sandbox";
 import { loadTask, readSweAtlasMeta } from "./dataset";
-import { buildInstanceMessage } from "./prompts";
+import {
+  buildAgentCliSubmissionProtocol,
+  buildInstanceMessage,
+} from "./prompts";
 import type { SweAtlasTrack } from "./schema";
 import { JUDGE_BASE_URL, TRACK_SANDBOX } from "./schema";
 import { ensureTasksCheckedOut } from "./tasks-source";
@@ -38,6 +51,14 @@ const PER_COMMAND_TIMEOUT_SEC = {
 } as const satisfies Record<SweAtlasTrack, number>;
 
 const SANDBOX_TIMEOUT_MARGIN_SEC = 300;
+
+const ZERO_AGENT_USAGE: ModelUsage = {
+  inputTokens: 0,
+  outputTokens: 0,
+  totalTokens: 0,
+  reasoningTokens: 0,
+  totalCost: 0,
+};
 
 export const REMOTE_INSTRUCTION = "/instruction.md" as const;
 
@@ -59,6 +80,8 @@ export interface SweAtlasSolverOpts {
   readonly judgeModel: string;
   readonly stepLimit: number;
   readonly inference?: InferenceOverride;
+  readonly agent?: HarborAgent;
+  readonly agentCli?: AgentCliOpts;
 }
 
 export function makeSweAtlasSolver(
@@ -82,15 +105,32 @@ export function makeSweAtlasSolver(
           }),
       });
       const task = loadTask(meta.taskId, meta.track, tasksRoot);
+      const agent = opts.agent ?? "mini_swe";
+      const cliHarness = isOriAgent(agent) ? getOriHarness(agent) : undefined;
+      const baseCliOpts: AgentCliOpts = opts.agentCli ?? {
+        model: opts.model,
+        apiKey: opts.apiKey,
+        ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
+      };
+      const cliOpts: AgentCliOpts = {
+        ...baseCliOpts,
+        appendSystemPrompt: joinAgentPrompts(
+          buildAgentCliSubmissionProtocol(meta.track),
+          baseCliOpts.appendSystemPrompt
+        ),
+      };
       const session = yield* sessionFactory.create({
         imageTag: meta.dockerImage,
+        ...(cliHarness !== undefined && {
+          imageBuildSteps: agentImageBuildSteps(cliHarness, cliOpts),
+        }),
         timeoutSec:
           meta.maxAgentTimeoutSec +
           meta.maxTestTimeoutSec +
           SANDBOX_TIMEOUT_MARGIN_SEC,
         cpus: meta.cpus,
         memoryMb: meta.memoryMb,
-        allowInternet: meta.allowInternet,
+        allowInternet: cliHarness !== undefined ? true : meta.allowInternet,
         workdir: TRACK_SANDBOX[meta.track].workdir,
         keepAliveCommand: TRACK_SANDBOX[meta.track].keepAliveCommand,
         uploads: [
@@ -99,7 +139,6 @@ export function makeSweAtlasSolver(
             remotePath: REMOTE_INSTRUCTION,
             kind: "file",
           },
-          { localPath: task.testDir, remotePath: REMOTE_TEST_DIR, kind: "dir" },
         ],
       });
       const genConfig: ResponsesGenerateConfig = {
@@ -111,6 +150,53 @@ export function makeSweAtlasSolver(
         ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
       };
       try {
+        if (cliHarness !== undefined) {
+          const run = yield* runAgentCli({
+            session,
+            harness: cliHarness,
+            opts: cliOpts,
+            instructionPath: REMOTE_INSTRUCTION,
+            timeoutMs: meta.maxAgentTimeoutSec * 1000 + 30000,
+          });
+          const cliVerifier = yield* runVerifier({
+            session,
+            meta,
+            opts,
+            testDir: task.testDir,
+          });
+          const cliCompletion = run.finalText ?? run.rawStream;
+          return {
+            sample: {
+              ...state.sample,
+              metadata: {
+                ...state.sample.metadata,
+                reward: cliVerifier.reward,
+                verifierOutput: run.failureDetail
+                  ? `${run.failureDetail}\n\n${cliVerifier.output}`
+                  : cliVerifier.output,
+                ...agentCliMetadata(cliHarness.id, run),
+                ...(meta.allowInternet
+                  ? {}
+                  : { agentNetworkForced: true, taskAllowInternet: false }),
+              },
+            },
+            messages: [
+              { role: MessageRole.User, content: state.sample.input },
+              ...run.assistantMessages,
+            ],
+            responseItems: run.responseItems,
+            output: {
+              completion: cliCompletion,
+              message: {
+                role: MessageRole.Assistant,
+                content: cliCompletion,
+              },
+              usage: run.usage ?? ZERO_AGENT_USAGE,
+              generationTimeMs: run.generationTimeMs ?? 0,
+            },
+            completed: true,
+          };
+        }
         const systemInfo = yield* probeSystemInfo(session);
         const loop = yield* runAgentLoop({
           model,
@@ -126,7 +212,12 @@ export function makeSweAtlasSolver(
           perCommandTimeoutMs:
             PER_COMMAND_TIMEOUT_SEC[meta.track] * 1000 + 30000,
         });
-        const verifier = yield* runVerifier({ session, meta, opts });
+        const verifier = yield* runVerifier({
+          session,
+          meta,
+          opts,
+          testDir: task.testDir,
+        });
         const finalContent = loop.finalText;
         return {
           sample: {
@@ -154,6 +245,7 @@ export function makeSweAtlasSolver(
 }
 
 interface RunVerifierInput {
+  readonly testDir: string;
   readonly session: SandboxSessionInstance;
   readonly meta: {
     readonly maxTestTimeoutSec: number;
@@ -180,6 +272,7 @@ function runVerifier(input: RunVerifierInput): Effect<
     OPENAI_API_BASE: JUDGE_BASE_URL,
   };
   return gen(function* () {
+    yield* session.uploadDir(input.testDir, REMOTE_TEST_DIR);
     yield* session.exec(["bash", "-lc", JUDGE_BOOTSTRAP], judgeEnv, 300000);
     const run = yield* session.exec(
       [
@@ -200,4 +293,13 @@ function runVerifier(input: RunVerifierInput): Effect<
       output: `${run.stdout}\n${run.stderr}`.trim(),
     };
   });
+}
+
+function joinAgentPrompts(
+  protocol: string,
+  callerPrompt: string | undefined
+): string {
+  return callerPrompt === undefined || callerPrompt.length === 0
+    ? protocol
+    : `${protocol}\n\n${callerPrompt}`;
 }

@@ -65,6 +65,34 @@ function makeDeepSweLayer(
           model: benchmarkConfig.model,
           apiKey: input.apiKey,
           stepLimit: benchmarkConfig.stepLimit,
+          agent: benchmarkConfig.agent,
+          agentCli: {
+            model: benchmarkConfig.model,
+            apiKey: input.apiKey,
+            sessionId: input.sessionId,
+            ...(benchmarkConfig.endpointId !== undefined && {
+              endpointId: benchmarkConfig.endpointId,
+            }),
+            ...(benchmarkConfig.agentPackage !== undefined && {
+              agentPackage: benchmarkConfig.agentPackage,
+            }),
+            oriInstallUrl: benchmarkConfig.oriInstallUrl,
+            agentReasoningEffort: benchmarkConfig.agentReasoningEffort,
+            oriChannel: benchmarkConfig.oriChannel,
+            ...(benchmarkConfig.systemPrompt !== undefined && {
+              systemPrompt: benchmarkConfig.systemPrompt,
+            }),
+            ...(benchmarkConfig.appendSystemPrompt !== undefined && {
+              appendSystemPrompt: benchmarkConfig.appendSystemPrompt,
+            }),
+            ...(benchmarkConfig.allowedTools !== undefined && {
+              allowedTools: benchmarkConfig.allowedTools,
+            }),
+            ...(benchmarkConfig.disallowedTools !== undefined && {
+              disallowedTools: benchmarkConfig.disallowedTools,
+            }),
+            isolateAgentConfig: benchmarkConfig.isolateAgentConfig,
+          },
           ...(benchmarkConfig.endpointId !== undefined && {
             endpointId: benchmarkConfig.endpointId,
           }),
