@@ -41,10 +41,11 @@
     "typecheck": "effect-tsgo diagnostics --project tsconfig.json",
     "test": "bun test",
     "lint": "bun run typecheck && bun run check",
-    "format": "oxfmt src test --write",
-    "format:check": "oxfmt src test --check",
+    "format": "oxfmt src test scripts --write",
+    "format:check": "oxfmt src test scripts --check",
     "check": "oxlint",
-    "fix": "oxfmt src test --write && oxlint --fix"
+    "fix": "oxfmt src test scripts --write && oxlint --fix",
+    "mirror-vgi-bench-media": "bun scripts/mirror-vgi-bench-media.ts"
   },
   "dependencies": {
     "@effect/platform": "0.95.0",

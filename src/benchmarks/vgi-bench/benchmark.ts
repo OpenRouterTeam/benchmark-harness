@@ -21,10 +21,10 @@ import { defineChatBenchmark } from "../define-chat-benchmark";
 import { mcqScorer } from "../scorers/mcq/scorer";
 import type { Benchmark } from "../types";
 
-const VGI_BENCH_DATASET_PATH = "Seldon-Technologies/VGIBench";
+export const VGI_BENCH_DATASET_PATH = "Seldon-Technologies/VGIBench";
 
-const VGI_BENCH_CONFIG = "default";
-const VGI_BENCH_SPLIT = "train";
+export const VGI_BENCH_CONFIG = "default";
+export const VGI_BENCH_SPLIT = "train";
 
 export const VGI_BENCH_DEFAULT_REVISION = "v1.0.1";
 
