@@ -20,7 +20,9 @@ export function makeHarborSandboxLayer(
   config: ModalSandboxConfig,
   env: Readonly<Record<string, string | undefined>> = process.env
 ): Layer<SandboxSession, Error> {
-  const backend = env[SANDBOX_BACKEND_ENV] ?? "modal";
+  const backendValue = env[SANDBOX_BACKEND_ENV];
+  const backend =
+    backendValue === undefined || backendValue === "" ? "modal" : backendValue;
   if (backend === "modal") {
     return makeModalSandboxLayer(config);
   }

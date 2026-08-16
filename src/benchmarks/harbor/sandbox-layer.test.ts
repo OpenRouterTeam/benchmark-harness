@@ -33,6 +33,14 @@ describe("makeHarborSandboxLayer", () => {
     expect(layer).toBeDefined();
   });
 
+  it("defaults to the Modal backend when the backend env is empty", () => {
+    const layer = makeHarborSandboxLayer(MODAL_CONFIG, {
+      [SANDBOX_BACKEND_ENV]: "",
+    });
+
+    expect(layer).toBeDefined();
+  });
+
   it("builds the HTTP backend for an https URL", async () => {
     const layer = makeHarborSandboxLayer(MODAL_CONFIG, {
       [SANDBOX_BACKEND_ENV]: "http",
