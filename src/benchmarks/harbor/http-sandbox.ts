@@ -161,8 +161,29 @@ function isCapacityStatus(status: number | undefined): boolean {
   return status === 429 || status === 503;
 }
 
-const PRIVATE_IPV4_PATTERN =
-  /^(?:10\.|127\.|169\.254\.|192\.168\.|172\.(?:1[6-9]|2\d|3[01])\.)/;
+const IPV4_LITERAL_PATTERN = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
+
+function isPrivateIpv4Literal(hostname: string): boolean {
+  const match = IPV4_LITERAL_PATTERN.exec(hostname);
+  if (match === null) {
+    return false;
+  }
+  const octets = match.slice(1).map(Number);
+  if (octets.some((octet) => octet > 255)) {
+    return false;
+  }
+  const [first, second] = octets;
+  if (first === 10 || first === 127) {
+    return true;
+  }
+  if (first === 169 && second === 254) {
+    return true;
+  }
+  if (first === 192 && second === 168) {
+    return true;
+  }
+  return first === 172 && second !== undefined && second >= 16 && second <= 31;
+}
 
 export function isPrivateHostname(hostname: string): boolean {
   if (hostname === "localhost" || hostname.endsWith(".localhost")) {
@@ -174,7 +195,7 @@ export function isPrivateHostname(hostname: string): boolean {
   if (hostname === "[::1]") {
     return true;
   }
-  return PRIVATE_IPV4_PATTERN.test(hostname);
+  return isPrivateIpv4Literal(hostname);
 }
 
 function assertAllowedHostUrl(config: ResolvedConfig, hostUrl: string): void {

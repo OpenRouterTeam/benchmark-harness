@@ -5,7 +5,7 @@ import { join } from "node:path";
 
 import { gen, provide, runPromise, runPromiseExit } from "effect/Effect";
 
-import { makeHttpSandboxLayer } from "./http-sandbox";
+import { isPrivateHostname, makeHttpSandboxLayer } from "./http-sandbox";
 import { decodeHttpSandboxId } from "./http-sandbox-protocol";
 import type { CreateSessionInput } from "./sandbox";
 import { SandboxSession } from "./sandbox";
@@ -409,5 +409,46 @@ describe("makeHttpSandboxLayer attach", () => {
     );
 
     expect(exit._tag).toBe("Failure");
+  });
+});
+
+describe("isPrivateHostname", () => {
+  it("accepts private and loopback IPv4 literals", () => {
+    expect(isPrivateHostname("10.0.0.5")).toBe(true);
+    expect(isPrivateHostname("127.0.0.1")).toBe(true);
+    expect(isPrivateHostname("169.254.1.1")).toBe(true);
+    expect(isPrivateHostname("192.168.1.1")).toBe(true);
+    expect(isPrivateHostname("172.16.0.1")).toBe(true);
+    expect(isPrivateHostname("172.31.255.255")).toBe(true);
+  });
+
+  it("rejects public IPv4 literals", () => {
+    expect(isPrivateHostname("8.8.8.8")).toBe(false);
+    expect(isPrivateHostname("172.15.0.1")).toBe(false);
+    expect(isPrivateHostname("172.32.0.1")).toBe(false);
+    expect(isPrivateHostname("192.169.0.1")).toBe(false);
+    expect(isPrivateHostname("11.0.0.1")).toBe(false);
+  });
+
+  it("rejects public hostnames with private-IP-looking prefixes", () => {
+    expect(isPrivateHostname("10.0.0.5.attacker.com")).toBe(false);
+    expect(isPrivateHostname("127.0.0.1.evil.com")).toBe(false);
+    expect(isPrivateHostname("192.168.1.1.example.net")).toBe(false);
+    expect(isPrivateHostname("172.16.99.99.badguy.io")).toBe(false);
+    expect(isPrivateHostname("169.254.169.254.metadata.example")).toBe(false);
+  });
+
+  it("rejects malformed or out-of-range IPv4-like names", () => {
+    expect(isPrivateHostname("10.0.0.999")).toBe(false);
+    expect(isPrivateHostname("10.0.0")).toBe(false);
+    expect(isPrivateHostname("10.0.0.5.")).toBe(false);
+  });
+
+  it("accepts localhost, .localhost, .internal, and IPv6 loopback", () => {
+    expect(isPrivateHostname("localhost")).toBe(true);
+    expect(isPrivateHostname("dev.localhost")).toBe(true);
+    expect(isPrivateHostname("sandbox-lb.internal")).toBe(true);
+    expect(isPrivateHostname("[::1]")).toBe(true);
+    expect(isPrivateHostname("internal.example.com")).toBe(false);
   });
 });
