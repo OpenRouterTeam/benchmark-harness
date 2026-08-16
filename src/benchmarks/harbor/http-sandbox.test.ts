@@ -25,6 +25,7 @@ interface RecordedRequest {
   readonly method: string;
   readonly path: string;
   readonly authorization: string | null;
+  readonly redirect: RequestRedirect | undefined;
 }
 
 interface FakeHost {
@@ -61,6 +62,7 @@ function makeFakeHost(options: FakeHostOptions = {}): FakeHost {
       method,
       path: url.pathname,
       authorization: headers.get("authorization"),
+      redirect: init?.redirect,
     });
     if (method === "POST" && url.pathname === "/v1/sandboxes") {
       if (createRejectionsLeft > 0) {
@@ -179,6 +181,15 @@ describe("makeHttpSandboxLayer create", () => {
 
     const tokens = new Set(host.requests.map((r) => r.authorization));
     expect(tokens).toEqual(new Set([`Bearer ${AUTH_TOKEN}`]));
+  });
+
+  it("refuses to follow redirects on every request", async () => {
+    const host = makeFakeHost();
+
+    await createSession(host, CREATE_INPUT);
+
+    const redirects = new Set(host.requests.map((r) => r.redirect));
+    expect(redirects).toEqual(new Set(["error"]));
   });
 
   it("retries create when the pool is at capacity", async () => {

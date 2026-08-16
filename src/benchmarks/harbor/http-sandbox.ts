@@ -127,6 +127,7 @@ async function requestJson(
           : new Blob([init.body.slice()]),
     }),
     signal: AbortSignal.timeout(init.timeoutMs ?? CONTROL_REQUEST_TIMEOUT_MS),
+    redirect: "error",
   });
   if (!response.ok) {
     const message = await errorMessageFrom(response);
@@ -322,6 +323,7 @@ async function downloadFileFromHost(
     method: "GET",
     headers: { authorization: `Bearer ${config.authToken}` },
     signal: AbortSignal.timeout(FILE_REQUEST_TIMEOUT_MS),
+    redirect: "error",
   });
   if (!response.ok) {
     const message = await errorMessageFrom(response);
