@@ -20,6 +20,7 @@ interface FakeHostOptions {
   readonly createOutcome?: "running" | "failed" | "stopped";
   readonly execExitCode?: number;
   readonly hostUrlOverride?: string;
+  readonly emptyLifecycleBodies?: boolean;
 }
 
 interface RecordedRequest {
@@ -97,6 +98,9 @@ function makeFakeHost(options: FakeHostOptions = {}): FakeHost {
     }
     if (sandboxMatch?.[1] !== undefined && method === "DELETE") {
       destroyed.push(sandboxMatch[1]);
+      if (options.emptyLifecycleBodies === true) {
+        return new Response(null, { status: 204 });
+      }
       return json({ sandboxId: sandboxMatch[1], status: "stopped" });
     }
     if (method === "POST" && url.pathname.endsWith("/execs")) {
@@ -125,6 +129,9 @@ function makeFakeHost(options: FakeHostOptions = {}): FakeHost {
             ? new Uint8Array(await body.arrayBuffer())
             : new TextEncoder().encode(String(body));
         files.set(path, bytes);
+        if (options.emptyLifecycleBodies === true) {
+          return new Response(null, { status: 204 });
+        }
         return json({ ok: true });
       }
       const content = files.get(path);
@@ -365,6 +372,22 @@ describe("makeHttpSandboxLayer instance", () => {
 
     await runPromise(instance.destroy());
 
+    expect(host.destroyed).toEqual(["sbx-1"]);
+  });
+
+  it("treats empty upload and destroy response bodies as success", async () => {
+    const host = makeFakeHost({ emptyLifecycleBodies: true });
+    const dir = mkdtempSync(join(tmpdir(), "http-sandbox-test-"));
+    const localPath = join(dir, "input.json");
+    writeFileSync(localPath, '{"a":1}');
+
+    const instance = await createSession(host, {
+      ...CREATE_INPUT,
+      uploads: [{ localPath, remotePath: "/data/input.json", kind: "file" }],
+    });
+    await runPromise(instance.destroy());
+
+    expect(host.files.has("/data/input.json")).toBe(true);
     expect(host.destroyed).toEqual(["sbx-1"]);
   });
 });

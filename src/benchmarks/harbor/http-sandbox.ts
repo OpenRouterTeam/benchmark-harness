@@ -107,15 +107,17 @@ async function errorMessageFrom(response: Response): Promise<string> {
   return bodyText.slice(0, 500);
 }
 
-async function requestJson(
+interface RequestInitLike {
+  readonly method: string;
+  readonly body?: string | Uint8Array;
+  readonly timeoutMs?: number;
+}
+
+async function requestOk(
   config: ResolvedConfig,
   url: string,
-  init: {
-    readonly method: string;
-    readonly body?: string | Uint8Array;
-    readonly timeoutMs?: number;
-  }
-): Promise<unknown> {
+  init: RequestInitLike
+): Promise<Response> {
   const response = await config.fetchFn(url, {
     method: init.method,
     headers: {
@@ -140,6 +142,24 @@ async function requestJson(
       response.status
     );
   }
+  return response;
+}
+
+async function requestIgnoringBody(
+  config: ResolvedConfig,
+  url: string,
+  init: RequestInitLike
+): Promise<void> {
+  const response = await requestOk(config, url, init);
+  await response.text().catch(() => "");
+}
+
+async function requestJson(
+  config: ResolvedConfig,
+  url: string,
+  init: RequestInitLike
+): Promise<unknown> {
+  const response = await requestOk(config, url, init);
   return response.json();
 }
 
@@ -400,7 +420,7 @@ async function uploadFileToHost(
   remotePath: string
 ): Promise<void> {
   const bytes = await readFile(localPath);
-  await requestJson(config, fileUrl(hostUrl, localId, remotePath), {
+  await requestIgnoringBody(config, fileUrl(hostUrl, localId, remotePath), {
     method: "PUT",
     body: bytes,
     timeoutMs: FILE_REQUEST_TIMEOUT_MS,
@@ -437,7 +457,7 @@ async function destroyOnHost(
   hostUrl: string,
   localId: string
 ): Promise<void> {
-  await requestJson(
+  await requestIgnoringBody(
     config,
     `${hostUrl}/v1/sandboxes/${encodeURIComponent(localId)}`,
     { method: "DELETE" }
