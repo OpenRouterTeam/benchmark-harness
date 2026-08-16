@@ -53,6 +53,11 @@ interface MirrorOptions {
   readonly limit: number | undefined;
 }
 
+interface SourceCandidate {
+  readonly url: string;
+  readonly kind: "downscaled" | "original";
+}
+
 interface SourceVideo {
   readonly videoId: string;
   readonly originalUrl: string;
@@ -212,13 +217,22 @@ async function fetchSourceVideos(
     .sort((a, b) => a.videoId.localeCompare(b.videoId));
 }
 
+export function candidateSources(
+  originalUrl: string
+): readonly SourceCandidate[] {
+  try {
+    return [
+      { url: downscaledVideoUrl(originalUrl), kind: "downscaled" },
+      { url: originalUrl, kind: "original" },
+    ];
+  } catch {
+    return [{ url: originalUrl, kind: "original" }];
+  }
+}
+
 async function resolveSourceUrl(
-  video: SourceVideo
-): Promise<{ url: string; kind: "downscaled" | "original" } | undefined> {
-  const candidates: { url: string; kind: "downscaled" | "original" }[] = [
-    { url: downscaledVideoUrl(video.originalUrl), kind: "downscaled" },
-    { url: video.originalUrl, kind: "original" },
-  ];
+  candidates: readonly SourceCandidate[]
+): Promise<SourceCandidate | undefined> {
   for (const candidate of candidates) {
     const response = await fetch(candidate.url, { method: "HEAD" });
     await response.body?.cancel();
@@ -235,11 +249,12 @@ export function describeFailure(cause: unknown): string {
 
 async function mirrorVideo(
   video: SourceVideo,
+  candidates: readonly SourceCandidate[],
   env: MirrorEnv,
   options: MirrorOptions,
   s3: S3Client
 ): Promise<MirrorOutcome> {
-  const source = await resolveSourceUrl(video);
+  const source = await resolveSourceUrl(candidates);
   if (source === undefined) {
     return {
       kind: "unresolved",
@@ -332,12 +347,17 @@ async function main(): Promise<void> {
     videos,
     options.concurrency,
     async (video) => {
-      const outcome = await mirrorVideo(video, env, options, s3).catch(
-        (cause: unknown): MirrorOutcome => ({
-          kind: "unresolved",
-          reason: describeFailure(cause),
-        })
-      );
+      const candidates = candidateSources(video.originalUrl);
+      const outcome = await mirrorVideo(
+        video,
+        candidates,
+        env,
+        options,
+        s3
+      ).catch((cause: unknown): MirrorOutcome => ({
+        kind: "unresolved",
+        reason: describeFailure(cause),
+      }));
       done += 1;
       process.stderr.write(
         `[${done}/${videos.length}] ${video.videoId} ${
@@ -346,22 +366,19 @@ async function main(): Promise<void> {
             : `UNRESOLVED ${outcome.reason}`
         }\n`
       );
-      return { video, outcome };
+      return { video, candidates, outcome };
     }
   );
   const entries = outcomes.flatMap(({ outcome }) =>
     outcome.kind === "mirrored" ? [outcome.entry] : []
   );
-  const unresolved = outcomes.flatMap(({ video, outcome }) =>
+  const unresolved = outcomes.flatMap(({ video, candidates, outcome }) =>
     outcome.kind === "mirrored"
       ? []
       : [
           {
             videoId: video.videoId,
-            attempted: [
-              downscaledVideoUrl(video.originalUrl),
-              video.originalUrl,
-            ],
+            attempted: candidates.map((candidate) => candidate.url),
             reason: outcome.reason,
           },
         ]
@@ -374,8 +391,9 @@ async function main(): Promise<void> {
     publicBaseUrl: env.publicBaseUrl,
     generatedAt: new Date().toISOString(),
     videoCount: entries.length,
-    questionCount: videos.reduce(
-      (sum, video) => sum + video.questionIds.length,
+    questionCount: outcomes.reduce(
+      (sum, { video, outcome }) =>
+        outcome.kind === "mirrored" ? sum + video.questionIds.length : sum,
       0
     ),
     manifestHash: hashManifest(entries),

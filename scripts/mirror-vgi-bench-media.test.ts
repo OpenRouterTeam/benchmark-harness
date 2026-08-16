@@ -3,6 +3,7 @@ import { describe, expect, test } from "bun:test";
 import { VGI_BENCH_DEFAULT_REVISION } from "../src/benchmarks/vgi-bench/benchmark";
 import type { ManifestEntry } from "./mirror-vgi-bench-media";
 import {
+  candidateSources,
   describeFailure,
   extensionOf,
   hashManifest,
@@ -72,6 +73,24 @@ describe("readOptions", () => {
   test("rejects invalid numeric flags", () => {
     expect(() => readOptions(["--concurrency=0"])).toThrow();
     expect(() => readOptions(["--limit=abc"])).toThrow();
+  });
+});
+
+describe("candidateSources", () => {
+  test("prefers the downscaled URL over the original", () => {
+    expect(candidateSources("https://example.test/videos/clip.mp4")).toEqual([
+      {
+        url: "https://example.test/videos/clip_proxy_v2.mp4",
+        kind: "downscaled",
+      },
+      { url: "https://example.test/videos/clip.mp4", kind: "original" },
+    ]);
+  });
+
+  test("falls back to the original alone when it is not a URL", () => {
+    expect(candidateSources("not a url")).toEqual([
+      { url: "not a url", kind: "original" },
+    ]);
   });
 });
 
