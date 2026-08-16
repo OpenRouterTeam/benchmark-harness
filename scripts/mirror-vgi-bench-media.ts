@@ -383,6 +383,9 @@ async function main(): Promise<void> {
           },
         ]
   );
+  const mirroredQuestionIds = outcomes.flatMap(({ video, outcome }) =>
+    outcome.kind === "mirrored" ? video.questionIds : []
+  );
   const manifest: Manifest = {
     dataset: VGI_BENCH_DATASET_PATH,
     config: VGI_BENCH_CONFIG,
@@ -391,11 +394,7 @@ async function main(): Promise<void> {
     publicBaseUrl: env.publicBaseUrl,
     generatedAt: new Date().toISOString(),
     videoCount: entries.length,
-    questionCount: outcomes.reduce(
-      (sum, { video, outcome }) =>
-        outcome.kind === "mirrored" ? sum + video.questionIds.length : sum,
-      0
-    ),
+    questionCount: mirroredQuestionIds.length,
     manifestHash: hashManifest(entries),
     videos: entries,
     unresolved,
