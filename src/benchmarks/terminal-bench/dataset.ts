@@ -25,7 +25,7 @@ import type { TerminalBenchTask } from "./schema";
 import { TaskTomlSchema } from "./schema";
 import { ensureTasksCheckedOutEffect } from "./tasks-source";
 
-export const TERMINAL_BENCH_DATASET_ID = "terminal_bench" as const;
+const TERMINAL_BENCH_DATASET_ID = "terminal_bench" as const;
 
 export function loadTask(taskId: string, tasksDir: string): TerminalBenchTask {
   const taskDir = join(tasksDir, taskId);
@@ -90,9 +90,9 @@ export interface TerminalBenchSampleMeta {
   testOutput?: string;
 }
 
-export const DEFAULT_TERMINAL_BENCH_CPUS = 1;
+const DEFAULT_TERMINAL_BENCH_CPUS = 1;
 
-export const DEFAULT_TERMINAL_BENCH_MEMORY_MB = 2048;
+const DEFAULT_TERMINAL_BENCH_MEMORY_MB = 2048;
 
 export function taskToSample(
   task: TerminalBenchTask,

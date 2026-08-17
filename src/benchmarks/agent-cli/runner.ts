@@ -22,9 +22,9 @@ import {
 
 const EXIT_DETAIL_TAIL_CHARS = 500;
 
-export const ORI_SESSION_ID_ENV = "ORI_OPENROUTER_SESSION_ID" as const;
+const ORI_SESSION_ID_ENV = "ORI_OPENROUTER_SESSION_ID" as const;
 
-export const AGENT_EXEC_UNAVAILABLE_EXIT = -1;
+const AGENT_EXEC_UNAVAILABLE_EXIT = -1;
 
 const LOG_RECOVERY_TIMEOUT_MS = 60000;
 
@@ -102,7 +102,7 @@ export interface AgentCliRunResult extends OriAgentRun {
   readonly failureDetail: string;
 }
 
-export function normalizeAgentModel(model: string): string {
+function normalizeAgentModel(model: string): string {
   const routingPrefix = "openrouter/";
   if (!model.startsWith(routingPrefix)) {
     return model;
@@ -111,32 +111,54 @@ export function normalizeAgentModel(model: string): string {
   return rest.includes("/") ? rest : model;
 }
 
-export function buildAgentCliEnv(opts: AgentCliOpts): Record<string, string> {
-  const env: Record<string, string> = {
-    OPENROUTER_API_KEY: opts.apiKey,
-    TB_MODEL: normalizeAgentModel(opts.model),
-  };
-  if (opts.endpointId !== undefined) {
-    env["OPENROUTER_ENDPOINT_ID"] = opts.endpointId;
-  }
-  if (opts.sessionId !== undefined && isSafeOriSessionId(opts.sessionId)) {
-    env[ORI_SESSION_ID_ENV] = opts.sessionId;
-  }
-  if (opts.systemPrompt !== undefined) {
-    env["TB_SYSTEM_PROMPT"] = opts.systemPrompt;
-  }
-  if (opts.appendSystemPrompt !== undefined) {
-    env["TB_APPEND_SYSTEM_PROMPT"] = opts.appendSystemPrompt;
-  }
-  const allowedTools = opts.allowedTools ?? [];
-  if (allowedTools.length > 0) {
-    env["TB_ALLOWED_TOOLS"] = allowedTools.join(" ");
-  }
-  const disallowedTools = opts.disallowedTools ?? [];
-  if (disallowedTools.length > 0) {
-    env["TB_DISALLOWED_TOOLS"] = disallowedTools.join(" ");
+function buildAgentCliEnv(opts: AgentCliOpts): Record<string, string> {
+  const sessionId =
+    opts.sessionId !== undefined && isSafeOriSessionId(opts.sessionId)
+      ? opts.sessionId
+      : undefined;
+  const joined = (values: readonly string[] | undefined): string | undefined =>
+    values !== undefined && values.length > 0 ? values.join(" ") : undefined;
+  const entries: readonly (readonly [string, string | undefined])[] = [
+    ["OPENROUTER_API_KEY", opts.apiKey],
+    ["TB_MODEL", normalizeAgentModel(opts.model)],
+    ["OPENROUTER_ENDPOINT_ID", opts.endpointId],
+    [ORI_SESSION_ID_ENV, sessionId],
+    ["TB_SYSTEM_PROMPT", opts.systemPrompt],
+    ["TB_APPEND_SYSTEM_PROMPT", opts.appendSystemPrompt],
+    ["TB_ALLOWED_TOOLS", joined(opts.allowedTools)],
+    ["TB_DISALLOWED_TOOLS", joined(opts.disallowedTools)],
+  ];
+  const env: Record<string, string> = {};
+  for (const [key, value] of entries) {
+    if (value !== undefined) {
+      env[key] = value;
+    }
   }
   return env;
+}
+
+export function buildAgentCliOpts(input: {
+  readonly model: string;
+  readonly apiKey: string;
+  readonly endpointId?: string;
+  readonly sessionId?: string;
+  readonly agentCli?: AgentCliOpts;
+  readonly submissionProtocol: string;
+}): AgentCliOpts {
+  const base: AgentCliOpts = input.agentCli ?? {
+    model: input.model,
+    apiKey: input.apiKey,
+    ...(input.endpointId !== undefined && { endpointId: input.endpointId }),
+    ...(input.sessionId !== undefined && { sessionId: input.sessionId }),
+  };
+  const caller = base.appendSystemPrompt;
+  return {
+    ...base,
+    appendSystemPrompt:
+      caller === undefined || caller.length === 0
+        ? input.submissionProtocol
+        : `${input.submissionProtocol}\n\n${caller}`,
+  };
 }
 
 export function agentImageBuildSteps(
@@ -215,7 +237,7 @@ export function runAgentCli(input: {
   });
 }
 
-export function buildFailureDetail(input: {
+function buildFailureDetail(input: {
   readonly agentId: string;
   readonly exitCode: number;
   readonly isError: boolean;

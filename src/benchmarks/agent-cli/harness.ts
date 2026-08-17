@@ -10,9 +10,9 @@ const NODE_VERSION = "22" as const;
 const NVM_INSTALL_URL =
   "https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh" as const;
 
-export const ORI_INSTALL_DIR = "/usr/local/bin" as const;
+const ORI_INSTALL_DIR = "/usr/local/bin" as const;
 
-export const DEFAULT_PI_AGENT_PACKAGE =
+const DEFAULT_PI_AGENT_PACKAGE =
   "@earendil-works/pi-coding-agent@latest" as const;
 
 export interface OriRunScriptOptions {
@@ -160,75 +160,88 @@ function usageFromResult(result: Record<string, unknown>): ModelUsage {
   };
 }
 
+interface ClaudeResultFields {
+  readonly usage: ModelUsage;
+  readonly generationTimeMs: number | undefined;
+  readonly finalText: string | undefined;
+  readonly isError: boolean;
+  readonly apiErrorStatus: string | undefined;
+  readonly turns: number | undefined;
+}
+
+function readClaudeResult(event: Record<string, unknown>): ClaudeResultFields {
+  return {
+    usage: usageFromResult(event),
+    generationTimeMs: optionalNumberField(event, "duration_ms"),
+    finalText: optionalStringField(event, "result"),
+    isError: event["is_error"] === true,
+    apiErrorStatus: optionalStringField(event, "api_error_status"),
+    turns: optionalNumberField(event, "num_turns"),
+  };
+}
+
+function readClaudeAssistant(message: Record<string, unknown>): {
+  readonly id: string | undefined;
+  readonly message: ChatMessage | undefined;
+  readonly toolCalls: number;
+} {
+  const id = optionalStringField(message, "id");
+  const content = textFromContent(message["content"]);
+  const reasoning = reasoningFromContent(message["content"]);
+  const model = optionalStringField(message, "model");
+  return {
+    id: id !== undefined && id.length > 0 ? id : undefined,
+    toolCalls: countToolUseBlocks(message["content"]),
+    message:
+      content.length > 0 || reasoning !== undefined
+        ? {
+            role: MessageRole.Assistant,
+            content,
+            ...(reasoning !== undefined && { reasoning }),
+            ...(model !== undefined && { model }),
+          }
+        : undefined,
+  };
+}
+
 function parseClaudeStream(stdout: string): OriAgentRun {
   const generationIds: string[] = [];
   const assistantMessages: ChatMessage[] = [];
-  const responseItems: ResponseItem[] = [];
-  let usage: ModelUsage | undefined;
-  let generationTimeMs: number | undefined;
-  let finalText: string | undefined;
-  let isError = false;
-  let apiErrorStatus: string | undefined;
-  let turns: number | undefined;
+  const responseItems = streamEvents(stdout);
   let toolCalls = 0;
-  for (const line of stdout.split("\n")) {
-    const trimmed = line.trim();
-    if (!trimmed.startsWith("{")) {
-      continue;
-    }
-    const parsed = Either.try(() => JSON.parse(trimmed));
-    if (Either.isLeft(parsed) || !isRecord(parsed.right)) {
-      continue;
-    }
-    const event = parsed.right;
-    responseItems.push(event);
+  let result: ClaudeResultFields | undefined;
+  for (const event of responseItems) {
     const eventType = event["type"];
-    if (eventType === "assistant") {
-      const { message } = event;
-      if (!isRecord(message)) {
-        continue;
-      }
-      const id = message["id"];
-      if (
-        typeof id === "string" &&
-        id.length > 0 &&
-        !generationIds.includes(id)
-      ) {
-        generationIds.push(id);
-      }
-      toolCalls += countToolUseBlocks(message["content"]);
-      const content = textFromContent(message["content"]);
-      const reasoning = reasoningFromContent(message["content"]);
-      const model = optionalStringField(message, "model");
-      if (content.length > 0 || reasoning !== undefined) {
-        assistantMessages.push({
-          role: MessageRole.Assistant,
-          content,
-          ...(reasoning !== undefined && { reasoning }),
-          ...(model !== undefined && { model }),
-        });
-      }
+    if (eventType === "result") {
+      result = readClaudeResult(event);
       continue;
     }
-    if (eventType === "result") {
-      usage = usageFromResult(event);
-      generationTimeMs = optionalNumberField(event, "duration_ms");
-      finalText = optionalStringField(event, "result");
-      isError = event["is_error"] === true;
-      apiErrorStatus = optionalStringField(event, "api_error_status");
-      turns = optionalNumberField(event, "num_turns");
+    if (eventType !== "assistant") {
+      continue;
+    }
+    const { message } = event;
+    if (!isRecord(message)) {
+      continue;
+    }
+    const read = readClaudeAssistant(message);
+    if (read.id !== undefined && !generationIds.includes(read.id)) {
+      generationIds.push(read.id);
+    }
+    toolCalls += read.toolCalls;
+    if (read.message !== undefined) {
+      assistantMessages.push(read.message);
     }
   }
   return {
-    usage,
+    usage: result?.usage,
     generationIds,
-    generationTimeMs,
-    finalText,
+    generationTimeMs: result?.generationTimeMs,
+    finalText: result?.finalText,
     assistantMessages,
     responseItems,
-    isError,
-    apiErrorStatus,
-    turns,
+    isError: result?.isError ?? false,
+    apiErrorStatus: result?.apiErrorStatus,
+    turns: result?.turns,
     toolCalls,
   };
 }
@@ -333,21 +346,8 @@ export function getOriHarness(agent: OriAgent): OriHarnessDef {
   return ORI_HARNESSES[agent];
 }
 
-function parsePiStream(stdout: string): OriAgentRun {
-  let inputTokens = 0;
-  let outputTokens = 0;
-  let cacheRead = 0;
-  let cacheWrite = 0;
-  let reasoningTokens = 0;
-  let totalCost = 0;
-  let turns = 0;
-  let toolCalls = 0;
-  let isError = false;
-  let apiErrorStatus: string | undefined;
-  let finalText: string | undefined;
-  const generationIds: string[] = [];
-  const assistantMessages: ChatMessage[] = [];
-  const responseItems: ResponseItem[] = [];
+function streamEvents(stdout: string): ResponseItem[] {
+  const events: ResponseItem[] = [];
   for (const line of stdout.split("\n")) {
     const trimmed = line.trim();
     if (!trimmed.startsWith("{")) {
@@ -357,8 +357,100 @@ function parsePiStream(stdout: string): OriAgentRun {
     if (Either.isLeft(parsed) || !isRecord(parsed.right)) {
       continue;
     }
-    const event = parsed.right;
-    responseItems.push(event);
+    events.push(parsed.right);
+  }
+  return events;
+}
+
+interface PiUsageTotals {
+  inputTokens: number;
+  outputTokens: number;
+  cacheRead: number;
+  cacheWrite: number;
+  reasoningTokens: number;
+  totalCost: number;
+}
+
+function addPiUsage(totals: PiUsageTotals, usage: unknown): void {
+  if (!isRecord(usage)) {
+    return;
+  }
+  totals.inputTokens += numberField(usage, "input");
+  totals.outputTokens += numberField(usage, "output");
+  totals.cacheRead += numberField(usage, "cacheRead");
+  totals.cacheWrite += numberField(usage, "cacheWrite");
+  totals.reasoningTokens += numberField(usage, "reasoning");
+  const { cost } = usage;
+  if (isRecord(cost)) {
+    totals.totalCost += numberField(cost, "total");
+  }
+}
+
+function piUsageToModelUsage(totals: PiUsageTotals): ModelUsage | undefined {
+  const hasTokens =
+    totals.inputTokens !== 0 ||
+    totals.outputTokens !== 0 ||
+    totals.cacheRead !== 0 ||
+    totals.cacheWrite !== 0;
+  if (!hasTokens) {
+    return undefined;
+  }
+  const inputTokens = totals.inputTokens + totals.cacheRead + totals.cacheWrite;
+  return {
+    inputTokens,
+    outputTokens: totals.outputTokens,
+    totalTokens: inputTokens + totals.outputTokens,
+    reasoningTokens: totals.reasoningTokens,
+    totalCost: totals.totalCost,
+  };
+}
+
+function readPiApiError(message: Record<string, unknown>): string | undefined {
+  const errorMessage = optionalStringField(message, "errorMessage");
+  if (errorMessage !== undefined && errorMessage.length > 0) {
+    return errorMessage;
+  }
+  if (message["stopReason"] === "error") {
+    return "pi reported stopReason=error without an errorMessage";
+  }
+  return undefined;
+}
+
+interface PiAssistantMessage {
+  readonly responseId: string | undefined;
+  readonly apiError: string | undefined;
+  readonly text: string;
+}
+
+function readPiAssistantMessage(
+  message: Record<string, unknown>
+): PiAssistantMessage {
+  const responseId = optionalStringField(message, "responseId");
+  const apiError = readPiApiError(message);
+  return {
+    responseId,
+    apiError,
+    text: textFromPiContent(message["content"]),
+  };
+}
+
+function parsePiStream(stdout: string): OriAgentRun {
+  const totals: PiUsageTotals = {
+    inputTokens: 0,
+    outputTokens: 0,
+    cacheRead: 0,
+    cacheWrite: 0,
+    reasoningTokens: 0,
+    totalCost: 0,
+  };
+  let turns = 0;
+  let toolCalls = 0;
+  let finalText: string | undefined;
+  const apiErrors: string[] = [];
+  const generationIds: string[] = [];
+  const assistantMessages: ChatMessage[] = [];
+  const responseItems = streamEvents(stdout);
+  for (const event of responseItems) {
     const eventType = event["type"];
     if (eventType === "turn_end") {
       turns++;
@@ -375,65 +467,34 @@ function parsePiStream(stdout: string): OriAgentRun {
     if (!isRecord(message) || message["role"] !== "assistant") {
       continue;
     }
-    const responseId = message["responseId"];
+    const read = readPiAssistantMessage(message);
     if (
-      typeof responseId === "string" &&
-      responseId.length > 0 &&
-      !generationIds.includes(responseId)
+      read.responseId !== undefined &&
+      !generationIds.includes(read.responseId)
     ) {
-      generationIds.push(responseId);
+      generationIds.push(read.responseId);
     }
-    const errorMessage = message["errorMessage"];
-    if (typeof errorMessage === "string" && errorMessage.length > 0) {
-      isError = true;
-      apiErrorStatus = errorMessage;
-    } else if (message["stopReason"] === "error") {
-      isError = true;
+    if (read.apiError !== undefined) {
+      apiErrors.push(read.apiError);
     }
-    const text = textFromPiContent(message["content"]);
-    if (text.length > 0) {
-      finalText = text;
-      assistantMessages.push({ role: MessageRole.Assistant, content: text });
+    if (read.text.length > 0) {
+      finalText = read.text;
+      assistantMessages.push({
+        role: MessageRole.Assistant,
+        content: read.text,
+      });
     }
-    const { usage } = message;
-    if (!isRecord(usage)) {
-      continue;
-    }
-    inputTokens += typeof usage["input"] === "number" ? usage["input"] : 0;
-    outputTokens += typeof usage["output"] === "number" ? usage["output"] : 0;
-    cacheRead +=
-      typeof usage["cacheRead"] === "number" ? usage["cacheRead"] : 0;
-    cacheWrite +=
-      typeof usage["cacheWrite"] === "number" ? usage["cacheWrite"] : 0;
-    reasoningTokens +=
-      typeof usage["reasoning"] === "number" ? usage["reasoning"] : 0;
-    const { cost } = usage;
-    if (isRecord(cost)) {
-      totalCost += typeof cost["total"] === "number" ? cost["total"] : 0;
-    }
+    addPiUsage(totals, message["usage"]);
   }
-  const hasTokens =
-    inputTokens !== 0 ||
-    outputTokens !== 0 ||
-    cacheRead !== 0 ||
-    cacheWrite !== 0;
   return {
-    usage: hasTokens
-      ? {
-          inputTokens: inputTokens + cacheRead + cacheWrite,
-          outputTokens,
-          totalTokens: inputTokens + outputTokens + cacheRead + cacheWrite,
-          reasoningTokens,
-          totalCost,
-        }
-      : undefined,
+    usage: piUsageToModelUsage(totals),
     generationIds,
     generationTimeMs: undefined,
     finalText,
     assistantMessages,
     responseItems,
-    isError,
-    apiErrorStatus,
+    isError: apiErrors.length > 0,
+    apiErrorStatus: apiErrors[0],
     turns: turns > 0 ? turns : undefined,
     toolCalls,
   };

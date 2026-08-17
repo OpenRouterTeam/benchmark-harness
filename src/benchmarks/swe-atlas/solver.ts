@@ -10,11 +10,13 @@ import type {
   ResponsesModelService,
 } from "../../providers/responses-model";
 import { responsesMessage } from "../../providers/responses-model";
+import type { OriHarnessDef } from "../agent-cli/harness";
 import { getOriHarness } from "../agent-cli/harness";
 import type { AgentCliOpts } from "../agent-cli/runner";
 import {
   agentCliMetadata,
   agentImageBuildSteps,
+  buildAgentCliOpts,
   runAgentCli,
 } from "../agent-cli/runner";
 import type { HarborAgent } from "../agent-cli/schema";
@@ -52,6 +54,8 @@ const PER_COMMAND_TIMEOUT_SEC = {
 
 const SANDBOX_TIMEOUT_MARGIN_SEC = 300;
 
+const AGENT_TIMEOUT_MARGIN_MS = 30000;
+
 const ZERO_AGENT_USAGE: ModelUsage = {
   inputTokens: 0,
   outputTokens: 0,
@@ -60,9 +64,9 @@ const ZERO_AGENT_USAGE: ModelUsage = {
   totalCost: 0,
 };
 
-export const REMOTE_INSTRUCTION = "/instruction.md" as const;
+const REMOTE_INSTRUCTION = "/instruction.md" as const;
 
-export const REMOTE_REWARD_PATH = "/logs/verifier/reward.txt" as const;
+const REMOTE_REWARD_PATH = "/logs/verifier/reward.txt" as const;
 
 const JUDGE_BOOTSTRAP = [
   'export PATH="$HOME/.local/bin:$PATH";',
@@ -107,18 +111,13 @@ export function makeSweAtlasSolver(
       const task = loadTask(meta.taskId, meta.track, tasksRoot);
       const agent = opts.agent ?? "mini_swe";
       const cliHarness = isOriAgent(agent) ? getOriHarness(agent) : undefined;
-      const baseCliOpts: AgentCliOpts = opts.agentCli ?? {
+      const cliOpts = buildAgentCliOpts({
         model: opts.model,
         apiKey: opts.apiKey,
         ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
-      };
-      const cliOpts: AgentCliOpts = {
-        ...baseCliOpts,
-        appendSystemPrompt: joinAgentPrompts(
-          buildAgentCliSubmissionProtocol(meta.track),
-          baseCliOpts.appendSystemPrompt
-        ),
-      };
+        ...(opts.agentCli !== undefined && { agentCli: opts.agentCli }),
+        submissionProtocol: buildAgentCliSubmissionProtocol(meta.track),
+      });
       const session = yield* sessionFactory.create({
         imageTag: meta.dockerImage,
         ...(cliHarness !== undefined && {
@@ -151,48 +150,35 @@ export function makeSweAtlasSolver(
       };
       try {
         if (cliHarness !== undefined) {
-          const run = yield* runAgentCli({
+          const cli = yield* runSweAtlasCliAgent({
             session,
             harness: cliHarness,
-            opts: cliOpts,
-            instructionPath: REMOTE_INSTRUCTION,
-            timeoutMs: meta.maxAgentTimeoutSec * 1000 + 30000,
-          });
-          const cliVerifier = yield* runVerifier({
-            session,
+            cliOpts,
             meta,
             opts,
+            sampleInput: state.sample.input,
             testDir: task.testDir,
           });
-          const cliCompletion = run.finalText ?? run.rawStream;
           return {
             sample: {
               ...state.sample,
               metadata: {
                 ...state.sample.metadata,
-                reward: cliVerifier.reward,
-                verifierOutput: run.failureDetail
-                  ? `${run.failureDetail}\n\n${cliVerifier.output}`
-                  : cliVerifier.output,
-                ...agentCliMetadata(cliHarness.id, run),
-                ...(meta.allowInternet
-                  ? {}
-                  : { agentNetworkForced: true, taskAllowInternet: false }),
+                reward: cli.reward,
+                verifierOutput: cli.verifierOutput,
+                ...cli.metadata,
               },
             },
-            messages: [
-              { role: MessageRole.User, content: state.sample.input },
-              ...run.assistantMessages,
-            ],
-            responseItems: run.responseItems,
+            messages: cli.messages,
+            responseItems: cli.responseItems,
             output: {
-              completion: cliCompletion,
+              completion: cli.completion,
               message: {
                 role: MessageRole.Assistant,
-                content: cliCompletion,
+                content: cli.completion,
               },
-              usage: run.usage ?? ZERO_AGENT_USAGE,
-              generationTimeMs: run.generationTimeMs ?? 0,
+              usage: cli.usage,
+              generationTimeMs: cli.generationTimeMs,
             },
             completed: true,
           };
@@ -295,11 +281,45 @@ function runVerifier(input: RunVerifierInput): Effect<
   });
 }
 
-function joinAgentPrompts(
-  protocol: string,
-  callerPrompt: string | undefined
-): string {
-  return callerPrompt === undefined || callerPrompt.length === 0
-    ? protocol
-    : `${protocol}\n\n${callerPrompt}`;
+function runSweAtlasCliAgent(input: {
+  readonly session: SandboxSessionInstance;
+  readonly harness: OriHarnessDef;
+  readonly cliOpts: AgentCliOpts;
+  readonly meta: NonNullable<ReturnType<typeof readSweAtlasMeta>>;
+  readonly opts: SweAtlasSolverOpts;
+  readonly sampleInput: string;
+  readonly testDir: string;
+}) {
+  const { session, harness, cliOpts, meta, opts, sampleInput, testDir } = input;
+  return gen(function* () {
+    const run = yield* runAgentCli({
+      session,
+      harness,
+      opts: cliOpts,
+      instructionPath: REMOTE_INSTRUCTION,
+      timeoutMs: meta.maxAgentTimeoutSec * 1000 + AGENT_TIMEOUT_MARGIN_MS,
+    });
+    const verifier = yield* runVerifier({ session, meta, opts, testDir });
+    const completion = run.finalText ?? run.rawStream;
+    return {
+      reward: verifier.reward,
+      verifierOutput: run.failureDetail
+        ? `${run.failureDetail}\n\n${verifier.output}`
+        : verifier.output,
+      metadata: {
+        ...agentCliMetadata(harness.id, run),
+        ...(meta.allowInternet
+          ? {}
+          : { agentNetworkForced: true, taskAllowInternet: false }),
+      },
+      messages: [
+        { role: MessageRole.User, content: sampleInput },
+        ...run.assistantMessages,
+      ],
+      responseItems: run.responseItems,
+      completion,
+      usage: run.usage ?? ZERO_AGENT_USAGE,
+      generationTimeMs: run.generationTimeMs ?? 0,
+    };
+  });
 }

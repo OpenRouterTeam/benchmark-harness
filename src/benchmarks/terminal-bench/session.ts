@@ -12,13 +12,13 @@ import type {
 import { REMOTE_TEST_DIR, REMOTE_VERIFIER_SCRIPT } from "../harbor/sandbox";
 import type { TerminalBenchSampleMeta } from "./dataset";
 
-export const CONTAINER_WORKDIR = "/app" as const;
+const CONTAINER_WORKDIR = "/app" as const;
 
 export const REMOTE_INSTRUCTION = "/instruction.md" as const;
 
-export const REMOTE_REWARD_PATH = "/logs/verifier/reward.txt" as const;
+const REMOTE_REWARD_PATH = "/logs/verifier/reward.txt" as const;
 
-export const KEEP_ALIVE_COMMAND = ["sleep", "infinity"] as const;
+const KEEP_ALIVE_COMMAND = ["sleep", "infinity"] as const;
 
 const SANDBOX_TIMEOUT_MARGIN_SEC = 300;
 

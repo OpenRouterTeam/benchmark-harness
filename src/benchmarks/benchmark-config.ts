@@ -137,12 +137,7 @@ export type MmmuProVisionBenchmarkConfig = z.infer<
   typeof MmmuProVisionBenchmarkConfigSchema
 >;
 
-export const TerminalBenchOptionsSchema = z.object({
-  maxAgentTimeoutSec: z.number().positive().optional(),
-  taskSubset: z.array(z.string()).optional(),
-  modalEnv: z.string().default("main"),
-  appendSystemPrompt: z.string().optional(),
-  agent: z.enum(TERMINAL_BENCH_AGENTS).default(DEFAULT_TERMINAL_BENCH_AGENT),
+const AgentCliOptionsSchema = z.object({
   agentPackage: z.string().optional(),
   oriInstallUrl: z.string().default(DEFAULT_ORI_INSTALL_URL),
   agentReasoningEffort: z
@@ -150,9 +145,18 @@ export const TerminalBenchOptionsSchema = z.object({
     .default(DEFAULT_ORI_REASONING_EFFORT),
   oriChannel: z.enum(ORI_CHANNELS).default(DEFAULT_ORI_CHANNEL),
   systemPrompt: z.string().optional(),
+  appendSystemPrompt: z.string().optional(),
   allowedTools: z.array(z.string()).optional(),
   disallowedTools: z.array(z.string()).optional(),
   isolateAgentConfig: z.boolean().default(false),
+});
+
+export const TerminalBenchOptionsSchema = z.object({
+  maxAgentTimeoutSec: z.number().positive().optional(),
+  taskSubset: z.array(z.string()).optional(),
+  modalEnv: z.string().default("main"),
+  agent: z.enum(TERMINAL_BENCH_AGENTS).default(DEFAULT_TERMINAL_BENCH_AGENT),
+  ...AgentCliOptionsSchema.shape,
 });
 
 export const TerminalBenchConfigSchema = z.object({
@@ -189,17 +193,7 @@ const AgenticOptionsSchema = z.object({
   maxAgentTimeoutSec: z.number().positive().optional(),
   modalEnv: z.string().default("main"),
   agent: z.enum(HARBOR_AGENTS).default(DEFAULT_HARBOR_AGENT),
-  agentPackage: z.string().optional(),
-  oriInstallUrl: z.string().default(DEFAULT_ORI_INSTALL_URL),
-  agentReasoningEffort: z
-    .enum(ORI_REASONING_EFFORTS)
-    .default(DEFAULT_ORI_REASONING_EFFORT),
-  oriChannel: z.enum(ORI_CHANNELS).default(DEFAULT_ORI_CHANNEL),
-  systemPrompt: z.string().optional(),
-  appendSystemPrompt: z.string().optional(),
-  allowedTools: z.array(z.string()).optional(),
-  disallowedTools: z.array(z.string()).optional(),
-  isolateAgentConfig: z.boolean().default(false),
+  ...AgentCliOptionsSchema.shape,
 });
 
 export const SweAtlasOptionsSchema = z.object({

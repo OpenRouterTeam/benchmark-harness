@@ -26,11 +26,13 @@ import type {
   ResponsesModelService,
 } from "../../providers/responses-model";
 import { responsesMessage } from "../../providers/responses-model";
+import type { OriHarnessDef } from "../agent-cli/harness";
 import { getOriHarness } from "../agent-cli/harness";
 import type { AgentCliOpts } from "../agent-cli/runner";
 import {
   agentCliMetadata,
   agentImageBuildSteps,
+  buildAgentCliOpts,
   runAgentCli,
 } from "../agent-cli/runner";
 import type { HarborAgent } from "../agent-cli/schema";
@@ -62,14 +64,15 @@ const PER_COMMAND_TIMEOUT_SEC = 1800;
 
 const SANDBOX_TIMEOUT_MARGIN_SEC = 300;
 
-export const REMOTE_AGENT_INSTRUCTION = "/instruction.md" as const;
+const AGENT_TIMEOUT_MARGIN_MS = 30000;
 
-export const REMOTE_PRE_ARTIFACTS_SCRIPT =
-  "/tmp/.deep-swe-pre-artifacts.sh" as const;
+const REMOTE_AGENT_INSTRUCTION = "/instruction.md" as const;
+
+const REMOTE_PRE_ARTIFACTS_SCRIPT = "/tmp/.deep-swe-pre-artifacts.sh" as const;
 
 export const REMOTE_PATCH_PATH = "/logs/artifacts/model.patch" as const;
 
-export const REMOTE_REWARD_JSON_PATH = "/logs/verifier/reward.json" as const;
+const REMOTE_REWARD_JSON_PATH = "/logs/verifier/reward.json" as const;
 
 export interface DeepSweSolverOpts {
   readonly model: string;
@@ -105,20 +108,14 @@ export function makeDeepSweSolver(
       const task = loadTask(meta.taskId, tasksRoot);
       const agent = opts.agent ?? "mini_swe";
       const cliHarness = isOriAgent(agent) ? getOriHarness(agent) : undefined;
-      const baseCliOpts: AgentCliOpts = opts.agentCli ?? {
+      const cliOpts = buildAgentCliOpts({
         model: opts.model,
         apiKey: opts.apiKey,
         ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
         ...(opts.sessionId !== undefined && { sessionId: opts.sessionId }),
-      };
-      const cliOpts: AgentCliOpts = {
-        ...baseCliOpts,
-        appendSystemPrompt:
-          baseCliOpts.appendSystemPrompt === undefined ||
-          baseCliOpts.appendSystemPrompt.length === 0
-            ? AGENT_CLI_SUBMISSION_PROTOCOL
-            : `${AGENT_CLI_SUBMISSION_PROTOCOL}\n\n${baseCliOpts.appendSystemPrompt}`,
-      };
+        ...(opts.agentCli !== undefined && { agentCli: opts.agentCli }),
+        submissionProtocol: AGENT_CLI_SUBMISSION_PROTOCOL,
+      });
       const reporter = yield* ProgressReporter;
       const checkpointStore = yield* CheckpointStore;
       const epoch = state.epoch;
@@ -198,63 +195,38 @@ export function makeDeepSweSolver(
       };
       const result = yield* gen(function* () {
         if (cliHarness !== undefined) {
-          const cliRun = yield* runAgentCli({
-            session: agentSession,
+          const cli = yield* runDeepSweCliAgent({
+            agentSession,
+            sessionFactory,
             harness: cliHarness,
-            opts: cliOpts,
-            instructionPath: REMOTE_AGENT_INSTRUCTION,
-            timeoutMs: meta.maxAgentTimeoutSec * 1000 + 30000,
+            cliOpts,
+            meta,
+            task,
+            sampleInput: state.sample.input,
           });
-          const cliPatch = yield* extractPatch(agentSession);
-          const cliVerifierSession = yield* sessionFactory.create({
-            imageTag: meta.dockerImage,
-            timeoutSec: meta.maxTestTimeoutSec + SANDBOX_TIMEOUT_MARGIN_SEC,
-            cpus: meta.cpus,
-            memoryMb: meta.memoryMb,
-            allowInternet: meta.allowInternet,
-            workdir: DEEP_SWE_WORKDIR,
-            keepAliveCommand: DEEP_SWE_KEEP_ALIVE_COMMAND,
-            uploads: [
-              {
-                localPath: task.testDir,
-                remotePath: REMOTE_TEST_DIR,
-                kind: "dir",
-              },
-            ],
-          });
-          const cliVerifier = yield* gen(function* () {
-            yield* deliverPatch(cliVerifierSession, task, cliPatch);
-            return yield* runVerifier(cliVerifierSession, meta);
-          }).pipe(ensureDestroy(cliVerifierSession));
-          const cliCompletion = cliRun.finalText ?? cliRun.rawStream;
           return {
             sample: {
               ...state.sample,
               metadata: {
                 ...state.sample.metadata,
-                reward: cliVerifier.reward,
-                verifierOutput: cliRun.failureDetail
-                  ? `${cliRun.failureDetail}\n\n${cliVerifier.output}`
-                  : cliVerifier.output,
-                ...agentCliMetadata(cliHarness.id, cliRun),
-                ...(meta.allowInternet
-                  ? {}
-                  : { agentNetworkForced: true, taskAllowInternet: false }),
+                reward: cli.reward,
+                verifierOutput: cli.verifierOutput,
+                ...cli.metadata,
               },
             },
             messages: [
               { role: MessageRole.User, content: state.sample.input },
-              ...cliRun.assistantMessages,
+              ...cli.assistantMessages,
             ],
-            responseItems: cliRun.responseItems,
+            responseItems: cli.responseItems,
             output: {
-              completion: cliCompletion,
+              completion: cli.completion,
               message: {
                 role: MessageRole.Assistant,
-                content: cliCompletion,
+                content: cli.completion,
               },
-              usage: cliRun.usage ?? ZERO_AGENT_USAGE,
-              generationTimeMs: cliRun.generationTimeMs ?? 0,
+              usage: cli.usage,
+              generationTimeMs: cli.generationTimeMs,
             },
             completed: true,
           };
@@ -474,3 +446,59 @@ const ZERO_AGENT_USAGE: ModelUsage = {
   reasoningTokens: 0,
   totalCost: 0,
 };
+
+function runDeepSweCliAgent(input: {
+  readonly agentSession: SandboxSessionInstance;
+  readonly sessionFactory: SandboxSessionFactory;
+  readonly harness: OriHarnessDef;
+  readonly cliOpts: AgentCliOpts;
+  readonly meta: NonNullable<ReturnType<typeof readDeepSweMeta>>;
+  readonly task: ReturnType<typeof loadTask>;
+  readonly sampleInput: string;
+}) {
+  const { agentSession, sessionFactory, harness, cliOpts, meta, task } = input;
+  return gen(function* () {
+    const cliRun = yield* runAgentCli({
+      session: agentSession,
+      harness,
+      opts: cliOpts,
+      instructionPath: REMOTE_AGENT_INSTRUCTION,
+      timeoutMs: meta.maxAgentTimeoutSec * 1000 + AGENT_TIMEOUT_MARGIN_MS,
+    });
+    const patch = yield* extractPatch(agentSession);
+    const verifierSession = yield* sessionFactory.create({
+      imageTag: meta.dockerImage,
+      timeoutSec: meta.maxTestTimeoutSec + SANDBOX_TIMEOUT_MARGIN_SEC,
+      cpus: meta.cpus,
+      memoryMb: meta.memoryMb,
+      allowInternet: meta.allowInternet,
+      workdir: DEEP_SWE_WORKDIR,
+      keepAliveCommand: DEEP_SWE_KEEP_ALIVE_COMMAND,
+      uploads: [
+        { localPath: task.testDir, remotePath: REMOTE_TEST_DIR, kind: "dir" },
+      ],
+    });
+    const verifier = yield* gen(function* () {
+      yield* deliverPatch(verifierSession, task, patch);
+      return yield* runVerifier(verifierSession, meta);
+    }).pipe(ensureDestroy(verifierSession));
+    const completion = cliRun.finalText ?? cliRun.rawStream;
+    return {
+      reward: verifier.reward,
+      verifierOutput: cliRun.failureDetail
+        ? `${cliRun.failureDetail}\n\n${verifier.output}`
+        : verifier.output,
+      metadata: {
+        ...agentCliMetadata(harness.id, cliRun),
+        ...(meta.allowInternet
+          ? {}
+          : { agentNetworkForced: true, taskAllowInternet: false }),
+      },
+      assistantMessages: cliRun.assistantMessages,
+      responseItems: cliRun.responseItems,
+      completion,
+      usage: cliRun.usage ?? ZERO_AGENT_USAGE,
+      generationTimeMs: cliRun.generationTimeMs ?? 0,
+    };
+  });
+}
