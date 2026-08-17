@@ -71,12 +71,13 @@ that looks like a model difference.
 ## 4. Solver
 
 Every inference parameter comes from the parsed config, never from a literal in
-the solver body. `InferenceOverrideSchema` in `benchmark-config.ts` is the full
-set, including `temperature`, `maxTokens`, `reasoningEffort`, `timeoutMs`,
-`endpointId`, `providerOnly`, `allowFallbacks` and `sort`. Spread it through
-`definedValues` so an unset option stays absent from the request and the API
-side default applies. Sending an explicit default is not the same as sending
-nothing.
+the solver body. `InferenceOverrideSchema` in `benchmark-config.ts` defines the
+inference overrides, while `ModelBenchmarkBaseSchema` adds `endpointId` and
+other benchmark-level fields. The available overrides include `temperature`,
+`maxTokens`, `reasoningEffort`, `timeoutMs`, `providerOnly`, `allowFallbacks`
+and `sort`. Spread them through `definedValues` so an unset option stays absent
+from the request and the API side default applies. Sending an explicit default
+is not the same as sending nothing.
 
 Benchmarks with a fixed temperature take `FixedTemperatureBenchmarkBaseSchema`
 and keep the temperature in their metadata, as `GPQA_META` does. Do not let a
