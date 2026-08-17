@@ -22,7 +22,7 @@ Adapts the official public-split protocol (`vgibench/prompts.py`, `vgibench/run.
 
 | option | type | default | description |
 | --- | --- | --- | --- |
-| `downscaledVideos` | boolean | `false` | Substitute `<name>_proxy_v2.mp4` re-encodes (≤ ~50 MB, 256 frames / 1280 px) where they exist. Only affects URLs when the media manifest is not in effect (i.e. `datasetRevision` differs from the manifest revision); under the manifest the mirror's files are used as-is. The requested flag is always disclosed in results. |
+| `downscaledVideos` | boolean | `false` | Substitute `<name>_proxy_v2.mp4` re-encodes (≤ ~50 MB, 256 frames / 1280 px) where they exist. Only affects URLs when the media manifest is not in effect (i.e. `datasetRevision` differs from the manifest revision), in which case `downscaled_videos: true` is recorded in sample metadata. Under the manifest the mirror's files are used as-is and the inert request is recorded as `downscaled_videos_requested: true` instead. |
 | `datasetRevision` | string | `v1.0.1` | Override the pinned HF dataset tag. |
 
 ## Video ingestion caveat

@@ -120,7 +120,8 @@ describe("vgiBenchRecordToSample", () => {
       videoUrl: { url: "https://mirror.example.com/clip_007.mp4" },
     });
     expect(sample.metadata?.["media_manifest_hash"]).toBe("a".repeat(64));
-    expect(sample.metadata?.["downscaled_videos"]).toBe(true);
+    expect(sample.metadata?.["downscaled_videos"]).toBeUndefined();
+    expect(sample.metadata?.["downscaled_videos_requested"]).toBe(true);
   });
 
   it("throws when a video is missing from the media manifest", () => {
