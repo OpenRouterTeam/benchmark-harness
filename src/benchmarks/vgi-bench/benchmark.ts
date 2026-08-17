@@ -150,10 +150,9 @@ export function vgiBenchRecordToSample(
       ...(manifest !== undefined && {
         media_manifest_hash: manifest.manifestHash,
       }),
-      ...(manifest === undefined &&
-        opts?.downscaledVideos === true && {
-          downscaled_videos: true,
-        }),
+      ...(opts?.downscaledVideos === true && {
+        downscaled_videos: true,
+      }),
     },
   };
 }
