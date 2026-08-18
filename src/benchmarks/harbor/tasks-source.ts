@@ -9,6 +9,10 @@ import type { Effect } from "effect/Effect";
 import { async, fail, runSync, succeed, tryPromise } from "effect/Effect";
 import { getOrNull } from "effect/Option";
 
+import {
+  datasetCacheRoot,
+  removeDirRecursive,
+} from "../../datasets/local-cache";
 import { runHarnessPromise } from "../../internal/effect-logger";
 import { wLog } from "../../internal/log";
 
@@ -59,15 +63,33 @@ export function makeTasksSource(config: TasksSourceConfig): TasksSource {
       return false;
     }
   };
+  const sharedCheckoutRoot = (): string | undefined => {
+    const root = datasetCacheRoot();
+    if (root === undefined) {
+      return undefined;
+    }
+    return join(root, "repos", `${config.label}-${config.commit.slice(0, 12)}`);
+  };
   const resolveCacheRoot = (): string => {
     const override = getOrNull(runSync(string(config.envVar).pipe(option)));
     if (override && override.length > 0 && isEmptyOrMissing(override)) {
       return override;
     }
+    const shared = sharedCheckoutRoot();
+    if (shared !== undefined) {
+      return shared;
+    }
     return mkdtempSync(join(tmpdir(), config.tmpPrefix));
   };
   const cloneTasks = async (): Promise<string> => {
     const root = resolveCacheRoot();
+    if (!isEmptyOrMissing(root)) {
+      if (isAtPinnedCommit(root) && hasTasksDir(root)) {
+        cacheRoot = root;
+        return root;
+      }
+      removeDirRecursive(root);
+    }
     await runGit([
       "clone",
       "--depth",
@@ -97,6 +119,15 @@ export function makeTasksSource(config: TasksSourceConfig): TasksSource {
     if (override && hasTasksDir(override) && isAtPinnedCommit(override)) {
       cacheRoot = override;
       return Promise.resolve(override);
+    }
+    const shared = sharedCheckoutRoot();
+    if (
+      shared !== undefined &&
+      hasTasksDir(shared) &&
+      isAtPinnedCommit(shared)
+    ) {
+      cacheRoot = shared;
+      return Promise.resolve(shared);
     }
     if (
       override !== null &&
