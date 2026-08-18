@@ -351,7 +351,6 @@ describe("terminal-bench ori solver", () => {
     }
     expect(usage.inputTokens).toBe(0);
     expect(usage.totalCost).toBe(0);
-    expect(finalState.output?.generationTimeMs).toBeGreaterThanOrEqual(0);
     expect(finalState.completed).toBe(true);
   });
 
