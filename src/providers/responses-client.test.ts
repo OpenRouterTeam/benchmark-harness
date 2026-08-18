@@ -30,6 +30,7 @@ import {
   extractMessageText,
   findOutputItems,
   makeResponsesLayer,
+  recoverOutputItems,
   Responses,
   ResponsesError,
   toModelError,
@@ -79,6 +80,20 @@ async function readUnknownTerminalFixture(): Promise<StreamEvents> {
     throw parsed.error;
   }
   return parsed.value;
+}
+
+async function readUnknownOutputItemFixture(): Promise<
+  Record<string, unknown>
+> {
+  return JSON.parse(
+    await readFile(
+      new URL(
+        "../../test/fixtures/anthropic-unknown-output-item.json",
+        import.meta.url
+      ),
+      "utf8"
+    )
+  ) as Record<string, unknown>;
 }
 describe("extractMessageText", () => {
   it("concatenates output_text from message items", () => {
@@ -234,6 +249,73 @@ describe("usageFromResponses", () => {
   });
 });
 describe("consumeStream", () => {
+  it("recovers unknown output items with a stable synthetic id", async () => {
+    const item = await readUnknownOutputItemFixture();
+    const recovered = recoverOutputItems([item], "resp-local");
+
+    expect(recovered).toEqual([
+      {
+        content: [
+          {
+            text: "deterministic completion turn 1deterministic completion turn 1",
+            type: "output_text",
+          },
+        ],
+        id: "synthetic-resp-local-0",
+        role: "assistant",
+        status: "completed",
+        type: "message",
+      },
+    ]);
+    expect(recovered[0]).toMatchObject({
+      role: "assistant",
+      status: "completed",
+      type: "message",
+    });
+  });
+
+  it("logs and drops output items that cannot be recovered", () => {
+    const warn = spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      const recovered = recoverOutputItems(
+        [
+          {
+            raw: {
+              content: [{ text: "kept", type: "output_text" }],
+              role: "assistant",
+              status: "completed",
+              type: "message",
+            },
+            type: "UNKNOWN",
+            is_unknown: true,
+          },
+          {
+            raw: { type: "unsupported_item" },
+            type: "UNKNOWN",
+            is_unknown: true,
+          },
+        ],
+        "resp-local"
+      );
+
+      expect(recovered).toHaveLength(1);
+      expect(recovered[0]).toMatchObject({
+        id: "synthetic-resp-local-0",
+        type: "message",
+      });
+      expect(warn).toHaveBeenCalledWith(
+        "Unable to recover Responses output item",
+        {
+          item_index: 1,
+          raw_type: "unsupported_item",
+          response_id: "resp-local",
+        }
+      );
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
   it("accepts an SDK-unknown terminal event from its raw payload", async () => {
     const event = await readUnknownTerminalFixture();
     expect(event).toMatchObject({
