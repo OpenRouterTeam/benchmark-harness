@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { join } from "node:path";
 
 import { FetchHttpClient, HttpClient } from "@effect/platform";
@@ -63,10 +64,18 @@ export function resolveHfCacheTtlMs(): number {
   return HF_CACHE_DEFAULT_TTL_MS;
 }
 
+function hfTokenCacheSegment(hfToken: string): string {
+  if (hfToken === "") {
+    return "anon";
+  }
+  return createHash("sha256").update(hfToken).digest("hex").slice(0, 16);
+}
+
 function hfPageCacheFile(
   config: HfDatasetConfig,
   offset: number,
-  length: number
+  length: number,
+  hfToken: string
 ): string | undefined {
   const root = datasetCacheRoot();
   if (root === undefined) {
@@ -75,6 +84,7 @@ function hfPageCacheFile(
   return join(
     root,
     "hf",
+    hfTokenCacheSegment(hfToken),
     encodeCacheKeySegment(config.dataset),
     encodeCacheKeySegment(config.config),
     encodeCacheKeySegment(config.split),
@@ -178,7 +188,7 @@ export function makeHfPageFetcher(
                   })
               )
             );
-      const cacheFile = hfPageCacheFile(config, offset, length);
+      const cacheFile = hfPageCacheFile(config, offset, length, hfToken);
       if (cacheFile !== undefined) {
         const cached = readJsonCacheFile(
           cacheFile,

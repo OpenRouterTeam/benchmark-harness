@@ -1,5 +1,13 @@
 import { afterEach, describe, expect, it } from "bun:test";
-import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -8,6 +16,7 @@ import {
   DATASET_CACHE_DISABLE_ENV,
   datasetCacheRoot,
   encodeCacheKeySegment,
+  publishStagedCheckout,
   readJsonCacheFile,
   removeDirRecursive,
   writeJsonCacheFileAtomic,
@@ -60,7 +69,7 @@ describe("local-cache", () => {
     });
     it("defaults under the user's home cache dir", () => {
       delete process.env[DATASET_CACHE_DIR_ENV];
-      delete process.env[DATASET_CACHE_DISABLE_ENV];
+      process.env[DATASET_CACHE_DISABLE_ENV] = "0";
       expect(datasetCacheRoot()).toBe(
         join(homedir(), ".cache", "openrouter-bench-harness")
       );
@@ -71,6 +80,17 @@ describe("local-cache", () => {
       expect(datasetCacheRoot()).toBeUndefined();
       process.env[DATASET_CACHE_DISABLE_ENV] = "0";
       expect(datasetCacheRoot()).toBeDefined();
+    });
+    it("defaults to disabled under bun test without an explicit cache dir", () => {
+      delete process.env[DATASET_CACHE_DIR_ENV];
+      delete process.env[DATASET_CACHE_DISABLE_ENV];
+      expect(datasetCacheRoot()).toBeUndefined();
+    });
+    it("stays enabled under bun test when a cache dir is set", () => {
+      const dir = makeTmpDir();
+      process.env[DATASET_CACHE_DIR_ENV] = dir;
+      delete process.env[DATASET_CACHE_DISABLE_ENV];
+      expect(datasetCacheRoot()).toBe(dir);
     });
   });
 
@@ -89,6 +109,7 @@ describe("local-cache", () => {
       const file = join(dir, "a", "b", "entry.json");
       writeJsonCacheFileAtomic(file, { hello: "world" });
       expect(readJsonCacheFile(file)).toEqual({ hello: "world" });
+      expect(statSync(file).mode & 0o777).toBe(0o600);
     });
     it("treats missing files and corrupt JSON as misses", () => {
       const dir = makeTmpDir();
@@ -125,6 +146,46 @@ describe("local-cache", () => {
       removeDirRecursive(dir);
       expect(existsSync(dir)).toBe(false);
       removeDirRecursive(join(dir, "missing"));
+    });
+  });
+
+  describe("publishStagedCheckout", () => {
+    it("renames the staging dir into a free shared path", () => {
+      const dir = makeTmpDir();
+      const staging = join(dir, "staging");
+      const shared = join(dir, "shared");
+      mkdirSync(staging);
+      writeFileSync(join(staging, "task.toml"), "task\n");
+      const root = publishStagedCheckout(staging, shared, () => true);
+      expect(root).toBe(shared);
+      expect(existsSync(join(shared, "task.toml"))).toBe(true);
+      expect(existsSync(staging)).toBe(false);
+    });
+    it("keeps a concurrently published valid checkout and discards staging", () => {
+      const dir = makeTmpDir();
+      const staging = join(dir, "staging");
+      const shared = join(dir, "shared");
+      mkdirSync(staging);
+      mkdirSync(shared);
+      writeFileSync(join(shared, "task.toml"), "winner\n");
+      const root = publishStagedCheckout(staging, shared, () => true);
+      expect(root).toBe(shared);
+      expect(readFileSync(join(shared, "task.toml"), "utf8")).toBe("winner\n");
+      expect(existsSync(staging)).toBe(false);
+    });
+    it("replaces a corrupt leftover shared dir", () => {
+      const dir = makeTmpDir();
+      const staging = join(dir, "staging");
+      const shared = join(dir, "shared");
+      mkdirSync(staging);
+      writeFileSync(join(staging, "task.toml"), "fresh\n");
+      mkdirSync(shared);
+      writeFileSync(join(shared, "partial.txt"), "interrupted run\n");
+      const root = publishStagedCheckout(staging, shared, () => false);
+      expect(root).toBe(shared);
+      expect(readFileSync(join(shared, "task.toml"), "utf8")).toBe("fresh\n");
+      expect(existsSync(join(shared, "partial.txt"))).toBe(false);
+      expect(existsSync(staging)).toBe(false);
     });
   });
 });

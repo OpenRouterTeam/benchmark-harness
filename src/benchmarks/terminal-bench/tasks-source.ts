@@ -1,7 +1,7 @@
 import { execFile, execFileSync } from "node:child_process";
-import { mkdtempSync, readdirSync, statSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readdirSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { basename, dirname, join } from "node:path";
 
 import { option, string } from "effect/Config";
 import { TaggedError } from "effect/Data";
@@ -11,7 +11,7 @@ import { getOrNull } from "effect/Option";
 
 import {
   datasetCacheRoot,
-  removeDirRecursive,
+  publishStagedCheckout,
 } from "../../datasets/local-cache";
 import { runHarnessPromise } from "../../internal/effect-logger";
 
@@ -33,18 +33,6 @@ function sharedCheckoutRoot(): string | undefined {
     "repos",
     `terminal-bench-${TERMINAL_BENCH_SOURCE_COMMIT.slice(0, 12)}`
   );
-}
-
-function resolveCacheRoot(): string {
-  const override = getOrNull(runSync(string("BENCH_TASKS_DIR").pipe(option)));
-  if (override && override.length > 0 && isEmptyOrMissing(override)) {
-    return override;
-  }
-  const shared = sharedCheckoutRoot();
-  if (shared !== undefined) {
-    return shared;
-  }
-  return mkdtempSync(join(tmpdir(), "terminal-bench-2-1-tasks-"));
 }
 
 function isEmptyOrMissing(path: string): boolean {
@@ -146,15 +134,37 @@ export function resetCheckoutCache(): void {
 }
 
 async function cloneTasks(): Promise<string> {
-  const root = resolveCacheRoot();
-  if (!isEmptyOrMissing(root)) {
-    const resolved = resolveTasksDir(root);
-    if (resolved !== undefined && isAtPinnedCommit(resolved)) {
-      cacheRoot = resolved;
-      return resolved;
-    }
-    removeDirRecursive(root);
+  const override = getOrNull(runSync(string("BENCH_TASKS_DIR").pipe(option)));
+  if (override !== null && override.length > 0 && isEmptyOrMissing(override)) {
+    await cloneInto(override);
+    const tasksDir = join(override, TERMINAL_BENCH_TASKS_SUBDIR);
+    cacheRoot = tasksDir;
+    return tasksDir;
   }
+  const shared = sharedCheckoutRoot();
+  if (shared === undefined) {
+    const tmp = mkdtempSync(join(tmpdir(), "terminal-bench-2-1-tasks-"));
+    await cloneInto(tmp);
+    const tasksDir = join(tmp, TERMINAL_BENCH_TASKS_SUBDIR);
+    cacheRoot = tasksDir;
+    return tasksDir;
+  }
+  mkdirSync(dirname(shared), { recursive: true });
+  const staging = mkdtempSync(
+    join(dirname(shared), `.${basename(shared)}.staging-`)
+  );
+  await cloneInto(staging);
+  const root = publishStagedCheckout(
+    staging,
+    shared,
+    () => isAtPinnedCommit(shared) && resolveTasksDir(shared) !== undefined
+  );
+  const tasksDir = join(root, TERMINAL_BENCH_TASKS_SUBDIR);
+  cacheRoot = tasksDir;
+  return tasksDir;
+}
+
+async function cloneInto(root: string): Promise<void> {
   await runGit([
     "clone",
     "--depth",
@@ -173,9 +183,6 @@ async function cloneTasks(): Promise<string> {
     TERMINAL_BENCH_SOURCE_COMMIT,
   ]);
   await runGit(["-C", root, "checkout", TERMINAL_BENCH_SOURCE_COMMIT]);
-  const tasksDir = join(root, TERMINAL_BENCH_TASKS_SUBDIR);
-  cacheRoot = tasksDir;
-  return tasksDir;
 }
 
 class GitError extends TaggedError("GitError")<{

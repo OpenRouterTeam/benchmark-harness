@@ -1,7 +1,7 @@
 import { execFile, execFileSync } from "node:child_process";
-import { mkdtempSync, readdirSync, statSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readdirSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { basename, dirname, join } from "node:path";
 
 import { option, string } from "effect/Config";
 import { TaggedError } from "effect/Data";
@@ -11,7 +11,7 @@ import { getOrNull } from "effect/Option";
 
 import {
   datasetCacheRoot,
-  removeDirRecursive,
+  publishStagedCheckout,
 } from "../../datasets/local-cache";
 import { runHarnessPromise } from "../../internal/effect-logger";
 import { wLog } from "../../internal/log";
@@ -70,26 +70,7 @@ export function makeTasksSource(config: TasksSourceConfig): TasksSource {
     }
     return join(root, "repos", `${config.label}-${config.commit.slice(0, 12)}`);
   };
-  const resolveCacheRoot = (): string => {
-    const override = getOrNull(runSync(string(config.envVar).pipe(option)));
-    if (override && override.length > 0 && isEmptyOrMissing(override)) {
-      return override;
-    }
-    const shared = sharedCheckoutRoot();
-    if (shared !== undefined) {
-      return shared;
-    }
-    return mkdtempSync(join(tmpdir(), config.tmpPrefix));
-  };
-  const cloneTasks = async (): Promise<string> => {
-    const root = resolveCacheRoot();
-    if (!isEmptyOrMissing(root)) {
-      if (isAtPinnedCommit(root) && hasTasksDir(root)) {
-        cacheRoot = root;
-        return root;
-      }
-      removeDirRecursive(root);
-    }
+  const cloneInto = async (root: string): Promise<void> => {
     await runGit([
       "clone",
       "--depth",
@@ -108,6 +89,35 @@ export function makeTasksSource(config: TasksSourceConfig): TasksSource {
       config.commit,
     ]);
     await runGit(["-C", root, "checkout", config.commit]);
+  };
+  const cloneTasks = async (): Promise<string> => {
+    const override = getOrNull(runSync(string(config.envVar).pipe(option)));
+    if (
+      override !== null &&
+      override.length > 0 &&
+      isEmptyOrMissing(override)
+    ) {
+      await cloneInto(override);
+      cacheRoot = override;
+      return override;
+    }
+    const shared = sharedCheckoutRoot();
+    if (shared === undefined) {
+      const tmp = mkdtempSync(join(tmpdir(), config.tmpPrefix));
+      await cloneInto(tmp);
+      cacheRoot = tmp;
+      return tmp;
+    }
+    mkdirSync(dirname(shared), { recursive: true });
+    const staging = mkdtempSync(
+      join(dirname(shared), `.${basename(shared)}.staging-`)
+    );
+    await cloneInto(staging);
+    const root = publishStagedCheckout(
+      staging,
+      shared,
+      () => isAtPinnedCommit(shared) && hasTasksDir(shared)
+    );
     cacheRoot = root;
     return root;
   };

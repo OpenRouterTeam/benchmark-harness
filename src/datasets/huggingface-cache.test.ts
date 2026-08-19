@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
-import { mkdtempSync, rmSync, utimesSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { existsSync, mkdtempSync, rmSync, utimesSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -102,14 +103,20 @@ describe("huggingface page cache", () => {
     }
   });
 
-  function cacheFile(opts: { revision?: string }): string {
+  function cacheFile(opts: { revision?: string; token?: string }): string {
     const root = process.env.BENCH_DATASET_CACHE_DIR;
     if (root === undefined) {
       throw new Error("BENCH_DATASET_CACHE_DIR not set");
     }
+    const token = opts.token ?? "";
+    const tokenSegment =
+      token === ""
+        ? "anon"
+        : createHash("sha256").update(token).digest("hex").slice(0, 16);
     return join(
       root,
       "hf",
+      tokenSegment,
       encodeCacheKeySegment("test/dataset"),
       "default",
       "train",
@@ -161,5 +168,27 @@ describe("huggingface page cache", () => {
     expect(await fetchSize(makeLayer({}))).toBe(1);
     expect(await fetchSize(makeLayer({}))).toBe(1);
     expect(fetchCount).toBe(2);
+  });
+
+  it("scopes cache entries by HF token so anonymous callers never read gated pages", async () => {
+    stubFetch(rowsPage({ numRowsTotal: 1, rows: 1 }));
+    const tokenLayer = makeHfDatasetLayer({
+      dataset: "test/dataset",
+      config: "default",
+      split: "train",
+      hfToken: "hf_secret_token",
+      recordToSample: (record) => ({
+        id: String(record["id"] ?? ""),
+        input: "unused",
+        target: { text: "unused" },
+      }),
+    });
+    expect(await fetchSize(tokenLayer)).toBe(1);
+    expect(await fetchSize(tokenLayer)).toBe(1);
+    expect(fetchCount).toBe(1);
+    expect(existsSync(cacheFile({ token: "hf_secret_token" }))).toBe(true);
+    expect(await fetchSize(makeLayer({}))).toBe(1);
+    expect(fetchCount).toBe(2);
+    expect(existsSync(cacheFile({}))).toBe(true);
   });
 });
