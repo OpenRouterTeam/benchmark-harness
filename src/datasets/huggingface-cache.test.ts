@@ -154,6 +154,14 @@ describe("huggingface page cache", () => {
     expect(fetchCount).toBe(1);
   });
 
+  it("expires revision-pinned entries too when BENCH_HF_CACHE_TTL_MS is set explicitly", async () => {
+    stubFetch(rowsPage({ numRowsTotal: 1, rows: 1 }));
+    process.env.BENCH_HF_CACHE_TTL_MS = "0";
+    expect(await fetchSize(makeLayer({ revision: "abc123" }))).toBe(1);
+    expect(await fetchSize(makeLayer({ revision: "abc123" }))).toBe(1);
+    expect(fetchCount).toBe(2);
+  });
+
   it("honors BENCH_HF_CACHE_TTL_MS for unpinned entries", async () => {
     stubFetch(rowsPage({ numRowsTotal: 1, rows: 1 }));
     process.env.BENCH_HF_CACHE_TTL_MS = "0";
