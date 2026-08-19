@@ -7,6 +7,7 @@ import {
   readFileSync,
   rmSync,
   statSync,
+  utimesSync,
   writeFileSync,
 } from "node:fs";
 import { homedir, tmpdir } from "node:os";
@@ -16,13 +17,16 @@ import {
   CHECKOUT_COMPLETE_MARKER,
   DATASET_CACHE_DIR_ENV,
   DATASET_CACHE_DISABLE_ENV,
+  STALE_STAGING_MAX_AGE_MS,
   datasetCacheRoot,
   encodeCacheKeySegment,
   hasCheckoutCompleteMarker,
+  mkdirOwnerOnly,
   publishStagedCheckout,
   readJsonCacheFile,
   removeDirRecursive,
   restrictPermissionsRecursive,
+  sweepStaleStagingDirs,
   writeCheckoutCompleteMarker,
   writeJsonCacheFileAtomic,
 } from "./local-cache";
@@ -151,6 +155,49 @@ describe("local-cache", () => {
       removeDirRecursive(dir);
       expect(existsSync(dir)).toBe(false);
       removeDirRecursive(join(dir, "missing"));
+    });
+  });
+
+  describe("mkdirOwnerOnly", () => {
+    it("creates every new level with owner-only permissions and leaves existing dirs alone", () => {
+      const base = makeTmpDir();
+      chmodSync(base, 0o755);
+      const path = join(base, "a", "b", "c");
+      mkdirOwnerOnly(path);
+      expect(statSync(join(base, "a")).mode & 0o777).toBe(0o700);
+      expect(statSync(join(base, "a", "b")).mode & 0o777).toBe(0o700);
+      expect(statSync(path).mode & 0o777).toBe(0o700);
+      expect(statSync(base).mode & 0o777).toBe(0o755);
+    });
+    it("tightens a pre-existing target dir without touching its ancestors", () => {
+      const base = makeTmpDir();
+      chmodSync(base, 0o755);
+      const target = join(base, "hf");
+      mkdirSync(target, { mode: 0o755 });
+      mkdirOwnerOnly(target);
+      expect(statSync(target).mode & 0o777).toBe(0o700);
+      expect(statSync(base).mode & 0o777).toBe(0o755);
+    });
+  });
+
+  describe("sweepStaleStagingDirs", () => {
+    it("removes only staging dirs older than the max age", () => {
+      const dir = makeTmpDir();
+      const stale = join(dir, ".old-label-abc.staging-zzzzzz");
+      const fresh = join(dir, ".new-label-abc.staging-aaaaaa");
+      const checkout = join(dir, "some-label-abc1234567890");
+      for (const d of [stale, fresh, checkout]) {
+        mkdirSync(d);
+      }
+      const old = new Date(Date.now() - STALE_STAGING_MAX_AGE_MS - 1000);
+      utimesSync(stale, old, old);
+      sweepStaleStagingDirs(dir);
+      expect(existsSync(stale)).toBe(false);
+      expect(existsSync(fresh)).toBe(true);
+      expect(existsSync(checkout)).toBe(true);
+    });
+    it("ignores missing dirs", () => {
+      sweepStaleStagingDirs(join(makeTmpDir(), "does-not-exist"));
     });
   });
 

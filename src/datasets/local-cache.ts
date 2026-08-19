@@ -1,5 +1,6 @@
 import {
   chmodSync,
+  existsSync,
   mkdirSync,
   readdirSync,
   readFileSync,
@@ -20,6 +21,8 @@ import { wLog } from "../internal/log";
 export const DATASET_CACHE_DIR_ENV = "BENCH_DATASET_CACHE_DIR";
 export const DATASET_CACHE_DISABLE_ENV = "BENCH_DATASET_CACHE_DISABLE";
 export const CHECKOUT_COMPLETE_MARKER = ".bench-checkout-complete";
+
+export const STALE_STAGING_MAX_AGE_MS = 24 * 60 * 60 * 1e3;
 
 export function readEnvOptional(name: string): string | undefined {
   const value = getOrNull(runSync(string(name).pipe(option)));
@@ -80,9 +83,60 @@ export function readJsonCacheFile(
   }
 }
 
+export function mkdirOwnerOnly(path: string): void {
+  const missing: string[] = [];
+  let current = path;
+  while (!existsSync(current)) {
+    missing.push(current);
+    const parent = dirname(current);
+    if (parent === current) {
+      break;
+    }
+    current = parent;
+  }
+  mkdirSync(path, { recursive: true });
+  for (const dir of [path, ...missing]) {
+    try {
+      chmodSync(dir, 0o700);
+    } catch (error) {
+      wLog("cache dir permission restriction failed", {
+        dir,
+        error: String(error),
+      });
+    }
+  }
+}
+
+export function sweepStaleStagingDirs(
+  dir: string,
+  maxAgeMs: number = STALE_STAGING_MAX_AGE_MS
+): void {
+  try {
+    const now = Date.now();
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      if (!entry.name.includes(".staging-")) {
+        continue;
+      }
+      const path = join(dir, entry.name);
+      try {
+        const { mtimeMs } = statSync(path);
+        if (now - mtimeMs >= maxAgeMs) {
+          removeDirRecursive(path);
+        }
+      } catch {
+        wLog("stale staging dir sweep skipped an unreadable entry", {
+          path,
+        });
+      }
+    }
+  } catch {
+    wLog("stale staging dir sweep failed", { dir });
+  }
+}
+
 export function writeJsonCacheFileAtomic(path: string, value: unknown): void {
   try {
-    mkdirSync(dirname(path), { recursive: true, mode: 0o700 });
+    mkdirOwnerOnly(dirname(path));
     const tmp = `${path}.${process.pid}.${Math.random().toString(36).slice(2)}.tmp`;
     writeFileSync(tmp, JSON.stringify(value), { mode: 0o600 });
     renameSync(tmp, path);
@@ -160,8 +214,8 @@ export function publishStagedCheckout(
         { cause: error }
       );
     }
-    removeDirRecursive(shared);
     try {
+      removeDirRecursive(shared);
       renameSync(staging, shared);
       return shared;
     } catch {

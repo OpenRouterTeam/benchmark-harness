@@ -7,6 +7,7 @@ import {
   readdirSync,
   rmSync,
   statSync,
+  utimesSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
@@ -18,6 +19,7 @@ import { makeTasksSource } from "./tasks-source";
 const ENV_VARS: readonly string[] = [
   "BENCH_DATASET_CACHE_DIR",
   "BENCH_DATASET_CACHE_DISABLE",
+  "BENCH_TEST_BENCH_TASKS_DIR",
 ];
 
 function git(args: string[], cwd: string): string {
@@ -191,5 +193,44 @@ describe("makeTasksSource shared checkout cache", () => {
     const root = await second.ensureTasksCheckedOut();
     expect(root).toBe(shared);
     expect(hasCheckoutCompleteMarker(shared)).toBe(true);
+  });
+
+  it("clones into an empty override dir even when a shared checkout exists", async () => {
+    const { url, commit } = makeSourceRepo(makeTmpDir());
+    const first = makeSource({ repoUrl: url, commit });
+    await first.ensureTasksCheckedOut();
+
+    const override = join(makeTmpDir(), "tasks-override");
+    mkdirSync(override, { recursive: true });
+    process.env.BENCH_TEST_BENCH_TASKS_DIR = override;
+
+    const second = makeSource({ repoUrl: url, commit });
+    const root = await second.ensureTasksCheckedOut();
+    expect(root).toBe(override);
+    expect(existsSync(join(root, "tasks", "task-a", "task.toml"))).toBe(true);
+  });
+
+  it("sweeps stale staging dirs left by interrupted runs when cloning", async () => {
+    const parent = makeTmpDir();
+    const { url, commit } = makeSourceRepo(parent);
+    const source = makeSource({ repoUrl: url, commit });
+    const shared = await source.ensureTasksCheckedOut();
+
+    const reposDir = dirname(shared);
+    const stale = join(reposDir, ".interrupted-label-abc.staging-zzzzzz");
+    mkdirSync(stale);
+    writeFileSync(join(stale, "partial.txt"), "interrupted run\n");
+    const old = new Date(Date.now() - 48 * 60 * 60 * 1e3);
+    utimesSync(stale, old, old);
+
+    const repo = join(parent, "source-repo");
+    writeFileSync(join(repo, "tasks", "task-a", "extra.txt"), "more\n");
+    git(["add", "-A"], repo);
+    git(["commit", "-qm", "second"], repo);
+    const commit2 = git(["rev-parse", "HEAD"], repo);
+
+    const second = makeSource({ repoUrl: url, commit: commit2 });
+    await second.ensureTasksCheckedOut();
+    expect(existsSync(stale)).toBe(false);
   });
 });
