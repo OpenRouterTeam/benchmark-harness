@@ -17,7 +17,7 @@ cached on disk so repeat runs don't re-download them. The cache lives at
 | --- | --- | --- |
 | `BENCH_DATASET_CACHE_DIR` | `~/.cache/openrouter-bench-harness` | Cache root |
 | `BENCH_DATASET_CACHE_DISABLE` | unset | Set to `1` to bypass the cache entirely |
-| `BENCH_HF_CACHE_TTL_MS` | `86400000` (24h) | Freshness window for HuggingFace pages fetched without a pinned `revision`; revision-pinned pages never expire unless this is set explicitly, in which case it applies to all entries |
+| `BENCH_HF_CACHE_TTL_MS` | `86400000` (24h) | Freshness window for HuggingFace pages fetched without a pinned `revision`; revision-pinned pages never expire |
 
 GitHub task repos are checked out under `<cache>/repos/<benchmark>-<commit>`
 and reused while the pinned commit matches; HuggingFace `/rows` pages are
