@@ -1,5 +1,7 @@
 import {
+  chmodSync,
   mkdirSync,
+  readdirSync,
   readFileSync,
   renameSync,
   rmSync,
@@ -17,6 +19,7 @@ import { wLog } from "../internal/log";
 
 export const DATASET_CACHE_DIR_ENV = "BENCH_DATASET_CACHE_DIR";
 export const DATASET_CACHE_DISABLE_ENV = "BENCH_DATASET_CACHE_DISABLE";
+export const CHECKOUT_COMPLETE_MARKER = ".bench-checkout-complete";
 
 export function readEnvOptional(name: string): string | undefined {
   const value = getOrNull(runSync(string(name).pipe(option)));
@@ -92,23 +95,77 @@ export function removeDirRecursive(path: string): void {
   rmSync(path, { recursive: true, force: true });
 }
 
+export function writeCheckoutCompleteMarker(root: string): void {
+  try {
+    writeFileSync(join(root, CHECKOUT_COMPLETE_MARKER), "", { mode: 0o600 });
+  } catch (error) {
+    wLog("checkout completion marker write failed", {
+      root,
+      error: String(error),
+    });
+  }
+}
+
+export function hasCheckoutCompleteMarker(root: string): boolean {
+  try {
+    return statSync(join(root, CHECKOUT_COMPLETE_MARKER)).isFile();
+  } catch {
+    return false;
+  }
+}
+
+export function restrictPermissionsRecursive(root: string): void {
+  try {
+    restrictDirPermissions(root);
+  } catch (error) {
+    wLog("cache permission restriction failed", {
+      root,
+      error: String(error),
+    });
+  }
+}
+
+function restrictDirPermissions(dir: string): void {
+  chmodSync(dir, 0o700);
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const path = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      restrictDirPermissions(path);
+    } else if (entry.isFile()) {
+      const ownerExec = statSync(path).mode & 0o100;
+      chmodSync(path, ownerExec ? 0o700 : 0o600);
+    }
+  }
+}
+
 export function publishStagedCheckout(
   staging: string,
   shared: string,
-  sharedIsValid: () => boolean
+  hasTasks: () => boolean
 ): string {
+  const sharedIsComplete = () =>
+    hasCheckoutCompleteMarker(shared) && hasTasks();
   try {
     renameSync(staging, shared);
     return shared;
   } catch (error) {
-    if (!sharedIsValid()) {
-      removeDirRecursive(shared);
+    if (sharedIsComplete()) {
+      removeDirRecursive(staging);
+      return shared;
     }
+    if (hasCheckoutCompleteMarker(shared)) {
+      removeDirRecursive(staging);
+      throw new Error(
+        `shared checkout exists but is incomplete; remove it manually: ${shared}`,
+        { cause: error }
+      );
+    }
+    removeDirRecursive(shared);
     try {
       renameSync(staging, shared);
       return shared;
     } catch {
-      if (sharedIsValid()) {
+      if (sharedIsComplete()) {
         removeDirRecursive(staging);
         return shared;
       }

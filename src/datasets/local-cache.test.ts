@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "bun:test";
 import {
+  chmodSync,
   existsSync,
   mkdirSync,
   mkdtempSync,
@@ -12,13 +13,17 @@ import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 
 import {
+  CHECKOUT_COMPLETE_MARKER,
   DATASET_CACHE_DIR_ENV,
   DATASET_CACHE_DISABLE_ENV,
   datasetCacheRoot,
   encodeCacheKeySegment,
+  hasCheckoutCompleteMarker,
   publishStagedCheckout,
   readJsonCacheFile,
   removeDirRecursive,
+  restrictPermissionsRecursive,
+  writeCheckoutCompleteMarker,
   writeJsonCacheFileAtomic,
 } from "./local-cache";
 
@@ -149,6 +154,35 @@ describe("local-cache", () => {
     });
   });
 
+  describe("checkout completion marker", () => {
+    it("round-trips the marker and defaults to absent", () => {
+      const dir = makeTmpDir();
+      expect(hasCheckoutCompleteMarker(dir)).toBe(false);
+      writeCheckoutCompleteMarker(dir);
+      expect(hasCheckoutCompleteMarker(dir)).toBe(true);
+      expect(existsSync(join(dir, CHECKOUT_COMPLETE_MARKER))).toBe(true);
+      expect(statSync(join(dir, CHECKOUT_COMPLETE_MARKER)).mode & 0o777).toBe(
+        0o600
+      );
+    });
+  });
+
+  describe("restrictPermissionsRecursive", () => {
+    it("strips group and other permissions while keeping owner exec bits", () => {
+      const dir = makeTmpDir();
+      const nested = join(dir, "sub", "deep");
+      mkdirSync(nested, { recursive: true });
+      writeFileSync(join(nested, "plain.txt"), "x\n");
+      writeFileSync(join(nested, "run.sh"), "x\n", { mode: 0o755 });
+      chmodSync(join(dir, "sub"), 0o755);
+      restrictPermissionsRecursive(dir);
+      expect(statSync(dir).mode & 0o777).toBe(0o700);
+      expect(statSync(join(dir, "sub")).mode & 0o777).toBe(0o700);
+      expect(statSync(join(nested, "plain.txt")).mode & 0o777).toBe(0o600);
+      expect(statSync(join(nested, "run.sh")).mode & 0o777).toBe(0o700);
+    });
+  });
+
   describe("publishStagedCheckout", () => {
     it("renames the staging dir into a free shared path", () => {
       const dir = makeTmpDir();
@@ -161,30 +195,48 @@ describe("local-cache", () => {
       expect(existsSync(join(shared, "task.toml"))).toBe(true);
       expect(existsSync(staging)).toBe(false);
     });
-    it("keeps a concurrently published valid checkout and discards staging", () => {
+    it("keeps a concurrently published complete checkout and discards staging", () => {
       const dir = makeTmpDir();
       const staging = join(dir, "staging");
       const shared = join(dir, "shared");
       mkdirSync(staging);
       mkdirSync(shared);
+      writeCheckoutCompleteMarker(shared);
       writeFileSync(join(shared, "task.toml"), "winner\n");
       const root = publishStagedCheckout(staging, shared, () => true);
       expect(root).toBe(shared);
       expect(readFileSync(join(shared, "task.toml"), "utf8")).toBe("winner\n");
       expect(existsSync(staging)).toBe(false);
     });
-    it("replaces a corrupt leftover shared dir", () => {
+    it("replaces a marker-less leftover shared dir", () => {
       const dir = makeTmpDir();
       const staging = join(dir, "staging");
       const shared = join(dir, "shared");
       mkdirSync(staging);
+      writeCheckoutCompleteMarker(staging);
       writeFileSync(join(staging, "task.toml"), "fresh\n");
       mkdirSync(shared);
       writeFileSync(join(shared, "partial.txt"), "interrupted run\n");
-      const root = publishStagedCheckout(staging, shared, () => false);
+      const root = publishStagedCheckout(staging, shared, () => true);
       expect(root).toBe(shared);
       expect(readFileSync(join(shared, "task.toml"), "utf8")).toBe("fresh\n");
       expect(existsSync(join(shared, "partial.txt"))).toBe(false);
+      expect(existsSync(staging)).toBe(false);
+    });
+    it("never deletes a marked shared dir that is missing its tasks", () => {
+      const dir = makeTmpDir();
+      const staging = join(dir, "staging");
+      const shared = join(dir, "shared");
+      mkdirSync(staging);
+      mkdirSync(shared);
+      writeCheckoutCompleteMarker(shared);
+      writeFileSync(join(shared, "partial.txt"), "in use elsewhere\n");
+      expect(() => publishStagedCheckout(staging, shared, () => false)).toThrow(
+        /incomplete; remove it manually/
+      );
+      expect(readFileSync(join(shared, "partial.txt"), "utf8")).toBe(
+        "in use elsewhere\n"
+      );
       expect(existsSync(staging)).toBe(false);
     });
   });

@@ -26,8 +26,10 @@ matches. HuggingFace `/rows` pages are stored under
 `<cache>/hf/<token-scope>/<dataset>/<config>/<split>/<revision>/`, where
 `<token-scope>` is `anon` for anonymous requests or a hash of the
 `HF_TOKEN` used, so gated contents are never served across token scopes.
-Cache files are written with owner-only permissions. Under `bun test` the
-cache is disabled by default unless `BENCH_DATASET_CACHE_DIR` is set (or
+Cache files and task-repo checkouts are written with owner-only permissions,
+and a shared checkout is only replaced wholesale once its completion marker
+shows another process never adopted it. Under `bun test` the cache is disabled
+by default unless `BENCH_DATASET_CACHE_DIR` is set (or
 `BENCH_DATASET_CACHE_DISABLE=0` opts in explicitly).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) before proposing changes. Report security issues privately as described in [SECURITY.md](SECURITY.md).
