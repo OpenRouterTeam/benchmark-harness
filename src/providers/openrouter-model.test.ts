@@ -126,6 +126,7 @@ describe("openrouter-model request parity", () => {
       }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
     );
     expect(captured.value?.body["provider"]).toEqual({ sort: "price" });
+    expect(captured.value?.body["provider"]).not.toHaveProperty("ignore");
   });
   it("sends provider.only with fallbacks disabled on pinned runs", async () => {
     const captured = newHolder();
@@ -139,12 +140,14 @@ describe("openrouter-model request parity", () => {
         const model = yield* Model;
         yield* model.generate(MESSAGES, {
           providerOnly: ["google-vertex"],
+          providerIgnore: ["azure"],
           allowFallbacks: false,
         });
       }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
     );
     expect(captured.value?.body["provider"]).toEqual({
       only: ["google-vertex"],
+      ignore: ["azure"],
       allow_fallbacks: false,
     });
   });
@@ -161,6 +164,7 @@ describe("openrouter-model request parity", () => {
         yield* model.generate(MESSAGES, {
           sort: ProviderSort.Price,
           providerOnly: ["google-vertex"],
+          providerIgnore: ["azure"],
           allowFallbacks: false,
         });
       }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
@@ -168,7 +172,27 @@ describe("openrouter-model request parity", () => {
     expect(captured.value?.body["provider"]).toEqual({
       sort: "price",
       only: ["google-vertex"],
+      ignore: ["azure"],
       allow_fallbacks: false,
+    });
+  });
+  it("sends provider.ignore without other provider preferences", async () => {
+    const captured = newHolder();
+    restore = installFetchCapture(captured);
+    const layer = makeOpenRouterModelLayer({
+      model: "openai/gpt-4o",
+      apiKey: "sk-test",
+    });
+    await runPromiseExit(
+      gen(function* run() {
+        const model = yield* Model;
+        yield* model.generate(MESSAGES, {
+          providerIgnore: ["azure"],
+        });
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    expect(captured.value?.body["provider"]).toEqual({
+      ignore: ["azure"],
     });
   });
   it("records the chat completion generation id", async () => {

@@ -374,6 +374,7 @@ describe("responses-model", () => {
         const model = yield* ResponsesModel;
         return yield* model.generate([], {
           providerOnly: ["google-vertex"],
+          providerIgnore: ["azure"],
           allowFallbacks: false,
         });
       }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
@@ -381,6 +382,7 @@ describe("responses-model", () => {
     assertSuccess(exit);
     expect(captured.value?.body["provider"]).toEqual({
       only: ["google-vertex"],
+      ignore: ["azure"],
       allow_fallbacks: false,
     });
   });

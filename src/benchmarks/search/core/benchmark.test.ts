@@ -29,6 +29,7 @@ describe("searchSolverOptionsFromConfig", () => {
       sort: ProviderSort.Latency,
       providerOrder: ["openai", "azure"],
       providerOnly: ["openai", "azure"],
+      providerIgnore: ["bedrock"],
       allowFallbacks: false,
       cloudflareVersion: "worker-version",
     } as const;
@@ -55,6 +56,7 @@ describe("searchSolverOptionsFromConfig", () => {
       sort: "latency",
       providerOrder: ["openai", "azure"],
       providerOnly: ["openai", "azure"],
+      providerIgnore: ["bedrock"],
       allowFallbacks: false,
       versionOverride: "worker-version",
       retry: { maxRetries: 2, baseDelayMs: 3 },

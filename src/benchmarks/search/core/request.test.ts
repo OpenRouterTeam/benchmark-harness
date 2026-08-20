@@ -41,6 +41,7 @@ describe("buildSearchRequestBody", () => {
       },
     ]);
     expect(body.maxToolCalls).toBe(25);
+    expect(body.provider).toBeUndefined();
     expect(body.plugins).toBeUndefined();
     expect(body.tools).toEqual([
       {
@@ -201,19 +202,33 @@ describe("buildSearchRequestBody", () => {
       lane: lane({}),
       providerOrder: ["openai", "azure"],
       providerOnly: ["openai", "azure"],
+      providerIgnore: ["bedrock"],
       allowFallbacks: false,
     });
     expect(body.provider).toEqual({
       order: ["openai", "azure"],
       only: ["openai", "azure"],
+      ignore: ["bedrock"],
       allowFallbacks: false,
     });
     expect(JSON.parse(responsesRequestToJSON(body))).toMatchObject({
       provider: {
         order: ["openai", "azure"],
         only: ["openai", "azure"],
+        ignore: ["bedrock"],
         allow_fallbacks: false,
       },
+    });
+  });
+  it("sends the provider object for ignore-only routing", () => {
+    const body = buildSearchRequestBody({
+      ...BASE,
+      lane: lane({}),
+      providerIgnore: ["bedrock"],
+    });
+    expect(body.provider).toEqual({ ignore: ["bedrock"] });
+    expect(JSON.parse(responsesRequestToJSON(body))).toMatchObject({
+      provider: { ignore: ["bedrock"] },
     });
   });
   it("threads search-context and character caps into tool parameters", () => {

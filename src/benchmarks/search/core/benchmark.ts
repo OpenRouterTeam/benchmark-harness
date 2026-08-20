@@ -71,6 +71,9 @@ export function searchSolverOptionsFromConfig({
     ...(config.providerOnly !== undefined && {
       providerOnly: config.providerOnly,
     }),
+    ...(config.providerIgnore !== undefined && {
+      providerIgnore: config.providerIgnore,
+    }),
     ...(config.allowFallbacks !== undefined && {
       allowFallbacks: config.allowFallbacks,
     }),
