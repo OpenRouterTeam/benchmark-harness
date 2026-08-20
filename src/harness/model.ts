@@ -25,6 +25,7 @@ export interface GenerateConfig {
   readonly timeoutMs?: number;
   readonly sort?: ProviderSort;
   readonly providerOnly?: readonly string[];
+  readonly providerIgnore?: readonly string[];
   readonly allowFallbacks?: boolean;
   readonly cloudflareVersion?: string;
   readonly costQualityTradeoff?: number;

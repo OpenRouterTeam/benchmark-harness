@@ -150,6 +150,9 @@ export function generate(
     ...(genConfig.providerOnly !== undefined && {
       only: [...genConfig.providerOnly],
     }),
+    ...(genConfig.providerIgnore !== undefined && {
+      ignore: [...genConfig.providerIgnore],
+    }),
     ...(genConfig.allowFallbacks !== undefined && {
       allowFallbacks: genConfig.allowFallbacks,
     }),

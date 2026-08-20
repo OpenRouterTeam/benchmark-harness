@@ -166,6 +166,7 @@ const MMLU_PRO_CHAT_BENCHMARK = defineChatBenchmark({
         timeoutMs: config.timeoutMs,
         sort: config.sort,
         providerOnly: config.providerOnly,
+        providerIgnore: config.providerIgnore,
         allowFallbacks: config.allowFallbacks,
         cloudflareVersion: config.cloudflareVersion,
         costTier: config.costTier,

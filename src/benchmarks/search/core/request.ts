@@ -31,6 +31,7 @@ export interface SearchRequestOptions {
   readonly sort?: ProviderSort;
   readonly providerOrder?: readonly string[];
   readonly providerOnly?: readonly string[];
+  readonly providerIgnore?: readonly string[];
   readonly allowFallbacks?: boolean;
   readonly costQualityTradeoff?: number;
   readonly costTier?: CostTier;
@@ -127,6 +128,7 @@ export function buildSearchRequestBody(
         opts.sort !== undefined ||
         opts.providerOrder !== undefined ||
         opts.providerOnly !== undefined ||
+        opts.providerIgnore !== undefined ||
         opts.allowFallbacks !== undefined
           ? (definedValues({
               sort: opts.sort,
@@ -138,6 +140,10 @@ export function buildSearchRequestBody(
                 opts.providerOnly === undefined
                   ? undefined
                   : [...opts.providerOnly],
+              ignore:
+                opts.providerIgnore === undefined
+                  ? undefined
+                  : [...opts.providerIgnore],
               allowFallbacks: opts.allowFallbacks,
             }) satisfies ProviderPreferences)
           : undefined,

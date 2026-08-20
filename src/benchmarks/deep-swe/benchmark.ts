@@ -104,6 +104,7 @@ function makeDeepSweLayer(
             timeoutMs: benchmarkConfig.timeoutMs,
             sort: benchmarkConfig.sort,
             providerOnly: benchmarkConfig.providerOnly,
+            providerIgnore: benchmarkConfig.providerIgnore,
             allowFallbacks: benchmarkConfig.allowFallbacks,
             cloudflareVersion: benchmarkConfig.cloudflareVersion,
             costTier: benchmarkConfig.costTier,
