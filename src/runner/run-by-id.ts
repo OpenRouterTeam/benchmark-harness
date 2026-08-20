@@ -1,4 +1,3 @@
-import { FetchHttpClient } from "@effect/platform";
 import { flatMap, provide } from "effect/Effect";
 import {
   mergeAll as layerMergeAll,
@@ -33,6 +32,7 @@ import {
 } from "../runtime/generation-resolver";
 import { withRunAttempt } from "../runtime/response-cache";
 import type { RetryConfig } from "../runtime/retry";
+import { makeHttpClientLayer } from "./trace-headers";
 
 export interface RunBenchmarkInput {
   readonly benchmarkId: string;
@@ -53,6 +53,7 @@ export interface RunBenchmarkInput {
   readonly abortSignal?: AbortSignal;
   readonly resultStore?: ResultStoreService;
   readonly maxOutputTokensCeiling?: number;
+  readonly traceHeaders?: Readonly<Record<string, string>>;
 }
 
 export interface RunBenchmarkOutput {
@@ -108,9 +109,13 @@ export function runBenchmarkById(
       }),
     },
   };
-  const fullBenchmarkLayer = benchmarkLayer.pipe(
-    layerProvide(FetchHttpClient.layer)
-  );
+  const httpClientLayer = makeHttpClientLayer({
+    ...(input.traceHeaders !== undefined && {
+      traceHeaders: input.traceHeaders,
+    }),
+    ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
+  });
+  const fullBenchmarkLayer = benchmarkLayer.pipe(layerProvide(httpClientLayer));
   const resolverLayer = layerSucceed(
     GenerationResolver,
     makeOpenRouterGenerationResolver({
