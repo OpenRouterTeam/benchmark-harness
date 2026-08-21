@@ -6,6 +6,8 @@ import {
   gen as effectGen,
   map as effectMap,
   annotateLogs,
+  orElseSucceed,
+  tryPromise,
   withLogSpan,
   succeed as effectSucceed,
 } from "effect/Effect";
@@ -42,6 +44,7 @@ import { Dataset } from "./dataset";
 import type { AggregateMetrics, SampleScore } from "./metric";
 import { aggregateScores } from "./metric";
 import { CheckpointStore, ProgressReporter } from "./progress";
+import { SampleResultStore, sampleResultKey } from "./sample-result-store";
 import { Scorer } from "./scorer";
 import { Solver } from "./solver";
 
@@ -109,12 +112,12 @@ function evalWithProgress(
   evaluate: Effect<
     EvalOutcome,
     ModelError | SolverError,
-    Solver | Scorer | ProgressReporter | CheckpointStore
+    Solver | Scorer | ProgressReporter | CheckpointStore | SampleResultStore
   >
 ): Effect<
   EvalOutcome,
   ModelError | SolverError,
-  Solver | Scorer | ProgressReporter | CheckpointStore
+  Solver | Scorer | ProgressReporter | CheckpointStore | SampleResultStore
 > {
   const { sample, epoch, sampleIndex } = sampleEpoch;
   return effectGen(function* () {
@@ -188,6 +191,31 @@ function applyReplayedUsage(
 interface EvaluateOneOpts {
   readonly sampleEpoch: SampleEpoch;
   readonly degradeSolverErrors: boolean;
+}
+
+function evaluateOneResumable(
+  opts: EvaluateOneOpts
+): Effect<
+  EvalOutcome,
+  ModelError | SolverError,
+  Solver | Scorer | ProgressReporter | CheckpointStore | SampleResultStore
+> {
+  const { sample, epoch } = opts.sampleEpoch;
+  const key = sampleResultKey(sample.id, epoch);
+  return effectGen(function* () {
+    const store = yield* SampleResultStore;
+    const persisted = yield* tryPromise(() => store.read(key)).pipe(
+      orElseSucceed(() => null)
+    );
+    if (persisted !== null) {
+      return persisted;
+    }
+    const outcome = yield* evaluateOne(opts);
+    yield* tryPromise(() => store.write(key, outcome)).pipe(
+      orElseSucceed(() => undefined)
+    );
+    return outcome;
+  });
 }
 
 function evaluateOne(
@@ -330,7 +358,12 @@ export function runBenchmark(
 ): Effect<
   RunResult,
   ModelError | SolverError | DatasetError,
-  Dataset | Solver | Scorer | ProgressReporter | CheckpointStore
+  | Dataset
+  | Solver
+  | Scorer
+  | ProgressReporter
+  | CheckpointStore
+  | SampleResultStore
 > {
   return Dataset.pipe(
     effectFlatMap((dataset) => {
@@ -348,7 +381,7 @@ export function runBenchmark(
           (se) =>
             evalWithProgress(
               se,
-              evaluateOne({
+              evaluateOneResumable({
                 sampleEpoch: se,
                 degradeSolverErrors: config.degradeSolverErrors ?? false,
               }).pipe(

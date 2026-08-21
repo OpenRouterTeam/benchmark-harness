@@ -22,6 +22,11 @@ import {
 } from "../harness/progress";
 import type { RunResult, RunConfig } from "../harness/run";
 import { runBenchmark } from "../harness/run";
+import type { SampleResultStoreService } from "../harness/sample-result-store";
+import {
+  NOOP_SAMPLE_RESULT_STORE,
+  SampleResultStore,
+} from "../harness/sample-result-store";
 import { runHarnessPromise } from "../internal/effect-logger";
 import type { AsyncEither } from "../internal/either";
 import { Either } from "../internal/either";
@@ -50,6 +55,7 @@ export interface RunBenchmarkInput {
   readonly datasetRetry?: RetryConfig;
   readonly progressReporter?: ProgressReporterService;
   readonly checkpointStore?: CheckpointStoreService;
+  readonly sampleResultStore?: SampleResultStoreService;
   readonly abortSignal?: AbortSignal;
   readonly resultStore?: ResultStoreService;
   readonly maxOutputTokensCeiling?: number;
@@ -91,6 +97,10 @@ export function runBenchmarkById(
     CheckpointStore,
     input.checkpointStore ?? NOOP_CHECKPOINT_STORE
   );
+  const sampleResultLayer = layerSucceed(
+    SampleResultStore,
+    input.sampleResultStore ?? NOOP_SAMPLE_RESULT_STORE
+  );
   const model = modelFromConfig(input.benchmarkConfig);
   const runConfig: RunConfig = {
     epochs: input.epochs,
@@ -122,6 +132,7 @@ export function runBenchmarkById(
     fullBenchmarkLayer,
     progressLayer,
     checkpointLayer,
+    sampleResultLayer,
     resolverLayer
   );
   const runOpts =
