@@ -32,6 +32,7 @@
     "./parquet": "./src/results/parquet.ts",
     "./parquet-schema": "./src/results/parquet-schema.ts",
     "./progress": "./src/harness/progress.ts",
+    "./sample-result-store": "./src/harness/sample-result-store.ts",
     "./result-store": "./src/results/result-store.ts",
     "./internal/log": "./src/internal/log.ts",
     "./internal/effect-logger": "./src/internal/effect-logger.ts"
