@@ -53,4 +53,4 @@ export const DEEP_SWE_WORKDIR = "/app" as const;
 
 export const DEEP_SWE_KEEP_ALIVE_COMMAND = ["sleep", "infinity"] as const;
 
-export const DEFAULT_STEP_LIMIT = 250;
+export const DEFAULT_STEP_LIMIT = Number.MAX_SAFE_INTEGER;
