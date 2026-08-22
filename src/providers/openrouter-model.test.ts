@@ -250,6 +250,7 @@ describe("openrouter-model request parity", () => {
           isCacheHit: true,
           countsTowardUsage: true,
           isResolvedSource: true,
+          shouldResolveChildren: false,
         },
       ]);
     } finally {
@@ -289,6 +290,7 @@ describe("openrouter-model request parity", () => {
           isCacheHit: true,
           countsTowardUsage: true,
           isResolvedSource: false,
+          shouldResolveChildren: false,
         },
       ]);
     } finally {
