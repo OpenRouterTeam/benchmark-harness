@@ -388,8 +388,7 @@ const HostBenchmarkIdSchema = z
   .refine(
     (benchmarkId) => !NATIVE_BENCHMARK_ID_SET.has(benchmarkId),
     "Host benchmark ids must not reuse native benchmark ids"
-  )
-  .brand<"HostBenchmarkId">();
+  );
 
 export const HostBenchmarkRunConfigSchema = z.object({
   benchmarkId: HostBenchmarkIdSchema,
@@ -418,10 +417,16 @@ export function isModelBenchmarkConfig(
   return "model" in config;
 }
 
+export function isNativeBenchmarkConfig(
+  config: BenchmarkRunConfig
+): config is NativeBenchmarkRunConfig {
+  return NATIVE_BENCHMARK_ID_SET.has(config.benchmarkId);
+}
+
 export function isHostBenchmarkConfig(
   config: BenchmarkRunConfig
 ): config is HostBenchmarkRunConfig {
-  return !NATIVE_BENCHMARK_ID_SET.has(config.benchmarkId);
+  return !isNativeBenchmarkConfig(config);
 }
 
 const SEARCH_BENCHMARK_ID_SET: ReadonlySet<string> = new Set([

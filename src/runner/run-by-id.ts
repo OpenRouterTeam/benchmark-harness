@@ -10,9 +10,16 @@ import type {
   BenchmarkRunConfig,
   HostBenchmarkRunConfig,
 } from "../benchmarks/benchmark-config";
-import { modelFromConfig } from "../benchmarks/benchmark-config";
+import {
+  isNativeBenchmarkConfig,
+  modelFromConfig,
+} from "../benchmarks/benchmark-config";
 import { getBenchmark } from "../benchmarks/registry";
-import type { Benchmark } from "../benchmarks/types";
+import type {
+  Benchmark,
+  BenchmarkMetadata,
+  BenchmarkRunInput,
+} from "../benchmarks/types";
 import { Dataset } from "../harness/dataset";
 import type {
   CheckpointStoreService,
@@ -68,28 +75,50 @@ export interface RunBenchmarkOutput {
 export function runBenchmarkById(
   input: RunBenchmarkInput
 ): AsyncEither<RunBenchmarkOutput, string> {
-  const benchmarkResult = resolveBenchmark(
-    input.benchmarkId,
-    input.hostBenchmark
-  );
-  if (Either.isLeft(benchmarkResult)) {
-    return Promise.resolve(Either.left(benchmarkResult.left));
+  let benchmark: BenchmarkMetadata;
+  let benchmarkLayer: ReturnType<Benchmark["makeLayer"]>;
+  if (isNativeBenchmarkConfig(input.benchmarkConfig)) {
+    if (input.hostBenchmark !== undefined) {
+      return Promise.resolve(
+        Either.left(
+          `A host benchmark cannot be supplied for native benchmark "${input.benchmarkId}"`
+        )
+      );
+    }
+    const nativeBenchmark = getBenchmark(input.benchmarkId);
+    if (nativeBenchmark === undefined) {
+      return Promise.resolve(
+        Either.left(`Unknown benchmark "${input.benchmarkId}"`)
+      );
+    }
+    benchmark = nativeBenchmark;
+    benchmarkLayer = makeBenchmarkLayer(
+      nativeBenchmark,
+      input,
+      input.benchmarkConfig
+    );
+  } else {
+    if (input.hostBenchmark === undefined) {
+      return Promise.resolve(
+        Either.left(
+          `A host benchmark is required for host config "${input.benchmarkId}"`
+        )
+      );
+    }
+    if (input.hostBenchmark.id !== input.benchmarkId) {
+      return Promise.resolve(
+        Either.left(
+          `Benchmark id mismatch: requested "${input.benchmarkId}", supplied "${input.hostBenchmark.id}"`
+        )
+      );
+    }
+    benchmark = input.hostBenchmark;
+    benchmarkLayer = makeBenchmarkLayer(
+      input.hostBenchmark,
+      input,
+      input.benchmarkConfig
+    );
   }
-  const benchmark = benchmarkResult.right;
-  const maxRetries = input.benchmarkConfig.maxRetries;
-  const benchmarkLayer = benchmark.makeLayer({
-    apiKey: input.apiKey,
-    benchmarkConfig: input.benchmarkConfig,
-    ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
-    sessionId: input.sessionId,
-    ...(input.datasetRetry !== undefined && {
-      datasetRetry: input.datasetRetry,
-    }),
-    ...(maxRetries !== undefined && { modelRetry: { maxRetries } }),
-    ...(input.maxOutputTokensCeiling !== undefined && {
-      maxOutputTokensCeiling: input.maxOutputTokensCeiling,
-    }),
-  });
   const progressLayer = layerSucceed(
     ProgressReporter,
     input.progressReporter ?? NOOP_PROGRESS_REPORTER
@@ -183,7 +212,7 @@ export function datasetSizeById(
 function resolveBenchmark(
   benchmarkId: string,
   hostBenchmark: Benchmark<HostBenchmarkRunConfig> | undefined
-): Either.Either<Benchmark<BenchmarkRunConfig>, string> {
+): Either.Either<BenchmarkMetadata, string> {
   if (hostBenchmark !== undefined) {
     return hostBenchmark.id === benchmarkId
       ? Either.right(hostBenchmark)
@@ -195,4 +224,26 @@ function resolveBenchmark(
   return benchmark === undefined
     ? Either.left(`Unknown benchmark "${benchmarkId}"`)
     : Either.right(benchmark);
+}
+
+function makeBenchmarkLayer<Config extends BenchmarkRunConfig>(
+  benchmark: Benchmark<Config>,
+  input: RunBenchmarkInput,
+  benchmarkConfig: Config
+): ReturnType<Benchmark["makeLayer"]> {
+  const maxRetries = benchmarkConfig.maxRetries;
+  const benchmarkInput: BenchmarkRunInput<Config> = {
+    apiKey: input.apiKey,
+    benchmarkConfig,
+    ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
+    sessionId: input.sessionId,
+    ...(input.datasetRetry !== undefined && {
+      datasetRetry: input.datasetRetry,
+    }),
+    ...(maxRetries !== undefined && { modelRetry: { maxRetries } }),
+    ...(input.maxOutputTokensCeiling !== undefined && {
+      maxOutputTokensCeiling: input.maxOutputTokensCeiling,
+    }),
+  };
+  return benchmark.makeLayer(benchmarkInput);
 }

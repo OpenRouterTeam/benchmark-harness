@@ -4,12 +4,13 @@ import { succeed } from "effect/Effect";
 import { fail as layerFail, succeed as layerSucceed } from "effect/Layer";
 import { fromIterable } from "effect/Stream";
 
+import type { HostBenchmarkRunConfig } from "../benchmarks/benchmark-config";
 import type { Benchmark } from "../benchmarks/types";
 import { Dataset } from "../harness/dataset";
 import { assertLeft, assertRight } from "../internal/testing";
 import { datasetSizeById, runBenchmarkById } from "./run-by-id";
 
-const HOST_BENCHMARK: Benchmark = {
+const HOST_BENCHMARK: Benchmark<HostBenchmarkRunConfig> = {
   id: "host_benchmark",
   makeDatasetLayer: () =>
     layerSucceed(Dataset, {
@@ -41,6 +42,38 @@ describe("benchmark runner by id", () => {
 
     assertLeft(result);
     expect(result.left).toContain("host benchmark used");
+  });
+
+  it("rejects a host config without an injected benchmark", async () => {
+    const result = await runBenchmarkById({
+      benchmarkId: HOST_BENCHMARK.id,
+      apiKey: "unused",
+      benchmarkConfig: HOST_CONFIG,
+      epochs: 1,
+      maxConcurrency: 1,
+      sessionId: "test",
+    });
+
+    assertLeft(result);
+    expect(result.left).toContain("host benchmark is required");
+  });
+
+  it("rejects an injected benchmark for a native config", async () => {
+    const result = await runBenchmarkById({
+      benchmarkId: "search_hle",
+      hostBenchmark: HOST_BENCHMARK,
+      apiKey: "unused",
+      benchmarkConfig: {
+        benchmarkId: "search_hle",
+        model: "host/model",
+      },
+      epochs: 1,
+      maxConcurrency: 1,
+      sessionId: "test",
+    });
+
+    assertLeft(result);
+    expect(result.left).toContain("cannot be supplied for native benchmark");
   });
 
   it("resolves dataset size from an injected host benchmark", async () => {

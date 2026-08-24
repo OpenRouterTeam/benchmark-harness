@@ -41,10 +41,9 @@ export interface Benchmark<
 > {
   readonly id: string;
   readonly makeDatasetLayer: (retryConfig?: RetryConfig) => Layer<Dataset>;
-  // oxlint-disable-next-line typescript/method-signature-style
-  makeLayer(
+  readonly makeLayer: (
     input: BenchmarkRunInput<Config>
-  ): Layer<Dataset | Solver | Scorer, Error, HttpClient.HttpClient>;
+  ) => Layer<Dataset | Solver | Scorer, Error, HttpClient.HttpClient>;
   readonly temperature: number;
   readonly defaultEpochs: number;
   readonly degradeSolverErrors?: boolean;
@@ -65,6 +64,8 @@ export interface Benchmark<
     result: RunResult
   ) => BenchmarkPrimaryScore | undefined;
 }
+
+export type BenchmarkMetadata = Omit<Benchmark, "makeLayer">;
 
 export interface BenchmarkCliContext {
   readonly argv: readonly string[];

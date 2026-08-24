@@ -7,14 +7,14 @@ import { succeed } from "effect/Effect";
 
 import type { BenchmarkRunConfig } from "../benchmarks/benchmark-config";
 import { modelFromConfig } from "../benchmarks/benchmark-config";
-import type { Benchmark } from "../benchmarks/types";
+import type { BenchmarkMetadata } from "../benchmarks/types";
 import type { RunResult } from "../harness/run";
 import { runResultToParquet } from "./parquet";
 
 export interface ResultStoreService {
   readonly write: (opts: {
     readonly result: RunResult;
-    readonly benchmark: Benchmark;
+    readonly benchmark: BenchmarkMetadata;
     readonly benchmarkConfig: BenchmarkRunConfig;
     readonly epochs: number;
     readonly sessionId: string;
