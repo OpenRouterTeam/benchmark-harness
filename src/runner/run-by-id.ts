@@ -75,50 +75,11 @@ export interface RunBenchmarkOutput {
 export function runBenchmarkById(
   input: RunBenchmarkInput
 ): AsyncEither<RunBenchmarkOutput, string> {
-  let benchmark: BenchmarkMetadata;
-  let benchmarkLayer: ReturnType<Benchmark["makeLayer"]>;
-  if (isNativeBenchmarkConfig(input.benchmarkConfig)) {
-    if (input.hostBenchmark !== undefined) {
-      return Promise.resolve(
-        Either.left(
-          `A host benchmark cannot be supplied for native benchmark "${input.benchmarkId}"`
-        )
-      );
-    }
-    const nativeBenchmark = getBenchmark(input.benchmarkId);
-    if (nativeBenchmark === undefined) {
-      return Promise.resolve(
-        Either.left(`Unknown benchmark "${input.benchmarkId}"`)
-      );
-    }
-    benchmark = nativeBenchmark;
-    benchmarkLayer = makeBenchmarkLayer(
-      nativeBenchmark,
-      input,
-      input.benchmarkConfig
-    );
-  } else {
-    if (input.hostBenchmark === undefined) {
-      return Promise.resolve(
-        Either.left(
-          `A host benchmark is required for host config "${input.benchmarkId}"`
-        )
-      );
-    }
-    if (input.hostBenchmark.id !== input.benchmarkId) {
-      return Promise.resolve(
-        Either.left(
-          `Benchmark id mismatch: requested "${input.benchmarkId}", supplied "${input.hostBenchmark.id}"`
-        )
-      );
-    }
-    benchmark = input.hostBenchmark;
-    benchmarkLayer = makeBenchmarkLayer(
-      input.hostBenchmark,
-      input,
-      input.benchmarkConfig
-    );
+  const benchmarkResult = resolveRunBenchmark(input);
+  if (Either.isLeft(benchmarkResult)) {
+    return Promise.resolve(Either.left(benchmarkResult.left));
   }
+  const { benchmark, benchmarkLayer } = benchmarkResult.right;
   const progressLayer = layerSucceed(
     ProgressReporter,
     input.progressReporter ?? NOOP_PROGRESS_REPORTER
@@ -224,6 +185,52 @@ function resolveBenchmark(
   return benchmark === undefined
     ? Either.left(`Unknown benchmark "${benchmarkId}"`)
     : Either.right(benchmark);
+}
+
+function resolveRunBenchmark(input: RunBenchmarkInput): Either.Either<
+  {
+    readonly benchmark: BenchmarkMetadata;
+    readonly benchmarkLayer: ReturnType<Benchmark["makeLayer"]>;
+  },
+  string
+> {
+  if (isNativeBenchmarkConfig(input.benchmarkConfig)) {
+    if (input.hostBenchmark !== undefined) {
+      return Either.left(
+        `A host benchmark cannot be supplied for native benchmark "${input.benchmarkId}"`
+      );
+    }
+    const nativeBenchmark = getBenchmark(input.benchmarkId);
+    if (nativeBenchmark === undefined) {
+      return Either.left(`Unknown benchmark "${input.benchmarkId}"`);
+    }
+    return Either.right({
+      benchmark: nativeBenchmark,
+      benchmarkLayer: makeBenchmarkLayer(
+        nativeBenchmark,
+        input,
+        input.benchmarkConfig
+      ),
+    });
+  }
+  if (input.hostBenchmark === undefined) {
+    return Either.left(
+      `A host benchmark is required for host config "${input.benchmarkId}"`
+    );
+  }
+  if (input.hostBenchmark.id !== input.benchmarkId) {
+    return Either.left(
+      `Benchmark id mismatch: requested "${input.benchmarkId}", supplied "${input.hostBenchmark.id}"`
+    );
+  }
+  return Either.right({
+    benchmark: input.hostBenchmark,
+    benchmarkLayer: makeBenchmarkLayer(
+      input.hostBenchmark,
+      input,
+      input.benchmarkConfig
+    ),
+  });
 }
 
 function makeBenchmarkLayer<Config extends BenchmarkRunConfig>(
