@@ -2,6 +2,7 @@ import { describe, expect, it, spyOn } from "bun:test";
 
 import { fromIterable } from "effect/Chunk";
 import {
+  fail as effectFail,
   flatMap as effectFlatMap,
   runPromise,
   succeed as effectSucceed,
@@ -18,7 +19,7 @@ import {
 import { mcqScorer } from "../benchmarks/scorers/mcq/scorer";
 import { recordGenerationId } from "../runtime/generation-ids";
 import type { Sample } from "./core";
-import { MessageRole } from "./core";
+import { MessageRole, ModelError, ScoreValue } from "./core";
 import { Dataset } from "./dataset";
 import type { ModelService } from "./model";
 import type { RunResult } from "./run";
@@ -122,10 +123,14 @@ function throwingStore(): SampleResultStoreService {
 }
 
 async function runWithStore(
-  store: SampleResultStoreService
+  store: SampleResultStoreService,
+  overrides?: {
+    readonly model?: ModelService;
+    readonly scorer?: ScorerService;
+  }
 ): Promise<{ result: RunResult; counters: Counters }> {
   const counters: Counters = { solver: 0, scorer: 0 };
-  const model = fakeModel();
+  const model = overrides?.model ?? fakeModel();
   const innerSolver = chain(
     systemMessage("You are a helpful assistant."),
     generate(model, { temperature: 0.5 })
@@ -134,9 +139,10 @@ async function runWithStore(
     counters.solver += 1;
     return innerSolver(state);
   });
+  const baseScorer = overrides?.scorer ?? mcqScorer;
   const countingScorer: ScorerService = (state, target) => {
     counters.scorer += 1;
-    return mcqScorer(state, target);
+    return baseScorer(state, target);
   };
   const layers = mergeAll(
     fakeDatasetLayer(SAMPLES),
@@ -223,7 +229,9 @@ describe("sample-result resume", () => {
       expect(result.sampleScores.length).toBe(6);
       expect(summarize(result)).toEqual(run1Summary);
       expect(result.metrics.accuracy).toBeCloseTo(run1Metrics.accuracy, 5);
-      const warned = warn.mock.calls.map((call) => String(call[0]));
+      const warned = warn.mock.calls.map((call) =>
+        call.map((arg) => JSON.stringify(arg)).join(" ")
+      );
       expect(
         warned.some((line) =>
           line.includes("Failed to read persisted sample outcome")
@@ -232,8 +240,79 @@ describe("sample-result resume", () => {
       expect(
         warned.some((line) => line.includes("Failed to persist sample outcome"))
       ).toBe(true);
+      expect(warned.some((line) => line.includes("read exploded"))).toBe(true);
+      expect(warned.some((line) => line.includes("write exploded"))).toBe(true);
     } finally {
       warn.mockRestore();
     }
+  });
+
+  it("T5: degraded error outcomes are not persisted and are re-evaluated on resume", async () => {
+    const failingModel: ModelService = {
+      generate: (messages) => {
+        const userMsg =
+          messages.find((m) => m.role === MessageRole.User)?.content ?? "";
+        if (userMsg.includes("Q1")) {
+          return effectFail(
+            new ModelError({ message: "OpenRouter HTTP 429", status: 429 })
+          );
+        }
+        return effectSucceed({
+          completion: "Answer: B",
+          message: { role: MessageRole.Assistant, content: "Answer: B" },
+          generationTimeMs: 100,
+        });
+      },
+    };
+    const store = makeInMemoryStore();
+    const run1 = await runWithStore(store, { model: failingModel });
+    const skippedRun1 = run1.result.sampleScores.filter(
+      (s) => s.sampleId === "s1"
+    );
+    expect(skippedRun1.every((s) => s.score.value === ScoreValue.Skipped)).toBe(
+      true
+    );
+    expect([...store.map.keys()].sort()).toEqual([
+      "s2/0",
+      "s2/1",
+      "s3/0",
+      "s3/1",
+    ]);
+
+    const run2 = await runWithStore(store);
+    expect(run2.counters.solver).toBe(2);
+    expect(run2.counters.scorer).toBe(2);
+    const s1Run2 = run2.result.sampleScores.filter((s) => s.sampleId === "s1");
+    expect(s1Run2.every((s) => s.score.value === ScoreValue.Correct)).toBe(
+      true
+    );
+    expect([...store.map.keys()].sort()).toEqual(ALL_KEYS);
+  });
+
+  it("T6: scorer trajectory survives persistence and resume", async () => {
+    const trajectoryScorer: ScorerService = (state, target) =>
+      mcqScorer(state, target).pipe(
+        effectFlatMap((score) =>
+          effectSucceed({
+            ...score,
+            trajectory: {
+              kind: "verifier_log" as const,
+              log: "pytest: 12 passed",
+            },
+          })
+        )
+      );
+    const store = makeInMemoryStore();
+    await runWithStore(store, { scorer: trajectoryScorer });
+
+    const resumed = await runWithStore(store);
+    expect(resumed.counters.solver).toBe(0);
+    expect(
+      resumed.result.sampleScores.every(
+        (s) =>
+          s.score.trajectory?.kind === "verifier_log" &&
+          s.score.trajectory.log === "pytest: 12 passed"
+      )
+    ).toBe(true);
   });
 });

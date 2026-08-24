@@ -82,6 +82,7 @@ type EvalOutcome = {
   sampleScore: SampleScore;
   usage?: ModelUsage;
   generationTimeMs?: number;
+  isDegraded?: boolean;
 };
 
 function sampleEpochStream(
@@ -206,11 +207,14 @@ function evaluateOneResumable(
   const key = sampleResultKey(sample.id, epoch);
   return effectGen(function* () {
     const store = yield* SampleResultStore;
-    const persisted = yield* tryPromise(() => store.read(key)).pipe(
+    const persisted = yield* tryPromise({
+      try: () => store.read(key),
+      catch: unknownErrorToString,
+    }).pipe(
       catchAll((error) => {
         wLog("Failed to read persisted sample outcome; re-evaluating", {
           sample_result_key: key,
-          error: unknownErrorToString(error),
+          error,
         });
         return effectSucceed(null);
       })
@@ -219,11 +223,17 @@ function evaluateOneResumable(
       return persisted;
     }
     const outcome = yield* evaluateOne(opts);
-    yield* tryPromise(() => store.write(key, outcome)).pipe(
+    if (outcome.isDegraded === true) {
+      return outcome;
+    }
+    yield* tryPromise({
+      try: () => store.write(key, outcome),
+      catch: unknownErrorToString,
+    }).pipe(
       catchAll((error) => {
         wLog("Failed to persist sample outcome; a resumed run will re-run it", {
           sample_result_key: key,
-          error: unknownErrorToString(error),
+          error,
         });
         return effectSucceed(undefined);
       })
@@ -355,6 +365,7 @@ function errorOutcome(opts: ErrorOutcomeOpts): EvalOutcome {
       input: sample.input,
       target: sample.target.text,
     },
+    isDegraded: true,
   };
 }
 
