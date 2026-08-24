@@ -494,6 +494,35 @@ describe("openrouter-model request parity", () => {
       captured.value?.headers["cloudflare-workers-version-overrides"]
     ).toBeUndefined();
   });
+  it("preserves the raw non-streaming response alongside the mapped output", async () => {
+    const captured: CapturedRequest[] = [];
+    restore = installFetchSequence([CHAT_RESULT_WITH_RAW_USAGE], captured);
+    const layer = makeOpenRouterModelLayer({
+      model: "openai/gpt-4o",
+      apiKey: "sk-test",
+    });
+    const exit = await runPromiseExit(
+      gen(function* run() {
+        const model = yield* Model;
+        return yield* model.generate(MESSAGES, {});
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    assertSuccess(exit);
+    expect(exit.value.rawResponse).toEqual(CHAT_RESULT_WITH_RAW_USAGE);
+    expect(exit.value.completion).toBe("Answer: A");
+    expect(exit.value.message).toEqual({
+      role: MessageRole.Assistant,
+      content: "Answer: A",
+      model: "m",
+    });
+    expect(exit.value.usage).toEqual({
+      inputTokens: 1,
+      outputTokens: 1,
+      totalTokens: 2,
+      reasoningTokens: 3,
+      totalCost: 0.25,
+    });
+  });
 });
 describe("openrouter-model response caching", () => {
   let restore: (() => void) | undefined;
@@ -737,35 +766,6 @@ describe("openrouter-model auto-router plugin", () => {
     );
     assertSuccess(exit);
     expect(exit.value.message.model).toBe("m");
-  });
-  it("preserves the raw non-streaming response alongside the mapped output", async () => {
-    const captured: CapturedRequest[] = [];
-    restore = installFetchSequence([CHAT_RESULT_WITH_RAW_USAGE], captured);
-    const layer = makeOpenRouterModelLayer({
-      model: "openai/gpt-4o",
-      apiKey: "sk-test",
-    });
-    const exit = await runPromiseExit(
-      gen(function* run() {
-        const model = yield* Model;
-        return yield* model.generate(MESSAGES, {});
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
-    );
-    assertSuccess(exit);
-    expect(exit.value.rawResponse).toEqual(CHAT_RESULT_WITH_RAW_USAGE);
-    expect(exit.value.completion).toBe("Answer: A");
-    expect(exit.value.message).toEqual({
-      role: MessageRole.Assistant,
-      content: "Answer: A",
-      model: "m",
-    });
-    expect(exit.value.usage).toEqual({
-      inputTokens: 1,
-      outputTokens: 1,
-      totalTokens: 2,
-      reasoningTokens: 3,
-      totalCost: 0.25,
-    });
   });
   it("re-emits model on assistant messages sent back in history", async () => {
     const captured = newHolder();
