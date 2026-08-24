@@ -28,6 +28,9 @@ export interface OriRunScriptOptions {
 
 export interface OriImageStepsOptions {
   readonly agentPackage: string;
+}
+
+export interface OriBootstrapOptions {
   readonly oriInstallUrl: string;
   readonly oriChannel: OriChannel;
 }
@@ -51,26 +54,36 @@ export interface OriHarnessDef {
   readonly binaryName: string;
   readonly remoteLogPath: string;
   readonly imageBuildSteps: (options: OriImageStepsOptions) => string[];
+  readonly buildBootstrapScript: (options: OriBootstrapOptions) => string;
   readonly buildRunScript: (options: OriRunScriptOptions) => string;
   readonly parseRun: (stdout: string) => OriAgentRun;
 }
 
 function buildImageSteps(opts: {
   agentPackage: string;
-  oriInstallUrl: string;
-  oriChannel: OriChannel;
   binaryName: string;
 }): string[] {
-  const channelPrefix =
-    opts.oriChannel === "stable" ? "" : `ORI_CHANNEL=${opts.oriChannel} `;
   return [
     "RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates git",
     "ENV NVM_DIR=/root/.nvm",
     `RUN curl -o- ${NVM_INSTALL_URL} | bash`,
     `RUN . /root/.nvm/nvm.sh && nvm install ${NODE_VERSION} && npm install -g ${opts.agentPackage} && ln -sf $(which ${opts.binaryName}) /usr/local/bin/${opts.binaryName} && ln -sf $(which node) /usr/local/bin/node && ln -sf $(which npm) /usr/local/bin/npm`,
-    `RUN curl -fsSL ${opts.oriInstallUrl} | ${channelPrefix}ORI_INSTALL_DIR=${ORI_INSTALL_DIR} bash`,
-    `RUN ori --version && ${opts.binaryName} --version`,
+    `RUN ${opts.binaryName} --version`,
   ];
+}
+
+function buildBootstrapScript(opts: {
+  oriInstallUrl: string;
+  oriChannel: OriChannel;
+  binaryName: string;
+}): string {
+  const channelPrefix =
+    opts.oriChannel === "stable" ? "" : `ORI_CHANNEL=${opts.oriChannel} `;
+  return [
+    "set -euo pipefail",
+    `curl -fsSL ${opts.oriInstallUrl} | ${channelPrefix}ORI_INSTALL_DIR=${ORI_INSTALL_DIR} bash`,
+    `ori --version && ${opts.binaryName} --version`,
+  ].join("\n");
 }
 
 function numberField(source: unknown, key: string): number {
@@ -253,6 +266,8 @@ const CLAUDE_HARNESS: OriHarnessDef = {
   remoteLogPath: "/logs/agent/claude.txt",
   imageBuildSteps: (options) =>
     buildImageSteps({ ...options, binaryName: "claude" }),
+  buildBootstrapScript: (options) =>
+    buildBootstrapScript({ ...options, binaryName: "claude" }),
   buildRunScript: (options) =>
     [
       "set -euo pipefail",
@@ -292,6 +307,8 @@ const ORI_PI_HARNESS: OriHarnessDef = {
   remoteLogPath: "/logs/agent/pi.txt",
   imageBuildSteps: (options) =>
     buildImageSteps({ ...options, binaryName: "pi" }),
+  buildBootstrapScript: (options) =>
+    buildBootstrapScript({ ...options, binaryName: "pi" }),
   buildRunScript: (options) =>
     [
       "set -euo pipefail",
