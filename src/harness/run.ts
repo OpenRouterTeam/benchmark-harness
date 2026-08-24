@@ -1,12 +1,12 @@
 import type { Effect } from "effect/Effect";
 import {
+  catchAll,
   catchTags,
   fail as effectFail,
   flatMap as effectFlatMap,
   gen as effectGen,
   map as effectMap,
   annotateLogs,
-  orElseSucceed,
   tryPromise,
   withLogSpan,
   succeed as effectSucceed,
@@ -20,6 +20,8 @@ import {
   zipWithIndex as streamZipWithIndex,
 } from "effect/Stream";
 
+import { unknownErrorToString } from "../internal/errors";
+import { wLog } from "../internal/log";
 import { resetGenerationIds } from "../runtime/generation-ids";
 import type { ReplayedUsage } from "../runtime/generation-resolver";
 import { resolveCollectedGenerations } from "../runtime/generation-resolver";
@@ -205,14 +207,26 @@ function evaluateOneResumable(
   return effectGen(function* () {
     const store = yield* SampleResultStore;
     const persisted = yield* tryPromise(() => store.read(key)).pipe(
-      orElseSucceed(() => null)
+      catchAll((error) => {
+        wLog("Failed to read persisted sample outcome; re-evaluating", {
+          sample_result_key: key,
+          error: unknownErrorToString(error),
+        });
+        return effectSucceed(null);
+      })
     );
     if (persisted !== null) {
       return persisted;
     }
     const outcome = yield* evaluateOne(opts);
     yield* tryPromise(() => store.write(key, outcome)).pipe(
-      orElseSucceed(() => undefined)
+      catchAll((error) => {
+        wLog("Failed to persist sample outcome; a resumed run will re-run it", {
+          sample_result_key: key,
+          error: unknownErrorToString(error),
+        });
+        return effectSucceed(undefined);
+      })
     );
     return outcome;
   });

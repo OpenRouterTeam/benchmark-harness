@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it, spyOn } from "bun:test";
 
 import { fromIterable } from "effect/Chunk";
 import {
@@ -214,12 +214,26 @@ describe("sample-result resume", () => {
     expect(result.metrics.accuracy).toBeCloseTo(run1Metrics.accuracy, 5);
   });
 
-  it("T4: store whose read/write throw — run completes, all evaluated", async () => {
-    const { result, counters } = await runWithStore(throwingStore());
-    expect(counters.solver).toBe(6);
-    expect(counters.scorer).toBe(6);
-    expect(result.sampleScores.length).toBe(6);
-    expect(summarize(result)).toEqual(run1Summary);
-    expect(result.metrics.accuracy).toBeCloseTo(run1Metrics.accuracy, 5);
+  it("T4: store whose read/write throw — run completes, all evaluated, failures logged", async () => {
+    const warn = spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      const { result, counters } = await runWithStore(throwingStore());
+      expect(counters.solver).toBe(6);
+      expect(counters.scorer).toBe(6);
+      expect(result.sampleScores.length).toBe(6);
+      expect(summarize(result)).toEqual(run1Summary);
+      expect(result.metrics.accuracy).toBeCloseTo(run1Metrics.accuracy, 5);
+      const warned = warn.mock.calls.map((call) => String(call[0]));
+      expect(
+        warned.some((line) =>
+          line.includes("Failed to read persisted sample outcome")
+        )
+      ).toBe(true);
+      expect(
+        warned.some((line) => line.includes("Failed to persist sample outcome"))
+      ).toBe(true);
+    } finally {
+      warn.mockRestore();
+    }
   });
 });
