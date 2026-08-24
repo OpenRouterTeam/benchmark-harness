@@ -3,14 +3,24 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { either, gen, provide, runPromise } from "effect/Effect";
+import { failureOption } from "effect/Cause";
+import {
+  either,
+  gen,
+  provide,
+  runPromise,
+  runPromiseExit,
+} from "effect/Effect";
+import type { Exit } from "effect/Exit";
 import type { Layer } from "effect/Layer";
 import {
   effect as layerEffect,
   mergeAll as layerMergeAll,
   provide as layerProvide,
 } from "effect/Layer";
+import { getOrThrow } from "effect/Option";
 
+import { assertFailure } from "../../../test/helpers/exit-asserts";
 import {
   noopProgressLayer,
   noopCheckpointLayer,
@@ -19,7 +29,12 @@ import {
   makeTerminalBenchFakeSandboxLayer,
   SandboxSession,
 } from "../../../test/helpers/terminal-bench-sandbox";
-import type { Sample, TaskState } from "../../harness/core";
+import type {
+  ModelError,
+  Sample,
+  SolverError,
+  TaskState,
+} from "../../harness/core";
 import { initialTaskState, ScoreValue } from "../../harness/core";
 import { Solver } from "../../harness/solver";
 import {
@@ -105,6 +120,34 @@ async function runOriSolver(
     })
   );
   return runPromise(
+    gen(function* () {
+      const solver = yield* Solver;
+      return yield* solver(sampleState());
+    }).pipe(
+      provide(
+        layerMergeAll(
+          solverLayer.pipe(layerProvide(sandboxLayer)),
+          noopProgressLayer,
+          noopCheckpointLayer
+        )
+      )
+    )
+  );
+}
+
+async function runOriSolverExit(
+  sandboxLayer: Layer<SandboxSession>,
+  opts: OriSolverOpts = SOLVER_OPTS
+): Promise<Exit<TaskState, SolverError | ModelError>> {
+  const solverLayer = layerEffect(Solver)(
+    gen(function* () {
+      const sessionFactory = yield* SandboxSession;
+      return Solver.of(
+        oriSolver(sessionFactory, opts, getOriHarness("claude"))
+      );
+    })
+  );
+  return runPromiseExit(
     gen(function* () {
       const solver = yield* Solver;
       return yield* solver(sampleState());
@@ -554,25 +597,72 @@ describe("terminal-bench ori solver", () => {
     expect(finalState.sample.metadata?.["agentToolCalls"]).toBe(2);
   });
 
-  it("installs ori and the claude package in the image", () => {
+  it("installs the claude package in the image and leaves ori out of it", () => {
     const steps = ORI_HARNESSES.claude.imageBuildSteps({
       agentPackage: DEFAULT_CLAUDE_PACKAGE,
-      oriInstallUrl: "https://openrouter.ai/labs/ori/install.sh",
-      oriChannel: "stable",
     });
     expect(steps.join("\n")).toContain(DEFAULT_CLAUDE_PACKAGE);
-    expect(steps.join("\n")).toContain("ORI_INSTALL_DIR=/usr/local/bin bash");
-    expect(steps.at(-1)).toBe("RUN ori --version && claude --version");
+    expect(steps.join("\n")).not.toContain("ORI_INSTALL_DIR");
+    expect(steps.join("\n")).not.toContain("ori --version");
+    expect(steps.at(-1)).toBe("RUN claude --version");
   });
 
   it("honors an agent package override", () => {
     const steps = ORI_HARNESSES.claude.imageBuildSteps({
       agentPackage: "@anthropic-ai/claude-code@1.2.3",
-      oriInstallUrl: "https://openrouter.ai/labs/ori/install.sh",
-      oriChannel: "stable",
     });
     expect(steps.join("\n")).toContain("@anthropic-ai/claude-code@1.2.3");
     expect(steps.join("\n")).not.toContain("claude-code@latest");
+  });
+
+  it("installs ori in the running sandbox on the requested channel", async () => {
+    const oriInstallScripts: string[] = [];
+    await runOriSolver(
+      makeTerminalBenchFakeSandboxLayer({
+        reward: 1,
+        agentEventStream: CLAUDE_STREAM,
+        agentExitCode: 0,
+        oriInstallScripts,
+      }),
+      { ...SOLVER_OPTS, oriChannel: "alpha" }
+    );
+    expect(oriInstallScripts).toHaveLength(1);
+    expect(oriInstallScripts[0]).toContain(
+      "curl -fsSL https://openrouter.ai/labs/ori/install.sh"
+    );
+    expect(oriInstallScripts[0]).toContain(
+      "ORI_CHANNEL=alpha ORI_INSTALL_DIR=/usr/local/bin bash"
+    );
+    expect(oriInstallScripts[0]).toContain("ori --version && claude --version");
+  });
+
+  it("omits the channel override when ori comes from stable", () => {
+    const script = ORI_HARNESSES.claude.buildBootstrapScript({
+      oriInstallUrl: "https://openrouter.ai/labs/ori/install.sh",
+      oriChannel: "stable",
+    });
+    expect(script).toContain("ORI_INSTALL_DIR=/usr/local/bin bash");
+    expect(script).not.toContain("ORI_CHANNEL");
+  });
+
+  it("fails the sample when ori cannot be installed and never runs the agent", async () => {
+    const execCalls: ExecCalls = [];
+    const exit = await runOriSolverExit(
+      makeTerminalBenchFakeSandboxLayer({
+        reward: 1,
+        agentEventStream: CLAUDE_STREAM,
+        agentExitCode: 0,
+        oriInstallExitCode: 1,
+        execCalls,
+      })
+    );
+    assertFailure(exit);
+    expect(getOrThrow(failureOption(exit.cause)).message).toContain(
+      "Failed to install ori"
+    );
+    expect(
+      execCalls.some((call) => call.argv.join(" ").includes("ori claude"))
+    ).toBe(false);
   });
 });
 
@@ -851,22 +941,21 @@ describe("terminal-bench pi via ori", () => {
     expect(outcome._tag).toBe("Left");
   });
 
-  it("installs pi and ori into the image", () => {
+  it("installs pi into the image", () => {
     const steps = ORI_HARNESSES.pi.imageBuildSteps({
       agentPackage: "@earendil-works/pi-coding-agent@latest",
-      oriInstallUrl: "https://openrouter.ai/labs/ori/install.sh",
-      oriChannel: "stable",
     });
     expect(steps.join("\n")).toContain("@earendil-works/pi-coding-agent");
-    expect(steps.at(-1)).toBe("RUN ori --version && pi --version");
+    expect(steps.join("\n")).not.toContain("ORI_INSTALL_DIR");
+    expect(steps.at(-1)).toBe("RUN pi --version");
   });
 
   it("can install ori from the alpha channel when asked", () => {
-    const steps = ORI_HARNESSES.pi.imageBuildSteps({
-      agentPackage: "pi@1",
+    const script = ORI_HARNESSES.pi.buildBootstrapScript({
       oriInstallUrl: "https://openrouter.ai/labs/ori/install.sh",
       oriChannel: "alpha",
     });
-    expect(steps.join("\n")).toContain("ORI_CHANNEL=alpha");
+    expect(script).toContain("ORI_CHANNEL=alpha");
+    expect(script).toContain("ori --version && pi --version");
   });
 });

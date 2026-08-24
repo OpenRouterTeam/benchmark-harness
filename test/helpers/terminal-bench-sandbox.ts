@@ -25,9 +25,13 @@ export interface FakeTerminalBenchBehavior {
   readonly uploadedDirs?: { localDir: string; remoteDir: string }[];
   readonly failAgentExec?: boolean;
   readonly recoveredLog?: string;
+  readonly oriInstallScripts?: string[];
+  readonly oriInstallExitCode?: number;
 }
 
 const AGENT_COMMAND_MARKERS = ["pi --print", "pi ", "ori claude"] as const;
+
+const ORI_INSTALL_MARKER = "ORI_INSTALL_DIR=" as const;
 
 function isAgentCommand(joined: string): boolean {
   return AGENT_COMMAND_MARKERS.some((marker) => joined.includes(marker));
@@ -44,8 +48,16 @@ export function makeTerminalBenchFakeSandboxLayer(
       behavior.uploadedDirs?.push({ localDir, remoteDir });
     },
     execHandler: (argv, env, timeoutMs): ExecResult => {
-      behavior.execCalls?.push({ argv: [...argv], env: { ...env }, timeoutMs });
       const joined = argv.join(" ");
+      if (joined.includes(ORI_INSTALL_MARKER)) {
+        behavior.oriInstallScripts?.push(joined);
+        return {
+          stdout: "",
+          stderr: "",
+          exitCode: behavior.oriInstallExitCode ?? 0,
+        };
+      }
+      behavior.execCalls?.push({ argv: [...argv], env: { ...env }, timeoutMs });
       if (joined.startsWith("cat /logs/agent/")) {
         return {
           stdout: behavior.recoveredLog ?? "",

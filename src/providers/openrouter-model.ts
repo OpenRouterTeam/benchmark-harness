@@ -521,6 +521,7 @@ function decodeResult(
         },
         generationTimeMs: Math.round(performance.now() - startedAt),
         ...(usage && { usage }),
+        ...(isRecord(raw) && { rawResponse: raw }),
       })
     )
   );

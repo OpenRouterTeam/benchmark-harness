@@ -28,6 +28,10 @@ export const AGENT_EXEC_UNAVAILABLE_EXIT = -1;
 
 const LOG_RECOVERY_TIMEOUT_MS = 60000;
 
+const ORI_BOOTSTRAP_TIMEOUT_MS = 300000;
+
+const BOOTSTRAP_DETAIL_TAIL_CHARS = 1000;
+
 function recoverAfterExecFailure(
   session: SandboxSessionInstance,
   harness: OriHarnessDef,
@@ -145,8 +149,30 @@ export function agentImageBuildSteps(
 ): string[] {
   return harness.imageBuildSteps({
     agentPackage: opts.agentPackage ?? harness.defaultPackage,
+  });
+}
+
+export function installOri(input: {
+  readonly session: SandboxSessionInstance;
+  readonly harness: OriHarnessDef;
+  readonly opts: AgentCliOpts;
+}): Effect<void, SolverError> {
+  const { session, harness, opts } = input;
+  const script = harness.buildBootstrapScript({
     oriInstallUrl: opts.oriInstallUrl ?? DEFAULT_ORI_INSTALL_URL,
     oriChannel: opts.oriChannel ?? DEFAULT_ORI_CHANNEL,
+  });
+  return gen(function* () {
+    const run = yield* session.exec(
+      ["bash", "-c", script],
+      {},
+      ORI_BOOTSTRAP_TIMEOUT_MS
+    );
+    if (run.exitCode !== 0) {
+      return yield* new SolverError({
+        message: `Failed to install ori in the sandbox (exit ${run.exitCode}): ${`${run.stdout}\n${run.stderr}`.slice(-BOOTSTRAP_DETAIL_TAIL_CHARS)}`,
+      });
+    }
   });
 }
 
@@ -178,6 +204,7 @@ export function runAgentCli(input: {
         message: `sessionId contains a control character, which ori replaces with a fresh UUID and silently detaches the run from its generations (id=${JSON.stringify(opts.sessionId)})`,
       });
     }
+    yield* installOri({ session, harness, opts });
     const startedAt = yield* currentTimeMillis;
     const outcome = yield* session
       .exec(["bash", "-c", script], buildAgentCliEnv(opts), timeoutMs)
