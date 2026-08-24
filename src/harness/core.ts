@@ -151,6 +151,9 @@ export interface ModelOutput {
   readonly message: ChatMessage;
   readonly usage?: ModelUsage;
   readonly generationTimeMs?: number;
+  // oxlint-disable-next-line openrouter/no-comments
+  /** Populated only on the non-streaming OpenRouter chat path; absent when the output is synthesized. */
+  readonly rawResponse?: Readonly<Record<string, unknown>>;
 }
 
 export interface TaskState {
