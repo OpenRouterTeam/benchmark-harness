@@ -30,6 +30,7 @@
     "./scorer": "./src/harness/scorer.ts",
     "./solver": "./src/harness/solver.ts",
     "./parquet": "./src/results/parquet.ts",
+    "./partial-outcome-store": "./src/results/partial-outcome-store.ts",
     "./parquet-schema": "./src/results/parquet-schema.ts",
     "./progress": "./src/harness/progress.ts",
     "./result-store": "./src/results/result-store.ts",

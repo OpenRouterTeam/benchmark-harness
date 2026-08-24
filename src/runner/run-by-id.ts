@@ -31,12 +31,17 @@ import {
   NOOP_PROGRESS_REPORTER,
   ProgressReporter,
 } from "../harness/progress";
-import type { RunResult, RunConfig } from "../harness/run";
-import { runBenchmark } from "../harness/run";
+import type { RunResult, RunConfig, SampleOutcome } from "../harness/run";
+import {
+  aggregateOutcomes,
+  runBenchmark,
+  sampleEpochKey,
+} from "../harness/run";
 import { runHarnessPromise } from "../internal/effect-logger";
 import type { AsyncEither } from "../internal/either";
 import { Either } from "../internal/either";
 import { wLog } from "../internal/log";
+import type { PartialOutcomeStoreService } from "../results/partial-outcome-store";
 import type { ResultStoreService } from "../results/result-store";
 import {
   GenerationResolver,
@@ -64,6 +69,7 @@ export interface RunBenchmarkInput {
   readonly checkpointStore?: CheckpointStoreService;
   readonly abortSignal?: AbortSignal;
   readonly resultStore?: ResultStoreService;
+  readonly partialOutcomeStore?: PartialOutcomeStoreService;
   readonly maxOutputTokensCeiling?: number;
 }
 
@@ -72,14 +78,20 @@ export interface RunBenchmarkOutput {
   readonly resultsPath: string | null;
 }
 
-export function runBenchmarkById(
+export async function runBenchmarkById(
   input: RunBenchmarkInput
 ): AsyncEither<RunBenchmarkOutput, string> {
   const benchmarkResult = resolveRunBenchmark(input);
   if (Either.isLeft(benchmarkResult)) {
-    return Promise.resolve(Either.left(benchmarkResult.left));
+    return Either.left(benchmarkResult.left);
   }
   const { benchmark, benchmarkLayer } = benchmarkResult.right;
+  const partialStore = input.partialOutcomeStore;
+  const priorOutcomes =
+    partialStore === undefined
+      ? []
+      : ((await partialStore.read().catch(() => null)) ?? []);
+  const collectedOutcomes: SampleOutcome[] = [];
   const progressLayer = layerSucceed(
     ProgressReporter,
     input.progressReporter ?? NOOP_PROGRESS_REPORTER
@@ -104,6 +116,21 @@ export function runBenchmarkById(
         run_attempt: `${input.runAttempt}`,
       }),
     },
+    ...(partialStore !== undefined && {
+      onOutcome: (outcome: SampleOutcome) => {
+        collectedOutcomes.push(outcome);
+      },
+    }),
+    ...(priorOutcomes.length > 0 && {
+      skipSampleEpochs: new Set(
+        priorOutcomes.map((outcome) =>
+          sampleEpochKey(
+            outcome.sampleScore.sampleId,
+            outcome.sampleScore.epoch
+          )
+        )
+      ),
+    }),
   };
   const fullBenchmarkLayer = benchmarkLayer.pipe(
     layerProvide(FetchHttpClient.layer)
@@ -124,34 +151,76 @@ export function runBenchmarkById(
   const runOpts =
     input.abortSignal !== undefined ? { signal: input.abortSignal } : undefined;
   const program = runBenchmark(runConfig).pipe(provide(layers));
+  let harnessResult: RunResult;
+  try {
+    harnessResult = await runHarnessPromise(
+      input.runAttempt === undefined
+        ? program
+        : withRunAttempt(input.runAttempt, program),
+      runOpts
+    );
+  } catch (error) {
+    await flushPartialOutcomes({
+      partialStore,
+      abortSignal: input.abortSignal,
+      outcomes: [...priorOutcomes, ...collectedOutcomes],
+      newOutcomeCount: collectedOutcomes.length,
+    });
+    return Either.left(String(error));
+  }
+  const result =
+    priorOutcomes.length > 0
+      ? aggregateOutcomes([...priorOutcomes, ...collectedOutcomes])
+      : harnessResult;
+  if (partialStore !== undefined) {
+    await partialStore.remove().catch(() => {});
+  }
+  if (input.resultStore === undefined) {
+    return Either.right({ result, resultsPath: null });
+  }
   return runHarnessPromise(
-    input.runAttempt === undefined
-      ? program
-      : withRunAttempt(input.runAttempt, program),
-    runOpts
-  )
-    .then((result) => {
-      if (input.resultStore !== undefined) {
-        return runHarnessPromise(
-          input.resultStore.write({
-            result,
-            benchmark,
-            benchmarkConfig: input.benchmarkConfig,
-            epochs: input.epochs,
-            sessionId: input.sessionId,
-          })
-        )
-          .then((resultsPath) => Either.right({ result, resultsPath }))
-          .catch((storeErr) => {
-            wLog("Failed to persist benchmark results", {
-              error: String(storeErr),
-            });
-            return Either.right({ result, resultsPath: null });
-          });
-      }
-      return Either.right({ result, resultsPath: null });
+    input.resultStore.write({
+      result,
+      benchmark,
+      benchmarkConfig: input.benchmarkConfig,
+      epochs: input.epochs,
+      sessionId: input.sessionId,
     })
-    .catch((error) => Either.left(String(error)));
+  )
+    .then((resultsPath) => Either.right({ result, resultsPath }))
+    .catch((storeErr) => {
+      wLog("Failed to persist benchmark results", {
+        error: String(storeErr),
+      });
+      return Either.right({ result, resultsPath: null });
+    });
+}
+
+async function flushPartialOutcomes(opts: {
+  readonly partialStore: PartialOutcomeStoreService | undefined;
+  readonly abortSignal: AbortSignal | undefined;
+  readonly outcomes: readonly SampleOutcome[];
+  readonly newOutcomeCount: number;
+}): Promise<void> {
+  const { partialStore, abortSignal, outcomes, newOutcomeCount } = opts;
+  if (
+    partialStore === undefined ||
+    abortSignal?.aborted !== true ||
+    newOutcomeCount === 0
+  ) {
+    return;
+  }
+  try {
+    await partialStore.write(outcomes);
+    wLog("Flushed partial benchmark outcomes after abort", {
+      outcome_count: outcomes.length,
+      new_outcome_count: newOutcomeCount,
+    });
+  } catch (error) {
+    wLog("Failed to flush partial benchmark outcomes after abort", {
+      error: String(error),
+    });
+  }
 }
 
 export function datasetSizeById(

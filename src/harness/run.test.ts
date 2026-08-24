@@ -26,7 +26,8 @@ import { Dataset } from "./dataset";
 import type { ModelService } from "./model";
 import { Model } from "./model";
 import type { CheckpointStore, ProgressReporter } from "./progress";
-import { runBenchmark } from "./run";
+import type { SampleOutcome } from "./run";
+import { aggregateOutcomes, runBenchmark, sampleEpochKey } from "./run";
 import { Scorer } from "./scorer";
 import type { SolverService } from "./solver";
 import { systemMessage, chain, generate, Solver } from "./solver";
@@ -396,5 +397,53 @@ describe("runBenchmark", () => {
     );
     expect(result.usage.generationTimeMs).toBe(200);
     expect(result.usage.outputTokens).toBe(0);
+  });
+  it("evaluates only the sample-epochs not listed in skipSampleEpochs", async () => {
+    const model = fakeModel(() => "Answer: B");
+    const solver = chain(
+      systemMessage("You are a helpful assistant."),
+      generate(model.service, { temperature: 0.5 })
+    );
+    const result = await runPromise(
+      runBenchmark({
+        epochs: 2,
+        maxConcurrency: 2,
+        skipSampleEpochs: new Set([
+          sampleEpochKey("s-correct", 0),
+          sampleEpochKey("s-wrong", 1),
+        ]),
+      }).pipe(provide(makeLayers(model, solver)))
+    );
+    const evaluated = result.sampleScores.map((score) =>
+      sampleEpochKey(score.sampleId, score.epoch)
+    );
+    expect(evaluated.toSorted()).toEqual([
+      sampleEpochKey("s-correct", 1),
+      sampleEpochKey("s-wrong", 0),
+    ]);
+  });
+  it("reports every completed outcome through onOutcome as it folds", async () => {
+    const model = fakeModel((input) =>
+      input.includes("Q1") ? "Answer: B" : "Answer: A"
+    );
+    const solver = chain(
+      systemMessage("You are a helpful assistant."),
+      generate(model.service, { temperature: 0.5 })
+    );
+    const collected: SampleOutcome[] = [];
+    const result = await runPromise(
+      runBenchmark({
+        epochs: 1,
+        maxConcurrency: 2,
+        onOutcome: (outcome) => {
+          collected.push(outcome);
+        },
+      }).pipe(provide(makeLayers(model, solver)))
+    );
+    const collectedIds = collected
+      .map((outcome) => outcome.sampleScore.sampleId)
+      .toSorted();
+    expect(collectedIds).toEqual(["s-correct", "s-wrong"]);
+    expect(aggregateOutcomes(collected)).toEqual(result);
   });
 });

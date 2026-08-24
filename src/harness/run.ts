@@ -11,6 +11,7 @@ import {
 } from "effect/Effect";
 import type { Stream } from "effect/Stream";
 import {
+  filter as streamFilter,
   flatMap as streamFlatMap,
   fromIterable as streamFromIterable,
   mapEffect as streamMapEffect,
@@ -54,6 +55,8 @@ export interface RunConfig {
   };
   readonly degradeSolverErrors?: boolean;
   readonly logAnnotations?: Readonly<Record<string, string>>;
+  readonly skipSampleEpochs?: ReadonlySet<string>;
+  readonly onOutcome?: (outcome: SampleOutcome) => void;
 }
 
 export interface RunResult {
@@ -73,11 +76,28 @@ interface FoldAccumulator {
   usage: UsageTotals;
 }
 
-type EvalOutcome = {
+export type SampleOutcome = {
   sampleScore: SampleScore;
   usage?: ModelUsage;
   generationTimeMs?: number;
 };
+
+export function sampleEpochKey(sampleId: string, epoch: number): string {
+  return `${sampleId}:${epoch}`;
+}
+
+export function aggregateOutcomes(
+  outcomes: readonly SampleOutcome[]
+): RunResult {
+  let acc: FoldAccumulator = {
+    scores: [],
+    usage: { ...ZERO_USAGE },
+  };
+  for (const outcome of outcomes) {
+    acc = accumulateOutcome(acc, outcome);
+  }
+  return finalizeRun(acc);
+}
 
 function sampleEpochStream(
   dataset: DatasetService,
@@ -107,12 +127,12 @@ function sampleEpochStream(
 function evalWithProgress(
   sampleEpoch: SampleEpoch,
   evaluate: Effect<
-    EvalOutcome,
+    SampleOutcome,
     ModelError | SolverError,
     Solver | Scorer | ProgressReporter | CheckpointStore
   >
 ): Effect<
-  EvalOutcome,
+  SampleOutcome,
   ModelError | SolverError,
   Solver | Scorer | ProgressReporter | CheckpointStore
 > {
@@ -139,7 +159,7 @@ function evalWithProgress(
 
 function accumulateOutcome(
   acc: FoldAccumulator,
-  item: EvalOutcome
+  item: SampleOutcome
 ): FoldAccumulator {
   acc.scores.push(item.sampleScore);
   const u = item.usage;
@@ -163,9 +183,9 @@ function finalizeRun(acc: FoldAccumulator): RunResult {
 }
 
 function applyReplayedUsage(
-  outcome: EvalOutcome,
+  outcome: SampleOutcome,
   replayed: ReplayedUsage | undefined
-): EvalOutcome {
+): SampleOutcome {
   if (replayed === undefined) {
     return outcome;
   }
@@ -193,7 +213,7 @@ interface EvaluateOneOpts {
 function evaluateOne(
   opts: EvaluateOneOpts
 ): Effect<
-  EvalOutcome,
+  SampleOutcome,
   ModelError | SolverError,
   Solver | Scorer | ProgressReporter | CheckpointStore
 > {
@@ -296,7 +316,7 @@ interface ErrorOutcomeOpts {
   readonly explanation: string;
 }
 
-function errorOutcome(opts: ErrorOutcomeOpts): EvalOutcome {
+function errorOutcome(opts: ErrorOutcomeOpts): SampleOutcome {
   const { sample, epoch, value, explanation } = opts;
   const score: Score = {
     value,
@@ -334,10 +354,17 @@ export function runBenchmark(
 > {
   return Dataset.pipe(
     effectFlatMap((dataset) => {
+      const skipKeys = config.skipSampleEpochs;
       const sampleEpochs = sampleEpochStream(
         dataset,
         config.epochs,
         config.range
+      ).pipe(
+        streamFilter(
+          (se) =>
+            skipKeys === undefined ||
+            !skipKeys.has(sampleEpochKey(se.sample.id, se.epoch))
+        )
       );
       const initialAcc: FoldAccumulator = {
         scores: [],
@@ -364,6 +391,7 @@ export function runBenchmark(
         streamRunFoldEffect(initialAcc, (acc, item) =>
           effectGen(function* () {
             const updated = accumulateOutcome(acc, item);
+            config.onOutcome?.(item);
             const reporter = yield* ProgressReporter;
             yield* reporter.onSampleComplete(updated.scores.length);
             return updated;
