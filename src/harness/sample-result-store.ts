@@ -1,7 +1,7 @@
 import { Tag } from "effect/Context";
 
 import type { ZodShape } from "../internal/zod";
-import { z } from "../internal/zod";
+import { z, zInt } from "../internal/zod";
 import type {
   ModelUsage,
   ResponseItem,
@@ -55,7 +55,7 @@ const ResponseItemSchema: z.ZodType<ResponseItem> = z
 
 const SampleScoreSchema = z.object({
   sampleId: z.string(),
-  epoch: z.number(),
+  epoch: zInt(),
   score: ScoreSchema,
   messages: z.array(ChatMessageSchema).readonly().optional(),
   responseItems: z.array(ResponseItemSchema).readonly().optional(),
