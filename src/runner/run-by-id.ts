@@ -41,7 +41,12 @@ import { runHarnessPromise } from "../internal/effect-logger";
 import type { AsyncEither } from "../internal/either";
 import { Either } from "../internal/either";
 import { wLog } from "../internal/log";
-import type { PartialOutcomeStoreService } from "../results/partial-outcome-store";
+import type {
+  PartialOutcomeRunScope,
+  PartialOutcomesPayload,
+  PartialOutcomeStoreService,
+} from "../results/partial-outcome-store";
+import { isSameRunScope } from "../results/partial-outcome-store";
 import type { ResultStoreService } from "../results/result-store";
 import {
   GenerationResolver,
@@ -87,10 +92,14 @@ export async function runBenchmarkById(
   }
   const { benchmark, benchmarkLayer } = benchmarkResult.right;
   const partialStore = input.partialOutcomeStore;
+  const runScope: PartialOutcomeRunScope = {
+    epochs: input.epochs,
+    ...(input.range !== undefined && { range: input.range }),
+  };
   const priorOutcomes =
     partialStore === undefined
       ? []
-      : ((await partialStore.read().catch(() => null)) ?? []);
+      : await readPartialOutcomes(partialStore, runScope);
   const collectedOutcomes: SampleOutcome[] = [];
   const progressLayer = layerSucceed(
     ProgressReporter,
@@ -163,6 +172,7 @@ export async function runBenchmarkById(
     await flushPartialOutcomes({
       partialStore,
       abortSignal: input.abortSignal,
+      runScope,
       outcomes: [...priorOutcomes, ...collectedOutcomes],
       newOutcomeCount: collectedOutcomes.length,
     });
@@ -172,37 +182,77 @@ export async function runBenchmarkById(
     priorOutcomes.length > 0
       ? aggregateOutcomes([...priorOutcomes, ...collectedOutcomes])
       : harnessResult;
-  if (partialStore !== undefined) {
-    await partialStore.remove().catch(() => {});
-  }
   if (input.resultStore === undefined) {
+    await removePartialOutcomes(partialStore);
     return Either.right({ result, resultsPath: null });
   }
-  return runHarnessPromise(
-    input.resultStore.write({
-      result,
-      benchmark,
-      benchmarkConfig: input.benchmarkConfig,
-      epochs: input.epochs,
-      sessionId: input.sessionId,
-    })
-  )
-    .then((resultsPath) => Either.right({ result, resultsPath }))
-    .catch((storeErr) => {
-      wLog("Failed to persist benchmark results", {
-        error: String(storeErr),
-      });
-      return Either.right({ result, resultsPath: null });
+  try {
+    const resultsPath = await runHarnessPromise(
+      input.resultStore.write({
+        result,
+        benchmark,
+        benchmarkConfig: input.benchmarkConfig,
+        epochs: input.epochs,
+        sessionId: input.sessionId,
+      })
+    );
+    await removePartialOutcomes(partialStore);
+    return Either.right({ result, resultsPath });
+  } catch (storeErr) {
+    wLog("Failed to persist benchmark results", {
+      error: String(storeErr),
     });
+    return Either.right({ result, resultsPath: null });
+  }
+}
+
+async function readPartialOutcomes(
+  partialStore: PartialOutcomeStoreService,
+  runScope: PartialOutcomeRunScope
+): Promise<readonly SampleOutcome[]> {
+  let payload: PartialOutcomesPayload | null;
+  try {
+    payload = await partialStore.read();
+  } catch (error) {
+    wLog("Failed to read partial benchmark outcomes; starting fresh", {
+      error: String(error),
+    });
+    return [];
+  }
+  if (payload === null) {
+    return [];
+  }
+  if (!isSameRunScope(payload.scope, runScope)) {
+    wLog("Discarding partial benchmark outcomes from a mismatched run scope", {
+      persisted_epochs: payload.scope.epochs,
+      current_epochs: runScope.epochs,
+      persisted_range: JSON.stringify(payload.scope.range ?? null),
+      current_range: JSON.stringify(runScope.range ?? null),
+      discarded_outcome_count: payload.outcomes.length,
+    });
+    return [];
+  }
+  return payload.outcomes;
+}
+
+async function removePartialOutcomes(
+  partialStore: PartialOutcomeStoreService | undefined
+): Promise<void> {
+  if (partialStore === undefined) {
+    return;
+  }
+  await partialStore.remove().catch(() => {});
 }
 
 async function flushPartialOutcomes(opts: {
   readonly partialStore: PartialOutcomeStoreService | undefined;
   readonly abortSignal: AbortSignal | undefined;
+  readonly runScope: PartialOutcomeRunScope;
   readonly outcomes: readonly SampleOutcome[];
   readonly newOutcomeCount: number;
 }): Promise<void> {
-  const { partialStore, abortSignal, outcomes, newOutcomeCount } = opts;
+  const { partialStore, abortSignal, runScope, outcomes, newOutcomeCount } =
+    opts;
   if (
     partialStore === undefined ||
     abortSignal?.aborted !== true ||
@@ -211,7 +261,7 @@ async function flushPartialOutcomes(opts: {
     return;
   }
   try {
-    await partialStore.write(outcomes);
+    await partialStore.write({ scope: runScope, outcomes });
     wLog("Flushed partial benchmark outcomes after abort", {
       outcome_count: outcomes.length,
       new_outcome_count: newOutcomeCount,

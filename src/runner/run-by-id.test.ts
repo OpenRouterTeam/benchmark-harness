@@ -1,13 +1,26 @@
 import { describe, expect, it } from "bun:test";
 
-import { succeed } from "effect/Effect";
-import { fail as layerFail, succeed as layerSucceed } from "effect/Layer";
+import { dieMessage, succeed } from "effect/Effect";
+import {
+  fail as layerFail,
+  mergeAll,
+  succeed as layerSucceed,
+} from "effect/Layer";
 import { fromIterable } from "effect/Stream";
 
 import type { HostBenchmarkRunConfig } from "../benchmarks/benchmark-config";
+import { mcqScorer } from "../benchmarks/scorers/mcq/scorer";
 import type { Benchmark } from "../benchmarks/types";
+import { MessageRole, ScoreValue } from "../harness/core";
 import { Dataset } from "../harness/dataset";
+import type { SampleOutcome } from "../harness/run";
+import { Scorer } from "../harness/scorer";
+import { generate, Solver } from "../harness/solver";
 import { assertLeft, assertRight } from "../internal/testing";
+import type {
+  PartialOutcomesPayload,
+  PartialOutcomeStoreService,
+} from "../results/partial-outcome-store";
 import { datasetSizeById, runBenchmarkById } from "./run-by-id";
 
 const HOST_BENCHMARK: Benchmark<HostBenchmarkRunConfig> = {
@@ -101,5 +114,195 @@ describe("benchmark runner by id", () => {
     assertLeft(sizeResult);
     expect(runResult.left).toContain("Benchmark id mismatch");
     expect(sizeResult.left).toBe(runResult.left);
+  });
+});
+
+const RUNNABLE_SAMPLES = [
+  { id: "s-1", input: "Q1 target B", target: { text: "B" } },
+  { id: "s-2", input: "Q2 target B", target: { text: "B" } },
+] as const;
+
+function makeRunnableHostBenchmark(
+  solverCalls: string[]
+): Benchmark<HostBenchmarkRunConfig> {
+  const datasetLayer = layerSucceed(Dataset, {
+    stream: () => fromIterable(RUNNABLE_SAMPLES),
+    size: succeed(RUNNABLE_SAMPLES.length),
+  });
+  const solver = generate(
+    {
+      generate: (messages) => {
+        const userMsg =
+          messages.find((m) => m.role === MessageRole.User)?.content ?? "";
+        solverCalls.push(userMsg);
+        return succeed({
+          completion: "Answer: B",
+          message: { role: MessageRole.Assistant, content: "Answer: B" },
+          generationTimeMs: 100,
+        });
+      },
+    },
+    { temperature: 0 }
+  );
+  return {
+    ...HOST_BENCHMARK,
+    makeLayer: () =>
+      mergeAll(
+        datasetLayer,
+        layerSucceed(Solver, Solver.of(solver)),
+        layerSucceed(Scorer, Scorer.of(mcqScorer))
+      ),
+  };
+}
+
+function priorOutcome(sampleId: string, epoch: number): SampleOutcome {
+  return {
+    sampleScore: {
+      sampleId,
+      epoch,
+      score: {
+        value: ScoreValue.Correct,
+        answer: "B",
+        explanation: "persisted",
+      },
+    },
+  };
+}
+
+function makePartialStore(payload: PartialOutcomesPayload | null): {
+  store: PartialOutcomeStoreService;
+  removals: number[];
+} {
+  const removals: number[] = [];
+  return {
+    store: {
+      read: () => Promise.resolve(payload),
+      write: () => Promise.resolve(),
+      remove: () => {
+        removals.push(1);
+        return Promise.resolve();
+      },
+    },
+    removals,
+  };
+}
+
+describe("runBenchmarkById partial outcome resume", () => {
+  it("skips sample-epochs persisted under the same run scope", async () => {
+    const solverCalls: string[] = [];
+    const { store, removals } = makePartialStore({
+      scope: { epochs: 1 },
+      outcomes: [priorOutcome("s-1", 0)],
+    });
+
+    const result = await runBenchmarkById({
+      benchmarkId: HOST_BENCHMARK.id,
+      hostBenchmark: makeRunnableHostBenchmark(solverCalls),
+      apiKey: "unused",
+      benchmarkConfig: HOST_CONFIG,
+      epochs: 1,
+      maxConcurrency: 1,
+      sessionId: "test",
+      partialOutcomeStore: store,
+    });
+
+    assertRight(result);
+    expect(solverCalls).toEqual(["Q2 target B"]);
+    expect(result.right.result.sampleScores).toHaveLength(2);
+    expect(removals).toHaveLength(1);
+  });
+
+  it("discards persisted outcomes from a mismatched run scope", async () => {
+    const solverCalls: string[] = [];
+    const { store } = makePartialStore({
+      scope: { epochs: 2 },
+      outcomes: [priorOutcome("s-1", 0)],
+    });
+
+    const result = await runBenchmarkById({
+      benchmarkId: HOST_BENCHMARK.id,
+      hostBenchmark: makeRunnableHostBenchmark(solverCalls),
+      apiKey: "unused",
+      benchmarkConfig: HOST_CONFIG,
+      epochs: 1,
+      maxConcurrency: 1,
+      sessionId: "test",
+      partialOutcomeStore: store,
+    });
+
+    assertRight(result);
+    expect(solverCalls.toSorted()).toEqual(["Q1 target B", "Q2 target B"]);
+    expect(result.right.result.sampleScores).toHaveLength(2);
+  });
+
+  it("starts fresh when the partial store read fails", async () => {
+    const solverCalls: string[] = [];
+    const store: PartialOutcomeStoreService = {
+      read: () => Promise.reject(new Error("read failed")),
+      write: () => Promise.resolve(),
+      remove: () => Promise.resolve(),
+    };
+
+    const result = await runBenchmarkById({
+      benchmarkId: HOST_BENCHMARK.id,
+      hostBenchmark: makeRunnableHostBenchmark(solverCalls),
+      apiKey: "unused",
+      benchmarkConfig: HOST_CONFIG,
+      epochs: 1,
+      maxConcurrency: 1,
+      sessionId: "test",
+      partialOutcomeStore: store,
+    });
+
+    assertRight(result);
+    expect(solverCalls).toHaveLength(2);
+  });
+
+  it("keeps the partial store when result persistence fails", async () => {
+    const solverCalls: string[] = [];
+    const { store, removals } = makePartialStore({
+      scope: { epochs: 1 },
+      outcomes: [priorOutcome("s-1", 0)],
+    });
+
+    const result = await runBenchmarkById({
+      benchmarkId: HOST_BENCHMARK.id,
+      hostBenchmark: makeRunnableHostBenchmark(solverCalls),
+      apiKey: "unused",
+      benchmarkConfig: HOST_CONFIG,
+      epochs: 1,
+      maxConcurrency: 1,
+      sessionId: "test",
+      partialOutcomeStore: store,
+      resultStore: { write: () => dieMessage("results store down") },
+    });
+
+    assertRight(result);
+    expect(result.right.resultsPath).toBeNull();
+    expect(removals).toHaveLength(0);
+  });
+
+  it("removes the partial store after result persistence succeeds", async () => {
+    const solverCalls: string[] = [];
+    const { store, removals } = makePartialStore({
+      scope: { epochs: 1 },
+      outcomes: [priorOutcome("s-1", 0)],
+    });
+
+    const result = await runBenchmarkById({
+      benchmarkId: HOST_BENCHMARK.id,
+      hostBenchmark: makeRunnableHostBenchmark(solverCalls),
+      apiKey: "unused",
+      benchmarkConfig: HOST_CONFIG,
+      epochs: 1,
+      maxConcurrency: 1,
+      sessionId: "test",
+      partialOutcomeStore: store,
+      resultStore: { write: () => succeed("/tmp/results.parquet") },
+    });
+
+    assertRight(result);
+    expect(result.right.resultsPath).toBe("/tmp/results.parquet");
+    expect(removals).toHaveLength(1);
   });
 });

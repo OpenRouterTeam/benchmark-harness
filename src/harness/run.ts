@@ -366,6 +366,7 @@ export function runBenchmark(
             !skipKeys.has(sampleEpochKey(se.sample.id, se.epoch))
         )
       );
+      const completedOffset = skipKeys?.size ?? 0;
       const initialAcc: FoldAccumulator = {
         scores: [],
         usage: { ...ZERO_USAGE },
@@ -393,7 +394,9 @@ export function runBenchmark(
             const updated = accumulateOutcome(acc, item);
             config.onOutcome?.(item);
             const reporter = yield* ProgressReporter;
-            yield* reporter.onSampleComplete(updated.scores.length);
+            yield* reporter.onSampleComplete(
+              completedOffset + updated.scores.length
+            );
             return updated;
           })
         ),

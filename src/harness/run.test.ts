@@ -26,6 +26,10 @@ import { Dataset } from "./dataset";
 import type { ModelService } from "./model";
 import { Model } from "./model";
 import type { CheckpointStore, ProgressReporter } from "./progress";
+import {
+  makeProgressReporter,
+  ProgressReporter as ProgressReporterTag,
+} from "./progress";
 import type { SampleOutcome } from "./run";
 import { aggregateOutcomes, runBenchmark, sampleEpochKey } from "./run";
 import { Scorer } from "./scorer";
@@ -421,6 +425,41 @@ describe("runBenchmark", () => {
       sampleEpochKey("s-correct", 1),
       sampleEpochKey("s-wrong", 0),
     ]);
+  });
+  it("offsets progress counts by the skipped sample-epochs when resuming", async () => {
+    const model = fakeModel(() => "Answer: B");
+    const solver = chain(
+      systemMessage("You are a helpful assistant."),
+      generate(model.service, { temperature: 0.5 })
+    );
+    const reported: number[] = [];
+    const reporterLayer = layerSucceed(
+      ProgressReporterTag,
+      makeProgressReporter({
+        onSampleComplete: (count) => {
+          reported.push(count);
+        },
+      })
+    );
+    const layers = mergeAll(
+      fakeDatasetLayer(SAMPLES),
+      layerSucceed(Solver, Solver.of(solver)),
+      layerSucceed(Scorer, Scorer.of(mcqScorer)),
+      model.layer,
+      reporterLayer,
+      noopCheckpointLayer
+    );
+    await runPromise(
+      runBenchmark({
+        epochs: 2,
+        maxConcurrency: 1,
+        skipSampleEpochs: new Set([
+          sampleEpochKey("s-correct", 0),
+          sampleEpochKey("s-wrong", 1),
+        ]),
+      }).pipe(provide(layers))
+    );
+    expect(reported.toSorted()).toEqual([3, 4]);
   });
   it("reports every completed outcome through onOutcome as it folds", async () => {
     const model = fakeModel((input) =>
