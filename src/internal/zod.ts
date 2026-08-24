@@ -5,7 +5,7 @@ import { Either } from "./either";
 export { z };
 
 export type ZodShape<T> = {
-  [key in keyof T]: ZodType<T[key]>;
+  [key in keyof Required<T>]: ZodType<T[key]>;
 };
 
 export function parseSchema<Input, Output>(
