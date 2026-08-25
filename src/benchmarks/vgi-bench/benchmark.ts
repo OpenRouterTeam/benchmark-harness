@@ -272,7 +272,7 @@ function vgiBenchRunLevelScores(result: RunResult): readonly {
   ];
 }
 
-const VGI_BENCH_CHAT_BENCHMARK = defineSingleTurnBenchmark({
+const VGI_BENCH_SINGLE_TURN_BENCHMARK = defineSingleTurnBenchmark({
   id: VGI_BENCH_META.id,
   temperature: VGI_BENCH_TEMPERATURE,
   defaultEpochs: VGI_BENCH_META.defaultEpochs,
@@ -315,6 +315,6 @@ const VGI_BENCH_CHAT_BENCHMARK = defineSingleTurnBenchmark({
 });
 
 export const VGI_BENCH_BENCHMARK: Benchmark = {
-  ...VGI_BENCH_CHAT_BENCHMARK,
+  ...VGI_BENCH_SINGLE_TURN_BENCHMARK,
   runLevelScores: vgiBenchRunLevelScores,
 };

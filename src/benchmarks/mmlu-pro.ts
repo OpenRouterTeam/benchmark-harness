@@ -148,7 +148,7 @@ function mmluProRunLevelScores(result: RunResult): readonly {
   ];
 }
 
-const MMLU_PRO_CHAT_BENCHMARK = defineSingleTurnBenchmark({
+const MMLU_PRO_SINGLE_TURN_BENCHMARK = defineSingleTurnBenchmark({
   id: "mmlu_pro",
   temperature: MMLU_PRO_TEMPERATURE,
   defaultEpochs: MMLU_PRO_META.defaultEpochs,
@@ -176,6 +176,6 @@ const MMLU_PRO_CHAT_BENCHMARK = defineSingleTurnBenchmark({
 });
 
 export const MMLU_PRO_BENCHMARK: Benchmark = {
-  ...MMLU_PRO_CHAT_BENCHMARK,
+  ...MMLU_PRO_SINGLE_TURN_BENCHMARK,
   runLevelScores: mmluProRunLevelScores,
 };

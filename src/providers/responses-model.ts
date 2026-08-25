@@ -247,7 +247,7 @@ export function generate(
 
 const RAW_PAYLOAD_KEYS = new Set(["arguments", "output"]);
 
-function toSdkInput(input: readonly ResponsesInputItem[]): InputsUnion {
+export function toSdkInput(input: readonly ResponsesInputItem[]): InputsUnion {
   return input.map(toSdkValue) as InputsUnion;
 }
 

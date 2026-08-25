@@ -1,30 +1,13 @@
 import { describe, expect, it } from "bun:test";
 
 import { ResponsesRequest$outboundSchema } from "@openrouter/sdk/models/responsesrequest";
-import { camelCase } from "change-case";
 
 import { MessageRole } from "../harness/core";
 import {
   messagesToResponses,
   toolDefinitionToResponses,
 } from "./messages-to-responses";
-
-const RAW_PAYLOAD_KEYS = new Set(["arguments", "output"]);
-
-function toSdkValue(value: unknown): unknown {
-  if (Array.isArray(value)) {
-    return value.map(toSdkValue);
-  }
-  if (value === null || typeof value !== "object") {
-    return value;
-  }
-  return Object.fromEntries(
-    Object.entries(value).map(([key, nestedValue]) => [
-      camelCase(key),
-      RAW_PAYLOAD_KEYS.has(key) ? nestedValue : toSdkValue(nestedValue),
-    ])
-  );
-}
+import { toSdkInput } from "./responses-model";
 
 function expectValidResponsesRequest(
   messages: Parameters<typeof messagesToResponses>[0],
@@ -32,7 +15,7 @@ function expectValidResponsesRequest(
 ) {
   const result = ResponsesRequest$outboundSchema.safeParse({
     model: "openai/gpt-4o-mini",
-    input: toSdkValue(messagesToResponses(messages)),
+    input: toSdkInput(messagesToResponses(messages)),
     store: false,
     stream: true,
     serviceTier: null,
