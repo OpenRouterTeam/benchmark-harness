@@ -47,7 +47,7 @@ import {
 import {
   BENCH_HARNESS_APP_REFERRER,
   BENCH_HARNESS_APP_TITLE,
-} from "./openrouter-model";
+} from "./app-identity";
 import type { ModelErrorIdentifiers } from "./request-identifiers";
 import {
   appendModelErrorIdentifiers,

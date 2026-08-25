@@ -14,6 +14,7 @@ import type { SolverService } from "../../harness/solver";
 import { Either } from "../../internal/either";
 import { definedValues } from "../../internal/guards";
 import { parseSchema } from "../../internal/zod";
+import type { ResponsesModelService } from "../../providers/responses-model";
 import {
   buildBankingAgentSystemPrompt,
   DEFAULT_FIRST_AGENT_MESSAGE,
@@ -117,11 +118,13 @@ function isToolErrorResult(result: string): boolean {
 
 export function bankingSolver({
   model,
+  userModel,
   client,
   dataFetchLock,
   opts,
 }: {
   readonly model: ModelService;
+  readonly userModel: ResponsesModelService;
   readonly client: HttpClient.HttpClient;
   readonly dataFetchLock: Semaphore;
   readonly opts?: SolverOpts;
@@ -197,7 +200,7 @@ export function bankingSolver({
       );
       registerInitialDiscoverableTools();
       const userToolDefs = selectUserToolDefinitions(task.user_tools ?? []);
-      const userSim = new UserSimulator(userModelConfig);
+      const userSim = new UserSimulator(userModel, userModelConfig);
       userSim.setAvailableTools(userToolDefs);
       userSim.reset(state.sample.input, DEFAULT_FIRST_AGENT_MESSAGE);
       const systemPrompt = buildBankingAgentSystemPrompt({

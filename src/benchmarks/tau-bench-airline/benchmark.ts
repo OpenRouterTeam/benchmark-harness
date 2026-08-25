@@ -19,6 +19,10 @@ import { Solver } from "../../harness/solver";
 import { Either } from "../../internal/either";
 import { parseSchema } from "../../internal/zod";
 import { makeOpenRouterModelLayer } from "../../providers/openrouter-model";
+import {
+  makeResponsesModelLayer,
+  ResponsesModel,
+} from "../../providers/responses-model";
 import type { RetryConfig } from "../../runtime/retry";
 import { TAU_BENCH_AIRLINE_META } from "../benchmark-meta";
 import type { Benchmark, BenchmarkRunInput } from "../types";
@@ -123,20 +127,33 @@ function makeAirlineLayer(
       sessionId: input.sessionId,
       ...(input.modelRetry !== undefined && { retry: input.modelRetry }),
     });
+  const userModelLayer = makeResponsesModelLayer({
+    model: benchmarkConfig.userModel,
+    apiKey: input.apiKey,
+    ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
+    sessionId: input.sessionId,
+  });
   const solverLayer = layerEffect(Solver)(
     gen(function* () {
       const model = yield* Model;
+      const userModel = yield* ResponsesModel;
       const client = yield* HttpClient.HttpClient;
       const dataFetchLock = yield* makeSemaphore(1);
       return Solver.of(
-        airlineSolver({ model, client, dataFetchLock, opts: solverOpts })
+        airlineSolver({
+          model,
+          userModel,
+          client,
+          dataFetchLock,
+          opts: solverOpts,
+        })
       );
     })
   );
   const scorerLayer = layerSucceed(Scorer, Scorer.of(airlineScorer));
   return layerMergeAll(
     datasetLayer,
-    solverLayer.pipe(layerProvide(modelLayer)),
+    solverLayer.pipe(layerProvide(layerMergeAll(modelLayer, userModelLayer))),
     scorerLayer
   );
 }

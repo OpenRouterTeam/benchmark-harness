@@ -8,6 +8,7 @@ import type { GenerateConfig, ModelService } from "../../harness/model";
 import type { SolverService } from "../../harness/solver";
 import { Either } from "../../internal/either";
 import { definedValues, isRecord } from "../../internal/guards";
+import type { ResponsesModelService } from "../../providers/responses-model";
 import {
   buildAgentSystemPrompt,
   DEFAULT_FIRST_AGENT_MESSAGE,
@@ -40,11 +41,13 @@ type Role = (typeof Role)[keyof typeof Role];
 
 export function airlineSolver({
   model,
+  userModel,
   client,
   dataFetchLock,
   opts,
 }: {
   readonly model: ModelService;
+  readonly userModel: ResponsesModelService;
   readonly client: HttpClient.HttpClient;
   readonly dataFetchLock: Semaphore;
   readonly opts?: SolverOpts;
@@ -69,7 +72,7 @@ export function airlineSolver({
       );
       const task = state.sample.metadata?.["task"];
       const data: AirlineData = loadAirlineData();
-      const userSim = new UserSimulator(userModelConfig);
+      const userSim = new UserSimulator(userModel, userModelConfig);
       userSim.reset(state.sample.input, DEFAULT_FIRST_AGENT_MESSAGE);
       const messages: ChatMessage[] = [
         {

@@ -77,6 +77,10 @@ export const ChatMessageSchema = z
     toolCallId: z.string().optional(),
     reasoning: z.string().optional(),
     reasoningDetails: ReasoningDetailsSchema.optional(),
+    responseItems: z
+      .array(z.record(z.string(), z.unknown()))
+      .readonly()
+      .optional(),
     citations: z.array(CitationSchema).readonly().optional(),
     model: z.string().optional(),
   })
