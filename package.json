@@ -46,7 +46,8 @@
     "format:check": "oxfmt src test scripts --check",
     "check": "oxlint",
     "fix": "oxfmt src test scripts --write && oxlint --fix",
-    "mirror-vgi-bench-media": "bun scripts/mirror-vgi-bench-media.ts"
+    "mirror-vgi-bench-media": "bun scripts/mirror-vgi-bench-media.ts",
+    "package-prime-agent-runtime": "scripts/prime-agent-runtime/package.sh"
   },
   "dependencies": {
     "@effect/platform": "0.95.0",

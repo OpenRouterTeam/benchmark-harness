@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "dependencies": {
+    "prime-agent": "file:/tmp/prime-agent.tgz"
+  }
+}
