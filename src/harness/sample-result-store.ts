@@ -92,8 +92,11 @@ export function sampleResultKey(sampleId: string, epoch: number): string {
 }
 
 export interface SampleResultStoreService {
-  readonly read: (key: string) => Promise<unknown>;
-  readonly write: (key: string, data: PersistedSampleOutcome) => Promise<void>;
+  readonly read: (runRelativeKey: string) => Promise<unknown>;
+  readonly write: (
+    runRelativeKey: string,
+    data: PersistedSampleOutcome
+  ) => Promise<void>;
 }
 
 export class SampleResultStore extends Tag(
@@ -106,11 +109,12 @@ export const NOOP_SAMPLE_RESULT_STORE: SampleResultStoreService = {
 };
 
 export function namespacedSampleResultStore(
-  prefix: string,
+  sessionId: string,
   store: SampleResultStoreService
 ): SampleResultStoreService {
   return {
-    read: (key) => store.read(`${prefix}/${key}`),
-    write: (key, data) => store.write(`${prefix}/${key}`, data),
+    read: (runRelativeKey) => store.read(`${sessionId}/${runRelativeKey}`),
+    write: (runRelativeKey, data) =>
+      store.write(`${sessionId}/${runRelativeKey}`, data),
   };
 }
