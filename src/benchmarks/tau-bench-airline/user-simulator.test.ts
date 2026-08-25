@@ -2,8 +2,8 @@ import { describe, expect, it } from "bun:test";
 
 import { runPromise, succeed } from "effect/Effect";
 
-import type { ChatMessage } from "../../harness/core";
 import type {
+  ResponsesInputItem,
   ResponsesModelService,
   ResponsesTurn,
 } from "../../providers/responses-model";
@@ -17,7 +17,7 @@ const config = {
 
 function modelFor(
   turns: readonly ResponsesTurn[],
-  inputs: ChatMessage[][]
+  inputs: ResponsesInputItem[][]
 ): ResponsesModelService {
   let index = 0;
   return {
@@ -30,7 +30,7 @@ function modelFor(
 
 describe("tau-bench airline user simulator", () => {
   it("uses Responses turns and replays output items", async () => {
-    const inputs: ChatMessage[][] = [];
+    const inputs: ResponsesInputItem[][] = [];
     const responseItems = [
       { type: "reasoning", encrypted_content: "opaque" },
       { type: "message", content: [{ type: "output_text", text: "Hello" }] },
@@ -57,14 +57,10 @@ describe("tau-bench airline user simulator", () => {
     expect(await runPromise(simulator.generateInitial())).toBe("Hello");
     expect(await runPromise(simulator.step("How are you?"))).toBe("Goodbye");
     expect(inputs[1]).toEqual([
-      { role: "system", content: expect.any(String) },
-      { role: "user", content: "Hi" },
-      {
-        role: "assistant",
-        content: "Hello",
-        responseItems,
-      },
-      { role: "user", content: "How are you?" },
+      { type: "message", role: "system", content: expect.any(String) },
+      { type: "message", role: "user", content: "Hi" },
+      ...responseItems,
+      { type: "message", role: "user", content: "How are you?" },
     ]);
   });
 });

@@ -60,6 +60,7 @@ export interface ResponsesFunctionTool {
   readonly name: string;
   readonly description?: string;
   readonly parameters: Record<string, unknown>;
+  readonly strict?: boolean | null;
 }
 
 export interface ResponsesGenerateConfig extends Omit<GenerateConfig, "tools"> {

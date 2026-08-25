@@ -103,6 +103,9 @@ export function toolDefinitionToResponses(
       description: tool.function.description,
     }),
     parameters: tool.function.parameters ?? {},
+    ...(tool.function.strict !== undefined && {
+      strict: tool.function.strict,
+    }),
   };
 }
 

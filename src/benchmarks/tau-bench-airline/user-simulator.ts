@@ -5,6 +5,7 @@ import { fixed, passthrough, whileInput } from "effect/Schedule";
 
 import type { ChatMessage } from "../../harness/core";
 import { MessageRole } from "../../harness/core";
+import { chatMessagesToResponses } from "../../providers/chat-to-responses";
 import type { ResponsesModelService } from "../../providers/responses-model";
 import { withAuxiliaryUsage } from "../../runtime/generation-ids";
 import { retrySalted, withRetryAttemptLogging } from "../../runtime/retry";
@@ -92,12 +93,17 @@ export class UserSimulator {
   }
 
   private callModelOnce(model: string): Effect<UserModelResponse, SimError> {
-    return this.model.generate(this.messages, { model, temperature: 0 }).pipe(
-      mapError((error) => new UserSimError({ message: error.message })),
-      map((turn) => ({
-        content: turn.text,
-        responseItems: turn.outputItems,
-      }))
-    );
+    return this.model
+      .generate(chatMessagesToResponses(this.messages), {
+        model,
+        temperature: 0,
+      })
+      .pipe(
+        mapError((error) => new UserSimError({ message: error.message })),
+        map((turn) => ({
+          content: turn.text,
+          responseItems: turn.outputItems,
+        }))
+      );
   }
 }

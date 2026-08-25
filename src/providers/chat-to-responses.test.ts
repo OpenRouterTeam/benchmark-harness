@@ -110,12 +110,17 @@ describe("chat-to-responses", () => {
     expect(
       toolDefinitionToResponses({
         type: "function",
-        function: { name: "lookup", parameters: { type: "object" } },
+        function: {
+          name: "lookup",
+          parameters: { type: "object" },
+          strict: true,
+        },
       })
     ).toEqual({
       type: "function",
       name: "lookup",
       parameters: { type: "object" },
+      strict: true,
     });
   });
 

@@ -2,8 +2,8 @@ import { describe, expect, it } from "bun:test";
 
 import { runPromise, succeed } from "effect/Effect";
 
-import type { ChatMessage } from "../../harness/core";
 import type {
+  ResponsesInputItem,
   ResponsesModelService,
   ResponsesTurn,
 } from "../../providers/responses-model";
@@ -18,7 +18,7 @@ const config = {
 
 describe("tau3 banking user simulator", () => {
   it("uses Responses function calls and preserves call_id in tool results", async () => {
-    const inputs: ChatMessage[][] = [];
+    const inputs: ResponsesInputItem[][] = [];
     const turns: ResponsesTurn[] = [
       {
         outputItems: [
@@ -88,10 +88,15 @@ describe("tau3 banking user simulator", () => {
       kind: "text",
       content: "Done",
     });
-    expect(inputs[1]?.at(-1)).toEqual({
-      role: "tool",
-      content: "Balance: $10",
-      toolCallId: "call-1",
-    });
+    expect(inputs[1]).toEqual([
+      { type: "message", role: "system", content: expect.any(String) },
+      { type: "message", role: "user", content: "Hi" },
+      ...turns[0]!.outputItems,
+      {
+        type: "function_call_output",
+        call_id: "call-1",
+        output: "Balance: $10",
+      },
+    ]);
   });
 });

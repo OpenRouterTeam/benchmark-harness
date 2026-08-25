@@ -4,7 +4,10 @@ import { map, mapError } from "effect/Effect";
 
 import type { ChatMessage, ToolDefinition } from "../../harness/core";
 import { MessageRole } from "../../harness/core";
-import { toolDefinitionToResponses } from "../../providers/chat-to-responses";
+import {
+  chatMessagesToResponses,
+  toolDefinitionToResponses,
+} from "../../providers/chat-to-responses";
 import type { ResponsesModelService } from "../../providers/responses-model";
 import type { UserModelConfig } from "./types";
 import {
@@ -118,7 +121,7 @@ export class UserSimulator {
 
   private callModelOnce(model: string) {
     return this.model
-      .generate(this.messages, {
+      .generate(chatMessagesToResponses(this.messages), {
         model,
         temperature: 0,
         ...(this.config.userReasoningEffort !== undefined && {
