@@ -1,5 +1,6 @@
 import type { ValueOf } from "../../internal/guards";
 import { z } from "../../internal/zod";
+import { ORI_AGENTS } from "../agent-cli/schema";
 
 export {
   DEFAULT_CLAUDE_PACKAGE,
@@ -61,7 +62,7 @@ export interface TerminalBenchTask {
 
 export const TERMINAL_BENCH_VERSION = "2.1" as const;
 
-export const TERMINAL_BENCH_AGENTS = ["pi", "claude"] as const;
+export const TERMINAL_BENCH_AGENTS = ORI_AGENTS;
 
 export type TerminalBenchAgent = ValueOf<typeof TERMINAL_BENCH_AGENTS>;
 

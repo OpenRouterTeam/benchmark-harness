@@ -1,10 +1,10 @@
 import type { ValueOf } from "../../internal/guards";
 
-export const ORI_AGENTS = ["pi", "claude"] as const;
+export const ORI_AGENTS = ["pi", "claude", "prime-agent"] as const;
 
 export type OriAgent = ValueOf<typeof ORI_AGENTS>;
 
-export const HARBOR_AGENTS = ["mini_swe", "pi", "claude"] as const;
+export const HARBOR_AGENTS = ["mini_swe", ...ORI_AGENTS] as const;
 
 export type HarborAgent = ValueOf<typeof HARBOR_AGENTS>;
 

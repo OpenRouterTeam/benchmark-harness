@@ -29,7 +29,12 @@ export interface FakeTerminalBenchBehavior {
   readonly oriInstallExitCode?: number;
 }
 
-const AGENT_COMMAND_MARKERS = ["pi --print", "pi ", "ori claude"] as const;
+const AGENT_COMMAND_MARKERS = [
+  "pi --print",
+  "pi ",
+  "ori claude",
+  "ori prime-agent",
+] as const;
 
 const ORI_INSTALL_MARKER = "ORI_INSTALL_DIR=" as const;
 
