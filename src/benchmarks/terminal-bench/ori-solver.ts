@@ -1,6 +1,6 @@
 import { gen, tryPromise } from "effect/Effect";
 
-import type { ChatMessage, ModelUsage } from "../../harness/core";
+import type { ModelMessage, ModelUsage } from "../../harness/core";
 import { MessageRole, SolverError } from "../../harness/core";
 import type { SolverService } from "../../harness/solver";
 import type { OriHarnessDef } from "../agent-cli/harness";
@@ -76,7 +76,7 @@ export function oriSolver(
           ? `${run.failureDetail}\n\n${testResult.output}`
           : testResult.output;
         const completion = run.finalText ?? run.rawStream;
-        const messages: ChatMessage[] = [
+        const messages: ModelMessage[] = [
           { role: MessageRole.User, content: state.sample.input },
           ...run.assistantMessages,
         ];

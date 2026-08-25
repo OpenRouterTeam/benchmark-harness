@@ -14,7 +14,7 @@ import type {
   GpqaBenchmarkConfig,
 } from "./benchmark-config";
 import { GPQA_META } from "./benchmark-meta";
-import { defineChatBenchmark } from "./define-chat-benchmark";
+import { defineSingleTurnBenchmark } from "./define-single-turn-benchmark";
 import { mcqScorer } from "./scorers/mcq/scorer";
 import { seededPermutation } from "./scorers/mcq/shuffle";
 import type { Benchmark } from "./types";
@@ -119,7 +119,7 @@ export function makeGpqaDatasetLayer(
   });
 }
 
-export const GPQA_BENCHMARK: Benchmark = defineChatBenchmark({
+export const GPQA_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
   id: "gpqa_diamond",
   temperature: GPQA_TEMPERATURE,
   defaultEpochs: GPQA_META.defaultEpochs,

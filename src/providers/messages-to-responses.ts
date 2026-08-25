@@ -1,5 +1,5 @@
 import type {
-  ChatMessage,
+  ModelMessage,
   ContentPart,
   ModelOutput,
   ToolDefinition,
@@ -11,13 +11,13 @@ import type {
   ResponsesTurn,
 } from "./responses-model";
 
-export function chatMessagesToResponses(
-  messages: readonly ChatMessage[]
+export function messagesToResponses(
+  messages: readonly ModelMessage[]
 ): readonly ResponsesInputItem[] {
-  return messages.flatMap(chatMessageToResponses);
+  return messages.flatMap(messageToResponses);
 }
 
-function chatMessageToResponses(message: ChatMessage): ResponsesInputItem[] {
+function messageToResponses(message: ModelMessage): ResponsesInputItem[] {
   switch (message.role) {
     case MessageRole.System:
     case MessageRole.User: {

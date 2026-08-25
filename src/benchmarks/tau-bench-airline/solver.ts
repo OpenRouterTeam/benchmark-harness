@@ -2,7 +2,7 @@ import { HttpClient } from "@effect/platform";
 import type { Semaphore } from "effect/Effect";
 import { gen, mapError, provideService } from "effect/Effect";
 
-import type { ChatMessage, ModelUsage, ToolCall } from "../../harness/core";
+import type { ModelMessage, ModelUsage, ToolCall } from "../../harness/core";
 import { MessageRole, SolverError } from "../../harness/core";
 import type { GenerateConfig, ModelService } from "../../harness/model";
 import type { SolverService } from "../../harness/solver";
@@ -74,7 +74,7 @@ export function airlineSolver({
       const data: AirlineData = loadAirlineData();
       const userSim = new UserSimulator(userModel, userModelConfig);
       userSim.reset(state.sample.input, DEFAULT_FIRST_AGENT_MESSAGE);
-      const messages: ChatMessage[] = [
+      const messages: ModelMessage[] = [
         {
           role: MessageRole.System,
           content: buildAgentSystemPrompt(AIRLINE_POLICY),
@@ -208,7 +208,7 @@ export function airlineSolver({
     });
 }
 
-function lastAssistantText(messages: readonly ChatMessage[]): string {
+function lastAssistantText(messages: readonly ModelMessage[]): string {
   for (let i = messages.length - 1; i >= 0; i--) {
     const m = messages[i];
     if (m?.role === MessageRole.Assistant) {

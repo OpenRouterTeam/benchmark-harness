@@ -1,17 +1,17 @@
 import { describe, expect, it } from "bun:test";
 
-import type { ChatMessage } from "../harness/core";
+import type { ModelMessage } from "../harness/core";
 import { MessageRole } from "../harness/core";
 import {
-  chatMessagesToResponses,
+  messagesToResponses,
   responsesTurnToModelOutput,
   toolDefinitionToResponses,
-} from "./chat-to-responses";
+} from "./messages-to-responses";
 
-describe("chat-to-responses", () => {
+describe("messages-to-responses", () => {
   it("maps system and user messages", () => {
     expect(
-      chatMessagesToResponses([
+      messagesToResponses([
         { role: MessageRole.System, content: "rules" },
         { role: MessageRole.User, content: "question" },
       ])
@@ -23,7 +23,7 @@ describe("chat-to-responses", () => {
 
   it("maps multimodal content with default and explicit image detail", () => {
     expect(
-      chatMessagesToResponses([
+      messagesToResponses([
         {
           role: MessageRole.User,
           content: "",
@@ -51,7 +51,7 @@ describe("chat-to-responses", () => {
 
   it("maps assistant tool calls and tool results", () => {
     expect(
-      chatMessagesToResponses([
+      messagesToResponses([
         {
           role: MessageRole.Assistant,
           content: "",
@@ -85,7 +85,7 @@ describe("chat-to-responses", () => {
       { type: "reasoning", encrypted_content: "opaque" },
       { type: "function_call", call_id: "call-2" },
     ];
-    const message: ChatMessage = {
+    const message: ModelMessage = {
       role: MessageRole.Assistant,
       content: "ignored",
       responseItems,
@@ -97,12 +97,12 @@ describe("chat-to-responses", () => {
         },
       ],
     };
-    expect(chatMessagesToResponses([message])).toEqual(responseItems);
+    expect(messagesToResponses([message])).toEqual(responseItems);
   });
 
   it("omits empty assistant content", () => {
     expect(
-      chatMessagesToResponses([{ role: MessageRole.Assistant, content: "" }])
+      messagesToResponses([{ role: MessageRole.Assistant, content: "" }])
     ).toEqual([]);
   });
 

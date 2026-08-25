@@ -5,10 +5,10 @@ import { effect, provide } from "effect/Layer";
 import { Model } from "../harness/model";
 import type { RetryConfig } from "../runtime/retry";
 import {
-  chatMessagesToResponses,
+  messagesToResponses,
   responsesTurnToModelOutput,
   toolDefinitionToResponses,
-} from "./chat-to-responses";
+} from "./messages-to-responses";
 import { makeResponsesModelLayer, ResponsesModel } from "./responses-model";
 
 export {
@@ -48,7 +48,7 @@ export function makeOpenRouterModelLayer(
         generate: (messages, generateConfig) => {
           const { tools, ...rest } = generateConfig;
           return responsesModel
-            .generate(chatMessagesToResponses(messages), {
+            .generate(messagesToResponses(messages), {
               ...rest,
               ...(tools !== undefined && {
                 tools: tools.map(toolDefinitionToResponses),

@@ -2,12 +2,12 @@ import { TaggedError } from "effect/Data";
 import type { Effect } from "effect/Effect";
 import { map, mapError } from "effect/Effect";
 
-import type { ChatMessage, ToolDefinition } from "../../harness/core";
+import type { ModelMessage, ToolDefinition } from "../../harness/core";
 import { MessageRole } from "../../harness/core";
 import {
-  chatMessagesToResponses,
+  messagesToResponses,
   toolDefinitionToResponses,
-} from "../../providers/chat-to-responses";
+} from "../../providers/messages-to-responses";
 import type { ResponsesModelService } from "../../providers/responses-model";
 import type { UserModelConfig } from "./types";
 import {
@@ -46,7 +46,7 @@ function buildUserSystemPrompt(
 }
 
 export class UserSimulator {
-  private readonly messages: ChatMessage[] = [];
+  private readonly messages: ModelMessage[] = [];
   private readonly config: UserModelConfig;
   private readonly model: ResponsesModelService;
   private availableTools: readonly ToolDefinition[] = [];
@@ -96,7 +96,7 @@ export class UserSimulator {
   private callModel(model: string): Effect<SimulatorTurn, SimError> {
     return this.callModelOnce(model).pipe(
       map((turn) => {
-        const assistantMessage: ChatMessage = {
+        const assistantMessage: ModelMessage = {
           role: MessageRole.Assistant,
           content: turn.text,
           ...(turn.outputItems.length > 0 && {
@@ -121,7 +121,7 @@ export class UserSimulator {
 
   private callModelOnce(model: string) {
     return this.model
-      .generate(chatMessagesToResponses(this.messages), {
+      .generate(messagesToResponses(this.messages), {
         model,
         temperature: 0,
         ...(this.config.userReasoningEffort !== undefined && {

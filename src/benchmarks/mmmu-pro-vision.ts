@@ -17,7 +17,7 @@ import type {
   MmmuProVisionBenchmarkConfig,
 } from "./benchmark-config";
 import { MMMU_PRO_VISION_META } from "./benchmark-meta";
-import { defineChatBenchmark } from "./define-chat-benchmark";
+import { defineSingleTurnBenchmark } from "./define-single-turn-benchmark";
 import { MMMU_SYSTEM_MESSAGE, parseOptions } from "./mmmu-shared";
 import { buildDynamicMcqPrompt } from "./scorers/mcq/dynamic-prompt";
 import { mcqScorer } from "./scorers/mcq/scorer";
@@ -139,7 +139,7 @@ export function mmmuProVisionSolver(
   return chain(systemMessage(MMMU_SYSTEM_MESSAGE), generate(model, config));
 }
 
-export const MMMU_PRO_VISION_BENCHMARK: Benchmark = defineChatBenchmark({
+export const MMMU_PRO_VISION_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
   id: "mmmu_pro_vision",
   temperature: 0,
   defaultEpochs: MMMU_PRO_VISION_META.defaultEpochs,

@@ -3,9 +3,9 @@ import type { Effect } from "effect/Effect";
 import { catchAll, gen, map, mapError } from "effect/Effect";
 import { fixed, passthrough, whileInput } from "effect/Schedule";
 
-import type { ChatMessage } from "../../harness/core";
+import type { ModelMessage } from "../../harness/core";
 import { MessageRole } from "../../harness/core";
-import { chatMessagesToResponses } from "../../providers/chat-to-responses";
+import { messagesToResponses } from "../../providers/messages-to-responses";
 import type { ResponsesModelService } from "../../providers/responses-model";
 import { withAuxiliaryUsage } from "../../runtime/generation-ids";
 import { retrySalted, withRetryAttemptLogging } from "../../runtime/retry";
@@ -44,7 +44,7 @@ interface UserModelResponse {
 }
 
 export class UserSimulator {
-  private readonly messages: ChatMessage[] = [];
+  private readonly messages: ModelMessage[] = [];
   private readonly config: UserModelConfig;
   private readonly model: ResponsesModelService;
 
@@ -94,7 +94,7 @@ export class UserSimulator {
 
   private callModelOnce(model: string): Effect<UserModelResponse, SimError> {
     return this.model
-      .generate(chatMessagesToResponses(this.messages), {
+      .generate(messagesToResponses(this.messages), {
         model,
         temperature: 0,
       })

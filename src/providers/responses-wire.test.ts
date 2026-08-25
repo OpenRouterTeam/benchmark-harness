@@ -1,12 +1,13 @@
-import { ResponsesRequest$outboundSchema } from "@openrouter/sdk/models/responsesrequest";
 import { describe, expect, it } from "bun:test";
+
+import { ResponsesRequest$outboundSchema } from "@openrouter/sdk/models/responsesrequest";
 import { camelCase } from "change-case";
 
 import { MessageRole } from "../harness/core";
 import {
-  chatMessagesToResponses,
+  messagesToResponses,
   toolDefinitionToResponses,
-} from "./chat-to-responses";
+} from "./messages-to-responses";
 
 const RAW_PAYLOAD_KEYS = new Set(["arguments", "output"]);
 
@@ -26,12 +27,12 @@ function toSdkValue(value: unknown): unknown {
 }
 
 function expectValidResponsesRequest(
-  messages: Parameters<typeof chatMessagesToResponses>[0],
+  messages: Parameters<typeof messagesToResponses>[0],
   tools?: Parameters<typeof toolDefinitionToResponses>[0][]
 ) {
   const result = ResponsesRequest$outboundSchema.safeParse({
     model: "openai/gpt-4o-mini",
-    input: toSdkValue(chatMessagesToResponses(messages)),
+    input: toSdkValue(messagesToResponses(messages)),
     store: false,
     stream: true,
     serviceTier: null,
@@ -71,9 +72,7 @@ describe("Responses wire contract", () => {
       {
         role: MessageRole.User,
         content: "",
-        contentParts: [
-          { type: "video_url", videoUrl: { url: "video.mp4" } },
-        ],
+        contentParts: [{ type: "video_url", videoUrl: { url: "video.mp4" } }],
       },
     ]);
   });

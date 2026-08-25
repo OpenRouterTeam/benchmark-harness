@@ -8,7 +8,7 @@ import { SolverError } from "../../harness/core";
 import { assertRight } from "../../internal/testing";
 import { parseSchema, z } from "../../internal/zod";
 import type { ResponsesModelService } from "../../providers/responses-model";
-import { itemsToChatMessages, runAgentLoop } from "./agent-loop";
+import { itemsToModelMessages, runAgentLoop } from "./agent-loop";
 import { makeHarborStreamTracker } from "./agent-progress";
 import { SUBMIT_SENTINEL } from "./prompts";
 import type { ExecResult, SandboxSessionInstance } from "./sandbox";
@@ -314,7 +314,7 @@ describe("Harbor stream progress", () => {
 describe("Responses item round-tripping", () => {
   it("converts advisor advice from the real terminal fixture into an assistant message", async () => {
     const terminal = await readTerminalFixture();
-    expect(itemsToChatMessages(terminal.output)).toContainEqual({
+    expect(itemsToModelMessages(terminal.output)).toContainEqual({
       role: "assistant",
       content:
         "Confirmed: 2 + 2 = 4 in standard base-10 arithmetic; edge cases include alternate numeric bases or string concatenation in programming contexts.",

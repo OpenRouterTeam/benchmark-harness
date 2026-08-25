@@ -3,7 +3,7 @@ import type { Semaphore } from "effect/Effect";
 import { gen, mapError, provideService } from "effect/Effect";
 
 import type {
-  ChatMessage,
+  ModelMessage,
   ModelUsage,
   TaskState,
   ToolDefinition,
@@ -71,7 +71,7 @@ const Role = {
 
 type Role = (typeof Role)[keyof typeof Role];
 
-function lastAssistantText(messages: readonly ChatMessage[]): string {
+function lastAssistantText(messages: readonly ModelMessage[]): string {
   for (let i = messages.length - 1; i >= 0; i--) {
     if (messages[i]!.role === MessageRole.Assistant) {
       return messages[i]!.content;
@@ -94,7 +94,7 @@ type UserTurnState = "initial" | "continuing_tools" | "awaiting_reply";
 function selectUserTurnEffect(opts: {
   readonly userSim: UserSimulator;
   readonly turnState: UserTurnState;
-  readonly messages: readonly ChatMessage[];
+  readonly messages: readonly ModelMessage[];
 }): ReturnType<UserSimulator["step"]> {
   switch (opts.turnState) {
     case "initial": {
@@ -207,7 +207,7 @@ export function bankingSolver({
         requiredDocIds,
         retrievalConfig,
       });
-      const messages: ChatMessage[] = [
+      const messages: ModelMessage[] = [
         { role: MessageRole.System, content: systemPrompt },
         { role: MessageRole.Assistant, content: DEFAULT_FIRST_AGENT_MESSAGE },
       ];
