@@ -42,9 +42,10 @@ import {
   resetGenerationIds,
 } from "../../runtime/generation-ids";
 import {
+  DEFAULT_AGENT_RUNTIME_SHA256,
+  DEFAULT_AGENT_RUNTIME_URL,
+  DEFAULT_PI_AGENT_PACKAGE,
   DEFAULT_PRIME_AGENT_PACKAGE,
-  DEFAULT_PRIME_AGENT_RUNTIME_SHA256,
-  DEFAULT_PRIME_AGENT_RUNTIME_URL,
   getOriHarness,
   ORI_HARNESSES,
 } from "../agent-cli/harness";
@@ -605,22 +606,54 @@ describe("terminal-bench ori solver", () => {
     expect(finalState.sample.metadata?.["agentToolCalls"]).toBe(2);
   });
 
-  it("installs the claude package in the image and leaves ori out of it", () => {
+  it("installs the verified agent runtime for claude", () => {
     const steps = ORI_HARNESSES.claude.imageBuildSteps({
       agentPackage: DEFAULT_CLAUDE_PACKAGE,
     });
-    expect(steps.join("\n")).toContain(DEFAULT_CLAUDE_PACKAGE);
-    expect(steps.join("\n")).not.toContain("ORI_INSTALL_DIR");
-    expect(steps.join("\n")).not.toContain("ori --version");
+    const dockerfile = steps.join("\n");
+    expect(dockerfile).toContain(DEFAULT_AGENT_RUNTIME_URL);
+    expect(dockerfile).toContain(DEFAULT_AGENT_RUNTIME_SHA256);
+    expect(dockerfile).toContain("sha256sum -c -");
+    expect(dockerfile).toContain("zstd -dc");
+    expect(dockerfile).toContain(
+      "/opt/agent-runtime/app/node_modules/.bin/claude"
+    );
+    expect(dockerfile).not.toContain("npm install");
+    expect(dockerfile).not.toContain("nvm install");
+    expect(dockerfile).not.toContain("ORI_INSTALL_DIR");
+    expect(dockerfile).not.toContain("ori --version");
     expect(steps.at(-1)).toBe("RUN claude --version");
   });
 
-  it("honors an agent package override", () => {
+  it("exposes every packaged harness and runtime helper", () => {
+    const dockerfile = ORI_HARNESSES.claude
+      .imageBuildSteps({
+        agentPackage: DEFAULT_CLAUDE_PACKAGE,
+      })
+      .join("\n");
+    for (const binary of ["claude", "pi", "prime-agent"]) {
+      expect(dockerfile).toContain(
+        `/opt/agent-runtime/app/node_modules/.bin/${binary}`
+      );
+      expect(dockerfile).toContain(`/usr/local/bin/${binary}`);
+    }
+    for (const binary of ["node", "npm", "npx"]) {
+      expect(dockerfile).toContain(`/opt/agent-runtime/node/bin/${binary}`);
+      expect(dockerfile).toContain(`/usr/local/bin/${binary}`);
+    }
+    expect(dockerfile).toContain('ENV PATH="/root/.local/bin:$PATH"');
+  });
+
+  it("preserves a custom claude package override", () => {
     const steps = ORI_HARNESSES.claude.imageBuildSteps({
       agentPackage: "@anthropic-ai/claude-code@1.2.3",
     });
-    expect(steps.join("\n")).toContain("@anthropic-ai/claude-code@1.2.3");
-    expect(steps.join("\n")).not.toContain("claude-code@latest");
+    const dockerfile = steps.join("\n");
+    expect(dockerfile).toContain("@anthropic-ai/claude-code@1.2.3");
+    expect(dockerfile).toContain("npm install -g");
+    expect(dockerfile).toContain("nvm install");
+    expect(dockerfile).not.toContain(DEFAULT_AGENT_RUNTIME_URL);
+    expect(dockerfile).not.toContain(DEFAULT_AGENT_RUNTIME_SHA256);
   });
 
   it("installs ori in the running sandbox on the requested channel", async () => {
@@ -949,13 +982,32 @@ describe("terminal-bench pi via ori", () => {
     expect(outcome._tag).toBe("Left");
   });
 
-  it("installs pi into the image", () => {
+  it("installs the verified agent runtime for pi", () => {
     const steps = ORI_HARNESSES.pi.imageBuildSteps({
-      agentPackage: "@earendil-works/pi-coding-agent@latest",
+      agentPackage: DEFAULT_PI_AGENT_PACKAGE,
     });
-    expect(steps.join("\n")).toContain("@earendil-works/pi-coding-agent");
-    expect(steps.join("\n")).not.toContain("ORI_INSTALL_DIR");
+    const dockerfile = steps.join("\n");
+    expect(dockerfile).toContain(DEFAULT_AGENT_RUNTIME_URL);
+    expect(dockerfile).toContain(DEFAULT_AGENT_RUNTIME_SHA256);
+    expect(dockerfile).toContain("sha256sum -c -");
+    expect(dockerfile).toContain("zstd -dc");
+    expect(dockerfile).toContain("/opt/agent-runtime/app/node_modules/.bin/pi");
+    expect(dockerfile).not.toContain("npm install");
+    expect(dockerfile).not.toContain("nvm install");
+    expect(dockerfile).not.toContain("ORI_INSTALL_DIR");
     expect(steps.at(-1)).toBe("RUN pi --version");
+  });
+
+  it("preserves a custom pi package override", () => {
+    const steps = ORI_HARNESSES.pi.imageBuildSteps({
+      agentPackage: "@earendil-works/pi-coding-agent@0.80.0",
+    });
+    const dockerfile = steps.join("\n");
+    expect(dockerfile).toContain("@earendil-works/pi-coding-agent@0.80.0");
+    expect(dockerfile).toContain("npm install -g");
+    expect(dockerfile).toContain("nvm install");
+    expect(dockerfile).not.toContain(DEFAULT_AGENT_RUNTIME_URL);
+    expect(dockerfile).not.toContain(DEFAULT_AGENT_RUNTIME_SHA256);
   });
 
   it("can install ori from the alpha channel when asked", () => {
@@ -1352,17 +1404,17 @@ describe("terminal-bench Prime Agent via ori", () => {
     });
   });
 
-  it("installs the verified Prime Agent runtime without npm resolution", () => {
+  it("installs the verified agent runtime for Prime Agent", () => {
     const steps = ORI_HARNESSES["prime-agent"].imageBuildSteps({
       agentPackage: DEFAULT_PRIME_AGENT_PACKAGE,
     });
     const dockerfile = steps.join("\n");
-    expect(dockerfile).toContain(DEFAULT_PRIME_AGENT_RUNTIME_URL);
-    expect(dockerfile).toContain(DEFAULT_PRIME_AGENT_RUNTIME_SHA256);
+    expect(dockerfile).toContain(DEFAULT_AGENT_RUNTIME_URL);
+    expect(dockerfile).toContain(DEFAULT_AGENT_RUNTIME_SHA256);
     expect(dockerfile).toContain("sha256sum -c -");
     expect(dockerfile).toContain("zstd -dc");
     expect(dockerfile).toContain(
-      "/opt/prime-agent/app/node_modules/.bin/prime-agent"
+      "/opt/agent-runtime/app/node_modules/.bin/prime-agent"
     );
     expect(dockerfile).not.toContain("npm install");
     expect(dockerfile).not.toContain("nvm install");
@@ -1384,7 +1436,7 @@ describe("terminal-bench Prime Agent via ori", () => {
     expect(dockerfile).toContain("npm install -g");
     expect(dockerfile).toContain("PRIME_AGENT_BOOTSTRAP_TOOLS_ON_INSTALL=1");
     expect(dockerfile).toContain("PRIME_AGENT_BOOTSTRAP_KERNEL_ON_INSTALL=1");
-    expect(dockerfile).not.toContain(DEFAULT_PRIME_AGENT_RUNTIME_URL);
-    expect(dockerfile).not.toContain(DEFAULT_PRIME_AGENT_RUNTIME_SHA256);
+    expect(dockerfile).not.toContain(DEFAULT_AGENT_RUNTIME_URL);
+    expect(dockerfile).not.toContain(DEFAULT_AGENT_RUNTIME_SHA256);
   });
 });

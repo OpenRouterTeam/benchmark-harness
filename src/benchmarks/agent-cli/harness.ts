@@ -13,16 +13,16 @@ const NVM_INSTALL_URL =
 export const ORI_INSTALL_DIR = "/usr/local/bin" as const;
 
 export const DEFAULT_PI_AGENT_PACKAGE =
-  "@earendil-works/pi-coding-agent@latest" as const;
+  "@earendil-works/pi-coding-agent@0.84.2" as const;
 
 export const DEFAULT_PRIME_AGENT_PACKAGE =
   "https://pub-728493de92a943e2a9b2d17b4719f318.r2.dev/releases/v0.8.0/prime-agent-0.8.0.tgz" as const;
 
-export const DEFAULT_PRIME_AGENT_RUNTIME_URL =
-  "https://github.com/OpenRouterTeam/benchmark-harness/releases/download/prime-agent-runtime-v0.8.0/prime-agent-runtime-linux-x64-v0.8.0.tar.zst" as const;
+export const DEFAULT_AGENT_RUNTIME_URL =
+  "https://github.com/OpenRouterTeam/benchmark-harness/releases/download/agent-runtime-v1/agent-runtime-linux-x64-v1.tar.zst" as const;
 
-export const DEFAULT_PRIME_AGENT_RUNTIME_SHA256 =
-  "988ff8e60091dc2765f340fc8e76a1e2312bdbd16a5beeee4f06417db5e442e0" as const;
+export const DEFAULT_AGENT_RUNTIME_SHA256 =
+  "3b4ab1055d41257071860235867f31b5934e7e9c08fa57644d2888d435293bf3" as const;
 
 export interface OriRunScriptOptions {
   readonly instructionPath: string;
@@ -84,6 +84,31 @@ function buildImageSteps(opts: {
   ];
 }
 
+function buildAgentImageSteps(opts: {
+  agentPackage: string;
+  binaryName: string;
+  defaultPackage: string;
+  installCommand?: string;
+}): string[] {
+  if (opts.agentPackage === opts.defaultPackage) {
+    const archivePath = "/tmp/agent-runtime.tar.zst";
+    return [
+      "RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates git zstd",
+      `RUN curl -fsSL ${JSON.stringify(DEFAULT_AGENT_RUNTIME_URL)} -o ${archivePath} && echo "${DEFAULT_AGENT_RUNTIME_SHA256}  ${archivePath}" | sha256sum -c - && zstd -dc ${archivePath} | tar -x -C / && rm -f ${archivePath}`,
+      'ENV PATH="/root/.local/bin:$PATH"',
+      "RUN ln -sf /opt/agent-runtime/app/node_modules/.bin/claude /usr/local/bin/claude && ln -sf /opt/agent-runtime/app/node_modules/.bin/pi /usr/local/bin/pi && ln -sf /opt/agent-runtime/app/node_modules/.bin/prime-agent /usr/local/bin/prime-agent && ln -sf /opt/agent-runtime/node/bin/node /usr/local/bin/node && ln -sf /opt/agent-runtime/node/bin/npm /usr/local/bin/npm && ln -sf /opt/agent-runtime/node/bin/npx /usr/local/bin/npx",
+      `RUN ${opts.binaryName} --version`,
+    ];
+  }
+  return buildImageSteps({
+    agentPackage: opts.agentPackage,
+    binaryName: opts.binaryName,
+    ...(opts.installCommand !== undefined && {
+      installCommand: opts.installCommand,
+    }),
+  });
+}
+
 function buildBootstrapScript(opts: {
   oriInstallUrl: string;
   oriChannel: OriChannel;
@@ -96,31 +121,6 @@ function buildBootstrapScript(opts: {
     `curl -fsSL ${opts.oriInstallUrl} | ${channelPrefix}ORI_INSTALL_DIR=${ORI_INSTALL_DIR} bash`,
     `ori --version && ${opts.binaryName} --version`,
   ].join("\n");
-}
-
-function buildPrimeAgentImageSteps(agentPackage: string): string[] {
-  if (agentPackage === DEFAULT_PRIME_AGENT_PACKAGE) {
-    const archivePath = "/tmp/prime-agent-runtime.tar.zst";
-    return [
-      "RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates git zstd",
-      `RUN curl -fsSL ${JSON.stringify(DEFAULT_PRIME_AGENT_RUNTIME_URL)} -o ${archivePath} && echo "${DEFAULT_PRIME_AGENT_RUNTIME_SHA256}  ${archivePath}" | sha256sum -c - && zstd -dc ${archivePath} | tar -x -C / && rm -f ${archivePath}`,
-      'ENV PATH="/root/.local/bin:$PATH"',
-      "RUN ln -sf /opt/prime-agent/app/node_modules/.bin/prime-agent /usr/local/bin/prime-agent && ln -sf /opt/prime-agent/node/bin/node /usr/local/bin/node && ln -sf /opt/prime-agent/node/bin/npm /usr/local/bin/npm && ln -sf /opt/prime-agent/node/bin/npx /usr/local/bin/npx",
-      "RUN prime-agent --version",
-    ];
-  }
-  const installCommand = [
-    "PRIME_AGENT_BOOTSTRAP_TOOLS_ON_INSTALL=1",
-    "PRIME_AGENT_BOOTSTRAP_KERNEL_ON_INSTALL=1",
-    "PRIME_AGENT_INSTALL_UV=1",
-    "npm install -g --no-fund --no-audit --loglevel=error --progress=false",
-    JSON.stringify(agentPackage),
-  ].join(" ");
-  return buildImageSteps({
-    agentPackage,
-    binaryName: "prime-agent",
-    installCommand,
-  });
 }
 
 function numberField(source: unknown, key: string): number {
@@ -302,7 +302,11 @@ const CLAUDE_HARNESS: OriHarnessDef = {
   binaryName: "claude",
   remoteLogPath: "/logs/agent/claude.txt",
   imageBuildSteps: (options) =>
-    buildImageSteps({ ...options, binaryName: "claude" }),
+    buildAgentImageSteps({
+      ...options,
+      binaryName: "claude",
+      defaultPackage: DEFAULT_CLAUDE_PACKAGE,
+    }),
   buildBootstrapScript: (options) =>
     buildBootstrapScript({ ...options, binaryName: "claude" }),
   buildRunScript: (options) =>
@@ -343,7 +347,11 @@ const ORI_PI_HARNESS: OriHarnessDef = {
   binaryName: "pi",
   remoteLogPath: "/logs/agent/pi.txt",
   imageBuildSteps: (options) =>
-    buildImageSteps({ ...options, binaryName: "pi" }),
+    buildAgentImageSteps({
+      ...options,
+      binaryName: "pi",
+      defaultPackage: DEFAULT_PI_AGENT_PACKAGE,
+    }),
   buildBootstrapScript: (options) =>
     buildBootstrapScript({ ...options, binaryName: "pi" }),
   buildRunScript: (options) =>
@@ -383,7 +391,19 @@ const PRIME_AGENT_HARNESS: OriHarnessDef = {
   defaultPackage: DEFAULT_PRIME_AGENT_PACKAGE,
   binaryName: "prime-agent",
   remoteLogPath: "/logs/agent/prime-agent.txt",
-  imageBuildSteps: (options) => buildPrimeAgentImageSteps(options.agentPackage),
+  imageBuildSteps: (options) =>
+    buildAgentImageSteps({
+      ...options,
+      binaryName: "prime-agent",
+      defaultPackage: DEFAULT_PRIME_AGENT_PACKAGE,
+      installCommand: [
+        "PRIME_AGENT_BOOTSTRAP_TOOLS_ON_INSTALL=1",
+        "PRIME_AGENT_BOOTSTRAP_KERNEL_ON_INSTALL=1",
+        "PRIME_AGENT_INSTALL_UV=1",
+        "npm install -g --no-fund --no-audit --loglevel=error --progress=false",
+        JSON.stringify(options.agentPackage),
+      ].join(" "),
+    }),
   buildBootstrapScript: (options) =>
     buildBootstrapScript({ ...options, binaryName: "prime-agent" }),
   buildRunScript: (options) =>
