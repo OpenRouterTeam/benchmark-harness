@@ -67,16 +67,16 @@ const SampleScoreSchema = z.object({
 } satisfies ZodShape<SampleScore>);
 
 const ServerToolUseCountsSchema = z.object({
-  webSearchRequests: z.number().optional(),
-  toolCallsRequested: z.number().optional(),
-  toolCallsExecuted: z.number().optional(),
+  webSearchRequests: zInt().optional(),
+  toolCallsRequested: zInt().optional(),
+  toolCallsExecuted: zInt().optional(),
 } satisfies ZodShape<ServerToolUseCounts>);
 
 const ModelUsageSchema = z.object({
-  inputTokens: z.number().optional(),
-  outputTokens: z.number().optional(),
-  totalTokens: z.number().optional(),
-  reasoningTokens: z.number().optional(),
+  inputTokens: zInt().optional(),
+  outputTokens: zInt().optional(),
+  totalTokens: zInt().optional(),
+  reasoningTokens: zInt().optional(),
   totalCost: z.number().optional(),
   serverToolUse: ServerToolUseCountsSchema.optional(),
 } satisfies ZodShape<ModelUsage>);
