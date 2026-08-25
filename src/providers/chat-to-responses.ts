@@ -79,9 +79,7 @@ function contentPartToResponses(part: ContentPart): ResponsesInputItem {
       return {
         type: "input_image",
         image_url: part.imageUrl.url,
-        ...(part.imageUrl.detail !== undefined && {
-          detail: part.imageUrl.detail,
-        }),
+        detail: part.imageUrl.detail ?? "auto",
       };
     }
     case "video_url": {

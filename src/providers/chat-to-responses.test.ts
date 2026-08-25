@@ -21,7 +21,7 @@ describe("chat-to-responses", () => {
     ]);
   });
 
-  it("maps multimodal content without inventing image detail", () => {
+  it("maps multimodal content with default and explicit image detail", () => {
     expect(
       chatMessagesToResponses([
         {
@@ -41,7 +41,7 @@ describe("chat-to-responses", () => {
         role: "user",
         content: [
           { type: "input_text", text: "look" },
-          { type: "input_image", image_url: "a.png" },
+          { type: "input_image", image_url: "a.png", detail: "auto" },
           { type: "input_image", image_url: "b.png", detail: "high" },
           { type: "input_video", video_url: "v.mp4" },
         ],
