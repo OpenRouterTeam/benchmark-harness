@@ -98,11 +98,7 @@ function makeInMemoryStore(seed?: Map<string, string>): InMemoryStore {
     writtenKeys,
     read: async (key) => {
       const raw = map.get(key);
-      if (raw === undefined) {
-        return null;
-      }
-      const parsed = PersistedSampleOutcomeSchema.safeParse(JSON.parse(raw));
-      return parsed.success ? parsed.data : null;
+      return raw === undefined ? null : JSON.parse(raw);
     },
     write: async (key, data) => {
       writtenKeys.push(key);
@@ -287,6 +283,44 @@ describe("sample-result resume", () => {
       true
     );
     expect([...store.map.keys()].sort()).toEqual(ALL_KEYS);
+  });
+
+  it("T7: unparseable persisted record is logged and re-evaluated", async () => {
+    const seeded = new Map(run1Store.map);
+    const corruptRaw = seeded.get("s1/0");
+    if (corruptRaw === undefined) {
+      throw new Error("expected s1/0 in run1 store");
+    }
+    const corrupt: unknown = JSON.parse(corruptRaw);
+    if (typeof corrupt !== "object" || corrupt === null) {
+      throw new Error("expected persisted record to be an object");
+    }
+    seeded.set(
+      "s1/0",
+      JSON.stringify({ ...corrupt, usage: { inputTokens: 10.5 } })
+    );
+    const store = makeInMemoryStore(seeded);
+    const warn = spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      const { result, counters } = await runWithStore(store);
+      expect(counters.solver).toBe(1);
+      expect(counters.scorer).toBe(1);
+      expect(summarize(result)).toEqual(run1Summary);
+      expect(store.writtenKeys).toEqual(["s1/0"]);
+      const warned = warn.mock.calls.map((call) =>
+        call.map((arg) => JSON.stringify(arg)).join(" ")
+      );
+      expect(
+        warned.some(
+          (line) =>
+            line.includes("Persisted sample outcome failed validation") &&
+            line.includes("s1/0") &&
+            line.includes("inputTokens")
+        )
+      ).toBe(true);
+    } finally {
+      warn.mockRestore();
+    }
   });
 
   it("T6: scorer trajectory survives persistence and resume", async () => {

@@ -20,8 +20,10 @@ import {
   zipWithIndex as streamZipWithIndex,
 } from "effect/Stream";
 
+import { Either } from "../internal/either";
 import { unknownErrorToString } from "../internal/errors";
 import { wLog } from "../internal/log";
+import { firstZodIssueMessage, parseSchema } from "../internal/zod";
 import { resetGenerationIds } from "../runtime/generation-ids";
 import type { ReplayedUsage } from "../runtime/generation-resolver";
 import { resolveCollectedGenerations } from "../runtime/generation-resolver";
@@ -46,7 +48,11 @@ import { Dataset } from "./dataset";
 import type { AggregateMetrics, SampleScore } from "./metric";
 import { aggregateScores } from "./metric";
 import { CheckpointStore, ProgressReporter } from "./progress";
-import { SampleResultStore, sampleResultKey } from "./sample-result-store";
+import {
+  PersistedSampleOutcomeSchema,
+  SampleResultStore,
+  sampleResultKey,
+} from "./sample-result-store";
 import { Scorer } from "./scorer";
 import { Solver } from "./solver";
 
@@ -207,7 +213,7 @@ function evaluateOneResumable(
   const key = sampleResultKey(sample.id, epoch);
   return effectGen(function* () {
     const store = yield* SampleResultStore;
-    const persisted = yield* tryPromise({
+    const raw = yield* tryPromise({
       try: () => store.read(key),
       catch: unknownErrorToString,
     }).pipe(
@@ -219,8 +225,15 @@ function evaluateOneResumable(
         return effectSucceed(null);
       })
     );
-    if (persisted !== null) {
-      return persisted;
+    if (raw !== null && raw !== undefined) {
+      const persisted = parseSchema(PersistedSampleOutcomeSchema, raw);
+      if (Either.isRight(persisted)) {
+        return persisted.right;
+      }
+      wLog("Persisted sample outcome failed validation; re-evaluating", {
+        sample_result_key: key,
+        error: firstZodIssueMessage(persisted.left),
+      });
     }
     const outcome = yield* evaluateOne(opts);
     if (outcome.isDegraded === true) {

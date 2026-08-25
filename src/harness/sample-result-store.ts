@@ -92,7 +92,7 @@ export function sampleResultKey(sampleId: string, epoch: number): string {
 }
 
 export interface SampleResultStoreService {
-  readonly read: (key: string) => Promise<PersistedSampleOutcome | null>;
+  readonly read: (key: string) => Promise<unknown>;
   readonly write: (key: string, data: PersistedSampleOutcome) => Promise<void>;
 }
 
