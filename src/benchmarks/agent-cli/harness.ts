@@ -18,8 +18,11 @@ export const DEFAULT_PI_AGENT_PACKAGE =
 export const DEFAULT_PRIME_AGENT_PACKAGE =
   "https://pub-728493de92a943e2a9b2d17b4719f318.r2.dev/releases/v0.8.0/prime-agent-0.8.0.tgz" as const;
 
-const DEFAULT_PRIME_AGENT_PACKAGE_SHA256 =
-  "f5b0093c7e0fddb73f94773d74383585456adfa84f12a4082d3098f23bb8fab6" as const;
+export const DEFAULT_PRIME_AGENT_RUNTIME_URL =
+  "https://github.com/OpenRouterTeam/benchmark-harness/releases/download/prime-agent-runtime-v0.8.0/prime-agent-runtime-linux-x64-v0.8.0.tar.zst" as const;
+
+export const DEFAULT_PRIME_AGENT_RUNTIME_SHA256 =
+  "988ff8e60091dc2765f340fc8e76a1e2312bdbd16a5beeee4f06417db5e442e0" as const;
 
 export interface OriRunScriptOptions {
   readonly instructionPath: string;
@@ -95,23 +98,29 @@ function buildBootstrapScript(opts: {
   ].join("\n");
 }
 
-function buildPrimeAgentInstallCommand(agentPackage: string): string {
-  const npmInstall = [
+function buildPrimeAgentImageSteps(agentPackage: string): string[] {
+  if (agentPackage === DEFAULT_PRIME_AGENT_PACKAGE) {
+    const archivePath = "/tmp/prime-agent-runtime.tar.zst";
+    return [
+      "RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates git zstd",
+      `RUN curl -fsSL ${JSON.stringify(DEFAULT_PRIME_AGENT_RUNTIME_URL)} -o ${archivePath} && echo "${DEFAULT_PRIME_AGENT_RUNTIME_SHA256}  ${archivePath}" | sha256sum -c - && zstd -dc ${archivePath} | tar -x -C / && rm -f ${archivePath}`,
+      'ENV PATH="/root/.local/bin:$PATH"',
+      "RUN ln -sf /opt/prime-agent/app/node_modules/.bin/prime-agent /usr/local/bin/prime-agent && ln -sf /opt/prime-agent/node/bin/node /usr/local/bin/node && ln -sf /opt/prime-agent/node/bin/npm /usr/local/bin/npm && ln -sf /opt/prime-agent/node/bin/npx /usr/local/bin/npx",
+      "RUN prime-agent --version",
+    ];
+  }
+  const installCommand = [
     "PRIME_AGENT_BOOTSTRAP_TOOLS_ON_INSTALL=1",
     "PRIME_AGENT_BOOTSTRAP_KERNEL_ON_INSTALL=1",
     "PRIME_AGENT_INSTALL_UV=1",
     "npm install -g --no-fund --no-audit --loglevel=error --progress=false",
+    JSON.stringify(agentPackage),
   ].join(" ");
-  if (agentPackage !== DEFAULT_PRIME_AGENT_PACKAGE) {
-    return `${npmInstall} ${JSON.stringify(agentPackage)}`;
-  }
-  const archivePath = "/tmp/prime-agent.tgz";
-  return [
-    `curl -fsSL ${JSON.stringify(agentPackage)} -o ${archivePath}`,
-    `echo "${DEFAULT_PRIME_AGENT_PACKAGE_SHA256}  ${archivePath}" | sha256sum -c -`,
-    `${npmInstall} ${archivePath}`,
-    `rm -f ${archivePath}`,
-  ].join(" && ");
+  return buildImageSteps({
+    agentPackage,
+    binaryName: "prime-agent",
+    installCommand,
+  });
 }
 
 function numberField(source: unknown, key: string): number {
@@ -374,12 +383,7 @@ const PRIME_AGENT_HARNESS: OriHarnessDef = {
   defaultPackage: DEFAULT_PRIME_AGENT_PACKAGE,
   binaryName: "prime-agent",
   remoteLogPath: "/logs/agent/prime-agent.txt",
-  imageBuildSteps: (options) =>
-    buildImageSteps({
-      ...options,
-      binaryName: "prime-agent",
-      installCommand: buildPrimeAgentInstallCommand(options.agentPackage),
-    }),
+  imageBuildSteps: (options) => buildPrimeAgentImageSteps(options.agentPackage),
   buildBootstrapScript: (options) =>
     buildBootstrapScript({ ...options, binaryName: "prime-agent" }),
   buildRunScript: (options) =>

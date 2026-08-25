@@ -43,6 +43,8 @@ import {
 } from "../../runtime/generation-ids";
 import {
   DEFAULT_PRIME_AGENT_PACKAGE,
+  DEFAULT_PRIME_AGENT_RUNTIME_SHA256,
+  DEFAULT_PRIME_AGENT_RUNTIME_URL,
   getOriHarness,
   ORI_HARNESSES,
 } from "../agent-cli/harness";
@@ -1350,19 +1352,20 @@ describe("terminal-bench Prime Agent via ori", () => {
     });
   });
 
-  it("installs the verified Prime Agent release with runtime tools", () => {
+  it("installs the verified Prime Agent runtime without npm resolution", () => {
     const steps = ORI_HARNESSES["prime-agent"].imageBuildSteps({
       agentPackage: DEFAULT_PRIME_AGENT_PACKAGE,
     });
     const dockerfile = steps.join("\n");
-    expect(dockerfile).toContain(DEFAULT_PRIME_AGENT_PACKAGE);
-    expect(dockerfile).toContain("PRIME_AGENT_BOOTSTRAP_TOOLS_ON_INSTALL=1");
-    expect(dockerfile).toContain("PRIME_AGENT_BOOTSTRAP_KERNEL_ON_INSTALL=1");
-    expect(dockerfile).toContain(
-      "f5b0093c7e0fddb73f94773d74383585456adfa84f12a4082d3098f23bb8fab6"
-    );
+    expect(dockerfile).toContain(DEFAULT_PRIME_AGENT_RUNTIME_URL);
+    expect(dockerfile).toContain(DEFAULT_PRIME_AGENT_RUNTIME_SHA256);
     expect(dockerfile).toContain("sha256sum -c -");
-    expect(dockerfile).not.toContain("--ignore-scripts");
+    expect(dockerfile).toContain("zstd -dc");
+    expect(dockerfile).toContain(
+      "/opt/prime-agent/app/node_modules/.bin/prime-agent"
+    );
+    expect(dockerfile).not.toContain("npm install");
+    expect(dockerfile).not.toContain("nvm install");
     expect(steps.at(-1)).toBe("RUN prime-agent --version");
     expect(
       ORI_HARNESSES["prime-agent"].buildBootstrapScript({
@@ -1378,8 +1381,10 @@ describe("terminal-bench Prime Agent via ori", () => {
     });
     const dockerfile = steps.join("\n");
     expect(dockerfile).toContain('"file:///opt/prime-agent.tgz"');
-    expect(dockerfile).not.toContain(
-      "f5b0093c7e0fddb73f94773d74383585456adfa84f12a4082d3098f23bb8fab6"
-    );
+    expect(dockerfile).toContain("npm install -g");
+    expect(dockerfile).toContain("PRIME_AGENT_BOOTSTRAP_TOOLS_ON_INSTALL=1");
+    expect(dockerfile).toContain("PRIME_AGENT_BOOTSTRAP_KERNEL_ON_INSTALL=1");
+    expect(dockerfile).not.toContain(DEFAULT_PRIME_AGENT_RUNTIME_URL);
+    expect(dockerfile).not.toContain(DEFAULT_PRIME_AGENT_RUNTIME_SHA256);
   });
 });
