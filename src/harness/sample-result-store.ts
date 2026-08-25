@@ -104,3 +104,13 @@ export const NOOP_SAMPLE_RESULT_STORE: SampleResultStoreService = {
   read: async () => null,
   write: async () => {},
 };
+
+export function namespacedSampleResultStore(
+  prefix: string,
+  store: SampleResultStoreService
+): SampleResultStoreService {
+  return {
+    read: (key) => store.read(`${prefix}/${key}`),
+    write: (key, data) => store.write(`${prefix}/${key}`, data),
+  };
+}

@@ -35,6 +35,7 @@ import type { RunResult, RunConfig } from "../harness/run";
 import { runBenchmark } from "../harness/run";
 import type { SampleResultStoreService } from "../harness/sample-result-store";
 import {
+  namespacedSampleResultStore,
   NOOP_SAMPLE_RESULT_STORE,
   SampleResultStore,
 } from "../harness/sample-result-store";
@@ -96,7 +97,9 @@ export function runBenchmarkById(
   );
   const sampleResultLayer = layerSucceed(
     SampleResultStore,
-    input.sampleResultStore ?? NOOP_SAMPLE_RESULT_STORE
+    input.sampleResultStore === undefined
+      ? NOOP_SAMPLE_RESULT_STORE
+      : namespacedSampleResultStore(input.sessionId, input.sampleResultStore)
   );
   const model = modelFromConfig(input.benchmarkConfig);
   const runConfig: RunConfig = {
