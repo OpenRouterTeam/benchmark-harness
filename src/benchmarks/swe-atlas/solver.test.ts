@@ -21,6 +21,7 @@ import { initialTaskState, MessageRole, ScoreValue } from "../../harness/core";
 import { Solver } from "../../harness/solver";
 import type { ResponsesGenerateConfig } from "../../providers/responses-model";
 import { ResponsesModel } from "../../providers/responses-model";
+import { DEFAULT_AGENT_RUNTIME_URL } from "../agent-cli/harness";
 import { SUBMIT_SENTINEL } from "../harbor/prompts";
 import type { CreateSessionInput, ExecResult } from "../harbor/sandbox";
 import { makeFakeSandboxLayer, SandboxSession } from "../harbor/sandbox";
@@ -308,7 +309,7 @@ describe("swe-atlas claude agent via ori", () => {
       { ...SOLVER_OPTS, agent: "claude" }
     );
     const steps = log.creates[0]?.imageBuildSteps ?? [];
-    expect(steps.join("\n")).toContain("@anthropic-ai/claude-code");
+    expect(steps.join("\n")).toContain(DEFAULT_AGENT_RUNTIME_URL);
     expect(steps.join("\n")).not.toContain("ORI_INSTALL_DIR");
     const installCall = log.calls.find((c) =>
       c.argv.join(" ").includes("ORI_INSTALL_DIR=/usr/local/bin")

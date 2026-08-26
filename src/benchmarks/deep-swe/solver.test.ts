@@ -21,6 +21,7 @@ import { initialTaskState, MessageRole, ScoreValue } from "../../harness/core";
 import { Solver } from "../../harness/solver";
 import type { ResponsesGenerateConfig } from "../../providers/responses-model";
 import { ResponsesModel } from "../../providers/responses-model";
+import { DEFAULT_AGENT_RUNTIME_URL } from "../agent-cli/harness";
 import { SUBMIT_SENTINEL } from "../harbor/prompts";
 import type { CreateSessionInput, ExecResult } from "../harbor/sandbox";
 import { makeFakeSandboxLayer, SandboxSession } from "../harbor/sandbox";
@@ -283,7 +284,7 @@ describe("deep-swe claude agent via ori", () => {
     );
     const agentCreate = log.creates[0];
     expect(agentCreate?.imageBuildSteps?.join("\n")).toContain(
-      "@anthropic-ai/claude-code"
+      DEFAULT_AGENT_RUNTIME_URL
     );
     const remotePaths = (agentCreate?.uploads ?? []).map((u) => u.remotePath);
     expect(remotePaths).toContain("/instruction.md");

@@ -185,6 +185,18 @@ describe("benchmark registry", () => {
     expect(result.right.agent).toBe("claude");
   });
 
+  it("accepts Prime Agent for terminal-bench and harbor benchmarks", () => {
+    for (const benchmarkId of ["terminal_bench", "deep_swe"] as const) {
+      const result = parseSchema(BenchmarkRunConfigSchema, {
+        benchmarkId,
+        model: "openai/gpt-5.4",
+        agent: "prime-agent",
+      });
+      assertRight(result);
+      expect(result.right.agent).toBe("prime-agent");
+    }
+  });
+
   it("exposes the full terminal-bench agent control surface with defaults", () => {
     const result = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "terminal_bench",
