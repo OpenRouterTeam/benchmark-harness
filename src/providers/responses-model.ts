@@ -60,9 +60,11 @@ export interface ResponsesFunctionTool {
   readonly name: string;
   readonly description?: string;
   readonly parameters: Record<string, unknown>;
+  readonly strict?: boolean | null;
 }
 
 export interface ResponsesGenerateConfig extends Omit<GenerateConfig, "tools"> {
+  readonly model?: string;
   readonly instructions?: string;
   readonly tools?: readonly ResponsesFunctionTool[];
 }
@@ -158,10 +160,11 @@ export function generate(
     }),
   };
   const sendProvider = Object.keys(providerPreferences).length > 0;
-  const baseModel = stripVariantSuffix(opts.model);
+  const requestModel = genConfig.model ?? opts.model;
+  const baseModel = stripVariantSuffix(requestModel);
   const autoRouterPlugin = buildAutoRouterPlugin(baseModel, genConfig);
   const body = {
-    model: opts.model,
+    model: requestModel,
     input: toSdkInput(opts.input),
     store: false,
     include: ["reasoning.encrypted_content"],
@@ -244,7 +247,7 @@ export function generate(
 
 const RAW_PAYLOAD_KEYS = new Set(["arguments", "output"]);
 
-function toSdkInput(input: readonly ResponsesInputItem[]): InputsUnion {
+export function toSdkInput(input: readonly ResponsesInputItem[]): InputsUnion {
   return input.map(toSdkValue) as InputsUnion;
 }
 

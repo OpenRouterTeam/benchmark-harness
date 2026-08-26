@@ -21,7 +21,7 @@ import type { RetryConfig } from "../runtime/retry";
 import type { BenchmarkRunConfig } from "./benchmark-config";
 import type { Benchmark, BenchmarkRunInput } from "./types";
 
-export interface ChatBenchmarkDefinition<
+export interface SingleTurnBenchmarkDefinition<
   C extends BenchmarkRunConfig & {
     readonly model: string;
   },
@@ -39,11 +39,11 @@ export interface ChatBenchmarkDefinition<
   readonly makeSolver: (model: ModelService, config: C) => SolverService;
 }
 
-export function defineChatBenchmark<
+export function defineSingleTurnBenchmark<
   C extends BenchmarkRunConfig & {
     readonly model: string;
   },
->(definition: ChatBenchmarkDefinition<C>): Benchmark {
+>(definition: SingleTurnBenchmarkDefinition<C>): Benchmark {
   function makeLayer(
     input: BenchmarkRunInput
   ): Layer<Dataset | Solver | Scorer, Error, HttpClient.HttpClient> {

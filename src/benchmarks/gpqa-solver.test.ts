@@ -10,7 +10,7 @@ import {
   noopProgressLayer,
   noopCheckpointLayer,
 } from "../../test/helpers/noop-progress-layer";
-import type { ChatMessage, ModelError, ModelOutput } from "../harness/core";
+import type { ModelMessage, ModelError, ModelOutput } from "../harness/core";
 import { initialTaskState, MessageRole } from "../harness/core";
 import type { GenerateConfig, ModelService } from "../harness/model";
 import { Model } from "../harness/model";
@@ -23,7 +23,7 @@ function recordingModel(record: { config: GenerateConfig | undefined }): {
 } {
   const service: ModelService = {
     generate: (
-      _messages: readonly ChatMessage[],
+      _messages: readonly ModelMessage[],
       config: GenerateConfig
     ): Effect<ModelOutput, ModelError> => {
       record.config = config;

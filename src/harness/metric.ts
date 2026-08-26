@@ -1,11 +1,11 @@
-import type { ChatMessage, ResponseItem, Score, ScoreValue } from "./core";
+import type { ModelMessage, ResponseItem, Score, ScoreValue } from "./core";
 import { ScoreValue as SV, scoreToNumber } from "./core";
 
 export interface SampleScore {
   readonly sampleId: string;
   readonly epoch: number;
   readonly score: Score;
-  readonly messages?: readonly ChatMessage[];
+  readonly messages?: readonly ModelMessage[];
   readonly responseItems?: readonly ResponseItem[];
   readonly requestBody?: Readonly<Record<string, unknown>>;
   readonly generationIds?: readonly string[];

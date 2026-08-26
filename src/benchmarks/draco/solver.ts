@@ -16,7 +16,7 @@ import {
 } from "effect/Effect";
 
 import type {
-  ChatMessage,
+  ModelMessage,
   ModelError,
   ModelOutput,
   ModelUsage,
@@ -476,7 +476,7 @@ function completedState(
   generation: GenerationResult,
   verdicts: JudgeRun[]
 ): TaskState {
-  const messages: ChatMessage[] = [
+  const messages: ModelMessage[] = [
     { role: MessageRole.User, content: state.sample.input },
     ...(generation.content
       ? [

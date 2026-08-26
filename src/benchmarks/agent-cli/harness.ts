@@ -1,4 +1,8 @@
-import type { ChatMessage, ModelUsage, ResponseItem } from "../../harness/core";
+import type {
+  ModelMessage,
+  ModelUsage,
+  ResponseItem,
+} from "../../harness/core";
 import { MessageRole } from "../../harness/core";
 import { Either } from "../../internal/either";
 import { isRecord } from "../../internal/guards";
@@ -40,7 +44,7 @@ export interface OriAgentRun {
   readonly generationIds: readonly string[];
   readonly generationTimeMs: number | undefined;
   readonly finalText: string | undefined;
-  readonly assistantMessages: readonly ChatMessage[];
+  readonly assistantMessages: readonly ModelMessage[];
   readonly responseItems: readonly ResponseItem[];
   readonly isError: boolean;
   readonly apiErrorStatus: string | undefined;
@@ -175,7 +179,7 @@ function usageFromResult(result: Record<string, unknown>): ModelUsage {
 
 function parseClaudeStream(stdout: string): OriAgentRun {
   const generationIds: string[] = [];
-  const assistantMessages: ChatMessage[] = [];
+  const assistantMessages: ModelMessage[] = [];
   const responseItems: ResponseItem[] = [];
   let usage: ModelUsage | undefined;
   let generationTimeMs: number | undefined;
@@ -363,7 +367,7 @@ function parsePiStream(stdout: string): OriAgentRun {
   let apiErrorStatus: string | undefined;
   let finalText: string | undefined;
   const generationIds: string[] = [];
-  const assistantMessages: ChatMessage[] = [];
+  const assistantMessages: ModelMessage[] = [];
   const responseItems: ResponseItem[] = [];
   for (const line of stdout.split("\n")) {
     const trimmed = line.trim();

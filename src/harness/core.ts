@@ -68,7 +68,7 @@ export const ContentPartSchema = z.discriminatedUnion("type", [
   VideoContentPartSchema,
 ]);
 
-export const ChatMessageSchema = z
+export const ModelMessageSchema = z
   .object({
     role: z.enum(MESSAGE_ROLE_VALUES),
     content: z.string(),
@@ -77,6 +77,10 @@ export const ChatMessageSchema = z
     toolCallId: z.string().optional(),
     reasoning: z.string().optional(),
     reasoningDetails: ReasoningDetailsSchema.optional(),
+    responseItems: z
+      .array(z.record(z.string(), z.unknown()))
+      .readonly()
+      .optional(),
     citations: z.array(CitationSchema).readonly().optional(),
     model: z.string().optional(),
   })
@@ -111,7 +115,7 @@ export interface VideoContentPart {
 
 export type ContentPart = TextContentPart | ImageContentPart | VideoContentPart;
 
-export type ChatMessage = z.infer<typeof ChatMessageSchema>;
+export type ModelMessage = z.infer<typeof ModelMessageSchema>;
 
 export interface Sample {
   readonly id: string;
@@ -148,7 +152,7 @@ export type ResponseItem = Readonly<Record<string, unknown>>;
 
 export interface ModelOutput {
   readonly completion: string;
-  readonly message: ChatMessage;
+  readonly message: ModelMessage;
   readonly usage?: ModelUsage;
   readonly generationTimeMs?: number;
   readonly rawResponse?: Readonly<Record<string, unknown>>;
@@ -156,7 +160,7 @@ export interface ModelOutput {
 
 export interface TaskState {
   readonly sample: Sample;
-  readonly messages: readonly ChatMessage[];
+  readonly messages: readonly ModelMessage[];
   readonly responseItems?: readonly ResponseItem[];
   readonly requestBody?: Readonly<Record<string, unknown>>;
   readonly output?: ModelOutput;
