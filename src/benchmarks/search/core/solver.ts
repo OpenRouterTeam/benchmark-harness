@@ -54,6 +54,7 @@ export interface SearchSolverOptions {
   readonly sort?: ProviderSort;
   readonly providerOrder?: readonly string[];
   readonly providerOnly?: readonly string[];
+  readonly providerIgnore?: readonly string[];
   readonly allowFallbacks?: boolean;
   readonly versionOverride?: string;
   readonly costQualityTradeoff?: number;
@@ -102,6 +103,9 @@ export function searchSolver(
         }),
         ...(opts.providerOnly !== undefined && {
           providerOnly: opts.providerOnly,
+        }),
+        ...(opts.providerIgnore !== undefined && {
+          providerIgnore: opts.providerIgnore,
         }),
         ...(opts.allowFallbacks !== undefined && {
           allowFallbacks: opts.allowFallbacks,

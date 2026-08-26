@@ -151,6 +151,7 @@ export interface ModelOutput {
   readonly message: ChatMessage;
   readonly usage?: ModelUsage;
   readonly generationTimeMs?: number;
+  readonly rawResponse?: Readonly<Record<string, unknown>>;
 }
 
 export interface TaskState {

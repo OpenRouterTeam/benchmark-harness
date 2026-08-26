@@ -147,6 +147,9 @@ export function generate(
     ...(genConfig.providerOnly !== undefined && {
       only: [...genConfig.providerOnly],
     }),
+    ...(genConfig.providerIgnore !== undefined && {
+      ignore: [...genConfig.providerIgnore],
+    }),
     ...(genConfig.allowFallbacks !== undefined && {
       allow_fallbacks: genConfig.allowFallbacks,
     }),
@@ -518,6 +521,7 @@ function decodeResult(
         },
         generationTimeMs: Math.round(performance.now() - startedAt),
         ...(usage && { usage }),
+        ...(isRecord(raw) && { rawResponse: raw }),
       })
     )
   );

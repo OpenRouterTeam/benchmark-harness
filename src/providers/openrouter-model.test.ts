@@ -50,6 +50,21 @@ const CHAT_RESULT = {
 
 const CHAT_RESULT_JSON = JSON.stringify(CHAT_RESULT);
 
+const CHAT_RESULT_WITH_RAW_USAGE = {
+  ...CHAT_RESULT,
+  choices: [
+    {
+      ...CHAT_RESULT.choices[0],
+      logprobs: null,
+    },
+  ],
+  usage: {
+    ...CHAT_RESULT.usage,
+    cost: 0.25,
+    completion_tokens_details: { reasoning_tokens: 3 },
+  },
+};
+
 const REASONING_CHAT_RESULT = {
   ...CHAT_RESULT,
   model: "openai/gpt-4o",
@@ -126,6 +141,7 @@ describe("openrouter-model request parity", () => {
       }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
     );
     expect(captured.value?.body["provider"]).toEqual({ sort: "price" });
+    expect(captured.value?.body["provider"]).not.toHaveProperty("ignore");
   });
   it("sends provider.only with fallbacks disabled on pinned runs", async () => {
     const captured = newHolder();
@@ -139,12 +155,14 @@ describe("openrouter-model request parity", () => {
         const model = yield* Model;
         yield* model.generate(MESSAGES, {
           providerOnly: ["google-vertex"],
+          providerIgnore: ["azure"],
           allowFallbacks: false,
         });
       }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
     );
     expect(captured.value?.body["provider"]).toEqual({
       only: ["google-vertex"],
+      ignore: ["azure"],
       allow_fallbacks: false,
     });
   });
@@ -161,6 +179,7 @@ describe("openrouter-model request parity", () => {
         yield* model.generate(MESSAGES, {
           sort: ProviderSort.Price,
           providerOnly: ["google-vertex"],
+          providerIgnore: ["azure"],
           allowFallbacks: false,
         });
       }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
@@ -168,7 +187,27 @@ describe("openrouter-model request parity", () => {
     expect(captured.value?.body["provider"]).toEqual({
       sort: "price",
       only: ["google-vertex"],
+      ignore: ["azure"],
       allow_fallbacks: false,
+    });
+  });
+  it("sends provider.ignore without other provider preferences", async () => {
+    const captured = newHolder();
+    restore = installFetchCapture(captured);
+    const layer = makeOpenRouterModelLayer({
+      model: "openai/gpt-4o",
+      apiKey: "sk-test",
+    });
+    await runPromiseExit(
+      gen(function* run() {
+        const model = yield* Model;
+        yield* model.generate(MESSAGES, {
+          providerIgnore: ["azure"],
+        });
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    expect(captured.value?.body["provider"]).toEqual({
+      ignore: ["azure"],
     });
   });
   it("records the chat completion generation id", async () => {
@@ -454,6 +493,35 @@ describe("openrouter-model request parity", () => {
     expect(
       captured.value?.headers["cloudflare-workers-version-overrides"]
     ).toBeUndefined();
+  });
+  it("preserves the raw non-streaming response alongside the mapped output", async () => {
+    const captured: CapturedRequest[] = [];
+    restore = installFetchSequence([CHAT_RESULT_WITH_RAW_USAGE], captured);
+    const layer = makeOpenRouterModelLayer({
+      model: "openai/gpt-4o",
+      apiKey: "sk-test",
+    });
+    const exit = await runPromiseExit(
+      gen(function* run() {
+        const model = yield* Model;
+        return yield* model.generate(MESSAGES, {});
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    assertSuccess(exit);
+    expect(exit.value.rawResponse).toEqual(CHAT_RESULT_WITH_RAW_USAGE);
+    expect(exit.value.completion).toBe("Answer: A");
+    expect(exit.value.message).toEqual({
+      role: MessageRole.Assistant,
+      content: "Answer: A",
+      model: "m",
+    });
+    expect(exit.value.usage).toEqual({
+      inputTokens: 1,
+      outputTokens: 1,
+      totalTokens: 2,
+      reasoningTokens: 3,
+      totalCost: 0.25,
+    });
   });
 });
 describe("openrouter-model response caching", () => {

@@ -300,7 +300,7 @@ describe("swe-atlas claude agent via ori", () => {
     expect(appended).toContain("Be terse.");
   });
 
-  it("installs the agent into the task image", async () => {
+  it("installs the agent into the task image and ori into the sandbox", async () => {
     const log: ExecLog = { calls: [], creates: [] };
     await runSweAtlasSolver(
       scriptedModel(newConfigRecord()),
@@ -309,7 +309,11 @@ describe("swe-atlas claude agent via ori", () => {
     );
     const steps = log.creates[0]?.imageBuildSteps ?? [];
     expect(steps.join("\n")).toContain("@anthropic-ai/claude-code");
-    expect(steps.join("\n")).toContain("ORI_INSTALL_DIR=/usr/local/bin");
+    expect(steps.join("\n")).not.toContain("ORI_INSTALL_DIR");
+    const installCall = log.calls.find((c) =>
+      c.argv.join(" ").includes("ORI_INSTALL_DIR=/usr/local/bin")
+    );
+    expect(installCall).toBeDefined();
   });
 
   it("carries agent usage, generation ids and counters into the result", async () => {

@@ -47,6 +47,7 @@ export const InferenceOverrideSchema = z.object({
   timeoutMs: z.number().optional(),
   sort: z.nativeEnum(ProviderSort).optional(),
   providerOnly: z.array(z.string()).optional(),
+  providerIgnore: z.array(z.string()).optional(),
   allowFallbacks: z.boolean().optional(),
   cloudflareVersion: z.string().optional(),
   costQualityTradeoff: z.number().int().min(0).max(10).optional(),
@@ -317,43 +318,42 @@ export type SearchBenchmarkConfig =
   | DsqaBenchmarkConfig
   | WideSearchBenchmarkConfig;
 
-export const BenchmarkRunConfigSchema = z.discriminatedUnion("benchmarkId", [
-  GpqaBenchmarkConfigSchema,
-  MmluProBenchmarkConfigSchema,
-  TauBenchAirlineConfigSchema,
-  Tau3BenchBankingConfigSchema,
-  MmmuProVisionBenchmarkConfigSchema,
-  TerminalBenchConfigSchema,
-  DracoBenchmarkConfigSchema,
-  IfStructBenchmarkConfigSchema,
-  SweAtlasQaConfigSchema,
-  SweAtlasTwConfigSchema,
-  SweAtlasRfConfigSchema,
-  DeepSweConfigSchema,
-  WandrConfigSchema,
-  BrowseCompBenchmarkConfigSchema,
-  HleBenchmarkConfigSchema,
-  DsqaBenchmarkConfigSchema,
-  WideSearchBenchmarkConfigSchema,
-  VgiBenchmarkConfigSchema,
-]);
+export const NativeBenchmarkRunConfigSchema = z.discriminatedUnion(
+  "benchmarkId",
+  [
+    GpqaBenchmarkConfigSchema,
+    MmluProBenchmarkConfigSchema,
+    TauBenchAirlineConfigSchema,
+    Tau3BenchBankingConfigSchema,
+    MmmuProVisionBenchmarkConfigSchema,
+    TerminalBenchConfigSchema,
+    DracoBenchmarkConfigSchema,
+    IfStructBenchmarkConfigSchema,
+    SweAtlasQaConfigSchema,
+    SweAtlasTwConfigSchema,
+    SweAtlasRfConfigSchema,
+    DeepSweConfigSchema,
+    WandrConfigSchema,
+    BrowseCompBenchmarkConfigSchema,
+    HleBenchmarkConfigSchema,
+    DsqaBenchmarkConfigSchema,
+    WideSearchBenchmarkConfigSchema,
+    VgiBenchmarkConfigSchema,
+  ]
+);
 
-export type BenchmarkRunConfig = z.infer<typeof BenchmarkRunConfigSchema>;
+export type NativeBenchmarkRunConfig = z.infer<
+  typeof NativeBenchmarkRunConfigSchema
+>;
 
-export type ModelBenchmarkConfig = Extract<
-  BenchmarkRunConfig,
+type NativeModelBenchmarkConfig = Extract<
+  NativeBenchmarkRunConfig,
   {
     model: string;
   }
 >;
 
-export type ModelBenchmarkId = ModelBenchmarkConfig["benchmarkId"];
-
-export function isModelBenchmarkConfig(
-  config: BenchmarkRunConfig
-): config is ModelBenchmarkConfig {
-  return "model" in config;
-}
+export type ModelBenchmarkId = NativeModelBenchmarkConfig["benchmarkId"];
 
 export const BENCHMARK_OPTIONS_SCHEMAS = {
   gpqa_diamond: GpqaOptionsSchema,
@@ -374,6 +374,60 @@ export const BENCHMARK_OPTIONS_SCHEMAS = {
   search_widesearch: SearchBenchmarkOptionsSchema,
   vgi_bench: VgiBenchOptionsSchema,
 } as const satisfies Record<ModelBenchmarkId, z.ZodObject<z.ZodRawShape>>;
+
+const NATIVE_BENCHMARK_ID_SET: ReadonlySet<string> = new Set(
+  NativeBenchmarkRunConfigSchema.options.flatMap((schema) => {
+    const benchmarkId = schema.shape.benchmarkId;
+    return benchmarkId instanceof z.ZodLiteral ? [benchmarkId.value] : [];
+  })
+);
+
+const HostBenchmarkIdSchema = z
+  .string()
+  .min(1)
+  .refine(
+    (benchmarkId) => !NATIVE_BENCHMARK_ID_SET.has(benchmarkId),
+    "Host benchmark ids must not reuse native benchmark ids"
+  );
+
+export const HostBenchmarkRunConfigSchema = z.object({
+  benchmarkId: HostBenchmarkIdSchema,
+  ...ModelBenchmarkBaseSchema.shape,
+  options: z.record(z.string(), z.unknown()).default({}),
+});
+
+export type HostBenchmarkRunConfig = z.infer<
+  typeof HostBenchmarkRunConfigSchema
+>;
+
+export const BenchmarkRunConfigSchema = z.union([
+  NativeBenchmarkRunConfigSchema,
+  HostBenchmarkRunConfigSchema,
+]);
+
+export type BenchmarkRunConfig = z.infer<typeof BenchmarkRunConfigSchema>;
+
+export type ModelBenchmarkConfig =
+  | NativeModelBenchmarkConfig
+  | HostBenchmarkRunConfig;
+
+export function isModelBenchmarkConfig(
+  config: BenchmarkRunConfig
+): config is ModelBenchmarkConfig {
+  return "model" in config;
+}
+
+export function isNativeBenchmarkConfig(
+  config: BenchmarkRunConfig
+): config is NativeBenchmarkRunConfig {
+  return NATIVE_BENCHMARK_ID_SET.has(config.benchmarkId);
+}
+
+export function isHostBenchmarkConfig(
+  config: BenchmarkRunConfig
+): config is HostBenchmarkRunConfig {
+  return !isNativeBenchmarkConfig(config);
+}
 
 const SEARCH_BENCHMARK_ID_SET: ReadonlySet<string> = new Set([
   "search_browsecomp",
