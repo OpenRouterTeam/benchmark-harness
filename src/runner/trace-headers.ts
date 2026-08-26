@@ -16,7 +16,7 @@ export function applyTraceHeaders(
   apiPrefix: string,
   traceHeaders: Readonly<Record<string, string>>
 ): HttpClientRequest.HttpClientRequest {
-  return request.url.startsWith(apiPrefix)
+  return request.url === apiPrefix || request.url.startsWith(`${apiPrefix}/`)
     ? HttpClientRequest.setHeaders(request, traceHeaders)
     : request;
 }

@@ -19,6 +19,15 @@ describe("applyTraceHeaders", () => {
     expect(result.headers["x-benchmark-trace"]).toBe("test-key");
   });
 
+  it("leaves requests to a lookalike prefix untouched", () => {
+    const request = HttpClientRequest.post(
+      "https://openrouter.ai/api/v10/chat/completions"
+    );
+    const result = applyTraceHeaders(request, API_PREFIX, TRACE_HEADERS);
+    expect(result.headers.traceparent).toBeUndefined();
+    expect(result.headers["x-benchmark-trace"]).toBeUndefined();
+  });
+
   it("leaves requests to other hosts untouched", () => {
     const request = HttpClientRequest.get(
       "https://datasets-server.huggingface.co/rows"
