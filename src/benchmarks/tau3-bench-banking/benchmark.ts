@@ -81,12 +81,18 @@ function makeBankingLayer(
       ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
       sessionId: input.sessionId,
       ...(input.modelRetry !== undefined && { retry: input.modelRetry }),
+      ...(input.traceHeaders !== undefined && {
+        traceHeaders: input.traceHeaders,
+      }),
     });
   const userModelLayer = makeResponsesModelLayer({
     model: config.userModel,
     apiKey: input.apiKey,
     ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
     sessionId: input.sessionId,
+    ...(input.traceHeaders !== undefined && {
+      traceHeaders: input.traceHeaders,
+    }),
   });
   const solverLayer = layerEffect(Solver)(
     gen(function* () {

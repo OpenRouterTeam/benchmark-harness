@@ -68,6 +68,9 @@ export function defineSingleTurnBenchmark<
         ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
         sessionId: input.sessionId,
         ...(input.modelRetry !== undefined && { retry: input.modelRetry }),
+        ...(input.traceHeaders !== undefined && {
+          traceHeaders: input.traceHeaders,
+        }),
       });
     const solverLayer = layerEffect(Solver)(
       gen(function* () {

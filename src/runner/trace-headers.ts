@@ -1,41 +1,30 @@
-import {
-  FetchHttpClient,
-  HttpClient,
-  HttpClientRequest,
-} from "@effect/platform";
-import { map } from "effect/Effect";
-import type { Layer } from "effect/Layer";
-import { effect as layerEffect, provide as layerProvide } from "effect/Layer";
+export const ALLOWED_TRACE_HEADER_NAMES = [
+  "traceparent",
+  "tracestate",
+  "x-or-traceparent",
+  "x-benchmark-trace",
+] as const;
 
-import { normalizeBaseUrl } from "../providers/openrouter-model";
+export type AllowedTraceHeaderName =
+  (typeof ALLOWED_TRACE_HEADER_NAMES)[number];
 
-const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
+const ALLOWED_TRACE_HEADER_SET: ReadonlySet<string> = new Set(
+  ALLOWED_TRACE_HEADER_NAMES
+);
 
-export function applyTraceHeaders(
-  request: HttpClientRequest.HttpClientRequest,
-  apiPrefix: string,
-  traceHeaders: Readonly<Record<string, string>>
-): HttpClientRequest.HttpClientRequest {
-  return request.url === apiPrefix || request.url.startsWith(`${apiPrefix}/`)
-    ? HttpClientRequest.setHeaders(request, traceHeaders)
-    : request;
-}
-
-export function makeHttpClientLayer(opts: {
-  readonly traceHeaders?: Readonly<Record<string, string>>;
-  readonly baseUrl?: string;
-}): Layer<HttpClient.HttpClient> {
-  const traceHeaders = opts.traceHeaders;
-  if (traceHeaders === undefined) {
-    return FetchHttpClient.layer;
+export function filterTraceHeaders(
+  headers: Readonly<Record<string, string>> | undefined
+): Record<string, string> | undefined {
+  if (headers === undefined) {
+    return undefined;
   }
-  const apiPrefix = normalizeBaseUrl(opts.baseUrl ?? DEFAULT_BASE_URL);
-  return layerEffect(
-    HttpClient.HttpClient,
-    map(HttpClient.HttpClient, (client) =>
-      HttpClient.mapRequest(client, (request) =>
-        applyTraceHeaders(request, apiPrefix, traceHeaders)
-      )
-    )
-  ).pipe(layerProvide(FetchHttpClient.layer));
+  const filtered = Object.fromEntries(
+    Object.entries(headers)
+      .map(([name, value]): readonly [string, string] => [
+        name.toLowerCase(),
+        value,
+      ])
+      .filter(([name]) => ALLOWED_TRACE_HEADER_SET.has(name))
+  );
+  return Object.keys(filtered).length > 0 ? filtered : undefined;
 }

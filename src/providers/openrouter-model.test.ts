@@ -143,4 +143,55 @@ describe("openrouter-model", () => {
     });
     expect(exit.value.rawResponse).toBeUndefined();
   });
+
+  it("sends trace headers on the OpenRouter request and never overrides auth", async () => {
+    const stream = await readFile(
+      new URL(
+        "../../test/fixtures/advisor-responses-stream.sse",
+        import.meta.url
+      ),
+      "utf8"
+    );
+    const originalFetch = globalThis.fetch;
+    let request: Request | undefined;
+    globalThis.fetch = async (input, init) => {
+      request = input instanceof Request ? input : new Request(input, init);
+      return new Response(stream, {
+        status: 200,
+        headers: { "content-type": "text/event-stream" },
+      });
+    };
+    restore = () => {
+      globalThis.fetch = originalFetch;
+    };
+
+    const traceparent =
+      "00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01";
+    const exit = await runPromiseExit(
+      gen(function* () {
+        const model = yield* Model;
+        return yield* model.generate([{ role: "user", content: "question" }], {
+          temperature: 0,
+        });
+      }).pipe(
+        provide(
+          makeOpenRouterModelLayer({
+            model: "openai/gpt-5",
+            apiKey: "sk-test",
+            baseUrl: "https://example.test",
+            traceHeaders: {
+              traceparent,
+              "x-benchmark-trace": "test-trace-key",
+              authorization: "Bearer attacker-key",
+            },
+          }).pipe(layerProvide(FetchHttpClient.layer))
+        )
+      )
+    );
+    assertSuccess(exit);
+    expect(request?.url).toBe("https://example.test/api/v1/responses");
+    expect(request?.headers.get("traceparent")).toBe(traceparent);
+    expect(request?.headers.get("x-benchmark-trace")).toBe("test-trace-key");
+    expect(request?.headers.get("authorization")).toBe("Bearer sk-test");
+  });
 });

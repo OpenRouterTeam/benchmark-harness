@@ -1,3 +1,4 @@
+import { FetchHttpClient } from "@effect/platform";
 import { flatMap, provide } from "effect/Effect";
 import {
   mergeAll as layerMergeAll,
@@ -43,7 +44,7 @@ import {
 } from "../runtime/generation-resolver";
 import { withRunAttempt } from "../runtime/response-cache";
 import type { RetryConfig } from "../runtime/retry";
-import { makeHttpClientLayer } from "./trace-headers";
+import { filterTraceHeaders } from "./trace-headers";
 
 export interface RunBenchmarkInput {
   readonly benchmarkId: string;
@@ -106,18 +107,16 @@ export function runBenchmarkById(
       }),
     },
   };
-  const httpClientLayer = makeHttpClientLayer({
-    ...(input.traceHeaders !== undefined && {
-      traceHeaders: input.traceHeaders,
-    }),
-    ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
-  });
-  const fullBenchmarkLayer = benchmarkLayer.pipe(layerProvide(httpClientLayer));
+  const fullBenchmarkLayer = benchmarkLayer.pipe(
+    layerProvide(FetchHttpClient.layer)
+  );
+  const traceHeaders = filterTraceHeaders(input.traceHeaders);
   const resolverLayer = layerSucceed(
     GenerationResolver,
     makeOpenRouterGenerationResolver({
       apiKey: input.apiKey,
       ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
+      ...(traceHeaders !== undefined && { traceHeaders }),
     })
   );
   const layers = layerMergeAll(
@@ -244,10 +243,12 @@ function makeBenchmarkLayer<Config extends BenchmarkRunConfig>(
   benchmarkConfig: Config
 ): ReturnType<Benchmark["makeLayer"]> {
   const maxRetries = benchmarkConfig.maxRetries;
+  const traceHeaders = filterTraceHeaders(input.traceHeaders);
   const benchmarkInput: BenchmarkRunInput<Config> = {
     apiKey: input.apiKey,
     benchmarkConfig,
     ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
+    ...(traceHeaders !== undefined && { traceHeaders }),
     sessionId: input.sessionId,
     ...(input.datasetRetry !== undefined && {
       datasetRetry: input.datasetRetry,

@@ -27,6 +27,7 @@ import { ModelError } from "../harness/core";
 import { Either } from "../internal/either";
 import { isRecord } from "../internal/guards";
 import { parseSchema, z } from "../internal/zod";
+import { filterTraceHeaders } from "../runner/trace-headers";
 import { recordGenerationId } from "../runtime/generation-ids";
 import type { ResponseCacheAttemptState } from "../runtime/response-cache";
 import {
@@ -103,6 +104,7 @@ export interface ResponsesConfig {
   readonly apiKey: string;
   readonly baseUrl?: string;
   readonly sessionId?: string;
+  readonly traceHeaders?: Readonly<Record<string, string>>;
 }
 
 export const VERSION_OVERRIDE_HEADER =
@@ -154,6 +156,7 @@ function normalizeBaseUrl(baseUrl: string): string {
 }
 
 export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
+  const traceHeaders = filterTraceHeaders(config.traceHeaders);
   const send = (
     body: ResponsesRequest,
     options: ResponsesSendOptions,
@@ -188,6 +191,7 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
     const headers: Record<string, string> = {
       "HTTP-Referer": BENCH_HARNESS_APP_REFERRER,
       "X-OpenRouter-Title": BENCH_HARNESS_APP_TITLE,
+      ...traceHeaders,
       ...options.extraHeaders,
       ...(options.versionOverride
         ? { [VERSION_OVERRIDE_HEADER]: `api="${options.versionOverride}"` }
