@@ -20,6 +20,8 @@ export const auxiliaryUsageGenerationIdCollector =
 export const resolvedSourceGenerationIdCollector =
   unsafeMakeHashSet<string>(empty());
 
+export const childGenerationRootCollector = unsafeMakeHashSet<string>(empty());
+
 export const auxiliaryUsageRef: FiberRef<boolean> = unsafeMake(false);
 
 export function withAuxiliaryUsage<A, E, R>(
@@ -31,7 +33,8 @@ export function withAuxiliaryUsage<A, E, R>(
 export function recordGenerationId(
   id: string | null | undefined,
   isCacheHit = false,
-  isResolvedSource = false
+  isResolvedSource = false,
+  shouldResolveChildren = false
 ): Effect<void> {
   if (id === null || id === undefined || id.length === 0) {
     return succeed(undefined);
@@ -47,6 +50,11 @@ export function recordGenerationId(
         zipRight(update(resolvedSourceGenerationIdCollector, add(generationId)))
       );
     }
+  }
+  if (shouldResolveChildren) {
+    record = record.pipe(
+      zipRight(update(childGenerationRootCollector, add(generationId)))
+    );
   }
   return get(auxiliaryUsageRef).pipe(
     flatMap((isAuxiliary) =>
@@ -67,7 +75,8 @@ export const resetGenerationIds: Effect<void> = set(
 ).pipe(
   zipRight(set(cacheHitGenerationIdCollector, empty<string>())),
   zipRight(set(auxiliaryUsageGenerationIdCollector, empty<string>())),
-  zipRight(set(resolvedSourceGenerationIdCollector, empty<string>()))
+  zipRight(set(resolvedSourceGenerationIdCollector, empty<string>())),
+  zipRight(set(childGenerationRootCollector, empty<string>()))
 );
 
 export const getCollectedGenerationIds: Effect<readonly string[]> = get(
@@ -79,6 +88,7 @@ export interface GenerationIdEntry {
   readonly isCacheHit: boolean;
   readonly countsTowardUsage: boolean;
   readonly isResolvedSource: boolean;
+  readonly shouldResolveChildren: boolean;
 }
 
 export const getCollectedGenerationIdEntries: Effect<
@@ -88,13 +98,15 @@ export const getCollectedGenerationIdEntries: Effect<
   get(cacheHitGenerationIdCollector),
   get(auxiliaryUsageGenerationIdCollector),
   get(resolvedSourceGenerationIdCollector),
+  get(childGenerationRootCollector),
 ]).pipe(
-  map(([ids, cacheHitIds, auxiliaryIds, resolvedSourceIds]) =>
+  map(([ids, cacheHitIds, auxiliaryIds, resolvedSourceIds, childRootIds]) =>
     [...ids].map((id) => ({
       id,
       isCacheHit: has(cacheHitIds, id),
       countsTowardUsage: !has(auxiliaryIds, id),
       isResolvedSource: has(resolvedSourceIds, id),
+      shouldResolveChildren: has(childRootIds, id),
     }))
   )
 );

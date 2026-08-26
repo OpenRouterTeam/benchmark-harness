@@ -293,6 +293,27 @@ describe("searchSolver", () => {
       solver(initialTaskState({ id: "s", input: "q", target: { text: "t" } }))
     );
     expect(sentOptions?.extraHeaders).toBeUndefined();
+    expect(sentOptions?.resolveGenerationChildren).toBe(true);
+  });
+  it("does not resolve child generations for plugin search", async () => {
+    let sentOptions: ResponsesSendOptions | undefined;
+    const solver = searchSolver(
+      {
+        send: (_body, options) => {
+          sentOptions = options;
+          return effectSucceed(fixtureResult({ text: "x" }));
+        },
+      },
+      {
+        model: "m",
+        instructions: "i",
+        lane: makeLane({ webSearch: "plugin" }),
+      }
+    );
+    await runSolver(
+      solver(initialTaskState({ id: "s", input: "q", target: { text: "t" } }))
+    );
+    expect(sentOptions?.resolveGenerationChildren).toBeUndefined();
   });
   it("forwards provider flags without an endpoint id", async () => {
     let sentOptions: ResponsesSendOptions | undefined;

@@ -119,6 +119,7 @@ describe("judgeCall", () => {
         isCacheHit: true,
         countsTowardUsage: true,
         isResolvedSource: false,
+        shouldResolveChildren: false,
       },
     ]);
   });

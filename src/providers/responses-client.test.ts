@@ -453,7 +453,7 @@ describe("makeResponsesLayer", () => {
               const responses = yield* Responses;
               yield* responses.send(
                 { model: "m", input: [] },
-                { timeoutMs: 1000 }
+                { timeoutMs: 1000, resolveGenerationChildren: true }
               );
             })
           ),
@@ -472,6 +472,7 @@ describe("makeResponsesLayer", () => {
           isCacheHit: true,
           countsTowardUsage: true,
           isResolvedSource: true,
+          shouldResolveChildren: true,
         },
       ]);
     } finally {

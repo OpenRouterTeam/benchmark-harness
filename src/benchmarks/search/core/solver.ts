@@ -129,6 +129,9 @@ export function searchSolver(
             };
       const sendOptions = (): ResponsesSendOptions => ({
         timeoutMs: opts.timeoutMs ?? DEFAULT_SEARCH_TIMEOUT_MS,
+        ...(opts.lane.webSearch !== "plugin" && {
+          resolveGenerationChildren: true,
+        }),
         ...(extraHeaders !== undefined && { extraHeaders }),
         ...(opts.versionOverride !== undefined && {
           versionOverride: opts.versionOverride,

@@ -69,7 +69,7 @@ describe("resolveCollectedGenerations", () => {
       resolveSourceGeneration: (generationId) => {
         requested.push(generationId);
         return succeed({
-          sourceId: `source-of-${generationId}`,
+          sourceIds: [`source-of-${generationId}`],
           usage: SOURCE_USAGE,
         });
       },
@@ -107,7 +107,7 @@ describe("resolveCollectedGenerations", () => {
           includeUsage: options?.includeUsage,
         });
         return succeed({
-          sourceId: `source-of-${generationId}`,
+          sourceIds: [`source-of-${generationId}`],
           ...(options?.includeUsage === false ? {} : { usage: SOURCE_USAGE }),
         });
       },
@@ -154,7 +154,7 @@ describe("resolveCollectedGenerations", () => {
       resolveSourceGeneration: (generationId, options) => {
         requested.push(generationId);
         return succeed({
-          sourceId: generationId,
+          sourceIds: [generationId],
           ...(options?.includeUsage === false ? {} : { usage: SOURCE_USAGE }),
         });
       },
@@ -179,7 +179,7 @@ describe("resolveCollectedGenerations", () => {
   it("omits usage for entries that resolve without usage", async () => {
     const resolver: GenerationResolverService = {
       resolveSourceGeneration: (generationId) =>
-        succeed({ sourceId: `source-of-${generationId}` }),
+        succeed({ sourceIds: [`source-of-${generationId}`] }),
     };
     const resolved = await runPromise(
       resetGenerationIds.pipe(
@@ -189,6 +189,31 @@ describe("resolveCollectedGenerations", () => {
       )
     );
     expect(resolved.ids).toEqual(["source-of-gen-dummy"]);
+    expect(resolved.replayedUsage).toBeUndefined();
+  });
+  it("replaces marked server-tools roots with their child generation ids", async () => {
+    const requested: {
+      id: string;
+      includeRelated: boolean | undefined;
+    }[] = [];
+    const resolver: GenerationResolverService = {
+      resolveSourceGeneration: (generationId, options) => {
+        requested.push({
+          id: generationId,
+          includeRelated: options?.includeRelated,
+        });
+        return succeed({ sourceIds: ["gen-child-1", "gen-child-2"] });
+      },
+    };
+    const resolved = await runPromise(
+      resetGenerationIds.pipe(
+        flatMap(() => recordGenerationId("gen-root", false, false, true)),
+        flatMap(() => resolveCollectedGenerations),
+        provideService(GenerationResolver, resolver)
+      )
+    );
+    expect(requested).toEqual([{ id: "gen-root", includeRelated: true }]);
+    expect(resolved.ids).toEqual(["gen-child-1", "gen-child-2"]);
     expect(resolved.replayedUsage).toBeUndefined();
   });
 });
@@ -219,7 +244,7 @@ describe("makeOpenRouterGenerationResolver", () => {
       resolver.resolveSourceGeneration("gen-dummy")
     );
     expect(resolved).toEqual({
-      sourceId: "gen-original",
+      sourceIds: ["gen-original"],
       usage: SOURCE_USAGE,
     });
     expect(getCalls()).toEqual([
@@ -240,7 +265,7 @@ describe("makeOpenRouterGenerationResolver", () => {
     const resolved = await runPromise(
       resolver.resolveSourceGeneration("gen-dummy", { includeUsage: false })
     );
-    expect(resolved).toEqual({ sourceId: "gen-original" });
+    expect(resolved).toEqual({ sourceIds: ["gen-original"] });
     expect(getCalls()).toEqual([
       "https://example.com/api/v1/generation?id=gen-dummy",
     ]);
@@ -265,7 +290,7 @@ describe("makeOpenRouterGenerationResolver", () => {
     const resolved = await runPromise(
       resolver.resolveSourceGeneration("gen-dummy")
     );
-    expect(resolved?.sourceId).toBe("gen-original");
+    expect(resolved?.sourceIds).toEqual(["gen-original"]);
     expect(getCalls().filter((url) => url.includes("gen-dummy")).length).toBe(
       3
     );
@@ -306,7 +331,10 @@ describe("makeOpenRouterGenerationResolver", () => {
     const resolved = await runPromise(
       resolver.resolveSourceGeneration("gen-source")
     );
-    expect(resolved).toEqual({ sourceId: "gen-source", usage: SOURCE_USAGE });
+    expect(resolved).toEqual({
+      sourceIds: ["gen-source"],
+      usage: SOURCE_USAGE,
+    });
     expect(getCalls().length).toBe(1);
   });
   it("warns when the source generation has no usage fields", async () => {
@@ -371,7 +399,45 @@ describe("makeOpenRouterGenerationResolver", () => {
     const resolved = await runPromise(
       resolver.resolveSourceGeneration("gen-dummy")
     );
-    expect(resolved).toEqual({ sourceId: "gen-original" });
+    expect(resolved).toEqual({ sourceIds: ["gen-original"] });
     expect(getCalls().length).toBe(2);
+  });
+  it("resolves a server-tools root to its leaf generations", async () => {
+    const getCalls = mockFetch((url) => {
+      if (url.includes("gen-root")) {
+        return jsonResponse({
+          data: {
+            response_cache_source_id: null,
+            related_generation_ids: ["gen-child-1", "gen-child-2"],
+          },
+        });
+      }
+      return jsonResponse({
+        data: {
+          response_cache_source_id: null,
+          related_generation_ids: [],
+        },
+      });
+    });
+    const resolver = makeOpenRouterGenerationResolver({
+      apiKey: "test-key",
+      baseUrl: "https://example.com",
+      pollIntervalMs: 1,
+      maxAttempts: 1,
+    });
+    const resolved = await runPromise(
+      resolver.resolveSourceGeneration("gen-root", {
+        includeRelated: true,
+        includeUsage: false,
+      })
+    );
+    expect(resolved).toEqual({
+      sourceIds: ["gen-child-1", "gen-child-2"],
+    });
+    expect(getCalls()).toEqual([
+      "https://example.com/api/v1/generation?id=gen-root&include_related=true",
+      "https://example.com/api/v1/generation?id=gen-child-1&include_related=true",
+      "https://example.com/api/v1/generation?id=gen-child-2&include_related=true",
+    ]);
   });
 });
