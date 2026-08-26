@@ -1,7 +1,12 @@
 import type { Effect } from "effect/Effect";
 import { succeed } from "effect/Effect";
 
-import type { ChatMessage, Score, Target, TaskState } from "../../harness/core";
+import type {
+  ModelMessage,
+  Score,
+  Target,
+  TaskState,
+} from "../../harness/core";
 import { MessageRole, ScoreValue } from "../../harness/core";
 import type { ScorerService } from "../../harness/scorer";
 import { Either } from "../../internal/either";
@@ -25,7 +30,7 @@ function isTau2Task(val: unknown): val is Tau2Task {
 }
 
 function collectToolCalls(
-  messages: readonly ChatMessage[]
+  messages: readonly ModelMessage[]
 ): PredictedToolCall[] {
   const calls: PredictedToolCall[] = [];
   for (const m of messages) {

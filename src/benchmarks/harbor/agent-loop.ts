@@ -9,7 +9,7 @@ import {
 } from "effect/Effect";
 
 import type {
-  ChatMessage,
+  ModelMessage,
   ModelError,
   ModelUsage,
   SolverError,
@@ -68,7 +68,7 @@ export interface AgentLoopInput {
 
 export interface AgentLoopResult {
   readonly input: ResponsesInputItem[];
-  readonly messages: ChatMessage[];
+  readonly messages: ModelMessage[];
   readonly usage: ModelUsage;
   readonly generationTimeMs: number;
   readonly finalText: string;
@@ -173,7 +173,7 @@ export function runAgentLoop(
     }
     return {
       input: conversation,
-      messages: itemsToChatMessages(conversation),
+      messages: itemsToModelMessages(conversation),
       usage: toModelUsage(acc),
       generationTimeMs,
       finalText,
@@ -329,10 +329,10 @@ function truncateCommand(command: string): string {
     : command;
 }
 
-export function itemsToChatMessages(
+export function itemsToModelMessages(
   items: readonly ResponsesInputItem[]
-): ChatMessage[] {
-  const messages: ChatMessage[] = [];
+): ModelMessage[] {
+  const messages: ModelMessage[] = [];
   for (const item of items) {
     const type = item["type"];
     if (type === "message" || type === undefined) {
