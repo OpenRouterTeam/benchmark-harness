@@ -323,6 +323,36 @@ describe("sample-result resume", () => {
     }
   });
 
+  it("T8: persisted record with mismatched identity is logged and re-evaluated", async () => {
+    const backing = makeInMemoryStore(run1Store.map);
+    const misMappingStore: SampleResultStoreService = {
+      read: (key) => backing.read(`s1/${key.split("/")[1]}`),
+      write: backing.write,
+    };
+    const warn = spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      const { result, counters } = await runWithStore(misMappingStore);
+      expect(counters.solver).toBe(4);
+      expect(counters.scorer).toBe(4);
+      expect(summarize(result)).toEqual(run1Summary);
+      expect(result.metrics.totalQuestions).toBe(run1Metrics.total);
+      expect(result.metrics.accuracy).toBeCloseTo(run1Metrics.accuracy, 5);
+      const warned = warn.mock.calls.map((call) =>
+        call.map((arg) => JSON.stringify(arg)).join(" ")
+      );
+      expect(
+        warned.some(
+          (line) =>
+            line.includes("Persisted sample outcome identity mismatch") &&
+            line.includes("s2/0") &&
+            line.includes("s1")
+        )
+      ).toBe(true);
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
   it("T6: scorer trajectory survives persistence and resume", async () => {
     const trajectoryScorer: ScorerService = (state, target) =>
       mcqScorer(state, target).pipe(

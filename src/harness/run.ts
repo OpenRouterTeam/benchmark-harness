@@ -228,12 +228,21 @@ function evaluateOneResumable(
     if (raw !== null && raw !== undefined) {
       const persisted = parseSchema(PersistedSampleOutcomeSchema, raw);
       if (Either.isRight(persisted)) {
-        return persisted.right;
+        const { sampleId, epoch: persistedEpoch } = persisted.right.sampleScore;
+        if (sampleId === sample.id && persistedEpoch === epoch) {
+          return persisted.right;
+        }
+        wLog("Persisted sample outcome identity mismatch; re-evaluating", {
+          sample_result_key: key,
+          persisted_sample_id: sampleId,
+          persisted_epoch: persistedEpoch,
+        });
+      } else {
+        wLog("Persisted sample outcome failed validation; re-evaluating", {
+          sample_result_key: key,
+          error: firstZodIssueMessage(persisted.left),
+        });
       }
-      wLog("Persisted sample outcome failed validation; re-evaluating", {
-        sample_result_key: key,
-        error: firstZodIssueMessage(persisted.left),
-      });
     }
     const outcome = yield* evaluateOne(opts);
     if (outcome.isDegraded === true) {
