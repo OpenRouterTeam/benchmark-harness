@@ -15,7 +15,7 @@ import type {
   MmluProBenchmarkConfig,
 } from "./benchmark-config";
 import { MMLU_PRO_META } from "./benchmark-meta";
-import { defineChatBenchmark } from "./define-chat-benchmark";
+import { defineSingleTurnBenchmark } from "./define-single-turn-benchmark";
 import { makeMmluProFewShotDatasetLayer } from "./mmlu-pro-dataset";
 import type { MmluProCotExamplesByCategory } from "./mmlu-pro-prompt";
 import { buildMmluProPrompt } from "./mmlu-pro-prompt";
@@ -148,7 +148,7 @@ function mmluProRunLevelScores(result: RunResult): readonly {
   ];
 }
 
-const MMLU_PRO_CHAT_BENCHMARK = defineChatBenchmark({
+const MMLU_PRO_SINGLE_TURN_BENCHMARK = defineSingleTurnBenchmark({
   id: "mmlu_pro",
   temperature: MMLU_PRO_TEMPERATURE,
   defaultEpochs: MMLU_PRO_META.defaultEpochs,
@@ -176,6 +176,6 @@ const MMLU_PRO_CHAT_BENCHMARK = defineChatBenchmark({
 });
 
 export const MMLU_PRO_BENCHMARK: Benchmark = {
-  ...MMLU_PRO_CHAT_BENCHMARK,
+  ...MMLU_PRO_SINGLE_TURN_BENCHMARK,
   runLevelScores: mmluProRunLevelScores,
 };

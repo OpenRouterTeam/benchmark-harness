@@ -16,7 +16,7 @@ import type {
   InferenceOverride,
 } from "../benchmark-config";
 import { IFSTRUCT_META } from "../benchmark-meta";
-import { defineChatBenchmark } from "../define-chat-benchmark";
+import { defineSingleTurnBenchmark } from "../define-single-turn-benchmark";
 import type { Benchmark } from "../types";
 import type {
   IfStructRequirements,
@@ -143,7 +143,7 @@ export function makeIfStructDatasetLayer(
   });
 }
 
-export const IFSTRUCT_BENCHMARK: Benchmark = defineChatBenchmark({
+export const IFSTRUCT_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
   id: "ifstruct",
   temperature: IFSTRUCT_TEMPERATURE,
   defaultEpochs: IFSTRUCT_META.defaultEpochs,

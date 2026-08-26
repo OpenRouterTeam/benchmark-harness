@@ -4,7 +4,7 @@ import assert from "node:assert";
 import type { AsyncBuffer } from "hyparquet";
 import { parquetMetadata } from "hyparquet";
 
-import type { ChatMessage, ResponseItem } from "../harness/core";
+import type { ModelMessage, ResponseItem } from "../harness/core";
 import { MessageRole, ScoreValue } from "../harness/core";
 import type { SampleScore } from "../harness/metric";
 import { assertRight, assertLeft } from "../internal/testing";
@@ -344,7 +344,7 @@ describe("runResultToParquet", () => {
     expect(rowScoreToNumber("I")).toBe(0);
   });
   it("serializes message trajectories as a JSON column", async () => {
-    const messages: readonly ChatMessage[] = [
+    const messages: readonly ModelMessage[] = [
       { role: MessageRole.System, content: "You are a helpful assistant." },
       { role: MessageRole.User, content: "What is 2+2?" },
       { role: MessageRole.Assistant, content: "Answer: B" },
@@ -378,7 +378,7 @@ describe("runResultToParquet", () => {
     ]);
   });
   it("serializes tool calls and tool_call_id in the messages JSON", async () => {
-    const messages: readonly ChatMessage[] = [
+    const messages: readonly ModelMessage[] = [
       {
         role: MessageRole.Assistant,
         content: "",
@@ -424,7 +424,7 @@ describe("runResultToParquet", () => {
     expect(parsed[1]).not.toHaveProperty("tool_calls");
   });
   it("serializes assistant reasoning traces in the messages JSON", async () => {
-    const messages: readonly ChatMessage[] = [
+    const messages: readonly ModelMessage[] = [
       {
         role: MessageRole.Assistant,
         content: "Answer: B",
@@ -455,7 +455,7 @@ describe("runResultToParquet", () => {
     expect(parsed[0]?.["reasoning"]).toBe("Step 1: ...");
   });
   it("serializes multimodal content parts (image_url) in the messages JSON", async () => {
-    const messages: readonly ChatMessage[] = [
+    const messages: readonly ModelMessage[] = [
       {
         role: MessageRole.User,
         content: "What is this image?",
@@ -498,7 +498,7 @@ describe("runResultToParquet", () => {
     ]);
   });
   it("serializes assistant citations (camelCase→snake_case) in the messages JSON", async () => {
-    const messages: readonly ChatMessage[] = [
+    const messages: readonly ModelMessage[] = [
       {
         role: MessageRole.Assistant,
         content: "Answer based on sources.",

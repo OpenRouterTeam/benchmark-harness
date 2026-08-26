@@ -17,7 +17,7 @@ import type {
   VgiBenchmarkConfig,
 } from "../benchmark-config";
 import { VGI_BENCH_META } from "../benchmark-meta";
-import { defineChatBenchmark } from "../define-chat-benchmark";
+import { defineSingleTurnBenchmark } from "../define-single-turn-benchmark";
 import { mcqScorer } from "../scorers/mcq/scorer";
 import type { Benchmark } from "../types";
 import type { VgiBenchMediaManifest } from "./media-manifest";
@@ -272,7 +272,7 @@ function vgiBenchRunLevelScores(result: RunResult): readonly {
   ];
 }
 
-const VGI_BENCH_CHAT_BENCHMARK = defineChatBenchmark({
+const VGI_BENCH_SINGLE_TURN_BENCHMARK = defineSingleTurnBenchmark({
   id: VGI_BENCH_META.id,
   temperature: VGI_BENCH_TEMPERATURE,
   defaultEpochs: VGI_BENCH_META.defaultEpochs,
@@ -315,6 +315,6 @@ const VGI_BENCH_CHAT_BENCHMARK = defineChatBenchmark({
 });
 
 export const VGI_BENCH_BENCHMARK: Benchmark = {
-  ...VGI_BENCH_CHAT_BENCHMARK,
+  ...VGI_BENCH_SINGLE_TURN_BENCHMARK,
   runLevelScores: vgiBenchRunLevelScores,
 };

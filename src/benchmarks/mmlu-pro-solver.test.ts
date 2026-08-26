@@ -8,7 +8,7 @@ import {
   noopCheckpointLayer,
   noopProgressLayer,
 } from "../../test/helpers/noop-progress-layer";
-import type { ChatMessage, ModelError, ModelOutput } from "../harness/core";
+import type { ModelMessage, ModelError, ModelOutput } from "../harness/core";
 import { initialTaskState, MessageRole } from "../harness/core";
 import type { GenerateConfig, ModelService } from "../harness/model";
 import { MMLU_PRO_TEMPERATURE, mmluProSolver } from "./mmlu-pro";
@@ -16,11 +16,11 @@ describe("mmluProSolver", () => {
   it("uses canonical sampling defaults and sends one user message", async () => {
     const recorded: {
       config?: GenerateConfig;
-      messages?: readonly ChatMessage[];
+      messages?: readonly ModelMessage[];
     } = {};
     const model: ModelService = {
       generate: (
-        messages: readonly ChatMessage[],
+        messages: readonly ModelMessage[],
         config: GenerateConfig
       ): Effect<ModelOutput, ModelError> => {
         recorded.messages = messages;

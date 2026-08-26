@@ -3,7 +3,7 @@ import type { Semaphore } from "effect/Effect";
 import { gen, mapError, provideService } from "effect/Effect";
 
 import type {
-  ChatMessage,
+  ModelMessage,
   ModelUsage,
   TaskState,
   ToolDefinition,
@@ -14,6 +14,7 @@ import type { SolverService } from "../../harness/solver";
 import { Either } from "../../internal/either";
 import { definedValues } from "../../internal/guards";
 import { parseSchema } from "../../internal/zod";
+import type { ResponsesModelService } from "../../providers/responses-model";
 import {
   buildBankingAgentSystemPrompt,
   DEFAULT_FIRST_AGENT_MESSAGE,
@@ -70,7 +71,7 @@ const Role = {
 
 type Role = (typeof Role)[keyof typeof Role];
 
-function lastAssistantText(messages: readonly ChatMessage[]): string {
+function lastAssistantText(messages: readonly ModelMessage[]): string {
   for (let i = messages.length - 1; i >= 0; i--) {
     if (messages[i]!.role === MessageRole.Assistant) {
       return messages[i]!.content;
@@ -93,7 +94,7 @@ type UserTurnState = "initial" | "continuing_tools" | "awaiting_reply";
 function selectUserTurnEffect(opts: {
   readonly userSim: UserSimulator;
   readonly turnState: UserTurnState;
-  readonly messages: readonly ChatMessage[];
+  readonly messages: readonly ModelMessage[];
 }): ReturnType<UserSimulator["step"]> {
   switch (opts.turnState) {
     case "initial": {
@@ -117,11 +118,13 @@ function isToolErrorResult(result: string): boolean {
 
 export function bankingSolver({
   model,
+  userModel,
   client,
   dataFetchLock,
   opts,
 }: {
   readonly model: ModelService;
+  readonly userModel: ResponsesModelService;
   readonly client: HttpClient.HttpClient;
   readonly dataFetchLock: Semaphore;
   readonly opts?: SolverOpts;
@@ -197,14 +200,14 @@ export function bankingSolver({
       );
       registerInitialDiscoverableTools();
       const userToolDefs = selectUserToolDefinitions(task.user_tools ?? []);
-      const userSim = new UserSimulator(userModelConfig);
+      const userSim = new UserSimulator(userModel, userModelConfig);
       userSim.setAvailableTools(userToolDefs);
       userSim.reset(state.sample.input, DEFAULT_FIRST_AGENT_MESSAGE);
       const systemPrompt = buildBankingAgentSystemPrompt({
         requiredDocIds,
         retrievalConfig,
       });
-      const messages: ChatMessage[] = [
+      const messages: ModelMessage[] = [
         { role: MessageRole.System, content: systemPrompt },
         { role: MessageRole.Assistant, content: DEFAULT_FIRST_AGENT_MESSAGE },
       ];
