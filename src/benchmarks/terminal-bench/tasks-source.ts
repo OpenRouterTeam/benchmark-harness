@@ -174,10 +174,12 @@ async function cloneTasks(): Promise<string> {
       TERMINAL_BENCH_SOURCE_COMMIT
     )
   ) {
-    if (hasTasks(shared) && isAtPinnedCommit(shared)) {
-      const tasksDir = join(shared, TERMINAL_BENCH_TASKS_SUBDIR);
-      cacheRoot = tasksDir;
-      return tasksDir;
+    const resolved = isAtPinnedCommit(shared)
+      ? resolveTasksDir(shared)
+      : undefined;
+    if (resolved !== undefined) {
+      cacheRoot = resolved;
+      return resolved;
     }
     wLog("GCS checkout hydration produced an unusable tree; re-cloning", {
       shared,
