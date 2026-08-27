@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
 import { join } from "node:path";
 import type { Readable, Writable } from "node:stream";
-import { pipeline } from "node:stream/promises";
+import { finished, pipeline } from "node:stream/promises";
 
 import { getGcsStorage } from "../internal/gcs";
 import { wLog } from "../internal/log";
@@ -71,13 +71,18 @@ export async function pipeTarGzTo(dir: string, dest: Writable): Promise<void> {
   }
   const exit = waitForTar(proc, "create");
   try {
-    await pipeline(proc.stdout, dest);
+    await pipeline(proc.stdout, dest, { end: false });
+    await exit;
+    dest.end();
+    await finished(dest);
   } catch (error) {
+    const destinationError =
+      error instanceof Error ? error : new Error(String(error));
+    dest.destroy(destinationError);
     proc.kill();
     await exit.catch(() => undefined);
     throw error;
   }
-  await exit;
 }
 
 export async function extractTarGzFrom(

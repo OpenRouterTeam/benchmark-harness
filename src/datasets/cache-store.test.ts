@@ -63,6 +63,7 @@ function makeMemoryGcsClient(): GcsObjectClient & {
           updated: Date.now(),
         });
       });
+      stream.on("error", () => {});
       return stream;
     },
     async objectUpdatedMs(key) {
@@ -197,12 +198,17 @@ describe("GcsCacheStore", () => {
     ).resolves.toBe(false);
   });
 
-  it("surfaces a nonzero tar exit instead of silently succeeding", async () => {
+  it("aborts the upload when tar exits nonzero", async () => {
+    const client = makeMemoryGcsClient();
     const dir = makeTmpDir();
-    const dest = new PassThrough();
-    await expect(pipeTarGzTo(join(dir, "missing"), dest)).rejects.toThrow(
-      "tar create exited"
-    );
+    const snapshotKey = "repos/harbor-missing.tar.gz";
+    await expect(
+      pipeTarGzTo(
+        join(dir, "missing"),
+        client.openObjectWriteStream(snapshotKey, "application/gzip")
+      )
+    ).rejects.toThrow("tar create exited");
+    expect(client.store.has(snapshotKey)).toBe(false);
   });
 
   it("does not export full-buffer tar helpers", async () => {
