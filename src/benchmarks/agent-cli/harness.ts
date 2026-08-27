@@ -17,7 +17,16 @@ const NVM_INSTALL_URL =
 export const ORI_INSTALL_DIR = "/usr/local/bin" as const;
 
 export const DEFAULT_PI_AGENT_PACKAGE =
-  "@earendil-works/pi-coding-agent@latest" as const;
+  "@earendil-works/pi-coding-agent@0.84.2" as const;
+
+export const DEFAULT_PRIME_AGENT_PACKAGE =
+  "https://pub-728493de92a943e2a9b2d17b4719f318.r2.dev/releases/v0.8.0/prime-agent-0.8.0.tgz" as const;
+
+export const DEFAULT_AGENT_RUNTIME_URL =
+  "https://github.com/OpenRouterTeam/benchmark-harness/releases/download/agent-runtime-v1/agent-runtime-linux-x64-v1.tar.zst" as const;
+
+export const DEFAULT_AGENT_RUNTIME_SHA256 =
+  "3b4ab1055d41257071860235867f31b5934e7e9c08fa57644d2888d435293bf3" as const;
 
 export interface OriRunScriptOptions {
   readonly instructionPath: string;
@@ -66,14 +75,42 @@ export interface OriHarnessDef {
 function buildImageSteps(opts: {
   agentPackage: string;
   binaryName: string;
+  installCommand?: string;
 }): string[] {
+  const installCommand =
+    opts.installCommand ?? `npm install -g ${opts.agentPackage}`;
   return [
     "RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates git",
     "ENV NVM_DIR=/root/.nvm",
     `RUN curl -o- ${NVM_INSTALL_URL} | bash`,
-    `RUN . /root/.nvm/nvm.sh && nvm install ${NODE_VERSION} && npm install -g ${opts.agentPackage} && ln -sf $(which ${opts.binaryName}) /usr/local/bin/${opts.binaryName} && ln -sf $(which node) /usr/local/bin/node && ln -sf $(which npm) /usr/local/bin/npm`,
+    `RUN . /root/.nvm/nvm.sh && nvm install ${NODE_VERSION} && ${installCommand} && ln -sf $(which ${opts.binaryName}) /usr/local/bin/${opts.binaryName} && ln -sf $(which node) /usr/local/bin/node && ln -sf $(which npm) /usr/local/bin/npm`,
     `RUN ${opts.binaryName} --version`,
   ];
+}
+
+function buildAgentImageSteps(opts: {
+  agentPackage: string;
+  binaryName: string;
+  defaultPackage: string;
+  installCommand?: string;
+}): string[] {
+  if (opts.agentPackage === opts.defaultPackage) {
+    const archivePath = "/tmp/agent-runtime.tar.zst";
+    return [
+      "RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates git zstd",
+      `RUN curl -fsSL ${JSON.stringify(DEFAULT_AGENT_RUNTIME_URL)} -o ${archivePath} && echo "${DEFAULT_AGENT_RUNTIME_SHA256}  ${archivePath}" | sha256sum -c - && zstd -dc ${archivePath} | tar -x -C / && rm -f ${archivePath}`,
+      'ENV PATH="/root/.local/bin:$PATH"',
+      "RUN ln -sf /opt/agent-runtime/app/node_modules/.bin/claude /usr/local/bin/claude && ln -sf /opt/agent-runtime/app/node_modules/.bin/pi /usr/local/bin/pi && ln -sf /opt/agent-runtime/app/node_modules/.bin/prime-agent /usr/local/bin/prime-agent && ln -sf /opt/agent-runtime/node/bin/node /usr/local/bin/node && ln -sf /opt/agent-runtime/node/bin/npm /usr/local/bin/npm && ln -sf /opt/agent-runtime/node/bin/npx /usr/local/bin/npx",
+      `RUN ${opts.binaryName} --version`,
+    ];
+  }
+  return buildImageSteps({
+    agentPackage: opts.agentPackage,
+    binaryName: opts.binaryName,
+    ...(opts.installCommand !== undefined && {
+      installCommand: opts.installCommand,
+    }),
+  });
 }
 
 function buildBootstrapScript(opts: {
@@ -269,7 +306,11 @@ const CLAUDE_HARNESS: OriHarnessDef = {
   binaryName: "claude",
   remoteLogPath: "/logs/agent/claude.txt",
   imageBuildSteps: (options) =>
-    buildImageSteps({ ...options, binaryName: "claude" }),
+    buildAgentImageSteps({
+      ...options,
+      binaryName: "claude",
+      defaultPackage: DEFAULT_CLAUDE_PACKAGE,
+    }),
   buildBootstrapScript: (options) =>
     buildBootstrapScript({ ...options, binaryName: "claude" }),
   buildRunScript: (options) =>
@@ -310,7 +351,11 @@ const ORI_PI_HARNESS: OriHarnessDef = {
   binaryName: "pi",
   remoteLogPath: "/logs/agent/pi.txt",
   imageBuildSteps: (options) =>
-    buildImageSteps({ ...options, binaryName: "pi" }),
+    buildAgentImageSteps({
+      ...options,
+      binaryName: "pi",
+      defaultPackage: DEFAULT_PI_AGENT_PACKAGE,
+    }),
   buildBootstrapScript: (options) =>
     buildBootstrapScript({ ...options, binaryName: "pi" }),
   buildRunScript: (options) =>
@@ -342,23 +387,81 @@ const ORI_PI_HARNESS: OriHarnessDef = {
       `  "$(cat ${options.instructionPath})" \\`,
       `  2>&1 </dev/null | grep -v '"type":"message_update"' | stdbuf -oL tee ${options.logPath}`,
     ].join("\n"),
-  parseRun: parsePiStream,
+  parseRun: parseJsonAgentStream,
+};
+
+const PRIME_AGENT_HARNESS: OriHarnessDef = {
+  id: "prime-agent",
+  defaultPackage: DEFAULT_PRIME_AGENT_PACKAGE,
+  binaryName: "prime-agent",
+  remoteLogPath: "/logs/agent/prime-agent.txt",
+  imageBuildSteps: (options) =>
+    buildAgentImageSteps({
+      ...options,
+      binaryName: "prime-agent",
+      defaultPackage: DEFAULT_PRIME_AGENT_PACKAGE,
+      installCommand: [
+        "PRIME_AGENT_BOOTSTRAP_TOOLS_ON_INSTALL=1",
+        "PRIME_AGENT_BOOTSTRAP_KERNEL_ON_INSTALL=1",
+        "PRIME_AGENT_INSTALL_UV=1",
+        "npm install -g --no-fund --no-audit --loglevel=error --progress=false",
+        JSON.stringify(options.agentPackage),
+      ].join(" "),
+    }),
+  buildBootstrapScript: (options) =>
+    buildBootstrapScript({ ...options, binaryName: "prime-agent" }),
+  buildRunScript: (options) =>
+    [
+      "set -euo pipefail",
+      "export HOME=/root",
+      "mkdir -p /logs/agent",
+      ...(options.hasDisallowedTools
+        ? ['echo "Prime Agent does not support disallowedTools" >&2', "exit 2"]
+        : []),
+      'ori prime-agent --model "$TB_MODEL" \\',
+      `  --reasoning-effort ${options.reasoningEffort} -- \\`,
+      "  --print --mode json --no-session \\",
+      ...(options.hasSystemPrompt
+        ? ['  --system-prompt "$TB_SYSTEM_PROMPT" \\']
+        : []),
+      ...(options.hasAppendSystemPrompt
+        ? ['  --append-system-prompt "$TB_APPEND_SYSTEM_PROMPT" \\']
+        : []),
+      ...(options.hasAllowedTools
+        ? [`  --tools "\${TB_ALLOWED_TOOLS// /,}" \\`]
+        : []),
+      ...(options.isolateAgentConfig
+        ? [
+            "  --no-extensions \\",
+            "  --no-skills \\",
+            "  --no-prompt-templates \\",
+            "  --no-themes \\",
+            "  --no-context-files \\",
+          ]
+        : []),
+      "  -- \\",
+      `  "$(cat ${options.instructionPath})" \\`,
+      `  2>&1 </dev/null | grep -v '"type":"message_update"' | stdbuf -oL tee ${options.logPath}`,
+    ].join("\n"),
+  parseRun: parseJsonAgentStream,
 };
 
 export const ORI_HARNESSES: Readonly<Record<OriAgent, OriHarnessDef>> = {
   claude: CLAUDE_HARNESS,
   pi: ORI_PI_HARNESS,
+  "prime-agent": PRIME_AGENT_HARNESS,
 };
 
 export function getOriHarness(agent: OriAgent): OriHarnessDef {
   return ORI_HARNESSES[agent];
 }
 
-function parsePiStream(stdout: string): OriAgentRun {
+function parseJsonAgentStream(stdout: string): OriAgentRun {
   let inputTokens = 0;
   let outputTokens = 0;
   let cacheRead = 0;
   let cacheWrite = 0;
+  let totalTokens = 0;
   let reasoningTokens = 0;
   let totalCost = 0;
   let turns = 0;
@@ -408,24 +511,51 @@ function parsePiStream(stdout: string): OriAgentRun {
     if (typeof errorMessage === "string" && errorMessage.length > 0) {
       isError = true;
       apiErrorStatus = errorMessage;
-    } else if (message["stopReason"] === "error") {
+    } else if (
+      message["stopReason"] === "error" ||
+      message["stopReason"] === "aborted"
+    ) {
       isError = true;
     }
-    const text = textFromPiContent(message["content"]);
+    const text = textFromContent(message["content"]);
+    const reasoning = reasoningFromContent(message["content"]);
+    const model = optionalStringField(message, "model");
     if (text.length > 0) {
       finalText = text;
-      assistantMessages.push({ role: MessageRole.Assistant, content: text });
+    }
+    if (text.length > 0 || reasoning !== undefined) {
+      assistantMessages.push({
+        role: MessageRole.Assistant,
+        content: text,
+        ...(reasoning !== undefined && { reasoning }),
+        ...(model !== undefined && { model }),
+      });
     }
     const { usage } = message;
     if (!isRecord(usage)) {
       continue;
     }
-    inputTokens += typeof usage["input"] === "number" ? usage["input"] : 0;
-    outputTokens += typeof usage["output"] === "number" ? usage["output"] : 0;
-    cacheRead +=
+    const eventInputTokens =
+      typeof usage["input"] === "number" ? usage["input"] : 0;
+    const eventOutputTokens =
+      typeof usage["output"] === "number" ? usage["output"] : 0;
+    const eventCacheRead =
       typeof usage["cacheRead"] === "number" ? usage["cacheRead"] : 0;
-    cacheWrite +=
+    const eventCacheWrite =
       typeof usage["cacheWrite"] === "number" ? usage["cacheWrite"] : 0;
+    const eventTotalTokens =
+      typeof usage["totalTokens"] === "number" ? usage["totalTokens"] : 0;
+    inputTokens += eventInputTokens;
+    outputTokens += eventOutputTokens;
+    cacheRead += eventCacheRead;
+    cacheWrite += eventCacheWrite;
+    totalTokens +=
+      eventTotalTokens !== 0
+        ? eventTotalTokens
+        : eventInputTokens +
+          eventOutputTokens +
+          eventCacheRead +
+          eventCacheWrite;
     reasoningTokens +=
       typeof usage["reasoning"] === "number" ? usage["reasoning"] : 0;
     const { cost } = usage;
@@ -433,17 +563,13 @@ function parsePiStream(stdout: string): OriAgentRun {
       totalCost += typeof cost["total"] === "number" ? cost["total"] : 0;
     }
   }
-  const hasTokens =
-    inputTokens !== 0 ||
-    outputTokens !== 0 ||
-    cacheRead !== 0 ||
-    cacheWrite !== 0;
+  const hasTokens = totalTokens !== 0;
   return {
     usage: hasTokens
       ? {
           inputTokens: inputTokens + cacheRead + cacheWrite,
           outputTokens,
-          totalTokens: inputTokens + outputTokens + cacheRead + cacheWrite,
+          totalTokens,
           reasoningTokens,
           totalCost,
         }
@@ -458,24 +584,4 @@ function parsePiStream(stdout: string): OriAgentRun {
     turns: turns > 0 ? turns : undefined,
     toolCalls,
   };
-}
-
-function textFromPiContent(content: unknown): string {
-  if (typeof content === "string") {
-    return content;
-  }
-  if (!Array.isArray(content)) {
-    return "";
-  }
-  const parts: string[] = [];
-  for (const block of content) {
-    if (!isRecord(block)) {
-      continue;
-    }
-    const text = block["text"];
-    if (block["type"] === "text" && typeof text === "string") {
-      parts.push(text);
-    }
-  }
-  return parts.join("");
 }

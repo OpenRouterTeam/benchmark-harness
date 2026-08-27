@@ -1,10 +1,10 @@
 import type { ValueOf } from "../../internal/guards";
 
-export const ORI_AGENTS = ["pi", "claude"] as const;
+export const ORI_AGENTS = ["pi", "claude", "prime-agent"] as const;
 
 export type OriAgent = ValueOf<typeof ORI_AGENTS>;
 
-export const HARBOR_AGENTS = ["mini_swe", "pi", "claude"] as const;
+export const HARBOR_AGENTS = ["mini_swe", ...ORI_AGENTS] as const;
 
 export type HarborAgent = ValueOf<typeof HARBOR_AGENTS>;
 
@@ -25,7 +25,7 @@ export type OriReasoningEffort = ValueOf<typeof ORI_REASONING_EFFORTS>;
 export const DEFAULT_ORI_REASONING_EFFORT: OriReasoningEffort = "medium";
 
 export const DEFAULT_CLAUDE_PACKAGE =
-  "@anthropic-ai/claude-code@latest" as const;
+  "@anthropic-ai/claude-code@2.1.235" as const;
 
 export const DEFAULT_ORI_INSTALL_URL =
   "https://openrouter.ai/labs/ori/install.sh" as const;
