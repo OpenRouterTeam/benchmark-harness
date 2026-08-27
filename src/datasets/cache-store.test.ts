@@ -9,9 +9,14 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { PassThrough, Readable } from "node:stream";
 
 import type { GcsObjectClient } from "./cache-store";
-import { makeGcsCacheStore, resolveCacheStore } from "./cache-store";
+import {
+  makeGcsCacheStore,
+  pipeTarGzTo,
+  resolveCacheStore,
+} from "./cache-store";
 
 interface StoredObject {
   readonly content: Buffer;
@@ -42,6 +47,23 @@ function makeMemoryGcsClient(): GcsObjectClient & {
         contentType,
         updated: Date.now(),
       });
+    },
+    async openObjectReadStream(key) {
+      const obj = store.get(key);
+      return obj === undefined ? undefined : Readable.from(obj.content);
+    },
+    openObjectWriteStream(key, contentType) {
+      const stream = new PassThrough();
+      const chunks: Buffer[] = [];
+      stream.on("data", (chunk: Buffer) => chunks.push(Buffer.from(chunk)));
+      stream.on("finish", () => {
+        store.set(key, {
+          content: Buffer.concat(chunks),
+          contentType,
+          updated: Date.now(),
+        });
+      });
+      return stream;
     },
     async objectUpdatedMs(key) {
       const obj = store.get(key);
@@ -170,7 +192,23 @@ describe("GcsCacheStore", () => {
     const client = makeMemoryGcsClient();
     const store = makeGcsCacheStore({ bucket: "b", client });
     const dir = makeTmpDir();
-    expect(await store.tryHydrateCheckout(dir, "harbor", "abc123")).toBe(false);
+    await expect(
+      store.tryHydrateCheckout(dir, "harbor", "abc123")
+    ).resolves.toBe(false);
+  });
+
+  it("surfaces a nonzero tar exit instead of silently succeeding", async () => {
+    const dir = makeTmpDir();
+    const dest = new PassThrough();
+    await expect(pipeTarGzTo(join(dir, "missing"), dest)).rejects.toThrow(
+      "tar create exited"
+    );
+  });
+
+  it("does not export full-buffer tar helpers", async () => {
+    const cacheStore = await import("./cache-store");
+    expect("createTarGz" in cacheStore).toBe(false);
+    expect("extractTarGz" in cacheStore).toBe(false);
   });
 });
 

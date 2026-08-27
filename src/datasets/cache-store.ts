@@ -1,6 +1,7 @@
-import { execFile, spawn } from "node:child_process";
+import { spawn } from "node:child_process";
 import { join } from "node:path";
-import { promisify } from "node:util";
+import type { Readable, Writable } from "node:stream";
+import { pipeline } from "node:stream/promises";
 
 import { getGcsStorage } from "../internal/gcs";
 import { wLog } from "../internal/log";
@@ -43,40 +44,62 @@ export interface CacheStore {
   ) => Promise<void>;
 }
 
-const pExecFile = promisify(execFile);
-
-const TAR_MAX_BUFFER = 256 * 1024 * 1024;
-
-export async function createTarGz(dir: string): Promise<Buffer> {
-  const { stdout } = await pExecFile("tar", ["-czf", "-", "-C", dir, "."], {
-    maxBuffer: TAR_MAX_BUFFER,
-    encoding: "buffer",
-  });
-  return stdout as unknown as Buffer;
-}
-
-export async function extractTarGz(
-  tarball: Buffer,
-  dir: string
+async function waitForTar(
+  proc: ReturnType<typeof spawn>,
+  operation: string
 ): Promise<void> {
-  mkdirOwnerOnly(dir);
+  let stderr = "";
+  proc.stderr?.on("data", (d: Buffer) => (stderr += d.toString()));
   await new Promise<void>((resolve, reject) => {
-    const proc = spawn("tar", ["-xzf", "-", "-C", dir], {
-      stdio: ["pipe", "ignore", "pipe"],
-    });
-    let stderr = "";
-    proc.stderr?.on("data", (d: Buffer) => (stderr += d.toString()));
-    proc.on("error", reject);
-    proc.on("close", (code) =>
+    proc.once("error", reject);
+    proc.once("close", (code) =>
       code === 0
         ? resolve()
         : reject(
-            new Error(`tar extract exited ${code}: ${stderr.slice(-1000)}`)
+            new Error(`tar ${operation} exited ${code}: ${stderr.slice(-1000)}`)
           )
     );
-    proc.stdin.on("error", reject);
-    proc.stdin.end(tarball);
   });
+}
+
+export async function pipeTarGzTo(dir: string, dest: Writable): Promise<void> {
+  const proc = spawn("tar", ["-czf", "-", "-C", dir, "."], {
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  if (proc.stdout === null) {
+    throw new Error("tar create did not provide stdout");
+  }
+  const exit = waitForTar(proc, "create");
+  try {
+    await pipeline(proc.stdout, dest);
+  } catch (error) {
+    proc.kill();
+    await exit.catch(() => undefined);
+    throw error;
+  }
+  await exit;
+}
+
+export async function extractTarGzFrom(
+  src: Readable,
+  dir: string
+): Promise<void> {
+  mkdirOwnerOnly(dir);
+  const proc = spawn("tar", ["-xzf", "-", "-C", dir], {
+    stdio: ["pipe", "ignore", "pipe"],
+  });
+  if (proc.stdin === null) {
+    throw new Error("tar extract did not provide stdin");
+  }
+  const exit = waitForTar(proc, "extract");
+  try {
+    await pipeline(src, proc.stdin);
+  } catch (error) {
+    proc.kill();
+    await exit.catch(() => undefined);
+    throw error;
+  }
+  await exit;
 }
 
 export function makeDiskCacheStore(): CacheStore {
@@ -113,6 +136,11 @@ export interface GcsObjectClient {
     content: Buffer,
     contentType?: string
   ) => Promise<void>;
+  readonly openObjectReadStream: (key: string) => Promise<Readable | undefined>;
+  readonly openObjectWriteStream: (
+    key: string,
+    contentType?: string
+  ) => Writable;
   readonly objectUpdatedMs: (key: string) => Promise<number | undefined>;
 }
 
@@ -161,6 +189,17 @@ export function makeDefaultGcsClient(bucket: string): GcsObjectClient {
       } catch (error) {
         wLog("GCS cache upload failed", { key, error: String(error) });
       }
+    },
+    async openObjectReadStream(key) {
+      const file = bucketRef.file(key);
+      const [exists] = await file.exists();
+      return exists ? file.createReadStream() : undefined;
+    },
+    openObjectWriteStream(key, contentType = "application/octet-stream") {
+      return bucketRef.file(key).createWriteStream({
+        contentType,
+        resumable: false,
+      });
     },
     async objectUpdatedMs(key) {
       try {
@@ -219,12 +258,12 @@ export function makeGcsCacheStore(opts: GcsCacheStoreOptions): CacheStore {
     },
     async tryHydrateCheckout(localDir, scope, commit) {
       const full = joinKey(prefix, checkoutSnapshotKey(scope, commit));
-      const buf = await client.downloadObject(full);
-      if (buf === undefined) {
-        return false;
-      }
       try {
-        await extractTarGz(buf, localDir);
+        const src = await client.openObjectReadStream(full);
+        if (src === undefined) {
+          return false;
+        }
+        await extractTarGzFrom(src, localDir);
         return true;
       } catch (error) {
         wLog("GCS checkout hydrate failed", {
@@ -237,8 +276,8 @@ export function makeGcsCacheStore(opts: GcsCacheStoreOptions): CacheStore {
     async snapshotCheckout(localDir, scope, commit) {
       const full = joinKey(prefix, checkoutSnapshotKey(scope, commit));
       try {
-        const buf = await createTarGz(localDir);
-        await client.uploadObject(full, buf, "application/gzip");
+        const dest = client.openObjectWriteStream(full, "application/gzip");
+        await pipeTarGzTo(localDir, dest);
       } catch (error) {
         wLog("GCS checkout snapshot failed", {
           key: full,
