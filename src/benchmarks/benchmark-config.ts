@@ -382,34 +382,34 @@ const NATIVE_BENCHMARK_ID_SET: ReadonlySet<string> = new Set(
   })
 );
 
-const HostBenchmarkIdSchema = z
+const InjectedBenchmarkIdSchema = z
   .string()
   .min(1)
   .refine(
     (benchmarkId) => !NATIVE_BENCHMARK_ID_SET.has(benchmarkId),
-    "Host benchmark ids must not reuse native benchmark ids"
+    "Injected benchmark ids must not reuse native benchmark ids"
   );
 
-export const HostBenchmarkRunConfigSchema = z.object({
-  benchmarkId: HostBenchmarkIdSchema,
+export const InjectedBenchmarkRunConfigSchema = z.object({
+  benchmarkId: InjectedBenchmarkIdSchema,
   ...ModelBenchmarkBaseSchema.shape,
   options: z.record(z.string(), z.unknown()).default({}),
 });
 
-export type HostBenchmarkRunConfig = z.infer<
-  typeof HostBenchmarkRunConfigSchema
+export type InjectedBenchmarkRunConfig = z.infer<
+  typeof InjectedBenchmarkRunConfigSchema
 >;
 
 export const BenchmarkRunConfigSchema = z.union([
   NativeBenchmarkRunConfigSchema,
-  HostBenchmarkRunConfigSchema,
+  InjectedBenchmarkRunConfigSchema,
 ]);
 
 export type BenchmarkRunConfig = z.infer<typeof BenchmarkRunConfigSchema>;
 
 export type ModelBenchmarkConfig =
   | NativeModelBenchmarkConfig
-  | HostBenchmarkRunConfig;
+  | InjectedBenchmarkRunConfig;
 
 export function isModelBenchmarkConfig(
   config: BenchmarkRunConfig
@@ -423,9 +423,9 @@ export function isNativeBenchmarkConfig(
   return NATIVE_BENCHMARK_ID_SET.has(config.benchmarkId);
 }
 
-export function isHostBenchmarkConfig(
+export function isInjectedBenchmarkConfig(
   config: BenchmarkRunConfig
-): config is HostBenchmarkRunConfig {
+): config is InjectedBenchmarkRunConfig {
   return !isNativeBenchmarkConfig(config);
 }
 
