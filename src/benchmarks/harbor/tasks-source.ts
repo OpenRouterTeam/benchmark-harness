@@ -137,7 +137,6 @@ export function makeTasksSource(config: TasksSourceConfig): TasksSource {
         hasTasksDir(shared)
       );
       cacheRoot = root;
-      void store.snapshotCheckout(root, config.label, config.commit);
       return root;
     }
     if (hydrated) {

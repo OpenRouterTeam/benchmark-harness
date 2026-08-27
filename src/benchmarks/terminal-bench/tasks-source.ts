@@ -188,11 +188,6 @@ async function cloneTasks(): Promise<string> {
     );
     const tasksDir = join(root, TERMINAL_BENCH_TASKS_SUBDIR);
     cacheRoot = tasksDir;
-    void store.snapshotCheckout(
-      root,
-      "terminal-bench",
-      TERMINAL_BENCH_SOURCE_COMMIT
-    );
     return tasksDir;
   }
   if (hydrated) {
