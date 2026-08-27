@@ -40,6 +40,10 @@ function gcsClient(): Storage {
   return storageSingleton;
 }
 
+export function getGcsStorage(): Storage {
+  return gcsClient();
+}
+
 export async function downloadFromGcs(
   input: GcsDownloadInput
 ): Promise<Either.Either<GcsDownloadResult, GcsError>> {

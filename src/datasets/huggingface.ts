@@ -1,3 +1,6 @@
+import { createHash } from "node:crypto";
+import { join } from "node:path";
+
 import { FetchHttpClient, HttpClient } from "@effect/platform";
 import { fromIterable } from "effect/Chunk";
 import { map as configMap, option, string } from "effect/Config";
@@ -9,6 +12,7 @@ import {
   map,
   mapError,
   orElseSucceed,
+  promise,
   retry,
   succeed,
 } from "effect/Effect";
@@ -34,10 +38,56 @@ import { Either } from "../internal/either";
 import { parseSchema, z } from "../internal/zod";
 import type { RetryConfig } from "../runtime/retry";
 import { withRetryAttemptLogging } from "../runtime/retry";
+import type { CacheStore } from "./cache-store";
+import { resolveCacheStore } from "./cache-store";
+import { encodeCacheKeySegment, readEnvOptional } from "./local-cache";
 
 const HF_MAX_PAGE_SIZE = 100;
 
 const HF_ROWS_BASE_URL = "https://datasets-server.huggingface.co/rows";
+
+export const HF_CACHE_TTL_ENV = "BENCH_HF_CACHE_TTL_MS";
+
+export const HF_CACHE_DEFAULT_TTL_MS = 24 * 60 * 60 * 1e3;
+
+export function resolveHfCacheTtlMs(): number | undefined {
+  const raw = readEnvOptional(HF_CACHE_TTL_ENV);
+  if (raw !== undefined) {
+    const parsed = Number.parseInt(raw, 10);
+    if (Number.isFinite(parsed) && parsed >= 0) {
+      return parsed;
+    }
+  }
+  return undefined;
+}
+
+function hfTokenCacheSegment(hfToken: string): string {
+  if (hfToken === "") {
+    return "anon";
+  }
+  return createHash("sha256").update(hfToken).digest("hex").slice(0, 16);
+}
+
+function hfPageCacheKey(
+  config: HfDatasetConfig,
+  offset: number,
+  length: number,
+  hfToken: string,
+  store: CacheStore
+): string | undefined {
+  if (!store.enabled) {
+    return undefined;
+  }
+  return join(
+    "hf",
+    hfTokenCacheSegment(hfToken),
+    encodeCacheKeySegment(config.dataset),
+    encodeCacheKeySegment(config.config),
+    encodeCacheKeySegment(config.split),
+    encodeCacheKeySegment(config.revision ?? "HEAD"),
+    `${offset}-${length}.json`
+  );
+}
 
 export function hfFetchRetrySchedule<E = unknown>(
   config: RetryConfig = {},
@@ -81,6 +131,7 @@ export interface HfDatasetConfig {
   readonly retry?: RetryConfig;
   readonly hfToken?: string;
   readonly revision?: string;
+  readonly cacheStore?: CacheStore;
 }
 
 export const HfImageSchema = z.object({
@@ -115,7 +166,8 @@ export type HfPageFetcher = (
 
 export function makeHfPageFetcher(
   config: HfDatasetConfig,
-  client: HttpClient.HttpClient
+  client: HttpClient.HttpClient,
+  store: CacheStore
 ): HfPageFetcher {
   const fetchRetry = hfFetchRetrySchedule(config.retry);
   const hfTokenOverride = config.hfToken;
@@ -134,6 +186,25 @@ export function makeHfPageFetcher(
                   })
               )
             );
+      const cacheKey = hfPageCacheKey(config, offset, length, hfToken, store);
+      if (cacheKey !== undefined) {
+        const explicitTtlMs = resolveHfCacheTtlMs();
+        const maxAgeMs =
+          explicitTtlMs ??
+          (config.revision === undefined ? HF_CACHE_DEFAULT_TTL_MS : undefined);
+        const cached = yield* promise(() =>
+          store.readJson(
+            cacheKey,
+            maxAgeMs !== undefined ? { maxAgeMs } : undefined
+          )
+        );
+        if (cached !== undefined) {
+          const cachedParsed = parseSchema(HfRowsResponseSchema, cached);
+          if (Either.isRight(cachedParsed)) {
+            return cachedParsed.right;
+          }
+        }
+      }
       const body = yield* client
         .get(HF_ROWS_BASE_URL, {
           urlParams: {
@@ -168,6 +239,9 @@ export function makeHfPageFetcher(
             message: `HF /rows response failed validation (offset=${offset}): ${parsed.left.message}`,
           })
         );
+      }
+      if (cacheKey !== undefined) {
+        yield* promise(() => store.writeJson(cacheKey, body));
       }
       return parsed.right;
     });
@@ -222,7 +296,8 @@ export function makeHfDatasetLayer(config: HfDatasetConfig): Layer<Dataset> {
   );
   const makeService = gen(function* () {
     const client = yield* HttpClient.HttpClient;
-    const fetchPage = makeHfPageFetcher(config, client);
+    const store = config.cacheStore ?? resolveCacheStore();
+    const fetchPage = makeHfPageFetcher(config, client, store);
     const sizeEffect: Effect<number, DatasetError> = fetchPage(0, 1).pipe(
       map((page) => page.num_rows_total)
     );

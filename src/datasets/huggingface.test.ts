@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, spyOn } from "bun:test";
+import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 
 import { fromMap } from "effect/ConfigProvider";
 import {
@@ -69,7 +69,17 @@ function fetchOnceWithLayer(
   );
 }
 describe("makeHfDatasetLayer", () => {
+  let savedCacheDisable: string | undefined;
+  beforeEach(() => {
+    savedCacheDisable = process.env.BENCH_DATASET_CACHE_DISABLE;
+    process.env.BENCH_DATASET_CACHE_DISABLE = "1";
+  });
   afterEach(() => {
+    if (savedCacheDisable === undefined) {
+      delete process.env.BENCH_DATASET_CACHE_DISABLE;
+    } else {
+      process.env.BENCH_DATASET_CACHE_DISABLE = savedCacheDisable;
+    }
     restoreFetch?.();
     restoreFetch = undefined;
     headersByRequest.length = 0;

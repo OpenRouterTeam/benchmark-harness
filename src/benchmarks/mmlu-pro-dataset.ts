@@ -5,6 +5,7 @@ import { effect, provide } from "effect/Layer";
 import type { Stream } from "effect/Stream";
 import { unwrap } from "effect/Stream";
 
+import { resolveCacheStore } from "../datasets/cache-store";
 import type { HfDatasetConfig } from "../datasets/huggingface";
 import { makeHfPageFetcher, paginateHfRows } from "../datasets/huggingface";
 import type { Sample } from "../harness/core";
@@ -115,8 +116,13 @@ export function makeMmluProFewShotDatasetLayer(
   };
   const makeService = gen(function* () {
     const client = yield* HttpClient.HttpClient;
-    const fetchValidationPage = makeHfPageFetcher(validationConfig, client);
-    const fetchTestPage = makeHfPageFetcher(testConfig, client);
+    const store = resolveCacheStore();
+    const fetchValidationPage = makeHfPageFetcher(
+      validationConfig,
+      client,
+      store
+    );
+    const fetchTestPage = makeHfPageFetcher(testConfig, client, store);
     const size = fetchTestPage(0, 1).pipe(map((page) => page.num_rows_total));
     const stream = (
       opts?: DatasetStreamOptions
