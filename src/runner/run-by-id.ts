@@ -8,7 +8,7 @@ import {
 
 import type {
   BenchmarkRunConfig,
-  HostBenchmarkRunConfig,
+  InjectedBenchmarkRunConfig,
 } from "../benchmarks/benchmark-config";
 import {
   isNativeBenchmarkConfig,
@@ -48,7 +48,7 @@ import { filterTraceHeaders } from "./trace-headers";
 
 export interface RunBenchmarkInput {
   readonly benchmarkId: string;
-  readonly hostBenchmark?: Benchmark<HostBenchmarkRunConfig>;
+  readonly injectedBenchmark?: Benchmark<InjectedBenchmarkRunConfig>;
   readonly apiKey: string;
   readonly baseUrl?: string;
   readonly benchmarkConfig: BenchmarkRunConfig;
@@ -160,9 +160,9 @@ export function runBenchmarkById(
 
 export function datasetSizeById(
   benchmarkId: string,
-  hostBenchmark?: Benchmark<HostBenchmarkRunConfig>
+  injectedBenchmark?: Benchmark<InjectedBenchmarkRunConfig>
 ): AsyncEither<number, string> {
-  const benchmarkResult = resolveBenchmark(benchmarkId, hostBenchmark);
+  const benchmarkResult = resolveBenchmark(benchmarkId, injectedBenchmark);
   if (Either.isLeft(benchmarkResult)) {
     return Promise.resolve(Either.left(benchmarkResult.left));
   }
@@ -176,13 +176,13 @@ export function datasetSizeById(
 
 function resolveBenchmark(
   benchmarkId: string,
-  hostBenchmark: Benchmark<HostBenchmarkRunConfig> | undefined
+  injectedBenchmark: Benchmark<InjectedBenchmarkRunConfig> | undefined
 ): Either.Either<BenchmarkMetadata, string> {
-  if (hostBenchmark !== undefined) {
-    return hostBenchmark.id === benchmarkId
-      ? Either.right(hostBenchmark)
+  if (injectedBenchmark !== undefined) {
+    return injectedBenchmark.id === benchmarkId
+      ? Either.right(injectedBenchmark)
       : Either.left(
-          `Benchmark id mismatch: requested "${benchmarkId}", supplied "${hostBenchmark.id}"`
+          `Benchmark id mismatch: requested "${benchmarkId}", supplied "${injectedBenchmark.id}"`
         );
   }
   const benchmark = getBenchmark(benchmarkId);
@@ -199,9 +199,9 @@ function resolveRunBenchmark(input: RunBenchmarkInput): Either.Either<
   string
 > {
   if (isNativeBenchmarkConfig(input.benchmarkConfig)) {
-    if (input.hostBenchmark !== undefined) {
+    if (input.injectedBenchmark !== undefined) {
       return Either.left(
-        `A host benchmark cannot be supplied for native benchmark "${input.benchmarkId}"`
+        `An injected benchmark cannot be supplied for native benchmark "${input.benchmarkId}"`
       );
     }
     const nativeBenchmark = getBenchmark(input.benchmarkId);
@@ -217,20 +217,20 @@ function resolveRunBenchmark(input: RunBenchmarkInput): Either.Either<
       ),
     });
   }
-  if (input.hostBenchmark === undefined) {
+  if (input.injectedBenchmark === undefined) {
     return Either.left(
-      `A host benchmark is required for host config "${input.benchmarkId}"`
+      `An injected benchmark is required for injected config "${input.benchmarkId}"`
     );
   }
-  if (input.hostBenchmark.id !== input.benchmarkId) {
+  if (input.injectedBenchmark.id !== input.benchmarkId) {
     return Either.left(
-      `Benchmark id mismatch: requested "${input.benchmarkId}", supplied "${input.hostBenchmark.id}"`
+      `Benchmark id mismatch: requested "${input.benchmarkId}", supplied "${input.injectedBenchmark.id}"`
     );
   }
   return Either.right({
-    benchmark: input.hostBenchmark,
+    benchmark: input.injectedBenchmark,
     benchmarkLayer: makeBenchmarkLayer(
-      input.hostBenchmark,
+      input.injectedBenchmark,
       input,
       input.benchmarkConfig
     ),

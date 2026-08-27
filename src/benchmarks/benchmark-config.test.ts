@@ -4,8 +4,8 @@ import { assertLeft, assertRight } from "../internal/testing";
 import { parseSchema } from "../internal/zod";
 import {
   BenchmarkRunConfigSchema,
-  HostBenchmarkRunConfigSchema,
-  isHostBenchmarkConfig,
+  InjectedBenchmarkRunConfigSchema,
+  isInjectedBenchmarkConfig,
   isModelBenchmarkConfig,
   isSearchBenchmarkConfig,
   NativeBenchmarkRunConfigSchema,
@@ -28,7 +28,7 @@ describe("benchmark config", () => {
     expect(isModelBenchmarkConfig(result.right)).toBe(true);
   });
 
-  it("does not let malformed native configs fall through to the host variant", () => {
+  it("does not let malformed native configs fall through to the injected variant", () => {
     const result = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "gpqa_diamond",
       model: 42,
@@ -37,10 +37,10 @@ describe("benchmark config", () => {
     assertLeft(result);
   });
 
-  it("parses host configs with opaque options", () => {
+  it("parses injected benchmark configs with opaque options", () => {
     const result = parseSchema(BenchmarkRunConfigSchema, {
-      benchmarkId: "host_benchmark",
-      model: "host/model",
+      benchmarkId: "injected_benchmark",
+      model: "injected/model",
       options: {
         subsets: ["all"],
         customFlag: true,
@@ -49,32 +49,32 @@ describe("benchmark config", () => {
 
     assertRight(result);
     expect(result.right).toEqual({
-      benchmarkId: "host_benchmark",
-      model: "host/model",
+      benchmarkId: "injected_benchmark",
+      model: "injected/model",
       options: {
         subsets: ["all"],
         customFlag: true,
       },
     });
-    expect(isHostBenchmarkConfig(result.right)).toBe(true);
+    expect(isInjectedBenchmarkConfig(result.right)).toBe(true);
     expect(isModelBenchmarkConfig(result.right)).toBe(true);
     expect(isSearchBenchmarkConfig(result.right)).toBe(false);
   });
 
-  it("defaults host options to an empty object", () => {
-    const result = parseSchema(HostBenchmarkRunConfigSchema, {
-      benchmarkId: "host_benchmark",
-      model: "host/model",
+  it("defaults injected benchmark options to an empty object", () => {
+    const result = parseSchema(InjectedBenchmarkRunConfigSchema, {
+      benchmarkId: "injected_benchmark",
+      model: "injected/model",
     });
 
     assertRight(result);
     expect(result.right.options).toEqual({});
   });
 
-  it("rejects a host config that reuses a native benchmark id", () => {
-    const result = parseSchema(HostBenchmarkRunConfigSchema, {
+  it("rejects an injected config that reuses a native benchmark id", () => {
+    const result = parseSchema(InjectedBenchmarkRunConfigSchema, {
       benchmarkId: "gpqa_diamond",
-      model: "host/model",
+      model: "injected/model",
       options: { subsets: ["all"] },
     });
 
