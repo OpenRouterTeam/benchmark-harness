@@ -87,6 +87,7 @@ export interface ResponsesModelConfig {
   readonly baseUrl?: string;
   readonly sessionId?: string;
   readonly retry?: RetryConfig;
+  readonly traceHeaders?: Readonly<Record<string, string>>;
 }
 
 export interface ResponsesModelService {
@@ -111,6 +112,9 @@ export function makeResponsesModelLayer(
     apiKey: config.apiKey,
     baseUrl,
     ...(config.sessionId !== undefined && { sessionId: config.sessionId }),
+    ...(config.traceHeaders !== undefined && {
+      traceHeaders: config.traceHeaders,
+    }),
   });
   return effect(ResponsesModel)(
     gen(function* () {

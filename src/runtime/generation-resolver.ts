@@ -22,6 +22,7 @@ import { unknownErrorToString } from "../internal/errors";
 import { isDefinedAndNotNull } from "../internal/guards";
 import { wLog } from "../internal/log";
 import { parseSchema, z } from "../internal/zod";
+import { filterTraceHeaders } from "../runner/trace-headers";
 import type { GenerationIdEntry } from "./generation-ids";
 import { getCollectedGenerationIdEntries } from "./generation-ids";
 
@@ -77,6 +78,7 @@ export interface GenerationResolverConfig {
   readonly baseUrl?: string;
   readonly pollIntervalMs?: number;
   readonly maxAttempts?: number;
+  readonly traceHeaders?: Readonly<Record<string, string>>;
 }
 
 const DEFAULT_POLL_INTERVAL_MS = 5000;
@@ -117,6 +119,7 @@ export function makeOpenRouterGenerationResolver(
   config: GenerationResolverConfig
 ): GenerationResolverService {
   const baseUrl = normalizeBaseUrl(config.baseUrl ?? "https://openrouter.ai");
+  const traceHeaders = filterTraceHeaders(config.traceHeaders);
   const pollIntervalMs = config.pollIntervalMs ?? DEFAULT_POLL_INTERVAL_MS;
   const maxAttempts = config.maxAttempts ?? DEFAULT_MAX_ATTEMPTS;
   const pollSchedule = (attempts: number) =>
@@ -134,7 +137,10 @@ export function makeOpenRouterGenerationResolver(
         const response = await fetch(
           `${baseUrl}/generation?id=${encodeURIComponent(generationId)}`,
           {
-            headers: { Authorization: `Bearer ${config.apiKey}` },
+            headers: {
+              ...traceHeaders,
+              Authorization: `Bearer ${config.apiKey}`,
+            },
             signal,
           }
         );

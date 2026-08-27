@@ -22,6 +22,7 @@ export interface OpenRouterModelConfig {
   readonly baseUrl?: string;
   readonly sessionId?: string;
   readonly retry?: RetryConfig;
+  readonly traceHeaders?: Readonly<Record<string, string>>;
 }
 
 export function normalizeBaseUrl(baseUrl: string): string {
@@ -40,6 +41,9 @@ export function makeOpenRouterModelLayer(
     }),
     ...(config.sessionId !== undefined && { sessionId: config.sessionId }),
     ...(config.retry !== undefined && { retry: config.retry }),
+    ...(config.traceHeaders !== undefined && {
+      traceHeaders: config.traceHeaders,
+    }),
   });
   return effect(Model)(
     gen(function* () {

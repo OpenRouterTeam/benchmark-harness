@@ -69,6 +69,9 @@ function makeWandrLayer(
       ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
       sessionId: input.sessionId,
       ...(input.modelRetry !== undefined && { retry: input.modelRetry }),
+      ...(input.traceHeaders !== undefined && {
+        traceHeaders: input.traceHeaders,
+      }),
     });
   const sandboxLayer = makeModalSandboxLayer({
     appName: "openrouter-wandr",
