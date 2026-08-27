@@ -9,6 +9,7 @@ import type { Effect } from "effect/Effect";
 import { async, fail, runSync, succeed, tryPromise } from "effect/Effect";
 import { getOrNull } from "effect/Option";
 
+import { resolveCacheStore } from "../../datasets/cache-store";
 import {
   datasetCacheRoot,
   hasCheckoutCompleteMarker,
@@ -20,6 +21,7 @@ import {
   writeCheckoutCompleteMarker,
 } from "../../datasets/local-cache";
 import { runHarnessPromise } from "../../internal/effect-logger";
+import { wLog } from "../../internal/log";
 
 export const TERMINAL_BENCH_SOURCE_REPO =
   "https://github.com/harbor-framework/terminal-bench-2-1.git" as const;
@@ -164,6 +166,23 @@ async function cloneTasks(): Promise<string> {
   }
   mkdirOwnerOnly(dirname(shared));
   sweepStaleStagingDirs(dirname(shared));
+  const store = resolveCacheStore();
+  if (
+    await store.tryHydrateCheckout(
+      shared,
+      "terminal-bench",
+      TERMINAL_BENCH_SOURCE_COMMIT
+    )
+  ) {
+    if (hasTasks(shared) && isAtPinnedCommit(shared)) {
+      const tasksDir = join(shared, TERMINAL_BENCH_TASKS_SUBDIR);
+      cacheRoot = tasksDir;
+      return tasksDir;
+    }
+    wLog("GCS checkout hydration produced an unusable tree; re-cloning", {
+      shared,
+    });
+  }
   const staging = mkdtempSync(
     join(dirname(shared), `.${basename(shared)}.staging-`)
   );
@@ -181,6 +200,11 @@ async function cloneTasks(): Promise<string> {
   );
   const tasksDir = join(root, TERMINAL_BENCH_TASKS_SUBDIR);
   cacheRoot = tasksDir;
+  void store.snapshotCheckout(
+    root,
+    "terminal-bench",
+    TERMINAL_BENCH_SOURCE_COMMIT
+  );
   return tasksDir;
 }
 
