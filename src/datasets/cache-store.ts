@@ -4,7 +4,7 @@ import type { Readable, Writable } from "node:stream";
 import { finished, pipeline } from "node:stream/promises";
 
 import { getGcsStorage } from "../internal/gcs";
-import { wLog } from "../internal/log";
+import { iLog, wLog } from "../internal/log";
 import {
   datasetCacheDisabled,
   datasetCacheRoot,
@@ -22,6 +22,16 @@ export type DatasetCacheBackend = "disk" | "gcs";
 export interface ReadJsonOptions {
   readonly maxAgeMs?: number;
   readonly now?: number;
+}
+
+type DatasetCacheReadResult = "hit" | "miss" | "stale" | "invalid";
+
+function logDatasetCacheRead(
+  backend: DatasetCacheBackend,
+  key: string,
+  result: DatasetCacheReadResult
+): void {
+  iLog("dataset cache read", { backend, key, result });
 }
 
 export interface CacheStore {
@@ -118,7 +128,14 @@ export function makeDiskCacheStore(): CacheStore {
       if (root === undefined) {
         return undefined;
       }
-      return readJsonCacheFile(join(root, key), opts);
+      const path = join(root, key);
+      const value = readJsonCacheFile(path, opts);
+      if (value !== undefined) {
+        logDatasetCacheRead("disk", key, "hit");
+        return value;
+      }
+      logDatasetCacheRead("disk", key, "miss");
+      return undefined;
     },
     async writeJson(key, value) {
       const root = datasetCacheRoot();
@@ -232,20 +249,26 @@ export function makeGcsCacheStore(opts: GcsCacheStoreOptions): CacheStore {
       if (readOpts?.maxAgeMs !== undefined) {
         const updated = await client.objectUpdatedMs(full);
         if (updated === undefined) {
+          logDatasetCacheRead("gcs", full, "miss");
           return undefined;
         }
         const now = readOpts.now ?? Date.now();
         if (Math.max(0, now - updated) >= readOpts.maxAgeMs) {
+          logDatasetCacheRead("gcs", full, "stale");
           return undefined;
         }
       }
       const buf = await client.downloadObject(full);
       if (buf === undefined) {
+        logDatasetCacheRead("gcs", full, "miss");
         return undefined;
       }
       try {
-        return JSON.parse(buf.toString("utf8"));
+        const value: unknown = JSON.parse(buf.toString("utf8"));
+        logDatasetCacheRead("gcs", full, "hit");
+        return value;
       } catch {
+        logDatasetCacheRead("gcs", full, "invalid");
         return undefined;
       }
     },
@@ -266,9 +289,21 @@ export function makeGcsCacheStore(opts: GcsCacheStoreOptions): CacheStore {
       try {
         const src = await client.openObjectReadStream(full);
         if (src === undefined) {
+          iLog("checkout cache hydrate", {
+            key: full,
+            scope,
+            commit,
+            result: "miss",
+          });
           return false;
         }
         await extractTarGzFrom(src, localDir);
+        iLog("checkout cache hydrate", {
+          key: full,
+          scope,
+          commit,
+          result: "hit",
+        });
         return true;
       } catch (error) {
         wLog("GCS checkout hydrate failed", {
@@ -283,6 +318,7 @@ export function makeGcsCacheStore(opts: GcsCacheStoreOptions): CacheStore {
       try {
         const dest = client.openObjectWriteStream(full, "application/gzip");
         await pipeTarGzTo(localDir, dest);
+        iLog("checkout cache snapshot written", { key: full, scope, commit });
       } catch (error) {
         wLog("GCS checkout snapshot failed", {
           key: full,
