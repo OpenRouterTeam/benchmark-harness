@@ -1,5 +1,4 @@
 import { spawn } from "node:child_process";
-import { existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 import type { Readable, Writable } from "node:stream";
 import { finished, pipeline } from "node:stream/promises";
@@ -135,22 +134,7 @@ export function makeDiskCacheStore(): CacheStore {
         logDatasetCacheRead("disk", key, "hit");
         return value;
       }
-      if (opts?.maxAgeMs !== undefined) {
-        try {
-          const ageMs = Math.max(
-            0,
-            (opts.now ?? Date.now()) - statSync(path).mtimeMs
-          );
-          if (ageMs >= opts.maxAgeMs) {
-            logDatasetCacheRead("disk", key, "stale");
-            return undefined;
-          }
-        } catch {
-          logDatasetCacheRead("disk", key, "miss");
-          return undefined;
-        }
-      }
-      logDatasetCacheRead("disk", key, existsSync(path) ? "invalid" : "miss");
+      logDatasetCacheRead("disk", key, "miss");
       return undefined;
     },
     async writeJson(key, value) {

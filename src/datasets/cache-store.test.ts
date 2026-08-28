@@ -5,7 +5,6 @@ import {
   mkdtempSync,
   readFileSync,
   rmSync,
-  utimesSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
@@ -425,17 +424,9 @@ describe("DiskCacheStore", () => {
     infoSpies.push(info);
     const store = makeDiskCacheStore();
     writeFileSync(join(root, "hit.json"), JSON.stringify({ ok: true }));
-    writeFileSync(join(root, "invalid.json"), "{");
-    writeFileSync(join(root, "stale.json"), JSON.stringify({ ok: true }));
-    const staleTime = new Date(1_000);
-    utimesSync(join(root, "stale.json"), staleTime, staleTime);
 
     await expect(store.readJson("hit.json")).resolves.toEqual({ ok: true });
     await expect(store.readJson("missing.json")).resolves.toBeUndefined();
-    await expect(
-      store.readJson("stale.json", { maxAgeMs: 1_000, now: 3_000 })
-    ).resolves.toBeUndefined();
-    await expect(store.readJson("invalid.json")).resolves.toBeUndefined();
 
     expect(info.mock.calls).toEqual([
       [
@@ -445,14 +436,6 @@ describe("DiskCacheStore", () => {
       [
         "dataset cache read",
         { backend: "disk", key: "missing.json", result: "miss" },
-      ],
-      [
-        "dataset cache read",
-        { backend: "disk", key: "stale.json", result: "stale" },
-      ],
-      [
-        "dataset cache read",
-        { backend: "disk", key: "invalid.json", result: "invalid" },
       ],
     ]);
   });
