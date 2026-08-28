@@ -1,7 +1,7 @@
 import { execFile, execFileSync } from "node:child_process";
 import { mkdtempSync, readdirSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { basename, dirname, join } from "node:path";
+import { join } from "node:path";
 
 import { option, string } from "effect/Config";
 import { TaggedError } from "effect/Data";
@@ -11,14 +11,8 @@ import { getOrNull } from "effect/Option";
 
 import { resolveCacheStore } from "../../datasets/cache-store";
 import {
-  datasetCacheRoot,
-  hasCheckoutCompleteMarker,
-  mkdirOwnerOnly,
-  publishStagedCheckout,
   removeDirRecursive,
   restrictPermissionsRecursive,
-  sweepStaleStagingDirs,
-  writeCheckoutCompleteMarker,
 } from "../../datasets/local-cache";
 import { runHarnessPromise } from "../../internal/effect-logger";
 import { wLog } from "../../internal/log";
@@ -30,18 +24,6 @@ export const TERMINAL_BENCH_SOURCE_COMMIT =
   "c5ee500c185224c97cd6caff7866a990a0057f41" as const;
 
 export const TERMINAL_BENCH_TASKS_SUBDIR = "tasks" as const;
-
-function sharedCheckoutRoot(): string | undefined {
-  const root = datasetCacheRoot();
-  if (root === undefined) {
-    return undefined;
-  }
-  return join(
-    root,
-    "repos",
-    `terminal-bench-${TERMINAL_BENCH_SOURCE_COMMIT.slice(0, 12)}`
-  );
-}
 
 function isEmptyOrMissing(path: string): boolean {
   try {
@@ -63,21 +45,6 @@ export function ensureTasksCheckedOut(): Promise<string> {
   if (override) {
     const resolved = resolveTasksDir(override);
     if (resolved !== undefined && isAtPinnedCommit(resolved)) {
-      cacheRoot = resolved;
-      return Promise.resolve(resolved);
-    }
-  }
-  const overrideIsCloneTarget =
-    override !== null && override.length > 0 && isEmptyOrMissing(override);
-  const shared = sharedCheckoutRoot();
-  if (
-    !overrideIsCloneTarget &&
-    shared !== undefined &&
-    hasCheckoutCompleteMarker(shared) &&
-    isAtPinnedCommit(shared)
-  ) {
-    const resolved = resolveTasksDir(shared);
-    if (resolved !== undefined) {
       cacheRoot = resolved;
       return Promise.resolve(resolved);
     }
@@ -156,20 +123,8 @@ async function cloneTasks(): Promise<string> {
     cacheRoot = tasksDir;
     return tasksDir;
   }
-  const shared = sharedCheckoutRoot();
-  if (shared === undefined) {
-    const tmp = mkdtempSync(join(tmpdir(), "terminal-bench-2-1-tasks-"));
-    await cloneInto(tmp);
-    const tasksDir = join(tmp, TERMINAL_BENCH_TASKS_SUBDIR);
-    cacheRoot = tasksDir;
-    return tasksDir;
-  }
-  mkdirOwnerOnly(dirname(shared));
-  sweepStaleStagingDirs(dirname(shared));
   const store = resolveCacheStore();
-  const staging = mkdtempSync(
-    join(dirname(shared), `.${basename(shared)}.staging-`)
-  );
+  const staging = mkdtempSync(join(tmpdir(), "terminal-bench-2-1-tasks-"));
   const hydrated = await store.tryHydrateCheckout(
     staging,
     "terminal-bench",
@@ -181,24 +136,14 @@ async function cloneTasks(): Promise<string> {
       : undefined;
   if (resolved !== undefined) {
     restrictPermissionsRecursive(staging);
-    const root = publishStagedCheckout(
-      staging,
-      shared,
-      () => resolveTasksDir(shared) !== undefined
-    );
-    const tasksDir = join(root, TERMINAL_BENCH_TASKS_SUBDIR);
-    cacheRoot = tasksDir;
-    return tasksDir;
+    cacheRoot = resolved;
+    return resolved;
   }
   if (hydrated) {
-    wLog("GCS checkout hydration produced an unusable tree; re-cloning", {
-      shared,
-    });
+    wLog("GCS checkout hydration produced an unusable tree; re-cloning", {});
   }
   removeDirRecursive(staging);
-  const cloneStaging = mkdtempSync(
-    join(dirname(shared), `.${basename(shared)}.staging-`)
-  );
+  const cloneStaging = mkdtempSync(join(tmpdir(), "terminal-bench-2-1-tasks-"));
   try {
     await cloneInto(cloneStaging);
   } catch (error) {
@@ -206,15 +151,10 @@ async function cloneTasks(): Promise<string> {
     throw error;
   }
   restrictPermissionsRecursive(cloneStaging);
-  const root = publishStagedCheckout(
-    cloneStaging,
-    shared,
-    () => resolveTasksDir(shared) !== undefined
-  );
-  const tasksDir = join(root, TERMINAL_BENCH_TASKS_SUBDIR);
+  const tasksDir = join(cloneStaging, TERMINAL_BENCH_TASKS_SUBDIR);
   cacheRoot = tasksDir;
   void store.snapshotCheckout(
-    root,
+    cloneStaging,
     "terminal-bench",
     TERMINAL_BENCH_SOURCE_COMMIT
   );
@@ -240,7 +180,6 @@ async function cloneInto(root: string): Promise<void> {
     TERMINAL_BENCH_SOURCE_COMMIT,
   ]);
   await runGit(["-C", root, "checkout", TERMINAL_BENCH_SOURCE_COMMIT]);
-  writeCheckoutCompleteMarker(root);
 }
 
 class GitError extends TaggedError("GitError")<{
