@@ -21,7 +21,7 @@ import { rateLimitRetrySchedule, retrySalted } from "../runtime/retry";
 export interface JudgeConfig {
   readonly judgeModel: string;
   readonly temperature?: number;
-  readonly reasoningEffort?: ReasoningEffort;
+  readonly reasoningEffort: ReasoningEffort;
   readonly timeoutMs?: number;
   readonly retry?: RetryConfig;
   readonly versionOverride?: string;
@@ -68,9 +68,7 @@ export function judgeCall<T>(
     ...(config.temperature !== undefined && {
       temperature: config.temperature,
     }),
-    ...(config.reasoningEffort !== undefined && {
-      reasoning: { effort: config.reasoningEffort },
-    }),
+    reasoning: { effort: config.reasoningEffort },
   };
   const sendOptions = {
     timeoutMs: config.timeoutMs ?? DEFAULT_JUDGE_TIMEOUT_MS,

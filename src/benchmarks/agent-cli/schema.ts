@@ -22,8 +22,6 @@ export const ORI_REASONING_EFFORTS = [
 
 export type OriReasoningEffort = ValueOf<typeof ORI_REASONING_EFFORTS>;
 
-export const DEFAULT_ORI_REASONING_EFFORT: OriReasoningEffort = "medium";
-
 export const DEFAULT_CLAUDE_PACKAGE =
   "@anthropic-ai/claude-code@2.1.235" as const;
 

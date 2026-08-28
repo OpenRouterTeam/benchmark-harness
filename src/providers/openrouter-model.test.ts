@@ -95,6 +95,7 @@ describe("openrouter-model", () => {
           ],
           {
             temperature: 0,
+            reasoningEffort: "high",
             tools: [
               {
                 type: "function",
@@ -172,6 +173,7 @@ describe("openrouter-model", () => {
         const model = yield* Model;
         return yield* model.generate([{ role: "user", content: "question" }], {
           temperature: 0,
+          reasoningEffort: "high",
         });
       }).pipe(
         provide(

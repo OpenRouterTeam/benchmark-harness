@@ -232,9 +232,7 @@ function dracoJudgeConfig(config: DracoPanelConfig): JudgeConfig {
     temperature: config.judgeTemperature ?? 0.2,
     timeoutMs: config.timeout * 1000,
     retry: { maxRetries: 0 },
-    ...(config.judgeReasoningEffort !== undefined && {
-      reasoningEffort: config.judgeReasoningEffort,
-    }),
+    reasoningEffort: config.judgeReasoningEffort,
     ...(config.versionOverride !== undefined && {
       versionOverride: config.versionOverride,
     }),

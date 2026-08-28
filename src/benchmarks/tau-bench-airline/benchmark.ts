@@ -102,6 +102,7 @@ function makeAirlineLayer(
       model: benchmarkConfig.userModel,
       ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
       sessionId: input.sessionId,
+      reasoningEffort: benchmarkConfig.userReasoningEffort,
     },
     inference: {
       maxTokens: benchmarkConfig.maxTokens,

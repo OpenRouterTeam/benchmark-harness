@@ -352,6 +352,7 @@ describe("responses-model", () => {
         return yield* model.generate([], {
           sort: ProviderSort.Price,
           endpointId: "endpoint-1",
+          reasoningEffort: "high",
         });
       }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
     );
@@ -376,6 +377,7 @@ describe("responses-model", () => {
           providerOnly: ["google-vertex"],
           providerIgnore: ["azure"],
           allowFallbacks: false,
+          reasoningEffort: "high",
         });
       }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
     );
@@ -399,7 +401,10 @@ describe("responses-model", () => {
       const exit = await runPromiseExit(
         gen(function* run() {
           const modelService = yield* ResponsesModel;
-          return yield* modelService.generate([], { costTier: "high" });
+          return yield* modelService.generate([], {
+            costTier: "high",
+            reasoningEffort: "high",
+          });
         }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
       );
       assertSuccess(exit);
@@ -423,6 +428,7 @@ describe("responses-model", () => {
         return yield* modelService.generate([], {
           costTier: "medium",
           costQualityTradeoff: 8,
+          reasoningEffort: "high",
         });
       }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
     );
@@ -443,7 +449,7 @@ describe("responses-model", () => {
     const exit = await runPromiseExit(
       gen(function* run() {
         const modelService = yield* ResponsesModel;
-        return yield* modelService.generate([], {});
+        return yield* modelService.generate([], { reasoningEffort: "high" });
       }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
     );
     assertSuccess(exit);
@@ -504,7 +510,7 @@ describe("responses-model", () => {
     const exit = await runPromiseExit(
       gen(function* run() {
         const model = yield* ResponsesModel;
-        return yield* model.generate([], {});
+        return yield* model.generate([], { reasoningEffort: "high" });
       }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
     );
     assertFailure(exit);
@@ -547,7 +553,10 @@ describe("responses-model", () => {
     const exit = await runPromiseExit(
       gen(function* run() {
         const model = yield* ResponsesModel;
-        return yield* model.generate([], { timeoutMs: 50 });
+        return yield* model.generate([], {
+          timeoutMs: 50,
+          reasoningEffort: "high",
+        });
       }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
     );
     assertFailure(exit);
@@ -574,7 +583,7 @@ describe("responses-model", () => {
         const model = yield* ResponsesModel;
         return yield* model.generate(
           [],
-          {},
+          { reasoningEffort: "high" },
           { onStreamEvent: (event) => events.push(event) }
         );
       }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
@@ -601,7 +610,7 @@ describe("responses-model", () => {
     const exit = await runPromiseExit(
       gen(function* run() {
         const model = yield* ResponsesModel;
-        return yield* model.generate([], {});
+        return yield* model.generate([], { reasoningEffort: "high" });
       }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
     );
     assertFailure(exit);

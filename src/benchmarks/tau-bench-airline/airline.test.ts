@@ -4,6 +4,9 @@ import { runSync } from "effect/Effect";
 
 import { MessageRole, ScoreValue } from "../../harness/core";
 import { isRecord } from "../../internal/guards";
+import { assertRight } from "../../internal/testing";
+import { parseSchema } from "../../internal/zod";
+import { TauBenchAirlineConfigSchema } from "../benchmark-config";
 import { benchmarkIds, getBenchmark } from "../registry";
 import { compareActionWithToolCall } from "./action-match";
 import { airlineRecordToSample, TAU_BENCH_AIRLINE_ID } from "./benchmark";
@@ -97,6 +100,29 @@ describe("tau_bench_verified_airline registry", () => {
   });
   it("appears in benchmarkIds()", () => {
     expect(benchmarkIds()).toContain("tau_bench_verified_airline");
+  });
+});
+describe("tau_bench_verified_airline config", () => {
+  it("defaults the user simulator reasoning effort independently", () => {
+    const result = parseSchema(TauBenchAirlineConfigSchema, {
+      benchmarkId: "tau_bench_verified_airline",
+      model: "openai/gpt-4o-mini",
+      reasoningEffort: "low",
+    });
+    assertRight(result);
+    expect(result.right.reasoningEffort).toBe("low");
+    expect(result.right.userReasoningEffort).toBe("medium");
+  });
+  it("allows overriding the user simulator reasoning effort", () => {
+    const result = parseSchema(TauBenchAirlineConfigSchema, {
+      benchmarkId: "tau_bench_verified_airline",
+      model: "openai/gpt-4o-mini",
+      reasoningEffort: "low",
+      userReasoningEffort: "high",
+    });
+    assertRight(result);
+    expect(result.right.reasoningEffort).toBe("low");
+    expect(result.right.userReasoningEffort).toBe("high");
   });
 });
 describe("airlineRecordToSample", () => {

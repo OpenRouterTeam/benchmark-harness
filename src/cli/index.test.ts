@@ -2,6 +2,22 @@ import { describe, expect, it } from "bun:test";
 
 import { buildBenchmarkConfig, parseArgs } from ".";
 describe("bench-harness CLI", () => {
+  it("defaults --reasoning-effort to high", () => {
+    expect(parseArgs([]).reasoningEffort).toBe("high");
+  });
+
+  it("accepts an explicit --reasoning-effort", () => {
+    expect(parseArgs(["--reasoning-effort", "low"]).reasoningEffort).toBe(
+      "low"
+    );
+  });
+
+  it("rejects an invalid --reasoning-effort value", () => {
+    expect(() => parseArgs(["--reasoning-effort", "invalid"])).toThrow(
+      "--reasoning-effort must be one of"
+    );
+  });
+
   it("parses and forwards --cost-tier", () => {
     const args = parseArgs([
       "--benchmark",
@@ -20,6 +36,7 @@ describe("bench-harness CLI", () => {
         endpointId: undefined,
         imageDetail: undefined,
         costTier: args.costTier,
+        reasoningEffort: args.reasoningEffort,
       })
     ).toMatchObject({ costTier: "xhigh" });
   });
@@ -28,6 +45,58 @@ describe("bench-harness CLI", () => {
     expect(() => parseArgs(["--cost-tier", "invalid"])).toThrow(
       "--cost-tier must be one of"
     );
+  });
+
+  it("passes reasoning effort to hand-built model benchmark configs", () => {
+    for (const benchmarkId of [
+      "gpqa_diamond",
+      "mmlu_pro",
+      "mmmu_pro_vision",
+      "ifstruct",
+    ] as const) {
+      const config = buildBenchmarkConfig({
+        benchmarkId,
+        model: "openai/gpt-5",
+        panelConfig: undefined,
+        artifactDir: undefined,
+        endpointId: undefined,
+        imageDetail: undefined,
+        reasoningEffort: "low",
+      });
+      expect(config).toMatchObject({ reasoningEffort: "low" });
+    }
+  });
+
+  it("derives agent reasoning effort for ori lanes", () => {
+    const config = buildBenchmarkConfig({
+      benchmarkId: "terminal_bench",
+      model: "anthropic/claude-opus-5",
+      panelConfig: undefined,
+      artifactDir: undefined,
+      endpointId: undefined,
+      imageDetail: undefined,
+      reasoningEffort: "xhigh",
+    });
+    expect(config).toMatchObject({
+      reasoningEffort: "xhigh",
+      agentReasoningEffort: "xhigh",
+    });
+  });
+
+  it("preserves explicit ori agent reasoning effort", () => {
+    const config = buildBenchmarkConfig({
+      benchmarkId: "terminal_bench",
+      model: "anthropic/claude-opus-5",
+      panelConfig: { agentReasoningEffort: "max" },
+      artifactDir: undefined,
+      endpointId: undefined,
+      imageDetail: undefined,
+      reasoningEffort: "low",
+    });
+    expect(config).toMatchObject({
+      reasoningEffort: "low",
+      agentReasoningEffort: "max",
+    });
   });
 
   it("passes tau3 retrieval config through the generic solver config", () => {
@@ -47,6 +116,7 @@ describe("bench-harness CLI", () => {
       artifactDir: undefined,
       endpointId: undefined,
       imageDetail: undefined,
+      reasoningEffort: args.reasoningEffort,
     });
     expect(config).toMatchObject({
       benchmarkId: "tau3_bench_banking",
@@ -71,6 +141,7 @@ describe("bench-harness CLI", () => {
       artifactDir: undefined,
       endpointId: undefined,
       imageDetail: undefined,
+      reasoningEffort: args.reasoningEffort,
     });
     expect(config).toMatchObject({
       benchmarkId: "terminal_bench",
@@ -86,6 +157,7 @@ describe("bench-harness CLI", () => {
       artifactDir: undefined,
       endpointId: undefined,
       imageDetail: undefined,
+      reasoningEffort: "high",
     });
     expect(config).toMatchObject({
       benchmarkId: "terminal_bench",
@@ -93,7 +165,7 @@ describe("bench-harness CLI", () => {
     });
   });
 
-  it("defaults terminal_bench to the unified ori reasoning effort", () => {
+  it("defaults terminal_bench to the CLI reasoning effort", () => {
     const config = buildBenchmarkConfig({
       benchmarkId: "terminal_bench",
       model: "anthropic/claude-opus-5",
@@ -101,10 +173,11 @@ describe("bench-harness CLI", () => {
       artifactDir: undefined,
       endpointId: undefined,
       imageDetail: undefined,
+      reasoningEffort: "high",
     });
     expect(config).toMatchObject({
       benchmarkId: "terminal_bench",
-      agentReasoningEffort: "medium",
+      agentReasoningEffort: "high",
       oriChannel: "stable",
     });
   });
@@ -121,6 +194,7 @@ describe("bench-harness CLI", () => {
           artifactDir: undefined,
           endpointId: undefined,
           imageDetail: undefined,
+          reasoningEffort: "high",
         })
       ).not.toThrow();
     } finally {
@@ -141,6 +215,7 @@ describe("bench-harness CLI", () => {
         artifactDir: undefined,
         endpointId: undefined,
         imageDetail: undefined,
+        reasoningEffort: "high",
       })
     ).toThrow("Unknown terminal_bench solver-config option(s): thinking");
   });
@@ -154,6 +229,7 @@ describe("bench-harness CLI", () => {
         artifactDir: undefined,
         endpointId: undefined,
         imageDetail: undefined,
+        reasoningEffort: "high",
       })
     ).toThrow("agentReasoningEfort");
   });
@@ -175,6 +251,7 @@ describe("bench-harness CLI", () => {
       artifactDir: undefined,
       endpointId: undefined,
       imageDetail: undefined,
+      reasoningEffort: "high",
     });
     expect(config).toMatchObject({
       agent: "claude",
@@ -193,6 +270,7 @@ describe("bench-harness CLI", () => {
         artifactDir: undefined,
         endpointId: undefined,
         imageDetail: undefined,
+        reasoningEffort: "high",
       })
     ).toThrow("Invalid terminal_bench config");
   });
@@ -205,6 +283,7 @@ describe("bench-harness CLI", () => {
       artifactDir: undefined,
       endpointId: undefined,
       imageDetail: undefined,
+      reasoningEffort: "high",
     });
     expect(config).toMatchObject({
       benchmarkId: "tau3_bench_banking",

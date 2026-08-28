@@ -64,6 +64,7 @@ type ExecCalls = NonNullable<
 const SOLVER_OPTS: OriSolverOpts = {
   model: "anthropic/claude-opus-5",
   apiKey: "sk-test",
+  agentReasoningEffort: "medium",
 };
 
 const GENERATION_ID = "gen-1786484980-H6OpVHdz7070QlmacXWO";

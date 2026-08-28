@@ -33,7 +33,11 @@ describe("benchmark registry", () => {
     const result = await runBenchmarkById({
       benchmarkId: "gpqa_diamond",
       apiKey: "unused",
-      benchmarkConfig: { benchmarkId: "gpqa_diamond", model: "test/model" },
+      benchmarkConfig: {
+        benchmarkId: "gpqa_diamond",
+        model: "test/model",
+        reasoningEffort: "high",
+      },
       epochs: 1,
       maxConcurrency: 1,
       range: { start: 0, end: 1 },
@@ -64,11 +68,13 @@ describe("benchmark registry", () => {
     const config = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "search_hle",
       model: "openai/gpt-5.4-nano",
+      reasoningEffort: "high",
     });
     assertRight(config);
     expect(config.right).toEqual({
       benchmarkId: "search_hle",
       model: "openai/gpt-5.4-nano",
+      reasoningEffort: "high",
       lane: { webSearch: "server-tool", engine: "auto" },
     });
   });
@@ -82,11 +88,13 @@ describe("benchmark registry", () => {
     const config = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "search_dsqa",
       model: "openai/gpt-5.4-nano",
+      reasoningEffort: "high",
     });
     assertRight(config);
     expect(config.right).toEqual({
       benchmarkId: "search_dsqa",
       model: "openai/gpt-5.4-nano",
+      reasoningEffort: "high",
       lane: { webSearch: "server-tool", engine: "auto" },
     });
   });
@@ -96,6 +104,7 @@ describe("benchmark registry", () => {
       isSearchBenchmarkConfig({
         benchmarkId: "search_dsqa",
         model: "model",
+        reasoningEffort: "high",
         lane: { webSearch: "server-tool", engine: "auto" },
       })
     ).toBe(true);
@@ -112,11 +121,13 @@ describe("benchmark registry", () => {
     const result = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "search_widesearch",
       model: "openai/gpt-5.4-nano",
+      reasoningEffort: "high",
     });
     assertRight(result);
     expect(result.right).toEqual({
       benchmarkId: "search_widesearch",
       model: "openai/gpt-5.4-nano",
+      reasoningEffort: "high",
       lane: { webSearch: "server-tool", engine: "auto" },
     });
   });
@@ -126,6 +137,7 @@ describe("benchmark registry", () => {
     const config = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "wandr",
       model: "openai/gpt-5.5",
+      reasoningEffort: "high",
     });
     assertRight(config);
     expect(benchmark?.defaultEpochs).toBe(1);
@@ -133,6 +145,7 @@ describe("benchmark registry", () => {
     expect(config.right).toEqual({
       benchmarkId: "wandr",
       model: "openai/gpt-5.5",
+      reasoningEffort: "high",
       modalEnv: "main",
       stepLimit: 64,
       serverTools: [
@@ -146,6 +159,8 @@ describe("benchmark registry", () => {
     const result = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "swe_atlas_qa",
       model: "anthropic/claude-opus-4.5",
+      reasoningEffort: "high",
+      agentReasoningEffort: "high",
     });
     assertRight(result);
     if (result.right.benchmarkId !== "swe_atlas_qa") {
@@ -156,10 +171,12 @@ describe("benchmark registry", () => {
     expect(result.right.modalEnv).toBe("main");
   });
 
-  it("defaults terminal-bench to the pi agent and the ori install url", () => {
+  it("parses terminal-bench with the pi agent and the ori install url", () => {
     const result = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "terminal_bench",
       model: "anthropic/claude-opus-5",
+      reasoningEffort: "high",
+      agentReasoningEffort: "high",
     });
     assertRight(result);
     if (result.right.benchmarkId !== "terminal_bench") {
@@ -177,6 +194,8 @@ describe("benchmark registry", () => {
       benchmarkId: "terminal_bench",
       model: "anthropic/claude-opus-5",
       agent: "claude",
+      reasoningEffort: "high",
+      agentReasoningEffort: "high",
     });
     assertRight(result);
     if (result.right.benchmarkId !== "terminal_bench") {
@@ -191,6 +210,8 @@ describe("benchmark registry", () => {
         benchmarkId,
         model: "openai/gpt-5.4",
         agent: "prime-agent",
+        reasoningEffort: "high",
+        agentReasoningEffort: "high",
       });
       assertRight(result);
       expect(result.right.agent).toBe("prime-agent");
@@ -201,12 +222,14 @@ describe("benchmark registry", () => {
     const result = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "terminal_bench",
       model: "anthropic/claude-opus-5",
+      reasoningEffort: "high",
+      agentReasoningEffort: "high",
     });
     assertRight(result);
     if (result.right.benchmarkId !== "terminal_bench") {
       throw new Error("expected terminal_bench config");
     }
-    expect(result.right.agentReasoningEffort).toBe("medium");
+    expect(result.right.agentReasoningEffort).toBe("high");
     expect(result.right.oriChannel).toBe("stable");
     expect(result.right.isolateAgentConfig).toBe(false);
     expect(result.right.systemPrompt).toBeUndefined();
@@ -219,6 +242,7 @@ describe("benchmark registry", () => {
       benchmarkId: "terminal_bench",
       model: "anthropic/claude-opus-5",
       agentReasoningEffort: "max",
+      reasoningEffort: "high",
     });
     assertRight(parsed);
     if (parsed.right.benchmarkId !== "terminal_bench") {
@@ -232,6 +256,7 @@ describe("benchmark registry", () => {
       benchmarkId: "terminal_bench",
       model: "anthropic/claude-opus-5",
       agentReasoningEffort: "none",
+      reasoningEffort: "high",
     });
     assertRight(parsed);
     if (parsed.right.benchmarkId !== "terminal_bench") {
@@ -245,6 +270,7 @@ describe("benchmark registry", () => {
       benchmarkId: "terminal_bench",
       model: "anthropic/claude-opus-5",
       agentReasoningEffort: "off",
+      reasoningEffort: "high",
     });
     assertLeft(result);
   });
@@ -254,6 +280,8 @@ describe("benchmark registry", () => {
       benchmarkId: "terminal_bench",
       model: "anthropic/claude-opus-5",
       allowedTools: ["Bash", "Edit"],
+      reasoningEffort: "high",
+      agentReasoningEffort: "high",
       disallowedTools: ["WebSearch"],
       isolateAgentConfig: true,
       systemPrompt: "terse",
@@ -273,6 +301,8 @@ describe("benchmark registry", () => {
       benchmarkId: "terminal_bench",
       model: "openai/gpt-5.4",
       agent: "codex",
+      reasoningEffort: "high",
+      agentReasoningEffort: "high",
     });
     assertLeft(result);
   });
@@ -287,6 +317,8 @@ describe("benchmark registry", () => {
       const result = parseSchema(BenchmarkRunConfigSchema, {
         benchmarkId,
         model: "anthropic/claude-opus-4.5",
+        reasoningEffort: "high",
+        agentReasoningEffort: "high",
       });
       assertRight(result);
       if (!("agent" in result.right)) {
@@ -301,6 +333,7 @@ describe("benchmark registry", () => {
       benchmarkId: "deep_swe",
       model: "anthropic/claude-opus-5",
       agent: "claude",
+      reasoningEffort: "high",
       agentReasoningEffort: "high",
       isolateAgentConfig: true,
     });
@@ -318,6 +351,8 @@ describe("benchmark registry", () => {
       benchmarkId: "deep_swe",
       model: "anthropic/claude-opus-5",
       agent: "pi",
+      reasoningEffort: "high",
+      agentReasoningEffort: "high",
     });
     assertRight(result);
     if (result.right.benchmarkId !== "deep_swe") {
@@ -331,6 +366,8 @@ describe("benchmark registry", () => {
       benchmarkId: "deep_swe",
       model: "anthropic/claude-opus-5",
       agent: "codex",
+      reasoningEffort: "high",
+      agentReasoningEffort: "high",
     });
     assertLeft(result);
   });
@@ -339,6 +376,7 @@ describe("benchmark registry", () => {
     const result = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "wandr",
       model: "openai/gpt-5.5",
+      reasoningEffort: "high",
     });
     assertRight(result);
     expect("agent" in result.right).toBe(false);

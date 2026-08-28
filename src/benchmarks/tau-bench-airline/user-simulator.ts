@@ -97,6 +97,7 @@ export class UserSimulator {
       .generate(messagesToResponses(this.messages), {
         model,
         temperature: 0,
+        reasoningEffort: this.config.reasoningEffort,
       })
       .pipe(
         mapError((error) => new UserSimError({ message: error.message })),

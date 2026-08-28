@@ -16,6 +16,7 @@ describe("benchmark config", () => {
     const result = parseSchema(NativeBenchmarkRunConfigSchema, {
       benchmarkId: "search_hle",
       model: "openai/gpt-5.4",
+      reasoningEffort: "high",
     });
 
     assertRight(result);
@@ -37,10 +38,20 @@ describe("benchmark config", () => {
     assertLeft(result);
   });
 
+  it("requires reasoningEffort in model benchmark configs", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "gpqa_diamond",
+      model: "openai/gpt-5",
+    });
+
+    assertLeft(result);
+  });
+
   it("parses injected benchmark configs with opaque options", () => {
     const result = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "injected_benchmark",
       model: "injected/model",
+      reasoningEffort: "high",
       options: {
         subsets: ["all"],
         customFlag: true,
@@ -51,6 +62,7 @@ describe("benchmark config", () => {
     expect(result.right).toEqual({
       benchmarkId: "injected_benchmark",
       model: "injected/model",
+      reasoningEffort: "high",
       options: {
         subsets: ["all"],
         customFlag: true,
@@ -65,6 +77,7 @@ describe("benchmark config", () => {
     const result = parseSchema(InjectedBenchmarkRunConfigSchema, {
       benchmarkId: "injected_benchmark",
       model: "injected/model",
+      reasoningEffort: "high",
     });
 
     assertRight(result);
@@ -75,6 +88,7 @@ describe("benchmark config", () => {
     const result = parseSchema(InjectedBenchmarkRunConfigSchema, {
       benchmarkId: "gpqa_diamond",
       model: "injected/model",
+      reasoningEffort: "high",
       options: { subsets: ["all"] },
     });
 

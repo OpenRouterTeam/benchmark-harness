@@ -5,7 +5,6 @@ import { ORI_AGENTS } from "../agent-cli/schema";
 export {
   DEFAULT_CLAUDE_PACKAGE,
   DEFAULT_ORI_INSTALL_URL,
-  DEFAULT_ORI_REASONING_EFFORT,
   ORI_AGENTS,
   ORI_REASONING_EFFORTS,
 } from "../agent-cli/schema";

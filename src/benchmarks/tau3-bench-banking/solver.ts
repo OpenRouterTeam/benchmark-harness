@@ -127,7 +127,7 @@ export function bankingSolver({
   readonly userModel: ResponsesModelService;
   readonly client: HttpClient.HttpClient;
   readonly dataFetchLock: Semaphore;
-  readonly opts?: SolverOpts;
+  readonly opts: SolverOpts;
 }): SolverService {
   return (state: TaskState) =>
     gen(function* () {
@@ -216,8 +216,8 @@ export function bankingSolver({
       const genConfig: GenerateConfig = {
         temperature: BANKING_TEMPERATURE,
         tools: [...BANKING_TOOL_DEFINITIONS, ...retrievalTools.definitions],
-        ...definedValues(opts?.inference ?? {}),
-        ...(opts?.endpointId !== undefined && { endpointId: opts.endpointId }),
+        ...definedValues(opts.inference),
+        ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
       };
       let totalGenerationTimeMs = 0;
       const accUsage = {

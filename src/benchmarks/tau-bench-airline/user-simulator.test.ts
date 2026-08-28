@@ -13,7 +13,9 @@ const config = {
   apiKey: "sk-test",
   model: "openai/gpt-5",
   sessionId: "session-1",
+  reasoningEffort: "medium",
 } as const;
+const runLevelReasoningEffort = "low";
 
 function modelFor(
   turns: readonly ResponsesTurn[],
@@ -21,8 +23,10 @@ function modelFor(
 ): ResponsesModelService {
   let index = 0;
   return {
-    generate: (input) => {
+    generate: (input, options) => {
       inputs.push([...input]);
+      expect(options.reasoningEffort).toBe(config.reasoningEffort);
+      expect(options.reasoningEffort).not.toBe(runLevelReasoningEffort);
       return succeed(turns[Math.min(index++, turns.length - 1)]!);
     },
   };

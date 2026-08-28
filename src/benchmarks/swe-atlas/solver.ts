@@ -42,8 +42,6 @@ import { ensureTasksCheckedOut } from "./tasks-source";
 
 const SWE_ATLAS_TEMPERATURE = 1;
 
-const SWE_ATLAS_REASONING_EFFORT = "high" as const;
-
 const PER_COMMAND_TIMEOUT_SEC = {
   qa: 900,
   tw: 1800,
@@ -79,7 +77,7 @@ export interface SweAtlasSolverOpts {
   readonly endpointId?: string;
   readonly judgeModel: string;
   readonly stepLimit: number;
-  readonly inference?: InferenceOverride;
+  readonly inference: InferenceOverride;
   readonly agent?: HarborAgent;
   readonly agentCli?: AgentCliOpts;
 }
@@ -111,6 +109,7 @@ export function makeSweAtlasSolver(
         model: opts.model,
         apiKey: opts.apiKey,
         ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
+        agentReasoningEffort: opts.inference.reasoningEffort,
       };
       const cliOpts: AgentCliOpts = {
         ...baseCliOpts,
@@ -143,10 +142,9 @@ export function makeSweAtlasSolver(
       });
       const genConfig: ResponsesGenerateConfig = {
         temperature: SWE_ATLAS_TEMPERATURE,
-        reasoningEffort: SWE_ATLAS_REASONING_EFFORT,
         tools: [BASH_RESPONSES_TOOL_DEFINITION],
         instructions: MINI_SWE_SYSTEM_MESSAGE,
-        ...definedValues(opts.inference ?? {}),
+        ...definedValues(opts.inference),
         ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
       };
       try {

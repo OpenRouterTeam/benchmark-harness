@@ -15,6 +15,7 @@ describe("DSQA grader", () => {
       "9bdd0b9198244de8a78bf256b5332805d00c140e85b713f0e1878b3e4aa605a0"
     );
     expect(DSQA_JUDGE_CONFIG.judgeModel).toBe("google/gemini-2.5-flash");
+    expect(DSQA_JUDGE_CONFIG.reasoningEffort).toBe("low");
   });
   it("renders the benchmark inputs inside the official wrappers", () => {
     const prompt = renderDsqaGraderPrompt({

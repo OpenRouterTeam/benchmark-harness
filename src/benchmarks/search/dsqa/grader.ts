@@ -4,6 +4,7 @@ import type { JudgeCallSpec, JudgeConfig } from "../../../judge/judge";
 
 export const DSQA_JUDGE_CONFIG = {
   judgeModel: "google/gemini-2.5-flash",
+  reasoningEffort: "low",
 } as const satisfies JudgeConfig;
 
 export const DSQA_JUDGE_PROMPT_ID = "dsqa_judge";

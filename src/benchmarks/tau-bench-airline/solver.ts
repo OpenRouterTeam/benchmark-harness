@@ -50,11 +50,11 @@ export function airlineSolver({
   readonly userModel: ResponsesModelService;
   readonly client: HttpClient.HttpClient;
   readonly dataFetchLock: Semaphore;
-  readonly opts?: SolverOpts;
+  readonly opts: SolverOpts;
 }): SolverService {
   return (state) =>
     gen(function* () {
-      const userModelConfig = opts?.userModelConfig;
+      const userModelConfig = opts.userModelConfig;
       if (!userModelConfig) {
         return yield* new SolverError({
           message:
@@ -85,8 +85,8 @@ export function airlineSolver({
       const genConfig: GenerateConfig = {
         temperature: AIRLINE_TEMPERATURE,
         tools: AIRLINE_TOOL_DEFINITIONS,
-        ...definedValues(opts?.inference ?? {}),
-        ...(opts?.endpointId !== undefined && { endpointId: opts.endpointId }),
+        ...definedValues(opts.inference),
+        ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
       };
       let totalGenerationTimeMs = 0;
       const accUsage = {

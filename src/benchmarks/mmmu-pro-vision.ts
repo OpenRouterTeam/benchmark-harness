@@ -122,17 +122,17 @@ export function makeMmmuProVisionDatasetLayer(
 
 export function mmmuProVisionSolver(
   model: ModelService,
-  opts?: {
+  opts: {
     readonly endpointId?: string;
-    readonly inference?: InferenceOverride;
+    readonly inference: InferenceOverride;
     readonly mediaResolution?: GeminiMediaResolution;
   }
 ): SolverService {
   const config: GenerateConfig = {
     temperature: 0,
-    ...definedValues(opts?.inference ?? {}),
-    ...(opts?.endpointId !== undefined && { endpointId: opts.endpointId }),
-    ...(opts?.mediaResolution !== undefined && {
+    ...definedValues(opts.inference),
+    ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
+    ...(opts.mediaResolution !== undefined && {
       extraBody: { media_resolution: opts.mediaResolution },
     }),
   };

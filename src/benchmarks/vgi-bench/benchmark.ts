@@ -194,15 +194,15 @@ function makeVgiBenchDatasetLayer(
 
 function vgiBenchSolver(
   model: ModelService,
-  opts?: {
+  opts: {
     readonly endpointId?: string;
-    readonly inference?: FixedTemperatureInferenceOverride;
+    readonly inference: FixedTemperatureInferenceOverride;
   }
 ): SolverService {
   const config: GenerateConfig = {
     temperature: VGI_BENCH_TEMPERATURE,
-    ...definedValues(opts?.inference ?? {}),
-    ...(opts?.endpointId !== undefined && { endpointId: opts.endpointId }),
+    ...definedValues(opts.inference),
+    ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
   };
   return generate(model, config);
 }

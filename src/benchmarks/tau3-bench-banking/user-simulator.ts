@@ -124,9 +124,7 @@ export class UserSimulator {
       .generate(messagesToResponses(this.messages), {
         model,
         temperature: 0,
-        ...(this.config.userReasoningEffort !== undefined && {
-          reasoningEffort: this.config.userReasoningEffort,
-        }),
+        reasoningEffort: this.config.userReasoningEffort,
         ...(this.availableTools.length > 0 && {
           tools: this.availableTools.map(toolDefinitionToResponses),
         }),

@@ -49,7 +49,7 @@ export interface SearchSolverOptions {
   readonly timeoutMs?: number;
   readonly maxOutputTokens?: number;
   readonly temperature?: number;
-  readonly reasoningEffort?: ReasoningEffort;
+  readonly reasoningEffort: ReasoningEffort;
   readonly endpointId?: string;
   readonly sort?: ProviderSort;
   readonly providerOrder?: readonly string[];
@@ -94,9 +94,7 @@ export function searchSolver(
         ...(opts.temperature !== undefined && {
           temperature: opts.temperature,
         }),
-        ...(opts.reasoningEffort !== undefined && {
-          reasoningEffort: opts.reasoningEffort,
-        }),
+        reasoningEffort: opts.reasoningEffort,
         ...(sendSort && { sort: opts.sort }),
         ...(opts.providerOrder !== undefined && {
           providerOrder: opts.providerOrder,

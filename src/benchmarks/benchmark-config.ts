@@ -10,7 +10,6 @@ import {
   DEFAULT_HARBOR_AGENT,
   DEFAULT_ORI_CHANNEL,
   DEFAULT_ORI_INSTALL_URL,
-  DEFAULT_ORI_REASONING_EFFORT,
   HARBOR_AGENTS,
   ORI_CHANNELS,
   ORI_REASONING_EFFORTS,
@@ -42,7 +41,7 @@ export type GeminiMediaResolution = ValueOf<typeof GEMINI_MEDIA_RESOLUTIONS>;
 export const InferenceOverrideSchema = z.object({
   temperature: z.number().optional(),
   maxTokens: z.number().optional(),
-  reasoningEffort: z.enum(REASONING_EFFORTS).optional(),
+  reasoningEffort: z.enum(REASONING_EFFORTS),
   costTier: z.enum(COST_TIERS).optional(),
   timeoutMs: z.number().optional(),
   sort: z.nativeEnum(ProviderSort).optional(),
@@ -97,6 +96,7 @@ export type MmluProBenchmarkConfig = z.infer<
 
 export const TauBenchOptionsSchema = z.object({
   userModel: zDefaultedText(TAU_BENCH_AIRLINE_META.userModel),
+  userReasoningEffort: z.enum(REASONING_EFFORTS).default("medium"),
 });
 
 export const TauBenchAirlineConfigSchema = z.object({
@@ -146,9 +146,7 @@ export const TerminalBenchOptionsSchema = z.object({
   agent: z.enum(TERMINAL_BENCH_AGENTS).default(DEFAULT_TERMINAL_BENCH_AGENT),
   agentPackage: z.string().optional(),
   oriInstallUrl: z.string().default(DEFAULT_ORI_INSTALL_URL),
-  agentReasoningEffort: z
-    .enum(ORI_REASONING_EFFORTS)
-    .default(DEFAULT_ORI_REASONING_EFFORT),
+  agentReasoningEffort: z.enum(ORI_REASONING_EFFORTS),
   oriChannel: z.enum(ORI_CHANNELS).default(DEFAULT_ORI_CHANNEL),
   systemPrompt: z.string().optional(),
   allowedTools: z.array(z.string()).optional(),
@@ -192,9 +190,7 @@ const AgenticOptionsSchema = z.object({
   agent: z.enum(HARBOR_AGENTS).default(DEFAULT_HARBOR_AGENT),
   agentPackage: z.string().optional(),
   oriInstallUrl: z.string().default(DEFAULT_ORI_INSTALL_URL),
-  agentReasoningEffort: z
-    .enum(ORI_REASONING_EFFORTS)
-    .default(DEFAULT_ORI_REASONING_EFFORT),
+  agentReasoningEffort: z.enum(ORI_REASONING_EFFORTS),
   oriChannel: z.enum(ORI_CHANNELS).default(DEFAULT_ORI_CHANNEL),
   systemPrompt: z.string().optional(),
   appendSystemPrompt: z.string().optional(),

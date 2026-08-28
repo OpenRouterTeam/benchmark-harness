@@ -121,15 +121,15 @@ export const IFSTRUCT_DATASET = {
 
 export function ifStructSolver(
   model: ModelService,
-  opts?: {
+  opts: {
     readonly endpointId?: string;
-    readonly inference?: InferenceOverride;
+    readonly inference: InferenceOverride;
   }
 ): SolverService {
   const config: GenerateConfig = {
     temperature: IFSTRUCT_TEMPERATURE,
-    ...definedValues(opts?.inference ?? {}),
-    ...(opts?.endpointId !== undefined && { endpointId: opts.endpointId }),
+    ...definedValues(opts.inference),
+    ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
   };
   return generate(model, config);
 }

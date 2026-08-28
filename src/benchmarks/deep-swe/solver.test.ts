@@ -180,6 +180,7 @@ const SOLVER_OPTS = {
   apiKey: "sk-test",
   stepLimit: 10,
   endpointId: "ep-pinned",
+  inference: { reasoningEffort: "low" },
 } as const;
 const CLAUDE_STREAM = [
   JSON.stringify({
@@ -413,7 +414,7 @@ describe("deep-swe solver", () => {
     expect(record.configs.length).toBeGreaterThan(0);
     for (const cfg of record.configs) {
       expect(cfg.endpointId).toBe("ep-pinned");
-      expect(cfg.reasoningEffort).toBe("high");
+      expect(cfg.reasoningEffort).toBe("low");
       expect(cfg.instructions).toContain("helpful assistant");
       expect(cfg.tools?.[0]?.name).toBe("bash");
     }

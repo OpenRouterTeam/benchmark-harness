@@ -34,7 +34,9 @@ describe("mmluProSolver", () => {
         });
       },
     };
-    const solver = mmluProSolver(model);
+    const solver = mmluProSolver(model, {
+      inference: { reasoningEffort: "high" },
+    });
     await runPromise(
       solver(
         initialTaskState({
@@ -46,6 +48,7 @@ describe("mmluProSolver", () => {
     );
     expect(recorded.config).toEqual({
       temperature: MMLU_PRO_TEMPERATURE,
+      reasoningEffort: "high",
     });
     expect(recorded.config?.maxTokens).toBeUndefined();
     expect(recorded.messages).toEqual([

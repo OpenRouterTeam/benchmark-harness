@@ -157,7 +157,7 @@ describe("runBenchmark", () => {
     );
     const solver = chain(
       systemMessage("You are a helpful assistant."),
-      generate(model.service, { temperature: 0.5 })
+      generate(model.service, { temperature: 0.5, reasoningEffort: "high" })
     );
     const result = await runPromise(
       runBenchmark({ epochs: 3, maxConcurrency: 4 }).pipe(
@@ -176,7 +176,7 @@ describe("runBenchmark", () => {
     const model = fakeModel(() => "Answer: B");
     const solver = chain(
       systemMessage("You are a helpful assistant."),
-      generate(model.service, { temperature: 0.5 })
+      generate(model.service, { temperature: 0.5, reasoningEffort: "high" })
     );
     const layers = mergeAll(
       fakeDatasetLayer(SAMPLES.slice(0, 1)),
@@ -261,7 +261,10 @@ describe("runBenchmark", () => {
   });
   it("respects a sample range (chunk slice)", async () => {
     const model = fakeModel(() => "Answer: B");
-    const solver = generate(model.service, { temperature: 0 });
+    const solver = generate(model.service, {
+      temperature: 0,
+      reasoningEffort: "high",
+    });
     const layers = mergeAll(
       fakeDatasetLayer(SAMPLES),
       layerSucceed(Solver, Solver.of(solver)),
@@ -300,7 +303,10 @@ describe("runBenchmark", () => {
       },
     };
     const model = { service, layer: layerSucceed(Model, Model.of(service)) };
-    const solver = generate(model.service, { temperature: 0 });
+    const solver = generate(model.service, {
+      temperature: 0,
+      reasoningEffort: "high",
+    });
     const layers = mergeAll(
       fakeDatasetLayer(SAMPLES),
       layerSucceed(Solver, Solver.of(solver)),
@@ -339,7 +345,10 @@ describe("runBenchmark", () => {
       },
     };
     const model = { service, layer: layerSucceed(Model, Model.of(service)) };
-    const solver = generate(model.service, { temperature: 0 });
+    const solver = generate(model.service, {
+      temperature: 0,
+      reasoningEffort: "high",
+    });
     const layers = mergeAll(
       fakeDatasetLayer(SAMPLES),
       layerSucceed(Solver, Solver.of(solver)),
@@ -382,7 +391,10 @@ describe("runBenchmark", () => {
         })
       ),
     };
-    const solver = generate(model.service, { temperature: 0 });
+    const solver = generate(model.service, {
+      temperature: 0,
+      reasoningEffort: "high",
+    });
     const layers = mergeAll(
       fakeDatasetLayer(SAMPLES),
       layerSucceed(Solver, Solver.of(solver)),
