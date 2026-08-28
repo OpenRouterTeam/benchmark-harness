@@ -1,7 +1,7 @@
 import { execFile, execFileSync } from "node:child_process";
 import { mkdtempSync, readdirSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { basename, dirname, join } from "node:path";
+import { join } from "node:path";
 
 import { option, string } from "effect/Config";
 import { TaggedError } from "effect/Data";
@@ -12,14 +12,8 @@ import { getOrNull } from "effect/Option";
 import type { CacheStore } from "../../datasets/cache-store";
 import { resolveCacheStore } from "../../datasets/cache-store";
 import {
-  datasetCacheRoot,
-  hasCheckoutCompleteMarker,
-  mkdirOwnerOnly,
-  publishStagedCheckout,
   removeDirRecursive,
   restrictPermissionsRecursive,
-  sweepStaleStagingDirs,
-  writeCheckoutCompleteMarker,
 } from "../../datasets/local-cache";
 import { runHarnessPromise } from "../../internal/effect-logger";
 import { wLog } from "../../internal/log";
@@ -73,13 +67,6 @@ export function makeTasksSource(config: TasksSourceConfig): TasksSource {
       return false;
     }
   };
-  const sharedCheckoutRoot = (): string | undefined => {
-    const root = datasetCacheRoot();
-    if (root === undefined) {
-      return undefined;
-    }
-    return join(root, "repos", `${config.label}-${config.commit.slice(0, 12)}`);
-  };
   const cloneInto = async (root: string): Promise<void> => {
     await runGit([
       "clone",
@@ -99,7 +86,6 @@ export function makeTasksSource(config: TasksSourceConfig): TasksSource {
       config.commit,
     ]);
     await runGit(["-C", root, "checkout", config.commit]);
-    writeCheckoutCompleteMarker(root);
   };
   const cloneTasks = async (): Promise<string> => {
     const override = getOrNull(runSync(string(config.envVar).pipe(option)));
@@ -112,18 +98,7 @@ export function makeTasksSource(config: TasksSourceConfig): TasksSource {
       cacheRoot = override;
       return override;
     }
-    const shared = sharedCheckoutRoot();
-    if (shared === undefined) {
-      const tmp = mkdtempSync(join(tmpdir(), config.tmpPrefix));
-      await cloneInto(tmp);
-      cacheRoot = tmp;
-      return tmp;
-    }
-    mkdirOwnerOnly(dirname(shared));
-    sweepStaleStagingDirs(dirname(shared));
-    const staging = mkdtempSync(
-      join(dirname(shared), `.${basename(shared)}.staging-`)
-    );
+    const staging = mkdtempSync(join(tmpdir(), config.tmpPrefix));
     const hydrated = await store.tryHydrateCheckout(
       staging,
       config.label,
@@ -133,22 +108,16 @@ export function makeTasksSource(config: TasksSourceConfig): TasksSource {
       hydrated && hasTasksDir(staging) && isAtPinnedCommit(staging);
     if (usable) {
       restrictPermissionsRecursive(staging);
-      const root = publishStagedCheckout(staging, shared, () =>
-        hasTasksDir(shared)
-      );
-      cacheRoot = root;
-      return root;
+      cacheRoot = staging;
+      return staging;
     }
     if (hydrated) {
       wLog("GCS checkout hydration produced an unusable tree; re-cloning", {
         benchmark: config.label,
-        shared,
       });
     }
     removeDirRecursive(staging);
-    const cloneStaging = mkdtempSync(
-      join(dirname(shared), `.${basename(shared)}.staging-`)
-    );
+    const cloneStaging = mkdtempSync(join(tmpdir(), config.tmpPrefix));
     try {
       await cloneInto(cloneStaging);
     } catch (error) {
@@ -156,12 +125,9 @@ export function makeTasksSource(config: TasksSourceConfig): TasksSource {
       throw error;
     }
     restrictPermissionsRecursive(cloneStaging);
-    const root = publishStagedCheckout(cloneStaging, shared, () =>
-      hasTasksDir(shared)
-    );
-    cacheRoot = root;
-    void store.snapshotCheckout(root, config.label, config.commit);
-    return root;
+    cacheRoot = cloneStaging;
+    void store.snapshotCheckout(cloneStaging, config.label, config.commit);
+    return cloneStaging;
   };
   const ensureTasksCheckedOut = (): Promise<string> => {
     if (cacheRoot && hasTasksDir(cacheRoot)) {
@@ -171,19 +137,6 @@ export function makeTasksSource(config: TasksSourceConfig): TasksSource {
     if (override && hasTasksDir(override) && isAtPinnedCommit(override)) {
       cacheRoot = override;
       return Promise.resolve(override);
-    }
-    const overrideIsCloneTarget =
-      override !== null && override.length > 0 && isEmptyOrMissing(override);
-    const shared = sharedCheckoutRoot();
-    if (
-      !overrideIsCloneTarget &&
-      shared !== undefined &&
-      hasCheckoutCompleteMarker(shared) &&
-      hasTasksDir(shared) &&
-      isAtPinnedCommit(shared)
-    ) {
-      cacheRoot = shared;
-      return Promise.resolve(shared);
     }
     if (
       override !== null &&
