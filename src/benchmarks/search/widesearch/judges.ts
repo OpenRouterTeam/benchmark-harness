@@ -6,6 +6,7 @@ export const WIDESEARCH_JUDGE_CONFIG = {
   judgeModel: "openai/gpt-4.1",
   temperature: 0,
   timeoutMs: 180000,
+  reasoningEffort: "none",
 } as const satisfies JudgeConfig;
 
 export const WIDESEARCH_ALIGNMENT_PROMPT_ID = "widesearch_alignment";

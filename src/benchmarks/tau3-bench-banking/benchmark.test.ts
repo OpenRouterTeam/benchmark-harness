@@ -28,6 +28,7 @@ describe("tau3_bench_banking registration", () => {
     const result = parseSchema(Tau3BenchBankingConfigSchema, {
       benchmarkId: "tau3_bench_banking",
       model: "openai/gpt-4o-mini",
+      reasoningEffort: "high",
     });
     assertRight(result);
     expect(result.right.userModel).toBe("openai/gpt-5.4-mini");
@@ -38,6 +39,7 @@ describe("tau3_bench_banking registration", () => {
     const result = parseSchema(Tau3BenchBankingConfigSchema, {
       benchmarkId: "tau3_bench_banking",
       model: "openai/gpt-4o-mini",
+      reasoningEffort: "high",
       userModel: "",
     });
     assertRight(result);
@@ -47,6 +49,7 @@ describe("tau3_bench_banking registration", () => {
     const result = parseSchema(Tau3BenchBankingConfigSchema, {
       benchmarkId: "tau3_bench_banking",
       model: "openai/gpt-4o-mini",
+      reasoningEffort: "high",
       userModel: "  \t",
     });
     assertRight(result);
@@ -56,6 +59,7 @@ describe("tau3_bench_banking registration", () => {
     const result = parseSchema(Tau3BenchBankingConfigSchema, {
       benchmarkId: "tau3_bench_banking",
       model: "openai/gpt-4o-mini",
+      reasoningEffort: "high",
       userReasoningEffort: "high",
     });
     assertRight(result);
@@ -65,6 +69,7 @@ describe("tau3_bench_banking registration", () => {
     const result = parseSchema(Tau3BenchBankingConfigSchema, {
       benchmarkId: "tau3_bench_banking",
       model: "openai/gpt-4o-mini",
+      reasoningEffort: "high",
       userModel: "google/gemini-2.5-flash",
       retrievalConfig: "required_docs",
     });
@@ -76,6 +81,7 @@ describe("tau3_bench_banking registration", () => {
     const result = parseSchema(Tau3BenchBankingConfigSchema, {
       benchmarkId: "tau3_bench_banking",
       model: "openai/gpt-4o-mini",
+      reasoningEffort: "high",
       retrievalConfig: "bm25_grep",
     });
     assertRight(result);
@@ -102,6 +108,7 @@ describe("tau3_bench_banking registration", () => {
       benchmarkConfig: {
         benchmarkId: "gpqa_diamond",
         model: "openai/gpt-4o-mini",
+        reasoningEffort: "high",
       },
       sessionId: "test-session",
     });

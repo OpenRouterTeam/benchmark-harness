@@ -162,12 +162,12 @@ export interface UserModelConfig {
   readonly model: string;
   readonly baseUrl?: string;
   readonly sessionId?: string;
-  readonly userReasoningEffort?: ReasoningEffort;
+  readonly userReasoningEffort: ReasoningEffort;
 }
 
 export interface SolverOpts {
   readonly endpointId?: string;
   readonly userModelConfig?: UserModelConfig;
   readonly retrievalConfig?: BankingRetrievalConfig;
-  readonly inference?: InferenceOverride;
+  readonly inference: InferenceOverride;
 }

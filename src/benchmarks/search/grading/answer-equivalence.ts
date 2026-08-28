@@ -5,6 +5,7 @@ import type { JudgeCallSpec, JudgeConfig } from "../../../judge/judge";
 export const ANSWER_EQUIVALENCE_JUDGE_CONFIG = {
   judgeModel: "openai/gpt-4.1",
   temperature: 0,
+  reasoningEffort: "none",
 } as const satisfies JudgeConfig;
 
 export const ANSWER_EQUIVALENCE_JUDGE_PROMPT_ID = "answer_equivalence_judge";

@@ -224,6 +224,7 @@ describe("VGI-Bench registry", () => {
     const result = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "vgi_bench",
       model: "google/gemini-2.5-flash",
+      reasoningEffort: "high",
     });
     assertRight(result);
     expect(result.right.benchmarkId).toBe("vgi_bench");
@@ -234,6 +235,7 @@ describe("VGI-Bench registry", () => {
     const result = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "vgi_bench",
       model: "google/gemini-2.5-flash",
+      reasoningEffort: "high",
       downscaledVideos: true,
       datasetRevision: "v1.0.0",
     });
@@ -247,7 +249,11 @@ describe("VGI-Bench registry", () => {
     const result = await runBenchmarkById({
       benchmarkId: "vgi_bench",
       apiKey: "unused",
-      benchmarkConfig: { benchmarkId: "vgi_bench", model: "test/model" },
+      benchmarkConfig: {
+        benchmarkId: "vgi_bench",
+        model: "test/model",
+        reasoningEffort: "high",
+      },
       epochs: 1,
       maxConcurrency: 1,
       range: { start: 0, end: 1 },

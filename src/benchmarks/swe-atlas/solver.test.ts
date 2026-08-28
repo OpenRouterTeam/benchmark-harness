@@ -167,6 +167,7 @@ const SOLVER_OPTS = {
   judgeModel: "anthropic/claude-opus-4.5",
   stepLimit: 10,
   endpointId: "ep-pinned",
+  inference: { reasoningEffort: "low" },
 } as const;
 const CLAUDE_STREAM = [
   JSON.stringify({
@@ -289,6 +290,7 @@ describe("swe-atlas claude agent via ori", () => {
         agentCli: {
           model: "anthropic/claude-opus-4.5",
           apiKey: "sk-test",
+          agentReasoningEffort: "low",
           appendSystemPrompt: "Be terse.",
         },
       }
@@ -375,7 +377,7 @@ describe("swe-atlas solver", () => {
     expect(record.configs.length).toBeGreaterThan(0);
     for (const cfg of record.configs) {
       expect(cfg.endpointId).toBe("ep-pinned");
-      expect(cfg.reasoningEffort).toBe("high");
+      expect(cfg.reasoningEffort).toBe("low");
       expect(cfg.instructions).toContain("helpful assistant");
       expect(cfg.tools?.[0]?.name).toBe("bash");
     }

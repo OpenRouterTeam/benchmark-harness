@@ -1,3 +1,4 @@
+import type { ReasoningEffort } from "../../harness/constants";
 import type { ValueOf } from "../../internal/guards";
 import { isDefinedAndNotNull } from "../../internal/guards";
 import { z } from "../../internal/zod";
@@ -187,7 +188,7 @@ export interface AirlineData {
 export interface SolverOpts {
   readonly endpointId?: string;
   readonly userModelConfig?: UserModelConfig;
-  readonly inference?: FixedTemperatureInferenceOverride;
+  readonly inference: FixedTemperatureInferenceOverride;
 }
 
 export interface UserModelConfig {
@@ -195,4 +196,5 @@ export interface UserModelConfig {
   readonly model: string;
   readonly baseUrl?: string;
   readonly sessionId?: string;
+  readonly reasoningEffort: ReasoningEffort;
 }

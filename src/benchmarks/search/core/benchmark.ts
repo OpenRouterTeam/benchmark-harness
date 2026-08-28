@@ -60,9 +60,7 @@ export function searchSolverOptionsFromConfig({
         : Math.min(requestedMaxOutputTokens, maxOutputTokensCeiling),
     temperature: config.temperature ?? temperature,
     ...(config.timeoutMs !== undefined && { timeoutMs: config.timeoutMs }),
-    ...(config.reasoningEffort !== undefined && {
-      reasoningEffort: config.reasoningEffort,
-    }),
+    reasoningEffort: config.reasoningEffort,
     ...(config.endpointId !== undefined && { endpointId: config.endpointId }),
     ...(config.sort !== undefined && { sort: config.sort }),
     ...(config.providerOrder !== undefined && {

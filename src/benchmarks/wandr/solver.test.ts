@@ -290,7 +290,7 @@ async function runSolver({
 }: {
   readonly modelLayer: Layer<ResponsesModel>;
   readonly sandboxLayer: Layer<SandboxSession>;
-  readonly inference?: InferenceOverride;
+  readonly inference: InferenceOverride;
   readonly taskId?: string;
   readonly apiKey?: string;
 }): Promise<TaskState> {

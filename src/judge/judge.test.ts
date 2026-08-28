@@ -66,7 +66,15 @@ describe("judgeCall", () => {
       },
     };
     const result = await runPromise(
-      judgeCall(service, { judgeModel: "openai/gpt-4.1", temperature: 0 }, SPEC)
+      judgeCall(
+        service,
+        {
+          judgeModel: "openai/gpt-4.1",
+          temperature: 0,
+          reasoningEffort: "high",
+        },
+        SPEC
+      )
     );
     expect(result.verdict).toEqual({ verdict: "yes" });
     expect(sentModel).toBe("openai/gpt-4.1");
@@ -90,7 +98,7 @@ describe("judgeCall", () => {
     const result = await runPromise(
       judgeCall(
         service,
-        { judgeModel: "openai/gpt-4.1" },
+        { judgeModel: "openai/gpt-4.1", reasoningEffort: "high" },
         {
           ...SPEC,
           jsonSchema: undefined,
@@ -109,7 +117,9 @@ describe("judgeCall", () => {
     };
     const entries = await runPromise(
       resetGenerationIds.pipe(
-        flatMap(() => judgeCall(service, { judgeModel: "j" }, SPEC)),
+        flatMap(() =>
+          judgeCall(service, { judgeModel: "j", reasoningEffort: "high" }, SPEC)
+        ),
         flatMap(() => getCollectedGenerationIdEntries)
       )
     );
@@ -132,7 +142,7 @@ describe("judgeCall", () => {
         }),
     };
     const exit = await runPromiseExit(
-      judgeCall(service, { judgeModel: "j" }, SPEC)
+      judgeCall(service, { judgeModel: "j", reasoningEffort: "high" }, SPEC)
     );
     expect(isFailure(exit)).toBe(true);
     expect(calls).toBe(1);
@@ -153,7 +163,7 @@ describe("judgeCall", () => {
     const result = await runPromise(
       judgeCall(
         service,
-        { judgeModel: "j" },
+        { judgeModel: "j", reasoningEffort: "high" },
         {
           ...SPEC,
           parseFailureFallback: { verdict: "no" } satisfies Verdict,
@@ -185,7 +195,11 @@ describe("judgeCall", () => {
     const result = await runPromise(
       judgeCall(
         service,
-        { judgeModel: "j", retry: { maxRetries: 2, baseDelayMs: 1 } },
+        {
+          judgeModel: "j",
+          reasoningEffort: "high",
+          retry: { maxRetries: 2, baseDelayMs: 1 },
+        },
         SPEC
       )
     );
@@ -210,7 +224,11 @@ describe("judgeCall", () => {
     const exit = await runPromiseExit(
       judgeCall(
         service,
-        { judgeModel: "j", retry: { maxRetries: 3, baseDelayMs: 1 } },
+        {
+          judgeModel: "j",
+          reasoningEffort: "high",
+          retry: { maxRetries: 3, baseDelayMs: 1 },
+        },
         SPEC
       )
     );
@@ -233,7 +251,7 @@ describe("judgeCall usage", () => {
         }),
     };
     const result = await runPromise(
-      judgeCall(service, { judgeModel: "j" }, SPEC)
+      judgeCall(service, { judgeModel: "j", reasoningEffort: "high" }, SPEC)
     );
     expect(result.usage).toEqual({
       inputTokens: 50,

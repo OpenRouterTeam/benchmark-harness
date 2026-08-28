@@ -9,17 +9,20 @@ import { getOrNull } from "effect/Option";
 import { isSafeOriSessionId } from "../benchmarks/agent-cli/runner";
 import type { BenchmarkRunConfig } from "../benchmarks/benchmark-config";
 import {
+  BENCHMARK_OPTIONS_SCHEMAS,
   BenchmarkRunConfigSchema,
   isModelBenchmarkId,
   knownBenchmarkOptionKeys,
 } from "../benchmarks/benchmark-config";
 import { DracoPanelConfigSchema } from "../benchmarks/draco/schemas";
 import { benchmarkIds, getBenchmark } from "../benchmarks/registry";
-import type { CostTier } from "../harness/constants";
+import type { CostTier, ReasoningEffort } from "../harness/constants";
 import {
   COST_TIERS,
+  DEFAULT_REASONING_EFFORT,
   ImageDetail,
   IMAGE_DETAIL_VALUES,
+  REASONING_EFFORTS,
 } from "../harness/constants";
 import { makeProgressReporter } from "../harness/progress";
 import { runHarnessPromise } from "../internal/effect-logger";
@@ -43,6 +46,7 @@ interface CliArgs {
   readonly resumeId?: string;
   readonly imageDetail?: ImageDetail;
   readonly costTier?: CostTier;
+  readonly reasoningEffort: ReasoningEffort;
 }
 
 export function parseArgs(argv: readonly string[]): CliArgs {
@@ -68,6 +72,7 @@ export function parseArgs(argv: readonly string[]): CliArgs {
     resumeId: get("--resume-id"),
     imageDetail: validateImageDetail(get("--image-detail")),
     costTier: validateCostTier(get("--cost-tier")),
+    reasoningEffort: validateReasoningEffort(get("--reasoning-effort")),
   };
 }
 
@@ -182,9 +187,10 @@ function main(): Promise<void> {
         endpointId: args.endpointId,
         imageDetail: args.imageDetail,
         costTier: args.costTier,
+        reasoningEffort: args.reasoningEffort,
       });
       process.stderr.write(
-        `Running ${args.benchmark}${args.model !== undefined ? ` on ${args.model}` : ""}${args.solverConfig !== undefined ? ` (solver-config=${args.solverConfig})` : ""}${artifactDir !== undefined ? ` (artifact-dir=${artifactDir})` : ""} (epochs=${epochs}, concurrency=${args.concurrency}${range !== undefined ? `, range=${range.start ?? 0}..${range.end ?? "end"}` : ""}, session=${sessionId})...\n`
+        `Running ${args.benchmark}${args.model !== undefined ? ` on ${args.model}` : ""}${args.solverConfig !== undefined ? ` (solver-config=${args.solverConfig})` : ""}${artifactDir !== undefined ? ` (artifact-dir=${artifactDir})` : ""} (epochs=${epochs}, concurrency=${args.concurrency}, reasoning-effort=${args.reasoningEffort}${range !== undefined ? `, range=${range.start ?? 0}..${range.end ?? "end"}` : ""}, session=${sessionId})...\n`
       );
       const total = yield* promise(() =>
         resolveTotalEvaluations(args.benchmark, range, epochs)
@@ -294,6 +300,18 @@ function validateCostTier(raw: string | undefined): CostTier | undefined {
   return raw;
 }
 
+function validateReasoningEffort(raw: string | undefined): ReasoningEffort {
+  if (raw === undefined) {
+    return DEFAULT_REASONING_EFFORT;
+  }
+  if (!isMember(raw, REASONING_EFFORTS)) {
+    throw new Error(
+      `--reasoning-effort must be one of: ${REASONING_EFFORTS.join(", ")} (got "${raw}")`
+    );
+  }
+  return raw;
+}
+
 function requireModel(benchmarkId: string, model: string | undefined): string {
   if (model === undefined) {
     throw new Error(`${benchmarkId} requires --model`);
@@ -307,13 +325,22 @@ function buildSchemaValidatedConfig(opts: {
   endpointId: string | undefined;
   panelConfig: unknown;
   costTier?: CostTier;
+  reasoningEffort: ReasoningEffort;
 }): BenchmarkRunConfig {
-  const { benchmarkId, model, endpointId, panelConfig, costTier } = opts;
+  const {
+    benchmarkId,
+    model,
+    endpointId,
+    panelConfig,
+    costTier,
+    reasoningEffort,
+  } = opts;
   const merged: Record<string, unknown> = {
     benchmarkId,
     model,
     ...(endpointId !== undefined && { endpointId }),
     ...(costTier !== undefined && { costTier }),
+    reasoningEffort,
   };
   if (typeof panelConfig === "object" && panelConfig !== null) {
     const known = isModelBenchmarkId(benchmarkId)
@@ -332,6 +359,20 @@ function buildSchemaValidatedConfig(opts: {
         merged[k] = v;
       }
     }
+  }
+  const optionsSchema = isModelBenchmarkId(benchmarkId)
+    ? BENCHMARK_OPTIONS_SCHEMAS[benchmarkId]
+    : undefined;
+  if (
+    optionsSchema !== undefined &&
+    Object.hasOwn(optionsSchema.shape, "agentReasoningEffort") &&
+    !(
+      typeof panelConfig === "object" &&
+      panelConfig !== null &&
+      Object.hasOwn(panelConfig, "agentReasoningEffort")
+    )
+  ) {
+    merged.agentReasoningEffort = reasoningEffort;
   }
   const parsed = parseSchema(BenchmarkRunConfigSchema, merged);
   if (Either.isLeft(parsed)) {
@@ -362,9 +403,17 @@ export function buildBenchmarkConfig(opts: {
   endpointId: string | undefined;
   imageDetail: ImageDetail | undefined;
   costTier?: CostTier;
+  reasoningEffort: ReasoningEffort;
 }): BenchmarkRunConfig {
-  const { benchmarkId, model, panelConfig, artifactDir, endpointId, costTier } =
-    opts;
+  const {
+    benchmarkId,
+    model,
+    panelConfig,
+    artifactDir,
+    endpointId,
+    costTier,
+    reasoningEffort,
+  } = opts;
   switch (benchmarkId) {
     case "gpqa_diamond": {
       return {
@@ -372,6 +421,7 @@ export function buildBenchmarkConfig(opts: {
         model: requireModel("gpqa_diamond", model),
         ...(endpointId !== undefined && { endpointId }),
         ...(costTier !== undefined && { costTier }),
+        reasoningEffort,
       };
     }
     case "mmlu_pro": {
@@ -380,6 +430,7 @@ export function buildBenchmarkConfig(opts: {
         model: requireModel("mmlu_pro", model),
         ...(endpointId !== undefined && { endpointId }),
         ...(costTier !== undefined && { costTier }),
+        reasoningEffort,
       };
     }
     case "tau_bench_verified_airline": {
@@ -389,6 +440,7 @@ export function buildBenchmarkConfig(opts: {
         endpointId,
         panelConfig,
         costTier,
+        reasoningEffort,
       });
     }
     case "tau3_bench_banking": {
@@ -398,6 +450,7 @@ export function buildBenchmarkConfig(opts: {
         endpointId,
         panelConfig,
         costTier,
+        reasoningEffort,
       });
     }
     case "terminal_bench": {
@@ -407,6 +460,7 @@ export function buildBenchmarkConfig(opts: {
         endpointId,
         panelConfig,
         costTier,
+        reasoningEffort,
       });
     }
     case "draco": {
@@ -429,6 +483,7 @@ export function buildBenchmarkConfig(opts: {
           imageDetail: opts.imageDetail,
         }),
         ...(costTier !== undefined && { costTier }),
+        reasoningEffort,
       };
     }
     case "ifstruct": {
@@ -437,6 +492,7 @@ export function buildBenchmarkConfig(opts: {
         model: requireModel("ifstruct", model),
         ...(endpointId !== undefined && { endpointId }),
         ...(costTier !== undefined && { costTier }),
+        reasoningEffort,
       };
     }
     case "swe_atlas_qa":
@@ -455,6 +511,7 @@ export function buildBenchmarkConfig(opts: {
         endpointId,
         panelConfig,
         costTier,
+        reasoningEffort,
       });
     }
     default: {

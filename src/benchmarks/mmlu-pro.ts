@@ -87,15 +87,15 @@ export function makeMmluProDatasetLayer(
 
 export function mmluProSolver(
   model: ModelService,
-  opts?: {
+  opts: {
     readonly endpointId?: string;
-    readonly inference?: InferenceOverride;
+    readonly inference: InferenceOverride;
   }
 ): SolverService {
   const config: GenerateConfig = {
     temperature: MMLU_PRO_TEMPERATURE,
-    ...definedValues(opts?.inference ?? {}),
-    ...(opts?.endpointId !== undefined && { endpointId: opts.endpointId }),
+    ...definedValues(opts.inference),
+    ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
   };
   return generate(model, config);
 }

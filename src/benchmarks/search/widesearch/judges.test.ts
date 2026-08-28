@@ -1,8 +1,18 @@
 import { describe, expect, it } from "bun:test";
 
 import { assertLeft, assertRight } from "../../../internal/testing";
-import { alignmentJudgeSpec, cellJudgeSpec } from "./judges";
+import {
+  alignmentJudgeSpec,
+  cellJudgeSpec,
+  WIDESEARCH_JUDGE_CONFIG,
+} from "./judges";
 describe("WideSearch judge specs", () => {
+  it("pins the historical non-reasoning judge configuration", () => {
+    expect(WIDESEARCH_JUDGE_CONFIG).toMatchObject({
+      judgeModel: "openai/gpt-4.1",
+      reasoningEffort: "none",
+    });
+  });
   it("accepts partial, duplicate, and out-of-vocabulary alignments", () => {
     const spec = alignmentJudgeSpec(["Alpha", "Beta"], ["A", "B"]);
     const valid = spec.parseVerdict(

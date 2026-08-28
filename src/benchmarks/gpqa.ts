@@ -92,15 +92,15 @@ export const GPQA_DATASET = {
 
 export function gpqaSolver(
   model: ModelService,
-  opts?: {
+  opts: {
     readonly endpointId?: string;
-    readonly inference?: FixedTemperatureInferenceOverride;
+    readonly inference: FixedTemperatureInferenceOverride;
   }
 ): SolverService {
   const config: GenerateConfig = {
     temperature: GPQA_TEMPERATURE,
-    ...definedValues(opts?.inference ?? {}),
-    ...(opts?.endpointId !== undefined && { endpointId: opts.endpointId }),
+    ...definedValues(opts.inference),
+    ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
   };
   return chain(
     systemMessage(SIMPLE_EVALS_SYSTEM_MESSAGE),

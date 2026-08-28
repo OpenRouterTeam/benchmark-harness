@@ -177,9 +177,7 @@ export function generate(
     }),
     ...(genConfig.tools !== undefined &&
       genConfig.tools.length > 0 && { tools: [...genConfig.tools] }),
-    ...(genConfig.reasoningEffort !== undefined && {
-      reasoning: { effort: genConfig.reasoningEffort },
-    }),
+    reasoning: { effort: genConfig.reasoningEffort },
     ...(genConfig.temperature !== undefined && {
       temperature: genConfig.temperature,
     }),

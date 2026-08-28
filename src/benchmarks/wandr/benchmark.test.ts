@@ -9,6 +9,7 @@ describe("WANDR benchmark configuration", () => {
     const parsed = parseSchema(WandrConfigSchema, {
       benchmarkId: "wandr",
       model: "openai/gpt-5.4",
+      reasoningEffort: "high",
       costTier: "high",
     });
     assertRight(parsed);

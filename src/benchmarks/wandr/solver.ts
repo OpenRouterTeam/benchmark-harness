@@ -100,7 +100,7 @@ export interface WandrSolverOptions {
   readonly endpointId?: string;
   readonly stepLimit: number;
   readonly serverTools: readonly WandrServerTool[];
-  readonly inference?: InferenceOverride;
+  readonly inference: InferenceOverride;
   readonly sessionId?: string;
 }
 
@@ -220,7 +220,7 @@ export function makeWandrSolver(
           : undefined;
       const generationConfig: ResponsesGenerateConfig = {
         instructions: WANDR_SYSTEM_MESSAGE,
-        ...definedValues(options.inference ?? {}),
+        ...definedValues(options.inference),
         ...(options.endpointId !== undefined && {
           endpointId: options.endpointId,
         }),

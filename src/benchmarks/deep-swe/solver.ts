@@ -56,8 +56,6 @@ import { ensureTasksCheckedOut } from "./tasks-source";
 
 const DEEP_SWE_TEMPERATURE = 1;
 
-const DEEP_SWE_REASONING_EFFORT = "high" as const;
-
 const PER_COMMAND_TIMEOUT_SEC = 1800;
 
 const SANDBOX_TIMEOUT_MARGIN_SEC = 300;
@@ -76,7 +74,7 @@ export interface DeepSweSolverOpts {
   readonly apiKey: string;
   readonly endpointId?: string;
   readonly stepLimit: number;
-  readonly inference?: InferenceOverride;
+  readonly inference: InferenceOverride;
   readonly sessionId?: string;
   readonly agent?: HarborAgent;
   readonly agentCli?: AgentCliOpts;
@@ -110,6 +108,7 @@ export function makeDeepSweSolver(
         apiKey: opts.apiKey,
         ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
         ...(opts.sessionId !== undefined && { sessionId: opts.sessionId }),
+        agentReasoningEffort: opts.inference.reasoningEffort,
       };
       const cliOpts: AgentCliOpts = {
         ...baseCliOpts,
@@ -190,10 +189,9 @@ export function makeDeepSweSolver(
           : undefined;
       const genConfig: ResponsesGenerateConfig = {
         temperature: DEEP_SWE_TEMPERATURE,
-        reasoningEffort: DEEP_SWE_REASONING_EFFORT,
         tools: [BASH_RESPONSES_TOOL_DEFINITION],
         instructions: MINI_SWE_SYSTEM_MESSAGE,
-        ...definedValues(opts.inference ?? {}),
+        ...definedValues(opts.inference),
         ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
       };
       const result = yield* gen(function* () {

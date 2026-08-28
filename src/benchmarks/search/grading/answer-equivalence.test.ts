@@ -3,10 +3,19 @@ import { describe, expect, it } from "bun:test";
 import { assertRight, assertLeft } from "../../../internal/testing";
 import {
   ANSWER_EQUIVALENCE_GRADER_PROMPT,
+  ANSWER_EQUIVALENCE_JUDGE_CONFIG,
   answerEquivalenceJudgeSpec,
   parseAnswerEquivalenceVerdict,
   renderAnswerEquivalenceGraderPrompt,
 } from "./answer-equivalence";
+describe("ANSWER_EQUIVALENCE_JUDGE_CONFIG", () => {
+  it("pins the historical non-reasoning judge configuration", () => {
+    expect(ANSWER_EQUIVALENCE_JUDGE_CONFIG).toMatchObject({
+      judgeModel: "openai/gpt-4.1",
+      reasoningEffort: "none",
+    });
+  });
+});
 describe("renderAnswerEquivalenceGraderPrompt", () => {
   it("interpolates all three fields", () => {
     const rendered = renderAnswerEquivalenceGraderPrompt({
