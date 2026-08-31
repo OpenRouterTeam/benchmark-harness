@@ -9,6 +9,7 @@ import {
   succeed,
 } from "effect/Layer";
 
+import { installCapturingFetch } from "../../../test/helpers/capturing-fetch";
 import { ScoreValue } from "../../harness/core";
 import {
   CheckpointStore,
@@ -92,21 +93,7 @@ describe("DRACO makeLayer", () => {
       ),
       "utf8"
     );
-    const originalFetch = globalThis.fetch;
-    let capturedHeaders: Headers | undefined;
-    globalThis.fetch = async (fetchInput, init) => {
-      const request =
-        fetchInput instanceof Request
-          ? fetchInput
-          : new Request(fetchInput, init);
-      if (capturedHeaders === undefined) {
-        capturedHeaders = request.headers;
-      }
-      return new Response(stream, {
-        status: 200,
-        headers: { "content-type": "text/event-stream" },
-      });
-    };
+    const capturingFetch = installCapturingFetch(stream, "text/event-stream");
     try {
       const layer = DRACO_BENCHMARK.makeLayer({
         apiKey: "sk-test",
@@ -134,6 +121,7 @@ describe("DRACO makeLayer", () => {
           traceparent:
             "00-11111111111111111111111111111111-2222222222222222-01",
           "x-benchmark-trace": "bench-key",
+          authorization: "Bearer attacker",
         },
       });
       await runPromise(
@@ -154,13 +142,14 @@ describe("DRACO makeLayer", () => {
           )
         )
       );
+      const capturedHeaders = capturingFetch.headers();
       expect(capturedHeaders?.get("traceparent")).toBe(
         "00-11111111111111111111111111111111-2222222222222222-01"
       );
       expect(capturedHeaders?.get("x-benchmark-trace")).toBe("bench-key");
       expect(capturedHeaders?.get("authorization")).toBe("Bearer sk-test");
     } finally {
-      globalThis.fetch = originalFetch;
+      capturingFetch.restore();
     }
   });
 });
