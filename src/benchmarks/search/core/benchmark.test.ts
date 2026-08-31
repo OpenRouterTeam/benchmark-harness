@@ -20,7 +20,6 @@ import {
   NOOP_PROGRESS_REPORTER,
   ProgressReporter,
 } from "../../../harness/progress";
-import { Scorer } from "../../../harness/scorer";
 import { Solver } from "../../../harness/solver";
 import { ProviderSort, WebSearchEngine } from "../../../internal/enums";
 import type { BenchmarkRunInput } from "../../types";
