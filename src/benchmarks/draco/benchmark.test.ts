@@ -3,7 +3,11 @@ import { readFile } from "node:fs/promises";
 
 import { FetchHttpClient } from "@effect/platform";
 import { gen, provide, runPromise } from "effect/Effect";
-import { provide as layerProvide, succeed } from "effect/Layer";
+import {
+  mergeAll as layerMergeAll,
+  provide as layerProvide,
+  succeed,
+} from "effect/Layer";
 
 import { ScoreValue } from "../../harness/core";
 import {
@@ -141,9 +145,13 @@ describe("DRACO makeLayer", () => {
             completed: false,
           });
         }).pipe(
-          provide(layer.pipe(layerProvide(FetchHttpClient.layer))),
-          provide(succeed(ProgressReporter, NOOP_PROGRESS_REPORTER)),
-          provide(succeed(CheckpointStore, NOOP_CHECKPOINT_STORE))
+          provide(
+            layerMergeAll(
+              layer.pipe(layerProvide(FetchHttpClient.layer)),
+              succeed(ProgressReporter, NOOP_PROGRESS_REPORTER),
+              succeed(CheckpointStore, NOOP_CHECKPOINT_STORE)
+            )
+          )
         )
       );
       expect(capturedHeaders?.get("traceparent")).toBe(

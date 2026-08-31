@@ -9,7 +9,11 @@ import {
   runPromise,
   succeed as effectSucceed,
 } from "effect/Effect";
-import { provide as layerProvide, succeed } from "effect/Layer";
+import {
+  mergeAll as layerMergeAll,
+  provide as layerProvide,
+  succeed,
+} from "effect/Layer";
 import { empty } from "effect/Stream";
 
 import { ScoreValue } from "../../../harness/core";
@@ -222,9 +226,13 @@ describe("makeSearchBenchmarkLayer", () => {
             completed: false,
           });
         }).pipe(
-          provide(layer.pipe(layerProvide(FetchHttpClient.layer))),
-          provide(succeed(ProgressReporter, NOOP_PROGRESS_REPORTER)),
-          provide(succeed(CheckpointStore, NOOP_CHECKPOINT_STORE))
+          provide(
+            layerMergeAll(
+              layer.pipe(layerProvide(FetchHttpClient.layer)),
+              succeed(ProgressReporter, NOOP_PROGRESS_REPORTER),
+              succeed(CheckpointStore, NOOP_CHECKPOINT_STORE)
+            )
+          )
         )
       );
       expect(capturedHeaders?.get("traceparent")).toBe(
