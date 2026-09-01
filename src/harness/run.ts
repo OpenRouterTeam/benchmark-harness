@@ -1,11 +1,13 @@
 import type { Effect } from "effect/Effect";
 import {
+  catchAll,
   catchTags,
   fail as effectFail,
   flatMap as effectFlatMap,
   gen as effectGen,
   map as effectMap,
   annotateLogs,
+  tryPromise,
   withLogSpan,
   succeed as effectSucceed,
 } from "effect/Effect";
@@ -18,6 +20,10 @@ import {
   zipWithIndex as streamZipWithIndex,
 } from "effect/Stream";
 
+import { Either } from "../internal/either";
+import { unknownErrorToString } from "../internal/errors";
+import { wLog } from "../internal/log";
+import { firstZodIssueMessage, parseSchema } from "../internal/zod";
 import { resetGenerationIds } from "../runtime/generation-ids";
 import type { ReplayedUsage } from "../runtime/generation-resolver";
 import { resolveCollectedGenerations } from "../runtime/generation-resolver";
@@ -42,6 +48,11 @@ import { Dataset } from "./dataset";
 import type { AggregateMetrics, SampleScore } from "./metric";
 import { aggregateScores } from "./metric";
 import { CheckpointStore, ProgressReporter } from "./progress";
+import {
+  PersistedSampleOutcomeSchema,
+  SampleResultStore,
+  sampleResultKey,
+} from "./sample-result-store";
 import { Scorer } from "./scorer";
 import { Solver } from "./solver";
 
@@ -77,6 +88,7 @@ type EvalOutcome = {
   sampleScore: SampleScore;
   usage?: ModelUsage;
   generationTimeMs?: number;
+  isDegraded?: boolean;
 };
 
 function sampleEpochStream(
@@ -109,12 +121,12 @@ function evalWithProgress(
   evaluate: Effect<
     EvalOutcome,
     ModelError | SolverError,
-    Solver | Scorer | ProgressReporter | CheckpointStore
+    Solver | Scorer | ProgressReporter | CheckpointStore | SampleResultStore
   >
 ): Effect<
   EvalOutcome,
   ModelError | SolverError,
-  Solver | Scorer | ProgressReporter | CheckpointStore
+  Solver | Scorer | ProgressReporter | CheckpointStore | SampleResultStore
 > {
   const { sample, epoch, sampleIndex } = sampleEpoch;
   return effectGen(function* () {
@@ -188,6 +200,68 @@ function applyReplayedUsage(
 interface EvaluateOneOpts {
   readonly sampleEpoch: SampleEpoch;
   readonly degradeSolverErrors: boolean;
+}
+
+function evaluateOneResumable(
+  opts: EvaluateOneOpts
+): Effect<
+  EvalOutcome,
+  ModelError | SolverError,
+  Solver | Scorer | ProgressReporter | CheckpointStore | SampleResultStore
+> {
+  const { sample, epoch } = opts.sampleEpoch;
+  const key = sampleResultKey(sample.id, epoch);
+  return effectGen(function* () {
+    const store = yield* SampleResultStore;
+    const raw = yield* tryPromise({
+      try: () => store.read(key),
+      catch: unknownErrorToString,
+    }).pipe(
+      catchAll((error) => {
+        wLog("Failed to read persisted sample outcome; re-evaluating", {
+          sample_result_key: key,
+          error,
+        });
+        return effectSucceed(null);
+      })
+    );
+    if (raw !== null && raw !== undefined) {
+      const persisted = parseSchema(PersistedSampleOutcomeSchema, raw);
+      if (Either.isRight(persisted)) {
+        const { sampleId, epoch: persistedEpoch } = persisted.right.sampleScore;
+        if (sampleId === sample.id && persistedEpoch === epoch) {
+          return persisted.right;
+        }
+        wLog("Persisted sample outcome identity mismatch; re-evaluating", {
+          sample_result_key: key,
+          persisted_sample_id: sampleId,
+          persisted_epoch: persistedEpoch,
+        });
+      } else {
+        wLog("Persisted sample outcome failed validation; re-evaluating", {
+          sample_result_key: key,
+          error: firstZodIssueMessage(persisted.left),
+        });
+      }
+    }
+    const outcome = yield* evaluateOne(opts);
+    if (outcome.isDegraded === true) {
+      return outcome;
+    }
+    yield* tryPromise({
+      try: () => store.write(key, outcome),
+      catch: unknownErrorToString,
+    }).pipe(
+      catchAll((error) => {
+        wLog("Failed to persist sample outcome; a resumed run will re-run it", {
+          sample_result_key: key,
+          error,
+        });
+        return effectSucceed(undefined);
+      })
+    );
+    return outcome;
+  });
 }
 
 function evaluateOne(
@@ -313,6 +387,7 @@ function errorOutcome(opts: ErrorOutcomeOpts): EvalOutcome {
       input: sample.input,
       target: sample.target.text,
     },
+    isDegraded: true,
   };
 }
 
@@ -330,7 +405,12 @@ export function runBenchmark(
 ): Effect<
   RunResult,
   ModelError | SolverError | DatasetError,
-  Dataset | Solver | Scorer | ProgressReporter | CheckpointStore
+  | Dataset
+  | Solver
+  | Scorer
+  | ProgressReporter
+  | CheckpointStore
+  | SampleResultStore
 > {
   return Dataset.pipe(
     effectFlatMap((dataset) => {
@@ -348,7 +428,7 @@ export function runBenchmark(
           (se) =>
             evalWithProgress(
               se,
-              evaluateOne({
+              evaluateOneResumable({
                 sampleEpoch: se,
                 degradeSolverErrors: config.degradeSolverErrors ?? false,
               }).pipe(
