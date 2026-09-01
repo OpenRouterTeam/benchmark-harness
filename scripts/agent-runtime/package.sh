@@ -5,8 +5,8 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/../.." && pwd)"
 output_dir="${1:-${repo_root}/dist/agent-runtime}"
-image_tag="benchmark-harness-agent-runtime:1"
-artifact_name="agent-runtime-linux-x64-v1.tar.zst"
+image_tag="benchmark-harness-agent-runtime:2"
+artifact_name="agent-runtime-linux-x64-v2.tar.zst"
 
 mkdir -p "${output_dir}"
 
