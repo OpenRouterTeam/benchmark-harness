@@ -1,7 +1,24 @@
 import { describe, expect, it } from "bun:test";
+import { readFile } from "node:fs/promises";
 
+import { FetchHttpClient } from "@effect/platform";
+import { gen, provide, runPromise } from "effect/Effect";
+import {
+  mergeAll as layerMergeAll,
+  provide as layerProvide,
+  succeed,
+} from "effect/Layer";
+
+import { installCapturingFetch } from "../../../test/helpers/capturing-fetch";
 import { ScoreValue } from "../../harness/core";
+import {
+  CheckpointStore,
+  NOOP_CHECKPOINT_STORE,
+  NOOP_PROGRESS_REPORTER,
+  ProgressReporter,
+} from "../../harness/progress";
 import type { RunResult } from "../../harness/run";
+import { Solver } from "../../harness/solver";
 import { DRACO_BENCHMARK } from "./benchmark";
 
 function runResultWith(
@@ -64,5 +81,75 @@ describe("DRACO runLevelScores", () => {
     const result = runResultWith([undefined, "garbage"]);
     const scores = DRACO_BENCHMARK.runLevelScores?.(result) ?? [];
     expect(scores).toEqual([]);
+  });
+});
+
+describe("DRACO makeLayer", () => {
+  it("forwards trace headers to inference requests", async () => {
+    const stream = await readFile(
+      new URL(
+        "../../../test/fixtures/advisor-responses-stream.sse",
+        import.meta.url
+      ),
+      "utf8"
+    );
+    const capturingFetch = installCapturingFetch(stream, "text/event-stream");
+    try {
+      const layer = DRACO_BENCHMARK.makeLayer({
+        apiKey: "sk-test",
+        baseUrl: "https://example.test",
+        sessionId: "session-1",
+        benchmarkConfig: {
+          benchmarkId: "draco",
+          panelConfig: {
+            name: "test-exp",
+            description: "",
+            type: "single",
+            model: "openai/gpt-5",
+            analysisModels: [],
+            searchEngine: null,
+            blockedDomains: [],
+            judgeModel: "openai/gpt-5",
+            judgeRuns: 1,
+            judgeReasoningEffort: "low",
+            criterionConcurrency: 1,
+            timeout: 1800,
+            concurrency: 1,
+          },
+        },
+        traceHeaders: {
+          traceparent:
+            "00-11111111111111111111111111111111-2222222222222222-01",
+          "x-benchmark-trace": "bench-key",
+          authorization: "Bearer attacker",
+        },
+      });
+      await runPromise(
+        gen(function* () {
+          const solver = yield* Solver;
+          yield* solver({
+            sample: { id: "s1", input: "Q?", target: { text: "A" } },
+            messages: [],
+            completed: false,
+          });
+        }).pipe(
+          provide(
+            layerMergeAll(
+              layer.pipe(layerProvide(FetchHttpClient.layer)),
+              succeed(ProgressReporter, NOOP_PROGRESS_REPORTER),
+              succeed(CheckpointStore, NOOP_CHECKPOINT_STORE)
+            )
+          )
+        )
+      );
+      const capturedHeaders = capturingFetch.firstRequestHeaders();
+      expect(capturedHeaders?.get("traceparent")).toBe(
+        "00-11111111111111111111111111111111-2222222222222222-01"
+      );
+      expect(capturedHeaders?.get("x-benchmark-trace")).toBe("bench-key");
+      expect(capturedHeaders?.get("authorization")).toBe("Bearer sk-test");
+    } finally {
+      capturingFetch.restore();
+    }
   });
 });

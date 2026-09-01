@@ -1,7 +1,37 @@
 import { describe, expect, it } from "bun:test";
+import { readFile } from "node:fs/promises";
 
+import { FetchHttpClient } from "@effect/platform";
+import {
+  either,
+  gen,
+  provide,
+  runPromise,
+  succeed as effectSucceed,
+} from "effect/Effect";
+import {
+  mergeAll as layerMergeAll,
+  provide as layerProvide,
+  succeed,
+} from "effect/Layer";
+import { empty } from "effect/Stream";
+
+import { installCapturingFetch } from "../../../../test/helpers/capturing-fetch";
+import { ScoreValue } from "../../../harness/core";
+import { Dataset } from "../../../harness/dataset";
+import {
+  CheckpointStore,
+  NOOP_CHECKPOINT_STORE,
+  NOOP_PROGRESS_REPORTER,
+  ProgressReporter,
+} from "../../../harness/progress";
+import { Solver } from "../../../harness/solver";
 import { ProviderSort, WebSearchEngine } from "../../../internal/enums";
-import { searchSolverOptionsFromConfig } from "./benchmark";
+import type { BenchmarkRunInput } from "../../types";
+import {
+  makeSearchBenchmarkLayer,
+  searchSolverOptionsFromConfig,
+} from "./benchmark";
 import { buildSearchRequestBody } from "./request";
 describe("searchSolverOptionsFromConfig", () => {
   const baseConfig = {
@@ -121,5 +151,90 @@ describe("searchSolverOptionsFromConfig", () => {
     });
 
     expect(options.maxOutputTokens).toBe(999);
+  });
+});
+
+describe("makeSearchBenchmarkLayer", () => {
+  it("forwards trace headers to inference requests", async () => {
+    const stream = await readFile(
+      new URL(
+        "../../../../test/fixtures/advisor-responses-stream.sse",
+        import.meta.url
+      ),
+      "utf8"
+    );
+    const capturingFetch = installCapturingFetch(stream, "text/event-stream");
+    try {
+      const input: BenchmarkRunInput = {
+        apiKey: "sk-test",
+        baseUrl: "https://example.test",
+        sessionId: "session-1",
+        benchmarkConfig: {
+          benchmarkId: "search_hle",
+          model: "openai/gpt-5",
+          lane: { webSearch: "server-tool", engine: "auto" },
+        },
+        traceHeaders: {
+          traceparent:
+            "00-11111111111111111111111111111111-2222222222222222-01",
+          "x-or-traceparent":
+            "00-11111111111111111111111111111111-2222222222222222-01",
+          "x-benchmark-trace": "bench-key",
+          authorization: "Bearer attacker",
+        },
+      };
+      const layer = makeSearchBenchmarkLayer(input, {
+        benchmarkId: "search_hle",
+        instructions: "instructions",
+        temperature: 0,
+        makeDatasetLayer: () =>
+          succeed(Dataset, {
+            stream: () => empty,
+            size: effectSucceed(0),
+          }),
+        makeSolver: (responses) => (state) =>
+          gen(function* () {
+            yield* either(
+              responses.send({ model: "m", input: [] }, { timeoutMs: 1000 })
+            );
+            return { ...state, completed: true };
+          }),
+        scorer: () =>
+          effectSucceed({
+            value: ScoreValue.Correct,
+            answer: "",
+            explanation: "",
+          }),
+      });
+      await runPromise(
+        gen(function* () {
+          const solver = yield* Solver;
+          yield* solver({
+            sample: { id: "s1", input: "Q?", target: { text: "A" } },
+            messages: [],
+            completed: false,
+          });
+        }).pipe(
+          provide(
+            layerMergeAll(
+              layer.pipe(layerProvide(FetchHttpClient.layer)),
+              succeed(ProgressReporter, NOOP_PROGRESS_REPORTER),
+              succeed(CheckpointStore, NOOP_CHECKPOINT_STORE)
+            )
+          )
+        )
+      );
+      const capturedHeaders = capturingFetch.firstRequestHeaders();
+      expect(capturedHeaders?.get("traceparent")).toBe(
+        "00-11111111111111111111111111111111-2222222222222222-01"
+      );
+      expect(capturedHeaders?.get("x-or-traceparent")).toBe(
+        "00-11111111111111111111111111111111-2222222222222222-01"
+      );
+      expect(capturedHeaders?.get("x-benchmark-trace")).toBe("bench-key");
+      expect(capturedHeaders?.get("authorization")).toBe("Bearer sk-test");
+    } finally {
+      capturingFetch.restore();
+    }
   });
 });

@@ -103,6 +103,9 @@ export function makeSearchBenchmarkLayer(
     apiKey: input.apiKey,
     ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
     sessionId: input.sessionId,
+    ...(input.traceHeaders !== undefined && {
+      traceHeaders: input.traceHeaders,
+    }),
   });
   const options = searchSolverOptionsFromConfig({
     config,
