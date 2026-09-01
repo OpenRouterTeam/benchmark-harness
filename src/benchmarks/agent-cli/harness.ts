@@ -20,13 +20,13 @@ export const DEFAULT_PI_AGENT_PACKAGE =
   "@earendil-works/pi-coding-agent@0.84.2" as const;
 
 export const DEFAULT_PRIME_AGENT_PACKAGE =
-  "https://pub-728493de92a943e2a9b2d17b4719f318.r2.dev/releases/v0.8.0/prime-agent-0.8.0.tgz" as const;
+  "https://pub-728493de92a943e2a9b2d17b4719f318.r2.dev/releases/v0.9.1/prime-agent-0.9.1.tgz" as const;
 
 export const DEFAULT_AGENT_RUNTIME_URL =
-  "https://github.com/OpenRouterTeam/benchmark-harness/releases/download/agent-runtime-v1/agent-runtime-linux-x64-v1.tar.zst" as const;
+  "https://github.com/OpenRouterTeam/benchmark-harness/releases/download/agent-runtime-v2/agent-runtime-linux-x64-v2.tar.zst" as const;
 
 export const DEFAULT_AGENT_RUNTIME_SHA256 =
-  "3b4ab1055d41257071860235867f31b5934e7e9c08fa57644d2888d435293bf3" as const;
+  "7b59b9f3053b729f3d32da06154f68552e753b77da0b1dc497f53a860a8c8af2" as const;
 
 export interface OriRunScriptOptions {
   readonly instructionPath: string;
