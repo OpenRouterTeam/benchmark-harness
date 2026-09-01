@@ -142,7 +142,7 @@ describe("DRACO makeLayer", () => {
           )
         )
       );
-      const capturedHeaders = capturingFetch.headers();
+      const capturedHeaders = capturingFetch.firstRequestHeaders();
       expect(capturedHeaders?.get("traceparent")).toBe(
         "00-11111111111111111111111111111111-2222222222222222-01"
       );

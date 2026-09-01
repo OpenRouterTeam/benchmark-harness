@@ -1,5 +1,5 @@
 export interface CapturingFetch {
-  readonly headers: () => Headers | undefined;
+  readonly firstRequestHeaders: () => Headers | undefined;
   readonly restore: () => void;
 }
 
@@ -21,7 +21,7 @@ export function installCapturingFetch(
   };
   globalThis.fetch = stub;
   return {
-    headers: () => captured,
+    firstRequestHeaders: () => captured,
     restore: () => {
       globalThis.fetch = original;
     },
