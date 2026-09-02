@@ -150,24 +150,22 @@ export function vgiBenchRecordToSample(
     input: prompt,
     target: { text: LETTERS[correctAnswer]! },
     contentParts,
-    metadata: {
+    metadata: definedValues({
       question_id: questionId,
       video_id: videoId,
       question_type: questionType,
       family,
-      ...(manifest !== undefined && {
-        media_manifest_hash: manifest.manifestHash,
-      }),
-      ...definedValues({ video_processing: opts?.videoProcessing }),
-      ...(manifest === undefined &&
-        opts?.downscaledVideos === true && {
-          downscaled_videos: true,
-        }),
-      ...(manifest !== undefined &&
-        opts?.downscaledVideos === true && {
-          downscaled_videos_requested: true,
-        }),
-    },
+      media_manifest_hash: manifest?.manifestHash,
+      video_processing: opts?.videoProcessing,
+      downscaled_videos:
+        manifest === undefined && opts?.downscaledVideos === true
+          ? true
+          : undefined,
+      downscaled_videos_requested:
+        manifest !== undefined && opts?.downscaledVideos === true
+          ? true
+          : undefined,
+    }),
   };
 }
 
@@ -189,13 +187,15 @@ function makeVgiBenchDatasetLayer(
     config: VGI_BENCH_CONFIG,
     split: VGI_BENCH_SPLIT,
     recordToSample: (record, idx) =>
-      vgiBenchRecordToSample(record, idx, {
-        ...(mediaManifest !== undefined && { mediaManifest }),
-        ...definedValues({
+      vgiBenchRecordToSample(
+        record,
+        idx,
+        definedValues({
+          mediaManifest,
           downscaledVideos: opts?.downscaledVideos,
           videoProcessing: opts?.videoProcessing,
-        }),
-      }),
+        })
+      ),
     revision,
     ...(opts?.retry !== undefined && { retry: opts.retry }),
   };
@@ -298,14 +298,14 @@ const VGI_BENCH_SINGLE_TURN_BENCHMARK = defineSingleTurnBenchmark({
         : { revision: VGI_BENCH_DEFAULT_REVISION }
     ),
   makeDatasetLayerForConfig: (config, retryConfig) =>
-    makeVgiBenchDatasetLayer({
-      downscaledVideos: config.downscaledVideos,
-      ...definedValues({ videoProcessing: config.videoProcessing }),
-      ...(config.datasetRevision !== undefined
-        ? { revision: config.datasetRevision }
-        : { revision: VGI_BENCH_DEFAULT_REVISION }),
-      ...(retryConfig !== undefined && { retry: retryConfig }),
-    }),
+    makeVgiBenchDatasetLayer(
+      definedValues({
+        downscaledVideos: config.downscaledVideos,
+        videoProcessing: config.videoProcessing,
+        revision: config.datasetRevision ?? VGI_BENCH_DEFAULT_REVISION,
+        retry: retryConfig,
+      })
+    ),
   scorer: mcqScorer,
   makeSolver: (model, config) =>
     vgiBenchSolver(model, {
