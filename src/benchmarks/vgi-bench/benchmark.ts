@@ -135,12 +135,10 @@ export function vgiBenchRecordToSample(
   const contentParts: ContentPart[] = [
     {
       type: "video_url",
-      videoUrl: {
+      videoUrl: definedValues({
         url: videoUrl,
-        ...(opts?.videoProcessing !== undefined && {
-          processing: opts.videoProcessing,
-        }),
-      },
+        processing: opts?.videoProcessing,
+      }),
     },
     { type: "text", text: prompt },
   ];
@@ -160,9 +158,7 @@ export function vgiBenchRecordToSample(
       ...(manifest !== undefined && {
         media_manifest_hash: manifest.manifestHash,
       }),
-      ...(opts?.videoProcessing !== undefined && {
-        video_processing: opts.videoProcessing,
-      }),
+      ...definedValues({ video_processing: opts?.videoProcessing }),
       ...(manifest === undefined &&
         opts?.downscaledVideos === true && {
           downscaled_videos: true,
@@ -195,11 +191,9 @@ function makeVgiBenchDatasetLayer(
     recordToSample: (record, idx) =>
       vgiBenchRecordToSample(record, idx, {
         ...(mediaManifest !== undefined && { mediaManifest }),
-        ...(opts?.downscaledVideos !== undefined && {
-          downscaledVideos: opts.downscaledVideos,
-        }),
-        ...(opts?.videoProcessing !== undefined && {
-          videoProcessing: opts.videoProcessing,
+        ...definedValues({
+          downscaledVideos: opts?.downscaledVideos,
+          videoProcessing: opts?.videoProcessing,
         }),
       }),
     revision,
@@ -306,9 +300,7 @@ const VGI_BENCH_SINGLE_TURN_BENCHMARK = defineSingleTurnBenchmark({
   makeDatasetLayerForConfig: (config, retryConfig) =>
     makeVgiBenchDatasetLayer({
       downscaledVideos: config.downscaledVideos,
-      ...(config.videoProcessing !== undefined && {
-        videoProcessing: config.videoProcessing,
-      }),
+      ...definedValues({ videoProcessing: config.videoProcessing }),
       ...(config.datasetRevision !== undefined
         ? { revision: config.datasetRevision }
         : { revision: VGI_BENCH_DEFAULT_REVISION }),

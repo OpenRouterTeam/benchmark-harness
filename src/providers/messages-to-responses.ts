@@ -5,6 +5,7 @@ import type {
   ToolDefinition,
 } from "../harness/core";
 import { MessageRole } from "../harness/core";
+import { definedValues } from "../internal/guards";
 import type {
   ResponsesFunctionTool,
   ResponsesInputItem,
@@ -83,13 +84,11 @@ function contentPartToResponses(part: ContentPart): ResponsesInputItem {
       };
     }
     case "video_url": {
-      return {
+      return definedValues({
         type: "input_video",
         video_url: part.videoUrl.url,
-        ...(part.videoUrl.processing !== undefined && {
-          processing: part.videoUrl.processing,
-        }),
-      };
+        processing: part.videoUrl.processing,
+      });
     }
     default: {
       return part satisfies never;

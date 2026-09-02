@@ -16,6 +16,7 @@ import type { AggregateMetrics, SampleScore } from "../harness/metric";
 import { aggregateScores } from "../harness/metric";
 import type { RunResult } from "../harness/run";
 import { Either } from "../internal/either";
+import { definedValues } from "../internal/guards";
 import { firstZodIssueMessage, parseSchema, z } from "../internal/zod";
 import type { BenchmarkResultRow } from "./parquet-schema";
 import {
@@ -327,12 +328,10 @@ function contentPartToPojo(part: ContentPart): Record<string, unknown> {
     case "video_url": {
       return {
         type: "video_url",
-        video_url: {
+        video_url: definedValues({
           url: part.videoUrl.url,
-          ...(part.videoUrl.processing !== undefined && {
-            processing: part.videoUrl.processing,
-          }),
-        },
+          processing: part.videoUrl.processing,
+        }),
       };
     }
     default: {
