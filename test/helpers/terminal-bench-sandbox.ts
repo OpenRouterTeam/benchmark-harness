@@ -34,6 +34,7 @@ const AGENT_COMMAND_MARKERS = [
   "pi ",
   "ori claude",
   "ori prime-agent",
+  "ori omp",
 ] as const;
 
 const ORI_INSTALL_MARKER = "ORI_INSTALL_DIR=" as const;
