@@ -197,7 +197,9 @@ function makeVgiBenchDatasetLayer(
         })
       ),
     revision,
-    ...(opts?.retry !== undefined && { retry: opts.retry }),
+    ...definedValues({
+      retry: opts?.retry,
+    }),
   };
   return makeHfDatasetLayer(config);
 }
@@ -212,7 +214,9 @@ function vgiBenchSolver(
   const config: GenerateConfig = {
     temperature: VGI_BENCH_TEMPERATURE,
     ...definedValues(opts.inference),
-    ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
+    ...definedValues({
+      endpointId: opts.endpointId,
+    }),
   };
   return generate(model, config);
 }
@@ -308,21 +312,24 @@ const VGI_BENCH_SINGLE_TURN_BENCHMARK = defineSingleTurnBenchmark({
     ),
   scorer: mcqScorer,
   makeSolver: (model, config) =>
-    vgiBenchSolver(model, {
-      ...(config.endpointId !== undefined && { endpointId: config.endpointId }),
-      inference: {
-        maxTokens: config.maxTokens,
-        reasoningEffort: config.reasoningEffort,
-        timeoutMs: config.timeoutMs,
-        sort: config.sort,
-        providerOnly: config.providerOnly,
-        providerIgnore: config.providerIgnore,
-        allowFallbacks: config.allowFallbacks,
-        cloudflareVersion: config.cloudflareVersion,
-        costTier: config.costTier,
-        costQualityTradeoff: config.costQualityTradeoff,
-      },
-    }),
+    vgiBenchSolver(
+      model,
+      definedValues({
+        endpointId: config.endpointId,
+        inference: {
+          maxTokens: config.maxTokens,
+          reasoningEffort: config.reasoningEffort,
+          timeoutMs: config.timeoutMs,
+          sort: config.sort,
+          providerOnly: config.providerOnly,
+          providerIgnore: config.providerIgnore,
+          allowFallbacks: config.allowFallbacks,
+          cloudflareVersion: config.cloudflareVersion,
+          costTier: config.costTier,
+          costQualityTradeoff: config.costQualityTradeoff,
+        },
+      })
+    ),
 });
 
 export const VGI_BENCH_BENCHMARK: Benchmark = {
