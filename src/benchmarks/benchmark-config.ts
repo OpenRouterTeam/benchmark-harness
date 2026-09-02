@@ -7,6 +7,7 @@ import { ProviderSort } from "../internal/enums";
 import type { ValueOf } from "../internal/guards";
 import { z, zDefaultedText, zInt } from "../internal/zod";
 import {
+  AGENT_PACKAGE_PATTERN,
   DEFAULT_HARBOR_AGENT,
   DEFAULT_ORI_CHANNEL,
   DEFAULT_ORI_INSTALL_URL,
@@ -138,13 +139,17 @@ export type MmmuProVisionBenchmarkConfig = z.infer<
   typeof MmmuProVisionBenchmarkConfigSchema
 >;
 
+const AgentPackageSchema = z
+  .string()
+  .regex(AGENT_PACKAGE_PATTERN, "agentPackage contains disallowed characters");
+
 export const TerminalBenchOptionsSchema = z.object({
   maxAgentTimeoutSec: z.number().positive().optional(),
   taskSubset: z.array(z.string()).optional(),
   modalEnv: z.string().default("main"),
   appendSystemPrompt: z.string().optional(),
   agent: z.enum(TERMINAL_BENCH_AGENTS).default(DEFAULT_TERMINAL_BENCH_AGENT),
-  agentPackage: z.string().optional(),
+  agentPackage: AgentPackageSchema.optional(),
   oriInstallUrl: z.string().default(DEFAULT_ORI_INSTALL_URL),
   agentReasoningEffort: z.enum(ORI_REASONING_EFFORTS),
   oriChannel: z.enum(ORI_CHANNELS).default(DEFAULT_ORI_CHANNEL),
@@ -188,7 +193,7 @@ const AgenticOptionsSchema = z.object({
   maxAgentTimeoutSec: z.number().positive().optional(),
   modalEnv: z.string().default("main"),
   agent: z.enum(HARBOR_AGENTS).default(DEFAULT_HARBOR_AGENT),
-  agentPackage: z.string().optional(),
+  agentPackage: AgentPackageSchema.optional(),
   oriInstallUrl: z.string().default(DEFAULT_ORI_INSTALL_URL),
   agentReasoningEffort: z.enum(ORI_REASONING_EFFORTS),
   oriChannel: z.enum(ORI_CHANNELS).default(DEFAULT_ORI_CHANNEL),
