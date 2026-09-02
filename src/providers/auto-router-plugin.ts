@@ -1,4 +1,5 @@
 import type { GenerateConfig } from "../harness/model";
+import { definedValues } from "../internal/guards";
 
 interface AutoRouterPluginOptions {
   readonly costTier?: GenerateConfig["costTier"];
@@ -31,14 +32,12 @@ export function buildAutoRouterPlugin(
   ) {
     return undefined;
   }
-  return {
+  return definedValues({
     id,
-    ...(options.costTier !== undefined && { costTier: options.costTier }),
-    ...(options.costQualityTradeoff !== undefined && {
-      costQualityTradeoff: options.costQualityTradeoff,
-    }),
-    ...(options.pinModel === true && { pinModel: true }),
-  };
+    costTier: options.costTier,
+    costQualityTradeoff: options.costQualityTradeoff,
+    pinModel: options.pinModel === true ? true : undefined,
+  });
 }
 
 export function toWireAutoRouterPlugin(plugin: AutoRouterPluginConfig): {
@@ -47,12 +46,10 @@ export function toWireAutoRouterPlugin(plugin: AutoRouterPluginConfig): {
   readonly cost_quality_tradeoff?: number;
   readonly pin_model?: boolean;
 } {
-  return {
+  return definedValues({
     id: plugin.id,
-    ...(plugin.costTier !== undefined && { cost_tier: plugin.costTier }),
-    ...(plugin.costQualityTradeoff !== undefined && {
-      cost_quality_tradeoff: plugin.costQualityTradeoff,
-    }),
-    ...(plugin.pinModel === true && { pin_model: true }),
-  };
+    cost_tier: plugin.costTier,
+    cost_quality_tradeoff: plugin.costQualityTradeoff,
+    pin_model: plugin.pinModel === true ? true : undefined,
+  });
 }

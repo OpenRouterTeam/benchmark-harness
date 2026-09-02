@@ -8,6 +8,7 @@ import type { ScorerService } from "../../../harness/scorer";
 import { Scorer } from "../../../harness/scorer";
 import type { SolverService } from "../../../harness/solver";
 import { Solver } from "../../../harness/solver";
+import { definedValues } from "../../../internal/guards";
 import type { ResponsesService } from "../../../providers/responses-client";
 import {
   makeResponsesLayer,
@@ -50,7 +51,7 @@ export function searchSolverOptionsFromConfig({
   readonly maxOutputTokensCeiling?: number;
 }): SearchSolverOptions {
   const requestedMaxOutputTokens = config.maxTokens ?? maxOutputTokens;
-  return {
+  return definedValues({
     model: config.model,
     instructions,
     lane: config.lane,
@@ -59,31 +60,19 @@ export function searchSolverOptionsFromConfig({
         ? requestedMaxOutputTokens
         : Math.min(requestedMaxOutputTokens, maxOutputTokensCeiling),
     temperature: config.temperature ?? temperature,
-    ...(config.timeoutMs !== undefined && { timeoutMs: config.timeoutMs }),
+    timeoutMs: config.timeoutMs,
     reasoningEffort: config.reasoningEffort,
-    ...(config.endpointId !== undefined && { endpointId: config.endpointId }),
-    ...(config.sort !== undefined && { sort: config.sort }),
-    ...(config.providerOrder !== undefined && {
-      providerOrder: config.providerOrder,
-    }),
-    ...(config.providerOnly !== undefined && {
-      providerOnly: config.providerOnly,
-    }),
-    ...(config.providerIgnore !== undefined && {
-      providerIgnore: config.providerIgnore,
-    }),
-    ...(config.allowFallbacks !== undefined && {
-      allowFallbacks: config.allowFallbacks,
-    }),
-    ...(config.cloudflareVersion !== undefined && {
-      versionOverride: config.cloudflareVersion,
-    }),
-    ...(config.costQualityTradeoff !== undefined && {
-      costQualityTradeoff: config.costQualityTradeoff,
-    }),
-    ...(config.costTier !== undefined && { costTier: config.costTier }),
-    ...(retry !== undefined && { retry }),
-  };
+    endpointId: config.endpointId,
+    sort: config.sort,
+    providerOrder: config.providerOrder,
+    providerOnly: config.providerOnly,
+    providerIgnore: config.providerIgnore,
+    allowFallbacks: config.allowFallbacks,
+    versionOverride: config.cloudflareVersion,
+    costQualityTradeoff: config.costQualityTradeoff,
+    costTier: config.costTier,
+    retry,
+  });
 }
 
 export function makeSearchBenchmarkLayer(
@@ -99,24 +88,24 @@ export function makeSearchBenchmarkLayer(
       new Error(`${definition.benchmarkId} received mismatched benchmarkConfig`)
     );
   }
-  const responsesLayer = makeResponsesLayer({
-    apiKey: input.apiKey,
-    ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
-    sessionId: input.sessionId,
-    ...(input.traceHeaders !== undefined && {
+  const responsesLayer = makeResponsesLayer(
+    definedValues({
+      apiKey: input.apiKey,
+      baseUrl: input.baseUrl,
+      sessionId: input.sessionId,
       traceHeaders: input.traceHeaders,
-    }),
-  });
-  const options = searchSolverOptionsFromConfig({
-    config,
-    instructions: definition.instructions,
-    temperature: definition.temperature,
-    retry: input.modelRetry,
-    maxOutputTokens: definition.maxOutputTokens,
-    ...(input.maxOutputTokensCeiling !== undefined && {
+    })
+  );
+  const options = searchSolverOptionsFromConfig(
+    definedValues({
+      config,
+      instructions: definition.instructions,
+      temperature: definition.temperature,
+      retry: input.modelRetry,
+      maxOutputTokens: definition.maxOutputTokens,
       maxOutputTokensCeiling: input.maxOutputTokensCeiling,
-    }),
-  });
+    })
+  );
   const solverLayer = effect(Solver)(
     gen(function* () {
       const responses = yield* Responses;

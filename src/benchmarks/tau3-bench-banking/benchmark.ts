@@ -14,6 +14,7 @@ import { Model } from "../../harness/model";
 import { Scorer } from "../../harness/scorer";
 import { Solver } from "../../harness/solver";
 import { Either } from "../../internal/either";
+import { definedValues } from "../../internal/guards";
 import { parseSchema } from "../../internal/zod";
 import { makeOpenRouterModelLayer } from "../../providers/openrouter-model";
 import {
@@ -48,15 +49,15 @@ function makeBankingLayer(
     );
   }
   const config = configParsed.right;
-  const solverOpts: SolverOpts = {
-    ...(config.endpointId !== undefined && { endpointId: config.endpointId }),
-    userModelConfig: {
+  const solverOpts: SolverOpts = definedValues({
+    endpointId: config.endpointId,
+    userModelConfig: definedValues({
       apiKey: input.apiKey,
       model: config.userModel,
-      ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
+      baseUrl: input.baseUrl,
       sessionId: input.sessionId,
       userReasoningEffort: config.userReasoningEffort,
-    },
+    }),
     inference: {
       maxTokens: config.maxTokens,
       reasoningEffort: config.reasoningEffort,
@@ -71,29 +72,29 @@ function makeBankingLayer(
       pinModel: config.pinModel,
     },
     retrievalConfig: config.retrievalConfig,
-  };
+  });
   const datasetLayer = makeBankingDatasetLayer(input.datasetRetry);
   const modelLayer =
     input.modelLayer ??
-    makeOpenRouterModelLayer({
-      model: config.model,
-      apiKey: input.apiKey,
-      ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
-      sessionId: input.sessionId,
-      ...(input.modelRetry !== undefined && { retry: input.modelRetry }),
-      ...(input.traceHeaders !== undefined && {
+    makeOpenRouterModelLayer(
+      definedValues({
+        model: config.model,
+        apiKey: input.apiKey,
+        baseUrl: input.baseUrl,
+        sessionId: input.sessionId,
+        retry: input.modelRetry,
         traceHeaders: input.traceHeaders,
-      }),
-    });
-  const userModelLayer = makeResponsesModelLayer({
-    model: config.userModel,
-    apiKey: input.apiKey,
-    ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
-    sessionId: input.sessionId,
-    ...(input.traceHeaders !== undefined && {
+      })
+    );
+  const userModelLayer = makeResponsesModelLayer(
+    definedValues({
+      model: config.userModel,
+      apiKey: input.apiKey,
+      baseUrl: input.baseUrl,
+      sessionId: input.sessionId,
       traceHeaders: input.traceHeaders,
-    }),
-  });
+    })
+  );
   const solverLayer = layerEffect(Solver)(
     gen(function* () {
       const model = yield* Model;

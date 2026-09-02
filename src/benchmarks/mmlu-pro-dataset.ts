@@ -13,6 +13,7 @@ import { DatasetError } from "../harness/core";
 import type { DatasetStreamOptions } from "../harness/dataset";
 import { Dataset } from "../harness/dataset";
 import { Either } from "../internal/either";
+import { definedValues } from "../internal/guards";
 import type { RetryConfig } from "../runtime/retry";
 import type {
   MmluProCotExample,
@@ -97,7 +98,9 @@ function makeDatasetConfig(
         "recordToSample is not used by the shared MMLU-Pro dataset layer"
       );
     },
-    ...(retryConfig !== undefined && { retry: retryConfig }),
+    ...definedValues({
+      retry: retryConfig,
+    }),
   };
 }
 
@@ -108,11 +111,15 @@ export function makeMmluProFewShotDatasetLayer(
 ): Layer<Dataset> {
   const validationConfig = {
     ...makeDatasetConfig(MMLU_PRO_VALIDATION_SPLIT, retryConfig),
-    ...(hfToken !== undefined && { hfToken }),
+    ...definedValues({
+      hfToken,
+    }),
   };
   const testConfig = {
     ...makeDatasetConfig(MMLU_PRO_TEST_SPLIT, retryConfig),
-    ...(hfToken !== undefined && { hfToken }),
+    ...definedValues({
+      hfToken,
+    }),
   };
   const makeService = gen(function* () {
     const client = yield* HttpClient.HttpClient;

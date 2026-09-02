@@ -35,6 +35,7 @@ import { DatasetError } from "../harness/core";
 import type { DatasetStreamOptions } from "../harness/dataset";
 import { Dataset } from "../harness/dataset";
 import { Either } from "../internal/either";
+import { definedValues } from "../internal/guards";
 import { parseSchema, z } from "../internal/zod";
 import type { RetryConfig } from "../runtime/retry";
 import { withRetryAttemptLogging } from "../runtime/retry";
@@ -207,20 +208,20 @@ export function makeHfPageFetcher(
       }
       const body = yield* client
         .get(HF_ROWS_BASE_URL, {
-          urlParams: {
+          urlParams: definedValues({
             dataset: config.dataset,
             config: config.config,
             split: config.split,
             offset,
             length,
-            ...(config.revision !== undefined && {
-              revision: config.revision,
-            }),
-          },
-          ...(hfToken !== undefined &&
-            hfToken !== "" && {
-              headers: { Authorization: `Bearer ${hfToken}` },
-            }),
+            revision: config.revision,
+          }),
+          ...definedValues({
+            headers:
+              hfToken !== undefined && hfToken !== ""
+                ? { Authorization: `Bearer ${hfToken}` }
+                : undefined,
+          }),
         })
         .pipe(
           flatMap((response) => response.json),

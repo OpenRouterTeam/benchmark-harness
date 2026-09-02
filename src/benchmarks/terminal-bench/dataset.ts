@@ -20,6 +20,7 @@ import { DatasetError } from "../../harness/core";
 import type { DatasetStreamOptions } from "../../harness/dataset";
 import { Dataset } from "../../harness/dataset";
 import { Either } from "../../internal/either";
+import { definedValues } from "../../internal/guards";
 import { parseSchema } from "../../internal/zod";
 import type { TerminalBenchTask } from "./schema";
 import { TaskTomlSchema } from "./schema";
@@ -160,8 +161,10 @@ export function readTerminalBenchMeta(
         : DEFAULT_TERMINAL_BENCH_MEMORY_MB,
     gpus: typeof gpus === "number" ? gpus : 0,
     allowInternet: typeof allowInternet === "boolean" ? allowInternet : true,
-    ...(typeof reward === "number" && { reward }),
-    ...(typeof testOutput === "string" && { testOutput }),
+    ...definedValues({
+      reward: typeof reward === "number" ? reward : undefined,
+      testOutput: typeof testOutput === "string" ? testOutput : undefined,
+    }),
   };
 }
 

@@ -86,7 +86,9 @@ export function airlineSolver({
         temperature: AIRLINE_TEMPERATURE,
         tools: AIRLINE_TOOL_DEFINITIONS,
         ...definedValues(opts.inference),
-        ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
+        ...definedValues({
+          endpointId: opts.endpointId,
+        }),
       };
       let totalGenerationTimeMs = 0;
       const accUsage = {

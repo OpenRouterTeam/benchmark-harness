@@ -4,7 +4,7 @@ import type { Score, Target, TaskState } from "../../harness/core";
 import { ScoreValue } from "../../harness/core";
 import type { ScorerService } from "../../harness/scorer";
 import { Either } from "../../internal/either";
-import { isRecord } from "../../internal/guards";
+import { definedValues, isRecord } from "../../internal/guards";
 
 export function parseReward(raw: string): number {
   const trimmed = raw.trim();
@@ -33,14 +33,15 @@ export function makeRewardScorer(
   return (state: TaskState, target: Target) => {
     const meta = readMeta(state.sample.metadata);
     const reward = meta?.reward ?? 0;
-    const score: Score = {
+    const score: Score = definedValues({
       value: reward >= 1 ? ScoreValue.Correct : ScoreValue.Incorrect,
       answer: target.text,
       explanation: meta?.verifierOutput ?? "",
-      ...(meta?.verifierOutput !== undefined && {
-        trajectory: { kind: "verifier_log", log: meta.verifierOutput } as const,
-      }),
-    };
+      trajectory:
+        meta?.verifierOutput !== undefined
+          ? ({ kind: "verifier_log", log: meta.verifierOutput } as const)
+          : undefined,
+    });
     return succeed(score);
   };
 }

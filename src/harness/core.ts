@@ -3,6 +3,7 @@ import type { ChatToolCall } from "@openrouter/sdk/models/chattoolcall";
 import { TaggedError } from "effect/Data";
 
 import type { ValueOf } from "../internal/guards";
+import { definedValues } from "../internal/guards";
 import { z } from "../internal/zod";
 import type { ModelErrorIdentifiers } from "../providers/request-identifiers";
 import type { ImageDetail, VideoProcessingMode } from "./constants";
@@ -171,21 +172,19 @@ export interface TaskState {
 }
 
 export function initialTaskState(sample: Sample, epoch?: number): TaskState {
-  return {
+  return definedValues({
     sample,
     messages: [
-      {
+      definedValues({
         role: MessageRole.User,
         content: sample.input,
-        ...(sample.contentParts !== undefined && {
-          contentParts: sample.contentParts,
-        }),
-      },
+        contentParts: sample.contentParts,
+      }),
     ],
     output: undefined,
     completed: false,
-    ...(epoch !== undefined && { epoch }),
-  };
+    epoch,
+  });
 }
 
 export const ScoreValue = {

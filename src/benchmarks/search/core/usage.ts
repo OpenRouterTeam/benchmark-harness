@@ -1,4 +1,5 @@
 import type { ModelUsage, ServerToolUseCounts } from "../../../harness/core";
+import { definedValues } from "../../../internal/guards";
 
 function sum(values: readonly (number | undefined)[]): number | undefined {
   const defined = values.filter(
@@ -20,11 +21,11 @@ function mergeServerToolUse(
     usages.map((usage) => usage.toolCallsRequested)
   );
   const toolCallsExecuted = sum(usages.map((usage) => usage.toolCallsExecuted));
-  return {
-    ...(webSearchRequests !== undefined && { webSearchRequests }),
-    ...(toolCallsRequested !== undefined && { toolCallsRequested }),
-    ...(toolCallsExecuted !== undefined && { toolCallsExecuted }),
-  };
+  return definedValues({
+    webSearchRequests,
+    toolCallsRequested,
+    toolCallsExecuted,
+  });
 }
 
 export function mergeModelUsages(
@@ -49,12 +50,12 @@ export function mergeModelUsages(
       .map((usage) => usage.serverToolUse)
       .filter((usage): usage is ServerToolUseCounts => usage !== undefined)
   );
-  return {
-    ...(inputTokens !== undefined && { inputTokens }),
-    ...(outputTokens !== undefined && { outputTokens }),
-    ...(totalTokens !== undefined && { totalTokens }),
-    ...(reasoningTokens !== undefined && { reasoningTokens }),
-    ...(totalCost !== undefined && { totalCost }),
-    ...(serverToolUse !== undefined && { serverToolUse }),
-  };
+  return definedValues({
+    inputTokens,
+    outputTokens,
+    totalTokens,
+    reasoningTokens,
+    totalCost,
+    serverToolUse,
+  });
 }

@@ -19,7 +19,7 @@ import { intersect, recurs, spaced, whileInput } from "effect/Schedule";
 
 import { Either } from "../internal/either";
 import { unknownErrorToString } from "../internal/errors";
-import { isDefinedAndNotNull } from "../internal/guards";
+import { definedValues, isDefinedAndNotNull } from "../internal/guards";
 import { wLog } from "../internal/log";
 import { parseSchema, z } from "../internal/zod";
 import { filterTraceHeaders } from "../runner/trace-headers";
@@ -216,10 +216,12 @@ export function makeOpenRouterGenerationResolver(
             });
           }
           return lookupSourceUsage(sourceId).pipe(
-            map((usage): ResolvedSourceGeneration => ({
-              sourceId,
-              ...(usage !== undefined && { usage }),
-            }))
+            map((usage): ResolvedSourceGeneration =>
+              definedValues({
+                sourceId,
+                usage,
+              })
+            )
           );
         }),
         catchAll((error) =>
@@ -261,10 +263,10 @@ function resolveEntry(
           map((resolved): ResolvedEntry =>
             resolved === undefined
               ? { id: entry.id }
-              : {
+              : definedValues({
                   id: resolved.sourceId,
-                  ...(resolved.usage && { usage: resolved.usage }),
-                }
+                  usage: resolved.usage,
+                })
           )
         )
     : succeed({ id: entry.id });
@@ -306,9 +308,9 @@ export const resolveCollectedGenerations: Effect<ResolvedGenerations> = gen(
     for (const entry of resolved) {
       replayedUsage = sumReplayedUsage(replayedUsage, entry.usage);
     }
-    return {
+    return definedValues({
       ids: resolved.map((entry) => entry.id),
-      ...(replayedUsage !== undefined && { replayedUsage }),
-    };
+      replayedUsage,
+    });
   }
 );

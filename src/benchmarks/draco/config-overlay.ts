@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 
 import type { AsyncEither } from "../../internal/either";
 import { Either, tryPromiseEither } from "../../internal/either";
-import { isRecord } from "../../internal/guards";
+import { definedValues, isRecord } from "../../internal/guards";
 import { parseSchema } from "../../internal/zod";
 import type { DracoPanelConfig } from "./schemas";
 import { DracoPanelConfigSchema } from "./schemas";
@@ -26,21 +26,16 @@ export function applyConfigOverlay(
 ): Either.Either<DracoPanelConfig, string> {
   const merged: DracoPanelConfig = {
     ...base,
-    ...(override.panelModels !== undefined && {
-      analysisModels: [...override.panelModels],
-    }),
-    ...(override.synthesisModel !== undefined && {
+    ...definedValues({
+      analysisModels:
+        override.panelModels !== undefined
+          ? [...override.panelModels]
+          : undefined,
       synthesisModel: override.synthesisModel,
-    }),
-    ...(override.model !== undefined && { model: override.model }),
-    ...(override.judgeModel !== undefined && {
+      model: override.model,
       judgeModel: override.judgeModel,
-    }),
-    ...(override.judgeRuns !== undefined && { judgeRuns: override.judgeRuns }),
-    ...(override.versionOverride !== undefined && {
+      judgeRuns: override.judgeRuns,
       versionOverride: override.versionOverride,
-    }),
-    ...(override.cacheNamespace !== undefined && {
       cacheNamespace: override.cacheNamespace,
     }),
   };

@@ -100,7 +100,9 @@ export function gpqaSolver(
   const config: GenerateConfig = {
     temperature: GPQA_TEMPERATURE,
     ...definedValues(opts.inference),
-    ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
+    ...definedValues({
+      endpointId: opts.endpointId,
+    }),
   };
   return chain(
     systemMessage(SIMPLE_EVALS_SYSTEM_MESSAGE),
@@ -115,7 +117,9 @@ export function makeGpqaDatasetLayer(
 ): Layer<Dataset> {
   return makeHfDatasetLayer({
     ...GPQA_DATASET,
-    ...(retryConfig !== undefined && { retry: retryConfig }),
+    ...definedValues({
+      retry: retryConfig,
+    }),
   });
 }
 
@@ -128,19 +132,22 @@ export const GPQA_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
   makeDatasetLayer: makeGpqaDatasetLayer,
   scorer: gpqaScorer,
   makeSolver: (model, config) =>
-    gpqaSolver(model, {
-      ...(config.endpointId !== undefined && { endpointId: config.endpointId }),
-      inference: {
-        maxTokens: config.maxTokens,
-        reasoningEffort: config.reasoningEffort,
-        timeoutMs: config.timeoutMs,
-        sort: config.sort,
-        providerOnly: config.providerOnly,
-        providerIgnore: config.providerIgnore,
-        allowFallbacks: config.allowFallbacks,
-        cloudflareVersion: config.cloudflareVersion,
-        costTier: config.costTier,
-        costQualityTradeoff: config.costQualityTradeoff,
-      },
-    }),
+    gpqaSolver(
+      model,
+      definedValues({
+        endpointId: config.endpointId,
+        inference: {
+          maxTokens: config.maxTokens,
+          reasoningEffort: config.reasoningEffort,
+          timeoutMs: config.timeoutMs,
+          sort: config.sort,
+          providerOnly: config.providerOnly,
+          providerIgnore: config.providerIgnore,
+          allowFallbacks: config.allowFallbacks,
+          cloudflareVersion: config.cloudflareVersion,
+          costTier: config.costTier,
+          costQualityTradeoff: config.costQualityTradeoff,
+        },
+      })
+    ),
 });

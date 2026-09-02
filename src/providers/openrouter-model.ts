@@ -3,6 +3,7 @@ import type { Layer } from "effect/Layer";
 import { effect, provide } from "effect/Layer";
 
 import { Model } from "../harness/model";
+import { definedValues } from "../internal/guards";
 import type { RetryConfig } from "../runtime/retry";
 import {
   messagesToResponses,
@@ -33,18 +34,19 @@ export function normalizeBaseUrl(baseUrl: string): string {
 export function makeOpenRouterModelLayer(
   config: OpenRouterModelConfig
 ): Layer<Model> {
-  const responsesLayer = makeResponsesModelLayer({
-    model: config.model,
-    apiKey: config.apiKey,
-    ...(config.baseUrl !== undefined && {
-      baseUrl: normalizeBaseUrl(config.baseUrl),
-    }),
-    ...(config.sessionId !== undefined && { sessionId: config.sessionId }),
-    ...(config.retry !== undefined && { retry: config.retry }),
-    ...(config.traceHeaders !== undefined && {
+  const responsesLayer = makeResponsesModelLayer(
+    definedValues({
+      model: config.model,
+      apiKey: config.apiKey,
+      baseUrl:
+        config.baseUrl !== undefined
+          ? normalizeBaseUrl(config.baseUrl)
+          : undefined,
+      sessionId: config.sessionId,
+      retry: config.retry,
       traceHeaders: config.traceHeaders,
-    }),
-  });
+    })
+  );
   return effect(Model)(
     gen(function* () {
       const responsesModel = yield* ResponsesModel;
@@ -54,8 +56,11 @@ export function makeOpenRouterModelLayer(
           return responsesModel
             .generate(messagesToResponses(messages), {
               ...rest,
-              ...(tools !== undefined && {
-                tools: tools.map(toolDefinitionToResponses),
+              ...definedValues({
+                tools:
+                  tools !== undefined
+                    ? tools.map(toolDefinitionToResponses)
+                    : undefined,
               }),
             })
             .pipe(map(responsesTurnToModelOutput));

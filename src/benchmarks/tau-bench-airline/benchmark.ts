@@ -17,6 +17,7 @@ import { Model } from "../../harness/model";
 import { Scorer } from "../../harness/scorer";
 import { Solver } from "../../harness/solver";
 import { Either } from "../../internal/either";
+import { definedValues } from "../../internal/guards";
 import { parseSchema } from "../../internal/zod";
 import { makeOpenRouterModelLayer } from "../../providers/openrouter-model";
 import {
@@ -78,7 +79,9 @@ export function makeAirlineDatasetLayer(
 ): Layer<Dataset> {
   return makeHfDatasetLayer({
     ...TAU_BENCH_AIRLINE_DATASET,
-    ...(retryConfig !== undefined && { retry: retryConfig }),
+    ...definedValues({
+      retry: retryConfig,
+    }),
   });
 }
 
@@ -93,17 +96,15 @@ function makeAirlineLayer(
       )
     );
   }
-  const solverOpts: SolverOpts = {
-    ...(benchmarkConfig.endpointId !== undefined && {
-      endpointId: benchmarkConfig.endpointId,
-    }),
-    userModelConfig: {
+  const solverOpts: SolverOpts = definedValues({
+    endpointId: benchmarkConfig.endpointId,
+    userModelConfig: definedValues({
       apiKey: input.apiKey,
       model: benchmarkConfig.userModel,
-      ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
+      baseUrl: input.baseUrl,
       sessionId: input.sessionId,
       reasoningEffort: benchmarkConfig.userReasoningEffort,
-    },
+    }),
     inference: {
       maxTokens: benchmarkConfig.maxTokens,
       reasoningEffort: benchmarkConfig.reasoningEffort,
@@ -117,29 +118,29 @@ function makeAirlineLayer(
       costQualityTradeoff: benchmarkConfig.costQualityTradeoff,
       pinModel: benchmarkConfig.pinModel,
     },
-  };
+  });
   const datasetLayer = makeAirlineDatasetLayer(input.datasetRetry);
   const modelLayer =
     input.modelLayer ??
-    makeOpenRouterModelLayer({
-      model: benchmarkConfig.model,
-      apiKey: input.apiKey,
-      ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
-      sessionId: input.sessionId,
-      ...(input.modelRetry !== undefined && { retry: input.modelRetry }),
-      ...(input.traceHeaders !== undefined && {
+    makeOpenRouterModelLayer(
+      definedValues({
+        model: benchmarkConfig.model,
+        apiKey: input.apiKey,
+        baseUrl: input.baseUrl,
+        sessionId: input.sessionId,
+        retry: input.modelRetry,
         traceHeaders: input.traceHeaders,
-      }),
-    });
-  const userModelLayer = makeResponsesModelLayer({
-    model: benchmarkConfig.userModel,
-    apiKey: input.apiKey,
-    ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
-    sessionId: input.sessionId,
-    ...(input.traceHeaders !== undefined && {
+      })
+    );
+  const userModelLayer = makeResponsesModelLayer(
+    definedValues({
+      model: benchmarkConfig.userModel,
+      apiKey: input.apiKey,
+      baseUrl: input.baseUrl,
+      sessionId: input.sessionId,
       traceHeaders: input.traceHeaders,
-    }),
-  });
+    })
+  );
   const solverLayer = layerEffect(Solver)(
     gen(function* () {
       const model = yield* Model;

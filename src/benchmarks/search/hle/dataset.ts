@@ -28,6 +28,7 @@ import { DatasetError } from "../../../harness/core";
 import type { Dataset } from "../../../harness/dataset";
 import { Dataset as DatasetTag } from "../../../harness/dataset";
 import { Either } from "../../../internal/either";
+import { definedValues } from "../../../internal/guards";
 import { parseSchema, z } from "../../../internal/zod";
 import type { RetryConfig } from "../../../runtime/retry";
 
@@ -225,11 +226,13 @@ function fetchJson(
 ): Effect<unknown, DatasetError> {
   return tryPromise({
     try: async (): Promise<unknown> => {
-      const response = await fetch(url, {
-        ...(hfToken !== "" && {
-          headers: { Authorization: `Bearer ${hfToken}` },
-        }),
-      });
+      const response = await fetch(
+        url,
+        definedValues({
+          headers:
+            hfToken !== "" ? { Authorization: `Bearer ${hfToken}` } : undefined,
+        })
+      );
       const body: unknown = await response.json();
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);

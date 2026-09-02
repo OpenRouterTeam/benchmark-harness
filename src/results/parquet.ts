@@ -314,12 +314,10 @@ function contentPartToPojo(part: ContentPart): Record<string, unknown> {
     case "image_url": {
       return {
         type: "image_url",
-        image_url: {
+        image_url: definedValues({
           url: part.imageUrl.url,
-          ...(part.imageUrl.detail !== undefined && {
-            detail: part.imageUrl.detail,
-          }),
-        },
+          detail: part.imageUrl.detail,
+        }),
       };
     }
     case "text": {
@@ -462,7 +460,9 @@ export function summarizeChunkRows(
     totalCost: first.total_cost,
     generationTimeMs: first.generation_time_ms,
     temperature: first.temperature,
-    ...(primaryScore !== undefined && { primaryScore }),
+    ...definedValues({
+      primaryScore,
+    }),
     epochResults,
   };
 }

@@ -3,6 +3,7 @@ import { locally } from "effect/Effect";
 import type { FiberRef } from "effect/FiberRef";
 import { get, set, unsafeMake } from "effect/FiberRef";
 
+import { definedValues } from "../internal/guards";
 import { wLog } from "../internal/log";
 
 export const RESPONSE_CACHE_HEADER = "x-openrouter-cache";
@@ -116,19 +117,16 @@ export function logUnexpectedResponseCacheMiss(
   if (context.isCacheHit || !shouldExpectResponseCacheHit(context)) {
     return;
   }
-  wLog("Expected response cache hit on run retry but missed", {
-    run_attempt: context.runAttempt,
-    cache_salt: context.cacheSalt,
-    ...(context.model !== undefined && { model: context.model }),
-    ...(context.cacheStatus !== undefined && {
+  wLog(
+    "Expected response cache hit on run retry but missed",
+    definedValues({
+      run_attempt: context.runAttempt,
+      cache_salt: context.cacheSalt,
+      model: context.model,
       cache_status: context.cacheStatus,
-    }),
-    ...(context.cfRay !== undefined && { cf_ray: context.cfRay }),
-    ...(context.xRequestId !== undefined && {
+      cf_ray: context.cfRay,
       x_request_id: context.xRequestId,
-    }),
-    ...(context.generationId !== undefined && {
       generation_id: context.generationId,
-    }),
-  });
+    })
+  );
 }
