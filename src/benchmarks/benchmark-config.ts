@@ -2,6 +2,7 @@ import {
   COST_TIERS,
   IMAGE_DETAIL_VALUES,
   REASONING_EFFORTS,
+  VIDEO_PROCESSING_MODES,
 } from "../harness/constants";
 import { ProviderSort } from "../internal/enums";
 import type { ValueOf } from "../internal/guards";
@@ -302,6 +303,7 @@ export type WideSearchBenchmarkConfig = z.infer<
 
 export const VgiBenchOptionsSchema = z.object({
   downscaledVideos: z.boolean().default(false),
+  videoProcessing: z.enum(VIDEO_PROCESSING_MODES).optional(),
   datasetRevision: z.string().optional(),
 });
 

@@ -24,6 +24,7 @@ Adapts the official public-split protocol (`vgibench/prompts.py`, `vgibench/run.
 | --- | --- | --- | --- |
 | `downscaledVideos` | boolean | `false` | Substitute `<name>_proxy_v2.mp4` re-encodes (≤ ~50 MB, 256 frames / 1280 px) where they exist. Only affects URLs when the media manifest is not in effect (i.e. `datasetRevision` differs from the manifest revision), in which case `downscaled_videos: true` is recorded in sample metadata. Under the manifest the mirror's files are used as-is and the inert request is recorded as `downscaled_videos_requested: true` instead. |
 | `datasetRevision` | string | `v1.0.1` | Override the pinned HF dataset tag. |
+| `videoProcessing` | `"agentic"` \| `"static"` | unset | Sets `video_url.processing` on every sample's video part and records it as `video_processing` in sample metadata. Only Gemini models that support media processing (currently `google/gemini-3.7-flash` and newer) act on it; the OpenRouter API drops the field for other models, so a run with it set is only comparable to other runs with the same value on a supporting model. |
 
 ## Video ingestion caveat
 

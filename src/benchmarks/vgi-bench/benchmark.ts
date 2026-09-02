@@ -2,6 +2,7 @@ import type { Layer } from "effect/Layer";
 
 import type { HfDatasetConfig } from "../../datasets/huggingface";
 import { makeHfDatasetLayer } from "../../datasets/huggingface";
+import type { VideoProcessingMode } from "../../harness/constants";
 import type { ContentPart, Sample } from "../../harness/core";
 import type { Dataset as DatasetTag } from "../../harness/dataset";
 import type { SampleScore } from "../../harness/metric";
@@ -98,6 +99,7 @@ export function downscaledVideoUrl(url: string): string {
 export interface VgiBenchRecordToSampleOptions {
   readonly downscaledVideos?: boolean;
   readonly mediaManifest?: VgiBenchMediaManifest;
+  readonly videoProcessing?: VideoProcessingMode;
 }
 
 export function vgiBenchRecordToSample(
@@ -131,7 +133,13 @@ export function vgiBenchRecordToSample(
   }
   const prompt = buildVgiBenchPrompt(question, answers);
   const contentParts: ContentPart[] = [
-    { type: "video_url", videoUrl: { url: videoUrl } },
+    {
+      type: "video_url",
+      videoUrl: definedValues({
+        url: videoUrl,
+        processing: opts?.videoProcessing,
+      }),
+    },
     { type: "text", text: prompt },
   ];
   const family = questionType.includes("/")
@@ -142,23 +150,22 @@ export function vgiBenchRecordToSample(
     input: prompt,
     target: { text: LETTERS[correctAnswer]! },
     contentParts,
-    metadata: {
+    metadata: definedValues({
       question_id: questionId,
       video_id: videoId,
       question_type: questionType,
       family,
-      ...(manifest !== undefined && {
-        media_manifest_hash: manifest.manifestHash,
-      }),
-      ...(manifest === undefined &&
-        opts?.downscaledVideos === true && {
-          downscaled_videos: true,
-        }),
-      ...(manifest !== undefined &&
-        opts?.downscaledVideos === true && {
-          downscaled_videos_requested: true,
-        }),
-    },
+      media_manifest_hash: manifest?.manifestHash,
+      video_processing: opts?.videoProcessing,
+      downscaled_videos:
+        manifest === undefined && opts?.downscaledVideos === true
+          ? true
+          : undefined,
+      downscaled_videos_requested:
+        manifest !== undefined && opts?.downscaledVideos === true
+          ? true
+          : undefined,
+    }),
   };
 }
 
@@ -180,14 +187,19 @@ function makeVgiBenchDatasetLayer(
     config: VGI_BENCH_CONFIG,
     split: VGI_BENCH_SPLIT,
     recordToSample: (record, idx) =>
-      vgiBenchRecordToSample(record, idx, {
-        ...(mediaManifest !== undefined && { mediaManifest }),
-        ...(opts?.downscaledVideos !== undefined && {
-          downscaledVideos: opts.downscaledVideos,
-        }),
-      }),
+      vgiBenchRecordToSample(
+        record,
+        idx,
+        definedValues({
+          mediaManifest,
+          downscaledVideos: opts?.downscaledVideos,
+          videoProcessing: opts?.videoProcessing,
+        })
+      ),
     revision,
-    ...(opts?.retry !== undefined && { retry: opts.retry }),
+    ...definedValues({
+      retry: opts?.retry,
+    }),
   };
   return makeHfDatasetLayer(config);
 }
@@ -202,7 +214,9 @@ function vgiBenchSolver(
   const config: GenerateConfig = {
     temperature: VGI_BENCH_TEMPERATURE,
     ...definedValues(opts.inference),
-    ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
+    ...definedValues({
+      endpointId: opts.endpointId,
+    }),
   };
   return generate(model, config);
 }
@@ -288,30 +302,34 @@ const VGI_BENCH_SINGLE_TURN_BENCHMARK = defineSingleTurnBenchmark({
         : { revision: VGI_BENCH_DEFAULT_REVISION }
     ),
   makeDatasetLayerForConfig: (config, retryConfig) =>
-    makeVgiBenchDatasetLayer({
-      downscaledVideos: config.downscaledVideos,
-      ...(config.datasetRevision !== undefined
-        ? { revision: config.datasetRevision }
-        : { revision: VGI_BENCH_DEFAULT_REVISION }),
-      ...(retryConfig !== undefined && { retry: retryConfig }),
-    }),
+    makeVgiBenchDatasetLayer(
+      definedValues({
+        downscaledVideos: config.downscaledVideos,
+        videoProcessing: config.videoProcessing,
+        revision: config.datasetRevision ?? VGI_BENCH_DEFAULT_REVISION,
+        retry: retryConfig,
+      })
+    ),
   scorer: mcqScorer,
   makeSolver: (model, config) =>
-    vgiBenchSolver(model, {
-      ...(config.endpointId !== undefined && { endpointId: config.endpointId }),
-      inference: {
-        maxTokens: config.maxTokens,
-        reasoningEffort: config.reasoningEffort,
-        timeoutMs: config.timeoutMs,
-        sort: config.sort,
-        providerOnly: config.providerOnly,
-        providerIgnore: config.providerIgnore,
-        allowFallbacks: config.allowFallbacks,
-        cloudflareVersion: config.cloudflareVersion,
-        costTier: config.costTier,
-        costQualityTradeoff: config.costQualityTradeoff,
-      },
-    }),
+    vgiBenchSolver(
+      model,
+      definedValues({
+        endpointId: config.endpointId,
+        inference: {
+          maxTokens: config.maxTokens,
+          reasoningEffort: config.reasoningEffort,
+          timeoutMs: config.timeoutMs,
+          sort: config.sort,
+          providerOnly: config.providerOnly,
+          providerIgnore: config.providerIgnore,
+          allowFallbacks: config.allowFallbacks,
+          cloudflareVersion: config.cloudflareVersion,
+          costTier: config.costTier,
+          costQualityTradeoff: config.costQualityTradeoff,
+        },
+      })
+    ),
 });
 
 export const VGI_BENCH_BENCHMARK: Benchmark = {

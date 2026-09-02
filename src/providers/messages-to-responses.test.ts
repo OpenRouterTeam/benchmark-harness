@@ -32,6 +32,10 @@ describe("messages-to-responses", () => {
             { type: "image_url", imageUrl: { url: "a.png" } },
             { type: "image_url", imageUrl: { url: "b.png", detail: "high" } },
             { type: "video_url", videoUrl: { url: "v.mp4" } },
+            {
+              type: "video_url",
+              videoUrl: { url: "w.mp4", processing: "agentic" },
+            },
           ],
         },
       ])
@@ -44,6 +48,7 @@ describe("messages-to-responses", () => {
           { type: "input_image", image_url: "a.png", detail: "auto" },
           { type: "input_image", image_url: "b.png", detail: "high" },
           { type: "input_video", video_url: "v.mp4" },
+          { type: "input_video", video_url: "w.mp4", processing: "agentic" },
         ],
       },
     ]);

@@ -326,7 +326,10 @@ function contentPartToPojo(part: ContentPart): Record<string, unknown> {
     case "video_url": {
       return {
         type: "video_url",
-        video_url: { url: part.videoUrl.url },
+        video_url: definedValues({
+          url: part.videoUrl.url,
+          processing: part.videoUrl.processing,
+        }),
       };
     }
     default: {

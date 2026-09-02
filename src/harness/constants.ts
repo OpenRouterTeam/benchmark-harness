@@ -30,3 +30,15 @@ export const IMAGE_DETAIL_VALUES = [
 ] as const;
 
 export type ImageDetail = ValueOf<typeof IMAGE_DETAIL_VALUES>;
+
+export const VideoProcessingMode = {
+  Agentic: "agentic",
+  Static: "static",
+} as const;
+
+export const VIDEO_PROCESSING_MODES = [
+  VideoProcessingMode.Agentic,
+  VideoProcessingMode.Static,
+] as const;
+
+export type VideoProcessingMode = ValueOf<typeof VIDEO_PROCESSING_MODES>;
