@@ -1039,6 +1039,11 @@ describe("terminal-bench pi via ori", () => {
       "foo bar",
       'foo"bar',
       "foo'bar",
+      "foo|id",
+      "foo>x",
+      "foo<x",
+      "foo*",
+      "~root/foo",
     ]) {
       expect(() => ORI_HARNESSES.pi.imageBuildSteps({ agentPackage })).toThrow(
         /invalid agentPackage/
@@ -1055,7 +1060,7 @@ describe("terminal-bench pi via ori", () => {
       DEFAULT_PRIME_AGENT_PACKAGE,
       DEFAULT_OMP_PACKAGE,
       "@scope/name@^1.2.3",
-      "name@>=1.0.0||<2.0.0",
+      "name@=1.2.3",
       "file:///opt/omp.tgz",
     ]) {
       expect(() =>

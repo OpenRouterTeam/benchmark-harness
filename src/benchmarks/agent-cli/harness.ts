@@ -96,7 +96,8 @@ function buildImageSteps(opts: {
 }): string[] {
   assertValidAgentPackage(opts.agentPackage);
   const installCommand =
-    opts.installCommand ?? `npm install -g ${opts.agentPackage}`;
+    opts.installCommand ??
+    `npm install -g ${JSON.stringify(opts.agentPackage)}`;
   const nvmScript = "/tmp/nvm-install.sh";
   return [
     "RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates git",
