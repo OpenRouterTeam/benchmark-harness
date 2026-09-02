@@ -7,12 +7,15 @@ import { MessageRole } from "../../harness/core";
 import { Either } from "../../internal/either";
 import { isRecord } from "../../internal/guards";
 import type { OriAgent, OriChannel, OriReasoningEffort } from "./schema";
-import { DEFAULT_CLAUDE_PACKAGE } from "./schema";
+import { assertValidAgentPackage, DEFAULT_CLAUDE_PACKAGE } from "./schema";
 
 const NODE_VERSION = "22" as const;
 
-const NVM_INSTALL_URL =
+export const NVM_INSTALL_URL =
   "https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh" as const;
+
+export const NVM_INSTALL_SHA256 =
+  "a909fdd01765379ebc5983674adafb8bc9de6d928bfa188761309d4a0c36be0f" as const;
 
 export const ORI_INSTALL_DIR = "/usr/local/bin" as const;
 
@@ -26,7 +29,15 @@ export const DEFAULT_OMP_PACKAGE = "@oh-my-pi/pi-coding-agent@18.1.2" as const;
 
 export const OMP_BUN_VERSION = "bun-v1.3.14" as const;
 
-const BUN_INSTALL_URL = "https://bun.sh/install" as const;
+export const BUN_RELEASE_URL =
+  `https://github.com/oven-sh/bun/releases/download/${OMP_BUN_VERSION}/bun-linux-x64.zip` as const;
+
+export const BUN_RELEASE_SHA256 =
+  "951ee2aee855f08595aeec6225226a298d3fea83a3dcd6465c09cbccdf7e848f" as const;
+
+function verifiedDownload(url: string, sha256: string, dest: string): string {
+  return `curl -fsSL ${JSON.stringify(url)} -o ${dest} && echo "${sha256}  ${dest}" | sha256sum -c -`;
+}
 
 export const DEFAULT_AGENT_RUNTIME_URL =
   "https://github.com/OpenRouterTeam/benchmark-harness/releases/download/agent-runtime-v2/agent-runtime-linux-x64-v2.tar.zst" as const;
@@ -83,12 +94,14 @@ function buildImageSteps(opts: {
   binaryName: string;
   installCommand?: string;
 }): string[] {
+  assertValidAgentPackage(opts.agentPackage);
   const installCommand =
     opts.installCommand ?? `npm install -g ${opts.agentPackage}`;
+  const nvmScript = "/tmp/nvm-install.sh";
   return [
     "RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates git",
     "ENV NVM_DIR=/root/.nvm",
-    `RUN curl -o- ${NVM_INSTALL_URL} | bash`,
+    `RUN ${verifiedDownload(NVM_INSTALL_URL, NVM_INSTALL_SHA256, nvmScript)} && bash ${nvmScript} && rm -f ${nvmScript}`,
     `RUN . /root/.nvm/nvm.sh && nvm install ${NODE_VERSION} && ${installCommand} && ln -sf $(which ${opts.binaryName}) /usr/local/bin/${opts.binaryName} && ln -sf $(which node) /usr/local/bin/node && ln -sf $(which npm) /usr/local/bin/npm`,
     `RUN ${opts.binaryName} --version`,
   ];
@@ -104,7 +117,7 @@ function buildAgentImageSteps(opts: {
     const archivePath = "/tmp/agent-runtime.tar.zst";
     return [
       "RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates git zstd",
-      `RUN curl -fsSL ${JSON.stringify(DEFAULT_AGENT_RUNTIME_URL)} -o ${archivePath} && echo "${DEFAULT_AGENT_RUNTIME_SHA256}  ${archivePath}" | sha256sum -c - && zstd -dc ${archivePath} | tar -x -C / && rm -f ${archivePath}`,
+      `RUN ${verifiedDownload(DEFAULT_AGENT_RUNTIME_URL, DEFAULT_AGENT_RUNTIME_SHA256, archivePath)} && zstd -dc ${archivePath} | tar -x -C / && rm -f ${archivePath}`,
       'ENV PATH="/root/.local/bin:$PATH"',
       "RUN ln -sf /opt/agent-runtime/app/node_modules/.bin/claude /usr/local/bin/claude && ln -sf /opt/agent-runtime/app/node_modules/.bin/pi /usr/local/bin/pi && ln -sf /opt/agent-runtime/app/node_modules/.bin/prime-agent /usr/local/bin/prime-agent && ln -sf /opt/agent-runtime/node/bin/node /usr/local/bin/node && ln -sf /opt/agent-runtime/node/bin/npm /usr/local/bin/npm && ln -sf /opt/agent-runtime/node/bin/npx /usr/local/bin/npx",
       `RUN ${opts.binaryName} --version`,
@@ -120,10 +133,12 @@ function buildAgentImageSteps(opts: {
 }
 
 function buildOmpImageSteps(agentPackage: string): string[] {
+  assertValidAgentPackage(agentPackage);
+  const bunZip = "/tmp/bun.zip";
   return [
     "RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates git unzip",
     "ENV BUN_INSTALL=/root/.bun",
-    `RUN curl -fsSL ${BUN_INSTALL_URL} | bash -s ${OMP_BUN_VERSION} && ln -sf /root/.bun/bin/bun /usr/local/bin/bun`,
+    `RUN ${verifiedDownload(BUN_RELEASE_URL, BUN_RELEASE_SHA256, bunZip)} && unzip -q ${bunZip} -d /tmp && install -m 0755 /tmp/bun-linux-x64/bun /usr/local/bin/bun && rm -rf ${bunZip} /tmp/bun-linux-x64`,
     `RUN bun install -g ${JSON.stringify(agentPackage)} && ln -sf /root/.bun/bin/omp /usr/local/bin/omp`,
     "RUN omp --version",
   ];

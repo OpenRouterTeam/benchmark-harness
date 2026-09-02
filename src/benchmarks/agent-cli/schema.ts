@@ -22,6 +22,21 @@ export const ORI_REASONING_EFFORTS = [
 
 export type OriReasoningEffort = ValueOf<typeof ORI_REASONING_EFFORTS>;
 
+export const AGENT_PACKAGE_PATTERN = /^[A-Za-z0-9@/:._~^<>=|*+-]+$/;
+
+export function isValidAgentPackage(value: string): boolean {
+  return AGENT_PACKAGE_PATTERN.test(value);
+}
+
+export function assertValidAgentPackage(value: string): string {
+  if (!isValidAgentPackage(value)) {
+    throw new Error(
+      `invalid agentPackage ${JSON.stringify(value)}: only [A-Za-z0-9@/:._~^<>=|*+-] are allowed`
+    );
+  }
+  return value;
+}
+
 export const DEFAULT_CLAUDE_PACKAGE =
   "@anthropic-ai/claude-code@2.1.235" as const;
 
