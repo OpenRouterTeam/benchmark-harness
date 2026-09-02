@@ -22,6 +22,12 @@ export const DEFAULT_PI_AGENT_PACKAGE =
 export const DEFAULT_PRIME_AGENT_PACKAGE =
   "https://pub-728493de92a943e2a9b2d17b4719f318.r2.dev/releases/v0.9.1/prime-agent-0.9.1.tgz" as const;
 
+export const DEFAULT_OMP_PACKAGE = "@oh-my-pi/pi-coding-agent@18.1.2" as const;
+
+export const OMP_BUN_VERSION = "bun-v1.3.14" as const;
+
+const BUN_INSTALL_URL = "https://bun.sh/install" as const;
+
 export const DEFAULT_AGENT_RUNTIME_URL =
   "https://github.com/OpenRouterTeam/benchmark-harness/releases/download/agent-runtime-v2/agent-runtime-linux-x64-v2.tar.zst" as const;
 
@@ -111,6 +117,16 @@ function buildAgentImageSteps(opts: {
       installCommand: opts.installCommand,
     }),
   });
+}
+
+function buildOmpImageSteps(agentPackage: string): string[] {
+  return [
+    "RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates git unzip",
+    "ENV BUN_INSTALL=/root/.bun",
+    `RUN curl -fsSL ${BUN_INSTALL_URL} | bash -s ${OMP_BUN_VERSION} && ln -sf /root/.bun/bin/bun /usr/local/bin/bun`,
+    `RUN bun install -g ${JSON.stringify(agentPackage)} && ln -sf /root/.bun/bin/omp /usr/local/bin/omp`,
+    "RUN omp --version",
+  ];
 }
 
 function buildBootstrapScript(opts: {
@@ -446,14 +462,61 @@ const PRIME_AGENT_HARNESS: OriHarnessDef = {
   parseRun: parseJsonAgentStream,
 };
 
+const OMP_HARNESS: OriHarnessDef = {
+  id: "omp",
+  defaultPackage: DEFAULT_OMP_PACKAGE,
+  binaryName: "omp",
+  remoteLogPath: "/logs/agent/omp.txt",
+  imageBuildSteps: (options) => buildOmpImageSteps(options.agentPackage),
+  buildBootstrapScript: (options) =>
+    buildBootstrapScript({ ...options, binaryName: "omp" }),
+  buildRunScript: (options) =>
+    [
+      "set -euo pipefail",
+      "export HOME=/root",
+      "mkdir -p /logs/agent",
+      ...(options.hasDisallowedTools
+        ? ['echo "omp does not support disallowedTools" >&2', "exit 2"]
+        : []),
+      'ori omp --model "$TB_MODEL" \\',
+      `  --reasoning-effort ${options.reasoningEffort} -- \\`,
+      "  --print --mode json --no-session --yolo \\",
+      ...(options.hasSystemPrompt
+        ? ['  --system-prompt "$TB_SYSTEM_PROMPT" \\']
+        : []),
+      ...(options.hasAppendSystemPrompt
+        ? ['  --append-system-prompt "$TB_APPEND_SYSTEM_PROMPT" \\']
+        : []),
+      ...(options.hasAllowedTools
+        ? [`  --tools "\${TB_ALLOWED_TOOLS// /,}" \\`]
+        : []),
+      ...(options.isolateAgentConfig
+        ? ["  --no-extensions \\", "  --no-skills \\", "  --no-rules \\"]
+        : []),
+      `  "$(cat ${options.instructionPath})" \\`,
+      `  2>&1 </dev/null | grep -v '"type":"message_update"' | stdbuf -oL tee ${options.logPath}`,
+    ].join("\n"),
+  parseRun: parseJsonAgentStream,
+};
+
 export const ORI_HARNESSES: Readonly<Record<OriAgent, OriHarnessDef>> = {
   claude: CLAUDE_HARNESS,
   pi: ORI_PI_HARNESS,
   "prime-agent": PRIME_AGENT_HARNESS,
+  omp: OMP_HARNESS,
 };
 
 export function getOriHarness(agent: OriAgent): OriHarnessDef {
   return ORI_HARNESSES[agent];
+}
+
+function reasoningTokensOf(usage: Record<string, unknown>): number {
+  const reasoning = usage["reasoning"];
+  if (typeof reasoning === "number") {
+    return reasoning;
+  }
+  const reasoningTokens = usage["reasoningTokens"];
+  return typeof reasoningTokens === "number" ? reasoningTokens : 0;
 }
 
 function parseJsonAgentStream(stdout: string): OriAgentRun {
@@ -556,8 +619,7 @@ function parseJsonAgentStream(stdout: string): OriAgentRun {
           eventOutputTokens +
           eventCacheRead +
           eventCacheWrite;
-    reasoningTokens +=
-      typeof usage["reasoning"] === "number" ? usage["reasoning"] : 0;
+    reasoningTokens += reasoningTokensOf(usage);
     const { cost } = usage;
     if (isRecord(cost)) {
       totalCost += typeof cost["total"] === "number" ? cost["total"] : 0;
