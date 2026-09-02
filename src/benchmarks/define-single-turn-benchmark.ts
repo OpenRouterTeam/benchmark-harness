@@ -16,6 +16,7 @@ import type { ScorerService } from "../harness/scorer";
 import { Scorer } from "../harness/scorer";
 import type { SolverService } from "../harness/solver";
 import { Solver } from "../harness/solver";
+import { definedValues } from "../internal/guards";
 import { makeOpenRouterModelLayer } from "../providers/openrouter-model";
 import type { RetryConfig } from "../runtime/retry";
 import type { BenchmarkRunConfig } from "./benchmark-config";
@@ -62,16 +63,16 @@ export function defineSingleTurnBenchmark<
         : definition.makeDatasetLayer(input.datasetRetry);
     const modelLayer =
       input.modelLayer ??
-      makeOpenRouterModelLayer({
-        model: benchmarkConfig.model,
-        apiKey: input.apiKey,
-        ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
-        sessionId: input.sessionId,
-        ...(input.modelRetry !== undefined && { retry: input.modelRetry }),
-        ...(input.traceHeaders !== undefined && {
+      makeOpenRouterModelLayer(
+        definedValues({
+          model: benchmarkConfig.model,
+          apiKey: input.apiKey,
+          baseUrl: input.baseUrl,
+          sessionId: input.sessionId,
+          retry: input.modelRetry,
           traceHeaders: input.traceHeaders,
-        }),
-      });
+        })
+      );
     const solverLayer = layerEffect(Solver)(
       gen(function* () {
         const model = yield* Model;

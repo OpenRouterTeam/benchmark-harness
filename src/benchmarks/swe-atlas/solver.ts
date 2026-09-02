@@ -105,12 +105,14 @@ export function makeSweAtlasSolver(
       const task = loadTask(meta.taskId, meta.track, tasksRoot);
       const agent = opts.agent ?? "mini_swe";
       const cliHarness = isOriAgent(agent) ? getOriHarness(agent) : undefined;
-      const baseCliOpts: AgentCliOpts = opts.agentCli ?? {
-        model: opts.model,
-        apiKey: opts.apiKey,
-        ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
-        agentReasoningEffort: opts.inference.reasoningEffort,
-      };
+      const baseCliOpts: AgentCliOpts =
+        opts.agentCli ??
+        definedValues({
+          model: opts.model,
+          apiKey: opts.apiKey,
+          endpointId: opts.endpointId,
+          agentReasoningEffort: opts.inference.reasoningEffort,
+        });
       const cliOpts: AgentCliOpts = {
         ...baseCliOpts,
         appendSystemPrompt: joinAgentPrompts(

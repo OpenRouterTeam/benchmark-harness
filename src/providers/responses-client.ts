@@ -25,7 +25,7 @@ import { succeed as layerSucceed } from "effect/Layer";
 import type { Citation, ModelUsage } from "../harness/core";
 import { ModelError } from "../harness/core";
 import { Either } from "../internal/either";
-import { isRecord } from "../internal/guards";
+import { definedValues, isRecord } from "../internal/guards";
 import { parseSchema, z } from "../internal/zod";
 import { filterTraceHeaders } from "../runner/trace-headers";
 import { recordGenerationId } from "../runtime/generation-ids";
@@ -121,14 +121,14 @@ export class ResponsesError extends TaggedError("ResponsesError")<
 
 export function toModelError(error: ResponsesError): ModelError {
   const status = error.status ?? (error.retryable ? 500 : undefined);
-  return new ModelError({
-    message: error.message,
-    ...(status !== undefined && { status }),
-    ...(error.retryAfterMs !== undefined && {
+  return new ModelError(
+    definedValues({
+      message: error.message,
+      status,
       retryAfterMs: error.retryAfterMs,
-    }),
-    ...pickModelErrorIdentifiers(error),
-  });
+      ...pickModelErrorIdentifiers(error),
+    })
+  );
 }
 
 export class Responses extends Tag(
@@ -218,13 +218,11 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
         } satisfies ResponsesRequest;
         const stream = await client.send(
           { responsesRequest: requestBody },
-          {
+          definedValues({
             fetchOptions: { signal },
-            ...(options.timeoutMs !== undefined && {
-              timeoutMs: options.timeoutMs,
-            }),
+            timeoutMs: options.timeoutMs,
             headers,
-          }
+          })
         );
         if (!isAsyncIterable(stream)) {
           throw new ResponsesError({
@@ -511,20 +509,20 @@ export function usageFromResponses(
     webSearchRequests !== undefined ||
     toolCallsRequested !== undefined ||
     toolCallsExecuted !== undefined;
-  return {
-    ...(inputTokens !== undefined && { inputTokens }),
-    ...(outputTokens !== undefined && { outputTokens }),
-    ...(totalTokens !== undefined && { totalTokens }),
-    ...(reasoningTokens !== undefined && { reasoningTokens }),
-    ...(totalCost !== undefined && { totalCost }),
+  return definedValues({
+    inputTokens,
+    outputTokens,
+    totalTokens,
+    reasoningTokens,
+    totalCost,
     ...(hasServerToolUse && {
-      serverToolUse: {
-        ...(webSearchRequests !== undefined && { webSearchRequests }),
-        ...(toolCallsRequested !== undefined && { toolCallsRequested }),
-        ...(toolCallsExecuted !== undefined && { toolCallsExecuted }),
-      },
+      serverToolUse: definedValues({
+        webSearchRequests,
+        toolCallsRequested,
+        toolCallsExecuted,
+      }),
     }),
-  };
+  });
 }
 
 function numField(
@@ -645,16 +643,18 @@ function toResponsesError(
       ...modelErrorIdentifiersFromFetchHeaders(cause.headers),
     };
     const retryAfterMs = parseRetryAfter(cause.headers.get("retry-after"));
-    return new ResponsesError({
-      message: appendModelErrorIdentifiers(
-        `OpenRouter HTTP ${cause.statusCode}: ${cause.body}`,
-        errorIdentifiers
-      ),
-      status: cause.statusCode,
-      ...(retryAfterMs !== undefined && { retryAfterMs }),
-      retryable: cause.statusCode === 429 || cause.statusCode >= 500,
-      ...errorIdentifiers,
-    });
+    return new ResponsesError(
+      definedValues({
+        message: appendModelErrorIdentifiers(
+          `OpenRouter HTTP ${cause.statusCode}: ${cause.body}`,
+          errorIdentifiers
+        ),
+        status: cause.statusCode,
+        retryAfterMs,
+        retryable: cause.statusCode === 429 || cause.statusCode >= 500,
+        ...errorIdentifiers,
+      })
+    );
   }
   if (
     cause instanceof RequestAbortedError ||

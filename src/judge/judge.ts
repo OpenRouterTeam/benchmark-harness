@@ -9,6 +9,7 @@ import type { ReasoningEffort } from "../harness/constants";
 import type { ModelUsage } from "../harness/core";
 import { ModelError } from "../harness/core";
 import { Either } from "../internal/either";
+import { definedValues } from "../internal/guards";
 import type { ResponsesService } from "../providers/responses-client";
 import {
   toModelError,
@@ -60,22 +61,18 @@ export function judgeCall<T>(
             schema: spec.jsonSchema,
           },
         };
-  const body: ResponsesRequest = {
+  const body: ResponsesRequest = definedValues({
     model: config.judgeModel,
     input: [responsesMessage("user", spec.userInput)],
-    ...(text !== undefined && { text }),
-    ...(spec.instructions !== undefined && { instructions: spec.instructions }),
-    ...(config.temperature !== undefined && {
-      temperature: config.temperature,
-    }),
+    text,
+    instructions: spec.instructions,
+    temperature: config.temperature,
     reasoning: { effort: config.reasoningEffort },
-  };
-  const sendOptions = {
+  });
+  const sendOptions = definedValues({
     timeoutMs: config.timeoutMs ?? DEFAULT_JUDGE_TIMEOUT_MS,
-    ...(config.versionOverride !== undefined && {
-      versionOverride: config.versionOverride,
-    }),
-  };
+    versionOverride: config.versionOverride,
+  });
   return retrySalted(
     responses.send(body, sendOptions).pipe(mapError(toModelError)),
     rateLimitRetrySchedule(config.retry ?? {})

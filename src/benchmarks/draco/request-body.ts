@@ -17,7 +17,7 @@ import { runSync } from "effect/Effect";
 import { getOrNull } from "effect/Option";
 
 import type { ValueOf } from "../../internal/guards";
-import { isRecord } from "../../internal/guards";
+import { definedValues, isRecord } from "../../internal/guards";
 import { responsesMessage } from "../../providers/responses-model";
 import {
   AGENT_SYSTEM_PROMPT,
@@ -201,26 +201,26 @@ function toRequestTool(tool: ToolEntry): ResponsesRequestToolUnion {
   switch (tool.type) {
     case DracoToolType.WebSearch: {
       const parameters = toSearchParams(tool.parameters);
-      const webSearch: WebSearchServerToolOpenRouter = {
+      const webSearch: WebSearchServerToolOpenRouter = definedValues({
         type: DracoToolType.WebSearch,
-        ...(parameters !== undefined && { parameters }),
-      };
+        parameters,
+      });
       return webSearch;
     }
     case DracoToolType.WebFetch: {
       const parameters = toFetchParams(tool.parameters);
-      const webFetch: WebFetchServerTool = {
+      const webFetch: WebFetchServerTool = definedValues({
         type: DracoToolType.WebFetch,
-        ...(parameters !== undefined && { parameters }),
-      };
+        parameters,
+      });
       return webFetch;
     }
     case DracoToolType.Shell: {
       const parameters = toShellParams(tool.parameters);
-      const shell: ShellServerToolOpenRouter = {
+      const shell: ShellServerToolOpenRouter = definedValues({
         type: DracoToolType.Shell,
-        ...(parameters !== undefined && { parameters }),
-      };
+        parameters,
+      });
       return shell;
     }
     default: {
@@ -293,19 +293,17 @@ export function buildFusionBody(
     config.tools ?? DEFAULT_TOOLS,
     config
   ).map(toFusionPanelTool);
-  const fusionParameters: FusionServerToolConfig = {
+  const fusionParameters: FusionServerToolConfig = definedValues({
     maxToolCalls: MAX_TOOL_CALLS,
     maxCompletionTokens: MAX_OUTPUT_TOKENS,
-    ...(config.synthesisModel !== undefined && {
-      model: config.synthesisModel,
-    }),
+    model: config.synthesisModel,
     ...(config.analysisModels.length > 0 && {
       analysisModels: [...config.analysisModels],
     }),
     ...((config.tools !== undefined || panelTools.length > 0) && {
       tools: panelTools,
     }),
-  };
+  });
   const fusionTool: FusionServerToolOpenRouter = {
     type: "openrouter:fusion",
     parameters: fusionParameters,
@@ -330,12 +328,12 @@ export function buildSoloBody(
   const tools = experimentTools(config);
   const hasTools = tools.length > 0;
   const input = hasTools ? buildInputPrefix(MAX_TOOL_CALLS) + problem : problem;
-  return {
+  return definedValues({
     model: config.model,
     input: [responsesMessage("user", input)],
     maxToolCalls: MAX_TOOL_CALLS,
     maxOutputTokens: MAX_OUTPUT_TOKENS,
     ...(hasTools && { instructions: AGENT_SYSTEM_PROMPT, tools }),
-    ...(config.provider !== undefined && { provider: config.provider }),
-  };
+    provider: config.provider,
+  });
 }

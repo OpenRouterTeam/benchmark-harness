@@ -25,7 +25,7 @@ import type {
 import { MessageRole, SolverError } from "../../harness/core";
 import type { SolverService } from "../../harness/solver";
 import { Either } from "../../internal/either";
-import { isDefinedAndNotNull } from "../../internal/guards";
+import { definedValues, isDefinedAndNotNull } from "../../internal/guards";
 import { parseSchema, z } from "../../internal/zod";
 import type { JudgeConfig } from "../../judge/judge";
 import { judgeCall } from "../../judge/judge";
@@ -227,25 +227,21 @@ function cachedSend(opts: {
 }
 
 function dracoJudgeConfig(config: DracoPanelConfig): JudgeConfig {
-  return {
+  return definedValues({
     judgeModel: config.judgeModel,
     temperature: config.judgeTemperature ?? 0.2,
     timeoutMs: config.timeout * 1000,
     retry: { maxRetries: 0 },
     reasoningEffort: config.judgeReasoningEffort,
-    ...(config.versionOverride !== undefined && {
-      versionOverride: config.versionOverride,
-    }),
-  };
+    versionOverride: config.versionOverride,
+  });
 }
 
 function sendOptions(config: DracoPanelConfig): ResponsesSendOptions {
-  return {
+  return definedValues({
     timeoutMs: config.timeout * 1000,
-    ...(config.versionOverride !== undefined && {
-      versionOverride: config.versionOverride,
-    }),
-  };
+    versionOverride: config.versionOverride,
+  });
 }
 
 function runJudge(opts: {

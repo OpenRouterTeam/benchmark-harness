@@ -103,13 +103,15 @@ export function makeDeepSweSolver(
       const task = loadTask(meta.taskId, tasksRoot);
       const agent = opts.agent ?? "mini_swe";
       const cliHarness = isOriAgent(agent) ? getOriHarness(agent) : undefined;
-      const baseCliOpts: AgentCliOpts = opts.agentCli ?? {
-        model: opts.model,
-        apiKey: opts.apiKey,
-        ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
-        ...(opts.sessionId !== undefined && { sessionId: opts.sessionId }),
-        agentReasoningEffort: opts.inference.reasoningEffort,
-      };
+      const baseCliOpts: AgentCliOpts =
+        opts.agentCli ??
+        definedValues({
+          model: opts.model,
+          apiKey: opts.apiKey,
+          endpointId: opts.endpointId,
+          sessionId: opts.sessionId,
+          agentReasoningEffort: opts.inference.reasoningEffort,
+        });
       const cliOpts: AgentCliOpts = {
         ...baseCliOpts,
         appendSystemPrompt:
@@ -173,19 +175,13 @@ export function makeDeepSweSolver(
           : yield* createAgentSession();
       const resumeFrom =
         checkpoint !== null && attachSucceeded
-          ? {
+          ? definedValues({
               input: checkpoint.input,
               startStep: checkpoint.step + 1,
-              ...(checkpoint.usage !== undefined && {
-                usage: checkpoint.usage,
-              }),
-              ...(checkpoint.generationTimeMs !== undefined && {
-                generationTimeMs: checkpoint.generationTimeMs,
-              }),
-              ...(checkpoint.toolCallIndex !== undefined && {
-                toolCallIndex: checkpoint.toolCallIndex,
-              }),
-            }
+              usage: checkpoint.usage,
+              generationTimeMs: checkpoint.generationTimeMs,
+              toolCallIndex: checkpoint.toolCallIndex,
+            })
           : undefined;
       const genConfig: ResponsesGenerateConfig = {
         temperature: DEEP_SWE_TEMPERATURE,

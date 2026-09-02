@@ -20,7 +20,7 @@ import { ProgressReporter } from "../../../harness/progress";
 import type { SolverService } from "../../../harness/solver";
 import { runHarnessSync } from "../../../internal/effect-logger";
 import type { ProviderSort } from "../../../internal/enums";
-import { isRecord } from "../../../internal/guards";
+import { definedValues, isRecord } from "../../../internal/guards";
 import type {
   ResponsesResult,
   ResponsesSendOptions,
@@ -83,55 +83,40 @@ export function searchSolver(
       const reporter = yield* ProgressReporter;
       const { epoch } = state;
       const sendSort = opts.sort !== undefined && opts.endpointId === undefined;
-      const body = buildSearchRequestBody({
-        model: opts.model,
-        instructions: opts.instructions,
-        problem: state.sample.input,
-        lane: opts.lane,
-        ...(opts.maxOutputTokens !== undefined && {
+      const body = buildSearchRequestBody(
+        definedValues({
+          model: opts.model,
+          instructions: opts.instructions,
+          problem: state.sample.input,
+          lane: opts.lane,
           maxOutputTokens: opts.maxOutputTokens,
-        }),
-        ...(opts.temperature !== undefined && {
           temperature: opts.temperature,
-        }),
-        reasoningEffort: opts.reasoningEffort,
-        ...(sendSort && { sort: opts.sort }),
-        ...(opts.providerOrder !== undefined && {
+          reasoningEffort: opts.reasoningEffort,
+          ...(sendSort && { sort: opts.sort }),
           providerOrder: opts.providerOrder,
-        }),
-        ...(opts.providerOnly !== undefined && {
           providerOnly: opts.providerOnly,
-        }),
-        ...(opts.providerIgnore !== undefined && {
           providerIgnore: opts.providerIgnore,
-        }),
-        ...(opts.allowFallbacks !== undefined && {
           allowFallbacks: opts.allowFallbacks,
-        }),
-        ...(opts.costQualityTradeoff !== undefined && {
           costQualityTradeoff: opts.costQualityTradeoff,
-        }),
-        ...(opts.costTier !== undefined && { costTier: opts.costTier }),
-      });
+          costTier: opts.costTier,
+        })
+      );
       const extraHeaders =
         opts.endpointId === undefined && !opts.lane.providerFlags?.length
           ? undefined
-          : {
-              ...(opts.endpointId !== undefined && {
-                "X-OR-Endpoint-Id": opts.endpointId,
-              }),
+          : definedValues({
+              "X-OR-Endpoint-Id": opts.endpointId,
               ...(opts.lane.providerFlags !== undefined &&
                 opts.lane.providerFlags.length > 0 && {
                   "X-Provider-Flags": opts.lane.providerFlags.join(","),
                 }),
-            };
-      const sendOptions = (): ResponsesSendOptions => ({
-        timeoutMs: opts.timeoutMs ?? DEFAULT_SEARCH_TIMEOUT_MS,
-        ...(extraHeaders !== undefined && { extraHeaders }),
-        ...(opts.versionOverride !== undefined && {
+            });
+      const sendOptions = (): ResponsesSendOptions =>
+        definedValues({
+          timeoutMs: opts.timeoutMs ?? DEFAULT_SEARCH_TIMEOUT_MS,
+          extraHeaders,
           versionOverride: opts.versionOverride,
-        }),
-      });
+        });
       const { result, attemptResults } = yield* sendWithRetry({
         responses,
         body,
@@ -271,7 +256,7 @@ function completedState({
     provider: result.provider,
     generationId: result.generationId,
   };
-  return {
+  return definedValues({
     sample: {
       ...state.sample,
       metadata: {
@@ -287,17 +272,17 @@ function completedState({
     ],
     responseItems: responseItemsForCall(request, result),
     requestBody: { ...request },
-    output: {
+    output: definedValues({
       completion: text,
       message: { role: MessageRole.Assistant, content: text },
-      ...(usage !== undefined && { usage }),
+      usage,
       ...(generationTimeMs > 0 && {
         generationTimeMs,
       }),
-    },
+    }),
     completed: true,
-    ...(state.epoch !== undefined && { epoch: state.epoch }),
-  };
+    epoch: state.epoch,
+  });
 }
 
 function responseItemsForCall(

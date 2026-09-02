@@ -12,6 +12,7 @@ import {
 import type { Dataset } from "../../harness/dataset";
 import { Scorer } from "../../harness/scorer";
 import { Solver } from "../../harness/solver";
+import { definedValues } from "../../internal/guards";
 import {
   makeResponsesModelLayer,
   ResponsesModel,
@@ -53,26 +54,24 @@ function makeWandrLayer(
       new Error(`${WANDR_DATASET_ID} received mismatched benchmarkConfig`)
     );
   }
-  const datasetLayer = makeWandrDatasetLayer({
-    ...(benchmarkConfig.taskSubset !== undefined && {
+  const datasetLayer = makeWandrDatasetLayer(
+    definedValues({
       taskSubset: benchmarkConfig.taskSubset,
-    }),
-    ...(benchmarkConfig.maxAgentTimeoutSec !== undefined && {
       maxAgentTimeoutSec: benchmarkConfig.maxAgentTimeoutSec,
-    }),
-  });
+    })
+  );
   const modelLayer =
     input.responsesModelLayer ??
-    makeResponsesModelLayer({
-      model: benchmarkConfig.model,
-      apiKey: input.apiKey,
-      ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
-      sessionId: input.sessionId,
-      ...(input.modelRetry !== undefined && { retry: input.modelRetry }),
-      ...(input.traceHeaders !== undefined && {
+    makeResponsesModelLayer(
+      definedValues({
+        model: benchmarkConfig.model,
+        apiKey: input.apiKey,
+        baseUrl: input.baseUrl,
+        sessionId: input.sessionId,
+        retry: input.modelRetry,
         traceHeaders: input.traceHeaders,
-      }),
-    });
+      })
+    );
   const sandboxLayer = makeModalSandboxLayer({
     appName: "openrouter-wandr",
     environment: benchmarkConfig.modalEnv,
@@ -82,16 +81,18 @@ function makeWandrLayer(
       const model = yield* ResponsesModel;
       const sessionFactory = yield* SandboxSession;
       return Solver.of(
-        makeWandrSolver(model, sessionFactory, {
-          apiKey: input.apiKey,
-          stepLimit: benchmarkConfig.stepLimit,
-          serverTools: benchmarkConfig.serverTools,
-          ...(benchmarkConfig.endpointId !== undefined && {
+        makeWandrSolver(
+          model,
+          sessionFactory,
+          definedValues({
+            apiKey: input.apiKey,
+            stepLimit: benchmarkConfig.stepLimit,
+            serverTools: benchmarkConfig.serverTools,
             endpointId: benchmarkConfig.endpointId,
-          }),
-          sessionId: input.sessionId,
-          inference: wandrInferenceOverride(benchmarkConfig),
-        })
+            sessionId: input.sessionId,
+            inference: wandrInferenceOverride(benchmarkConfig),
+          })
+        )
       );
     })
   ).pipe(layerProvide(layerMergeAll(modelLayer, sandboxLayer)));

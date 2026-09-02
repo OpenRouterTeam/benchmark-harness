@@ -9,6 +9,7 @@ import type { App } from "modal";
 import { ModalClient } from "modal";
 
 import type { SolverError } from "../../harness/core";
+import { definedValues } from "../../internal/guards";
 import type {
   CreateSessionInput,
   SandboxExec,
@@ -36,13 +37,12 @@ export function makeModalSandboxLayer(
   config: ModalSandboxConfig
 ): Layer<SandboxSession> {
   const environment = config.environment ?? "main";
-  const clientParams: ConstructorParameters<typeof ModalClient>[0] = {
-    environment,
-    ...(config.tokenId !== undefined && { tokenId: config.tokenId }),
-    ...(config.tokenSecret !== undefined && {
+  const clientParams: ConstructorParameters<typeof ModalClient>[0] =
+    definedValues({
+      environment,
+      tokenId: config.tokenId,
       tokenSecret: config.tokenSecret,
-    }),
-  };
+    });
   const client = new ModalClient(clientParams);
   let appPromise: Promise<App> | undefined;
   const getApp = () => {

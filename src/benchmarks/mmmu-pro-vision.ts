@@ -61,10 +61,10 @@ export function mmmuProVisionRecordToSample(
     if (Either.isRight(parsed)) {
       contentParts.push({
         type: "image_url",
-        imageUrl: {
+        imageUrl: definedValues({
           url: parsed.right.src,
-          ...(imageDetail !== undefined && { detail: imageDetail }),
-        },
+          detail: imageDetail,
+        }),
       });
       numImages++;
     }
@@ -80,10 +80,10 @@ export function mmmuProVisionRecordToSample(
     }
     contentParts.push({
       type: "image_url",
-      imageUrl: {
+      imageUrl: definedValues({
         url: parsed.right.src,
-        ...(imageDetail !== undefined && { detail: imageDetail }),
-      },
+        detail: imageDetail,
+      }),
     });
     numImages++;
   }
@@ -150,29 +150,32 @@ export const MMMU_PRO_VISION_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
       retryConfig !== undefined ? { retry: retryConfig } : undefined
     ),
   makeDatasetLayerForConfig: (config, retryConfig) =>
-    makeMmmuProVisionDatasetLayer({
-      imageDetail: config.imageDetail,
-      ...(retryConfig !== undefined && { retry: retryConfig }),
-    }),
+    makeMmmuProVisionDatasetLayer(
+      definedValues({
+        imageDetail: config.imageDetail,
+        retry: retryConfig,
+      })
+    ),
   scorer: mcqScorer,
   makeSolver: (model, config) =>
-    mmmuProVisionSolver(model, {
-      ...(config.endpointId !== undefined && { endpointId: config.endpointId }),
-      ...(config.mediaResolution !== undefined && {
+    mmmuProVisionSolver(
+      model,
+      definedValues({
+        endpointId: config.endpointId,
         mediaResolution: config.mediaResolution,
-      }),
-      inference: {
-        temperature: config.temperature,
-        maxTokens: config.maxTokens,
-        reasoningEffort: config.reasoningEffort,
-        timeoutMs: config.timeoutMs,
-        sort: config.sort,
-        providerOnly: config.providerOnly,
-        providerIgnore: config.providerIgnore,
-        allowFallbacks: config.allowFallbacks,
-        cloudflareVersion: config.cloudflareVersion,
-        costTier: config.costTier,
-        costQualityTradeoff: config.costQualityTradeoff,
-      },
-    }),
+        inference: {
+          temperature: config.temperature,
+          maxTokens: config.maxTokens,
+          reasoningEffort: config.reasoningEffort,
+          timeoutMs: config.timeoutMs,
+          sort: config.sort,
+          providerOnly: config.providerOnly,
+          providerIgnore: config.providerIgnore,
+          allowFallbacks: config.allowFallbacks,
+          cloudflareVersion: config.cloudflareVersion,
+          costTier: config.costTier,
+          costQualityTradeoff: config.costQualityTradeoff,
+        },
+      })
+    ),
 });

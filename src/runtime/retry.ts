@@ -23,6 +23,7 @@ import {
   SolverError,
 } from "../harness/core";
 import { unknownErrorToString } from "../internal/errors";
+import { definedValues } from "../internal/guards";
 import { currentRetryAttemptRef } from "./response-cache";
 
 type EvalError = ModelError | SolverError;
@@ -55,23 +56,20 @@ function logRetryDecision<ErrorType>(
   const error = output.error;
   const modelError = error instanceof ModelErrorClass ? error : undefined;
   const errorTag = errorTagFrom(error);
-  return logWarning("Retrying after transient error", {
-    attempt: output.attempt,
-    delay_ms: delayMs,
-    error_status: modelError?.status,
-    error_tag: errorTag,
-    error_message: truncatedMessage(error),
-    ...(modelError?.retryAfterMs !== undefined && {
-      retry_after_ms: modelError.retryAfterMs,
-    }),
-    ...(modelError?.cfRay !== undefined && { cf_ray: modelError.cfRay }),
-    ...(modelError?.xRequestId !== undefined && {
-      x_request_id: modelError.xRequestId,
-    }),
-    ...(modelError?.generationId !== undefined && {
-      generation_id: modelError.generationId,
-    }),
-  });
+  return logWarning(
+    "Retrying after transient error",
+    definedValues({
+      attempt: output.attempt,
+      delay_ms: delayMs,
+      error_status: modelError?.status,
+      error_tag: errorTag,
+      error_message: truncatedMessage(error),
+      retry_after_ms: modelError?.retryAfterMs,
+      cf_ray: modelError?.cfRay,
+      x_request_id: modelError?.xRequestId,
+      generation_id: modelError?.generationId,
+    })
+  );
 }
 
 export function truncatedMessage(error: unknown): string {

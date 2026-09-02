@@ -27,7 +27,7 @@ import {
 import { makeProgressReporter } from "../harness/progress";
 import { runHarnessPromise } from "../internal/effect-logger";
 import { Either } from "../internal/either";
-import { isMember } from "../internal/guards";
+import { definedValues, isMember } from "../internal/guards";
 import { parseSchema } from "../internal/zod";
 import { makeLocalResultStore } from "../results/result-store";
 import { datasetSizeById, runBenchmarkById } from "../runner/run-by-id";
@@ -89,10 +89,10 @@ function resolveRange(args: CliArgs):
   if (start === undefined && end === undefined) {
     return undefined;
   }
-  return {
-    ...(start !== undefined && { start }),
-    ...(end !== undefined && { end }),
-  };
+  return definedValues({
+    start,
+    end,
+  });
 }
 
 function resolveTotalEvaluations(
@@ -167,14 +167,14 @@ function main(): Promise<void> {
       let artifactDir: string | undefined = args.artifactDir ?? args.resumeId;
       if (benchmark.cli !== undefined) {
         const resolved = yield* promise(() =>
-          benchmark.cli!.resolve({
-            argv: process.argv.slice(2),
-            benchmarkConfig,
-            ...(args.artifactDir !== undefined && {
+          benchmark.cli!.resolve(
+            definedValues({
+              argv: process.argv.slice(2),
+              benchmarkConfig,
               artifactDir: args.artifactDir,
-            }),
-            ...(args.resumeId !== undefined && { resumeId: args.resumeId }),
-          })
+              resumeId: args.resumeId,
+            })
+          )
         );
         effectivePanelConfig = resolved.benchmarkConfig;
         ({ artifactDir } = resolved);
@@ -207,31 +207,33 @@ function main(): Promise<void> {
         bar.start(total, 0, { sample: "" });
       }
       const result = yield* promise(() =>
-        runBenchmarkById({
-          benchmarkId: args.benchmark,
-          apiKey,
-          benchmarkConfig: benchmarkRunConfig,
-          epochs,
-          maxConcurrency: args.concurrency,
-          ...(baseUrl && { baseUrl }),
-          ...(range !== undefined && { range }),
-          sessionId,
-          resultStore: makeLocalResultStore({
-            dir: join(process.cwd(), "bench-results"),
-          }),
-          progressReporter: makeProgressReporter({
-            onSampleComplete: (completed) =>
-              bar.update(completed, { sample: currentSample }),
-            onSampleStart: (event) => {
-              currentSample = `#${event.sampleIndex}`;
-              bar.update({ sample: currentSample });
-            },
-            onSampleEnd: () => {
-              currentSample = "";
-              bar.update({ sample: currentSample });
-            },
-          }),
-        })
+        runBenchmarkById(
+          definedValues({
+            benchmarkId: args.benchmark,
+            apiKey,
+            benchmarkConfig: benchmarkRunConfig,
+            epochs,
+            maxConcurrency: args.concurrency,
+            ...(baseUrl && { baseUrl }),
+            range,
+            sessionId,
+            resultStore: makeLocalResultStore({
+              dir: join(process.cwd(), "bench-results"),
+            }),
+            progressReporter: makeProgressReporter({
+              onSampleComplete: (completed) =>
+                bar.update(completed, { sample: currentSample }),
+              onSampleStart: (event) => {
+                currentSample = `#${event.sampleIndex}`;
+                bar.update({ sample: currentSample });
+              },
+              onSampleEnd: () => {
+                currentSample = "";
+                bar.update({ sample: currentSample });
+              },
+            }),
+          })
+        )
       );
       bar.stop();
       if (Either.isLeft(result)) {
@@ -249,7 +251,7 @@ function main(): Promise<void> {
       }
       process.stdout.write(
         `${JSON.stringify(
-          {
+          definedValues({
             benchmark: args.benchmark,
             model: args.model,
             sessionId,
@@ -258,7 +260,7 @@ function main(): Promise<void> {
             totalQuestions: metrics.totalQuestions,
             correctAnswers: metrics.correctAnswers,
             usage,
-            ...(runLevelScores !== undefined && { runLevelScores }),
+            runLevelScores,
             sampleScores: result.right.result.sampleScores.map((s) => ({
               sampleId: s.sampleId,
               epoch: s.epoch,
@@ -267,7 +269,7 @@ function main(): Promise<void> {
               explanation: s.score.explanation,
               ...(s.metadata && { metadata: s.metadata }),
             })),
-          },
+          }),
           null,
           2
         )}\n`
@@ -335,13 +337,13 @@ function buildSchemaValidatedConfig(opts: {
     costTier,
     reasoningEffort,
   } = opts;
-  const merged: Record<string, unknown> = {
+  const merged: Record<string, unknown> = definedValues({
     benchmarkId,
     model,
-    ...(endpointId !== undefined && { endpointId }),
-    ...(costTier !== undefined && { costTier }),
+    endpointId,
+    costTier,
     reasoningEffort,
-  };
+  });
   if (typeof panelConfig === "object" && panelConfig !== null) {
     const known = isModelBenchmarkId(benchmarkId)
       ? knownBenchmarkOptionKeys(benchmarkId)

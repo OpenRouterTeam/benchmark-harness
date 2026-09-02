@@ -20,6 +20,7 @@ import { DatasetError } from "../../harness/core";
 import type { DatasetStreamOptions } from "../../harness/dataset";
 import { Dataset } from "../../harness/dataset";
 import { Either } from "../../internal/either";
+import { definedValues } from "../../internal/guards";
 import { parseSchema } from "../../internal/zod";
 import type { DeepSweTask } from "./schema";
 import { DeepSweTaskTomlSchema } from "./schema";
@@ -171,15 +172,13 @@ export function makeDeepSweDatasetLayer(
 ): Layer<Dataset> {
   const pageSize = config?.pageSize ?? 20;
   const makeService = succeed(
-    buildDatasetService({
-      pageSize,
-      ...(config?.taskSubset !== undefined && {
-        taskSubset: config.taskSubset,
-      }),
-      ...(config?.maxAgentTimeoutSec !== undefined && {
-        maxAgentTimeoutSec: config.maxAgentTimeoutSec,
-      }),
-    })
+    buildDatasetService(
+      definedValues({
+        pageSize,
+        taskSubset: config?.taskSubset,
+        maxAgentTimeoutSec: config?.maxAgentTimeoutSec,
+      })
+    )
   );
   return effect(Dataset, makeService);
 }

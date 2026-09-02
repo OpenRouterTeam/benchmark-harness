@@ -23,6 +23,7 @@ import type {
 } from "../../harness/dataset";
 import { Dataset } from "../../harness/dataset";
 import { Either } from "../../internal/either";
+import { definedValues } from "../../internal/guards";
 import { parseSchema } from "../../internal/zod";
 import type { WandrTask } from "./schema";
 import { WANDR_DATASET_ID, WandrTaskTomlSchema } from "./schema";
@@ -144,16 +145,14 @@ export function makeWandrDatasetLayer(
   return effect(
     Dataset,
     succeed(
-      buildDatasetService({
-        pageSize: config?.pageSize ?? DEFAULT_PAGE_SIZE,
-        ...(config?.taskSubset !== undefined && {
-          taskSubset: config.taskSubset,
-        }),
-        ...(config?.maxAgentTimeoutSec !== undefined && {
-          maxAgentTimeoutSec: config.maxAgentTimeoutSec,
-        }),
-        includeSmoke: config?.includeSmoke === true,
-      })
+      buildDatasetService(
+        definedValues({
+          pageSize: config?.pageSize ?? DEFAULT_PAGE_SIZE,
+          taskSubset: config?.taskSubset,
+          maxAgentTimeoutSec: config?.maxAgentTimeoutSec,
+          includeSmoke: config?.includeSmoke === true,
+        })
+      )
     )
   );
 }

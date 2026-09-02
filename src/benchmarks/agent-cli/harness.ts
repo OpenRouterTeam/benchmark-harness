@@ -5,7 +5,7 @@ import type {
 } from "../../harness/core";
 import { MessageRole } from "../../harness/core";
 import { Either } from "../../internal/either";
-import { isRecord } from "../../internal/guards";
+import { definedValues, isRecord } from "../../internal/guards";
 import type { OriAgent, OriChannel, OriReasoningEffort } from "./schema";
 import { assertValidAgentPackage, DEFAULT_CLAUDE_PACKAGE } from "./schema";
 
@@ -124,13 +124,13 @@ function buildAgentImageSteps(opts: {
       `RUN ${opts.binaryName} --version`,
     ];
   }
-  return buildImageSteps({
-    agentPackage: opts.agentPackage,
-    binaryName: opts.binaryName,
-    ...(opts.installCommand !== undefined && {
+  return buildImageSteps(
+    definedValues({
+      agentPackage: opts.agentPackage,
+      binaryName: opts.binaryName,
       installCommand: opts.installCommand,
-    }),
-  });
+    })
+  );
 }
 
 function buildOmpImageSteps(agentPackage: string): string[] {
@@ -287,12 +287,14 @@ function parseClaudeStream(stdout: string): OriAgentRun {
       const reasoning = reasoningFromContent(message["content"]);
       const model = optionalStringField(message, "model");
       if (content.length > 0 || reasoning !== undefined) {
-        assistantMessages.push({
-          role: MessageRole.Assistant,
-          content,
-          ...(reasoning !== undefined && { reasoning }),
-          ...(model !== undefined && { model }),
-        });
+        assistantMessages.push(
+          definedValues({
+            role: MessageRole.Assistant,
+            content,
+            reasoning,
+            model,
+          })
+        );
       }
       continue;
     }
@@ -603,12 +605,14 @@ function parseJsonAgentStream(stdout: string): OriAgentRun {
       finalText = text;
     }
     if (text.length > 0 || reasoning !== undefined) {
-      assistantMessages.push({
-        role: MessageRole.Assistant,
-        content: text,
-        ...(reasoning !== undefined && { reasoning }),
-        ...(model !== undefined && { model }),
-      });
+      assistantMessages.push(
+        definedValues({
+          role: MessageRole.Assistant,
+          content: text,
+          reasoning,
+          model,
+        })
+      );
     }
     const { usage } = message;
     if (!isRecord(usage)) {

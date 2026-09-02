@@ -204,19 +204,13 @@ export function makeWandrSolver(
             );
       const resumeFrom =
         checkpoint !== null && didAttach
-          ? {
+          ? definedValues({
               input: checkpoint.input,
               startStep: checkpoint.step + 1,
-              ...(checkpoint.usage !== undefined && {
-                usage: checkpoint.usage,
-              }),
-              ...(checkpoint.generationTimeMs !== undefined && {
-                generationTimeMs: checkpoint.generationTimeMs,
-              }),
-              ...(checkpoint.toolCallIndex !== undefined && {
-                toolCallIndex: checkpoint.toolCallIndex,
-              }),
-            }
+              usage: checkpoint.usage,
+              generationTimeMs: checkpoint.generationTimeMs,
+              toolCallIndex: checkpoint.toolCallIndex,
+            })
           : undefined;
       const generationConfig: ResponsesGenerateConfig = {
         instructions: WANDR_SYSTEM_MESSAGE,

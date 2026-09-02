@@ -1,4 +1,5 @@
 import { Either } from "../../internal/either";
+import { definedValues } from "../../internal/guards";
 import type {
   BenchmarkCliContext,
   BenchmarkCliPlugin,
@@ -42,12 +43,14 @@ export const DRACO_CLI_PLUGIN: BenchmarkCliPlugin = {
     ctx: BenchmarkCliContext
   ): Promise<BenchmarkCliResolution> => {
     const override = parseDracoOverride(ctx.argv);
-    const resolved = await resolveDracoRunConfig({
-      benchmarkConfig: ctx.benchmarkConfig,
-      ...(ctx.resumeId !== undefined && { resumeDir: ctx.resumeId }),
-      ...(Object.keys(override).length > 0 && { override }),
-      ...(ctx.artifactDir !== undefined && { artifactDir: ctx.artifactDir }),
-    });
+    const resolved = await resolveDracoRunConfig(
+      definedValues({
+        benchmarkConfig: ctx.benchmarkConfig,
+        resumeDir: ctx.resumeId,
+        ...(Object.keys(override).length > 0 && { override }),
+        artifactDir: ctx.artifactDir,
+      })
+    );
     if (Either.isLeft(resolved)) {
       throw new Error(resolved.left);
     }

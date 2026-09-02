@@ -1,3 +1,4 @@
+import { definedValues } from "../internal/guards";
 export interface ModelErrorIdentifiers {
   readonly cfRay?: string;
   readonly xRequestId?: string;
@@ -7,13 +8,11 @@ export interface ModelErrorIdentifiers {
 export function pickModelErrorIdentifiers(
   source: ModelErrorIdentifiers
 ): ModelErrorIdentifiers {
-  return {
-    ...(source.cfRay !== undefined && { cfRay: source.cfRay }),
-    ...(source.xRequestId !== undefined && { xRequestId: source.xRequestId }),
-    ...(source.generationId !== undefined && {
-      generationId: source.generationId,
-    }),
-  };
+  return definedValues({
+    cfRay: source.cfRay,
+    xRequestId: source.xRequestId,
+    generationId: source.generationId,
+  });
 }
 
 export function appendModelErrorIdentifiers(
@@ -41,12 +40,10 @@ export function modelErrorIdentifiersFromHeaders(
     );
     return entry?.[1] || undefined;
   };
-  return {
-    ...(valueFor("cf-ray") !== undefined && { cfRay: valueFor("cf-ray") }),
-    ...(valueFor("x-request-id") !== undefined && {
-      xRequestId: valueFor("x-request-id"),
-    }),
-  };
+  return definedValues({
+    cfRay: valueFor("cf-ray"),
+    xRequestId: valueFor("x-request-id"),
+  });
 }
 
 export function modelErrorIdentifiersFromFetchHeaders(
@@ -54,8 +51,8 @@ export function modelErrorIdentifiersFromFetchHeaders(
 ): Pick<ModelErrorIdentifiers, "cfRay" | "xRequestId"> {
   const cfRay = headers.get("cf-ray") || undefined;
   const xRequestId = headers.get("x-request-id") || undefined;
-  return {
-    ...(cfRay !== undefined && { cfRay }),
-    ...(xRequestId !== undefined && { xRequestId }),
-  };
+  return definedValues({
+    cfRay,
+    xRequestId,
+  });
 }

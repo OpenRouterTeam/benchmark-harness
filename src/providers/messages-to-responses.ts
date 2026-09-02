@@ -5,6 +5,7 @@ import type {
   ToolDefinition,
 } from "../harness/core";
 import { MessageRole } from "../harness/core";
+import { definedValues } from "../internal/guards";
 import type {
   ResponsesFunctionTool,
   ResponsesInputItem,
@@ -108,7 +109,7 @@ export function toolDefinitionToResponses(
 }
 
 export function responsesTurnToModelOutput(turn: ResponsesTurn): ModelOutput {
-  return {
+  return definedValues({
     completion: turn.text,
     message: {
       role: MessageRole.Assistant,
@@ -125,7 +126,7 @@ export function responsesTurnToModelOutput(turn: ResponsesTurn): ModelOutput {
       }),
       responseItems: turn.outputItems,
     },
-    ...(turn.usage !== undefined && { usage: turn.usage }),
+    usage: turn.usage,
     generationTimeMs: turn.generationTimeMs,
-  };
+  });
 }
