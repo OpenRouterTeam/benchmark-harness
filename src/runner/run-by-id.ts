@@ -101,9 +101,8 @@ export function runBenchmarkById(
       benchmark: input.benchmarkId,
       session_id: input.sessionId,
       model,
-      ...(input.runAttempt !== undefined && {
-        run_attempt: `${input.runAttempt}`,
-      }),
+      run_attempt:
+        input.runAttempt !== undefined ? `${input.runAttempt}` : undefined,
     }),
   });
   const fullBenchmarkLayer = benchmarkLayer.pipe(
@@ -253,7 +252,7 @@ function makeBenchmarkLayer<Config extends BenchmarkRunConfig>(
       traceHeaders,
       sessionId: input.sessionId,
       datasetRetry: input.datasetRetry,
-      ...(maxRetries !== undefined && { modelRetry: { maxRetries } }),
+      modelRetry: maxRetries !== undefined ? { maxRetries } : undefined,
       maxOutputTokensCeiling: input.maxOutputTokensCeiling,
     }),
   };

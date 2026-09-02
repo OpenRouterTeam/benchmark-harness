@@ -100,7 +100,9 @@ export function gpqaSolver(
   const config: GenerateConfig = {
     temperature: GPQA_TEMPERATURE,
     ...definedValues(opts.inference),
-    ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
+    ...definedValues({
+      endpointId: opts.endpointId,
+    }),
   };
   return chain(
     systemMessage(SIMPLE_EVALS_SYSTEM_MESSAGE),
@@ -115,7 +117,9 @@ export function makeGpqaDatasetLayer(
 ): Layer<Dataset> {
   return makeHfDatasetLayer({
     ...GPQA_DATASET,
-    ...(retryConfig !== undefined && { retry: retryConfig }),
+    ...definedValues({
+      retry: retryConfig,
+    }),
   });
 }
 

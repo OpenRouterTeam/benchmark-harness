@@ -225,16 +225,16 @@ export function runAgentCli(input: {
       generationTimeMs: parsed.generationTimeMs ?? elapsedMs,
       exitCode: run.exitCode,
       rawStream: run.stdout,
-      failureDetail: buildFailureDetail({
-        agentId: harness.id,
-        exitCode: run.exitCode,
-        isError: parsed.isError,
-        apiErrorStatus: parsed.apiErrorStatus,
-        eventStream: run.stdout,
-        ...("execError" in run && run.execError !== undefined
-          ? { execError: run.execError }
-          : {}),
-      }),
+      failureDetail: buildFailureDetail(
+        definedValues({
+          agentId: harness.id,
+          exitCode: run.exitCode,
+          isError: parsed.isError,
+          apiErrorStatus: parsed.apiErrorStatus,
+          eventStream: run.stdout,
+          execError: "execError" in run ? run.execError : undefined,
+        })
+      ),
     };
   });
 }

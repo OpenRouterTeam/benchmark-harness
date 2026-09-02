@@ -5,6 +5,7 @@ import { fixed, passthrough, whileInput } from "effect/Schedule";
 
 import type { ModelMessage } from "../../harness/core";
 import { MessageRole } from "../../harness/core";
+import { definedValues } from "../../internal/guards";
 import { messagesToResponses } from "../../providers/messages-to-responses";
 import type { ResponsesModelService } from "../../providers/responses-model";
 import { withAuxiliaryUsage } from "../../runtime/generation-ids";
@@ -81,13 +82,14 @@ export class UserSimulator {
         withAuxiliaryUsage,
         catchAll(() => withAuxiliaryUsage(response(USER_FALLBACK_MODEL)))
       );
-      this.messages.push({
-        role: MessageRole.Assistant,
-        content: result.content,
-        ...(result.responseItems.length > 0 && {
-          responseItems: result.responseItems,
-        }),
-      });
+      this.messages.push(
+        definedValues({
+          role: MessageRole.Assistant,
+          content: result.content,
+          responseItems:
+            result.responseItems.length > 0 ? result.responseItems : undefined,
+        })
+      );
       return result.content;
     });
   }

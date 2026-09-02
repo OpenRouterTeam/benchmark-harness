@@ -116,7 +116,9 @@ export function makeMmmuProVisionDatasetLayer(
     split: MMMU_PRO_SPLIT,
     recordToSample: (record, idx) =>
       mmmuProVisionRecordToSample(record, idx, opts?.imageDetail),
-    ...(opts?.retry !== undefined && { retry: opts.retry }),
+    ...definedValues({
+      retry: opts?.retry,
+    }),
   });
 }
 
@@ -131,9 +133,12 @@ export function mmmuProVisionSolver(
   const config: GenerateConfig = {
     temperature: 0,
     ...definedValues(opts.inference),
-    ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
-    ...(opts.mediaResolution !== undefined && {
-      extraBody: { media_resolution: opts.mediaResolution },
+    ...definedValues({
+      endpointId: opts.endpointId,
+      extraBody:
+        opts.mediaResolution !== undefined
+          ? { media_resolution: opts.mediaResolution }
+          : undefined,
     }),
   };
   return chain(systemMessage(MMMU_SYSTEM_MESSAGE), generate(model, config));

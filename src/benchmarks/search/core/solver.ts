@@ -92,7 +92,7 @@ export function searchSolver(
           maxOutputTokens: opts.maxOutputTokens,
           temperature: opts.temperature,
           reasoningEffort: opts.reasoningEffort,
-          ...(sendSort && { sort: opts.sort }),
+          sort: sendSort ? opts.sort : undefined,
           providerOrder: opts.providerOrder,
           providerOnly: opts.providerOnly,
           providerIgnore: opts.providerIgnore,
@@ -106,10 +106,11 @@ export function searchSolver(
           ? undefined
           : definedValues({
               "X-OR-Endpoint-Id": opts.endpointId,
-              ...(opts.lane.providerFlags !== undefined &&
-                opts.lane.providerFlags.length > 0 && {
-                  "X-Provider-Flags": opts.lane.providerFlags.join(","),
-                }),
+              "X-Provider-Flags":
+                opts.lane.providerFlags !== undefined &&
+                opts.lane.providerFlags.length > 0
+                  ? opts.lane.providerFlags.join(",")
+                  : undefined,
             });
       const sendOptions = (): ResponsesSendOptions =>
         definedValues({
@@ -122,12 +123,11 @@ export function searchSolver(
         body,
         options: () => ({
           ...sendOptions(),
-          ...(epoch !== undefined && {
-            onStreamEvent: makeStreamEventReporter(
-              reporter,
-              state.sample.id,
-              epoch
-            ),
+          ...definedValues({
+            onStreamEvent:
+              epoch !== undefined
+                ? makeStreamEventReporter(reporter, state.sample.id, epoch)
+                : undefined,
           }),
         }),
         retryConfig: opts.retry,
@@ -276,9 +276,7 @@ function completedState({
       completion: text,
       message: { role: MessageRole.Assistant, content: text },
       usage,
-      ...(generationTimeMs > 0 && {
-        generationTimeMs,
-      }),
+      generationTimeMs: generationTimeMs > 0 ? generationTimeMs : undefined,
     }),
     completed: true,
     epoch: state.epoch,

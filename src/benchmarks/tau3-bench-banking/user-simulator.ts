@@ -4,6 +4,7 @@ import { map, mapError } from "effect/Effect";
 
 import type { ModelMessage, ToolDefinition } from "../../harness/core";
 import { MessageRole } from "../../harness/core";
+import { definedValues } from "../../internal/guards";
 import {
   messagesToResponses,
   toolDefinitionToResponses,
@@ -96,13 +97,12 @@ export class UserSimulator {
   private callModel(model: string): Effect<SimulatorTurn, SimError> {
     return this.callModelOnce(model).pipe(
       map((turn) => {
-        const assistantMessage: ModelMessage = {
+        const assistantMessage: ModelMessage = definedValues({
           role: MessageRole.Assistant,
           content: turn.text,
-          ...(turn.outputItems.length > 0 && {
-            responseItems: turn.outputItems,
-          }),
-        };
+          responseItems:
+            turn.outputItems.length > 0 ? turn.outputItems : undefined,
+        });
         this.messages.push(assistantMessage);
         if (turn.functionCalls.length > 0) {
           return {
@@ -125,8 +125,11 @@ export class UserSimulator {
         model,
         temperature: 0,
         reasoningEffort: this.config.userReasoningEffort,
-        ...(this.availableTools.length > 0 && {
-          tools: this.availableTools.map(toolDefinitionToResponses),
+        ...definedValues({
+          tools:
+            this.availableTools.length > 0
+              ? this.availableTools.map(toolDefinitionToResponses)
+              : undefined,
         }),
       })
       .pipe(mapError((error) => new UserSimError({ message: error.message })));

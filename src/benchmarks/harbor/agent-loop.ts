@@ -18,7 +18,7 @@ import { MessageRole } from "../../harness/core";
 import type { AgentStepEvent } from "../../harness/progress";
 import { runHarnessSync } from "../../internal/effect-logger";
 import { Either } from "../../internal/either";
-import { isRecord } from "../../internal/guards";
+import { definedValues, isRecord } from "../../internal/guards";
 import type {
   ResponsesGenerateConfig,
   ResponsesInputItem,
@@ -488,18 +488,18 @@ function addUsage(acc: UsageAccumulator, usage: ModelUsage | undefined): void {
 }
 
 function toModelUsage(acc: UsageAccumulator): ModelUsage {
-  return {
+  return definedValues({
     inputTokens: acc.inputTokens,
     outputTokens: acc.outputTokens,
     totalTokens: acc.totalTokens,
     reasoningTokens: acc.reasoningTokens,
     totalCost: acc.totalCost,
-    ...(acc.seenServerToolUse && {
-      serverToolUse: {
-        webSearchRequests: acc.webSearchRequests,
-        toolCallsRequested: acc.toolCallsRequested,
-        toolCallsExecuted: acc.toolCallsExecuted,
-      },
-    }),
-  };
+    serverToolUse: acc.seenServerToolUse
+      ? {
+          webSearchRequests: acc.webSearchRequests,
+          toolCallsRequested: acc.toolCallsRequested,
+          toolCallsExecuted: acc.toolCallsExecuted,
+        }
+      : undefined,
+  });
 }

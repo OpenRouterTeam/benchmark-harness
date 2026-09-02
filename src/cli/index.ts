@@ -214,7 +214,7 @@ function main(): Promise<void> {
             benchmarkConfig: benchmarkRunConfig,
             epochs,
             maxConcurrency: args.concurrency,
-            ...(baseUrl && { baseUrl }),
+            baseUrl: baseUrl ? baseUrl : undefined,
             range,
             sessionId,
             resultStore: makeLocalResultStore({
@@ -261,14 +261,16 @@ function main(): Promise<void> {
             correctAnswers: metrics.correctAnswers,
             usage,
             runLevelScores,
-            sampleScores: result.right.result.sampleScores.map((s) => ({
-              sampleId: s.sampleId,
-              epoch: s.epoch,
-              value: s.score.value,
-              answer: s.score.answer,
-              explanation: s.score.explanation,
-              ...(s.metadata && { metadata: s.metadata }),
-            })),
+            sampleScores: result.right.result.sampleScores.map((s) =>
+              definedValues({
+                sampleId: s.sampleId,
+                epoch: s.epoch,
+                value: s.score.value,
+                answer: s.score.answer,
+                explanation: s.score.explanation,
+                metadata: s.metadata,
+              })
+            ),
           }),
           null,
           2
@@ -421,8 +423,10 @@ export function buildBenchmarkConfig(opts: {
       return {
         benchmarkId: "gpqa_diamond",
         model: requireModel("gpqa_diamond", model),
-        ...(endpointId !== undefined && { endpointId }),
-        ...(costTier !== undefined && { costTier }),
+        ...definedValues({
+          endpointId,
+          costTier,
+        }),
         reasoningEffort,
       };
     }
@@ -430,8 +434,10 @@ export function buildBenchmarkConfig(opts: {
       return {
         benchmarkId: "mmlu_pro",
         model: requireModel("mmlu_pro", model),
-        ...(endpointId !== undefined && { endpointId }),
-        ...(costTier !== undefined && { costTier }),
+        ...definedValues({
+          endpointId,
+          costTier,
+        }),
         reasoningEffort,
       };
     }
@@ -473,18 +479,20 @@ export function buildBenchmarkConfig(opts: {
       return {
         benchmarkId: "draco",
         panelConfig: panel.right,
-        ...(artifactDir !== undefined && { artifactDir }),
+        ...definedValues({
+          artifactDir,
+        }),
       };
     }
     case "mmmu_pro_vision": {
       return {
         benchmarkId: "mmmu_pro_vision",
         model: requireModel("mmmu_pro_vision", model),
-        ...(endpointId !== undefined && { endpointId }),
-        ...(opts.imageDetail !== undefined && {
+        ...definedValues({
+          endpointId,
           imageDetail: opts.imageDetail,
+          costTier,
         }),
-        ...(costTier !== undefined && { costTier }),
         reasoningEffort,
       };
     }
@@ -492,8 +500,10 @@ export function buildBenchmarkConfig(opts: {
       return {
         benchmarkId: "ifstruct",
         model: requireModel("ifstruct", model),
-        ...(endpointId !== undefined && { endpointId }),
-        ...(costTier !== undefined && { costTier }),
+        ...definedValues({
+          endpointId,
+          costTier,
+        }),
         reasoningEffort,
       };
     }

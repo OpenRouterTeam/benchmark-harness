@@ -240,8 +240,9 @@ function usageFromResult(result: Record<string, unknown>): ModelUsage {
     totalTokens: inputTokens + outputTokens,
     reasoningTokens,
     totalCost: numberField(result, "total_cost_usd"),
-    ...(webSearchRequests !== undefined && {
-      serverToolUse: { webSearchRequests },
+    ...definedValues({
+      serverToolUse:
+        webSearchRequests !== undefined ? { webSearchRequests } : undefined,
     }),
   };
 }

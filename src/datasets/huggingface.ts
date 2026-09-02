@@ -216,10 +216,12 @@ export function makeHfPageFetcher(
             length,
             revision: config.revision,
           }),
-          ...(hfToken !== undefined &&
-            hfToken !== "" && {
-              headers: { Authorization: `Bearer ${hfToken}` },
-            }),
+          ...definedValues({
+            headers:
+              hfToken !== undefined && hfToken !== ""
+                ? { Authorization: `Bearer ${hfToken}` }
+                : undefined,
+          }),
         })
         .pipe(
           flatMap((response) => response.json),

@@ -234,30 +234,27 @@ function toFusionPanelTool(tool: ToolEntry): FusionServerToolConfigTool {
   switch (tool.type) {
     case DracoToolType.WebSearch: {
       const parameters = toSearchParams(tool.parameters);
-      return {
+      return definedValues({
         type: DracoToolType.WebSearch,
-        ...(parameters !== undefined && {
-          parameters: deepSnakeCaseKeys(parameters),
-        }),
-      };
+        parameters:
+          parameters !== undefined ? deepSnakeCaseKeys(parameters) : undefined,
+      });
     }
     case DracoToolType.WebFetch: {
       const parameters = toFetchParams(tool.parameters);
-      return {
+      return definedValues({
         type: DracoToolType.WebFetch,
-        ...(parameters !== undefined && {
-          parameters: deepSnakeCaseKeys(parameters),
-        }),
-      };
+        parameters:
+          parameters !== undefined ? deepSnakeCaseKeys(parameters) : undefined,
+      });
     }
     case DracoToolType.Shell: {
       const parameters = toShellParams(tool.parameters);
-      return {
+      return definedValues({
         type: DracoToolType.Shell,
-        ...(parameters !== undefined && {
-          parameters: deepSnakeCaseKeys(parameters),
-        }),
-      };
+        parameters:
+          parameters !== undefined ? deepSnakeCaseKeys(parameters) : undefined,
+      });
     }
     default: {
       const _exhaustive: never = tool;
@@ -297,12 +294,12 @@ export function buildFusionBody(
     maxToolCalls: MAX_TOOL_CALLS,
     maxCompletionTokens: MAX_OUTPUT_TOKENS,
     model: config.synthesisModel,
-    ...(config.analysisModels.length > 0 && {
-      analysisModels: [...config.analysisModels],
-    }),
-    ...((config.tools !== undefined || panelTools.length > 0) && {
-      tools: panelTools,
-    }),
+    analysisModels:
+      config.analysisModels.length > 0 ? [...config.analysisModels] : undefined,
+    tools:
+      config.tools !== undefined || panelTools.length > 0
+        ? panelTools
+        : undefined,
   });
   const fusionTool: FusionServerToolOpenRouter = {
     type: "openrouter:fusion",
@@ -317,7 +314,9 @@ export function buildFusionBody(
     maxToolCalls: MAX_TOOL_CALLS,
     maxOutputTokens: MAX_OUTPUT_TOKENS,
     tools: [fusionTool],
-    ...(config.provider !== undefined && { provider: config.provider }),
+    ...definedValues({
+      provider: config.provider,
+    }),
   };
 }
 
@@ -333,7 +332,8 @@ export function buildSoloBody(
     input: [responsesMessage("user", input)],
     maxToolCalls: MAX_TOOL_CALLS,
     maxOutputTokens: MAX_OUTPUT_TOKENS,
-    ...(hasTools && { instructions: AGENT_SYSTEM_PROMPT, tools }),
+    instructions: hasTools ? AGENT_SYSTEM_PROMPT : undefined,
+    tools: hasTools ? tools : undefined,
     provider: config.provider,
   });
 }

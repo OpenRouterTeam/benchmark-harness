@@ -457,7 +457,9 @@ export function summarizeChunkRows(
     totalCost: first.total_cost,
     generationTimeMs: first.generation_time_ms,
     temperature: first.temperature,
-    ...(primaryScore !== undefined && { primaryScore }),
+    ...definedValues({
+      primaryScore,
+    }),
     epochResults,
   };
 }

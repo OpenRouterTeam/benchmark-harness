@@ -38,9 +38,10 @@ export function makeOpenRouterModelLayer(
     definedValues({
       model: config.model,
       apiKey: config.apiKey,
-      ...(config.baseUrl !== undefined && {
-        baseUrl: normalizeBaseUrl(config.baseUrl),
-      }),
+      baseUrl:
+        config.baseUrl !== undefined
+          ? normalizeBaseUrl(config.baseUrl)
+          : undefined,
       sessionId: config.sessionId,
       retry: config.retry,
       traceHeaders: config.traceHeaders,
@@ -55,8 +56,11 @@ export function makeOpenRouterModelLayer(
           return responsesModel
             .generate(messagesToResponses(messages), {
               ...rest,
-              ...(tools !== undefined && {
-                tools: tools.map(toolDefinitionToResponses),
+              ...definedValues({
+                tools:
+                  tools !== undefined
+                    ? tools.map(toolDefinitionToResponses)
+                    : undefined,
               }),
             })
             .pipe(map(responsesTurnToModelOutput));

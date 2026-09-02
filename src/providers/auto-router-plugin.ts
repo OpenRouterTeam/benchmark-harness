@@ -36,7 +36,7 @@ export function buildAutoRouterPlugin(
     id,
     costTier: options.costTier,
     costQualityTradeoff: options.costQualityTradeoff,
-    ...(options.pinModel === true && { pinModel: true }),
+    pinModel: options.pinModel === true ? true : undefined,
   });
 }
 
@@ -50,6 +50,6 @@ export function toWireAutoRouterPlugin(plugin: AutoRouterPluginConfig): {
     id: plugin.id,
     cost_tier: plugin.costTier,
     cost_quality_tradeoff: plugin.costQualityTradeoff,
-    ...(plugin.pinModel === true && { pin_model: true }),
+    pin_model: plugin.pinModel === true ? true : undefined,
   });
 }

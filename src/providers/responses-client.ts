@@ -184,8 +184,11 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
       apiKey: config.apiKey,
       httpClient,
       retryConfig: { strategy: "none" },
-      ...(config.baseUrl !== undefined && {
-        serverURL: normalizeBaseUrl(config.baseUrl),
+      ...definedValues({
+        serverURL:
+          config.baseUrl !== undefined
+            ? normalizeBaseUrl(config.baseUrl)
+            : undefined,
       }),
     });
     const headers: Record<string, string> = {
@@ -193,27 +196,30 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
       "X-OpenRouter-Title": BENCH_HARNESS_APP_TITLE,
       ...traceHeaders,
       ...options.extraHeaders,
-      ...(options.versionOverride
-        ? { [VERSION_OVERRIDE_HEADER]: `api="${options.versionOverride}"` }
-        : {}),
-      ...(config.sessionId !== undefined && {
+      ...definedValues({
+        [VERSION_OVERRIDE_HEADER]: options.versionOverride
+          ? `api="${options.versionOverride}"`
+          : undefined,
+      }),
+      ...definedValues({
         "x-session-id": config.sessionId,
+        [RESPONSE_CACHE_SALT_HEADER]: attemptState.cacheSalt,
       }),
       [RESPONSE_CACHE_HEADER]: "true",
       [RESPONSE_CACHE_TTL_HEADER]: `${RESPONSE_CACHE_TTL_SECONDS}`,
-      ...(attemptState.cacheSalt !== undefined && {
-        [RESPONSE_CACHE_SALT_HEADER]: attemptState.cacheSalt,
-      }),
     };
     return tryPromise({
       try: async (signal) => {
         identifiers = {};
         const requestBody = {
           ...body,
-          ...(body.cacheControl === undefined &&
-            options.extraBody?.["cache_control"] === undefined && {
-              cacheControl: { type: "ephemeral" as const },
-            }),
+          ...definedValues({
+            cacheControl:
+              body.cacheControl === undefined &&
+              options.extraBody?.["cache_control"] === undefined
+                ? { type: "ephemeral" as const }
+                : undefined,
+          }),
           stream: true,
         } satisfies ResponsesRequest;
         const stream = await client.send(
@@ -239,8 +245,12 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
           logUnexpectedResponseCacheMiss({
             ...attemptState,
             isCacheHit,
-            ...(typeof body.model === "string" && { model: body.model }),
-            ...(cacheStatus !== undefined && { cacheStatus }),
+            ...definedValues({
+              model: typeof body.model === "string" ? body.model : undefined,
+            }),
+            ...definedValues({
+              cacheStatus,
+            }),
             ...identifiers,
           });
         })
@@ -353,18 +363,20 @@ function normalizeRawTerminalEvent(
       tool_choice: event.response["tool_choice"] ?? "auto",
       tools: event.response["tools"] ?? [],
       top_p: event.response["top_p"] ?? null,
-      ...(usage !== undefined &&
-        usage !== null && {
-          usage: {
-            ...usage,
-            input_tokens_details: usage["input_tokens_details"] ?? {
-              cached_tokens: 0,
-            },
-            output_tokens_details: usage["output_tokens_details"] ?? {
-              reasoning_tokens: 0,
-            },
-          },
-        }),
+      ...definedValues({
+        usage:
+          usage !== undefined && usage !== null
+            ? {
+                ...usage,
+                input_tokens_details: usage["input_tokens_details"] ?? {
+                  cached_tokens: 0,
+                },
+                output_tokens_details: usage["output_tokens_details"] ?? {
+                  reasoning_tokens: 0,
+                },
+              }
+            : undefined,
+      }),
     },
   };
 }
@@ -515,13 +527,13 @@ export function usageFromResponses(
     totalTokens,
     reasoningTokens,
     totalCost,
-    ...(hasServerToolUse && {
-      serverToolUse: definedValues({
-        webSearchRequests,
-        toolCallsRequested,
-        toolCallsExecuted,
-      }),
-    }),
+    serverToolUse: hasServerToolUse
+      ? definedValues({
+          webSearchRequests,
+          toolCallsRequested,
+          toolCallsExecuted,
+        })
+      : undefined,
   });
 }
 

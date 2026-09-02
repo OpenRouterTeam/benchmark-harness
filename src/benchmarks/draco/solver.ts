@@ -477,8 +477,11 @@ function completedState(
           {
             role: MessageRole.Assistant,
             content: generation.content,
-            ...(generation.citations.length > 0 && {
-              citations: generation.citations,
+            ...definedValues({
+              citations:
+                generation.citations.length > 0
+                  ? generation.citations
+                  : undefined,
             }),
           } as const,
         ]
@@ -517,7 +520,11 @@ function dracoUsageToModelUsage(
   const { totalCost: _perCallCost, ...tokens } = mapped;
   return {
     ...tokens,
-    ...(isDefinedAndNotNull(generation.cost) && { totalCost: generation.cost }),
+    ...definedValues({
+      totalCost: isDefinedAndNotNull(generation.cost)
+        ? generation.cost
+        : undefined,
+    }),
   };
 }
 

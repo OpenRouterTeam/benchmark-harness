@@ -25,13 +25,14 @@ export const terminalBenchScorer: ScorerService = (
   target: Target
 ) => {
   const { reward, testOutput } = readReward(state);
-  const score: Score = {
+  const score: Score = definedValues({
     value: reward >= 1 ? ScoreValue.Correct : ScoreValue.Incorrect,
     answer: target.text,
     explanation: testOutput ?? "",
-    ...(testOutput !== undefined && {
-      trajectory: { kind: "verifier_log", log: testOutput } as const,
-    }),
-  };
+    trajectory:
+      testOutput !== undefined
+        ? ({ kind: "verifier_log", log: testOutput } as const)
+        : undefined,
+  });
   return succeed(score);
 };

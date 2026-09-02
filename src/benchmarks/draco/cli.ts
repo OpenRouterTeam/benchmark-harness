@@ -25,16 +25,19 @@ function parseDracoOverride(argv: readonly string[]): DracoConfigOverride {
   const judgeRuns = num(argv, "--judge-runs");
   const cacheNamespace = get(argv, "--cache-namespace");
   return {
-    ...(panelModels !== undefined && {
-      panelModels: panelModels
-        .split(",")
-        .map((s) => s.trim())
-        .filter((s) => s.length > 0),
+    ...definedValues({
+      panelModels:
+        panelModels !== undefined
+          ? panelModels
+              .split(",")
+              .map((s) => s.trim())
+              .filter((s) => s.length > 0)
+          : undefined,
+      synthesisModel,
+      judgeModel,
+      judgeRuns,
+      cacheNamespace,
     }),
-    ...(synthesisModel !== undefined && { synthesisModel }),
-    ...(judgeModel !== undefined && { judgeModel }),
-    ...(judgeRuns !== undefined && { judgeRuns }),
-    ...(cacheNamespace !== undefined && { cacheNamespace }),
   };
 }
 
@@ -47,7 +50,7 @@ export const DRACO_CLI_PLUGIN: BenchmarkCliPlugin = {
       definedValues({
         benchmarkConfig: ctx.benchmarkConfig,
         resumeDir: ctx.resumeId,
-        ...(Object.keys(override).length > 0 && { override }),
+        override: Object.keys(override).length > 0 ? override : undefined,
         artifactDir: ctx.artifactDir,
       })
     );

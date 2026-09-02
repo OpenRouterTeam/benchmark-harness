@@ -122,8 +122,11 @@ export function makeSweAtlasSolver(
       };
       const session = yield* sessionFactory.create({
         imageTag: meta.dockerImage,
-        ...(cliHarness !== undefined && {
-          imageBuildSteps: agentImageBuildSteps(cliHarness, cliOpts),
+        ...definedValues({
+          imageBuildSteps:
+            cliHarness !== undefined
+              ? agentImageBuildSteps(cliHarness, cliOpts)
+              : undefined,
         }),
         timeoutSec:
           meta.maxAgentTimeoutSec +
@@ -147,7 +150,9 @@ export function makeSweAtlasSolver(
         tools: [BASH_RESPONSES_TOOL_DEFINITION],
         instructions: MINI_SWE_SYSTEM_MESSAGE,
         ...definedValues(opts.inference),
-        ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
+        ...definedValues({
+          endpointId: opts.endpointId,
+        }),
       };
       try {
         if (cliHarness !== undefined) {
@@ -175,9 +180,10 @@ export function makeSweAtlasSolver(
                   ? `${run.failureDetail}\n\n${cliVerifier.output}`
                   : cliVerifier.output,
                 ...agentCliMetadata(cliHarness.id, run),
-                ...(meta.allowInternet
-                  ? {}
-                  : { agentNetworkForced: true, taskAllowInternet: false }),
+                ...definedValues({
+                  agentNetworkForced: meta.allowInternet ? undefined : true,
+                  taskAllowInternet: meta.allowInternet ? undefined : false,
+                }),
               },
             },
             messages: [

@@ -98,11 +98,9 @@ export function toolDefinitionToResponses(
   return {
     type: "function",
     name: tool.function.name,
-    ...(tool.function.description !== undefined && {
-      description: tool.function.description,
-    }),
     parameters: tool.function.parameters ?? {},
-    ...(tool.function.strict !== undefined && {
+    ...definedValues({
+      description: tool.function.description,
       strict: tool.function.strict,
     }),
   };
@@ -114,15 +112,18 @@ export function responsesTurnToModelOutput(turn: ResponsesTurn): ModelOutput {
     message: {
       role: MessageRole.Assistant,
       content: turn.text,
-      ...(turn.functionCalls.length > 0 && {
-        toolCalls: turn.functionCalls.map((call) => ({
-          id: call.callId,
-          type: "function" as const,
-          function: {
-            name: call.name,
-            arguments: call.arguments,
-          },
-        })),
+      ...definedValues({
+        toolCalls:
+          turn.functionCalls.length > 0
+            ? turn.functionCalls.map((call) => ({
+                id: call.callId,
+                type: "function" as const,
+                function: {
+                  name: call.name,
+                  arguments: call.arguments,
+                },
+              }))
+            : undefined,
       }),
       responseItems: turn.outputItems,
     },

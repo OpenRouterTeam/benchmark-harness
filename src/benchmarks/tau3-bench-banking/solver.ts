@@ -217,7 +217,9 @@ export function bankingSolver({
         temperature: BANKING_TEMPERATURE,
         tools: [...BANKING_TOOL_DEFINITIONS, ...retrievalTools.definitions],
         ...definedValues(opts.inference),
-        ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
+        ...definedValues({
+          endpointId: opts.endpointId,
+        }),
       };
       let totalGenerationTimeMs = 0;
       const accUsage = {

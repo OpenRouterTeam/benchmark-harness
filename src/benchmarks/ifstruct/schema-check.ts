@@ -1,4 +1,4 @@
-import { isRecord } from "../../internal/guards";
+import { definedValues, isRecord } from "../../internal/guards";
 import { pyRepr, pyTypeName } from "./py-format";
 import type { JsonSchemaNode, TopLevelCount } from "./schema";
 
@@ -135,11 +135,13 @@ export function validateAgainstJsonSchema(
     }
     case "string": {
       const ok = typeof data === "string";
-      checks.push({
-        path: rootPath,
-        passed: ok,
-        ...(ok ? {} : { error: `expected string, got ${pyTypeName(data)}` }),
-      });
+      checks.push(
+        definedValues({
+          path: rootPath,
+          passed: ok,
+          error: ok ? undefined : `expected string, got ${pyTypeName(data)}`,
+        })
+      );
       break;
     }
     case "number": {
@@ -168,11 +170,13 @@ export function validateAgainstJsonSchema(
     }
     case "boolean": {
       const ok = typeof data === "boolean";
-      checks.push({
-        path: rootPath,
-        passed: ok,
-        ...(ok ? {} : { error: `expected boolean, got ${pyTypeName(data)}` }),
-      });
+      checks.push(
+        definedValues({
+          path: rootPath,
+          passed: ok,
+          error: ok ? undefined : `expected boolean, got ${pyTypeName(data)}`,
+        })
+      );
       break;
     }
     default: {
@@ -182,15 +186,15 @@ export function validateAgainstJsonSchema(
   const enumValues = schema.enum;
   if (enumValues !== undefined) {
     const ok = enumValues.some((v) => v === data);
-    checks.push({
-      path: rootPath,
-      passed: ok,
-      ...(ok
-        ? {}
-        : {
-            error: `${pyRepr(data)} not in allowed values ${pyRepr(enumValues)}`,
-          }),
-    });
+    checks.push(
+      definedValues({
+        path: rootPath,
+        passed: ok,
+        error: !ok
+          ? `${pyRepr(data)} not in allowed values ${pyRepr(enumValues)}`
+          : undefined,
+      })
+    );
   }
   return checks;
 }

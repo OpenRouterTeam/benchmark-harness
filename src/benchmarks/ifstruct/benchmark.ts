@@ -129,7 +129,9 @@ export function ifStructSolver(
   const config: GenerateConfig = {
     temperature: IFSTRUCT_TEMPERATURE,
     ...definedValues(opts.inference),
-    ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
+    ...definedValues({
+      endpointId: opts.endpointId,
+    }),
   };
   return generate(model, config);
 }
@@ -139,7 +141,9 @@ export function makeIfStructDatasetLayer(
 ): Layer<Dataset> {
   return makeHfDatasetLayer({
     ...IFSTRUCT_DATASET,
-    ...(retryConfig !== undefined && { retry: retryConfig }),
+    ...definedValues({
+      retry: retryConfig,
+    }),
   });
 }
 

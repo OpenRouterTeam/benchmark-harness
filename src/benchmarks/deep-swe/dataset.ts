@@ -156,8 +156,11 @@ export function readDeepSweMeta(
         : DEFAULT_ALLOW_INTERNET,
     category: typeof category === "string" ? category : "unknown",
     language: typeof language === "string" ? language : "unknown",
-    ...(typeof reward === "number" && { reward }),
-    ...(typeof verifierOutput === "string" && { verifierOutput }),
+    ...definedValues({
+      reward: typeof reward === "number" ? reward : undefined,
+      verifierOutput:
+        typeof verifierOutput === "string" ? verifierOutput : undefined,
+    }),
   };
 }
 

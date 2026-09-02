@@ -263,10 +263,10 @@ function resolveEntry(
           map((resolved): ResolvedEntry =>
             resolved === undefined
               ? { id: entry.id }
-              : {
+              : definedValues({
                   id: resolved.sourceId,
-                  ...(resolved.usage && { usage: resolved.usage }),
-                }
+                  usage: resolved.usage,
+                })
           )
         )
     : succeed({ id: entry.id });

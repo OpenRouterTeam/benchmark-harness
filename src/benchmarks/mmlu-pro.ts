@@ -95,7 +95,9 @@ export function mmluProSolver(
   const config: GenerateConfig = {
     temperature: MMLU_PRO_TEMPERATURE,
     ...definedValues(opts.inference),
-    ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
+    ...definedValues({
+      endpointId: opts.endpointId,
+    }),
   };
   return generate(model, config);
 }

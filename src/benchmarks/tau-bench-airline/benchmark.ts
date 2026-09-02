@@ -79,7 +79,9 @@ export function makeAirlineDatasetLayer(
 ): Layer<Dataset> {
   return makeHfDatasetLayer({
     ...TAU_BENCH_AIRLINE_DATASET,
-    ...(retryConfig !== undefined && { retry: retryConfig }),
+    ...definedValues({
+      retry: retryConfig,
+    }),
   });
 }
 

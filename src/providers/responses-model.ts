@@ -152,13 +152,15 @@ export function generate(
   const sendSort =
     genConfig.sort !== undefined && genConfig.endpointId === undefined;
   const providerPreferences = definedValues({
-    ...(sendSort && { sort: genConfig.sort }),
-    ...(genConfig.providerOnly !== undefined && {
-      only: [...genConfig.providerOnly],
-    }),
-    ...(genConfig.providerIgnore !== undefined && {
-      ignore: [...genConfig.providerIgnore],
-    }),
+    sort: sendSort ? genConfig.sort : undefined,
+    only:
+      genConfig.providerOnly !== undefined
+        ? [...genConfig.providerOnly]
+        : undefined,
+    ignore:
+      genConfig.providerIgnore !== undefined
+        ? [...genConfig.providerIgnore]
+        : undefined,
     allowFallbacks: genConfig.allowFallbacks,
   });
   const sendProvider = Object.keys(providerPreferences).length > 0;
@@ -174,12 +176,18 @@ export function generate(
       instructions: genConfig.instructions,
       temperature: genConfig.temperature,
       maxOutputTokens: genConfig.maxTokens,
+      tools:
+        genConfig.tools !== undefined && genConfig.tools.length > 0
+          ? [...genConfig.tools]
+          : undefined,
     }),
-    ...(genConfig.tools !== undefined &&
-      genConfig.tools.length > 0 && { tools: [...genConfig.tools] }),
     reasoning: { effort: genConfig.reasoningEffort },
-    ...(sendProvider && { provider: providerPreferences }),
-    ...(autoRouterPlugin !== undefined && { plugins: [autoRouterPlugin] }),
+    ...definedValues({
+      provider: sendProvider ? providerPreferences : undefined,
+    }),
+    ...definedValues({
+      plugins: autoRouterPlugin !== undefined ? [autoRouterPlugin] : undefined,
+    }),
   } satisfies ResponsesRequest;
   const extraHeaders = definedValues({
     "X-OR-Endpoint-Id": genConfig.endpointId,
@@ -192,8 +200,13 @@ export function generate(
     const startedAt = performance.now();
     return responses
       .send(body, {
-        ...(Object.keys(extraHeaders).length > 0 && { extraHeaders }),
-        ...(extraBody !== undefined && { extraBody }),
+        ...definedValues({
+          extraHeaders:
+            Object.keys(extraHeaders).length > 0 ? extraHeaders : undefined,
+        }),
+        ...definedValues({
+          extraBody,
+        }),
         onResponseIdentifiers: (responseIdentifiers) => {
           identifiers = { ...identifiers, ...responseIdentifiers };
         },
