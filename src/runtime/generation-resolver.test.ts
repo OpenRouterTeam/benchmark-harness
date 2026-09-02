@@ -34,11 +34,11 @@ function mockFetch(
   handler: (url: string) => Response
 ): () => readonly string[] {
   const calls: string[] = [];
-  globalThis.fetch = ((input: string | URL | Request) => {
+  globalThis.fetch = (input) => {
     const url = typeof input === "string" ? input : new Request(input).url;
     calls.push(url);
     return Promise.resolve(handler(url));
-  }) as typeof fetch;
+  };
   return () => calls;
 }
 
@@ -229,12 +229,12 @@ describe("makeOpenRouterGenerationResolver", () => {
   });
   it("sends filtered trace headers on the lookup without touching auth", async () => {
     let request: Request | undefined;
-    globalThis.fetch = ((input: string | URL | Request, init?: RequestInit) => {
+    globalThis.fetch = (input, init) => {
       request = input instanceof Request ? input : new Request(input, init);
       return Promise.resolve(
         jsonResponse({ data: { response_cache_source_id: "gen-original" } })
       );
-    }) as typeof fetch;
+    };
     const traceparent =
       "00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01";
     const resolver = makeOpenRouterGenerationResolver({
