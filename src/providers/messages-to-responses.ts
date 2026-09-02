@@ -83,7 +83,13 @@ function contentPartToResponses(part: ContentPart): ResponsesInputItem {
       };
     }
     case "video_url": {
-      return { type: "input_video", video_url: part.videoUrl.url };
+      return {
+        type: "input_video",
+        video_url: part.videoUrl.url,
+        ...(part.videoUrl.processing !== undefined && {
+          processing: part.videoUrl.processing,
+        }),
+      };
     }
     default: {
       return part satisfies never;

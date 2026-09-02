@@ -5,8 +5,8 @@ import { TaggedError } from "effect/Data";
 import type { ValueOf } from "../internal/guards";
 import { z } from "../internal/zod";
 import type { ModelErrorIdentifiers } from "../providers/request-identifiers";
-import type { ImageDetail } from "./constants";
-import { IMAGE_DETAIL_VALUES } from "./constants";
+import type { ImageDetail, VideoProcessingMode } from "./constants";
+import { IMAGE_DETAIL_VALUES, VIDEO_PROCESSING_MODES } from "./constants";
 import { ReasoningDetailsSchema } from "./reasoning-details";
 
 export const MessageRole = {
@@ -59,6 +59,7 @@ export const VideoContentPartSchema = z.object({
   type: z.literal("video_url"),
   videoUrl: z.object({
     url: z.string(),
+    processing: z.enum(VIDEO_PROCESSING_MODES).optional(),
   }),
 });
 
@@ -110,6 +111,7 @@ export interface VideoContentPart {
   readonly type: "video_url";
   readonly videoUrl: {
     readonly url: string;
+    readonly processing?: VideoProcessingMode;
   };
 }
 

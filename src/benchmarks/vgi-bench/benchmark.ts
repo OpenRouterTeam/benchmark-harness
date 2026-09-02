@@ -2,6 +2,7 @@ import type { Layer } from "effect/Layer";
 
 import type { HfDatasetConfig } from "../../datasets/huggingface";
 import { makeHfDatasetLayer } from "../../datasets/huggingface";
+import type { VideoProcessingMode } from "../../harness/constants";
 import type { ContentPart, Sample } from "../../harness/core";
 import type { Dataset as DatasetTag } from "../../harness/dataset";
 import type { SampleScore } from "../../harness/metric";
@@ -98,6 +99,7 @@ export function downscaledVideoUrl(url: string): string {
 export interface VgiBenchRecordToSampleOptions {
   readonly downscaledVideos?: boolean;
   readonly mediaManifest?: VgiBenchMediaManifest;
+  readonly videoProcessing?: VideoProcessingMode;
 }
 
 export function vgiBenchRecordToSample(
@@ -131,7 +133,15 @@ export function vgiBenchRecordToSample(
   }
   const prompt = buildVgiBenchPrompt(question, answers);
   const contentParts: ContentPart[] = [
-    { type: "video_url", videoUrl: { url: videoUrl } },
+    {
+      type: "video_url",
+      videoUrl: {
+        url: videoUrl,
+        ...(opts?.videoProcessing !== undefined && {
+          processing: opts.videoProcessing,
+        }),
+      },
+    },
     { type: "text", text: prompt },
   ];
   const family = questionType.includes("/")
@@ -149,6 +159,9 @@ export function vgiBenchRecordToSample(
       family,
       ...(manifest !== undefined && {
         media_manifest_hash: manifest.manifestHash,
+      }),
+      ...(opts?.videoProcessing !== undefined && {
+        video_processing: opts.videoProcessing,
       }),
       ...(manifest === undefined &&
         opts?.downscaledVideos === true && {
@@ -184,6 +197,9 @@ function makeVgiBenchDatasetLayer(
         ...(mediaManifest !== undefined && { mediaManifest }),
         ...(opts?.downscaledVideos !== undefined && {
           downscaledVideos: opts.downscaledVideos,
+        }),
+        ...(opts?.videoProcessing !== undefined && {
+          videoProcessing: opts.videoProcessing,
         }),
       }),
     revision,
@@ -290,6 +306,9 @@ const VGI_BENCH_SINGLE_TURN_BENCHMARK = defineSingleTurnBenchmark({
   makeDatasetLayerForConfig: (config, retryConfig) =>
     makeVgiBenchDatasetLayer({
       downscaledVideos: config.downscaledVideos,
+      ...(config.videoProcessing !== undefined && {
+        videoProcessing: config.videoProcessing,
+      }),
       ...(config.datasetRevision !== undefined
         ? { revision: config.datasetRevision }
         : { revision: VGI_BENCH_DEFAULT_REVISION }),

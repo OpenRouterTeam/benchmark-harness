@@ -60,6 +60,21 @@ describe("Responses wire contract", () => {
     ]);
   });
 
+  it("validates video content with a processing mode", () => {
+    expectValidResponsesRequest([
+      {
+        role: MessageRole.User,
+        content: "",
+        contentParts: [
+          {
+            type: "video_url",
+            videoUrl: { url: "video.mp4", processing: "agentic" },
+          },
+        ],
+      },
+    ]);
+  });
+
   it("validates an assistant function call and its output", () => {
     expectValidResponsesRequest(
       [

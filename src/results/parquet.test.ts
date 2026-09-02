@@ -465,6 +465,17 @@ describe("runResultToParquet", () => {
             type: "image_url",
             imageUrl: { url: "https://example.com/img.png", detail: "high" },
           },
+          {
+            type: "video_url",
+            videoUrl: { url: "https://example.com/clip.mp4" },
+          },
+          {
+            type: "video_url",
+            videoUrl: {
+              url: "https://example.com/clip2.mp4",
+              processing: "agentic",
+            },
+          },
         ],
       },
     ];
@@ -494,6 +505,14 @@ describe("runResultToParquet", () => {
       {
         type: "image_url",
         image_url: { url: "https://example.com/img.png", detail: "high" },
+      },
+      { type: "video_url", video_url: { url: "https://example.com/clip.mp4" } },
+      {
+        type: "video_url",
+        video_url: {
+          url: "https://example.com/clip2.mp4",
+          processing: "agentic",
+        },
       },
     ]);
   });

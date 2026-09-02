@@ -110,6 +110,30 @@ describe("vgiBenchRecordToSample", () => {
     expect(sample.metadata?.["downscaled_videos"]).toBe(true);
   });
 
+  it("requests agentic video processing on the video part when configured", () => {
+    const sample = vgiBenchRecordToSample(VGI_RECORD, 0, {
+      mediaManifest: TEST_MANIFEST,
+      videoProcessing: "agentic",
+    });
+    expect(sample.contentParts![0]).toEqual({
+      type: "video_url",
+      videoUrl: {
+        url: "https://mirror.example.com/clip_007.mp4",
+        processing: "agentic",
+      },
+    });
+    expect(sample.metadata?.["video_processing"]).toBe("agentic");
+  });
+
+  it("omits processing from the video part and metadata when not configured", () => {
+    const sample = vgiBenchRecordToSample(VGI_RECORD, 0);
+    expect(sample.contentParts![0]).toEqual({
+      type: "video_url",
+      videoUrl: { url: "https://cdn.seldon.global/videos/clip_007.mp4" },
+    });
+    expect(sample.metadata).not.toHaveProperty("video_processing");
+  });
+
   it("resolves the video through the media manifest when provided", () => {
     const sample = vgiBenchRecordToSample(VGI_RECORD, 0, {
       downscaledVideos: true,
@@ -242,6 +266,27 @@ describe("VGI-Bench registry", () => {
     assertRight(result);
     expect(result.right.downscaledVideos).toBe(true);
     expect(result.right.datasetRevision).toBe("v1.0.0");
+  });
+
+  it("parses vgi_bench config with a videoProcessing mode", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "vgi_bench",
+      model: "google/gemini-3.8-flash",
+      reasoningEffort: "high",
+      videoProcessing: "agentic",
+    });
+    assertRight(result);
+    expect(result.right.videoProcessing).toBe("agentic");
+  });
+
+  it("rejects an unknown videoProcessing mode", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "vgi_bench",
+      model: "google/gemini-3.8-flash",
+      reasoningEffort: "high",
+      videoProcessing: "fast",
+    });
+    assertLeft(result);
   });
 
   it("dispatches runBenchmarkById through the registry entry (network blocked)", async () => {
