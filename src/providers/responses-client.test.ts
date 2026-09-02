@@ -433,6 +433,74 @@ describe("makeResponsesLayer", () => {
       globalThis.fetch = originalFetch;
     }
   });
+
+  it.each(["agentic", "static"] as const)(
+    "serializes input_video.processing=%s onto the wire",
+    async (processing) => {
+      const originalFetch = globalThis.fetch;
+      const stream = await readStreamFixture();
+      const capturedBodies: unknown[] = [];
+      globalThis.fetch = async (input, init) => {
+        const request =
+          input instanceof Request ? input : new Request(input, init);
+        capturedBodies.push(await request.clone().json());
+        return new Response(stream, {
+          status: 200,
+          headers: { "content-type": "text/event-stream" },
+        });
+      };
+      try {
+        await runPromise(
+          gen(function* run() {
+            const responses = yield* Responses;
+            yield* responses.send(
+              {
+                model: "m",
+                input: [
+                  {
+                    type: "message",
+                    role: "user",
+                    content: [
+                      {
+                        type: "input_video",
+                        videoUrl: "https://example.test/clip.mp4",
+                        processing,
+                      },
+                    ],
+                  },
+                ],
+              },
+              { timeoutMs: 1000 }
+            );
+          }).pipe(
+            provide(
+              makeResponsesLayer({
+                apiKey: "sk-test",
+                baseUrl: "https://example.test",
+              })
+            )
+          )
+        );
+        expect(capturedBodies[0]).toMatchObject({
+          input: [
+            {
+              type: "message",
+              role: "user",
+              content: [
+                {
+                  type: "input_video",
+                  video_url: "https://example.test/clip.mp4",
+                  processing,
+                },
+              ],
+            },
+          ],
+        });
+      } finally {
+        globalThis.fetch = originalFetch;
+      }
+    }
+  );
   it("records the cache source id from the response header on cache hits", async () => {
     const originalFetch = globalThis.fetch;
     const stream = await readStreamFixture();

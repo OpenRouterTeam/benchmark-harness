@@ -54,7 +54,7 @@
   "dependencies": {
     "@effect/platform": "0.95.0",
     "@google-cloud/storage": "7.19.0",
-    "@openrouter/sdk": "1.2.14",
+    "@openrouter/sdk": "1.2.94",
     "change-case": "5.4.4",
     "chrono-node": "2.9.0",
     "cli-progress": "3.12.0",
