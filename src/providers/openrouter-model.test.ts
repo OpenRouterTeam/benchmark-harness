@@ -120,10 +120,7 @@ describe("openrouter-model", () => {
     );
     assertSuccess(exit);
     expect(request?.url).toBe("https://example.test/api/v1/responses");
-    const body = JSON.parse(await request!.clone().text()) as Record<
-      string,
-      unknown
-    >;
+    const body: unknown = JSON.parse(await request!.clone().text());
     expect(body).toMatchObject({
       input: [
         { type: "message", role: "system", content: "rules" },

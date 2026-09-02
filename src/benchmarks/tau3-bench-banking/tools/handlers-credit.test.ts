@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from "bun:test";
+import assert from "node:assert";
 
 import { makeEmptyBankingData } from "../environment";
 import type { BankingData } from "../types";
@@ -89,9 +90,8 @@ describe("handlers-credit", () => {
       expect(result).toContain("Expected Delivery: 7-10 business days");
       const ordersCount = Object.keys(state.db.credit_card_orders.data).length;
       expect(ordersCount).toBe(1);
-      const order = Object.values(
-        state.db.credit_card_orders.data
-      )[0] as Record<string, unknown>;
+      const order = Object.values(state.db.credit_card_orders.data)[0];
+      assert(order);
       expect(order.status).toBe("ORDERED");
       expect(order.reason).toBe("lost");
     });
@@ -108,10 +108,8 @@ describe("handlers-credit", () => {
         shipping_address: "123 Main St",
         reason: "stolen",
       });
-      const ccAccount = state.db.credit_card_accounts.data.cc_001 as Record<
-        string,
-        unknown
-      >;
+      const ccAccount = state.db.credit_card_accounts.data.cc_001;
+      assert(ccAccount);
       expect(ccAccount.status).toBe("CLOSED");
       expect(ccAccount.closed_date).toBe("11/14/2025");
     });
@@ -231,7 +229,8 @@ describe("handlers-credit", () => {
       expect(reasonsCount).toBe(1);
       const reason = Object.values(
         state.db.credit_card_closure_reasons.data
-      )[0] as Record<string, unknown>;
+      )[0];
+      assert(reason);
       expect(reason.closure_reason).toBe("annual_fee");
       expect(reason.status).toBe("LOGGED");
     });
@@ -264,10 +263,8 @@ describe("handlers-credit", () => {
       });
       expect(result).toContain("Credit card account closed successfully");
       expect(result).toContain("cc_001");
-      const ccAccount = state.db.credit_card_accounts.data.cc_001 as Record<
-        string,
-        unknown
-      >;
+      const ccAccount = state.db.credit_card_accounts.data.cc_001;
+      assert(ccAccount);
       expect(ccAccount.status).toBe("CLOSED");
       expect(ccAccount.closed_date).toBe("11/14/2025");
       expect(ccAccount.closed_by).toBe("user_123");
@@ -306,15 +303,11 @@ describe("handlers-credit", () => {
       expect(result).toContain("$500.00");
       expect(result).toContain("$4500.00");
       expect(result).toContain("$1000.00");
-      const checkingAccount = state.db.accounts.data.checking_001 as Record<
-        string,
-        unknown
-      >;
+      const checkingAccount = state.db.accounts.data.checking_001;
+      assert(checkingAccount);
       expect(checkingAccount.current_holdings).toBe("4500.00");
-      const ccAccount = state.db.credit_card_accounts.data.cc_001 as Record<
-        string,
-        unknown
-      >;
+      const ccAccount = state.db.credit_card_accounts.data.cc_001;
+      assert(ccAccount);
       expect(ccAccount.current_balance).toBe("$1000.00");
     });
     it("should reject a non-numeric amount", () => {
@@ -407,7 +400,8 @@ describe("handlers-credit", () => {
       expect(requestsCount).toBe(1);
       const request = Object.values(
         state.db.credit_limit_increase_requests.data
-      )[0] as Record<string, unknown>;
+      )[0];
+      assert(request);
       expect(request.status).toBe("PENDING");
       expect(request.requested_increase_amount).toBe(2500);
     });
@@ -543,10 +537,8 @@ describe("handlers-credit", () => {
       });
       expect(result).toContain("Credit limit increase approved!");
       expect(result).toContain("$8000.00");
-      const ccAccount = state.db.credit_card_accounts.data.cc_001 as Record<
-        string,
-        unknown
-      >;
+      const ccAccount = state.db.credit_card_accounts.data.cc_001;
+      assert(ccAccount);
       expect(ccAccount.credit_limit).toBe("$8000.00");
     });
     it("should reject if pending disputes exist", () => {
@@ -571,10 +563,8 @@ describe("handlers-credit", () => {
       );
     });
     it("should reject if account is CLOSED", () => {
-      const ccAccount = state.db.credit_card_accounts.data.cc_001 as Record<
-        string,
-        unknown
-      >;
+      const ccAccount = state.db.credit_card_accounts.data.cc_001;
+      assert(ccAccount);
       ccAccount.account_status = "CLOSED";
       const tool = DISCOVERABLE_AGENT_TOOLS.get(
         "approve_credit_limit_increase_5847"
@@ -613,7 +603,8 @@ describe("handlers-credit", () => {
       expect(requestsCount).toBe(1);
       const request = Object.values(
         state.db.credit_limit_increase_requests.data
-      )[0] as Record<string, unknown>;
+      )[0];
+      assert(request);
       expect(request.status).toBe("DENIED");
       expect(request.denial_reason).toBe("insufficient_account_age");
     });
@@ -653,7 +644,8 @@ describe("handlers-credit", () => {
       expect(historyCount).toBe(1);
       const credit = Object.values(
         state.db.credit_card_transaction_history.data
-      )[0] as Record<string, unknown>;
+      )[0];
+      assert(credit);
       expect(credit.credit_reason).toBe("goodwill_adjustment");
       expect(credit.status).toBe("COMPLETED");
     });
@@ -708,9 +700,8 @@ describe("handlers-credit", () => {
         state.db.credit_card_account_flags.data
       ).length;
       expect(flagsCount).toBe(1);
-      const flag = Object.values(
-        state.db.credit_card_account_flags.data
-      )[0] as Record<string, unknown>;
+      const flag = Object.values(state.db.credit_card_account_flags.data)[0];
+      assert(flag);
       expect(flag.flag_type).toBe("annual_fee_waived");
       expect(flag.reason).toBe("retention_offer");
       expect(flag.status).toBe("ACTIVE");

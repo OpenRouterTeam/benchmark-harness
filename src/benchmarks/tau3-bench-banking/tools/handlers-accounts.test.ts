@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from "bun:test";
+import assert from "node:assert";
 
 import { makeEmptyBankingData } from "../environment";
 import type { BankingData } from "../types";
@@ -205,8 +206,10 @@ describe("handlers-accounts", () => {
       expect(result).toContain("Amount: $100.00");
       expect(result).toContain("new balance: $900.00");
       expect(result).toContain("new balance: $600.00");
-      const source = db.accounts.data["acc_001"] as Record<string, unknown>;
-      const dest = db.accounts.data["acc_002"] as Record<string, unknown>;
+      const source = db.accounts.data["acc_001"];
+      assert(source);
+      const dest = db.accounts.data["acc_002"];
+      assert(dest);
       expect(source.current_holdings).toBe("$900.00");
       expect(dest.current_holdings).toBe("$600.00");
     });
@@ -301,7 +304,8 @@ describe("handlers-accounts", () => {
       expect(result).toContain("Amount: $50.00");
       expect(result).toContain("Previous Balance: $1000.00");
       expect(result).toContain("New Balance: $1050.00");
-      const account = db.accounts.data["acc_001"] as Record<string, unknown>;
+      const account = db.accounts.data["acc_001"];
+      assert(account);
       expect(account.current_holdings).toBe("$1050.00");
       const txnKeys = Object.keys(db.bank_account_transaction_history.data);
       expect(txnKeys.length).toBeGreaterThan(0);
@@ -309,10 +313,8 @@ describe("handlers-accounts", () => {
       if (!txnId) {
         throw new Error("Expected transaction ID");
       }
-      const txn = db.bank_account_transaction_history.data[txnId] as Record<
-        string,
-        unknown
-      >;
+      const txn = db.bank_account_transaction_history.data[txnId];
+      assert(txn);
       expect(txn.account_id).toBe("acc_001");
       expect(txn.type).toBe("rebate_credit");
     });
@@ -347,7 +349,8 @@ describe("handlers-accounts", () => {
         credit_type: "rebate_credit",
       });
       expect(result).toBe("Error: Invalid credit amount. Must be a number.");
-      const account = db.accounts.data["acc_001"] as Record<string, unknown>;
+      const account = db.accounts.data["acc_001"];
+      assert(account);
       expect(account.current_holdings).toBe("1000.00");
     });
     it("should reject credit on non-checking account", () => {
@@ -384,7 +387,8 @@ describe("handlers-accounts", () => {
         credit_type: "interest_correction",
       });
       expect(result).toBe("Error: Invalid credit amount. Must be a number.");
-      const account = db.accounts.data["acc_002"] as Record<string, unknown>;
+      const account = db.accounts.data["acc_002"];
+      assert(account);
       expect(account.current_holdings).toBe("500.00");
     });
     it("should apply savings credit successfully", () => {
@@ -406,7 +410,8 @@ describe("handlers-accounts", () => {
       expect(result).toContain("Amount: $25.50");
       expect(result).toContain("Previous Balance: $500.00");
       expect(result).toContain("New Balance: $525.50");
-      const account = db.accounts.data["acc_002"] as Record<string, unknown>;
+      const account = db.accounts.data["acc_002"];
+      assert(account);
       expect(account.current_holdings).toBe("525.50");
     });
     it("should reject positive amount requirement", () => {
@@ -527,9 +532,9 @@ describe("handlers-accounts", () => {
     it("should close account with zero balance successfully", () => {
       const db = createTestDb();
       const state = makeBankingEnvState(db);
-      (
-        db.accounts.data["acc_001"] as Record<string, unknown>
-      ).current_holdings = "0.00";
+      const openAccount = db.accounts.data["acc_001"];
+      assert(openAccount);
+      openAccount.current_holdings = "0.00";
       const handler = DISCOVERABLE_AGENT_TOOLS.get(
         "close_bank_account_7392"
       )?.handler;
@@ -544,14 +549,16 @@ describe("handlers-accounts", () => {
       expect(result).toContain("Bank account closed successfully!");
       expect(result).toContain("Status: CLOSED");
       expect(result).toContain("Early Closure Fee Waived: Yes");
-      const account = db.accounts.data["acc_001"] as Record<string, unknown>;
+      const account = db.accounts.data["acc_001"];
+      assert(account);
       expect(account.status).toBe("CLOSED");
     });
     it("should reject closing already-closed account", () => {
       const db = createTestDb();
       const state = makeBankingEnvState(db);
-      (db.accounts.data["acc_001"] as Record<string, unknown>).status =
-        "CLOSED";
+      const closedAccount = db.accounts.data["acc_001"];
+      assert(closedAccount);
+      closedAccount.status = "CLOSED";
       const handler = DISCOVERABLE_AGENT_TOOLS.get(
         "close_bank_account_7392"
       )?.handler;

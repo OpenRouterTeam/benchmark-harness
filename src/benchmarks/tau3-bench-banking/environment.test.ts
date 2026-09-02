@@ -303,8 +303,7 @@ describe("tau3-bench-banking environment", () => {
       const hash1 = dbHash(data1);
       const data2 = loadBankingData();
       if (data2.task_config) {
-        (data2.task_config.data as Record<string, unknown>).test_key =
-          "test_value";
+        data2.task_config.data.test_key = { value: "test_value" };
       }
       const hash2 = dbHash(data2);
       expect(hash1).not.toBe(hash2);
