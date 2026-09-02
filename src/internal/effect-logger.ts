@@ -12,6 +12,7 @@ import type { LogSpan } from "effect/LogSpan";
 import type { ManagedRuntime } from "effect/ManagedRuntime";
 import { make as makeManagedRuntime } from "effect/ManagedRuntime";
 
+import { definedValues } from "./guards";
 import {
   emitLog,
   GCP_SEVERITY_BY_LEVEL,
@@ -40,10 +41,13 @@ export const harnessEffectLogger = make<unknown, void>(
     const context = {
       ...Object.fromEntries(annotations),
       ...normalizedMessage.context,
-      ...(Object.keys(renderedSpans).length > 0
-        ? { spans: renderedSpans }
-        : {}),
-      ...(renderedCause !== undefined ? { cause: renderedCause } : {}),
+      ...definedValues({
+        spans:
+          Object.keys(renderedSpans).length > 0 ? renderedSpans : undefined,
+      }),
+      ...definedValues({
+        cause: renderedCause,
+      }),
     };
     emitLog({
       level: EMIT_LEVEL_BY_LOG_LEVEL[logLevel.label],

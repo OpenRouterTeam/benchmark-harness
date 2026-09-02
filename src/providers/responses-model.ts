@@ -24,7 +24,7 @@ import type { ModelUsage } from "../harness/core";
 import { ModelError } from "../harness/core";
 import type { GenerateConfig } from "../harness/model";
 import { stripVariantSuffix } from "../harness/model";
-import { isRecord } from "../internal/guards";
+import { definedValues, isRecord } from "../internal/guards";
 import type { RetryConfig } from "../runtime/retry";
 import { rateLimitRetrySchedule, retrySalted } from "../runtime/retry";
 import { buildAutoRouterPlugin } from "./auto-router-plugin";
@@ -108,14 +108,14 @@ export function makeResponsesModelLayer(
   config: ResponsesModelConfig
 ): Layer<ResponsesModel> {
   const baseUrl = config.baseUrl ?? "https://openrouter.ai/api/v1";
-  const responsesLayer = makeResponsesLayer({
-    apiKey: config.apiKey,
-    baseUrl,
-    ...(config.sessionId !== undefined && { sessionId: config.sessionId }),
-    ...(config.traceHeaders !== undefined && {
+  const responsesLayer = makeResponsesLayer(
+    definedValues({
+      apiKey: config.apiKey,
+      baseUrl,
+      sessionId: config.sessionId,
       traceHeaders: config.traceHeaders,
-    }),
-  });
+    })
+  );
   return effect(ResponsesModel)(
     gen(function* () {
       const responses = yield* Responses;
@@ -151,18 +151,18 @@ export function generate(
   const { genConfig } = opts;
   const sendSort =
     genConfig.sort !== undefined && genConfig.endpointId === undefined;
-  const providerPreferences = {
-    ...(sendSort && { sort: genConfig.sort }),
-    ...(genConfig.providerOnly !== undefined && {
-      only: [...genConfig.providerOnly],
-    }),
-    ...(genConfig.providerIgnore !== undefined && {
-      ignore: [...genConfig.providerIgnore],
-    }),
-    ...(genConfig.allowFallbacks !== undefined && {
-      allowFallbacks: genConfig.allowFallbacks,
-    }),
-  };
+  const providerPreferences = definedValues({
+    sort: sendSort ? genConfig.sort : undefined,
+    only:
+      genConfig.providerOnly !== undefined
+        ? [...genConfig.providerOnly]
+        : undefined,
+    ignore:
+      genConfig.providerIgnore !== undefined
+        ? [...genConfig.providerIgnore]
+        : undefined,
+    allowFallbacks: genConfig.allowFallbacks,
+  });
   const sendProvider = Object.keys(providerPreferences).length > 0;
   const requestModel = genConfig.model ?? opts.model;
   const baseModel = stripVariantSuffix(requestModel);
@@ -172,29 +172,27 @@ export function generate(
     input: toSdkInput(opts.input),
     store: false,
     include: ["reasoning.encrypted_content"],
-    ...(genConfig.instructions !== undefined && {
+    ...definedValues({
       instructions: genConfig.instructions,
-    }),
-    ...(genConfig.tools !== undefined &&
-      genConfig.tools.length > 0 && { tools: [...genConfig.tools] }),
-    reasoning: { effort: genConfig.reasoningEffort },
-    ...(genConfig.temperature !== undefined && {
       temperature: genConfig.temperature,
-    }),
-    ...(genConfig.maxTokens !== undefined && {
       maxOutputTokens: genConfig.maxTokens,
+      tools:
+        genConfig.tools !== undefined && genConfig.tools.length > 0
+          ? [...genConfig.tools]
+          : undefined,
     }),
-    ...(sendProvider && { provider: providerPreferences }),
-    ...(autoRouterPlugin !== undefined && { plugins: [autoRouterPlugin] }),
+    reasoning: { effort: genConfig.reasoningEffort },
+    ...definedValues({
+      provider: sendProvider ? providerPreferences : undefined,
+    }),
+    ...definedValues({
+      plugins: autoRouterPlugin !== undefined ? [autoRouterPlugin] : undefined,
+    }),
   } satisfies ResponsesRequest;
-  const extraHeaders = {
-    ...(genConfig.endpointId !== undefined && {
-      "X-OR-Endpoint-Id": genConfig.endpointId,
-    }),
-    ...(genConfig.cloudflareVersion !== undefined && {
-      "Cloudflare-Workers-Version-Overrides": genConfig.cloudflareVersion,
-    }),
-  };
+  const extraHeaders = definedValues({
+    "X-OR-Endpoint-Id": genConfig.endpointId,
+    "Cloudflare-Workers-Version-Overrides": genConfig.cloudflareVersion,
+  });
   const extraBody = genConfig.extraBody;
   let identifiers: ModelErrorIdentifiers = {};
   const requestAttempt = suspend(() => {
@@ -202,8 +200,13 @@ export function generate(
     const startedAt = performance.now();
     return responses
       .send(body, {
-        ...(Object.keys(extraHeaders).length > 0 && { extraHeaders }),
-        ...(extraBody !== undefined && { extraBody }),
+        ...definedValues({
+          extraHeaders:
+            Object.keys(extraHeaders).length > 0 ? extraHeaders : undefined,
+        }),
+        ...definedValues({
+          extraBody,
+        }),
         onResponseIdentifiers: (responseIdentifiers) => {
           identifiers = { ...identifiers, ...responseIdentifiers };
         },
@@ -310,11 +313,11 @@ function toResponsesTurn(
       },
     ];
   });
-  return {
+  return definedValues({
     outputItems,
     functionCalls,
     text: extractMessageText(outputItems),
-    ...(usage !== undefined && { usage }),
+    usage,
     generationTimeMs,
-  };
+  });
 }

@@ -129,7 +129,9 @@ export function ifStructSolver(
   const config: GenerateConfig = {
     temperature: IFSTRUCT_TEMPERATURE,
     ...definedValues(opts.inference),
-    ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
+    ...definedValues({
+      endpointId: opts.endpointId,
+    }),
   };
   return generate(model, config);
 }
@@ -139,7 +141,9 @@ export function makeIfStructDatasetLayer(
 ): Layer<Dataset> {
   return makeHfDatasetLayer({
     ...IFSTRUCT_DATASET,
-    ...(retryConfig !== undefined && { retry: retryConfig }),
+    ...definedValues({
+      retry: retryConfig,
+    }),
   });
 }
 
@@ -152,20 +156,23 @@ export const IFSTRUCT_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
   makeDatasetLayer: makeIfStructDatasetLayer,
   scorer: ifStructScorer,
   makeSolver: (model, config) =>
-    ifStructSolver(model, {
-      ...(config.endpointId !== undefined && { endpointId: config.endpointId }),
-      inference: {
-        temperature: config.temperature,
-        maxTokens: config.maxTokens,
-        reasoningEffort: config.reasoningEffort,
-        timeoutMs: config.timeoutMs,
-        sort: config.sort,
-        providerOnly: config.providerOnly,
-        providerIgnore: config.providerIgnore,
-        allowFallbacks: config.allowFallbacks,
-        cloudflareVersion: config.cloudflareVersion,
-        costTier: config.costTier,
-        costQualityTradeoff: config.costQualityTradeoff,
-      },
-    }),
+    ifStructSolver(
+      model,
+      definedValues({
+        endpointId: config.endpointId,
+        inference: {
+          temperature: config.temperature,
+          maxTokens: config.maxTokens,
+          reasoningEffort: config.reasoningEffort,
+          timeoutMs: config.timeoutMs,
+          sort: config.sort,
+          providerOnly: config.providerOnly,
+          providerIgnore: config.providerIgnore,
+          allowFallbacks: config.allowFallbacks,
+          cloudflareVersion: config.cloudflareVersion,
+          costTier: config.costTier,
+          costQualityTradeoff: config.costQualityTradeoff,
+        },
+      })
+    ),
 });

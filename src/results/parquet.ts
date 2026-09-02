@@ -16,6 +16,7 @@ import type { AggregateMetrics, SampleScore } from "../harness/metric";
 import { aggregateScores } from "../harness/metric";
 import type { RunResult } from "../harness/run";
 import { Either } from "../internal/either";
+import { definedValues } from "../internal/guards";
 import { firstZodIssueMessage, parseSchema, z } from "../internal/zod";
 import type { BenchmarkResultRow } from "./parquet-schema";
 import {
@@ -313,12 +314,10 @@ function contentPartToPojo(part: ContentPart): Record<string, unknown> {
     case "image_url": {
       return {
         type: "image_url",
-        image_url: {
+        image_url: definedValues({
           url: part.imageUrl.url,
-          ...(part.imageUrl.detail !== undefined && {
-            detail: part.imageUrl.detail,
-          }),
-        },
+          detail: part.imageUrl.detail,
+        }),
       };
     }
     case "text": {
@@ -458,7 +457,9 @@ export function summarizeChunkRows(
     totalCost: first.total_cost,
     generationTimeMs: first.generation_time_ms,
     temperature: first.temperature,
-    ...(primaryScore !== undefined && { primaryScore }),
+    ...definedValues({
+      primaryScore,
+    }),
     epochResults,
   };
 }

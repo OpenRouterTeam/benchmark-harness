@@ -1,4 +1,5 @@
 import { Either } from "../../internal/either";
+import { definedValues } from "../../internal/guards";
 import {
   checkForCommentary,
   checkForCommentaryYaml,
@@ -120,9 +121,10 @@ export function validateResponse(
       usesCodeBlock,
       codeBlockType,
       ...(isYaml ? { yamlValid: extractValid } : { jsonValid: extractValid }),
-      ...(commentary !== null
-        ? { noCommentary: !commentary.hasCommentary }
-        : {}),
+      ...definedValues({
+        noCommentary:
+          commentary !== null ? !commentary.hasCommentary : undefined,
+      }),
       wasWrapped: structure.wasWrapped,
       schemaValid,
       schemaFieldsTotal: totalChecks,

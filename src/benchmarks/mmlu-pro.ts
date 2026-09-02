@@ -95,7 +95,9 @@ export function mmluProSolver(
   const config: GenerateConfig = {
     temperature: MMLU_PRO_TEMPERATURE,
     ...definedValues(opts.inference),
-    ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
+    ...definedValues({
+      endpointId: opts.endpointId,
+    }),
   };
   return generate(model, config);
 }
@@ -157,22 +159,25 @@ const MMLU_PRO_SINGLE_TURN_BENCHMARK = defineSingleTurnBenchmark({
   makeDatasetLayer: makeMmluProDatasetLayer,
   scorer: mmluProScorer,
   makeSolver: (model, config) =>
-    mmluProSolver(model, {
-      ...(config.endpointId !== undefined && { endpointId: config.endpointId }),
-      inference: {
-        temperature: config.temperature,
-        maxTokens: config.maxTokens,
-        reasoningEffort: config.reasoningEffort,
-        timeoutMs: config.timeoutMs,
-        sort: config.sort,
-        providerOnly: config.providerOnly,
-        providerIgnore: config.providerIgnore,
-        allowFallbacks: config.allowFallbacks,
-        cloudflareVersion: config.cloudflareVersion,
-        costTier: config.costTier,
-        costQualityTradeoff: config.costQualityTradeoff,
-      },
-    }),
+    mmluProSolver(
+      model,
+      definedValues({
+        endpointId: config.endpointId,
+        inference: {
+          temperature: config.temperature,
+          maxTokens: config.maxTokens,
+          reasoningEffort: config.reasoningEffort,
+          timeoutMs: config.timeoutMs,
+          sort: config.sort,
+          providerOnly: config.providerOnly,
+          providerIgnore: config.providerIgnore,
+          allowFallbacks: config.allowFallbacks,
+          cloudflareVersion: config.cloudflareVersion,
+          costTier: config.costTier,
+          costQualityTradeoff: config.costQualityTradeoff,
+        },
+      })
+    ),
 });
 
 export const MMLU_PRO_BENCHMARK: Benchmark = {

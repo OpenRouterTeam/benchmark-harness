@@ -36,6 +36,7 @@ import { runBenchmark } from "../harness/run";
 import { runHarnessPromise } from "../internal/effect-logger";
 import type { AsyncEither } from "../internal/either";
 import { Either } from "../internal/either";
+import { definedValues } from "../internal/guards";
 import { wLog } from "../internal/log";
 import type { ResultStoreService } from "../results/result-store";
 import {
@@ -91,33 +92,32 @@ export function runBenchmarkById(
     input.checkpointStore ?? NOOP_CHECKPOINT_STORE
   );
   const model = modelFromConfig(input.benchmarkConfig);
-  const runConfig: RunConfig = {
+  const runConfig: RunConfig = definedValues({
     epochs: input.epochs,
     maxConcurrency: input.maxConcurrency,
-    ...(input.range !== undefined && { range: input.range }),
-    ...(benchmark.degradeSolverErrors !== undefined && {
-      degradeSolverErrors: benchmark.degradeSolverErrors,
-    }),
-    logAnnotations: {
+    range: input.range,
+    degradeSolverErrors: benchmark.degradeSolverErrors,
+    logAnnotations: definedValues({
       benchmark: input.benchmarkId,
       session_id: input.sessionId,
-      ...(model !== undefined && { model }),
-      ...(input.runAttempt !== undefined && {
-        run_attempt: `${input.runAttempt}`,
-      }),
-    },
-  };
+      model,
+      run_attempt:
+        input.runAttempt !== undefined ? `${input.runAttempt}` : undefined,
+    }),
+  });
   const fullBenchmarkLayer = benchmarkLayer.pipe(
     layerProvide(FetchHttpClient.layer)
   );
   const traceHeaders = filterTraceHeaders(input.traceHeaders);
   const resolverLayer = layerSucceed(
     GenerationResolver,
-    makeOpenRouterGenerationResolver({
-      apiKey: input.apiKey,
-      ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
-      ...(traceHeaders !== undefined && { traceHeaders }),
-    })
+    makeOpenRouterGenerationResolver(
+      definedValues({
+        apiKey: input.apiKey,
+        baseUrl: input.baseUrl,
+        traceHeaders,
+      })
+    )
   );
   const layers = layerMergeAll(
     fullBenchmarkLayer,
@@ -245,16 +245,14 @@ function makeBenchmarkLayer<Config extends BenchmarkRunConfig>(
   const maxRetries = benchmarkConfig.maxRetries;
   const traceHeaders = filterTraceHeaders(input.traceHeaders);
   const benchmarkInput: BenchmarkRunInput<Config> = {
-    apiKey: input.apiKey,
     benchmarkConfig,
-    ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
-    ...(traceHeaders !== undefined && { traceHeaders }),
-    sessionId: input.sessionId,
-    ...(input.datasetRetry !== undefined && {
+    ...definedValues({
+      apiKey: input.apiKey,
+      baseUrl: input.baseUrl,
+      traceHeaders,
+      sessionId: input.sessionId,
       datasetRetry: input.datasetRetry,
-    }),
-    ...(maxRetries !== undefined && { modelRetry: { maxRetries } }),
-    ...(input.maxOutputTokensCeiling !== undefined && {
+      modelRetry: maxRetries !== undefined ? { maxRetries } : undefined,
       maxOutputTokensCeiling: input.maxOutputTokensCeiling,
     }),
   };

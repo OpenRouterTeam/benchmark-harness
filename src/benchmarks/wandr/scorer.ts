@@ -5,7 +5,7 @@ import { ScoreValue } from "../../harness/core";
 import type { RunResult } from "../../harness/run";
 import type { ScorerService } from "../../harness/scorer";
 import { Either } from "../../internal/either";
-import { isRecord } from "../../internal/guards";
+import { definedValues, isRecord } from "../../internal/guards";
 import { parseSchema } from "../../internal/zod";
 import type { BenchmarkPrimaryScore } from "../types";
 import type { WandrRewards } from "./schema";
@@ -28,10 +28,11 @@ export function readWandrScoreMeta(
   }
   const rewards = parseSchema(WandrRewardsSchema, metadata["rewards"]);
   const verifierOutput = metadata["verifierOutput"];
-  return {
-    ...(Either.isRight(rewards) && { rewards: rewards.right }),
-    ...(typeof verifierOutput === "string" && { verifierOutput }),
-  };
+  return definedValues({
+    rewards: Either.isRight(rewards) ? rewards.right : undefined,
+    verifierOutput:
+      typeof verifierOutput === "string" ? verifierOutput : undefined,
+  });
 }
 
 export const wandrScorer: ScorerService = (

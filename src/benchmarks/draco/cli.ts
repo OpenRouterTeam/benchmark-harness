@@ -1,4 +1,5 @@
 import { Either } from "../../internal/either";
+import { definedValues } from "../../internal/guards";
 import type {
   BenchmarkCliContext,
   BenchmarkCliPlugin,
@@ -24,16 +25,19 @@ function parseDracoOverride(argv: readonly string[]): DracoConfigOverride {
   const judgeRuns = num(argv, "--judge-runs");
   const cacheNamespace = get(argv, "--cache-namespace");
   return {
-    ...(panelModels !== undefined && {
-      panelModels: panelModels
-        .split(",")
-        .map((s) => s.trim())
-        .filter((s) => s.length > 0),
+    ...definedValues({
+      panelModels:
+        panelModels !== undefined
+          ? panelModels
+              .split(",")
+              .map((s) => s.trim())
+              .filter((s) => s.length > 0)
+          : undefined,
+      synthesisModel,
+      judgeModel,
+      judgeRuns,
+      cacheNamespace,
     }),
-    ...(synthesisModel !== undefined && { synthesisModel }),
-    ...(judgeModel !== undefined && { judgeModel }),
-    ...(judgeRuns !== undefined && { judgeRuns }),
-    ...(cacheNamespace !== undefined && { cacheNamespace }),
   };
 }
 
@@ -42,12 +46,14 @@ export const DRACO_CLI_PLUGIN: BenchmarkCliPlugin = {
     ctx: BenchmarkCliContext
   ): Promise<BenchmarkCliResolution> => {
     const override = parseDracoOverride(ctx.argv);
-    const resolved = await resolveDracoRunConfig({
-      benchmarkConfig: ctx.benchmarkConfig,
-      ...(ctx.resumeId !== undefined && { resumeDir: ctx.resumeId }),
-      ...(Object.keys(override).length > 0 && { override }),
-      ...(ctx.artifactDir !== undefined && { artifactDir: ctx.artifactDir }),
-    });
+    const resolved = await resolveDracoRunConfig(
+      definedValues({
+        benchmarkConfig: ctx.benchmarkConfig,
+        resumeDir: ctx.resumeId,
+        override: Object.keys(override).length > 0 ? override : undefined,
+        artifactDir: ctx.artifactDir,
+      })
+    );
     if (Either.isLeft(resolved)) {
       throw new Error(resolved.left);
     }

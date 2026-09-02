@@ -20,6 +20,7 @@ import { DatasetError } from "../../harness/core";
 import type { DatasetStreamOptions } from "../../harness/dataset";
 import { Dataset } from "../../harness/dataset";
 import { Either } from "../../internal/either";
+import { definedValues } from "../../internal/guards";
 import { parseSchema } from "../../internal/zod";
 import type { SweAtlasTask, SweAtlasTrack } from "./schema";
 import { SWE_ATLAS_TRACKS, SweAtlasTaskTomlSchema } from "./schema";
@@ -175,8 +176,11 @@ export function readSweAtlasMeta(
         ? allowInternet
         : DEFAULT_ALLOW_INTERNET,
     category: typeof category === "string" ? category : track,
-    ...(typeof reward === "number" && { reward }),
-    ...(typeof verifierOutput === "string" && { verifierOutput }),
+    ...definedValues({
+      reward: typeof reward === "number" ? reward : undefined,
+      verifierOutput:
+        typeof verifierOutput === "string" ? verifierOutput : undefined,
+    }),
   };
 }
 

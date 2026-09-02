@@ -1,4 +1,5 @@
 import { unknownErrorToString } from "./errors";
+import { definedValues } from "./guards";
 
 export type LogContext = Record<string, unknown>;
 
@@ -109,9 +110,11 @@ export function emitLog({ level, message, context }: EmitLogOptions): void {
       message,
       extra,
       level,
-      ...(process.env.K_SERVICE
-        ? { severity: GCP_SEVERITY_BY_LEVEL[level] }
-        : {}),
+      ...definedValues({
+        severity: process.env.K_SERVICE
+          ? GCP_SEVERITY_BY_LEVEL[level]
+          : undefined,
+      }),
     };
     console[CONSOLE_LEVEL_BY_LEVEL[level]](stringifyLogRecord(record));
     return;

@@ -12,6 +12,7 @@ import {
 import type { Dataset } from "../../harness/dataset";
 import { Scorer } from "../../harness/scorer";
 import { Solver } from "../../harness/solver";
+import { definedValues } from "../../internal/guards";
 import { getOriHarness } from "../agent-cli/harness";
 import { TERMINAL_BENCH_META } from "../benchmark-meta";
 import { makeModalSandboxLayer } from "../harbor/modal-sandbox";
@@ -36,41 +37,27 @@ function makeTerminalBenchLayer(
     );
   }
   const { agent } = benchmarkConfig;
-  const oriSolverOpts: OriSolverOpts = {
+  const oriSolverOpts: OriSolverOpts = definedValues({
     model: benchmarkConfig.model,
     apiKey: input.apiKey,
     sessionId: input.sessionId,
-    ...(benchmarkConfig.endpointId !== undefined && {
-      endpointId: benchmarkConfig.endpointId,
-    }),
-    ...(benchmarkConfig.agentPackage !== undefined && {
-      agentPackage: benchmarkConfig.agentPackage,
-    }),
+    endpointId: benchmarkConfig.endpointId,
+    agentPackage: benchmarkConfig.agentPackage,
     oriInstallUrl: benchmarkConfig.oriInstallUrl,
-    ...(benchmarkConfig.appendSystemPrompt !== undefined && {
-      appendSystemPrompt: benchmarkConfig.appendSystemPrompt,
-    }),
-    ...(benchmarkConfig.systemPrompt !== undefined && {
-      systemPrompt: benchmarkConfig.systemPrompt,
-    }),
+    appendSystemPrompt: benchmarkConfig.appendSystemPrompt,
+    systemPrompt: benchmarkConfig.systemPrompt,
     agentReasoningEffort: benchmarkConfig.agentReasoningEffort,
     oriChannel: benchmarkConfig.oriChannel,
-    ...(benchmarkConfig.allowedTools !== undefined && {
-      allowedTools: benchmarkConfig.allowedTools,
-    }),
-    ...(benchmarkConfig.disallowedTools !== undefined && {
-      disallowedTools: benchmarkConfig.disallowedTools,
-    }),
+    allowedTools: benchmarkConfig.allowedTools,
+    disallowedTools: benchmarkConfig.disallowedTools,
     isolateAgentConfig: benchmarkConfig.isolateAgentConfig,
-  };
-  const datasetLayer = makeTerminalBenchDatasetLayer({
-    ...(benchmarkConfig.taskSubset !== undefined && {
-      taskSubset: benchmarkConfig.taskSubset,
-    }),
-    ...(benchmarkConfig.maxAgentTimeoutSec !== undefined && {
-      maxAgentTimeoutSec: benchmarkConfig.maxAgentTimeoutSec,
-    }),
   });
+  const datasetLayer = makeTerminalBenchDatasetLayer(
+    definedValues({
+      taskSubset: benchmarkConfig.taskSubset,
+      maxAgentTimeoutSec: benchmarkConfig.maxAgentTimeoutSec,
+    })
+  );
   const sandboxLayer: Layer<SandboxSession> = makeModalSandboxLayer({
     appName: TERMINAL_BENCH_APP_NAME,
     environment: benchmarkConfig.modalEnv,

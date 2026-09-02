@@ -4,7 +4,7 @@ import { succeed } from "effect/Effect";
 import type { Score, Target, TaskState } from "../../harness/core";
 import { ScoreValue } from "../../harness/core";
 import { Either } from "../../internal/either";
-import { isRecord } from "../../internal/guards";
+import { definedValues, isRecord } from "../../internal/guards";
 import { parseSchema, z } from "../../internal/zod";
 import type { DracoPanelConfig, TaskScore } from "./schemas";
 import { CriterionSchema, JudgeRunSchema } from "./schemas";
@@ -44,30 +44,35 @@ export function dracoScorer(
     const totalCost = (generationCost ?? 0) + taskScore.judgingCost;
     const fullScore: TaskScore = {
       ...taskScore,
-      ...(generationCost !== null && { generationCost }),
+      ...definedValues({
+        generationCost: generationCost !== null ? generationCost : undefined,
+      }),
       totalCost,
     };
-    return succeed({
-      value:
-        fullScore.meanNormalized >= 50
-          ? ScoreValue.Correct
-          : ScoreValue.Incorrect,
-      answer: state.output?.completion ?? null,
-      explanation: JSON.stringify({
-        normalized: fullScore.meanNormalized,
-        stdNormalized: fullScore.stdNormalized,
-        passRate: fullScore.meanPassRate,
-        judgeRunsCompleted: fullScore.judgeRunsCompleted,
-        judgeRunsFailed: fullScore.judgeRunsFailed,
-        runScores: fullScore.runScores,
-        generationCost: fullScore.generationCost,
-        judgingCost: fullScore.judgingCost,
-        totalCost: fullScore.totalCost,
-      }),
-      ...(verdicts.length > 0 && {
-        trajectory: { kind: "judge_runs", runs: verdicts } as const,
-      }),
-    });
+    return succeed(
+      definedValues({
+        value:
+          fullScore.meanNormalized >= 50
+            ? ScoreValue.Correct
+            : ScoreValue.Incorrect,
+        answer: state.output?.completion ?? null,
+        explanation: JSON.stringify({
+          normalized: fullScore.meanNormalized,
+          stdNormalized: fullScore.stdNormalized,
+          passRate: fullScore.meanPassRate,
+          judgeRunsCompleted: fullScore.judgeRunsCompleted,
+          judgeRunsFailed: fullScore.judgeRunsFailed,
+          runScores: fullScore.runScores,
+          generationCost: fullScore.generationCost,
+          judgingCost: fullScore.judgingCost,
+          totalCost: fullScore.totalCost,
+        }),
+        trajectory:
+          verdicts.length > 0
+            ? ({ kind: "judge_runs", runs: verdicts } as const)
+            : undefined,
+      })
+    );
   };
 }
 

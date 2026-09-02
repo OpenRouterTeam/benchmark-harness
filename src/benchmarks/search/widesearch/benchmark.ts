@@ -6,6 +6,7 @@ import { ScoreValue } from "../../../harness/core";
 import type { RunResult } from "../../../harness/run";
 import type { SolverService } from "../../../harness/solver";
 import { Either } from "../../../internal/either";
+import { definedValues } from "../../../internal/guards";
 import { parseSchema, z } from "../../../internal/zod";
 import type { JudgeConfig } from "../../../judge/judge";
 import type { ResponsesService } from "../../../providers/responses-client";
@@ -62,8 +63,16 @@ function gradingStage(
       const usage = mergeModelUsages([state.output?.usage, result.usage]);
       return {
         ...state,
-        ...(state.output !== undefined && {
-          output: { ...state.output, ...(usage !== undefined && { usage }) },
+        ...definedValues({
+          output:
+            state.output !== undefined
+              ? {
+                  ...state.output,
+                  ...definedValues({
+                    usage,
+                  }),
+                }
+              : undefined,
         }),
         sample: {
           ...state.sample,
@@ -83,10 +92,10 @@ export function makeWideSearchSolver(
   const solve = searchSolver(responses, options);
   const grade = gradingStage(responses, {
     ...WIDESEARCH_JUDGE_CONFIG,
-    ...(options.versionOverride !== undefined && {
+    ...definedValues({
       versionOverride: options.versionOverride,
+      retry: options.retry,
     }),
-    ...(options.retry !== undefined && { retry: options.retry }),
   });
   return (state) => solve(state).pipe(effectFlatMap(grade));
 }

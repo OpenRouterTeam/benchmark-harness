@@ -6,6 +6,7 @@ import { ScoreValue } from "../../../harness/core";
 import type { RunResult } from "../../../harness/run";
 import type { SolverService } from "../../../harness/solver";
 import { Either } from "../../../internal/either";
+import { definedValues } from "../../../internal/guards";
 import { parseSchema } from "../../../internal/zod";
 import type { JudgeConfig } from "../../../judge/judge";
 import { judgeCall } from "../../../judge/judge";
@@ -44,8 +45,16 @@ function judgeStage(
       const usage = mergeModelUsages([state.output?.usage, judged.usage]);
       return {
         ...state,
-        ...(state.output !== undefined && {
-          output: { ...state.output, ...(usage !== undefined && { usage }) },
+        ...definedValues({
+          output:
+            state.output !== undefined
+              ? {
+                  ...state.output,
+                  ...definedValues({
+                    usage,
+                  }),
+                }
+              : undefined,
         }),
         sample: {
           ...state.sample,
@@ -65,10 +74,10 @@ export function makeAnswerEquivalenceSolver(
   const solve = searchSolver(responses, options);
   const judge = judgeStage(responses, {
     ...ANSWER_EQUIVALENCE_JUDGE_CONFIG,
-    ...(options.versionOverride !== undefined && {
+    ...definedValues({
       versionOverride: options.versionOverride,
+      retry: options.retry,
     }),
-    ...(options.retry !== undefined && { retry: options.retry }),
   });
   return (state) => solve(state).pipe(flatMap(judge));
 }

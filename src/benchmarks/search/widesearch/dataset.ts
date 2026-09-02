@@ -32,7 +32,7 @@ import { DatasetError } from "../../../harness/core";
 import type { Dataset } from "../../../harness/dataset";
 import { Dataset as DatasetTag } from "../../../harness/dataset";
 import { Either } from "../../../internal/either";
-import { isRecord } from "../../../internal/guards";
+import { definedValues, isRecord } from "../../../internal/guards";
 import { parseSchema, z } from "../../../internal/zod";
 import type { RetryConfig } from "../../../runtime/retry";
 
@@ -227,11 +227,15 @@ export function makeWideSearchDatasetLayer(
       const hfToken = yield* resolveHfToken();
       const records = yield* cached(
         client
-          .get(WIDESEARCH_DATASET_URL, {
-            ...(hfToken !== "" && {
-              headers: { Authorization: `Bearer ${hfToken}` },
-            }),
-          })
+          .get(
+            WIDESEARCH_DATASET_URL,
+            definedValues({
+              headers:
+                hfToken !== ""
+                  ? { Authorization: `Bearer ${hfToken}` }
+                  : undefined,
+            })
+          )
           .pipe(
             flatMap((response) => response.text),
             retry(fetchRetry),
@@ -282,11 +286,15 @@ function fetchWideSearchGoldCsv(
   return resolveGoldHfToken().pipe(
     flatMap((hfToken) =>
       client
-        .get(goldUrl, {
-          ...(hfToken !== "" && {
-            headers: { Authorization: `Bearer ${hfToken}` },
-          }),
-        })
+        .get(
+          goldUrl,
+          definedValues({
+            headers:
+              hfToken !== ""
+                ? { Authorization: `Bearer ${hfToken}` }
+                : undefined,
+          })
+        )
         .pipe(
           mapError((cause): GoldFetchFailure => ({
             message: `request failed: ${String(cause)}`,

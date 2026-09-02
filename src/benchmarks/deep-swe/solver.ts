@@ -36,6 +36,7 @@ import {
 import type { HarborAgent } from "../agent-cli/schema";
 import { isOriAgent } from "../agent-cli/schema";
 import type { InferenceOverride } from "../benchmark-config";
+import type { AgentLoopInput } from "../harbor/agent-loop";
 import { AGENT_ENV, probeSystemInfo, runAgentLoop } from "../harbor/agent-loop";
 import {
   BASH_RESPONSES_TOOL_DEFINITION,
@@ -103,13 +104,15 @@ export function makeDeepSweSolver(
       const task = loadTask(meta.taskId, tasksRoot);
       const agent = opts.agent ?? "mini_swe";
       const cliHarness = isOriAgent(agent) ? getOriHarness(agent) : undefined;
-      const baseCliOpts: AgentCliOpts = opts.agentCli ?? {
-        model: opts.model,
-        apiKey: opts.apiKey,
-        ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
-        ...(opts.sessionId !== undefined && { sessionId: opts.sessionId }),
-        agentReasoningEffort: opts.inference.reasoningEffort,
-      };
+      const baseCliOpts: AgentCliOpts =
+        opts.agentCli ??
+        definedValues({
+          model: opts.model,
+          apiKey: opts.apiKey,
+          endpointId: opts.endpointId,
+          sessionId: opts.sessionId,
+          agentReasoningEffort: opts.inference.reasoningEffort,
+        });
       const cliOpts: AgentCliOpts = {
         ...baseCliOpts,
         appendSystemPrompt:
@@ -135,8 +138,11 @@ export function makeDeepSweSolver(
       const createAgentSession = () =>
         sessionFactory.create({
           imageTag: meta.dockerImage,
-          ...(cliHarness !== undefined && {
-            imageBuildSteps: agentImageBuildSteps(cliHarness, cliOpts),
+          ...definedValues({
+            imageBuildSteps:
+              cliHarness !== undefined
+                ? agentImageBuildSteps(cliHarness, cliOpts)
+                : undefined,
           }),
           timeoutSec: meta.maxAgentTimeoutSec + SANDBOX_TIMEOUT_MARGIN_SEC,
           cpus: meta.cpus,
@@ -173,26 +179,22 @@ export function makeDeepSweSolver(
           : yield* createAgentSession();
       const resumeFrom =
         checkpoint !== null && attachSucceeded
-          ? {
+          ? definedValues({
               input: checkpoint.input,
               startStep: checkpoint.step + 1,
-              ...(checkpoint.usage !== undefined && {
-                usage: checkpoint.usage,
-              }),
-              ...(checkpoint.generationTimeMs !== undefined && {
-                generationTimeMs: checkpoint.generationTimeMs,
-              }),
-              ...(checkpoint.toolCallIndex !== undefined && {
-                toolCallIndex: checkpoint.toolCallIndex,
-              }),
-            }
+              usage: checkpoint.usage,
+              generationTimeMs: checkpoint.generationTimeMs,
+              toolCallIndex: checkpoint.toolCallIndex,
+            })
           : undefined;
       const genConfig: ResponsesGenerateConfig = {
         temperature: DEEP_SWE_TEMPERATURE,
         tools: [BASH_RESPONSES_TOOL_DEFINITION],
         instructions: MINI_SWE_SYSTEM_MESSAGE,
         ...definedValues(opts.inference),
-        ...(opts.endpointId !== undefined && { endpointId: opts.endpointId }),
+        ...definedValues({
+          endpointId: opts.endpointId,
+        }),
       };
       const result = yield* gen(function* () {
         if (cliHarness !== undefined) {
@@ -235,9 +237,10 @@ export function makeDeepSweSolver(
                   ? `${cliRun.failureDetail}\n\n${cliVerifier.output}`
                   : cliVerifier.output,
                 ...agentCliMetadata(cliHarness.id, cliRun),
-                ...(meta.allowInternet
-                  ? {}
-                  : { agentNetworkForced: true, taskAllowInternet: false }),
+                ...definedValues({
+                  agentNetworkForced: meta.allowInternet ? undefined : true,
+                  taskAllowInternet: meta.allowInternet ? undefined : false,
+                }),
               },
             },
             messages: [
@@ -258,6 +261,34 @@ export function makeDeepSweSolver(
           };
         }
         const systemInfo = yield* probeSystemInfo(agentSession);
+        const onStep: AgentLoopInput["onStep"] =
+          epoch !== undefined
+            ? (e) => reporter.onAgentStep(e, state.sample.id, epoch)
+            : undefined;
+        const onCheckpoint: AgentLoopInput["onCheckpoint"] =
+          checkpointKey !== undefined
+            ? ({ input, step, usage, generationTimeMs, toolCallIndex }) =>
+                tryPromise({
+                  try: () =>
+                    checkpointStore.write(checkpointKey, {
+                      sandboxId: agentSession.sandboxId,
+                      input,
+                      step,
+                      usage,
+                      generationTimeMs,
+                      toolCallIndex,
+                    }),
+                  catch: (error) =>
+                    new SolverError({ message: unknownErrorToString(error) }),
+                }).pipe(
+                  catchTag("SolverError", (error) =>
+                    logWarning("checkpoint-write-failed", {
+                      checkpoint_key: checkpointKey,
+                      error: error.message,
+                    })
+                  )
+                )
+            : undefined;
         const loop = yield* runAgentLoop({
           model,
           session: agentSession,
@@ -270,38 +301,10 @@ export function makeDeepSweSolver(
           genConfig,
           stepLimit: opts.stepLimit,
           perCommandTimeoutMs: PER_COMMAND_TIMEOUT_SEC * 1000 + 30000,
-          ...(epoch !== undefined && {
-            onStep: (e) => reporter.onAgentStep(e, state.sample.id, epoch),
-          }),
-          ...(resumeFrom !== undefined && { resumeFrom }),
-          ...(checkpointKey !== undefined && {
-            onCheckpoint: ({
-              input,
-              step,
-              usage,
-              generationTimeMs,
-              toolCallIndex,
-            }) =>
-              tryPromise({
-                try: () =>
-                  checkpointStore.write(checkpointKey, {
-                    sandboxId: agentSession.sandboxId,
-                    input,
-                    step,
-                    usage,
-                    generationTimeMs,
-                    toolCallIndex,
-                  }),
-                catch: (error) =>
-                  new SolverError({ message: unknownErrorToString(error) }),
-              }).pipe(
-                catchTag("SolverError", (error) =>
-                  logWarning("checkpoint-write-failed", {
-                    checkpoint_key: checkpointKey,
-                    error: error.message,
-                  })
-                )
-              ),
+          ...definedValues({
+            onStep,
+            resumeFrom,
+            onCheckpoint,
           }),
         });
         const patchBase64 = yield* extractPatch(agentSession);

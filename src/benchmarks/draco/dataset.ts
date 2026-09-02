@@ -5,7 +5,7 @@ import { makeHfDatasetLayer } from "../../datasets/huggingface";
 import type { Sample } from "../../harness/core";
 import type { Dataset } from "../../harness/dataset";
 import { Either } from "../../internal/either";
-import { isRecord } from "../../internal/guards";
+import { definedValues, isRecord } from "../../internal/guards";
 import { parseSchema } from "../../internal/zod";
 import type { RetryConfig } from "../../runtime/retry";
 import { extractCriteria } from "./criteria";
@@ -78,6 +78,8 @@ export function makeDracoDatasetLayer(
 ): Layer<Dataset> {
   return makeHfDatasetLayer({
     ...DRACO_DATASET,
-    ...(retryConfig !== undefined && { retry: retryConfig }),
+    ...definedValues({
+      retry: retryConfig,
+    }),
   });
 }

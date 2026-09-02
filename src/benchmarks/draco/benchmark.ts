@@ -8,7 +8,7 @@ import type { RunResult } from "../../harness/run";
 import { Scorer } from "../../harness/scorer";
 import { Solver } from "../../harness/solver";
 import { Either } from "../../internal/either";
-import { isRecord } from "../../internal/guards";
+import { definedValues, isRecord } from "../../internal/guards";
 import {
   Responses,
   makeResponsesLayer,
@@ -39,14 +39,14 @@ function makeDracoLayer(
   }
   const config = benchmarkConfig.panelConfig;
   const datasetLayer = makeDracoDatasetLayer(input.datasetRetry);
-  const responsesLayer = makeResponsesLayer({
-    apiKey: input.apiKey,
-    ...(input.baseUrl !== undefined && { baseUrl: input.baseUrl }),
-    sessionId: input.sessionId,
-    ...(input.traceHeaders !== undefined && {
+  const responsesLayer = makeResponsesLayer(
+    definedValues({
+      apiKey: input.apiKey,
+      baseUrl: input.baseUrl,
+      sessionId: input.sessionId,
       traceHeaders: input.traceHeaders,
-    }),
-  });
+    })
+  );
   const artifactLayer = resolveArtifactLayer(
     benchmarkConfig.artifactDir,
     config.cacheNamespace

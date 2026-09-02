@@ -10,6 +10,7 @@ import {
 } from "effect/Effect";
 
 import { SolverError } from "../../harness/core";
+import { definedValues } from "../../internal/guards";
 import { recordGenerationId } from "../../runtime/generation-ids";
 import type { SandboxSessionInstance } from "../harbor/sandbox";
 import type { OriAgentRun, OriHarnessDef } from "./harness";
@@ -224,16 +225,16 @@ export function runAgentCli(input: {
       generationTimeMs: parsed.generationTimeMs ?? elapsedMs,
       exitCode: run.exitCode,
       rawStream: run.stdout,
-      failureDetail: buildFailureDetail({
-        agentId: harness.id,
-        exitCode: run.exitCode,
-        isError: parsed.isError,
-        apiErrorStatus: parsed.apiErrorStatus,
-        eventStream: run.stdout,
-        ...("execError" in run && run.execError !== undefined
-          ? { execError: run.execError }
-          : {}),
-      }),
+      failureDetail: buildFailureDetail(
+        definedValues({
+          agentId: harness.id,
+          exitCode: run.exitCode,
+          isError: parsed.isError,
+          apiErrorStatus: parsed.apiErrorStatus,
+          eventStream: run.stdout,
+          execError: "execError" in run ? run.execError : undefined,
+        })
+      ),
     };
   });
 }
@@ -276,12 +277,12 @@ export function agentCliMetadata(
   harnessId: string,
   run: AgentCliRunResult
 ): Readonly<Record<string, unknown>> {
-  return {
+  return definedValues({
     agent: harnessId,
     agentExitCode: run.exitCode,
     agentIsError: run.isError,
     generationIds: run.generationIds,
-    ...(run.turns !== undefined && { agentTurns: run.turns }),
+    agentTurns: run.turns,
     agentToolCalls: run.toolCalls,
-  };
+  });
 }

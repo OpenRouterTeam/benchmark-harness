@@ -6,6 +6,7 @@ import { ScoreValue, SolverError } from "../../../harness/core";
 import type { RunResult } from "../../../harness/run";
 import type { SolverService } from "../../../harness/solver";
 import { Either } from "../../../internal/either";
+import { definedValues } from "../../../internal/guards";
 import { parseSchema, z } from "../../../internal/zod";
 import type { JudgeConfig } from "../../../judge/judge";
 import { judgeCall } from "../../../judge/judge";
@@ -98,7 +99,9 @@ export function calculateDsqaGrade(
   return {
     kind: "dsqa_grade",
     verdict,
-    ...(error !== undefined && { error }),
+    ...definedValues({
+      error,
+    }),
     metrics: {
       precision,
       recall,
@@ -141,15 +144,23 @@ function judgeStage(
       const usage = mergeModelUsages([state.output?.usage, judged.usage]);
       return {
         ...state,
-        ...(state.output !== undefined && {
-          output: { ...state.output, ...(usage !== undefined && { usage }) },
+        ...definedValues({
+          output:
+            state.output !== undefined
+              ? {
+                  ...state.output,
+                  ...definedValues({
+                    usage,
+                  }),
+                }
+              : undefined,
         }),
         sample: {
           ...state.sample,
           metadata: {
             ...state.sample.metadata,
             [VERDICT_METADATA_KEY]: judged.verdict,
-            ...(judged.parseError !== undefined && {
+            ...definedValues({
               [VERDICT_ERROR_METADATA_KEY]: judged.parseError,
             }),
           },
@@ -165,10 +176,10 @@ export function makeDsqaSolver(
   const solve = searchSolver(responses, options);
   const judge = judgeStage(responses, {
     ...DSQA_JUDGE_CONFIG,
-    ...(options.versionOverride !== undefined && {
+    ...definedValues({
       versionOverride: options.versionOverride,
+      retry: options.retry,
     }),
-    ...(options.retry !== undefined && { retry: options.retry }),
   });
   return (state) => solve(state).pipe(flatMap(judge));
 }
