@@ -1,4 +1,14 @@
 import { describe, expect, it } from "bun:test";
+import { spawnSync } from "node:child_process";
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 import type { Effect } from "effect/Effect";
 import { either, gen, provide, runPromise } from "effect/Effect";
@@ -15,8 +25,15 @@ import { makeFakeSandboxLayer, SandboxSession } from "../harbor/sandbox";
 import type { TerminalBench4SampleMeta } from "./dataset";
 import {
   agentNetworkDeviation,
+  agentSandboxTimeoutSec,
+  ARTIFACT_BUNDLE_TIMEOUT_MS,
+  ARTIFACT_TRANSFER_TIMEOUT_MS,
   artifactBundleCommand,
+  artifactExtractCommand,
   createAgentSession,
+  DEFAULT_COLLECT_TIMEOUT_SEC,
+  SANDBOX_TIMEOUT_MARGIN_SEC,
+  verifierSandboxTimeoutSec,
   createVerifierSession,
   runCollectHooks,
   runVerifier,
@@ -111,13 +128,14 @@ describe("terminal-bench-4 sandbox creation", () => {
     expect(recorded.creates).toHaveLength(1);
     const input = recorded.creates[0];
     expect(input?.imageTag).toBe("repo/task:abc");
+    expect(input?.imageKind).toBe("modal-image-id");
     expect(input?.imageBuildSteps).toEqual(["RUN echo hi"]);
     expect(input?.cpus).toBe(8);
     expect(input?.memoryMb).toBe(16384);
     expect(input?.gpu).toBe("H100");
     expect(input?.env).toEqual({ HF_HOME: "/cache" });
     expect(input?.allowInternet).toBe(true);
-    expect(input?.timeoutSec).toBe(400);
+    expect(input?.timeoutSec).toBe(agentSandboxTimeoutSec(META));
     expect(input?.uploads).toEqual([
       {
         localPath: "/tasks/fp8-rmsnorm-gemm/instruction.md",
@@ -138,11 +156,48 @@ describe("terminal-bench-4 sandbox creation", () => {
     );
     const input = recorded.creates[0];
     expect(input?.imageTag).toBe("repo/task-verifier:abc");
+    expect(input?.imageKind).toBe("modal-image-id");
     expect(input?.cpus).toBe(4);
     expect(input?.gpu).toBeUndefined();
     expect(input?.env).toEqual({ TB_SEED: "1" });
-    expect(input?.timeoutSec).toBe(350);
+    expect(input?.timeoutSec).toBe(verifierSandboxTimeoutSec(META));
     expect(input?.uploads).toEqual([]);
+  });
+
+  it("keeps the agent sandbox alive through collect hooks and artifact transfer", () => {
+    const meta: TerminalBench4SampleMeta = {
+      ...META,
+      maxAgentTimeoutSec: 28_800,
+      collect: [
+        { command: "a", timeout_sec: 120 },
+        { command: "b" },
+        { command: "c", timeout_sec: 0.5 },
+      ],
+    };
+    const postProcessingSec =
+      120 +
+      DEFAULT_COLLECT_TIMEOUT_SEC +
+      0.5 +
+      (2 * ARTIFACT_BUNDLE_TIMEOUT_MS + ARTIFACT_TRANSFER_TIMEOUT_MS) / 1000;
+    const lifetime = agentSandboxTimeoutSec(meta);
+    expect(lifetime).toBeGreaterThanOrEqual(
+      meta.maxAgentTimeoutSec + postProcessingSec
+    );
+    expect(lifetime).toBe(
+      Math.ceil(
+        meta.maxAgentTimeoutSec + postProcessingSec + SANDBOX_TIMEOUT_MARGIN_SEC
+      )
+    );
+    expect(lifetime - agentSandboxTimeoutSec(META)).toBe(
+      Math.ceil(28_700 + 120 + DEFAULT_COLLECT_TIMEOUT_SEC + 0.5)
+    );
+  });
+
+  it("keeps the verifier sandbox alive through artifact extraction and the test run", () => {
+    expect(verifierSandboxTimeoutSec(META)).toBeGreaterThanOrEqual(
+      META.maxTestTimeoutSec +
+        (2 * ARTIFACT_BUNDLE_TIMEOUT_MS + ARTIFACT_TRANSFER_TIMEOUT_MS) / 1000
+    );
   });
 
   it("records a deviation only when the task disallows internet", () => {
@@ -260,9 +315,71 @@ describe("terminal-bench-4 artifact bundling", () => {
       recorded.downloads[0]?.localPath
     );
     const extract = recorded.execs.at(-1);
-    expect(extract?.argv[2]).toBe(
+    expect(extract?.argv[2]).toBe(artifactExtractCommand(["/app/out"]));
+    expect(extract?.argv[2]).toContain(
       "tar -xf /tmp/tb4-artifacts.tar -P -C / && rm -f /tmp/tb4-artifacts.tar"
     );
+  });
+
+  it("clears declared directory destinations so files deleted by the agent do not survive", () => {
+    const root = mkdtempSync(join(tmpdir(), "tb4-extract-"));
+    try {
+      const agentDir = join(root, "agent", "pkg");
+      const verifierDir = join(root, "verifier", "pkg");
+      mkdirSync(agentDir, { recursive: true });
+      mkdirSync(verifierDir, { recursive: true });
+      writeFileSync(join(agentDir, "kept.py"), "agent");
+      writeFileSync(join(agentDir, "skipped.pyc"), "agent");
+      writeFileSync(join(verifierDir, "kept.py"), "image");
+      writeFileSync(join(verifierDir, "deleted.py"), "image");
+      writeFileSync(join(verifierDir, "skipped.pyc"), "image");
+      writeFileSync(join(root, "verifier", "untouched.txt"), "image");
+      const bundle = join(root, "bundle.tar");
+      const artifacts = [{ source: verifierDir, exclude: ["*.pyc"] }];
+      const pack = spawnSync(
+        "bash",
+        [
+          "-c",
+          `tar -cf ${bundle} -P --exclude='*.pyc' --transform 's|${agentDir}|${verifierDir}|' ${agentDir}`,
+        ],
+        { encoding: "utf8" }
+      );
+      expect(pack.status).toBe(0);
+      const extract = spawnSync(
+        "bash",
+        ["-c", artifactExtractCommand(artifacts, bundle)],
+        { encoding: "utf8" }
+      );
+      expect(extract.stderr).toBe("");
+      expect(extract.status).toBe(0);
+      expect(existsSync(join(verifierDir, "deleted.py"))).toBe(false);
+      expect(existsSync(join(verifierDir, "skipped.pyc"))).toBe(false);
+      expect(Bun.file(join(verifierDir, "kept.py")).size).toBe(5);
+      expect(existsSync(join(root, "verifier", "untouched.txt"))).toBe(true);
+      expect(existsSync(bundle)).toBe(false);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("leaves a destination alone when the bundle has no directory entry for it", () => {
+    const root = mkdtempSync(join(tmpdir(), "tb4-extract-"));
+    try {
+      const verifierDir = join(root, "verifier", "pkg");
+      mkdirSync(verifierDir, { recursive: true });
+      writeFileSync(join(verifierDir, "image.py"), "image");
+      const bundle = join(root, "bundle.tar");
+      spawnSync("bash", ["-c", `tar -cf ${bundle} -T /dev/null`]);
+      const extract = spawnSync(
+        "bash",
+        ["-c", artifactExtractCommand([verifierDir], bundle)],
+        { encoding: "utf8" }
+      );
+      expect(extract.status).toBe(0);
+      expect(existsSync(join(verifierDir, "image.py"))).toBe(true);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
   });
 });
 

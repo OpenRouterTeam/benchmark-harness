@@ -25,7 +25,6 @@ import { DracoPanelConfigSchema } from "./draco/schemas";
 import { SearchLaneConfigSchema } from "./search/core/config";
 import { DEFAULT_JUDGE_MODEL, DEFAULT_STEP_LIMIT } from "./swe-atlas/schema";
 import { BankingRetrievalConfigSchema } from "./tau3-bench-banking/retrieval-config";
-import { DEFAULT_TERMINAL_BENCH_4_IMAGE_REPO } from "./terminal-bench-4/images";
 import {
   DEFAULT_TERMINAL_BENCH_AGENT,
   TERMINAL_BENCH_AGENTS,
@@ -169,9 +168,7 @@ export const TerminalBenchConfigSchema = z.object({
 
 export type TerminalBenchConfig = z.infer<typeof TerminalBenchConfigSchema>;
 
-export const TerminalBench4OptionsSchema = TerminalBenchOptionsSchema.extend({
-  imageRepo: z.string().min(1).default(DEFAULT_TERMINAL_BENCH_4_IMAGE_REPO),
-});
+export const TerminalBench4OptionsSchema = TerminalBenchOptionsSchema;
 
 export const TerminalBench4ConfigSchema = z.object({
   benchmarkId: z.literal("terminal_bench_4"),

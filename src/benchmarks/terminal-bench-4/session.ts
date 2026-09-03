@@ -11,7 +11,7 @@ import type {
   SandboxSessionFactory,
   SandboxSessionInstance,
 } from "../harbor/sandbox";
-import { REMOTE_VERIFIER_SCRIPT } from "../harbor/sandbox";
+import { REMOTE_VERIFIER_SCRIPT, SANDBOX_IMAGE_KINDS } from "../harbor/sandbox";
 import type { TerminalBench4SampleMeta } from "./dataset";
 import type { Artifact, CollectHook } from "./schema";
 
@@ -27,15 +27,41 @@ export const KEEP_ALIVE_COMMAND = ["sleep", "infinity"] as const;
 
 const REMOTE_ARTIFACT_BUNDLE = "/tmp/tb4-artifacts.tar" as const;
 
-const SANDBOX_TIMEOUT_MARGIN_SEC = 300;
+export const SANDBOX_TIMEOUT_MARGIN_SEC = 300;
 
 const VERIFIER_TIMEOUT_MARGIN_MS = 5000;
 
 const REWARD_READ_TIMEOUT_MS = 10_000;
 
-const ARTIFACT_BUNDLE_TIMEOUT_MS = 600_000;
+export const ARTIFACT_BUNDLE_TIMEOUT_MS = 600_000;
 
-const DEFAULT_COLLECT_TIMEOUT_SEC = 300;
+export const ARTIFACT_TRANSFER_TIMEOUT_MS = 1_800_000;
+
+export const DEFAULT_COLLECT_TIMEOUT_SEC = 300;
+
+const ARTIFACT_PHASE_SEC =
+  (2 * ARTIFACT_BUNDLE_TIMEOUT_MS + ARTIFACT_TRANSFER_TIMEOUT_MS) / 1000;
+
+export function agentSandboxTimeoutSec(meta: TerminalBench4SampleMeta): number {
+  const collectSec = meta.collect.reduce(
+    (total, hook) => total + (hook.timeout_sec ?? DEFAULT_COLLECT_TIMEOUT_SEC),
+    0
+  );
+  return Math.ceil(
+    meta.maxAgentTimeoutSec +
+      collectSec +
+      ARTIFACT_PHASE_SEC +
+      SANDBOX_TIMEOUT_MARGIN_SEC
+  );
+}
+
+export function verifierSandboxTimeoutSec(
+  meta: TerminalBench4SampleMeta
+): number {
+  return Math.ceil(
+    meta.maxTestTimeoutSec + ARTIFACT_PHASE_SEC + SANDBOX_TIMEOUT_MARGIN_SEC
+  );
+}
 
 export function agentNetworkDeviation(
   meta: TerminalBench4SampleMeta
@@ -55,8 +81,9 @@ export function createAgentSession(input: {
   const { sessionFactory, meta, tasksDir, imageTag, imageBuildSteps } = input;
   return sessionFactory.create({
     imageTag,
+    imageKind: SANDBOX_IMAGE_KINDS.ModalImageId,
     imageBuildSteps,
-    timeoutSec: meta.maxAgentTimeoutSec + SANDBOX_TIMEOUT_MARGIN_SEC,
+    timeoutSec: agentSandboxTimeoutSec(meta),
     ...meta.agentEnv,
     allowInternet: true,
     workdir: CONTAINER_WORKDIR,
@@ -79,7 +106,8 @@ export function createVerifierSession(input: {
   const { sessionFactory, meta, imageTag } = input;
   return sessionFactory.create({
     imageTag,
-    timeoutSec: meta.maxTestTimeoutSec + SANDBOX_TIMEOUT_MARGIN_SEC,
+    imageKind: SANDBOX_IMAGE_KINDS.ModalImageId,
+    timeoutSec: verifierSandboxTimeoutSec(meta),
     ...meta.verifierEnv,
     workdir: CONTAINER_WORKDIR,
     keepAliveCommand: KEEP_ALIVE_COMMAND,
@@ -130,11 +158,14 @@ function shellQuote(value: string): string {
   return `'${value.replaceAll("'", String.raw`'\''`)}'`;
 }
 
+function artifactSources(artifacts: readonly Artifact[]): readonly string[] {
+  return [REMOTE_ARTIFACTS_DIR, ...artifacts.map(artifactSource)].filter(
+    (s, i, all) => all.indexOf(s) === i
+  );
+}
+
 export function artifactBundleCommand(artifacts: readonly Artifact[]): string {
-  const sources = [
-    REMOTE_ARTIFACTS_DIR,
-    ...artifacts.map(artifactSource),
-  ].filter((s, i, all) => all.indexOf(s) === i);
+  const sources = artifactSources(artifacts);
   const excludes = artifacts
     .flatMap(artifactExcludes)
     .filter((s, i, all) => all.indexOf(s) === i)
@@ -150,6 +181,19 @@ export function artifactBundleCommand(artifacts: readonly Artifact[]): string {
     `{ ${existing}; } > /tmp/tb4-artifact-list.txt`,
     `if [ -s /tmp/tb4-artifact-list.txt ]; then tar -cf ${REMOTE_ARTIFACT_BUNDLE} -P ${excludes.join(" ")} -T /tmp/tb4-artifact-list.txt; else tar -cf ${REMOTE_ARTIFACT_BUNDLE} -T /dev/null; fi`,
   ].join(" && ");
+}
+
+export function artifactExtractCommand(
+  artifacts: readonly Artifact[],
+  bundle: string = REMOTE_ARTIFACT_BUNDLE
+): string {
+  const clearDirs = artifactSources(artifacts).map(
+    (s) =>
+      `if tar -tf ${bundle} -P | grep -qx ${shellQuote(`${s}/`)}; then rm -rf ${shellQuote(s)}; fi`
+  );
+  return [...clearDirs, `tar -xf ${bundle} -P -C /`, `rm -f ${bundle}`].join(
+    " && "
+  );
 }
 
 export function transferArtifacts(input: {
@@ -173,11 +217,7 @@ export function transferArtifacts(input: {
       rmSync(staging, { recursive: true, force: true });
     }
     yield* verifier.exec(
-      [
-        "bash",
-        "-c",
-        `tar -xf ${REMOTE_ARTIFACT_BUNDLE} -P -C / && rm -f ${REMOTE_ARTIFACT_BUNDLE}`,
-      ],
+      ["bash", "-c", artifactExtractCommand(artifacts)],
       {},
       ARTIFACT_BUNDLE_TIMEOUT_MS
     );

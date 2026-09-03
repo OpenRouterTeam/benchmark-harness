@@ -31,13 +31,15 @@ Three tasks declare one H100 each: `fp8-rmsnorm-gemm`, `jax-speedrun-gpu`, `math
 
 ## Images
 
-4.0 tasks ship Dockerfiles with local-context `COPY` steps rather than prebuilt image names, and the Modal SDK rejects those Dockerfiles. Images are therefore prebuilt and pushed once per pinned commit:
+4.0 tasks ship Dockerfiles with local-context `COPY` steps rather than prebuilt image names, and the Modal JS SDK rejects those Dockerfiles. Images are built once per pinned commit with the Modal Python SDK (which supports a local build context) and stored in Modal's image store, so no external registry is involved:
 
 ```bash
-bun scripts/build-terminal-bench-4-images.ts --repo <registry/prefix> [--task <id>] [--concurrency 2] [--dry-run]
+pip install modal
+MODAL_TOKEN_ID=... MODAL_TOKEN_SECRET=... \
+  python3 scripts/build-terminal-bench-4-images.py --tasks-dir <checkout>/tasks [--task <id>] [--concurrency 4] [--dry-run]
 ```
 
-Tags are `<repo>/<taskId>:<commit12>` and `<repo>/<taskId>-verifier:<commit12>` (`images.ts`). The run config `imageRepo` selects the registry prefix and defaults to `DEFAULT_TERMINAL_BENCH_4_IMAGE_REPO`.
+The script writes `image-ids.json` (`{ sourceCommit, images: { <taskId>: { agent, verifier } } }`) with Modal image IDs. `images.ts` validates it at load time and refuses a map whose `sourceCommit` differs from `TERMINAL_BENCH_4_SOURCE_COMMIT`; the solver fails a sample whose task has no entry. Sandboxes are created with `imageKind: "modal-image-id"`, which resolves the ID with `images.fromId` before layering the agent install steps. Images built into the `terminal-bench-4-images` Modal app are visible to the run-time app because Modal image IDs are workspace-scoped.
 
 ## Excluded tasks
 
@@ -47,10 +49,14 @@ Eleven tasks use `environment/docker-compose.yaml` and need more than one contai
 
 A score over the 55 runnable tasks is not an official Terminal-Bench 4.0 number.
 
+## Sandbox lifetimes
+
+The agent sandbox outlives `maxAgentTimeoutSec` by the sum of collect-hook timeouts plus the artifact bundle, transfer and extract budgets plus a fixed margin (`agentSandboxTimeoutSec`). The verifier sandbox is created before artifact transfer, so its lifetime covers the same artifact budgets plus `maxTestTimeoutSec` (`verifierSandboxTimeoutSec`).
+
+## Artifact semantics
+
+Harbor empties directory artifact targets in the verifier before uploading the agent's copy. `artifactExtractCommand` mirrors this: any declared source that appears as a directory in the bundle is removed on the verifier before extraction, so files the agent deleted do not survive. Excluded patterns are simply absent from the bundle; verifiers that need a pristine copy of an excluded file restore it themselves (see `vpp-loss-divergence`).
+
 ## Config options
 
-Same agent options as `terminal_bench` (`TerminalBenchOptionsSchema`) plus:
-
-| option | type | default | description |
-| --- | --- | --- | --- |
-| `imageRepo` | string | `DEFAULT_TERMINAL_BENCH_4_IMAGE_REPO` | Registry prefix holding the prebuilt agent and verifier images. |
+Same agent options as `terminal_bench` (`TerminalBenchOptionsSchema`).

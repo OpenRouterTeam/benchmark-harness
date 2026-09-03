@@ -12,7 +12,8 @@ import {
 } from "../agent-cli/runner";
 import type { SandboxSessionFactory } from "../harbor/sandbox";
 import { readTerminalBench4Meta } from "./dataset";
-import { imageTags } from "./images";
+import type { TerminalBench4ImageMap } from "./images";
+import { TERMINAL_BENCH_4_IMAGES, taskImages } from "./images";
 import {
   agentNetworkDeviation,
   createAgentSession,
@@ -35,14 +36,13 @@ const ZERO_USAGE: ModelUsage = {
   totalCost: 0,
 };
 
-export interface TerminalBench4SolverOpts extends AgentCliOpts {
-  readonly imageRepo: string;
-}
+export type TerminalBench4SolverOpts = AgentCliOpts;
 
 export function terminalBench4Solver(
   sessionFactory: SandboxSessionFactory,
   opts: TerminalBench4SolverOpts,
-  harness: OriHarnessDef
+  harness: OriHarnessDef,
+  imageMap: TerminalBench4ImageMap = TERMINAL_BENCH_4_IMAGES
 ): SolverService {
   return (state) =>
     gen(function* () {
@@ -50,6 +50,12 @@ export function terminalBench4Solver(
       if (meta === undefined) {
         return yield* new SolverError({
           message: `terminal-bench-4 solver received a sample without terminal-bench-4 metadata (id=${state.sample.id})`,
+        });
+      }
+      const images = taskImages(imageMap, meta.taskId);
+      if (images === undefined) {
+        return yield* new SolverError({
+          message: `terminal-bench-4 task "${meta.taskId}" has no Modal images in image-ids.json; run scripts/build-terminal-bench-4-images.py`,
         });
       }
       const collectHooks = yield* sandboxCollectHooks(meta.collect);
@@ -60,7 +66,6 @@ export function terminalBench4Solver(
             message: `Failed to check out terminal-bench-4 tasks: ${String(e)}`,
           }),
       });
-      const images = imageTags(opts.imageRepo, meta.taskId);
       const agent = yield* createAgentSession({
         sessionFactory,
         meta,

@@ -51,7 +51,6 @@ function makeTerminalBench4Layer(
     allowedTools: benchmarkConfig.allowedTools,
     disallowedTools: benchmarkConfig.disallowedTools,
     isolateAgentConfig: benchmarkConfig.isolateAgentConfig,
-    imageRepo: benchmarkConfig.imageRepo,
   });
   const datasetLayer = makeTerminalBench4DatasetLayer(
     definedValues({
