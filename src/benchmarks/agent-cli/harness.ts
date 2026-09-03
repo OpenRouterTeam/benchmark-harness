@@ -596,7 +596,8 @@ function buildOpencodeRunScript(
   binary: "opencode" | "kilo",
   options: OriRunScriptOptions
 ): string {
-  const configEnv = `${binary.toUpperCase()}_CONFIG_CONTENT`;
+  const envPrefix = binary.toUpperCase();
+  const configEnv = `${envPrefix}_CONFIG_CONTENT`;
   const configScript = [
     "const config = {",
     `  provider: { openrouter: { options: { baseURL: process.env.${GENERATION_PROXY_BASE_URL_ENV}, headers: { "X-Session-Id": "{env:ORI_OPENROUTER_SESSION_ID}" } } } },`,
@@ -624,6 +625,11 @@ function buildOpencodeRunScript(
     ...(options.hasAppendSystemPrompt
       ? [
           `printf '%s' "$TB_APPEND_SYSTEM_PROMPT" > ${OPENCODE_APPEND_PROMPT_PATH}`,
+        ]
+      : []),
+    ...(options.isolateAgentConfig
+      ? [
+          `export ${envPrefix}_DISABLE_PROJECT_CONFIG=1 ${envPrefix}_DISABLE_CLAUDE_CODE=1 ${envPrefix}_DISABLE_EXTERNAL_SKILLS=1`,
         ]
       : []),
     ...buildGenerationProxyPrelude(options.logPath),
@@ -921,6 +927,7 @@ function parseOpencodeStream(stdout: string): OriAgentRun {
   let outputTokens = 0;
   let cacheRead = 0;
   let cacheWrite = 0;
+  let totalTokens = 0;
   let reasoningTokens = 0;
   let totalCost = 0;
   let turns = 0;
@@ -970,16 +977,25 @@ function parseOpencodeStream(stdout: string): OriAgentRun {
     if (!isRecord(tokens)) {
       continue;
     }
-    inputTokens += optionalNumberField(tokens, "input") ?? 0;
-    outputTokens += optionalNumberField(tokens, "output") ?? 0;
-    reasoningTokens += optionalNumberField(tokens, "reasoning") ?? 0;
+    const stepInput = optionalNumberField(tokens, "input") ?? 0;
+    const stepOutput = optionalNumberField(tokens, "output") ?? 0;
+    const stepReasoning = optionalNumberField(tokens, "reasoning") ?? 0;
     const { cache } = tokens;
-    if (isRecord(cache)) {
-      cacheRead += optionalNumberField(cache, "read") ?? 0;
-      cacheWrite += optionalNumberField(cache, "write") ?? 0;
-    }
+    const stepCacheRead = isRecord(cache)
+      ? (optionalNumberField(cache, "read") ?? 0)
+      : 0;
+    const stepCacheWrite = isRecord(cache)
+      ? (optionalNumberField(cache, "write") ?? 0)
+      : 0;
+    inputTokens += stepInput;
+    outputTokens += stepOutput + stepReasoning;
+    cacheRead += stepCacheRead;
+    cacheWrite += stepCacheWrite;
+    reasoningTokens += stepReasoning;
+    totalTokens +=
+      optionalNumberField(tokens, "total") ??
+      stepInput + stepCacheRead + stepCacheWrite + stepOutput + stepReasoning;
   }
-  const totalTokens = inputTokens + cacheRead + cacheWrite + outputTokens;
   return {
     usage:
       totalTokens !== 0

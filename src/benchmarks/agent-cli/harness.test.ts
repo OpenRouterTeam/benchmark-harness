@@ -193,8 +193,8 @@ describe("opencode and kilo harnesses", () => {
       expect(run.generationIds).toEqual([FIRST_ID]);
       expect(run.usage).toEqual({
         inputTokens: 4672,
-        outputTokens: 116,
-        totalTokens: 4788,
+        outputTokens: 244,
+        totalTokens: 4886,
         reasoningTokens: 128,
         totalCost: 0.0016485,
       });
@@ -234,6 +234,10 @@ describe("opencode and kilo harnesses", () => {
       expect(script).toContain("--reasoning-effort high --");
       expect(script).toContain("run --format json --auto");
       expect(script).toContain("--pure");
+      const prefix = binary.toUpperCase();
+      expect(script).toContain(
+        `export ${prefix}_DISABLE_PROJECT_CONFIG=1 ${prefix}_DISABLE_CLAUDE_CODE=1 ${prefix}_DISABLE_EXTERNAL_SKILLS=1`
+      );
       expect(
         script.indexOf("export OR_GENERATION_PROXY_BASE_URL")
       ).toBeLessThan(script.indexOf("_CONFIG_CONTENT="));
@@ -250,6 +254,7 @@ describe("opencode and kilo harnesses", () => {
     expect(plain).not.toContain("instructions:");
     expect(plain).not.toContain("TB_DISALLOWED_TOOLS");
     expect(plain).not.toContain("--pure");
+    expect(plain).not.toContain("_DISABLE_PROJECT_CONFIG");
     const rejected = ORI_HARNESSES.opencode.buildRunScript({
       ...RUN_OPTIONS,
       hasAllowedTools: true,
