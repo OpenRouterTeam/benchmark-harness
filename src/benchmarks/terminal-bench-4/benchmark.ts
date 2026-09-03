@@ -17,9 +17,9 @@ import { getOriHarness } from "../agent-cli/harness";
 import { TERMINAL_BENCH_4_META } from "../benchmark-meta";
 import { makeModalSandboxLayer } from "../harbor/modal-sandbox";
 import { SandboxSession } from "../harbor/sandbox";
-import { terminalBenchScorer } from "../terminal-bench/scorer";
 import type { Benchmark, BenchmarkRunInput } from "../types";
 import { makeTerminalBench4DatasetLayer } from "./dataset";
+import { terminalBench4Scorer } from "./scorer";
 import type { TerminalBench4SolverOpts } from "./solver";
 import { terminalBench4Solver } from "./solver";
 
@@ -70,7 +70,7 @@ function makeTerminalBench4Layer(
       );
     })
   );
-  const scorerLayer = layerSucceed(Scorer, Scorer.of(terminalBenchScorer));
+  const scorerLayer = layerSucceed(Scorer, Scorer.of(terminalBench4Scorer));
   return layerMergeAll(
     datasetLayer,
     solverLayer.pipe(layerProvide(sandboxLayer)),

@@ -29,6 +29,19 @@ import { ensureTasksCheckedOutEffect, tasksDir } from "./tasks-source";
 export const TERMINAL_BENCH_4_DATASET_ID = "terminal_bench_4" as const;
 
 const COMPOSE_FILE = join("environment", "docker-compose.yaml");
+const AGENT_DOCKERFILE = join("environment", "Dockerfile");
+const USER_DIRECTIVE = /^\s*USER\s+(\S+)/i;
+
+export function dockerfileUser(dockerfile: string): string | undefined {
+  const users = dockerfile
+    .split("\n")
+    .map((line) => USER_DIRECTIVE.exec(line)?.[1])
+    .filter((user): user is string => user !== undefined);
+  const last = users.at(-1);
+  return last === undefined || last === "root" || last === "0"
+    ? undefined
+    : last;
+}
 
 export function loadTask(
   taskId: string,
@@ -55,6 +68,9 @@ export function loadTask(
     taskDir,
     instructionPath: join(taskDir, "instruction.md"),
     composeFile: existsSync(composePath) ? composePath : undefined,
+    imageUser: dockerfileUser(
+      readFileSync(join(taskDir, AGENT_DOCKERFILE), "utf8")
+    ),
   };
 }
 
@@ -115,6 +131,7 @@ export const TerminalBench4SampleMetaSchema = z.object({
   category: z.string(),
   agentEnv: SandboxResourcesSchema,
   verifierEnv: SandboxResourcesSchema,
+  imageUser: z.string().min(1).optional(),
   artifacts: z.array(ArtifactSchema),
   collect: z.array(CollectHookSchema),
   reward: z.number().optional(),
@@ -162,7 +179,7 @@ export function taskToSample(
   }
   const instruction = readFileSync(task.instructionPath, "utf8");
   const { environment, verifier, agent, metadata, artifacts } = task.taskToml;
-  const meta: TerminalBench4SampleMeta = {
+  const meta: TerminalBench4SampleMeta = definedValues({
     taskId: task.id,
     maxAgentTimeoutSec: maxAgentTimeoutSecOverride ?? agent.timeout_sec,
     maxTestTimeoutSec: verifier.timeout_sec,
@@ -172,9 +189,10 @@ export function taskToSample(
       verifier.environment ?? environment,
       verifier.env
     ),
+    imageUser: task.imageUser,
     artifacts,
     collect: verifier.collect,
-  };
+  });
   return {
     id: `${TERMINAL_BENCH_4_DATASET_ID}-${task.id}`,
     input: instruction,

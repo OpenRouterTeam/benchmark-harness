@@ -1,9 +1,225 @@
 {
   "sourceCommit": "452bf305c6daa62fc59061d22133a7cbc7c1572e",
   "images": {
+    "atrx-vep-crispr": {
+      "agent": "im-5mzBHPjvYN8zIeS6JeEKmR",
+      "verifier": "im-soU60kfnSJpxarw5z0Xsls"
+    },
+    "batched-eval-parity": {
+      "agent": "im-kBn6DlBhHSrVN8JT9WgqbE",
+      "verifier": "im-arsDZFQI9fohCwpftm4Xmo"
+    },
+    "biped-contact-dynamics": {
+      "agent": "im-nxaATwoff5WzVgqWC3ueUg",
+      "verifier": "im-aI2kfN2sYYh7qYYuvjf5Ki"
+    },
+    "bun-sourcemap-leak": {
+      "agent": "im-VnmCRNhZKb7HmJvvSmpvSS",
+      "verifier": "im-Vl88ZMvXHbhJ6S02LyvIap"
+    },
+    "cad-model": {
+      "agent": "im-61M5ZsDKFh5kSZ2tCZWVdB",
+      "verifier": "im-H0ScSMfg12YuFmxArZsWls"
+    },
+    "cargo-flight-dispatch": {
+      "agent": "im-3ar3uyEVkz5JG01K03FSGL",
+      "verifier": "im-ewcfQ4RReECHrtBRgbIozd"
+    },
+    "coq-block-bound": {
+      "agent": "im-04T13UpbEAMId2NSJUp6SF",
+      "verifier": "im-aFOGNEMzDXXs1v53C1EBn2"
+    },
+    "data-anonymization": {
+      "agent": "im-X8mNLloN7NLDM0HER40G8k",
+      "verifier": "im-4GyZC9MkFZv2VmsUiZYygH"
+    },
+    "distributed-dedup": {
+      "agent": "im-WnqarejRmceVgqXZG0WS4y",
+      "verifier": "im-uRC5MnMRmgBoMqFeqtk3nU"
+    },
+    "embedding-drift-monitor": {
+      "agent": "im-PpFyIuYjqgY7lVH5zeWn8W",
+      "verifier": "im-GFLxtRFzTejj1HA8IuRQho"
+    },
+    "fin-saccr-rwa": {
+      "agent": "im-CaLvuH98JYvektFWObLx9D",
+      "verifier": "im-zFbl2JjMfiRThTG467pr73"
+    },
+    "foodstuff-beta-activity": {
+      "agent": "im-0D8mQR2fRuJ4CXlJ8WSU9H",
+      "verifier": "im-QZsMu4kmz3O4asRkrrjNMA"
+    },
+    "formal-crypto": {
+      "agent": "im-oB4I8OQeHKxpydnII7FSv7",
+      "verifier": "im-W1MgXXhDW3Xd9IS3O2FcaJ"
+    },
+    "fp8-rmsnorm-gemm": {
+      "agent": "im-FBlniwzVOyNSzbofwXX7Sf",
+      "verifier": "im-aRPhi7NBmOCMhMQxVOT2E6"
+    },
+    "freecad-impeller": {
+      "agent": "im-bKnL2lcYxiJvy7oCmBC8kJ",
+      "verifier": "im-LSPLtMLQE1ZKgOLfrk2uh3"
+    },
+    "freecad-platform-drawing": {
+      "agent": "im-mifytSREMlerQ7D73Vc3kp",
+      "verifier": "im-giErBLPDEx5peOyYKzGr2n"
+    },
+    "freecad-spring-clip": {
+      "agent": "im-bKnL2lcYxiJvy7oCmBC8kJ",
+      "verifier": "im-D6lcNYtlx1O7yg0pLocbAK"
+    },
+    "glycan-ms2-elucidation": {
+      "agent": "im-tVkTPoGRtm54VS5UxHye0p",
+      "verifier": "im-a6N7eouCDSEhvo7ePaG39C"
+    },
+    "gsea-proteomics": {
+      "agent": "im-uzrdxyBsF9lXgsBzNsolX3",
+      "verifier": "im-nkIpSvrBVlb5648LWMndAK"
+    },
+    "hof-topology-interpenetration": {
+      "agent": "im-EMSua2mY5hrV84ODUQio6O",
+      "verifier": "im-kHF4rEeFTCiLo3gYSAvs5X"
+    },
+    "html-js-filter": {
+      "agent": "im-QIU15HnCYJ1n5Hrp44ovlp",
+      "verifier": "im-JyPSKpY5Cci0XXtr9yEDXG"
+    },
+    "interleaved-vigenere": {
+      "agent": "im-u9b0sHMJDOnlaxKT6Txe5l",
+      "verifier": "im-zYsvvdjqBcynmj7duY40xg"
+    },
+    "jax-speedrun-gpu": {
+      "agent": "im-N6iQ3hzwZC8peLicLzgL9M",
+      "verifier": "im-WFYkmZNiX4qKi0URADBJwt"
+    },
+    "ks-solver-cpp": {
+      "agent": "im-AWBP7mR4qUflFwFvw5f2Vb",
+      "verifier": "im-Odr1CRDUAjeo1BhRdNVqqq"
+    },
+    "lake-temp-glm": {
+      "agent": "im-i3rLQTsqFSYEOT92nur7qt",
+      "verifier": "im-it6BKyg4odryjD8OcPmXy9"
+    },
+    "layout-config-recreation": {
+      "agent": "im-h1pPUIY5Ytp6u6fwhMjaq1",
+      "verifier": "im-g89G0VUFlmkOuWMDodvyQZ"
+    },
+    "layout-config-recreation2": {
+      "agent": "im-KnCKkgI6t0Gpja6WXqKba4",
+      "verifier": "im-1ETetaATJPqnFtf6oCAm4U"
+    },
+    "math-eval-grader": {
+      "agent": "im-rSssB1KmnzIxwD1Rs93NrI",
+      "verifier": "im-yQbArTXAtUudEH4ZjJoeab"
+    },
+    "mp-checkpoint-consolidation": {
+      "agent": "im-sWyivSwRZANmAmiaPguZCK",
+      "verifier": "im-iPJtn3o95kUUq1O3HD8qb0"
+    },
     "music-harmony": {
       "agent": "im-h4eLdJF4FdDeGLlrKSdS2D",
       "verifier": "im-N1tgE2XbCSM8h5eJVr69tv"
+    },
+    "mvcc-lsm-compaction": {
+      "agent": "im-2gXstFD5uCfDJCcmnLtIeZ",
+      "verifier": "im-LfmhJztcZwKbyHI2DFujA5"
+    },
+    "ontology-kg-querying": {
+      "agent": "im-2hI0nvFliMMqAFMA5llA3d",
+      "verifier": "im-AfLrc8nkL1xBFSob8CJ1bp"
+    },
+    "photonic-waveguide-routing": {
+      "agent": "im-pCYVVyjBavAEYkuJgozWUi",
+      "verifier": "im-vGf57QW6Br4K2RW8l6uO00"
+    },
+    "pretrain-shard-corruption": {
+      "agent": "im-Bv99gtPti1VZ961QSW4moe",
+      "verifier": "im-cRiRtyN0jiljrSuCMDjHS9"
+    },
+    "production-planning": {
+      "agent": "im-iDZVsFKcthAsrgI0ZAnlPM",
+      "verifier": "im-5LTiyQOWuyHcMWoWnXl0Th"
+    },
+    "protein-autointerp-disulfide": {
+      "agent": "im-si3dXWMicfkPd4VZDvVCAJ",
+      "verifier": "im-QUzqvygh1T8DjPDJZqoDwt"
+    },
+    "react-lead-form": {
+      "agent": "im-LKft15TMrpUL9cveUjPEv8",
+      "verifier": "im-cgFLZ0elW4ScsRhPLNBKHP"
+    },
+    "retro-console-soc": {
+      "agent": "im-PDekqRInPMIT5hA5ibSsqx",
+      "verifier": "im-l9VMHqhZwCChc9jReDlifb"
+    },
+    "risk-scorer-replay": {
+      "agent": "im-Q9ALFBHyhVNWlslfsJ6cvq",
+      "verifier": "im-mVQSAczLppxJhFWJ8q22c9"
+    },
+    "roy-polymorph-cn": {
+      "agent": "im-mpoKHymb4pQS0PRWMmXMJM",
+      "verifier": "im-LwNVFOAvkuKuYvXeMejMQG"
+    },
+    "rs-archive-clone": {
+      "agent": "im-9O5meSz6MvfwQpMkRShZ4w",
+      "verifier": "im-dD0YhMM2uiNKvb3kM9Ts8R"
+    },
+    "satb-audio-transcription": {
+      "agent": "im-ayMOwN81rBC0IYGlnCgChh",
+      "verifier": "im-ZHu8g2cFqoN7ZWm8CY8jWh"
+    },
+    "session-window-debug": {
+      "agent": "im-PvFjlbPMy4TK8t78B85qRH",
+      "verifier": "im-jbGBZHefGrA7YB4yR55Jwq"
+    },
+    "sglang-qwen-burst": {
+      "agent": "im-oGI1JG2N5ATgqomxqM2ZNa",
+      "verifier": "im-5ySAc9FIK3MD6slsX047gD"
+    },
+    "shadow-relay": {
+      "agent": "im-QEpRRr0q9Cu4axYMOuDtBh",
+      "verifier": "im-DLOI58H0O9lewdcjaDu0wb"
+    },
+    "sound-change-cascade": {
+      "agent": "im-MmUWHFroYghOfNIMBPlq0U",
+      "verifier": "im-TZsHjXKVzikNheZrbiXTqU"
+    },
+    "takens-embedding-lean": {
+      "agent": "im-YQ7KtwWLhnbbOS7IhEudJK",
+      "verifier": "im-mL2UnKl0T1kTZdQ15RC9FZ"
+    },
+    "telecom-entity-resolution": {
+      "agent": "im-xMkee5jCTN5uo6g2sb4a8Z",
+      "verifier": "im-HkAgySdmfJS99o1l12ZAwd"
+    },
+    "uefi-bootkit": {
+      "agent": "im-IuXJpvadCgAxNnD1mNngYn",
+      "verifier": "im-YmviJTLkykmRUFzJzjLLsR"
+    },
+    "vba-userform-port": {
+      "agent": "im-If0Gw9lp55OmbkJBANDhtp",
+      "verifier": "im-iRE4ikpfNdbayPgfalIGb9"
+    },
+    "vf2-speedup-networkx": {
+      "agent": "im-4RHL1D2JzIPOaREGkR8aZu",
+      "verifier": "im-9hv1GCOv9a01qdfGKyrRns"
+    },
+    "vllm-deepseek-streaming": {
+      "agent": "im-lZ9QozXsV4i7jNH9PNWH98",
+      "verifier": "im-DnbP8OnC3Mxvd8T3d2k4L6"
+    },
+    "vpp-loss-divergence": {
+      "agent": "im-53aeOBx7q6eVGTRYW5NikY",
+      "verifier": "im-Rn4eJ2D7g0Kck62cKgtnJR"
+    },
+    "wal-recovery-ordering": {
+      "agent": "im-xV4icf0Bdmezzi1PzQvqLe",
+      "verifier": "im-PeMankuM3Nw8YntS0AsdBA"
+    },
+    "wdm-design": {
+      "agent": "im-9cQ83P2bxI3JfLSAg0duHg",
+      "verifier": "im-dpyIXtQ258y6uA4hjOSTD5"
     }
   }
 }

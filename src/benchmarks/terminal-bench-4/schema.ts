@@ -64,4 +64,5 @@ export interface TerminalBench4Task {
   readonly taskDir: string;
   readonly instructionPath: string;
   readonly composeFile: string | undefined;
+  readonly imageUser: string | undefined;
 }

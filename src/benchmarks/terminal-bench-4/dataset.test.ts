@@ -7,6 +7,7 @@ import { assertLeft, assertRight } from "../../internal/testing";
 import { parseSchema } from "../../internal/zod";
 import {
   TERMINAL_BENCH_4_DATASET_ID,
+  dockerfileUser,
   listComposeTaskIds,
   listTaskIds,
   loadTask,
@@ -15,6 +16,7 @@ import {
   toModalGpu,
   toSandboxResources,
 } from "./dataset";
+import { TERMINAL_BENCH_4_IMAGES } from "./images";
 import { TaskTomlSchema } from "./schema";
 import {
   ensureTasksCheckedOut,
@@ -82,9 +84,16 @@ allow_internet = false
 env = { HF_HOME = "/cache" }
 `;
 
-function writeTask(root: string, id: string, toml: string, compose = false) {
+function writeTask(
+  root: string,
+  id: string,
+  toml: string,
+  compose = false,
+  dockerfile = "FROM ubuntu:24.04\nWORKDIR /app\n"
+) {
   const dir = join(root, id);
   mkdirSync(join(dir, "environment"), { recursive: true });
+  writeFileSync(join(dir, "environment", "Dockerfile"), dockerfile);
   writeFileSync(join(dir, "task.toml"), toml);
   writeFileSync(join(dir, "instruction.md"), `Solve ${id}.\n`);
   if (compose) {
@@ -101,6 +110,13 @@ beforeAll(() => {
   writeTask(fixtureRoot, "b-cpu", BASE_TOML);
   writeTask(fixtureRoot, "a-gpu", GPU_TOML);
   writeTask(fixtureRoot, "c-compose", BASE_TOML, true);
+  writeTask(
+    fixtureRoot,
+    "d-nonroot",
+    BASE_TOML,
+    false,
+    "FROM ubuntu:24.04\nUSER root\nRUN useradd agent\nuser agent\n"
+  );
   mkdirSync(join(fixtureRoot, ".hidden"));
   writeFileSync(join(fixtureRoot, "README.md"), "not a task\n");
 });
@@ -142,7 +158,7 @@ describe("terminal-bench-4 task.toml schema", () => {
 
 describe("terminal-bench-4 task listing", () => {
   it("lists non-compose task directories sorted and skips hidden dirs and files", () => {
-    expect(listTaskIds(fixtureRoot)).toEqual(["a-gpu", "b-cpu"]);
+    expect(listTaskIds(fixtureRoot)).toEqual(["a-gpu", "b-cpu", "d-nonroot"]);
   });
 
   it("lists compose tasks separately", () => {
@@ -153,6 +169,19 @@ describe("terminal-bench-4 task listing", () => {
     expect(
       listTaskIds(fixtureRoot, ["b-cpu", "nope", "c-compose", "a-gpu"])
     ).toEqual(["b-cpu", "a-gpu"]);
+  });
+});
+
+describe("terminal-bench-4 dockerfileUser", () => {
+  it("returns undefined when there is no USER or the last USER is root", () => {
+    expect(dockerfileUser("FROM x\nRUN true\n")).toBeUndefined();
+    expect(dockerfileUser("FROM x\nUSER agent\nUSER root\n")).toBeUndefined();
+    expect(dockerfileUser("FROM x\nUSER 0\n")).toBeUndefined();
+  });
+
+  it("returns the last USER directive, ignoring case and indentation", () => {
+    expect(dockerfileUser("FROM x\nUSER root\n  user nobody\n")).toBe("nobody");
+    expect(dockerfileUser("FROM x\nUSER agent:agent\n")).toBe("agent:agent");
   });
 });
 
@@ -206,6 +235,14 @@ describe("terminal-bench-4 taskToSample", () => {
       allowInternet: true,
     });
     expect(meta?.verifierEnv).toEqual(meta?.agentEnv);
+    expect(meta?.imageUser).toBeUndefined();
+  });
+
+  it("records the image's final non-root USER so the run can report the root deviation", () => {
+    const meta = readTerminalBench4Meta(
+      taskToSample(loadTask("d-nonroot", fixtureRoot)).metadata
+    );
+    expect(meta?.imageUser).toBe("agent");
   });
 
   it("propagates gpu, env vars, artifacts and collect hooks for a gpu task", () => {
@@ -292,5 +329,23 @@ NETWORK("terminal-bench-4 pinned checkout", () => {
     for (const id of listComposeTaskIds(tasksDir)) {
       expect(loadTask(id, tasksDir).composeFile).toBeDefined();
     }
+  });
+
+  it("ships Modal images for exactly the runnable task set", () => {
+    expect([...TERMINAL_BENCH_4_IMAGES.images.keys()].sort()).toEqual(
+      listTaskIds(tasksDir)
+    );
+  });
+
+  it("identifies exactly three tasks whose agent image runs as a non-root user", () => {
+    const nonRoot = listTaskIds(tasksDir).flatMap((id) => {
+      const user = loadTask(id, tasksDir).imageUser;
+      return user === undefined ? [] : [`${id}:${user}`];
+    });
+    expect(nonRoot).toEqual([
+      "fp8-rmsnorm-gemm:agent",
+      "risk-scorer-replay:nobody",
+      "rs-archive-clone:agent",
+    ]);
   });
 });

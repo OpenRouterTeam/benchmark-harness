@@ -25,6 +25,7 @@ import { makeFakeSandboxLayer, SandboxSession } from "../harbor/sandbox";
 import type { TerminalBench4SampleMeta } from "./dataset";
 import {
   agentNetworkDeviation,
+  agentUserDeviation,
   agentSandboxTimeoutSec,
   ARTIFACT_BUNDLE_TIMEOUT_MS,
   ARTIFACT_TRANSFER_TIMEOUT_MS,
@@ -212,6 +213,14 @@ describe("terminal-bench-4 sandbox creation", () => {
       })
     ).toEqual({});
   });
+
+  it("records a deviation only when the task image declares a non-root USER", () => {
+    expect(agentUserDeviation(META)).toEqual({});
+    expect(agentUserDeviation({ ...META, imageUser: "nobody" })).toEqual({
+      agentRunsAsRoot: true,
+      taskImageUser: "nobody",
+    });
+  });
 });
 
 describe("terminal-bench-4 collect hooks", () => {
@@ -357,6 +366,36 @@ describe("terminal-bench-4 artifact bundling", () => {
       expect(Bun.file(join(verifierDir, "kept.py")).size).toBe(5);
       expect(existsSync(join(root, "verifier", "untouched.txt"))).toBe(true);
       expect(existsSync(bundle)).toBe(false);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("replaces a directory declared with a trailing slash", () => {
+    const root = mkdtempSync(join(tmpdir(), "tb4-extract-"));
+    try {
+      const dir = join(root, "app");
+      mkdirSync(dir, { recursive: true });
+      writeFileSync(join(dir, "kept.py"), "agent");
+      const artifacts = [`${dir}/`];
+      const bundleCmd = artifactBundleCommand(artifacts);
+      expect(bundleCmd).toContain(`'${dir}'`);
+      expect(bundleCmd).not.toContain(`'${dir}/'`);
+      const bundle = join(root, "bundle.tar");
+      const pack = spawnSync("bash", ["-c", `tar -cf ${bundle} -P ${dir}/`], {
+        encoding: "utf8",
+      });
+      expect(pack.status).toBe(0);
+      writeFileSync(join(dir, "deleted.py"), "image");
+      const extract = spawnSync(
+        "bash",
+        ["-c", artifactExtractCommand(artifacts, bundle)],
+        { encoding: "utf8" }
+      );
+      expect(extract.stderr).toBe("");
+      expect(extract.status).toBe(0);
+      expect(existsSync(join(dir, "deleted.py"))).toBe(false);
+      expect(existsSync(join(dir, "kept.py"))).toBe(true);
     } finally {
       rmSync(root, { recursive: true, force: true });
     }

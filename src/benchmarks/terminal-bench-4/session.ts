@@ -71,6 +71,14 @@ export function agentNetworkDeviation(
     : { agentNetworkForced: true, taskAllowInternet: false };
 }
 
+export function agentUserDeviation(
+  meta: TerminalBench4SampleMeta
+): Readonly<Record<string, unknown>> {
+  return meta.imageUser === undefined
+    ? {}
+    : { agentRunsAsRoot: true, taskImageUser: meta.imageUser };
+}
+
 export function createAgentSession(input: {
   readonly sessionFactory: SandboxSessionFactory;
   readonly meta: TerminalBench4SampleMeta;
@@ -158,10 +166,15 @@ function shellQuote(value: string): string {
   return `'${value.replaceAll("'", String.raw`'\''`)}'`;
 }
 
+function normalizeArtifactPath(path: string): string {
+  const trimmed = path.replace(/\/+$/, "");
+  return trimmed === "" ? "/" : trimmed;
+}
+
 function artifactSources(artifacts: readonly Artifact[]): readonly string[] {
-  return [REMOTE_ARTIFACTS_DIR, ...artifacts.map(artifactSource)].filter(
-    (s, i, all) => all.indexOf(s) === i
-  );
+  return [REMOTE_ARTIFACTS_DIR, ...artifacts.map(artifactSource)]
+    .map(normalizeArtifactPath)
+    .filter((s, i, all) => all.indexOf(s) === i);
 }
 
 export function artifactBundleCommand(artifacts: readonly Artifact[]): string {

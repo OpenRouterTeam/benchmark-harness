@@ -16,6 +16,7 @@ import type { TerminalBench4ImageMap } from "./images";
 import { TERMINAL_BENCH_4_IMAGES, taskImages } from "./images";
 import {
   agentNetworkDeviation,
+  agentUserDeviation,
   createAgentSession,
   createVerifierSession,
   REMOTE_INSTRUCTION,
@@ -112,6 +113,7 @@ export function terminalBench4Solver(
                 testOutput,
                 ...agentCliMetadata(harness.id, run),
                 ...agentNetworkDeviation(meta),
+                ...agentUserDeviation(meta),
               },
             },
             messages,
