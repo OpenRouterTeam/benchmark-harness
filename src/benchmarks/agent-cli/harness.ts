@@ -89,6 +89,18 @@ export interface OriHarnessDef {
   readonly parseRun: (stdout: string) => OriAgentRun;
 }
 
+export function installSystemPackagesStep(packages: readonly string[]): string {
+  const list = packages.join(" ");
+  return [
+    "RUN if command -v apt-get >/dev/null",
+    `then apt-get update && apt-get install -y --no-install-recommends ${list}`,
+    `elif command -v dnf >/dev/null; then dnf install -y --setopt=install_weak_deps=False --allowerasing ${list}`,
+    `elif command -v apk >/dev/null; then apk add --no-cache ${list}`,
+    'else echo "no supported package manager (apt-get, dnf, apk)" >&2 && exit 1',
+    "fi",
+  ].join("; ");
+}
+
 function buildImageSteps(opts: {
   agentPackage: string;
   binaryName: string;
@@ -100,7 +112,7 @@ function buildImageSteps(opts: {
     `npm install -g ${JSON.stringify(opts.agentPackage)}`;
   const nvmScript = "/tmp/nvm-install.sh";
   return [
-    "RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates git",
+    installSystemPackagesStep(["curl", "ca-certificates", "git"]),
     "ENV NVM_DIR=/root/.nvm",
     `RUN ${verifiedDownload(NVM_INSTALL_URL, NVM_INSTALL_SHA256, nvmScript)} && bash ${nvmScript} && rm -f ${nvmScript}`,
     `RUN . /root/.nvm/nvm.sh && nvm install ${NODE_VERSION} && ${installCommand} && ln -sf $(which ${opts.binaryName}) /usr/local/bin/${opts.binaryName} && ln -sf $(which node) /usr/local/bin/node && ln -sf $(which npm) /usr/local/bin/npm`,
@@ -117,7 +129,7 @@ function buildAgentImageSteps(opts: {
   if (opts.agentPackage === opts.defaultPackage) {
     const archivePath = "/tmp/agent-runtime.tar.zst";
     return [
-      "RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates git zstd",
+      installSystemPackagesStep(["curl", "ca-certificates", "git", "zstd"]),
       `RUN ${verifiedDownload(DEFAULT_AGENT_RUNTIME_URL, DEFAULT_AGENT_RUNTIME_SHA256, archivePath)} && zstd -dc ${archivePath} | tar -x -C / && rm -f ${archivePath}`,
       'ENV PATH="/root/.local/bin:$PATH"',
       "RUN ln -sf /opt/agent-runtime/app/node_modules/.bin/claude /usr/local/bin/claude && ln -sf /opt/agent-runtime/app/node_modules/.bin/pi /usr/local/bin/pi && ln -sf /opt/agent-runtime/app/node_modules/.bin/prime-agent /usr/local/bin/prime-agent && ln -sf /opt/agent-runtime/node/bin/node /usr/local/bin/node && ln -sf /opt/agent-runtime/node/bin/npm /usr/local/bin/npm && ln -sf /opt/agent-runtime/node/bin/npx /usr/local/bin/npx",
@@ -137,7 +149,7 @@ function buildOmpImageSteps(agentPackage: string): string[] {
   assertValidAgentPackage(agentPackage);
   const bunZip = "/tmp/bun.zip";
   return [
-    "RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates git unzip",
+    installSystemPackagesStep(["curl", "ca-certificates", "git", "unzip"]),
     "ENV BUN_INSTALL=/root/.bun",
     `RUN ${verifiedDownload(BUN_RELEASE_URL, BUN_RELEASE_SHA256, bunZip)} && unzip -q ${bunZip} -d /tmp && install -m 0755 /tmp/bun-linux-x64/bun /usr/local/bin/bun && rm -rf ${bunZip} /tmp/bun-linux-x64`,
     `RUN bun install -g ${JSON.stringify(agentPackage)} && ln -sf /root/.bun/bin/omp /usr/local/bin/omp`,
