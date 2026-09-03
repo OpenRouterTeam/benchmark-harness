@@ -95,7 +95,7 @@ export function installSystemPackagesStep(packages: readonly string[]): string {
     "RUN if command -v apt-get >/dev/null",
     `then apt-get update && apt-get install -y --no-install-recommends ${list}`,
     `elif command -v dnf >/dev/null; then dnf install -y --setopt=install_weak_deps=False --allowerasing ${list}`,
-    `elif command -v apk >/dev/null; then apk add --no-cache ${list}`,
+    `elif command -v apk >/dev/null; then apk add --no-cache bash ${list}`,
     'else echo "no supported package manager (apt-get, dnf, apk)" >&2 && exit 1',
     "fi",
   ].join("; ");

@@ -643,7 +643,9 @@ describe("terminal-bench ori solver", () => {
       expect(step).toContain(
         "elif command -v dnf >/dev/null; then dnf install -y"
       );
-      expect(step).toContain("elif command -v apk >/dev/null; then apk add");
+      expect(step).toContain(
+        "elif command -v apk >/dev/null; then apk add --no-cache bash "
+      );
       expect(step).toContain("exit 1; fi");
       expect(step).not.toMatch(/^RUN apt-get/);
     }
