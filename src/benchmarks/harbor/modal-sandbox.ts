@@ -16,7 +16,12 @@ import type {
   SandboxSessionInstance,
   UploadSpec,
 } from "./sandbox";
-import { SandboxSession, makeSessionInstance, toSolverError } from "./sandbox";
+import {
+  SANDBOX_IMAGE_KINDS,
+  SandboxSession,
+  makeSessionInstance,
+  toSolverError,
+} from "./sandbox";
 
 export interface ModalSandboxConfig {
   readonly appName: string;
@@ -64,7 +69,17 @@ export function makeModalSandboxLayer(
         try: () => getApp(),
         catch: (e) => toSolverError("Failed to resolve Modal app", e),
       });
-      const baseImage = client.images.fromRegistry(input.imageTag);
+      const baseImage =
+        input.imageKind === SANDBOX_IMAGE_KINDS.ModalImageId
+          ? yield* tryPromise({
+              try: () => client.images.fromId(input.imageTag),
+              catch: (e: unknown) =>
+                toSolverError(
+                  `Failed to resolve Modal image ${input.imageTag}`,
+                  e
+                ),
+            })
+          : client.images.fromRegistry(input.imageTag);
       const image =
         input.imageBuildSteps !== undefined && input.imageBuildSteps.length > 0
           ? baseImage.dockerfileCommands([...input.imageBuildSteps])
@@ -76,14 +91,20 @@ export function makeModalSandboxLayer(
       });
       const sandbox = yield* tryPromise({
         try: () =>
-          client.sandboxes.create(app, builtImage, {
-            timeoutMs: input.timeoutSec * 1000,
-            cpu: input.cpus,
-            memoryMiB: input.memoryMb,
-            blockNetwork: !input.allowInternet,
-            workdir: input.workdir,
-            command: [...input.keepAliveCommand],
-          }),
+          client.sandboxes.create(
+            app,
+            builtImage,
+            definedValues({
+              timeoutMs: input.timeoutSec * 1000,
+              cpu: input.cpus,
+              memoryMiB: input.memoryMb,
+              gpu: input.gpu,
+              env: input.env === undefined ? undefined : { ...input.env },
+              blockNetwork: !input.allowInternet,
+              workdir: input.workdir,
+              command: [...input.keepAliveCommand],
+            })
+          ),
         catch: (e) => toSolverError("Failed to create Modal sandbox", e),
       });
       let handedOff = false;
