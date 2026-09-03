@@ -52,6 +52,8 @@ export interface CreateSessionInput {
   readonly timeoutSec: number;
   readonly cpus: number;
   readonly memoryMb: number;
+  readonly gpu?: string;
+  readonly env?: Readonly<Record<string, string>>;
   readonly allowInternet: boolean;
   readonly workdir: string;
   readonly keepAliveCommand: readonly string[];

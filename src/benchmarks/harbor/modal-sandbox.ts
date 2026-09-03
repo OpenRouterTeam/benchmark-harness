@@ -76,14 +76,20 @@ export function makeModalSandboxLayer(
       });
       const sandbox = yield* tryPromise({
         try: () =>
-          client.sandboxes.create(app, builtImage, {
-            timeoutMs: input.timeoutSec * 1000,
-            cpu: input.cpus,
-            memoryMiB: input.memoryMb,
-            blockNetwork: !input.allowInternet,
-            workdir: input.workdir,
-            command: [...input.keepAliveCommand],
-          }),
+          client.sandboxes.create(
+            app,
+            builtImage,
+            definedValues({
+              timeoutMs: input.timeoutSec * 1000,
+              cpu: input.cpus,
+              memoryMiB: input.memoryMb,
+              gpu: input.gpu,
+              env: input.env === undefined ? undefined : { ...input.env },
+              blockNetwork: !input.allowInternet,
+              workdir: input.workdir,
+              command: [...input.keepAliveCommand],
+            })
+          ),
         catch: (e) => toSolverError("Failed to create Modal sandbox", e),
       });
       let handedOff = false;

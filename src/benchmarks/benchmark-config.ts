@@ -25,6 +25,7 @@ import { DracoPanelConfigSchema } from "./draco/schemas";
 import { SearchLaneConfigSchema } from "./search/core/config";
 import { DEFAULT_JUDGE_MODEL, DEFAULT_STEP_LIMIT } from "./swe-atlas/schema";
 import { BankingRetrievalConfigSchema } from "./tau3-bench-banking/retrieval-config";
+import { DEFAULT_TERMINAL_BENCH_4_IMAGE_REPO } from "./terminal-bench-4/images";
 import {
   DEFAULT_TERMINAL_BENCH_AGENT,
   TERMINAL_BENCH_AGENTS,
@@ -167,6 +168,18 @@ export const TerminalBenchConfigSchema = z.object({
 });
 
 export type TerminalBenchConfig = z.infer<typeof TerminalBenchConfigSchema>;
+
+export const TerminalBench4OptionsSchema = TerminalBenchOptionsSchema.extend({
+  imageRepo: z.string().min(1).default(DEFAULT_TERMINAL_BENCH_4_IMAGE_REPO),
+});
+
+export const TerminalBench4ConfigSchema = z.object({
+  benchmarkId: z.literal("terminal_bench_4"),
+  ...ModelBenchmarkBaseSchema.shape,
+  ...TerminalBench4OptionsSchema.shape,
+});
+
+export type TerminalBench4Config = z.infer<typeof TerminalBench4ConfigSchema>;
 
 export const DracoBenchmarkConfigSchema = z.object({
   benchmarkId: z.literal("draco"),
@@ -330,6 +343,7 @@ export const NativeBenchmarkRunConfigSchema = z.discriminatedUnion(
     Tau3BenchBankingConfigSchema,
     MmmuProVisionBenchmarkConfigSchema,
     TerminalBenchConfigSchema,
+    TerminalBench4ConfigSchema,
     DracoBenchmarkConfigSchema,
     IfStructBenchmarkConfigSchema,
     SweAtlasQaConfigSchema,
@@ -365,6 +379,7 @@ export const BENCHMARK_OPTIONS_SCHEMAS = {
   tau3_bench_banking: Tau3BenchBankingOptionsSchema,
   mmmu_pro_vision: MmmuProVisionOptionsSchema,
   terminal_bench: TerminalBenchOptionsSchema,
+  terminal_bench_4: TerminalBench4OptionsSchema,
   ifstruct: IfStructOptionsSchema,
   swe_atlas_qa: SweAtlasOptionsSchema,
   swe_atlas_tw: SweAtlasOptionsSchema,
