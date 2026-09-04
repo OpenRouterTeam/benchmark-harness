@@ -289,9 +289,6 @@ function messageToPojo(msg: ModelMessage): Record<string, unknown> {
   if (msg.reasoning !== undefined) {
     pojo["reasoning"] = msg.reasoning;
   }
-  if (msg.reasoningDetails !== undefined && msg.reasoningDetails.length > 0) {
-    pojo["reasoning_details"] = msg.reasoningDetails;
-  }
   if (msg.citations !== undefined && msg.citations.length > 0) {
     pojo["citations"] = msg.citations.map((c) => ({
       url: c.url,

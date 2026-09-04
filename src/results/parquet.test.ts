@@ -501,10 +501,7 @@ describe("runResultToParquet", () => {
       turnRows[0]!.messages!
     );
     expect(parsed[0]?.["reasoning"]).toBe("1. Analyze the request");
-    expect(parsed[0]?.["reasoning_details"]).toEqual([
-      { type: "reasoning.text", text: "1. Analyze the request", id: "rs_1" },
-      { type: "reasoning.encrypted", data: "gAAAAAopaque", id: "rs_2" },
-    ]);
+    expect(parsed[0]).not.toHaveProperty("reasoning_details");
   });
   it("serializes multimodal content parts (image_url) in the messages JSON", async () => {
     const messages: readonly ModelMessage[] = [
