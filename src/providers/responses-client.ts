@@ -76,14 +76,6 @@ export interface ResponsesReasoning {
   readonly reasoningDetails?: ReasoningDetails;
 }
 
-const ReasoningDetailType = {
-  Summary: "reasoning.summary",
-  Encrypted: "reasoning.encrypted",
-  Text: "reasoning.text",
-} as const;
-
-const REASONING_JOINER = "\n\n";
-
 const RawResponsesTerminalEventSchema = z.object({
   type: z.union([
     z.literal("response.completed"),
@@ -607,7 +599,7 @@ export function extractReasoning(
       texts.push(text);
       details.push(
         definedValues({
-          type: ReasoningDetailType.Text,
+          type: "reasoning.text",
           text,
           id,
           format,
@@ -619,7 +611,7 @@ export function extractReasoning(
       summaries.push(summary);
       details.push(
         definedValues({
-          type: ReasoningDetailType.Summary,
+          type: "reasoning.summary",
           summary,
           id,
           format,
@@ -630,7 +622,7 @@ export function extractReasoning(
     if (encrypted !== undefined) {
       details.push(
         definedValues({
-          type: ReasoningDetailType.Encrypted,
+          type: "reasoning.encrypted",
           data: encrypted,
           id,
           format,
@@ -640,8 +632,7 @@ export function extractReasoning(
   }
   const readable = texts.length > 0 ? texts : summaries;
   return definedValues({
-    reasoning:
-      readable.length > 0 ? readable.join(REASONING_JOINER) : undefined,
+    reasoning: readable.length > 0 ? readable.join("\n\n") : undefined,
     reasoningDetails: details.length > 0 ? details : undefined,
   });
 }
