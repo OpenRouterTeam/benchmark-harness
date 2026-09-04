@@ -24,6 +24,7 @@ import { succeed as layerSucceed } from "effect/Layer";
 
 import type { Citation, ModelUsage } from "../harness/core";
 import { ModelError } from "../harness/core";
+import type { ReasoningDetails } from "../harness/reasoning-details";
 import { Either } from "../internal/either";
 import { definedValues, isRecord } from "../internal/guards";
 import { parseSchema, z } from "../internal/zod";
@@ -69,6 +70,19 @@ export const ResponsesResultSchema = z.object({
 });
 
 export type ResponsesResult = z.infer<typeof ResponsesResultSchema>;
+
+export interface ResponsesReasoning {
+  readonly reasoning?: string;
+  readonly reasoningDetails?: ReasoningDetails;
+}
+
+const ReasoningDetailType = {
+  Summary: "reasoning.summary",
+  Encrypted: "reasoning.encrypted",
+  Text: "reasoning.text",
+} as const;
+
+const REASONING_JOINER = "\n\n";
 
 const RawResponsesTerminalEventSchema = z.object({
   type: z.union([
@@ -574,6 +588,83 @@ export function extractMessageText(
     }
   }
   return text;
+}
+
+export function extractReasoning(
+  output: readonly Record<string, unknown>[]
+): ResponsesReasoning {
+  const details: unknown[] = [];
+  const texts: string[] = [];
+  const summaries: string[] = [];
+  for (const item of output) {
+    if (item["type"] !== "reasoning") {
+      continue;
+    }
+    const id = stringField(item, "id");
+    const format = stringField(item, "format");
+    const signature = stringField(item, "signature");
+    for (const text of partTexts(item["content"], "reasoning_text")) {
+      texts.push(text);
+      details.push(
+        definedValues({
+          type: ReasoningDetailType.Text,
+          text,
+          id,
+          format,
+          signature,
+        })
+      );
+    }
+    for (const summary of partTexts(item["summary"], "summary_text")) {
+      summaries.push(summary);
+      details.push(
+        definedValues({
+          type: ReasoningDetailType.Summary,
+          summary,
+          id,
+          format,
+        })
+      );
+    }
+    const encrypted = stringField(item, "encrypted_content");
+    if (encrypted !== undefined) {
+      details.push(
+        definedValues({
+          type: ReasoningDetailType.Encrypted,
+          data: encrypted,
+          id,
+          format,
+        })
+      );
+    }
+  }
+  const readable = texts.length > 0 ? texts : summaries;
+  return definedValues({
+    reasoning:
+      readable.length > 0 ? readable.join(REASONING_JOINER) : undefined,
+    reasoningDetails: details.length > 0 ? details : undefined,
+  });
+}
+
+function partTexts(parts: unknown, partType: string): string[] {
+  if (!Array.isArray(parts)) {
+    return [];
+  }
+  return parts.flatMap((part) => {
+    if (!isRecord(part) || part["type"] !== partType) {
+      return [];
+    }
+    const text = stringField(part, "text");
+    return text !== undefined ? [text] : [];
+  });
+}
+
+function stringField(
+  record: Readonly<Record<string, unknown>>,
+  key: string
+): string | undefined {
+  const value = record[key];
+  return typeof value === "string" && value.length > 0 ? value : undefined;
 }
 
 export function findOutputItems(

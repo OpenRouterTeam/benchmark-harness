@@ -6,12 +6,12 @@ import type {
 } from "../harness/core";
 import { MessageRole } from "../harness/core";
 import { definedValues } from "../internal/guards";
+import { extractReasoning } from "./responses-client";
 import type {
   ResponsesFunctionTool,
   ResponsesInputItem,
   ResponsesTurn,
 } from "./responses-model";
-import { reasoningFromOutputItems } from "./responses-reasoning";
 
 export function messagesToResponses(
   messages: readonly ModelMessage[]
@@ -112,7 +112,7 @@ export function toolDefinitionToResponses(
 }
 
 export function responsesTurnToModelOutput(turn: ResponsesTurn): ModelOutput {
-  const reasoning = reasoningFromOutputItems(turn.outputItems);
+  const reasoning = extractReasoning(turn.outputItems);
   return definedValues({
     completion: turn.text,
     message: {
