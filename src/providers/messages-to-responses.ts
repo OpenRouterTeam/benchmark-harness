@@ -11,6 +11,7 @@ import type {
   ResponsesInputItem,
   ResponsesTurn,
 } from "./responses-model";
+import { reasoningFromOutputItems } from "./responses-reasoning";
 
 export function messagesToResponses(
   messages: readonly ModelMessage[]
@@ -111,11 +112,13 @@ export function toolDefinitionToResponses(
 }
 
 export function responsesTurnToModelOutput(turn: ResponsesTurn): ModelOutput {
+  const reasoning = reasoningFromOutputItems(turn.outputItems);
   return definedValues({
     completion: turn.text,
     message: {
       role: MessageRole.Assistant,
       content: turn.text,
+      ...reasoning,
       ...definedValues({
         toolCalls:
           turn.functionCalls.length > 0

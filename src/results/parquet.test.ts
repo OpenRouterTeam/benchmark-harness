@@ -9,6 +9,7 @@ import { MessageRole, ScoreValue } from "../harness/core";
 import type { SampleScore } from "../harness/metric";
 import { assertRight, assertLeft } from "../internal/testing";
 import { parseSchema } from "../internal/zod";
+import { responsesTurnToModelOutput } from "../providers/messages-to-responses";
 import {
   readResultRows,
   runResultToParquet,
@@ -453,6 +454,57 @@ describe("runResultToParquet", () => {
       reasoningRows[0]!.messages!
     );
     expect(parsed[0]?.["reasoning"]).toBe("Step 1: ...");
+  });
+  it("serializes reasoning from a provider Responses turn end to end", async () => {
+    const output = responsesTurnToModelOutput({
+      text: "Answer: B",
+      outputItems: [
+        {
+          type: "reasoning",
+          id: "rs_1",
+          content: [{ type: "reasoning_text", text: "1. Analyze the request" }],
+          summary: [],
+        },
+        {
+          type: "reasoning",
+          id: "rs_2",
+          encrypted_content: "gAAAAAopaque",
+          summary: [],
+        },
+        {
+          type: "message",
+          content: [{ type: "output_text", text: "Answer: B" }],
+        },
+      ],
+      functionCalls: [],
+      generationTimeMs: 7,
+    });
+    const bufferFromTurn = runResultToParquet({
+      result: {
+        metrics: METRICS,
+        usage: USAGE,
+        sampleScores: [
+          {
+            sampleId: "s0",
+            epoch: 0,
+            score: { value: ScoreValue.Correct, answer: "B", explanation: "" },
+            messages: [output.message],
+            input: "q",
+            target: "B",
+          },
+        ],
+      },
+      meta: META,
+    });
+    const turnRows = await readRows(bufferFromTurn);
+    const parsed: Record<string, unknown>[] = JSON.parse(
+      turnRows[0]!.messages!
+    );
+    expect(parsed[0]?.["reasoning"]).toBe("1. Analyze the request");
+    expect(parsed[0]?.["reasoning_details"]).toEqual([
+      { type: "reasoning.text", text: "1. Analyze the request", id: "rs_1" },
+      { type: "reasoning.encrypted", data: "gAAAAAopaque", id: "rs_2" },
+    ]);
   });
   it("serializes multimodal content parts (image_url) in the messages JSON", async () => {
     const messages: readonly ModelMessage[] = [
