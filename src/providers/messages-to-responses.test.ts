@@ -146,4 +146,59 @@ describe("messages-to-responses", () => {
       },
     ]);
   });
+
+  it("normalizes a plaintext reasoning item onto the assistant message", () => {
+    const output = responsesTurnToModelOutput({
+      text: "Answer: B",
+      outputItems: [
+        {
+          type: "reasoning",
+          id: "rs_1",
+          content: [{ type: "reasoning_text", text: "1. Analyze" }],
+          summary: [],
+        },
+        {
+          type: "message",
+          content: [{ type: "output_text", text: "Answer: B" }],
+        },
+      ],
+      functionCalls: [],
+      generationTimeMs: 7,
+    });
+    expect(output.message.reasoning).toBe("1. Analyze");
+    expect(output.message.reasoningDetails).toEqual([
+      { type: "reasoning.text", text: "1. Analyze", id: "rs_1" },
+    ]);
+  });
+
+  it("keeps an encrypted reasoning item as details without inventing readable text", () => {
+    const output = responsesTurnToModelOutput({
+      text: "Answer: B",
+      outputItems: [
+        { type: "reasoning", id: "rs_1", encrypted_content: "opaque" },
+      ],
+      functionCalls: [],
+      generationTimeMs: 7,
+    });
+    expect(output.message).not.toHaveProperty("reasoning");
+    expect(output.message.reasoningDetails).toEqual([
+      { type: "reasoning.encrypted", data: "opaque", id: "rs_1" },
+    ]);
+  });
+
+  it("leaves both reasoning fields absent when the turn carries no reasoning", () => {
+    const output = responsesTurnToModelOutput({
+      text: "Answer: B",
+      outputItems: [
+        {
+          type: "message",
+          content: [{ type: "output_text", text: "Answer: B" }],
+        },
+      ],
+      functionCalls: [],
+      generationTimeMs: 7,
+    });
+    expect(output.message).not.toHaveProperty("reasoning");
+    expect(output.message).not.toHaveProperty("reasoningDetails");
+  });
 });
