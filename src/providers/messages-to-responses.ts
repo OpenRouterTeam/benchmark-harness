@@ -6,6 +6,7 @@ import type {
 } from "../harness/core";
 import { MessageRole } from "../harness/core";
 import { definedValues } from "../internal/guards";
+import { extractReasoning } from "./responses-client";
 import type {
   ResponsesFunctionTool,
   ResponsesInputItem,
@@ -111,11 +112,13 @@ export function toolDefinitionToResponses(
 }
 
 export function responsesTurnToModelOutput(turn: ResponsesTurn): ModelOutput {
+  const reasoning = extractReasoning(turn.outputItems);
   return definedValues({
     completion: turn.text,
     message: {
       role: MessageRole.Assistant,
       content: turn.text,
+      ...reasoning,
       ...definedValues({
         toolCalls:
           turn.functionCalls.length > 0
