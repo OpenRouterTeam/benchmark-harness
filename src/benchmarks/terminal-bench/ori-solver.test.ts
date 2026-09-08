@@ -53,6 +53,7 @@ import {
   NVM_INSTALL_SHA256,
   NVM_INSTALL_URL,
   OMP_BUN_VERSION,
+  ORI_CODE_PACKAGE,
   ORI_HARNESSES,
 } from "../agent-cli/harness";
 import type { OriHarnessDef } from "../agent-cli/harness";
@@ -1810,5 +1811,245 @@ describe("terminal-bench omp via ori", () => {
       agentPackage: "file:///opt/omp.tgz",
     });
     expect(steps.join("\n")).toContain('bun install -g "file:///opt/omp.tgz"');
+  });
+});
+
+describe("terminal-bench ori code", () => {
+  const CODE_GENERATION_IDS = [
+    "gen-1788844773-8CTCvdudI7aQLUsPgGbd",
+    "gen-1788844774-0D2JBvRDSsgDglI9Fn8G",
+  ];
+  const runtimeEvent = (
+    type: string,
+    payload: Record<string, unknown>
+  ): string =>
+    JSON.stringify({
+      event: {
+        type: "runtime.event",
+        event: {
+          type,
+          harness: "ori",
+          model: "meta/muse-spark-1.3",
+          runId: "run-1",
+          turnId: "turn-1",
+          sessionId: "session-1",
+          payload,
+        },
+      },
+      kind: "event",
+    });
+  const CODE_STREAM = [
+    JSON.stringify({
+      event: { type: "audit.event", audit: { name: "command.received" } },
+      kind: "event",
+    }),
+    runtimeEvent("run.started", { prompt: "Respond with exactly OK" }),
+    runtimeEvent("turn.started", { prompt: "Respond with exactly OK" }),
+    runtimeEvent("reasoning.delta", { delta: "[REDACTED]" }),
+    runtimeEvent("tool.started", {
+      name: "bash",
+      toolCallId: "call-1",
+      input: { command: "ls" },
+    }),
+    runtimeEvent("tool.succeeded", { name: "bash", toolCallId: "call-1" }),
+    runtimeEvent("assistant.text.delta", { delta: "O" }),
+    runtimeEvent("assistant.text.delta", { delta: "K" }),
+    runtimeEvent("turn.succeeded", {
+      durationMs: 3662,
+      usage: {
+        cacheCreationTokens: 0,
+        cacheReadTokens: 3185,
+        contextTokens: 3603,
+        costUsd: 0.010407,
+        generationIds: [...CODE_GENERATION_IDS, CODE_GENERATION_IDS[0]],
+        inputTokens: 7073,
+        model: "meta/muse-spark-1.3",
+        outputTokens: 256,
+      },
+    }),
+    JSON.stringify({ kind: "result", ok: true, sessionId: "session-1" }),
+  ].join("\n");
+
+  async function runCode(
+    opts?: Partial<OriSolverOpts>,
+    execCalls?: ExecCalls
+  ): Promise<TaskState> {
+    const layer = makeTerminalBenchFakeSandboxLayer({
+      reward: 1,
+      testOutput: "1 passed",
+      agentEventStream: CODE_STREAM,
+      agentExitCode: 0,
+      ...(execCalls !== undefined && { execCalls }),
+    });
+    const solverLayer = layerEffect(Solver)(
+      gen(function* () {
+        const sessionFactory = yield* SandboxSession;
+        return Solver.of(
+          oriSolver(
+            sessionFactory,
+            { ...SOLVER_OPTS, ...opts },
+            getOriHarness("code")
+          )
+        );
+      })
+    );
+    return runPromise(
+      gen(function* () {
+        const solver = yield* Solver;
+        return yield* solver(sampleState());
+      }).pipe(
+        provide(
+          layerMergeAll(
+            solverLayer.pipe(layerProvide(layer)),
+            noopProgressLayer,
+            noopCheckpointLayer
+          )
+        )
+      )
+    );
+  }
+
+  it("is registered as an ori agent", () => {
+    expect(ORI_AGENTS).toContain("code");
+    expect(getOriHarness("code").binaryName).toBe("ori");
+    expect(getOriHarness("code").defaultPackage).toBe(ORI_CODE_PACKAGE);
+    expect(getOriHarness("code").remoteLogPath).toBe(
+      "/logs/agent/ori-code.txt"
+    );
+  });
+
+  it("parses usage, cost, generation IDs, text, turns and tool calls", async () => {
+    const finalState = await runCode();
+    expect(finalState.output?.completion).toBe("OK");
+    expect(finalState.output?.usage).toEqual({
+      inputTokens: 7073,
+      outputTokens: 256,
+      totalTokens: 7329,
+      reasoningTokens: 0,
+      totalCost: 0.010407,
+    });
+    expect(finalState.sample.metadata?.["generationIds"]).toEqual(
+      CODE_GENERATION_IDS
+    );
+    expect(finalState.sample.metadata?.["agent"]).toBe("code");
+    expect(finalState.sample.metadata?.["agentTurns"]).toBe(1);
+    expect(finalState.sample.metadata?.["agentToolCalls"]).toBe(1);
+    expect(finalState.messages.at(-1)).toEqual({
+      role: "assistant",
+      content: "OK",
+      model: "meta/muse-spark-1.3",
+    });
+  });
+
+  it("launches headless ori code with jsonl output and self-drive approvals", async () => {
+    const execCalls: ExecCalls = [];
+    await runCode(
+      { model: "meta/muse-spark-1.3", agentReasoningEffort: "high" },
+      execCalls
+    );
+    const agentCall = execCalls.find((call) =>
+      call.argv[2]?.includes("ori code")
+    );
+    expect(agentCall?.env["TB_MODEL"]).toBe("meta/muse-spark-1.3");
+    expect(agentCall?.argv[2]).toBe(
+      [
+        "set -euo pipefail",
+        "export HOME=/root",
+        "mkdir -p /logs/agent",
+        'ori code --model "$TB_MODEL" \\',
+        "  --reasoning-effort high \\",
+        "  --approvals self-drive \\",
+        "  --output jsonl \\",
+        "  --prompt-file /instruction.md \\",
+        `  2>&1 </dev/null | grep -v -e '"type":"reasoning.delta"' -e '"type":"tool.output.delta"' | stdbuf -oL tee /logs/agent/ori-code.txt`,
+      ].join("\n")
+    );
+  });
+
+  it("fails before launch when prompt overrides or tool lists are configured", () => {
+    const base = {
+      instructionPath: "/instruction.md",
+      logPath: "/logs/agent/ori-code.txt",
+      reasoningEffort: "medium" as const,
+      hasSystemPrompt: false,
+      hasAppendSystemPrompt: false,
+      hasAllowedTools: false,
+      hasDisallowedTools: false,
+      isolateAgentConfig: false,
+    };
+    const withPrompt = ORI_HARNESSES.code.buildRunScript({
+      ...base,
+      hasAppendSystemPrompt: true,
+    });
+    expect(withPrompt).toContain(
+      'echo "ori code does not support system prompt overrides" >&2\nexit 2'
+    );
+    expect(withPrompt.indexOf("exit 2")).toBeLessThan(
+      withPrompt.indexOf("ori code --model")
+    );
+    const withTools = ORI_HARNESSES.code.buildRunScript({
+      ...base,
+      hasDisallowedTools: true,
+    });
+    expect(withTools).toContain(
+      'echo "ori code does not support tool allow/deny lists" >&2\nexit 2'
+    );
+  });
+
+  it("marks failed turns and non-ok results as errors", () => {
+    const failedTurn = ORI_HARNESSES.code.parseRun(
+      [
+        runtimeEvent("assistant.text.delta", { delta: "partial" }),
+        runtimeEvent("turn.failed", {
+          failure: { code: "provider_error", message: "rate limited" },
+        }),
+        JSON.stringify({
+          kind: "result",
+          ok: false,
+          error: { code: "turn_failed", message: "turn failed" },
+        }),
+      ].join("\n")
+    );
+    expect(failedTurn.isError).toBe(true);
+    expect(failedTurn.apiErrorStatus).toBe("provider_error: rate limited");
+    expect(failedTurn.finalText).toBe("partial");
+    expect(failedTurn.usage).toBeUndefined();
+    expect(failedTurn.turns).toBeUndefined();
+
+    const pendingInteraction = ORI_HARNESSES.code.parseRun(
+      JSON.stringify({
+        kind: "result",
+        ok: false,
+        error: { code: "interaction_pending", message: "question pending" },
+      })
+    );
+    expect(pendingInteraction.isError).toBe(true);
+    expect(pendingInteraction.apiErrorStatus).toBe("question pending");
+  });
+
+  it("installs only the ori CLI and rejects agent package overrides", () => {
+    const steps = ORI_HARNESSES.code.imageBuildSteps({
+      agentPackage: ORI_CODE_PACKAGE,
+    });
+    const dockerfile = steps.join("\n");
+    expect(dockerfile).toContain("apt-get install");
+    expect(dockerfile).not.toContain(DEFAULT_AGENT_RUNTIME_URL);
+    expect(dockerfile).not.toContain("npm install");
+    expect(dockerfile).not.toContain("bun install");
+    expect(() =>
+      ORI_HARNESSES.code.imageBuildSteps({ agentPackage: "ori@1.2.3" })
+    ).toThrow(/takes no agentPackage/);
+    expect(
+      ORI_HARNESSES.code.buildBootstrapScript({
+        oriInstallUrl: "https://openrouter.ai/labs/ori/install.sh",
+        oriChannel: "alpha",
+      })
+    ).toBe(
+      [
+        "set -euo pipefail",
+        "curl -fsSL https://openrouter.ai/labs/ori/install.sh | ORI_CHANNEL=alpha ORI_INSTALL_DIR=/usr/local/bin bash",
+        "ori --version",
+      ].join("\n")
+    );
   });
 });
