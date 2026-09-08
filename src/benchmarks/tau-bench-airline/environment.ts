@@ -1,17 +1,22 @@
 import { createHash } from "node:crypto";
 
-import { HttpClient, HttpClientError } from "@effect/platform";
+import type { HttpClient, HttpClientError } from "@effect/platform";
 import { TaggedError } from "effect/Data";
 import type { Effect, Semaphore } from "effect/Effect";
-import { fail, gen } from "effect/Effect";
+import { gen, mapError } from "effect/Effect";
 
+import { fetchCachedTextFile } from "../../datasets/cached-file";
 import { Either } from "../../internal/either";
 import { isRecord } from "../../internal/guards";
 import type { AirlineData } from "./types";
 
 const HF_DATASET_ID = "abhinavpola/tau2-bench-verified-airline";
 
-const HF_RESOLVE_BASE = `https://huggingface.co/datasets/${HF_DATASET_ID}/resolve/main`;
+const HF_REVISION = "main";
+
+const HF_RESOLVE_BASE = `https://huggingface.co/datasets/${HF_DATASET_ID}/resolve/${HF_REVISION}`;
+
+const AIRLINE_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1e3;
 
 let airlineDbCache: string | undefined;
 
@@ -26,19 +31,21 @@ function fetchHfFile(
   FetchError | HttpClientError.HttpClientError,
   HttpClient.HttpClient
 > {
-  const url = `${HF_RESOLVE_BASE}/${filename}`;
-  return gen(function* () {
-    const client = yield* HttpClient.HttpClient;
-    const response = yield* client.get(url);
-    if (response.status < 200 || response.status >= 300) {
-      return yield* fail(
-        new FetchError({
-          message: `Failed to fetch ${filename} from HF (${response.status})`,
-        })
-      );
-    }
-    return yield* response.text;
-  });
+  return fetchCachedTextFile({
+    url: `${HF_RESOLVE_BASE}/${filename}`,
+    scope: `hf/${HF_DATASET_ID}`,
+    revision: HF_REVISION,
+    filename,
+    maxAgeMs: AIRLINE_CACHE_MAX_AGE_MS,
+  }).pipe(
+    mapError((error) =>
+      error._tag === "CachedFileError"
+        ? new FetchError({
+            message: `Failed to fetch ${filename} from HF (${error.status ?? error.message})`,
+          })
+        : error
+    )
+  );
 }
 
 export function ensureAirlineData(
