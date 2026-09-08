@@ -27,6 +27,10 @@ import {
 import type { RetryConfig } from "../../runtime/retry";
 import { TAU_BENCH_AIRLINE_META } from "../benchmark-meta";
 import type { Benchmark, BenchmarkRunInput } from "../types";
+import {
+  TAU_BENCH_AIRLINE_DATASET_ID,
+  TAU_BENCH_AIRLINE_REVISION,
+} from "./environment";
 import { airlineScorer } from "./scorer";
 import { airlineSolver } from "./solver";
 import type { SolverOpts, Tau2Task } from "./types";
@@ -68,7 +72,8 @@ export function airlineRecordToSample(
 }
 
 export const TAU_BENCH_AIRLINE_DATASET = {
-  dataset: "abhinavpola/tau2-bench-verified-airline",
+  dataset: TAU_BENCH_AIRLINE_DATASET_ID,
+  revision: TAU_BENCH_AIRLINE_REVISION,
   config: "tasks",
   split: "test",
   recordToSample: airlineRecordToSample,

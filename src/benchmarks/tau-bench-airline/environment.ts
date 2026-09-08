@@ -1,51 +1,30 @@
 import { createHash } from "node:crypto";
 
-import { HttpClient, HttpClientError } from "@effect/platform";
-import { TaggedError } from "effect/Data";
+import type { HttpClient, HttpClientError } from "@effect/platform";
 import type { Effect, Semaphore } from "effect/Effect";
-import { fail, gen } from "effect/Effect";
+import { gen } from "effect/Effect";
 
+import type { CachedFileError } from "../../datasets/cached-file";
+import { fetchCachedTextFile } from "../../datasets/cached-file";
 import { Either } from "../../internal/either";
 import { isRecord } from "../../internal/guards";
 import type { AirlineData } from "./types";
 
-const HF_DATASET_ID = "abhinavpola/tau2-bench-verified-airline";
+export const TAU_BENCH_AIRLINE_DATASET_ID =
+  "abhinavpola/tau2-bench-verified-airline";
 
-const HF_RESOLVE_BASE = `https://huggingface.co/datasets/${HF_DATASET_ID}/resolve/main`;
+export const TAU_BENCH_AIRLINE_REVISION =
+  "790bdd0336f4e3386824ced48ee2a98a11058345";
+
+const AIRLINE_DB_URL = `https://huggingface.co/datasets/${TAU_BENCH_AIRLINE_DATASET_ID}/resolve/${TAU_BENCH_AIRLINE_REVISION}/db.json`;
 
 let airlineDbCache: string | undefined;
-
-class FetchError extends TaggedError("FetchError")<{
-  readonly message: string;
-}> {}
-
-function fetchHfFile(
-  filename: string
-): Effect<
-  string,
-  FetchError | HttpClientError.HttpClientError,
-  HttpClient.HttpClient
-> {
-  const url = `${HF_RESOLVE_BASE}/${filename}`;
-  return gen(function* () {
-    const client = yield* HttpClient.HttpClient;
-    const response = yield* client.get(url);
-    if (response.status < 200 || response.status >= 300) {
-      return yield* fail(
-        new FetchError({
-          message: `Failed to fetch ${filename} from HF (${response.status})`,
-        })
-      );
-    }
-    return yield* response.text;
-  });
-}
 
 export function ensureAirlineData(
   fetchLock: Semaphore
 ): Effect<
   void,
-  FetchError | HttpClientError.HttpClientError,
+  CachedFileError | HttpClientError.HttpClientError,
   HttpClient.HttpClient
 > {
   return fetchLock.withPermits(1)(
@@ -53,7 +32,7 @@ export function ensureAirlineData(
       if (airlineDbCache) {
         return;
       }
-      airlineDbCache = yield* fetchHfFile("db.json");
+      airlineDbCache = yield* fetchCachedTextFile({ url: AIRLINE_DB_URL });
     })
   );
 }

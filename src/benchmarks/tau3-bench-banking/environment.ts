@@ -1,11 +1,11 @@
 import { createHash } from "node:crypto";
 
-import type { HttpClientError } from "@effect/platform";
-import { HttpClient } from "@effect/platform";
-import { TaggedError } from "effect/Data";
+import type { HttpClient, HttpClientError } from "@effect/platform";
 import type { Effect, Semaphore } from "effect/Effect";
-import { fail, gen } from "effect/Effect";
+import { gen } from "effect/Effect";
 
+import type { CachedFileError } from "../../datasets/cached-file";
+import { fetchCachedTextFile } from "../../datasets/cached-file";
 import { Either } from "../../internal/either";
 import { isDefinedAndNotNull, isRecord } from "../../internal/guards";
 import { parseSchema } from "../../internal/zod";
@@ -21,37 +21,21 @@ let bankingDbCache: string | undefined;
 
 let bankingTasksCache: string | undefined;
 
-class FetchError extends TaggedError("FetchError")<{
-  readonly message: string;
-}> {}
-
 function fetchGithubFile(
   filename: string
 ): Effect<
   string,
-  FetchError | HttpClientError.HttpClientError,
+  CachedFileError | HttpClientError.HttpClientError,
   HttpClient.HttpClient
 > {
-  const url = `${BANKING_SOURCE_BASE_URL}/${filename}`;
-  return gen(function* () {
-    const client = yield* HttpClient.HttpClient;
-    const response = yield* client.get(url);
-    if (response.status < 200 || response.status >= 300) {
-      return yield* fail(
-        new FetchError({
-          message: `Failed to fetch ${filename} from GitHub (${response.status})`,
-        })
-      );
-    }
-    return yield* response.text;
-  });
+  return fetchCachedTextFile({ url: `${BANKING_SOURCE_BASE_URL}/${filename}` });
 }
 
 export function ensureBankingData(
   fetchLock: Semaphore
 ): Effect<
   void,
-  FetchError | HttpClientError.HttpClientError,
+  CachedFileError | HttpClientError.HttpClientError,
   HttpClient.HttpClient
 > {
   return fetchLock.withPermits(1)(
@@ -68,7 +52,7 @@ export function ensureBankingTasks(
   fetchLock: Semaphore
 ): Effect<
   void,
-  FetchError | HttpClientError.HttpClientError,
+  CachedFileError | HttpClientError.HttpClientError,
   HttpClient.HttpClient
 > {
   return fetchLock.withPermits(1)(
