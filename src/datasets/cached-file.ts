@@ -1,5 +1,3 @@
-import { join } from "node:path";
-
 import type { HttpClientError } from "@effect/platform";
 import { HttpClient } from "@effect/platform";
 import { TaggedError } from "effect/Data";
@@ -21,41 +19,22 @@ export class CachedFileError extends TaggedError("CachedFileError")<{
 
 export interface CachedTextFileRequest {
   readonly url: string;
-  readonly scope: string;
-  readonly revision: string;
-  readonly filename: string;
-  readonly maxAgeMs?: number;
   readonly retry?: RetryConfig;
   readonly cacheStore?: CacheStore;
 }
 
 const CachedTextSchema = z.object({ text: z.string() });
 
-function cacheKey(
-  request: CachedTextFileRequest,
-  store: CacheStore
-): string | undefined {
-  if (!store.enabled) {
-    return undefined;
-  }
-  return join(
-    "files",
-    encodeCacheKeySegment(request.scope),
-    encodeCacheKeySegment(request.revision),
-    `${encodeCacheKeySegment(request.filename)}.json`
-  );
-}
-
 function download(
-  request: CachedTextFileRequest,
+  url: string,
   client: HttpClient.HttpClient
 ): Effect<string, CachedFileError | HttpClientError.HttpClientError> {
   return gen(function* () {
-    const response = yield* client.get(request.url);
+    const response = yield* client.get(url);
     if (response.status < 200 || response.status >= 300) {
       return yield* fail(
         new CachedFileError({
-          message: `HTTP ${response.status} for ${request.url}`,
+          message: `HTTP ${response.status} for ${url}`,
           status: response.status,
         })
       );
@@ -74,29 +53,18 @@ export function fetchCachedTextFile(
   return gen(function* () {
     const client = yield* HttpClient.HttpClient;
     const store = request.cacheStore ?? resolveCacheStore();
-    const key = cacheKey(request, store);
-    if (key !== undefined) {
-      const cached = yield* promise(() =>
-        store.readJson(
-          key,
-          request.maxAgeMs !== undefined
-            ? { maxAgeMs: request.maxAgeMs }
-            : undefined
-        )
-      );
-      if (cached !== undefined) {
-        const parsed = parseSchema(CachedTextSchema, cached);
-        if (Either.isRight(parsed)) {
-          return parsed.right.text;
-        }
-      }
+    const key = `files/${encodeCacheKeySegment(request.url)}.json`;
+    const cached = parseSchema(
+      CachedTextSchema,
+      yield* promise(() => store.readJson(key))
+    );
+    if (Either.isRight(cached)) {
+      return cached.right.text;
     }
-    const text = yield* download(request, client).pipe(
+    const text = yield* download(request.url, client).pipe(
       retry(hfFetchRetrySchedule(request.retry))
     );
-    if (key !== undefined) {
-      yield* tryPromise(() => store.writeJson(key, { text })).pipe(ignore);
-    }
+    yield* tryPromise(() => store.writeJson(key, { text })).pipe(ignore);
     return text;
   });
 }

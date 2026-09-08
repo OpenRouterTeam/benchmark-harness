@@ -32,13 +32,10 @@ function makeMemoryStore(overrides?: Partial<CacheStore>): {
 }
 
 const REQUEST = {
-  url: "https://example.test/datasets/owner/name/resolve/main/db.json",
-  scope: "hf/owner/name",
-  revision: "main",
-  filename: "db.json",
+  url: "https://example.test/datasets/owner/name/resolve/abc123/db.json",
 } as const;
 
-const CACHE_KEY = "files/hf%2Fowner%2Fname/main/db.json.json";
+const CACHE_KEY = `files/${encodeURIComponent(REQUEST.url)}.json`;
 
 function run(
   request: Parameters<typeof fetchCachedTextFile>[0]
@@ -69,7 +66,7 @@ describe("fetchCachedTextFile", () => {
     }) as typeof global.fetch;
   }
 
-  it("stores the downloaded body under the scope/revision key", async () => {
+  it("stores the downloaded body under the url key", async () => {
     stubFetch([new Response('{"users":{}}', { status: 200 })]);
     const { store, entries } = makeMemoryStore();
 
@@ -89,20 +86,6 @@ describe("fetchCachedTextFile", () => {
       '{"users":{}}'
     );
     expect(requestCount).toBe(1);
-  });
-
-  it("passes maxAgeMs through to the store read", async () => {
-    stubFetch([new Response("fresh", { status: 200 })]);
-    const reads: (number | undefined)[] = [];
-    const { store } = makeMemoryStore({
-      async readJson(_key, opts) {
-        reads.push(opts?.maxAgeMs);
-        return undefined;
-      },
-    });
-
-    await run({ ...REQUEST, cacheStore: store, maxAgeMs: 1_000 });
-    expect(reads).toEqual([1_000]);
   });
 
   it("refetches when the cached entry is not a text envelope", async () => {
@@ -164,14 +147,6 @@ describe("fetchCachedTextFile", () => {
     assert(Either.isLeft(result));
     assert(result.left._tag === "CachedFileError");
     expect(result.left.status).toBe(300);
-    expect(entries.size).toBe(0);
-  });
-
-  it("skips the cache entirely when the store is disabled", async () => {
-    stubFetch([new Response("body", { status: 200 })]);
-    const { store, entries } = makeMemoryStore({ enabled: false });
-
-    await expect(run({ ...REQUEST, cacheStore: store })).resolves.toBe("body");
     expect(entries.size).toBe(0);
   });
 

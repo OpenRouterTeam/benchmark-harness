@@ -1,10 +1,10 @@
 import { createHash } from "node:crypto";
 
 import type { HttpClient, HttpClientError } from "@effect/platform";
-import { TaggedError } from "effect/Data";
 import type { Effect, Semaphore } from "effect/Effect";
-import { gen, mapError } from "effect/Effect";
+import { gen } from "effect/Effect";
 
+import type { CachedFileError } from "../../datasets/cached-file";
 import { fetchCachedTextFile } from "../../datasets/cached-file";
 import { Either } from "../../internal/either";
 import { isDefinedAndNotNull, isRecord } from "../../internal/guards";
@@ -21,38 +21,21 @@ let bankingDbCache: string | undefined;
 
 let bankingTasksCache: string | undefined;
 
-class FetchError extends TaggedError("FetchError")<{
-  readonly message: string;
-}> {}
-
 function fetchGithubFile(
   filename: string
 ): Effect<
   string,
-  FetchError | HttpClientError.HttpClientError,
+  CachedFileError | HttpClientError.HttpClientError,
   HttpClient.HttpClient
 > {
-  return fetchCachedTextFile({
-    url: `${BANKING_SOURCE_BASE_URL}/${filename}`,
-    scope: "github/sierra-research/tau2-bench/banking_knowledge",
-    revision: BANKING_SOURCE_REVISION,
-    filename,
-  }).pipe(
-    mapError((error) =>
-      error._tag === "CachedFileError"
-        ? new FetchError({
-            message: `Failed to fetch ${filename} from GitHub (${error.status ?? error.message})`,
-          })
-        : error
-    )
-  );
+  return fetchCachedTextFile({ url: `${BANKING_SOURCE_BASE_URL}/${filename}` });
 }
 
 export function ensureBankingData(
   fetchLock: Semaphore
 ): Effect<
   void,
-  FetchError | HttpClientError.HttpClientError,
+  CachedFileError | HttpClientError.HttpClientError,
   HttpClient.HttpClient
 > {
   return fetchLock.withPermits(1)(
@@ -69,7 +52,7 @@ export function ensureBankingTasks(
   fetchLock: Semaphore
 ): Effect<
   void,
-  FetchError | HttpClientError.HttpClientError,
+  CachedFileError | HttpClientError.HttpClientError,
   HttpClient.HttpClient
 > {
   return fetchLock.withPermits(1)(
