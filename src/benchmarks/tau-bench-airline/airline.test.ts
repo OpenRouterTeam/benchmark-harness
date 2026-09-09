@@ -1,6 +1,7 @@
-import { beforeAll, describe, expect, it } from "bun:test";
+import { afterEach, beforeAll, describe, expect, it } from "bun:test";
 
-import { runSync } from "effect/Effect";
+import { FetchHttpClient } from "@effect/platform";
+import { makeSemaphore, provide, runPromise, runSync } from "effect/Effect";
 
 import { MessageRole, ScoreValue } from "../../harness/core";
 import { isRecord } from "../../internal/guards";
@@ -10,7 +11,11 @@ import { TauBenchAirlineConfigSchema } from "../benchmark-config";
 import { benchmarkIds, getBenchmark } from "../registry";
 import { compareActionWithToolCall } from "./action-match";
 import { airlineRecordToSample, TAU_BENCH_AIRLINE_ID } from "./benchmark";
-import { seedAirlineDataCache } from "./environment";
+import {
+  ensureAirlineData,
+  loadAirlineData,
+  seedAirlineDataCache,
+} from "./environment";
 import { evaluateSimulation } from "./evaluator";
 import { airlineScorer } from "./scorer";
 import { AIRLINE_TOOL_DEFINITIONS } from "./tools/definitions";
@@ -445,6 +450,32 @@ describe("evaluateSimulation", () => {
         terminationReason: USER_STOP,
       }).reward
     ).toBe(0);
+  });
+});
+describe("ensureAirlineData", () => {
+  const originalFetch = global.fetch;
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+  });
+
+  it("serves the in-process copy without a network request", async () => {
+    let requestCount = 0;
+    const stub: typeof global.fetch = () => {
+      requestCount += 1;
+      return Promise.resolve(new Response("unexpected", { status: 500 }));
+    };
+    global.fetch = stub;
+    seedAirlineDataCache(makeTestData());
+
+    await runPromise(
+      ensureAirlineData(runSync(makeSemaphore(1))).pipe(
+        provide(FetchHttpClient.layer)
+      )
+    );
+
+    expect(requestCount).toBe(0);
+    expect(loadAirlineData()).toEqual(makeTestData());
   });
 });
 describe("airlineScorer", () => {

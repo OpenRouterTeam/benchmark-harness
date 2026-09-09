@@ -5,38 +5,100 @@ import type { Effect } from "effect/Effect";
 import { fail, gen, ignore, promise, retry, tryPromise } from "effect/Effect";
 
 import { Either } from "../internal/either";
+import { definedValues } from "../internal/guards";
 import { parseSchema, z } from "../internal/zod";
 import type { RetryConfig } from "../runtime/retry";
 import type { CacheStore } from "./cache-store";
 import { resolveCacheStore } from "./cache-store";
-import { hfFetchRetrySchedule } from "./huggingface";
+import { hfFetchRetrySchedule, resolveHfToken } from "./huggingface";
 import { encodeCacheKeySegment } from "./local-cache";
 
 export class CachedFileError extends TaggedError("CachedFileError")<{
   readonly message: string;
   readonly status?: number;
+  readonly retryAfterMs?: number;
 }> {}
 
 export interface CachedTextFileRequest {
   readonly url: string;
   readonly retry?: RetryConfig;
   readonly cacheStore?: CacheStore;
+  readonly hfToken?: string;
 }
+
+type CachedFileFailure = CachedFileError | HttpClientError.HttpClientError;
 
 const CachedTextSchema = z.object({ text: z.string() });
 
+const HF_HOST = "huggingface.co";
+
+export function isHuggingFaceUrl(url: string): boolean {
+  const parsed = Either.try(() => new URL(url));
+  if (Either.isLeft(parsed)) {
+    return false;
+  }
+  const { hostname } = parsed.right;
+  return hostname === HF_HOST || hostname.endsWith(`.${HF_HOST}`);
+}
+
+export function parseRetryAfterMs(
+  value: string | undefined,
+  now: number = Date.now()
+): number | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  const seconds = Number(value);
+  if (Number.isFinite(seconds)) {
+    return seconds >= 0 ? seconds * 1e3 : undefined;
+  }
+  const at = Date.parse(value);
+  return Number.isFinite(at) ? Math.max(0, at - now) : undefined;
+}
+
+export function isRetryableCachedFileFailure(
+  error: CachedFileFailure
+): boolean {
+  if (error._tag !== "CachedFileError") {
+    return true;
+  }
+  return error.status === 429 || (error.status ?? 0) >= 500;
+}
+
+function cachedFileRetryAfterMs(error: CachedFileFailure): number | undefined {
+  return error._tag === "CachedFileError" ? error.retryAfterMs : undefined;
+}
+
+function authorizationHeaders(
+  url: string,
+  hfToken: string
+): Readonly<Record<string, string>> | undefined {
+  if (hfToken === "" || !isHuggingFaceUrl(url)) {
+    return undefined;
+  }
+  return { Authorization: `Bearer ${hfToken}` };
+}
+
 function download(
   url: string,
+  hfToken: string,
   client: HttpClient.HttpClient
-): Effect<string, CachedFileError | HttpClientError.HttpClientError> {
+): Effect<string, CachedFileFailure> {
   return gen(function* () {
-    const response = yield* client.get(url);
+    const headers = authorizationHeaders(url, hfToken);
+    const response = yield* client.get(
+      url,
+      headers !== undefined ? { headers } : undefined
+    );
     if (response.status < 200 || response.status >= 300) {
       return yield* fail(
-        new CachedFileError({
-          message: `HTTP ${response.status} for ${url}`,
-          status: response.status,
-        })
+        new CachedFileError(
+          definedValues({
+            message: `HTTP ${response.status} for ${url}`,
+            status: response.status,
+            retryAfterMs: parseRetryAfterMs(response.headers["retry-after"]),
+          })
+        )
       );
     }
     return yield* response.text;
@@ -45,11 +107,7 @@ function download(
 
 export function fetchCachedTextFile(
   request: CachedTextFileRequest
-): Effect<
-  string,
-  CachedFileError | HttpClientError.HttpClientError,
-  HttpClient.HttpClient
-> {
+): Effect<string, CachedFileFailure, HttpClient.HttpClient> {
   return gen(function* () {
     const client = yield* HttpClient.HttpClient;
     const store = request.cacheStore ?? resolveCacheStore();
@@ -61,8 +119,15 @@ export function fetchCachedTextFile(
     if (Either.isRight(cached)) {
       return cached.right.text;
     }
-    const text = yield* download(request.url, client).pipe(
-      retry(hfFetchRetrySchedule(request.retry))
+    const hfToken = request.hfToken ?? (yield* resolveHfToken());
+    const text = yield* download(request.url, hfToken, client).pipe(
+      retry(
+        hfFetchRetrySchedule<CachedFileFailure>(
+          request.retry,
+          isRetryableCachedFileFailure,
+          cachedFileRetryAfterMs
+        )
+      )
     );
     yield* tryPromise(() => store.writeJson(key, { text })).pipe(ignore);
     return text;

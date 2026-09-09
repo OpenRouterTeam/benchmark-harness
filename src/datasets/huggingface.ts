@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { FetchHttpClient, HttpClient } from "@effect/platform";
 import { fromIterable } from "effect/Chunk";
 import { map as configMap, option, string } from "effect/Config";
+import type { DurationInput } from "effect/Duration";
 import type { Effect } from "effect/Effect";
 import {
   fail,
@@ -24,6 +25,7 @@ import type { Schedule } from "effect/Schedule";
 import {
   exponential,
   jittered,
+  modifyDelay,
   passthrough,
   whileInput,
 } from "effect/Schedule";
@@ -92,7 +94,8 @@ function hfPageCacheKey(
 
 export function hfFetchRetrySchedule<E = unknown>(
   config: RetryConfig = {},
-  isRetryable: (error: E) => boolean = () => true
+  isRetryable: (error: E) => boolean = () => true,
+  retryAfterMs: (error: E) => number | undefined = () => undefined
 ): Schedule<
   {
     readonly error: E;
@@ -107,7 +110,13 @@ export function hfFetchRetrySchedule<E = unknown>(
     passthrough
   );
   return withRetryAttemptLogging(
-    whileInput(scheduled, isRetryable).pipe(passthrough),
+    whileInput(scheduled, isRetryable).pipe(
+      passthrough,
+      modifyDelay((error, computed): DurationInput => {
+        const explicit = retryAfterMs(error);
+        return explicit !== undefined ? `${explicit} millis` : computed;
+      })
+    ),
     maxRetries
   );
 }
