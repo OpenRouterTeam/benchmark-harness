@@ -9,6 +9,7 @@ import type { CacheStore } from "./cache-store";
 import {
   fetchCachedTextFile,
   isHuggingFaceUrl,
+  jsonTextValidator,
   parseRetryAfterMs,
 } from "./cached-file";
 
@@ -245,6 +246,72 @@ describe("fetchCachedTextFile", () => {
     expect(entries.size).toBe(0);
   });
 
+  it("fails without caching when the validator rejects a 200 body", async () => {
+    stubFetch([
+      new Response("<html>rate limited</html>", { status: 200 }),
+      new Response('{"users":{}}', { status: 200 }),
+    ]);
+    const { store, entries } = makeMemoryStore();
+
+    const result = await runPromise(
+      fetchCachedTextFile({
+        ...REQUEST,
+        cacheStore: store,
+        validate: jsonTextValidator("object"),
+        retry: { maxRetries: 3, baseDelayMs: 1 },
+      }).pipe(either, provide(FetchHttpClient.layer))
+    );
+
+    assert(Either.isLeft(result));
+    assert(result.left._tag === "CachedFileError");
+    expect(result.left.status).toBeUndefined();
+    expect(requestCount).toBe(1);
+    expect(entries.size).toBe(0);
+  });
+
+  it("skips the store entirely when caching is disabled", async () => {
+    stubFetch([new Response("body", { status: 200 })]);
+    let reads = 0;
+    let writes = 0;
+    const { store } = makeMemoryStore({
+      enabled: false,
+      async readJson() {
+        reads += 1;
+        return undefined;
+      },
+      async writeJson() {
+        writes += 1;
+      },
+    });
+
+    await expect(run({ ...REQUEST, cacheStore: store })).resolves.toBe("body");
+    expect(reads).toBe(0);
+    expect(writes).toBe(0);
+    expect(requestCount).toBe(1);
+  });
+
+  it("drains the body of a failed response", async () => {
+    const failed = new Response("slow down", { status: 429 });
+    const recovered = new Response("recovered", { status: 200 });
+    const served: Response[] = [];
+    global.fetch = () => {
+      const response = served.length === 0 ? failed : recovered;
+      served.push(response);
+      requestCount += 1;
+      return Promise.resolve(response);
+    };
+    const { store } = makeMemoryStore();
+
+    await expect(
+      run({
+        ...REQUEST,
+        cacheStore: store,
+        retry: { maxRetries: 1, baseDelayMs: 1 },
+      })
+    ).resolves.toBe("recovered");
+    expect(failed.bodyUsed).toBe(true);
+  });
+
   it("returns the body even when the cache write fails", async () => {
     stubFetch([new Response("body", { status: 200 })]);
     const { store } = makeMemoryStore({
@@ -264,6 +331,16 @@ describe("isHuggingFaceUrl", () => {
     expect(isHuggingFaceUrl("https://nothuggingface.co/x")).toBe(false);
     expect(isHuggingFaceUrl(REQUEST.url)).toBe(false);
     expect(isHuggingFaceUrl("not a url")).toBe(false);
+  });
+});
+
+describe("jsonTextValidator", () => {
+  it("accepts only the expected JSON shape", () => {
+    expect(jsonTextValidator("object")("{}")).toBeUndefined();
+    expect(jsonTextValidator("array")("[]")).toBeUndefined();
+    expect(jsonTextValidator("object")("[]")).toBeDefined();
+    expect(jsonTextValidator("array")("{}")).toBeDefined();
+    expect(jsonTextValidator("object")("<html>")).toBeDefined();
   });
 });
 

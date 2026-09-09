@@ -5,7 +5,6 @@ import {
   map,
   mapError,
   provideService,
-  retry,
 } from "effect/Effect";
 import type { Layer as LayerType } from "effect/Layer";
 import { effect as layerEffect, provide as layerProvide } from "effect/Layer";
@@ -17,7 +16,6 @@ import {
   fromIterable,
 } from "effect/Stream";
 
-import { hfFetchRetrySchedule } from "../../datasets/huggingface";
 import type { Sample } from "../../harness/core";
 import { DatasetError } from "../../harness/core";
 import type { DatasetStreamOptions } from "../../harness/dataset";
@@ -41,9 +39,8 @@ export function makeBankingDatasetLayer(
   const makeService = gen(function* () {
     const client = yield* HttpClient.HttpClient;
     const fetchLock = yield* makeSemaphore(1);
-    const loadTasks = ensureBankingTasks(fetchLock).pipe(
+    const loadTasks = ensureBankingTasks(fetchLock, retryConfig).pipe(
       provideService(HttpClient.HttpClient, client),
-      retry(hfFetchRetrySchedule(retryConfig)),
       mapError(
         (cause) =>
           new DatasetError({
