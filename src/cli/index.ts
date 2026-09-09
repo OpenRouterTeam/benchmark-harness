@@ -56,7 +56,14 @@ export function parseArgs(argv: readonly string[]): CliArgs {
   };
   const num = (flag: string): number | undefined => {
     const raw = get(flag);
-    return raw !== undefined ? Number(raw) : undefined;
+    if (raw === undefined) {
+      return undefined;
+    }
+    const val = Number(raw);
+    if (!Number.isFinite(val)) {
+      throw new TypeError(`${flag} must be a valid number, got: ${raw}`);
+    }
+    return val;
   };
   return {
     benchmark: get("--benchmark") ?? "gpqa_diamond",
@@ -203,39 +210,47 @@ function main(): Promise<void> {
         Presets.shades_classic
       );
       let currentSample = "";
+      let barStarted = false;
       if (total !== undefined) {
         bar.start(total, 0, { sample: "" });
+        barStarted = true;
       }
-      const result = yield* promise(() =>
-        runBenchmarkById(
-          definedValues({
-            benchmarkId: args.benchmark,
-            apiKey,
-            benchmarkConfig: benchmarkRunConfig,
-            epochs,
-            maxConcurrency: args.concurrency,
-            baseUrl: baseUrl ? baseUrl : undefined,
-            range,
-            sessionId,
-            resultStore: makeLocalResultStore({
-              dir: join(process.cwd(), "bench-results"),
-            }),
-            progressReporter: makeProgressReporter({
-              onSampleComplete: (completed) =>
-                bar.update(completed, { sample: currentSample }),
-              onSampleStart: (event) => {
-                currentSample = `#${event.sampleIndex}`;
-                bar.update({ sample: currentSample });
-              },
-              onSampleEnd: () => {
-                currentSample = "";
-                bar.update({ sample: currentSample });
-              },
-            }),
-          })
-        )
-      );
-      bar.stop();
+      let result;
+      try {
+        result = yield* promise(() =>
+          runBenchmarkById(
+            definedValues({
+              benchmarkId: args.benchmark,
+              apiKey,
+              benchmarkConfig: benchmarkRunConfig,
+              epochs,
+              maxConcurrency: args.concurrency,
+              baseUrl: baseUrl ? baseUrl : undefined,
+              range,
+              sessionId,
+              resultStore: makeLocalResultStore({
+                dir: join(process.cwd(), "bench-results"),
+              }),
+              progressReporter: makeProgressReporter({
+                onSampleComplete: (completed) =>
+                  bar.update(completed, { sample: currentSample }),
+                onSampleStart: (event) => {
+                  currentSample = `#${event.sampleIndex}`;
+                  bar.update({ sample: currentSample });
+                },
+                onSampleEnd: () => {
+                  currentSample = "";
+                  bar.update({ sample: currentSample });
+                },
+              }),
+            })
+          )
+        );
+      } finally {
+        if (barStarted) {
+          bar.stop();
+        }
+      }
       if (Either.isLeft(result)) {
         process.stderr.write(`Benchmark failed: ${result.left}\n`);
         process.exitCode = 1;
@@ -330,6 +345,7 @@ function buildSchemaValidatedConfig(opts: {
   panelConfig: unknown;
   costTier?: CostTier;
   reasoningEffort: ReasoningEffort;
+  imageDetail?: ImageDetail;
 }): BenchmarkRunConfig {
   const {
     benchmarkId,
@@ -338,6 +354,7 @@ function buildSchemaValidatedConfig(opts: {
     panelConfig,
     costTier,
     reasoningEffort,
+    imageDetail,
   } = opts;
   const merged: Record<string, unknown> = definedValues({
     benchmarkId,
@@ -345,6 +362,7 @@ function buildSchemaValidatedConfig(opts: {
     endpointId,
     costTier,
     reasoningEffort,
+    imageDetail,
   });
   if (typeof panelConfig === "object" && panelConfig !== null) {
     const known = isModelBenchmarkId(benchmarkId)
@@ -419,58 +437,6 @@ export function buildBenchmarkConfig(opts: {
     reasoningEffort,
   } = opts;
   switch (benchmarkId) {
-    case "gpqa_diamond": {
-      return {
-        benchmarkId: "gpqa_diamond",
-        model: requireModel("gpqa_diamond", model),
-        ...definedValues({
-          endpointId,
-          costTier,
-        }),
-        reasoningEffort,
-      };
-    }
-    case "mmlu_pro": {
-      return {
-        benchmarkId: "mmlu_pro",
-        model: requireModel("mmlu_pro", model),
-        ...definedValues({
-          endpointId,
-          costTier,
-        }),
-        reasoningEffort,
-      };
-    }
-    case "tau_bench_verified_airline": {
-      return buildSchemaValidatedConfig({
-        benchmarkId: "tau_bench_verified_airline",
-        model: requireModel("tau_bench_verified_airline", model),
-        endpointId,
-        panelConfig,
-        costTier,
-        reasoningEffort,
-      });
-    }
-    case "tau3_bench_banking": {
-      return buildSchemaValidatedConfig({
-        benchmarkId: "tau3_bench_banking",
-        model: requireModel("tau3_bench_banking", model),
-        endpointId,
-        panelConfig,
-        costTier,
-        reasoningEffort,
-      });
-    }
-    case "terminal_bench": {
-      return buildSchemaValidatedConfig({
-        benchmarkId: "terminal_bench",
-        model: requireModel("terminal_bench", model),
-        endpointId,
-        panelConfig,
-        costTier,
-        reasoningEffort,
-      });
-    }
     case "draco": {
       const panel = parseSchema(DracoPanelConfigSchema, panelConfig);
       if (Either.isLeft(panel)) {
@@ -484,29 +450,13 @@ export function buildBenchmarkConfig(opts: {
         }),
       };
     }
-    case "mmmu_pro_vision": {
-      return {
-        benchmarkId: "mmmu_pro_vision",
-        model: requireModel("mmmu_pro_vision", model),
-        ...definedValues({
-          endpointId,
-          imageDetail: opts.imageDetail,
-          costTier,
-        }),
-        reasoningEffort,
-      };
-    }
-    case "ifstruct": {
-      return {
-        benchmarkId: "ifstruct",
-        model: requireModel("ifstruct", model),
-        ...definedValues({
-          endpointId,
-          costTier,
-        }),
-        reasoningEffort,
-      };
-    }
+    case "gpqa_diamond":
+    case "mmlu_pro":
+    case "tau_bench_verified_airline":
+    case "tau3_bench_banking":
+    case "terminal_bench":
+    case "mmmu_pro_vision":
+    case "ifstruct":
     case "swe_atlas_qa":
     case "swe_atlas_tw":
     case "swe_atlas_rf":
@@ -524,6 +474,9 @@ export function buildBenchmarkConfig(opts: {
         panelConfig,
         costTier,
         reasoningEffort,
+        ...(benchmarkId === "mmmu_pro_vision"
+          ? definedValues({ imageDetail: opts.imageDetail })
+          : {}),
       });
     }
     default: {
