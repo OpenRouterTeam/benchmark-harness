@@ -19,7 +19,6 @@ export class CachedFileError extends TaggedError("CachedFileError")<{
   readonly retryAfterMs?: number;
 }> {}
 
-/** Returns an error message when the downloaded text must not be used or cached. */
 export type CachedTextValidator = (text: string) => string | undefined;
 
 export interface CachedTextFileRequest {
