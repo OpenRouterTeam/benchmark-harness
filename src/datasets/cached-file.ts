@@ -138,7 +138,10 @@ export function fetchCachedTextFile(
         CachedTextSchema,
         yield* promise(() => store.readJson(key))
       );
-      if (Either.isRight(cached)) {
+      if (
+        Either.isRight(cached) &&
+        request.validate?.(cached.right.text) === undefined
+      ) {
         return cached.right.text;
       }
     }
