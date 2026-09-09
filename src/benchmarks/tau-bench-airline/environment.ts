@@ -5,7 +5,10 @@ import type { Effect, Semaphore } from "effect/Effect";
 import { gen } from "effect/Effect";
 
 import type { CachedFileError } from "../../datasets/cached-file";
-import { fetchCachedTextFile } from "../../datasets/cached-file";
+import {
+  fetchCachedTextFile,
+  jsonTextValidator,
+} from "../../datasets/cached-file";
 import { Either } from "../../internal/either";
 import { isRecord } from "../../internal/guards";
 import type { AirlineData } from "./types";
@@ -32,7 +35,10 @@ export function ensureAirlineData(
       if (airlineDbCache) {
         return;
       }
-      airlineDbCache = yield* fetchCachedTextFile({ url: AIRLINE_DB_URL });
+      airlineDbCache = yield* fetchCachedTextFile({
+        url: AIRLINE_DB_URL,
+        validate: jsonTextValidator("object"),
+      });
     })
   );
 }

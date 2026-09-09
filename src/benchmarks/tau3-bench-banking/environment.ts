@@ -5,10 +5,18 @@ import type { Effect, Semaphore } from "effect/Effect";
 import { gen } from "effect/Effect";
 
 import type { CachedFileError } from "../../datasets/cached-file";
-import { fetchCachedTextFile } from "../../datasets/cached-file";
+import {
+  fetchCachedTextFile,
+  jsonTextValidator,
+} from "../../datasets/cached-file";
 import { Either } from "../../internal/either";
-import { isDefinedAndNotNull, isRecord } from "../../internal/guards";
+import {
+  definedValues,
+  isDefinedAndNotNull,
+  isRecord,
+} from "../../internal/guards";
 import { parseSchema } from "../../internal/zod";
+import type { RetryConfig } from "../../runtime/retry";
 import type { BankingData, BankingTable, Tau3Task } from "./types";
 import { BANKING_TABLES, isBankingTableName, Tau3TaskSchema } from "./types";
 
@@ -22,17 +30,24 @@ let bankingDbCache: string | undefined;
 let bankingTasksCache: string | undefined;
 
 function fetchGithubFile(
-  filename: string
+  filename: string,
+  expected: "object" | "array",
+  retryConfig?: RetryConfig
 ): Effect<
   string,
   CachedFileError | HttpClientError.HttpClientError,
   HttpClient.HttpClient
 > {
-  return fetchCachedTextFile({ url: `${BANKING_SOURCE_BASE_URL}/${filename}` });
+  return fetchCachedTextFile({
+    url: `${BANKING_SOURCE_BASE_URL}/${filename}`,
+    validate: jsonTextValidator(expected),
+    ...definedValues({ retry: retryConfig }),
+  });
 }
 
 export function ensureBankingData(
-  fetchLock: Semaphore
+  fetchLock: Semaphore,
+  retryConfig?: RetryConfig
 ): Effect<
   void,
   CachedFileError | HttpClientError.HttpClientError,
@@ -43,13 +58,14 @@ export function ensureBankingData(
       if (bankingDbCache) {
         return;
       }
-      bankingDbCache = yield* fetchGithubFile("db.json");
+      bankingDbCache = yield* fetchGithubFile("db.json", "object", retryConfig);
     })
   );
 }
 
 export function ensureBankingTasks(
-  fetchLock: Semaphore
+  fetchLock: Semaphore,
+  retryConfig?: RetryConfig
 ): Effect<
   void,
   CachedFileError | HttpClientError.HttpClientError,
@@ -60,7 +76,11 @@ export function ensureBankingTasks(
       if (bankingTasksCache) {
         return;
       }
-      bankingTasksCache = yield* fetchGithubFile("tasks.json");
+      bankingTasksCache = yield* fetchGithubFile(
+        "tasks.json",
+        "array",
+        retryConfig
+      );
     })
   );
 }

@@ -103,5 +103,23 @@ describe("tau3-bench-banking dataset", () => {
       expect(size).toBe(fixtureTasks.length);
       expect(fetchCalls).toBe(2);
     });
+    it("does not retry when maxRetries is 0", async () => {
+      seedBankingTasksRawCache("");
+      let fetchCalls = 0;
+      global.fetch = async () => {
+        fetchCalls++;
+        return new Response("upstream hiccup", { status: 503 });
+      };
+      const layer = makeBankingDatasetLayer({ baseDelayMs: 0, maxRetries: 0 });
+      await expect(
+        runPromise(
+          Dataset.pipe(
+            flatMap((dataset) => dataset.size),
+            provide(layer)
+          )
+        )
+      ).rejects.toThrow();
+      expect(fetchCalls).toBe(1);
+    });
   });
 });
