@@ -271,6 +271,8 @@ describe("parseRetryAfterMs", () => {
   it("parses delay seconds and http dates", () => {
     const now = Date.UTC(2026, 0, 1, 0, 0, 0);
     expect(parseRetryAfterMs(undefined, now)).toBeUndefined();
+    expect(parseRetryAfterMs("", now)).toBeUndefined();
+    expect(parseRetryAfterMs("  ", now)).toBeUndefined();
     expect(parseRetryAfterMs("2", now)).toBe(2000);
     expect(parseRetryAfterMs("-1", now)).toBeUndefined();
     expect(parseRetryAfterMs("Thu, 01 Jan 2026 00:00:05 GMT", now)).toBe(5000);

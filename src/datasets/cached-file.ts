@@ -45,14 +45,15 @@ export function parseRetryAfterMs(
   value: string | undefined,
   now: number = Date.now()
 ): number | undefined {
-  if (value === undefined) {
+  const normalized = value?.trim();
+  if (normalized === undefined || normalized === "") {
     return undefined;
   }
-  const seconds = Number(value);
+  const seconds = Number(normalized);
   if (Number.isFinite(seconds)) {
     return seconds >= 0 ? seconds * 1e3 : undefined;
   }
-  const at = Date.parse(value);
+  const at = Date.parse(normalized);
   return Number.isFinite(at) ? Math.max(0, at - now) : undefined;
 }
 
