@@ -110,6 +110,22 @@ describe("fetchCachedTextFile", () => {
     expect(requestCount).toBe(1);
   });
 
+  it("refetches and overwrites a cached entry the validator rejects", async () => {
+    stubFetch([new Response('{"users":{}}', { status: 200 })]);
+    const { store, entries } = makeMemoryStore();
+    entries.set(CACHE_KEY, { text: "<html>rate limited</html>" });
+
+    await expect(
+      run({
+        ...REQUEST,
+        cacheStore: store,
+        validate: jsonTextValidator("object"),
+      })
+    ).resolves.toBe('{"users":{}}');
+    expect(requestCount).toBe(1);
+    expect(entries.get(CACHE_KEY)).toEqual({ text: '{"users":{}}' });
+  });
+
   it("retries a rate-limited origin and caches the successful body", async () => {
     stubFetch([
       new Response("slow down", { status: 429 }),
