@@ -300,7 +300,7 @@ describe("benchmark registry", () => {
     const result = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "terminal_bench",
       model: "openai/gpt-5.4",
-      agent: "codex",
+      agent: "grok",
       reasoningEffort: "high",
       agentReasoningEffort: "high",
     });
@@ -365,7 +365,7 @@ describe("benchmark registry", () => {
     const result = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "deep_swe",
       model: "anthropic/claude-opus-5",
-      agent: "codex",
+      agent: "grok",
       reasoningEffort: "high",
       agentReasoningEffort: "high",
     });

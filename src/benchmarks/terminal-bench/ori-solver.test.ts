@@ -41,12 +41,16 @@ import {
   getCollectedGenerationIds,
   resetGenerationIds,
 } from "../../runtime/generation-ids";
+import { GENERATION_ID_LINE_PREFIX } from "../agent-cli/generation-proxy";
 import {
   BUN_RELEASE_SHA256,
   BUN_RELEASE_URL,
   DEFAULT_AGENT_RUNTIME_SHA256,
   DEFAULT_AGENT_RUNTIME_URL,
+  DEFAULT_CODEX_PACKAGE,
+  DEFAULT_KILO_PACKAGE,
   DEFAULT_OMP_PACKAGE,
+  DEFAULT_OPENCODE_PACKAGE,
   DEFAULT_PI_AGENT_PACKAGE,
   DEFAULT_PRIME_AGENT_PACKAGE,
   getOriHarness,
@@ -1810,5 +1814,109 @@ describe("terminal-bench omp via ori", () => {
       agentPackage: "file:///opt/omp.tgz",
     });
     expect(steps.join("\n")).toContain('bun install -g "file:///opt/omp.tgz"');
+  });
+});
+
+describe("terminal-bench proxy-attributed harnesses via ori", () => {
+  const PROXY_GENERATION_ID = "gen-1788473388-R386NZLdIly5wVTk0l5f";
+  const CODEX_STREAM = [
+    JSON.stringify({ type: "thread.started", thread_id: "thread-1" }),
+    JSON.stringify({ type: "turn.started" }),
+    `${GENERATION_ID_LINE_PREFIX}${PROXY_GENERATION_ID}`,
+    JSON.stringify({
+      type: "item.completed",
+      item: { id: "item_0", type: "agent_message", text: "OK" },
+    }),
+    JSON.stringify({
+      type: "turn.completed",
+      usage: {
+        input_tokens: 100,
+        cached_input_tokens: 0,
+        cache_write_input_tokens: 0,
+        output_tokens: 5,
+        reasoning_output_tokens: 2,
+      },
+    }),
+  ].join("\n");
+
+  it("registers codex, opencode and kilo as ori agents", () => {
+    for (const agent of ["codex", "opencode", "kilo"] as const) {
+      expect(ORI_AGENTS).toContain(agent);
+      expect(getOriHarness(agent).binaryName).toBe(agent);
+      expect(getOriHarness(agent).remoteLogPath).toBe(
+        `/logs/agent/${agent}.txt`
+      );
+    }
+    expect(getOriHarness("codex").defaultPackage).toBe(DEFAULT_CODEX_PACKAGE);
+    expect(getOriHarness("opencode").defaultPackage).toBe(
+      DEFAULT_OPENCODE_PACKAGE
+    );
+    expect(getOriHarness("kilo").defaultPackage).toBe(DEFAULT_KILO_PACKAGE);
+  });
+
+  it("records the proxy-captured generation ids from the codex run", async () => {
+    const layer = makeTerminalBenchFakeSandboxLayer({
+      reward: 1,
+      testOutput: "1 passed",
+      agentEventStream: CODEX_STREAM,
+      agentExitCode: 0,
+    });
+    const execCalls: ExecCalls = [];
+    const solverLayer = layerEffect(Solver)(
+      gen(function* () {
+        const sessionFactory = yield* SandboxSession;
+        return Solver.of(
+          oriSolver(sessionFactory, SOLVER_OPTS, getOriHarness("codex"))
+        );
+      })
+    );
+    const finalState = await runPromise(
+      gen(function* () {
+        const solver = yield* Solver;
+        return yield* solver(sampleState());
+      }).pipe(
+        provide(
+          layerMergeAll(
+            solverLayer.pipe(
+              layerProvide(
+                makeTerminalBenchFakeSandboxLayer({
+                  reward: 1,
+                  testOutput: "1 passed",
+                  agentEventStream: CODEX_STREAM,
+                  agentExitCode: 0,
+                  execCalls,
+                })
+              )
+            ),
+            noopProgressLayer,
+            noopCheckpointLayer
+          )
+        )
+      )
+    );
+    expect(finalState.output?.completion).toBe("OK");
+    expect(finalState.output?.usage).toEqual({
+      inputTokens: 100,
+      outputTokens: 5,
+      totalTokens: 105,
+      reasoningTokens: 2,
+      totalCost: 0,
+    });
+    expect(finalState.sample.metadata?.["generationIds"]).toEqual([
+      PROXY_GENERATION_ID,
+    ]);
+    expect(finalState.sample.metadata?.["agent"]).toBe("codex");
+    expect(
+      await runAndCollectGenerationIds(layer, getOriHarness("codex"))
+    ).toEqual([PROXY_GENERATION_ID]);
+    const agentCall = execCalls.find((call) =>
+      call.argv[2]?.includes("ori codex")
+    );
+    expect(agentCall?.argv[2]).toContain(
+      "node /tmp/openrouter-generation-proxy.cjs"
+    );
+    expect(agentCall?.argv[2]).toContain(
+      "GEN_PROXY_UPSTREAM=https://openrouter.ai"
+    );
   });
 });

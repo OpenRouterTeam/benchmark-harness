@@ -6,6 +6,12 @@ import type {
 import { MessageRole } from "../../harness/core";
 import { Either } from "../../internal/either";
 import { definedValues, isRecord } from "../../internal/guards";
+import {
+  buildGenerationProxyPrelude,
+  GENERATION_PROXY_BASE_URL,
+  GENERATION_PROXY_BASE_URL_ENV,
+  parseProxyGenerationIds,
+} from "./generation-proxy";
 import type { OriAgent, OriChannel, OriReasoningEffort } from "./schema";
 import { assertValidAgentPackage, DEFAULT_CLAUDE_PACKAGE } from "./schema";
 
@@ -26,6 +32,12 @@ export const DEFAULT_PRIME_AGENT_PACKAGE =
   "https://pub-728493de92a943e2a9b2d17b4719f318.r2.dev/releases/v0.9.1/prime-agent-0.9.1.tgz" as const;
 
 export const DEFAULT_OMP_PACKAGE = "@oh-my-pi/pi-coding-agent@18.1.2" as const;
+
+export const DEFAULT_CODEX_PACKAGE = "@openai/codex@0.153.1" as const;
+
+export const DEFAULT_OPENCODE_PACKAGE = "opencode-ai@1.18.27" as const;
+
+export const DEFAULT_KILO_PACKAGE = "@kilocode/cli@7.5.9" as const;
 
 export const OMP_BUN_VERSION = "bun-v1.3.14" as const;
 
@@ -518,11 +530,153 @@ const OMP_HARNESS: OriHarnessDef = {
   parseRun: parseJsonAgentStream,
 };
 
+const CODEX_SYSTEM_PROMPT_PATH = "/tmp/agent-system-prompt.md" as const;
+const OPENCODE_APPEND_PROMPT_PATH = "/tmp/agent-append-prompt.md" as const;
+
+const CODEX_HARNESS: OriHarnessDef = {
+  id: "codex",
+  defaultPackage: DEFAULT_CODEX_PACKAGE,
+  binaryName: "codex",
+  remoteLogPath: "/logs/agent/codex.txt",
+  imageBuildSteps: (options) =>
+    buildImageSteps({ ...options, binaryName: "codex" }),
+  buildBootstrapScript: (options) =>
+    buildBootstrapScript({ ...options, binaryName: "codex" }),
+  buildRunScript: (options) =>
+    [
+      "set -euo pipefail",
+      "export HOME=/root",
+      "export RUST_LOG=error",
+      "mkdir -p /logs/agent",
+      ...(options.hasAllowedTools || options.hasDisallowedTools
+        ? [
+            'echo "Codex does not support allowedTools or disallowedTools" >&2',
+            "exit 2",
+          ]
+        : []),
+      ...(options.hasSystemPrompt
+        ? [`printf '%s' "$TB_SYSTEM_PROMPT" > ${CODEX_SYSTEM_PROMPT_PATH}`]
+        : []),
+      ...buildGenerationProxyPrelude(options.logPath),
+      'ori codex --model "$TB_MODEL" \\',
+      `  --reasoning-effort ${options.reasoningEffort} -- \\`,
+      "  exec --json --ephemeral --skip-git-repo-check \\",
+      "  --dangerously-bypass-approvals-and-sandbox \\",
+      '  -m "$TB_MODEL" \\',
+      `  -c model_reasoning_effort=${options.reasoningEffort} \\`,
+      "  -c model_provider=openrouter \\",
+      "  -c \"model_providers.openrouter.name='OpenRouter'\" \\",
+      `  -c "model_providers.openrouter.base_url='${GENERATION_PROXY_BASE_URL}'" \\`,
+      "  -c \"model_providers.openrouter.wire_api='responses'\" \\",
+      "  -c \"model_providers.openrouter.env_http_headers.X-Session-Id='ORI_OPENROUTER_SESSION_ID'\" \\",
+      "  -c \"model_providers.openrouter.auth.command='sh'\" \\",
+      "  -c \"model_providers.openrouter.auth.args=['-c','echo \\$OPENROUTER_API_KEY']\" \\",
+      ...(options.hasSystemPrompt
+        ? [`  -c "model_instructions_file='${CODEX_SYSTEM_PROMPT_PATH}'" \\`]
+        : []),
+      ...(options.hasAppendSystemPrompt
+        ? [
+            `  -c "developer_instructions=$(node -e 'process.stdout.write(JSON.stringify(process.env.TB_APPEND_SYSTEM_PROMPT))')" \\`,
+          ]
+        : []),
+      ...(options.isolateAgentConfig
+        ? [
+            "  --ignore-user-config \\",
+            "  --ignore-rules \\",
+            "  -c project_doc_max_bytes=0 \\",
+          ]
+        : []),
+      `  "$(cat ${options.instructionPath})" \\`,
+      `  2>&1 </dev/null | stdbuf -oL tee -a ${options.logPath}`,
+    ].join("\n"),
+  parseRun: parseCodexStream,
+};
+
+function buildOpencodeRunScript(
+  binary: "opencode" | "kilo",
+  options: OriRunScriptOptions
+): string {
+  const envPrefix = binary.toUpperCase();
+  const configEnv = `${envPrefix}_CONFIG_CONTENT`;
+  const configScript = [
+    "const config = {",
+    `  provider: { openrouter: { options: { baseURL: process.env.${GENERATION_PROXY_BASE_URL_ENV}, headers: { "X-Session-Id": "{env:ORI_OPENROUTER_SESSION_ID}" } } } },`,
+    ...(options.hasAppendSystemPrompt
+      ? [`  instructions: [${JSON.stringify(OPENCODE_APPEND_PROMPT_PATH)}],`]
+      : []),
+    ...(options.hasDisallowedTools
+      ? [
+          '  tools: Object.fromEntries(process.env.TB_DISALLOWED_TOOLS.split(" ").filter(Boolean).map((tool) => [tool, false])),',
+        ]
+      : []),
+    "};",
+    "process.stdout.write(JSON.stringify(config));",
+  ].join(" ");
+  return [
+    "set -euo pipefail",
+    "export HOME=/root",
+    "mkdir -p /logs/agent",
+    ...(options.hasSystemPrompt || options.hasAllowedTools
+      ? [
+          `echo "${binary} does not support systemPrompt or allowedTools" >&2`,
+          "exit 2",
+        ]
+      : []),
+    ...(options.hasAppendSystemPrompt
+      ? [
+          `printf '%s' "$TB_APPEND_SYSTEM_PROMPT" > ${OPENCODE_APPEND_PROMPT_PATH}`,
+        ]
+      : []),
+    ...(options.isolateAgentConfig
+      ? [
+          `export ${envPrefix}_DISABLE_PROJECT_CONFIG=1 ${envPrefix}_DISABLE_CLAUDE_CODE=1 ${envPrefix}_DISABLE_EXTERNAL_SKILLS=1`,
+        ]
+      : []),
+    ...buildGenerationProxyPrelude(options.logPath),
+    `export ${configEnv}="$(node -e '${configScript}')"`,
+    `ori ${binary} --model "$TB_MODEL" \\`,
+    `  --reasoning-effort ${options.reasoningEffort} -- \\`,
+    "  run --format json --auto \\",
+    ...(options.isolateAgentConfig ? ["  --pure \\"] : []),
+    `  "$(cat ${options.instructionPath})" \\`,
+    `  2>&1 </dev/null | stdbuf -oL tee -a ${options.logPath}`,
+  ].join("\n");
+}
+
+const OPENCODE_HARNESS: OriHarnessDef = {
+  id: "opencode",
+  defaultPackage: DEFAULT_OPENCODE_PACKAGE,
+  binaryName: "opencode",
+  remoteLogPath: "/logs/agent/opencode.txt",
+  imageBuildSteps: (options) =>
+    buildImageSteps({ ...options, binaryName: "opencode" }),
+  buildBootstrapScript: (options) =>
+    buildBootstrapScript({ ...options, binaryName: "opencode" }),
+  buildRunScript: (options) => buildOpencodeRunScript("opencode", options),
+  parseRun: parseOpencodeStream,
+};
+
+const KILO_HARNESS: OriHarnessDef = {
+  id: "kilo",
+  defaultPackage: DEFAULT_KILO_PACKAGE,
+  binaryName: "kilo",
+  remoteLogPath: "/logs/agent/kilo.txt",
+  imageBuildSteps: (options) =>
+    buildImageSteps({ ...options, binaryName: "kilo" }),
+  buildBootstrapScript: (options) =>
+    buildBootstrapScript({ ...options, binaryName: "kilo" }),
+  buildRunScript: (options) => buildOpencodeRunScript("kilo", options),
+  parseRun: parseOpencodeStream,
+};
+
 export const ORI_HARNESSES: Readonly<Record<OriAgent, OriHarnessDef>> = {
   claude: CLAUDE_HARNESS,
   pi: ORI_PI_HARNESS,
   "prime-agent": PRIME_AGENT_HARNESS,
   omp: OMP_HARNESS,
+  codex: CODEX_HARNESS,
+  opencode: OPENCODE_HARNESS,
+  kilo: KILO_HARNESS,
 };
 
 export function getOriHarness(agent: OriAgent): OriHarnessDef {
@@ -658,6 +812,202 @@ function parseJsonAgentStream(stdout: string): OriAgentRun {
         }
       : undefined,
     generationIds,
+    generationTimeMs: undefined,
+    finalText,
+    assistantMessages,
+    responseItems,
+    isError,
+    apiErrorStatus,
+    turns: turns > 0 ? turns : undefined,
+    toolCalls,
+  };
+}
+
+function parseJsonLines(stdout: string): Record<string, unknown>[] {
+  const events: Record<string, unknown>[] = [];
+  for (const line of stdout.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith("{")) {
+      continue;
+    }
+    const parsed = Either.try(() => JSON.parse(trimmed));
+    if (Either.isRight(parsed) && isRecord(parsed.right)) {
+      events.push(parsed.right);
+    }
+  }
+  return events;
+}
+
+const CODEX_TOOL_ITEM_TYPES = new Set([
+  "command_execution",
+  "file_change",
+  "mcp_tool_call",
+  "web_search",
+]);
+
+function parseCodexStream(stdout: string): OriAgentRun {
+  let inputTokens = 0;
+  let outputTokens = 0;
+  let reasoningTokens = 0;
+  let turns = 0;
+  let toolCalls = 0;
+  let isError = false;
+  let apiErrorStatus: string | undefined;
+  let finalText: string | undefined;
+  const assistantMessages: ModelMessage[] = [];
+  const responseItems: ResponseItem[] = [];
+  for (const event of parseJsonLines(stdout)) {
+    responseItems.push(event);
+    const eventType = event["type"];
+    if (eventType === "error" || eventType === "turn.failed") {
+      isError = true;
+      const errorRecord = isRecord(event["error"]) ? event["error"] : event;
+      apiErrorStatus =
+        optionalStringField(errorRecord, "message") ?? apiErrorStatus;
+      continue;
+    }
+    if (eventType === "turn.completed") {
+      turns++;
+      const { usage } = event;
+      if (isRecord(usage)) {
+        inputTokens += optionalNumberField(usage, "input_tokens") ?? 0;
+        outputTokens += optionalNumberField(usage, "output_tokens") ?? 0;
+        reasoningTokens +=
+          optionalNumberField(usage, "reasoning_output_tokens") ?? 0;
+      }
+      continue;
+    }
+    if (eventType !== "item.completed") {
+      continue;
+    }
+    const { item } = event;
+    if (!isRecord(item)) {
+      continue;
+    }
+    const itemType = item["type"];
+    if (typeof itemType === "string" && CODEX_TOOL_ITEM_TYPES.has(itemType)) {
+      toolCalls++;
+      continue;
+    }
+    if (itemType !== "agent_message") {
+      continue;
+    }
+    const text = optionalStringField(item, "text");
+    if (text !== undefined && text.length > 0) {
+      finalText = text;
+      assistantMessages.push({ role: MessageRole.Assistant, content: text });
+    }
+  }
+  const totalTokens = inputTokens + outputTokens;
+  return {
+    usage:
+      totalTokens !== 0
+        ? {
+            inputTokens,
+            outputTokens,
+            totalTokens,
+            reasoningTokens,
+            totalCost: 0,
+          }
+        : undefined,
+    generationIds: parseProxyGenerationIds(stdout),
+    generationTimeMs: undefined,
+    finalText,
+    assistantMessages,
+    responseItems,
+    isError,
+    apiErrorStatus,
+    turns: turns > 0 ? turns : undefined,
+    toolCalls,
+  };
+}
+
+function parseOpencodeStream(stdout: string): OriAgentRun {
+  let inputTokens = 0;
+  let outputTokens = 0;
+  let cacheRead = 0;
+  let cacheWrite = 0;
+  let totalTokens = 0;
+  let reasoningTokens = 0;
+  let totalCost = 0;
+  let turns = 0;
+  let toolCalls = 0;
+  let isError = false;
+  let apiErrorStatus: string | undefined;
+  let finalText: string | undefined;
+  const assistantMessages: ModelMessage[] = [];
+  const responseItems: ResponseItem[] = [];
+  for (const event of parseJsonLines(stdout)) {
+    responseItems.push(event);
+    const eventType = event["type"];
+    if (eventType === "error") {
+      isError = true;
+      const error = event["error"];
+      if (isRecord(error)) {
+        const data = isRecord(error["data"]) ? error["data"] : error;
+        apiErrorStatus =
+          optionalStringField(data, "message") ??
+          optionalStringField(error, "name") ??
+          apiErrorStatus;
+      }
+      continue;
+    }
+    if (eventType === "tool_use") {
+      toolCalls++;
+      continue;
+    }
+    const { part } = event;
+    if (!isRecord(part)) {
+      continue;
+    }
+    if (eventType === "text") {
+      const text = optionalStringField(part, "text");
+      if (text !== undefined && text.length > 0) {
+        finalText = text;
+        assistantMessages.push({ role: MessageRole.Assistant, content: text });
+      }
+      continue;
+    }
+    if (eventType !== "step_finish") {
+      continue;
+    }
+    turns++;
+    totalCost += optionalNumberField(part, "cost") ?? 0;
+    const { tokens } = part;
+    if (!isRecord(tokens)) {
+      continue;
+    }
+    const stepInput = optionalNumberField(tokens, "input") ?? 0;
+    const stepOutput = optionalNumberField(tokens, "output") ?? 0;
+    const stepReasoning = optionalNumberField(tokens, "reasoning") ?? 0;
+    const { cache } = tokens;
+    const stepCacheRead = isRecord(cache)
+      ? (optionalNumberField(cache, "read") ?? 0)
+      : 0;
+    const stepCacheWrite = isRecord(cache)
+      ? (optionalNumberField(cache, "write") ?? 0)
+      : 0;
+    inputTokens += stepInput;
+    outputTokens += stepOutput + stepReasoning;
+    cacheRead += stepCacheRead;
+    cacheWrite += stepCacheWrite;
+    reasoningTokens += stepReasoning;
+    totalTokens +=
+      optionalNumberField(tokens, "total") ??
+      stepInput + stepCacheRead + stepCacheWrite + stepOutput + stepReasoning;
+  }
+  return {
+    usage:
+      totalTokens !== 0
+        ? {
+            inputTokens: inputTokens + cacheRead + cacheWrite,
+            outputTokens,
+            totalTokens,
+            reasoningTokens,
+            totalCost,
+          }
+        : undefined,
+    generationIds: parseProxyGenerationIds(stdout),
     generationTimeMs: undefined,
     finalText,
     assistantMessages,
