@@ -15,6 +15,7 @@ import {
 } from "./swe-atlas/benchmark";
 import { TAU_BENCH_AIRLINE_BENCHMARK } from "./tau-bench-airline/benchmark";
 import { TAU3_BENCH_BANKING_BENCHMARK } from "./tau3-bench-banking/benchmark";
+import { TERMINAL_BENCH_4_BENCHMARK } from "./terminal-bench-4/benchmark";
 import { TERMINAL_BENCH_BENCHMARK } from "./terminal-bench/benchmark";
 import type { Benchmark } from "./types";
 import { VGI_BENCH_BENCHMARK } from "./vgi-bench/benchmark";
@@ -27,6 +28,7 @@ const BENCHMARKS: Record<string, Benchmark> = {
   [TAU3_BENCH_BANKING_BENCHMARK.id]: TAU3_BENCH_BANKING_BENCHMARK,
   [MMMU_PRO_VISION_BENCHMARK.id]: MMMU_PRO_VISION_BENCHMARK,
   [TERMINAL_BENCH_BENCHMARK.id]: TERMINAL_BENCH_BENCHMARK,
+  [TERMINAL_BENCH_4_BENCHMARK.id]: TERMINAL_BENCH_4_BENCHMARK,
   [DRACO_BENCHMARK.id]: DRACO_BENCHMARK,
   [IFSTRUCT_BENCHMARK.id]: IFSTRUCT_BENCHMARK,
   [SWE_ATLAS_QA_BENCHMARK.id]: SWE_ATLAS_QA_BENCHMARK,

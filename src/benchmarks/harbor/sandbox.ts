@@ -46,12 +46,23 @@ export interface SandboxSessionInstance {
   readonly destroy: () => Effect<void, SolverError>;
 }
 
+export const SANDBOX_IMAGE_KINDS = {
+  Registry: "registry",
+  ModalImageId: "modal-image-id",
+} as const;
+
+export type SandboxImageKind =
+  (typeof SANDBOX_IMAGE_KINDS)[keyof typeof SANDBOX_IMAGE_KINDS];
+
 export interface CreateSessionInput {
   readonly imageTag: string;
+  readonly imageKind?: SandboxImageKind;
   readonly imageBuildSteps?: readonly string[];
   readonly timeoutSec: number;
   readonly cpus: number;
   readonly memoryMb: number;
+  readonly gpu?: string;
+  readonly env?: Readonly<Record<string, string>>;
   readonly allowInternet: boolean;
   readonly workdir: string;
   readonly keepAliveCommand: readonly string[];

@@ -471,6 +471,16 @@ export function buildBenchmarkConfig(opts: {
         reasoningEffort,
       });
     }
+    case "terminal_bench_4": {
+      return buildSchemaValidatedConfig({
+        benchmarkId: "terminal_bench_4",
+        model: requireModel("terminal_bench_4", model),
+        endpointId,
+        panelConfig,
+        costTier,
+        reasoningEffort,
+      });
+    }
     case "draco": {
       const panel = parseSchema(DracoPanelConfigSchema, panelConfig);
       if (Either.isLeft(panel)) {

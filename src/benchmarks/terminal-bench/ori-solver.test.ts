@@ -633,6 +633,24 @@ describe("terminal-bench ori solver", () => {
     expect(steps.at(-1)).toBe("RUN claude --version");
   });
 
+  it("installs system packages through apt-get, dnf or apk so non-Debian task images build", () => {
+    for (const harness of Object.values(ORI_HARNESSES)) {
+      const step = harness
+        .imageBuildSteps({ agentPackage: harness.defaultPackage })
+        .find((s) => s.startsWith("RUN if command -v apt-get"));
+      expect(step).toBeDefined();
+      expect(step).toContain("apt-get install -y --no-install-recommends");
+      expect(step).toContain(
+        "elif command -v dnf >/dev/null; then dnf install -y"
+      );
+      expect(step).toContain(
+        "elif command -v apk >/dev/null; then apk add --no-cache bash "
+      );
+      expect(step).toContain("exit 1; fi");
+      expect(step).not.toMatch(/^RUN apt-get/);
+    }
+  });
+
   it("exposes every packaged harness and runtime helper", () => {
     const dockerfile = ORI_HARNESSES.claude
       .imageBuildSteps({
