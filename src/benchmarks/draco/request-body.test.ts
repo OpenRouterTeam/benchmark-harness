@@ -19,6 +19,7 @@ import {
   experimentTools,
 } from "./request-body";
 import type { DracoPanelConfig } from "./schemas";
+import { ToolEntrySchema } from "./schemas";
 
 function config(overrides: Partial<DracoPanelConfig> = {}): DracoPanelConfig {
   return {
@@ -132,6 +133,17 @@ describe("applyBlocklist", () => {
       engine: "openrouter",
       environment: { type: "container_auto" },
     });
+  });
+  it("omits shell parameters when a legacy idle timeout was the only parameter", () => {
+    const parsed = parseSchema(ToolEntrySchema, {
+      type: "openrouter:shell",
+      parameters: { sleepAfterSeconds: 3600 },
+    });
+    assertRight(parsed);
+
+    const tools = experimentTools(config({ tools: [parsed.right] }));
+
+    expect(tools).toEqual([{ type: "openrouter:shell" }]);
   });
   it("passes shell through untouched by the blocklist (no engine/domain injection)", () => {
     const cfg = config({
