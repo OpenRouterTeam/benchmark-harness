@@ -10,6 +10,7 @@ import {
   persistRunConfig,
   resolveDracoRunConfig,
 } from "./config-overlay";
+import { experimentTools } from "./request-body";
 import type { DracoPanelConfig } from "./schemas";
 
 function baseConfig(
@@ -149,6 +150,36 @@ describe("resolveDracoRunConfig", () => {
       expect(resolved.right.config).toEqual(baseConfig());
     } finally {
       await rm(dir, { recursive: true, force: true });
+    }
+  });
+  it("loads a legacy shell config without forwarding its removed idle timeout", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "draco-resume-"));
+    const parameters = {
+      engine: "openrouter",
+      environment: { type: "container_reference", containerId: "sess_test" },
+    } as const;
+    const tools = [{ type: "openrouter:shell", parameters }];
+    try {
+      await writeFile(
+        join(directory, "config.json"),
+        JSON.stringify({
+          ...baseConfig(),
+          tools: [
+            {
+              type: "openrouter:shell",
+              parameters: { ...parameters, sleepAfterSeconds: 3600 },
+            },
+          ],
+        })
+      );
+
+      const resolved = await resolveDracoRunConfig({ resumeDir: directory });
+
+      assertRight(resolved);
+      expect(resolved.right.config.tools).toEqual(tools);
+      expect(experimentTools(resolved.right.config)).toEqual(tools);
+    } finally {
+      await rm(directory, { recursive: true, force: true });
     }
   });
   it("errors on a missing resume dir", async () => {

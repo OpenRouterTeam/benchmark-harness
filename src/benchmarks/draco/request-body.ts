@@ -191,9 +191,6 @@ function toShellParams(
   if (parameters.environment !== undefined) {
     config.environment = parameters.environment;
   }
-  if (parameters.sleepAfterSeconds !== undefined) {
-    config.sleepAfterSeconds = parameters.sleepAfterSeconds;
-  }
   return Object.keys(config).length > 0 ? config : undefined;
 }
 

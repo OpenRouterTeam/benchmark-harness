@@ -208,7 +208,6 @@ export type ShellEnvironment = z.infer<typeof ShellEnvironmentSchema>;
 export const ShellToolParametersSchema = z.object({
   engine: z.enum([ShellEngine.Auto, ShellEngine.OpenRouter]).optional(),
   environment: ShellEnvironmentSchema.optional(),
-  sleepAfterSeconds: z.number().int().positive().max(2592000).optional(),
 });
 
 export type ShellToolParameters = z.infer<typeof ShellToolParametersSchema>;
