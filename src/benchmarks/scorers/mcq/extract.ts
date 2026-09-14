@@ -41,10 +41,10 @@ export function normalizeMcqAnswer(extractedAnswer: string): string {
 }
 
 const MCQ_PATTERNS: readonly RegExp[] = [
-  /(?:\*{1,2}|_{1,2})Answer[s]?\s*[:\-–]?(?:\*{1,2}|_{1,2})\s*([A-Z])\b/i,
-  /^\s*(?:\*{1,2}|_{1,2})?Answer:?(?:\*{1,2}|_{1,2})?\s*:?\s*(?:\*{1,2}|_{1,2})?([A-Z])(?:\*{1,2}|_{1,2})?\s*/im,
-  /\bAnswer[s]?\b\s*[:\-–]?\s*\(\s*([A-Z])\s*\)/i,
-  /\bAnswer[s]?\b\s*[:\-–]?\s*([A-Z])\b/i,
+  /(?:\*{1,2}|_{1,2})Answer[s]?\s*[:\-–]?(?:\*{1,2}|_{1,2})\s*\$?\s*([A-Z])\b/i,
+  /^\s*(?:\*{1,2}|_{1,2})?Answer:?(?:\*{1,2}|_{1,2})?\s*:?\s*(?:\*{1,2}|_{1,2})?\$?\s*([A-Z])(?:\*{1,2}|_{1,2})?\s*/im,
+  /\bAnswer[s]?\b\s*[:\-–]?\s*\$?\s*\(\s*([A-Z])\s*\)/i,
+  /\bAnswer[s]?\b\s*[:\-–]?\s*\$?\s*([A-Z])\b/i,
   /\b(?:Option|Choice)\b\s*[:\-–]?\s*([A-Z])\b/i,
   /\\boxed\{[^}]*?([A-Z])[^}]*\}/m,
   /\\boxed\{[^}]*?\\textbf\{[^}]*?([A-Z])[^}]*\}[^}]*\}/m,

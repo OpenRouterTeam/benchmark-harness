@@ -33,6 +33,32 @@ describe("extractMcqAnswer (openbench parity)", () => {
     });
   }
 });
+const DOLLAR_LETTER_FIXTURES: readonly {
+  text: string;
+  expected: string | null;
+}[] = [
+  { text: "Answer: $B", expected: "B" },
+  { text: "Answer: $B$", expected: "B" },
+  { text: "**Answer:** $C", expected: "C" },
+  { text: "Answer: $(D)", expected: "D" },
+  { text: "answer - $a", expected: "A" },
+  {
+    text: "The start codon (M) is encoded by AUG.\n\nAnswer: $B",
+    expected: "B",
+  },
+  {
+    text: "Option C looks tempting but fails the stoichiometry.\n\nAnswer: $A",
+    expected: "A",
+  },
+  { text: "Answer: $5", expected: null },
+];
+describe("extractMcqAnswer (prompt-literal `Answer: $LETTER`)", () => {
+  for (const { text, expected } of DOLLAR_LETTER_FIXTURES) {
+    it(`extracts ${JSON.stringify(expected)} from ${JSON.stringify(text)}`, () => {
+      expect(extractMcqAnswer(text)).toBe(expected);
+    });
+  }
+});
 describe("stripMdLatex (openbench parity)", () => {
   it("strips bold markers", () => {
     expect(stripMdLatex("**A**")).toBe("A");
