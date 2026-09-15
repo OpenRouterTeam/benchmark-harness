@@ -47,6 +47,21 @@ describe("bench-harness CLI", () => {
     );
   });
 
+  it("rejects non-numeric values for numeric flags", () => {
+    expect(() => parseArgs(["--concurrency", "abc"])).toThrow(
+      "--concurrency must be a valid number, got: abc"
+    );
+    expect(() => parseArgs(["--limit", "xyz"])).toThrow(
+      "--limit must be a valid number, got: xyz"
+    );
+    expect(() => parseArgs(["--start", "foo"])).toThrow(
+      "--start must be a valid number, got: foo"
+    );
+    expect(() => parseArgs(["--epochs", "bar"])).toThrow(
+      "--epochs must be a valid number, got: bar"
+    );
+  });
+
   it("passes reasoning effort to hand-built model benchmark configs", () => {
     for (const benchmarkId of [
       "gpqa_diamond",
@@ -289,5 +304,50 @@ describe("bench-harness CLI", () => {
       benchmarkId: "tau3_bench_banking",
       retrievalConfig: "bm25_grep",
     });
+  });
+
+  it("forwards solver-config options to gpqa_diamond, mmlu_pro, mmmu_pro_vision, and ifstruct", () => {
+    for (const benchmarkId of [
+      "gpqa_diamond",
+      "mmlu_pro",
+      "mmmu_pro_vision",
+      "ifstruct",
+    ] as const) {
+      const config = buildBenchmarkConfig({
+        benchmarkId,
+        model: "openai/gpt-5",
+        panelConfig: {
+          providerOnly: ["together"],
+          maxTokens: 2048,
+          timeoutMs: 30000,
+        },
+        artifactDir: undefined,
+        endpointId: undefined,
+        imageDetail: benchmarkId === "mmmu_pro_vision" ? "high" : undefined,
+        reasoningEffort: "low",
+      });
+      expect(config).toMatchObject({
+        benchmarkId,
+        providerOnly: ["together"],
+        maxTokens: 2048,
+        timeoutMs: 30000,
+        reasoningEffort: "low",
+        ...(benchmarkId === "mmmu_pro_vision" ? { imageDetail: "high" } : {}),
+      });
+    }
+  });
+
+  it("rejects unknown solver-config options for gpqa_diamond and mmlu_pro", () => {
+    expect(() =>
+      buildBenchmarkConfig({
+        benchmarkId: "gpqa_diamond",
+        model: "openai/gpt-5",
+        panelConfig: { unknownOption: true },
+        artifactDir: undefined,
+        endpointId: undefined,
+        imageDetail: undefined,
+        reasoningEffort: "high",
+      })
+    ).toThrow("Unknown gpqa_diamond solver-config option(s): unknownOption");
   });
 });
