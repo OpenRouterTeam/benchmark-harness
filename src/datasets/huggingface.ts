@@ -2,7 +2,6 @@ import { createHash } from "node:crypto";
 import { join } from "node:path";
 
 import { FetchHttpClient, HttpClient } from "@effect/platform";
-import { file } from "bun";
 import { fromIterable } from "effect/Chunk";
 import { map as configMap, option, string } from "effect/Config";
 import type { DurationInput } from "effect/Duration";
@@ -33,6 +32,7 @@ import {
 } from "effect/Schedule";
 import type { Stream } from "effect/Stream";
 import { paginateChunkEffect } from "effect/Stream";
+import mime from "mime";
 
 import type { Sample } from "../harness/core";
 import { DatasetError } from "../harness/core";
@@ -206,7 +206,10 @@ function inlineHfRowImages(
                 response.arrayBuffer.pipe(
                   map((arrayBuffer) => {
                     const base64 = Buffer.from(arrayBuffer).toString("base64");
-                    const contentType = file(new URL(imageUrl).pathname).type;
+                    const contentType =
+                      mime.getType(new URL(imageUrl).pathname) ??
+                      response.headers["content-type"] ??
+                      "application/octet-stream";
                     return [
                       key,
                       {

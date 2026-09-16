@@ -60,13 +60,13 @@ function stubFetch(response: unknown, assetBytes = new Uint8Array()): void {
   };
 }
 
-function makeLayer(opts: { revision?: string }) {
+function makeLayer(opts: { revision?: string; inlineImages?: boolean }) {
   return makeHfDatasetLayer({
     dataset: "test/dataset",
     config: "default",
     split: "train",
     hfToken: "",
-    ...(opts.revision !== undefined && { revision: opts.revision }),
+    ...opts,
     recordToSample: (record) => ({
       id: String(record["id"] ?? ""),
       input: "unused",
@@ -228,22 +228,13 @@ describe("huggingface page cache", () => {
       },
       new Uint8Array([3, 4, 5])
     );
-    expect(
-      await fetchSize(
-        makeHfDatasetLayer({
-          dataset: "test/dataset",
-          config: "default",
-          split: "train",
-          hfToken: "",
-          inlineImages: true,
-          recordToSample: () => ({
-            id: "image",
-            input: "unused",
-            target: { text: "unused" },
-          }),
-        })
-      )
-    ).toBe(1);
+    expect(await fetchSize(makeLayer({}))).toBe(1);
+    expect(fetchCount).toBe(1);
+    expect(readFileSync(cacheFile({}), "utf8")).toContain(imageUrl);
+    expect(await fetchSize(makeLayer({ inlineImages: true }))).toBe(1);
+    expect(fetchCount).toBe(3);
+    expect(await fetchSize(makeLayer({ inlineImages: true }))).toBe(1);
+    expect(fetchCount).toBe(3);
     const file = cacheFile({}).replace("0-1.json", "0-1-inline-images.json");
     expect(existsSync(file)).toBe(true);
     expect(readFileSync(file, "utf8")).toContain("data:image/png;base64,AwQF");
