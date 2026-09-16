@@ -33,6 +33,7 @@ const originalEnv = Object.fromEntries(
 );
 const originalFetch = globalThis.fetch;
 const uploads = new Map<string, { bytes: Uint8Array; contentType: string }>();
+let writes: number;
 let directory: string;
 let restoreStorage: () => void;
 let sourceRevision: string;
@@ -42,12 +43,21 @@ beforeEach(async () => {
   directory = await mkdtemp(join(tmpdir(), "mmmu-mirror-test-"));
   Object.assign(process.env, env);
   uploads.clear();
+  writes = 0;
   sourceRevision = revision;
   corruptReadback = false;
   const storage = spyOn(S3Client.prototype, "file").mockImplementation(
     (key) =>
       ({
+        stat: async () => {
+          const existing = uploads.get(`/${key}`);
+          if (existing === undefined) {
+            throw new Error("NoSuchKey");
+          }
+          return { size: existing.bytes.byteLength };
+        },
         write: async (data: Uint8Array, options: { type: string }) => {
+          writes += 1;
           uploads.set(`/${key}`, { bytes: data, contentType: options.type });
           return data.length;
         },
@@ -106,6 +116,29 @@ it("publishes original PNG/JPEG bytes and emits the verified manifest", async ()
   );
   expect(JSON.stringify(manifest)).not.toContain("Signature");
   expect(await Bun.file(out).json()).toEqual(manifest);
+});
+
+it("skips re-uploading objects that already exist unless forced, and still verifies readback", async () => {
+  const out = join(directory, "manifest.json");
+  const first = await mirrorMmmuProMedia({ revision, out });
+  expect(writes).toBe(2);
+  const second = await mirrorMmmuProMedia({ revision, out });
+  expect(writes).toBe(2);
+  expect(second).toEqual(first);
+  await mirrorMmmuProMedia({ revision, out, force: true });
+  expect(writes).toBe(4);
+  corruptReadback = true;
+  await expect(mirrorMmmuProMedia({ revision, out })).rejects.toThrow(
+    "readback verification"
+  );
+});
+
+it("dry-run downloads and hashes without uploading or writing the manifest", async () => {
+  const out = join(directory, "manifest.json");
+  const manifest = await mirrorMmmuProMedia({ revision, out, dryRun: true });
+  expect(manifest.images).toHaveLength(2);
+  expect(writes).toBe(0);
+  expect(await Bun.file(out).exists()).toBe(false);
 });
 
 it("rejects an unexpected HF revision before uploading", async () => {

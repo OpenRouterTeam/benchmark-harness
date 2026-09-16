@@ -1,16 +1,29 @@
 import { z } from "../internal/zod";
 
+export const MMMU_PRO_DATASET_PATH = "MMMU/MMMU_Pro";
+export const MMMU_PRO_VISION_SUBSET = "vision";
+export const MMMU_PRO_SPLIT = "test";
+export const MMMU_PRO_DEFAULT_REVISION =
+  "563f3e84bb3b90893083a1f039cfa13077f2302b";
+
+const HF_ORIGIN = "https://datasets-server.huggingface.co";
+const CACHED_ASSET_ROOT = `/cached-assets/${MMMU_PRO_DATASET_PATH}/`;
+
+export function mmmuProCachedAssetPrefix(revision: string): string {
+  return `${CACHED_ASSET_ROOT}--/${revision}/--/${MMMU_PRO_VISION_SUBSET}/${MMMU_PRO_SPLIT}/`;
+}
+
 const MmmuProMediaManifestSchema = z.object({
-  dataset: z.literal("MMMU/MMMU_Pro"),
-  config: z.literal("vision"),
-  split: z.literal("test"),
+  dataset: z.literal(MMMU_PRO_DATASET_PATH),
+  config: z.literal(MMMU_PRO_VISION_SUBSET),
+  split: z.literal(MMMU_PRO_SPLIT),
   revision: z.string().regex(/^[a-f0-9]{40}$/),
   manifestHash: z.string().regex(/^[a-f0-9]{64}$/),
   images: z
     .array(
       z.object({
         id: z.string().min(1),
-        sourcePath: z.string().startsWith("/cached-assets/MMMU/MMMU_Pro/"),
+        sourcePath: z.string().startsWith(CACHED_ASSET_ROOT),
         url: z.url(),
       })
     )
@@ -21,8 +34,15 @@ type ManifestImage = z.infer<
   typeof MmmuProMediaManifestSchema
 >["images"][number];
 
-export function buildMmmuProMediaManifest(raw: unknown) {
+export interface MmmuProMediaManifest {
+  readonly revision: string;
+  readonly manifestHash: string;
+  readonly imageById: ReadonlyMap<string, ManifestImage>;
+}
+
+export function buildMmmuProMediaManifest(raw: unknown): MmmuProMediaManifest {
   const manifest = MmmuProMediaManifestSchema.parse(raw);
+  const sourcePrefix = mmmuProCachedAssetPrefix(manifest.revision);
   const imageById = new Map<string, ManifestImage>();
   for (const image of manifest.images) {
     if (imageById.has(image.id)) {
@@ -30,11 +50,7 @@ export function buildMmmuProMediaManifest(raw: unknown) {
         `MMMU Pro media manifest has duplicate id ${image.id}`
       );
     }
-    if (
-      !image.sourcePath.startsWith(
-        `/cached-assets/MMMU/MMMU_Pro/--/${manifest.revision}/--/vision/test/`
-      )
-    ) {
+    if (!image.sourcePath.startsWith(sourcePrefix)) {
       throw new TypeError(
         `MMMU Pro image ${image.id} does not match manifest revision`
       );
@@ -49,7 +65,7 @@ export function buildMmmuProMediaManifest(raw: unknown) {
 }
 
 export function mirroredMmmuProImage(
-  manifest: ReturnType<typeof buildMmmuProMediaManifest>,
+  manifest: MmmuProMediaManifest,
   id: string,
   sourceUrl: string
 ): string {
@@ -58,13 +74,20 @@ export function mirroredMmmuProImage(
     throw new TypeError(`MMMU Pro image ${id} is missing from media manifest`);
   }
   const source = new URL(sourceUrl);
-  if (
-    source.origin !== "https://datasets-server.huggingface.co" ||
-    source.pathname !== image.sourcePath
-  ) {
+  if (source.origin !== HF_ORIGIN || source.pathname !== image.sourcePath) {
     throw new TypeError(
       `MMMU Pro image ${id} changed; regenerate media manifest for the current dataset revision`
     );
   }
   return image.url;
+}
+
+const MMMU_PRO_MEDIA_MANIFESTS: readonly MmmuProMediaManifest[] = [];
+
+export function mmmuProMediaManifestFor(
+  revision: string
+): MmmuProMediaManifest | undefined {
+  return MMMU_PRO_MEDIA_MANIFESTS.find(
+    (manifest) => manifest.revision === revision
+  );
 }

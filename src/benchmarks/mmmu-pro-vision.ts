@@ -18,18 +18,19 @@ import type {
 } from "./benchmark-config";
 import { MMMU_PRO_VISION_META } from "./benchmark-meta";
 import { defineSingleTurnBenchmark } from "./define-single-turn-benchmark";
-import type { buildMmmuProMediaManifest } from "./mmmu-pro-media-manifest";
-import { mirroredMmmuProImage } from "./mmmu-pro-media-manifest";
+import type { MmmuProMediaManifest } from "./mmmu-pro-media-manifest";
+import {
+  MMMU_PRO_DATASET_PATH,
+  MMMU_PRO_DEFAULT_REVISION,
+  MMMU_PRO_SPLIT,
+  MMMU_PRO_VISION_SUBSET,
+  mirroredMmmuProImage,
+  mmmuProMediaManifestFor,
+} from "./mmmu-pro-media-manifest";
 import { MMMU_SYSTEM_MESSAGE, parseOptions } from "./mmmu-shared";
 import { buildDynamicMcqPrompt } from "./scorers/mcq/dynamic-prompt";
 import { mcqScorer } from "./scorers/mcq/scorer";
 import type { Benchmark } from "./types";
-
-const MMMU_PRO_DATASET_PATH = "MMMU/MMMU_Pro";
-
-const MMMU_PRO_VISION_SUBSET = "vision";
-
-const MMMU_PRO_SPLIT = "test";
 
 const DEFAULT_QUESTION =
   "Use the image to answer the question. Choose the best option.";
@@ -42,7 +43,7 @@ export function mmmuProVisionRecordToSample(
   record: Readonly<Record<string, unknown>>,
   index: number,
   imageDetail?: ImageDetail,
-  mediaManifest?: ReturnType<typeof buildMmmuProMediaManifest>
+  mediaManifest?: MmmuProMediaManifest
 ): Sample {
   const id = asString(record["id"], `mmmu-pro-vision-${index}`);
   const questionRaw = record["question"];
@@ -118,27 +119,27 @@ export function mmmuProVisionRecordToSample(
 interface MmmuProVisionDatasetOpts {
   readonly imageDetail?: ImageDetail;
   readonly retry?: RetryConfig;
-  readonly mediaManifest?: ReturnType<typeof buildMmmuProMediaManifest>;
+  readonly revision?: string;
 }
 
 export function makeMmmuProVisionDatasetLayer(
   opts?: MmmuProVisionDatasetOpts
 ): Layer<DatasetTag> {
+  const revision = opts?.revision ?? MMMU_PRO_DEFAULT_REVISION;
+  const mediaManifest = mmmuProMediaManifestFor(revision);
   return makeHfDatasetLayer({
     dataset: MMMU_PRO_DATASET_PATH,
     config: MMMU_PRO_VISION_SUBSET,
     split: MMMU_PRO_SPLIT,
+    revision,
     recordToSample: (record, idx) =>
       mmmuProVisionRecordToSample(
         record,
         idx,
         opts?.imageDetail,
-        opts?.mediaManifest
+        mediaManifest
       ),
-    ...definedValues({
-      retry: opts?.retry,
-      revision: opts?.mediaManifest?.revision,
-    }),
+    ...definedValues({ retry: opts?.retry }),
   });
 }
 

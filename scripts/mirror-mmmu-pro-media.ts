@@ -1,127 +1,138 @@
-import { createHash } from "node:crypto";
 import { extname } from "node:path";
 import { parseArgs } from "node:util";
 
 import { S3Client } from "bun";
 
-import { buildMmmuProMediaManifest } from "../src/benchmarks/mmmu-pro-media-manifest";
+import {
+  MMMU_PRO_DATASET_PATH,
+  MMMU_PRO_DEFAULT_REVISION,
+  MMMU_PRO_SPLIT,
+  MMMU_PRO_VISION_SUBSET,
+  buildMmmuProMediaManifest,
+  mmmuProCachedAssetPrefix,
+} from "../src/benchmarks/mmmu-pro-media-manifest";
 import { z } from "../src/internal/zod";
-import { readMediaMirrorEnv } from "./media-mirror";
+import {
+  downloadBytes,
+  fetchHfRowPages,
+  hashManifestEntries,
+  mapWithConcurrency,
+  readMediaMirrorEnv,
+  sha256Hex,
+  uploadUnlessPresent,
+  verifyPublished,
+} from "./media-mirror";
 
-const RowsSchema = z.object({
-  rows: z.array(
-    z.object({
-      row: z.object({
-        id: z.string().min(1),
-        image: z.object({ src: z.url() }),
-      }),
-    })
-  ),
-  num_rows_total: z.number().int().positive(),
+const HF_ORIGIN = "https://datasets-server.huggingface.co";
+const DEFAULT_OUT = "src/benchmarks/mmmu-pro-media-manifest.json";
+
+const RowSchema = z.object({
+  id: z.string().min(1),
+  image: z.object({ src: z.url() }),
 });
 
-export async function mirrorMmmuProMedia(options: {
-  revision: string;
-  out: string;
-}) {
-  const revision = z
-    .string()
-    .regex(/^[a-f0-9]{40}$/)
-    .parse(options.revision);
+const RevisionSchema = z.string().regex(/^[a-f0-9]{40}$/);
+
+export interface MirrorMmmuProOptions {
+  readonly revision: string;
+  readonly out: string;
+  readonly concurrency?: number;
+  readonly force?: boolean;
+  readonly dryRun?: boolean;
+}
+
+export async function mirrorMmmuProMedia(options: MirrorMmmuProOptions) {
+  const revision = RevisionSchema.parse(options.revision);
+  const concurrency = options.concurrency ?? 8;
+  const uploadOptions = {
+    force: options.force ?? false,
+    dryRun: options.dryRun ?? false,
+  };
   const env = readMediaMirrorEnv();
   const s3 = new S3Client(env);
+  const sourcePrefix = mmmuProCachedAssetPrefix(revision);
   const images = [];
-  let total = Number.POSITIVE_INFINITY;
-  for (let offset = 0; offset < total; offset += 100) {
-    const response = await fetch(
-      `https://datasets-server.huggingface.co/rows?dataset=MMMU/MMMU_Pro&config=vision&split=test&offset=${offset}&length=100`
-    );
-    if (!response.ok || response.headers.get("x-revision") !== revision) {
-      await response.body?.cancel();
+  let total = 0;
+  const pages = fetchHfRowPages(
+    {
+      dataset: MMMU_PRO_DATASET_PATH,
+      config: MMMU_PRO_VISION_SUBSET,
+      split: MMMU_PRO_SPLIT,
+      revision,
+    },
+    RowSchema
+  );
+  for await (const page of pages) {
+    if (page.resolvedRevision !== revision) {
       throw new Error(
-        `MMMU Pro rows must return 200 at revision ${revision} (HTTP ${response.status})`
+        `MMMU Pro rows resolved to revision ${page.resolvedRevision ?? "unknown"}, expected ${revision}`
       );
     }
-    const page = RowsSchema.parse(await response.json());
-    total = page.num_rows_total;
-    if (page.rows.length !== Math.min(100, total - offset)) {
-      throw new Error(`Incomplete MMMU Pro page at offset ${offset}`);
-    }
-    for (let start = 0; start < page.rows.length; start += 8) {
-      const batch = await Promise.all(
-        page.rows.slice(start, start + 8).map(async ({ row }) => {
-          const source = new URL(row.image.src);
-          if (
-            source.origin !== "https://datasets-server.huggingface.co" ||
-            !source.pathname.startsWith(
-              `/cached-assets/MMMU/MMMU_Pro/--/${revision}/--/vision/test/`
-            )
-          ) {
-            throw new Error(
-              `MMMU Pro image ${row.id} does not match revision ${revision}`
-            );
-          }
-          const download = await fetch(source);
-          if (!download.ok) {
-            await download.body?.cancel();
-            throw new Error(
-              `MMMU Pro image ${row.id}: HTTP ${download.status}`
-            );
-          }
-          const bytes = new Uint8Array(await download.arrayBuffer());
-          if (bytes.byteLength === 0) {
-            throw new Error(`MMMU Pro image ${row.id} is empty`);
-          }
-          const sha256 = createHash("sha256").update(bytes).digest("hex");
-          const contentType = Bun.file(source.pathname).type;
-          const key = `${env.keyPrefix}mmmu-pro/${revision}/${sha256}${extname(source.pathname)}`;
-          await s3.file(key).write(bytes, { type: contentType });
-          const url = `${env.publicBaseUrl}/${key}`;
-          const check = await fetch(url);
-          if (!check.ok) {
-            await check.body?.cancel();
-            throw new Error(
-              `Published MMMU Pro image ${row.id}: HTTP ${check.status}`
-            );
-          }
-          const publishedBytes = new Uint8Array(await check.arrayBuffer());
-          if (
-            check.headers.get("content-type")?.split(";")[0] !== contentType ||
-            createHash("sha256").update(publishedBytes).digest("hex") !== sha256
-          ) {
-            throw new Error(
-              `Published MMMU Pro image ${row.id} failed public readback verification`
-            );
-          }
-          return {
-            id: row.id,
-            sourcePath: source.pathname,
-            url,
-            bytes: bytes.byteLength,
-            contentType,
-            sha256,
-          };
-        })
-      );
-      images.push(...batch);
-    }
+    total = page.total;
+    const batch = await mapWithConcurrency(
+      page.rows,
+      concurrency,
+      async (row) => {
+        const source = new URL(row.image.src);
+        if (
+          source.origin !== HF_ORIGIN ||
+          !source.pathname.startsWith(sourcePrefix)
+        ) {
+          throw new Error(
+            `MMMU Pro image ${row.id} does not match revision ${revision}`
+          );
+        }
+        const bytes = await downloadBytes(source);
+        if (bytes.byteLength === 0) {
+          throw new Error(`MMMU Pro image ${row.id} is empty`);
+        }
+        const sha256 = sha256Hex(bytes);
+        const contentType = Bun.file(source.pathname).type;
+        const key = `${env.keyPrefix}mmmu-pro/${revision}/${sha256}${extname(source.pathname)}`;
+        const outcome = await uploadUnlessPresent(
+          s3,
+          key,
+          bytes,
+          contentType,
+          uploadOptions
+        );
+        const url = `${env.publicBaseUrl}/${key}`;
+        if (outcome !== "dry-run") {
+          await verifyPublished(url, { sha256, contentType });
+        }
+        return {
+          id: row.id,
+          sourcePath: source.pathname,
+          url,
+          bytes: bytes.byteLength,
+          contentType,
+          sha256,
+        };
+      }
+    );
+    images.push(...batch);
     process.stderr.write(
-      `Mirrored ${images.length}/${total} MMMU Pro images\n`
+      `Mirrored ${images.length}/${page.total} MMMU Pro images\n`
+    );
+  }
+  if (images.length !== total) {
+    throw new Error(
+      `MMMU Pro rows returned ${images.length} of ${total} expected images`
     );
   }
   images.sort((a, b) => a.id.localeCompare(b.id));
   const manifest = {
-    dataset: "MMMU/MMMU_Pro",
-    config: "vision",
-    split: "test",
+    dataset: MMMU_PRO_DATASET_PATH,
+    config: MMMU_PRO_VISION_SUBSET,
+    split: MMMU_PRO_SPLIT,
     revision,
-    manifestHash: createHash("sha256")
-      .update(JSON.stringify(images))
-      .digest("hex"),
+    manifestHash: hashManifestEntries(images),
     images,
   };
   buildMmmuProMediaManifest(manifest);
-  await Bun.write(options.out, `${JSON.stringify(manifest, null, 2)}\n`);
+  if (!uploadOptions.dryRun) {
+    await Bun.write(options.out, `${JSON.stringify(manifest, null, 2)}\n`);
+  }
   return manifest;
 }
 
@@ -129,15 +140,22 @@ if (import.meta.main) {
   const { values } = parseArgs({
     args: Bun.argv.slice(2),
     options: {
-      revision: { type: "string" },
-      out: {
-        type: "string",
-        default: "src/benchmarks/mmmu-pro-media-manifest.json",
-      },
+      revision: { type: "string", default: MMMU_PRO_DEFAULT_REVISION },
+      out: { type: "string", default: DEFAULT_OUT },
+      concurrency: { type: "string", default: "8" },
+      force: { type: "boolean", default: false },
+      "dry-run": { type: "boolean", default: false },
     },
   });
+  const concurrency = Number(values.concurrency);
+  if (!Number.isInteger(concurrency) || concurrency < 1) {
+    throw new Error("--concurrency must be a positive integer");
+  }
   await mirrorMmmuProMedia({
-    revision: values.revision ?? "",
+    revision: values.revision,
     out: values.out,
+    concurrency,
+    force: values.force,
+    dryRun: values["dry-run"],
   });
 }
