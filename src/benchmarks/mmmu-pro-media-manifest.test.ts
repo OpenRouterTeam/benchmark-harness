@@ -1,9 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import {
-  buildMmmuProMediaManifest,
-  hashMmmuProMedia,
-} from "./mmmu-pro-media-manifest";
+import { buildMmmuProMediaManifest } from "./mmmu-pro-media-manifest";
 import { mmmuProVisionRecordToSample } from "./mmmu-pro-vision";
 
 const revision = "a".repeat(40);
@@ -24,7 +21,7 @@ function rawManifest(images = [image]) {
     split: "test",
     revision,
     images,
-    manifestHash: hashMmmuProMedia(images),
+    manifestHash: "0".repeat(64),
   };
 }
 
@@ -41,6 +38,8 @@ describe("MMMU Pro mirrored media", () => {
     };
     const original = mmmuProVisionRecordToSample(record, 0, "low");
     const mirrored = mmmuProVisionRecordToSample(record, 0, "low", manifest);
+    expect(manifest.imageById.get(image.id)).not.toHaveProperty("bytes");
+    expect(manifest.imageById.get(image.id)).not.toHaveProperty("sha256");
     expect(mirrored.input).toBe(original.input);
     expect(mirrored.target).toEqual(original.target);
     expect(mirrored.contentParts?.at(1)).toEqual({
@@ -82,13 +81,13 @@ describe("MMMU Pro mirrored media", () => {
     ).toThrow("changed");
   });
 
-  it("rejects corrupted, duplicate, or wrong-revision manifest entries", () => {
+  it("rejects invalid, duplicate, or wrong-revision manifest entries", () => {
     expect(() =>
       buildMmmuProMediaManifest({
         ...rawManifest(),
-        manifestHash: "0".repeat(64),
+        manifestHash: "invalid",
       })
-    ).toThrow("hash");
+    ).toThrow();
     expect(() =>
       buildMmmuProMediaManifest(rawManifest([image, image]))
     ).toThrow("duplicate");

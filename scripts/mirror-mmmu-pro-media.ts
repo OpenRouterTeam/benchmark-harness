@@ -1,20 +1,12 @@
 import { createHash } from "node:crypto";
-import { mkdir } from "node:fs/promises";
-import { extname, join } from "node:path";
+import { extname } from "node:path";
 import { parseArgs } from "node:util";
 
-import type { MmmuProMediaManifest } from "../src/benchmarks/mmmu-pro-media-manifest";
-import {
-  buildMmmuProMediaManifest,
-  hashMmmuProMedia,
-  MmmuProMediaManifestSchema,
-} from "../src/benchmarks/mmmu-pro-media-manifest";
+import { S3Client } from "bun";
+
+import { buildMmmuProMediaManifest } from "../src/benchmarks/mmmu-pro-media-manifest";
 import { z } from "../src/internal/zod";
-import {
-  createMediaMirrorClient,
-  readMediaMirrorEnv,
-  uploadMedia,
-} from "./media-mirror";
+import { readMediaMirrorEnv, uploadMedia } from "./media-mirror";
 
 const RowsSchema = z.object({
   rows: z.array(
@@ -28,26 +20,23 @@ const RowsSchema = z.object({
   num_rows_total: z.number().int().positive(),
 });
 
-export async function prepareMmmuProMedia(options: {
-  directory: string;
+export async function mirrorMmmuProMedia(options: {
   revision: string;
-  publicBaseUrl: string;
-}): Promise<MmmuProMediaManifest> {
+  out: string;
+}) {
   const revision = z
     .string()
     .regex(/^[a-f0-9]{40}$/)
     .parse(options.revision);
-  const publicBaseUrl = z
-    .url()
-    .parse(options.publicBaseUrl)
-    .replace(/\/+$/, "");
-  const images: MmmuProMediaManifest["images"] = [];
-  await mkdir(options.directory, { recursive: true });
+  const env = readMediaMirrorEnv();
+  const s3 = new S3Client(env);
+  const images = [];
   let total = Number.POSITIVE_INFINITY;
   for (let offset = 0; offset < total; offset += 100) {
     const response = await fetch(
       `https://datasets-server.huggingface.co/rows?dataset=MMMU/MMMU_Pro&config=vision&split=test&offset=${offset}&length=100`
     );
+    // The viewer ignores revision=, so check the revision it actually served.
     if (!response.ok || response.headers.get("x-revision") !== revision) {
       await response.body?.cancel();
       throw new Error(
@@ -81,15 +70,37 @@ export async function prepareMmmuProMedia(options: {
             );
           }
           const bytes = new Uint8Array(await download.arrayBuffer());
+          if (bytes.byteLength === 0) {
+            throw new Error(`MMMU Pro image ${row.id} is empty`);
+          }
           const sha256 = createHash("sha256").update(bytes).digest("hex");
-          const filename = `${sha256}${extname(source.pathname)}`;
-          await Bun.write(join(options.directory, filename), bytes);
+          const contentType = Bun.file(source.pathname).type;
+          const key = `${env.keyPrefix}mmmu-pro/${revision}/${sha256}${extname(source.pathname)}`;
+          // Always write the verified bytes; equal object sizes do not establish integrity.
+          await uploadMedia(s3, key, bytes, contentType, true);
+          const url = `${env.publicBaseUrl}/${key}`;
+          const check = await fetch(url);
+          if (!check.ok) {
+            await check.body?.cancel();
+            throw new Error(
+              `Published MMMU Pro image ${row.id}: HTTP ${check.status}`
+            );
+          }
+          const publishedBytes = new Uint8Array(await check.arrayBuffer());
+          if (
+            check.headers.get("content-type")?.split(";")[0] !== contentType ||
+            createHash("sha256").update(publishedBytes).digest("hex") !== sha256
+          ) {
+            throw new Error(
+              `Published MMMU Pro image ${row.id} failed public readback verification`
+            );
+          }
           return {
             id: row.id,
             sourcePath: source.pathname,
-            url: `${publicBaseUrl}/mmmu-pro/${revision}/${filename}`,
+            url,
             bytes: bytes.byteLength,
-            contentType: Bun.file(source.pathname).type,
+            contentType,
             sha256,
           };
         })
@@ -97,97 +108,38 @@ export async function prepareMmmuProMedia(options: {
       images.push(...batch);
     }
     process.stderr.write(
-      `Prepared ${images.length}/${total} MMMU Pro images\n`
+      `Mirrored ${images.length}/${total} MMMU Pro images\n`
     );
   }
   images.sort((a, b) => a.id.localeCompare(b.id));
-  const manifest: MmmuProMediaManifest = {
+  const manifest = {
     dataset: "MMMU/MMMU_Pro",
     config: "vision",
     split: "test",
     revision,
-    manifestHash: hashMmmuProMedia(images),
+    manifestHash: createHash("sha256")
+      .update(JSON.stringify(images))
+      .digest("hex"),
     images,
   };
   buildMmmuProMediaManifest(manifest);
-  await Bun.write(
-    join(options.directory, "manifest.json"),
-    `${JSON.stringify(manifest, null, 2)}\n`
-  );
+  await Bun.write(options.out, `${JSON.stringify(manifest, null, 2)}\n`);
   return manifest;
-}
-
-async function publishMmmuProMedia(
-  directory: string,
-  out: string
-): Promise<void> {
-  const manifest = MmmuProMediaManifestSchema.parse(
-    await Bun.file(join(directory, "manifest.json")).json()
-  );
-  buildMmmuProMediaManifest(manifest);
-  const env = readMediaMirrorEnv();
-  const s3 = createMediaMirrorClient(env);
-  for (const image of manifest.images) {
-    const filename = `${image.sha256}${extname(image.sourcePath)}`;
-    const bytes = new Uint8Array(
-      await Bun.file(join(directory, filename)).arrayBuffer()
-    );
-    if (
-      bytes.byteLength !== image.bytes ||
-      createHash("sha256").update(bytes).digest("hex") !== image.sha256
-    ) {
-      throw new Error(
-        `Prepared MMMU Pro image ${image.id} failed checksum verification`
-      );
-    }
-    const key = `${env.keyPrefix}mmmu-pro/${manifest.revision}/${filename}`;
-    await uploadMedia(s3, key, bytes, image.contentType);
-    image.url = `${env.publicBaseUrl}/${key}`;
-    const check = await fetch(image.url);
-    if (!check.ok) {
-      await check.body?.cancel();
-      throw new Error(
-        `Published MMMU Pro image ${image.id}: HTTP ${check.status}`
-      );
-    }
-    const publishedBytes = new Uint8Array(await check.arrayBuffer());
-    if (
-      check.headers.get("content-type")?.split(";")[0] !== image.contentType ||
-      createHash("sha256").update(publishedBytes).digest("hex") !== image.sha256
-    ) {
-      throw new Error(
-        `Published MMMU Pro image ${image.id} failed public readback verification`
-      );
-    }
-  }
-  manifest.manifestHash = hashMmmuProMedia(manifest.images);
-  await Bun.write(out, `${JSON.stringify(manifest, null, 2)}\n`);
 }
 
 if (import.meta.main) {
   const { values } = parseArgs({
     args: Bun.argv.slice(2),
     options: {
-      prepare: { type: "boolean", default: false },
-      directory: { type: "string" },
       revision: { type: "string" },
-      "public-base-url": { type: "string" },
       out: {
         type: "string",
         default: "src/benchmarks/mmmu-pro-media-manifest.json",
       },
     },
   });
-  if (!values.directory) {
-    throw new Error("--directory is required for prepared image files");
-  }
-  if (values.prepare) {
-    await prepareMmmuProMedia({
-      directory: values.directory,
-      revision: values.revision ?? "",
-      publicBaseUrl: values["public-base-url"] ?? "",
-    });
-  } else {
-    await publishMmmuProMedia(values.directory, values.out);
-  }
+  await mirrorMmmuProMedia({
+    revision: values.revision ?? "",
+    out: values.out,
+  });
 }

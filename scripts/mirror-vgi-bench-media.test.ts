@@ -1,13 +1,13 @@
 import { describe, expect, test } from "bun:test";
 
 import { VGI_BENCH_DEFAULT_REVISION } from "../src/benchmarks/vgi-bench/benchmark";
+import { normalizeKeyPrefix } from "./media-mirror";
 import type { ManifestEntry } from "./mirror-vgi-bench-media";
 import {
   candidateSources,
   describeFailure,
   extensionOf,
   hashManifest,
-  normalizeKeyPrefix,
   readOptions,
 } from "./mirror-vgi-bench-media";
 

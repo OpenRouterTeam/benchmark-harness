@@ -1,8 +1,6 @@
-import { createHash } from "node:crypto";
-
 import { z } from "../internal/zod";
 
-export const MmmuProMediaManifestSchema = z.object({
+const MmmuProMediaManifestSchema = z.object({
   dataset: z.literal("MMMU/MMMU_Pro"),
   config: z.literal("vision"),
   split: z.literal("test"),
@@ -14,30 +12,18 @@ export const MmmuProMediaManifestSchema = z.object({
         id: z.string().min(1),
         sourcePath: z.string().startsWith("/cached-assets/MMMU/MMMU_Pro/"),
         url: z.url(),
-        bytes: z.number().int().positive(),
-        contentType: z.string().min(1),
-        sha256: z.string().regex(/^[a-f0-9]{64}$/),
       })
     )
     .min(1),
 });
 
-export type MmmuProMediaManifest = z.infer<typeof MmmuProMediaManifestSchema>;
-
-export function hashMmmuProMedia(
-  images: MmmuProMediaManifest["images"]
-): string {
-  return createHash("sha256").update(JSON.stringify(images)).digest("hex");
-}
+type ManifestImage = z.infer<
+  typeof MmmuProMediaManifestSchema
+>["images"][number];
 
 export function buildMmmuProMediaManifest(raw: unknown) {
   const manifest = MmmuProMediaManifestSchema.parse(raw);
-  if (manifest.manifestHash !== hashMmmuProMedia(manifest.images)) {
-    throw new TypeError(
-      "MMMU Pro media manifest hash does not match its images"
-    );
-  }
-  const imageById = new Map<string, MmmuProMediaManifest["images"][number]>();
+  const imageById = new Map<string, ManifestImage>();
   for (const image of manifest.images) {
     if (imageById.has(image.id)) {
       throw new TypeError(

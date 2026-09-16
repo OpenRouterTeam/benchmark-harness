@@ -1,4 +1,4 @@
-import { S3Client } from "bun";
+import type { S3Client } from "bun";
 
 function requireEnv(name: string): string {
   const value = process.env[name]?.trim();
@@ -24,19 +24,7 @@ export function readMediaMirrorEnv() {
       ""
     ),
     keyPrefix: normalizeKeyPrefix(process.env["BENCH_MEDIA_KEY_PREFIX"]),
-    hfToken: process.env["HF_TOKEN"],
   };
-}
-
-export function createMediaMirrorClient(
-  env: ReturnType<typeof readMediaMirrorEnv>
-) {
-  return new S3Client({
-    accessKeyId: env.accessKeyId,
-    secretAccessKey: env.secretAccessKey,
-    bucket: env.bucket,
-    endpoint: env.endpoint,
-  });
 }
 
 export async function uploadMedia(

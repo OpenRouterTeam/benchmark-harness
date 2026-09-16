@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 
-import type { S3Client } from "bun";
+import { S3Client } from "bun";
 
 import {
   VGI_BENCH_CONFIG,
@@ -10,12 +10,7 @@ import {
   downscaledVideoUrl,
 } from "../src/benchmarks/vgi-bench/benchmark";
 import { z } from "../src/internal/zod";
-import {
-  createMediaMirrorClient,
-  readMediaMirrorEnv as readEnv,
-  uploadMedia,
-} from "./media-mirror";
-export { normalizeKeyPrefix } from "./media-mirror";
+import { readMediaMirrorEnv as readEnv, uploadMedia } from "./media-mirror";
 
 const HF_ROWS_BASE_URL = "https://datasets-server.huggingface.co/rows";
 const HF_PAGE_SIZE = 100;
@@ -296,8 +291,11 @@ export function hashManifest(entries: readonly ManifestEntry[]): string {
 async function main(): Promise<void> {
   const env = readEnv();
   const options = readOptions(process.argv.slice(2));
-  const s3 = createMediaMirrorClient(env);
-  const allVideos = await fetchSourceVideos(options.revision, env.hfToken);
+  const s3 = new S3Client(env);
+  const allVideos = await fetchSourceVideos(
+    options.revision,
+    process.env["HF_TOKEN"]
+  );
   const videos =
     options.limit === undefined ? allVideos : allVideos.slice(0, options.limit);
   process.stderr.write(
