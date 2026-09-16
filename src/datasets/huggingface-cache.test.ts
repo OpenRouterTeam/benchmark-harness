@@ -60,15 +60,12 @@ function stubFetch(response: unknown, assetBytes = new Uint8Array()): void {
   };
 }
 
-function makeLayer(opts: { inlineImages?: boolean; revision?: string }) {
+function makeLayer(opts: { revision?: string }) {
   return makeHfDatasetLayer({
     dataset: "test/dataset",
     config: "default",
     split: "train",
     hfToken: "",
-    ...(opts.inlineImages !== undefined && {
-      inlineImages: opts.inlineImages,
-    }),
     ...(opts.revision !== undefined && { revision: opts.revision }),
     recordToSample: (record) => ({
       id: String(record["id"] ?? ""),
@@ -120,11 +117,7 @@ describe("huggingface page cache", () => {
     }
   });
 
-  function cacheFile(opts: {
-    inlineImages?: boolean;
-    revision?: string;
-    token?: string;
-  }): string {
+  function cacheFile(opts: { revision?: string; token?: string }): string {
     const root = process.env.BENCH_DATASET_CACHE_DIR;
     if (root === undefined) {
       throw new Error("BENCH_DATASET_CACHE_DIR not set");
@@ -142,7 +135,7 @@ describe("huggingface page cache", () => {
       "default",
       "train",
       encodeCacheKeySegment(opts.revision ?? "HEAD"),
-      `0-1${opts.inlineImages === true ? "-inline" : ""}.json`
+      "0-1-inline.json"
     );
   }
 
@@ -235,10 +228,9 @@ describe("huggingface page cache", () => {
       },
       new Uint8Array([3, 4, 5])
     );
-    expect(await fetchSize(makeLayer({ inlineImages: true }))).toBe(1);
-    const file = cacheFile({ inlineImages: true });
+    expect(await fetchSize(makeLayer({}))).toBe(1);
+    const file = cacheFile({});
     expect(existsSync(file)).toBe(true);
-    expect(existsSync(cacheFile({ inlineImages: false }))).toBe(false);
     expect(readFileSync(file, "utf8")).toContain("data:image/png;base64,AwQF");
   });
 });

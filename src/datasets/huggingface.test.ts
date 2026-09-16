@@ -172,7 +172,6 @@ describe("makeHfDatasetLayer", () => {
       config: "default",
       split: "train",
       hfToken: "hf_test_token",
-      inlineImages: true,
       recordToSample: (record) => {
         fetchedRecord = record;
         return {
