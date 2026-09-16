@@ -3,12 +3,14 @@ import { createHash } from "node:crypto";
 import {
   existsSync,
   mkdtempSync,
+  mkdirSync,
+  writeFileSync,
   readFileSync,
   rmSync,
   utimesSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 
 import { flatMap, provide } from "effect/Effect";
 
@@ -60,7 +62,7 @@ function stubFetch(response: unknown, assetBytes = new Uint8Array()): void {
   };
 }
 
-function makeLayer(opts: { revision?: string; inlineImages?: boolean }) {
+function makeLayer(opts: { revision?: string }) {
   return makeHfDatasetLayer({
     dataset: "test/dataset",
     config: "default",
@@ -135,7 +137,7 @@ describe("huggingface page cache", () => {
       "default",
       "train",
       encodeCacheKeySegment(opts.revision ?? "HEAD"),
-      "0-1.json"
+      "0-1-inline-images.json"
     );
   }
 
@@ -214,29 +216,29 @@ describe("huggingface page cache", () => {
     expect(existsSync(cacheFile({}))).toBe(true);
   });
 
-  it("stores inlined images under a separate durable cache key", async () => {
+  it("replaces legacy URL caches with durable inline images", async () => {
     const imageUrl = `${HF_CACHED_ASSETS_URL_PREFIX}x/y.png?Expires=1&Signature=s`;
-    stubFetch(
-      {
-        rows: [
-          {
-            row_idx: 0,
-            row: { id: 0, image: { src: imageUrl, height: 1, width: 2 } },
-          },
-        ],
-        num_rows_total: 1,
-      },
-      new Uint8Array([3, 4, 5])
+    const page = {
+      rows: [
+        {
+          row_idx: 0,
+          row: { id: 0, image: { src: imageUrl, height: 1, width: 2 } },
+        },
+      ],
+      num_rows_total: 1,
+    };
+    const file = cacheFile({});
+    mkdirSync(dirname(file), { recursive: true });
+    writeFileSync(
+      file.replace("-inline-images.json", ".json"),
+      JSON.stringify(page)
     );
+    stubFetch(page, new Uint8Array([3, 4, 5]));
     expect(await fetchSize(makeLayer({}))).toBe(1);
-    expect(fetchCount).toBe(1);
-    expect(readFileSync(cacheFile({}), "utf8")).toContain(imageUrl);
-    expect(await fetchSize(makeLayer({ inlineImages: true }))).toBe(1);
-    expect(fetchCount).toBe(3);
-    expect(await fetchSize(makeLayer({ inlineImages: true }))).toBe(1);
-    expect(fetchCount).toBe(3);
-    const file = cacheFile({}).replace("0-1.json", "0-1-inline-images.json");
-    expect(existsSync(file)).toBe(true);
+    expect(fetchCount).toBe(2);
     expect(readFileSync(file, "utf8")).toContain("data:image/png;base64,AwQF");
+    expect(readFileSync(file, "utf8")).not.toContain(imageUrl);
+    expect(await fetchSize(makeLayer({}))).toBe(1);
+    expect(fetchCount).toBe(2);
   });
 });

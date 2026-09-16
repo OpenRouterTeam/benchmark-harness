@@ -90,7 +90,7 @@ function hfPageCacheKey(
     encodeCacheKeySegment(config.config),
     encodeCacheKeySegment(config.split),
     encodeCacheKeySegment(config.revision ?? "HEAD"),
-    `${offset}-${length}${config.inlineImages === true ? "-inline-images" : ""}.json`
+    `${offset}-${length}-inline-images.json`
   );
 }
 
@@ -139,7 +139,6 @@ export interface HfDatasetConfig {
     record: Readonly<Record<string, unknown>>,
     index: number
   ) => Sample;
-  readonly inlineImages?: boolean;
   readonly pageSize?: number;
   readonly retry?: RetryConfig;
   readonly hfToken?: string;
@@ -324,10 +323,12 @@ export function makeHfPageFetcher(
           })
         );
       }
-      const page =
-        config.inlineImages === true
-          ? yield* inlineHfRowImages(parsed.right, client, hfToken, fetchRetry)
-          : parsed.right;
+      const page = yield* inlineHfRowImages(
+        parsed.right,
+        client,
+        hfToken,
+        fetchRetry
+      );
       if (cacheKey !== undefined) {
         yield* promise(() => store.writeJson(cacheKey, page));
       }
