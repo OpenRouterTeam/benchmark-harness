@@ -89,7 +89,7 @@ function hfPageCacheKey(
     encodeCacheKeySegment(config.config),
     encodeCacheKeySegment(config.split),
     encodeCacheKeySegment(config.revision ?? "HEAD"),
-    `${offset}-${length}-inline.json`
+    `${offset}-${length}${config.inlinePngImages === true ? "-inline-png" : ""}.json`
   );
 }
 
@@ -138,6 +138,7 @@ export interface HfDatasetConfig {
     record: Readonly<Record<string, unknown>>,
     index: number
   ) => Sample;
+  readonly inlinePngImages?: boolean;
   readonly pageSize?: number;
   readonly retry?: RetryConfig;
   readonly hfToken?: string;
@@ -164,41 +165,6 @@ export const HfRowsResponseSchema = z.object({
 export const HF_CACHED_ASSETS_URL_PREFIX =
   "https://datasets-server.huggingface.co/cached-assets/";
 
-export function isHfCachedAssetUrl(src: string): boolean {
-  return src.startsWith(HF_CACHED_ASSETS_URL_PREFIX);
-}
-
-export function detectImageMimeType(
-  bytes: Uint8Array,
-  headerContentType: string | undefined
-): string {
-  const startsWith = (...expected: number[]): boolean =>
-    expected.every((value, index) => bytes[index] === value);
-  if (startsWith(0x89, 0x50, 0x4e, 0x47)) {
-    return "image/png";
-  }
-  if (startsWith(0xff, 0xd8, 0xff)) {
-    return "image/jpeg";
-  }
-  if (startsWith(0x47, 0x49, 0x46, 0x38)) {
-    return "image/gif";
-  }
-  if (
-    startsWith(0x52, 0x49, 0x46, 0x46) &&
-    bytes[8] === 0x57 &&
-    bytes[9] === 0x45 &&
-    bytes[10] === 0x42 &&
-    bytes[11] === 0x50
-  ) {
-    return "image/webp";
-  }
-  if (startsWith(0x42, 0x4d)) {
-    return "image/bmp";
-  }
-  const contentType = headerContentType?.split(";")[0]?.trim().toLowerCase();
-  return contentType?.startsWith("image/") ? contentType : "image/png";
-}
-
 interface PageState {
   readonly offset: number;
   readonly limit: number;
@@ -208,17 +174,11 @@ export type HfRowsResponse = z.infer<typeof HfRowsResponseSchema>;
 
 export type HfRow = HfRowsResponse["rows"][number];
 
-export function inlineHfRowImages(
+function inlineHfRowImages(
   page: HfRowsResponse,
   client: HttpClient.HttpClient,
   hfToken: string,
-  retrySchedule: Schedule<
-    {
-      readonly error: unknown;
-      readonly attempt: number;
-    },
-    unknown
-  >
+  retrySchedule: ReturnType<typeof hfFetchRetrySchedule>
 ): Effect<HfRowsResponse, DatasetError> {
   const headers =
     hfToken !== "" ? { Authorization: `Bearer ${hfToken}` } : undefined;
@@ -230,7 +190,10 @@ export function inlineHfRowImages(
         Object.entries(row.row),
         ([key, value]) => {
           const parsed = parseSchema(HfImageSchema, value);
-          if (Either.isLeft(parsed) || !isHfCachedAssetUrl(parsed.right.src)) {
+          if (
+            Either.isLeft(parsed) ||
+            !parsed.right.src.startsWith(HF_CACHED_ASSETS_URL_PREFIX)
+          ) {
             return succeed([key, value] satisfies readonly [string, unknown]);
           }
           const imageUrl = parsed.right.src;
@@ -241,17 +204,12 @@ export function inlineHfRowImages(
               flatMap((response) =>
                 response.arrayBuffer.pipe(
                   map((arrayBuffer) => {
-                    const bytes = new Uint8Array(arrayBuffer);
-                    const contentType = detectImageMimeType(
-                      bytes,
-                      response.headers["content-type"]
-                    );
-                    const base64 = Buffer.from(bytes).toString("base64");
+                    const base64 = Buffer.from(arrayBuffer).toString("base64");
                     return [
                       key,
                       {
                         ...parsed.right,
-                        src: `data:${contentType};base64,${base64}`,
+                        src: `data:image/png;base64,${base64}`,
                       },
                     ] satisfies readonly [string, unknown];
                   })
@@ -361,12 +319,10 @@ export function makeHfPageFetcher(
           })
         );
       }
-      const page = yield* inlineHfRowImages(
-        parsed.right,
-        client,
-        hfToken,
-        fetchRetry
-      );
+      const page =
+        config.inlinePngImages === true
+          ? yield* inlineHfRowImages(parsed.right, client, hfToken, fetchRetry)
+          : parsed.right;
       if (cacheKey !== undefined) {
         yield* promise(() => store.writeJson(cacheKey, page));
       }

@@ -135,7 +135,7 @@ describe("huggingface page cache", () => {
       "default",
       "train",
       encodeCacheKeySegment(opts.revision ?? "HEAD"),
-      "0-1-inline.json"
+      "0-1.json"
     );
   }
 
@@ -228,8 +228,23 @@ describe("huggingface page cache", () => {
       },
       new Uint8Array([3, 4, 5])
     );
-    expect(await fetchSize(makeLayer({}))).toBe(1);
-    const file = cacheFile({});
+    expect(
+      await fetchSize(
+        makeHfDatasetLayer({
+          dataset: "test/dataset",
+          config: "default",
+          split: "train",
+          hfToken: "",
+          inlinePngImages: true,
+          recordToSample: () => ({
+            id: "image",
+            input: "unused",
+            target: { text: "unused" },
+          }),
+        })
+      )
+    ).toBe(1);
+    const file = cacheFile({}).replace("0-1.json", "0-1-inline-png.json");
     expect(existsSync(file)).toBe(true);
     expect(readFileSync(file, "utf8")).toContain("data:image/png;base64,AwQF");
   });

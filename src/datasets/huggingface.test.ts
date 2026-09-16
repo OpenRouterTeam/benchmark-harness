@@ -20,9 +20,7 @@ import { runHarnessPromise } from "../internal/effect-logger";
 import type { CacheStore } from "./cache-store";
 import {
   HF_CACHED_ASSETS_URL_PREFIX,
-  detectImageMimeType,
   hfFetchRetrySchedule,
-  isHfCachedAssetUrl,
   makeHfDatasetLayer,
   resolveHfToken,
 } from "./huggingface";
@@ -150,6 +148,7 @@ describe("makeHfDatasetLayer", () => {
     stubFetch(rowsPage({ numRowsTotal: 1, rows: 1 }));
     const layer = makeHfDatasetLayer({
       dataset: "test/dataset",
+      inlinePngImages: true,
       config: "default",
       split: "train",
       hfToken: "hf_test_token",
@@ -168,6 +167,7 @@ describe("makeHfDatasetLayer", () => {
     stubFetch(rowsPage({ numRowsTotal: 1, rows: 1 }));
     const layer = makeHfDatasetLayer({
       dataset: "test/dataset",
+      inlinePngImages: true,
       config: "default",
       split: "train",
       hfToken: "",
@@ -182,135 +182,63 @@ describe("makeHfDatasetLayer", () => {
     expect(headersByRequest.length).toBe(1);
     expect(headersByRequest[0]?.["authorization"]).toBeUndefined();
   });
-  it("inlines cached asset images while preserving other row values", async () => {
-    const imageUrl = `${HF_CACHED_ASSETS_URL_PREFIX}x/y.png?Expires=1&Signature=s`;
-    const externalImage = {
-      src: "https://example.com/a.png",
-      height: 10,
-      width: 20,
-    };
-    const row = {
-      id: "image-row",
-      image: { src: imageUrl, height: 30, width: 40 },
-      externalImage,
-      description: "preserved",
-    };
-    let fetchedRecord: Readonly<Record<string, unknown>> | undefined;
-    stubFetch(
-      {
-        rows: [{ row_idx: 0, row }],
-        num_rows_total: 1,
-      },
-      new Uint8Array([0, 1, 2, 255])
-    );
-    const layer = makeHfDatasetLayer({
-      dataset: "test/dataset",
-      config: "default",
-      split: "train",
-      hfToken: "hf_test_token",
-      recordToSample: (record) => {
-        fetchedRecord = record;
-        return {
-          id: String(record["id"] ?? ""),
-          input: "unused",
-          target: { text: "unused" },
-        };
-      },
-    });
-    await fetchFirstSample(layer);
-    const image = fetchedRecord?.["image"];
-    expect(image).toEqual({
-      src: "data:image/png;base64,AAEC/w==",
-      height: 30,
-      width: 40,
-    });
-    expect(fetchedRecord?.["externalImage"]).toEqual(externalImage);
-    expect(fetchedRecord?.["description"]).toBe("preserved");
-    expect(
-      headersByRequest.filter((headers) => headers["authorization"]).length
-    ).toBe(2);
-    expect(
-      headersByRequest.some(
-        (headers) => headers["authorization"] === "Bearer hf_test_token"
-      )
-    ).toBe(true);
-  });
-  it("sniffs PNG bytes when HF reports binary/octet-stream", async () => {
-    let fetchedRecord: Readonly<Record<string, unknown>> | undefined;
-    stubFetch(
-      {
-        rows: [
-          {
-            row_idx: 0,
-            row: {
-              image: {
-                src: `${HF_CACHED_ASSETS_URL_PREFIX}x/y.png`,
-                height: 1,
-                width: 2,
-              },
-            },
-          },
-        ],
-        num_rows_total: 1,
-      },
-      new Uint8Array([0x89, 0x50, 0x4e, 0x47]),
-      { assetContentType: "binary/octet-stream" }
-    );
-    const layer = makeHfDatasetLayer({
-      dataset: "test/dataset",
-      config: "default",
-      split: "train",
-      hfToken: "",
-      recordToSample: (record) => {
-        fetchedRecord = record;
-        return {
-          id: "image",
-          input: "unused",
-          target: { text: "unused" },
-        };
-      },
-    });
-    await fetchFirstSample(layer);
-    expect(fetchedRecord?.["image"]).toMatchObject({
-      src: "data:image/png;base64,iVBORw==",
-    });
-  });
-  it("sniffs JPEG bytes when the asset has no content type", async () => {
-    let fetchedRecord: Readonly<Record<string, unknown>> | undefined;
-    stubFetch(
-      {
-        rows: [
-          {
-            row_idx: 0,
-            row: {
-              image: { src: `${HF_CACHED_ASSETS_URL_PREFIX}x/y.jpg` },
-            },
-          },
-        ],
-        num_rows_total: 1,
-      },
-      new Uint8Array([0xff, 0xd8, 0xff]),
-      { assetContentType: undefined }
-    );
-    const layer = makeHfDatasetLayer({
-      dataset: "test/dataset",
-      config: "default",
-      split: "train",
-      hfToken: "",
-      recordToSample: (record) => {
-        fetchedRecord = record;
-        return {
-          id: "image",
-          input: "unused",
-          target: { text: "unused" },
-        };
-      },
-    });
-    await fetchFirstSample(layer);
-    expect(fetchedRecord?.["image"]).toMatchObject({
-      src: "data:image/jpeg;base64,/9j/",
-    });
-  });
+  it.each([false, true])(
+    "only inlines PNG assets when opted in (%s)",
+    async (inlinePngImages) => {
+      const imageUrl = `${HF_CACHED_ASSETS_URL_PREFIX}x/y.png?Expires=1&Signature=s`;
+      const externalImage = {
+        src: "https://example.com/a.png",
+        height: 10,
+        width: 20,
+      };
+      const row = {
+        id: "image-row",
+        image: { src: imageUrl, height: 30, width: 40 },
+        externalImage,
+        description: "preserved",
+      };
+      let fetchedRecord: Readonly<Record<string, unknown>> | undefined;
+      stubFetch(
+        {
+          rows: [{ row_idx: 0, row }],
+          num_rows_total: 1,
+        },
+        new Uint8Array([0, 1, 2, 255])
+      );
+      const layer = makeHfDatasetLayer({
+        dataset: "test/dataset",
+        inlinePngImages,
+        config: "default",
+        split: "train",
+        hfToken: "hf_test_token",
+        recordToSample: (record) => {
+          fetchedRecord = record;
+          return {
+            id: String(record["id"] ?? ""),
+            input: "unused",
+            target: { text: "unused" },
+          };
+        },
+      });
+      await fetchFirstSample(layer);
+      const image = fetchedRecord?.["image"];
+      expect(image).toEqual({
+        src: inlinePngImages ? "data:image/png;base64,AAEC/w==" : imageUrl,
+        height: 30,
+        width: 40,
+      });
+      expect(fetchedRecord?.["externalImage"]).toEqual(externalImage);
+      expect(fetchedRecord?.["description"]).toBe("preserved");
+      expect(
+        headersByRequest.filter((headers) => headers["authorization"]).length
+      ).toBe(inlinePngImages ? 2 : 1);
+      expect(
+        headersByRequest.some(
+          (headers) => headers["authorization"] === "Bearer hf_test_token"
+        )
+      ).toBe(true);
+    }
+  );
   it("fails cached asset requests and does not write a failed page", async () => {
     const writes: unknown[] = [];
     stubFetch(
@@ -332,6 +260,7 @@ describe("makeHfDatasetLayer", () => {
     );
     const layer = makeHfDatasetLayer({
       dataset: "test/dataset",
+      inlinePngImages: true,
       config: "default",
       split: "train",
       hfToken: "",
@@ -358,17 +287,18 @@ describe("makeHfDatasetLayer", () => {
           {
             row_idx: 0,
             row: {
-              image: { src: `${HF_CACHED_ASSETS_URL_PREFIX}x/y.jpg` },
+              image: { src: `${HF_CACHED_ASSETS_URL_PREFIX}x/y.png` },
             },
           },
         ],
         num_rows_total: 1,
       },
-      new Uint8Array([0xff, 0xd8, 0xff]),
-      { assetStatuses: [500, 200], assetContentType: "image/jpeg" }
+      new Uint8Array([0x89, 0x50, 0x4e, 0x47]),
+      { assetStatuses: [500, 200], assetContentType: "image/png" }
     );
     const layer = makeHfDatasetLayer({
       dataset: "test/dataset",
+      inlinePngImages: true,
       config: "default",
       split: "train",
       hfToken: "",
@@ -384,34 +314,9 @@ describe("makeHfDatasetLayer", () => {
     });
     await fetchFirstSample(layer);
     expect(fetchedRecord?.["image"]).toMatchObject({
-      src: "data:image/jpeg;base64,/9j/",
+      src: "data:image/png;base64,iVBORw==",
     });
     expect(headersByRequest).toHaveLength(3);
-  });
-});
-describe("detectImageMimeType", () => {
-  it.each([
-    [[0x89, 0x50, 0x4e, 0x47], undefined, "image/png"],
-    [[0xff, 0xd8, 0xff], undefined, "image/jpeg"],
-    [[0x47, 0x49, 0x46, 0x38], undefined, "image/gif"],
-    [
-      [0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x57, 0x45, 0x42, 0x50],
-      undefined,
-      "image/webp",
-    ],
-    [[0x42, 0x4d], undefined, "image/bmp"],
-    [[1, 2, 3], "image/webp; charset=utf-8", "image/webp"],
-    [[1, 2, 3], "application/octet-stream", "image/png"],
-  ])("detects %s with header %s as %s", (bytes, header, expected) => {
-    expect(detectImageMimeType(new Uint8Array(bytes), header)).toBe(expected);
-  });
-});
-describe("isHfCachedAssetUrl", () => {
-  it("recognizes only the Hugging Face cached-assets prefix", () => {
-    expect(
-      isHfCachedAssetUrl(`${HF_CACHED_ASSETS_URL_PREFIX}x/y.png?Expires=1`)
-    ).toBe(true);
-    expect(isHfCachedAssetUrl("https://example.com/a.png")).toBe(false);
   });
 });
 describe("hfFetchRetrySchedule", () => {
