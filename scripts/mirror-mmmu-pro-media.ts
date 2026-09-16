@@ -128,7 +128,7 @@ async function publishMmmuProMedia(
   const env = readMediaMirrorEnv();
   const s3 = createMediaMirrorClient(env);
   for (const image of manifest.images) {
-    const filename = `${image.sha256}${extname(new URL(image.url).pathname)}`;
+    const filename = `${image.sha256}${extname(image.sourcePath)}`;
     const bytes = new Uint8Array(
       await Bun.file(join(directory, filename)).arrayBuffer()
     );
@@ -150,11 +150,10 @@ async function publishMmmuProMedia(
         `Published MMMU Pro image ${image.id}: HTTP ${check.status}`
       );
     }
+    const publishedBytes = new Uint8Array(await check.arrayBuffer());
     if (
       check.headers.get("content-type")?.split(";")[0] !== image.contentType ||
-      createHash("sha256")
-        .update(new Uint8Array(await check.arrayBuffer()))
-        .digest("hex") !== image.sha256
+      createHash("sha256").update(publishedBytes).digest("hex") !== image.sha256
     ) {
       throw new Error(
         `Published MMMU Pro image ${image.id} failed public readback verification`
