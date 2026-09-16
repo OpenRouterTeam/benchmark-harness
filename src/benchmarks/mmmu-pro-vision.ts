@@ -179,6 +179,7 @@ export const MMMU_PRO_VISION_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
     makeMmmuProVisionDatasetLayer(
       definedValues({
         imageDetail: config.imageDetail,
+        revision: config.datasetRevision,
         retry: retryConfig,
       })
     ),

@@ -1,6 +1,10 @@
 import { describe, expect, it } from "bun:test";
 
-import { buildMmmuProMediaManifest } from "./mmmu-pro-media-manifest";
+import {
+  MMMU_PRO_DEFAULT_REVISION,
+  buildMmmuProMediaManifest,
+  mmmuProMediaManifestFor,
+} from "./mmmu-pro-media-manifest";
 import { mmmuProVisionRecordToSample } from "./mmmu-pro-vision";
 
 const revision = "a".repeat(40);
@@ -102,5 +106,19 @@ describe("MMMU Pro mirrored media", () => {
       )
     ).toThrow("revision");
     expect(() => buildMmmuProMediaManifest({})).toThrow();
+  });
+
+  it("ships a complete committed manifest for the default revision only", () => {
+    const committed = mmmuProMediaManifestFor(MMMU_PRO_DEFAULT_REVISION);
+    expect(committed).toBeDefined();
+    expect(committed!.revision).toBe(MMMU_PRO_DEFAULT_REVISION);
+    expect(committed!.imageById.size).toBe(1730);
+    const urlPrefix = `https://mmmu-pro-mirror.openrouter.ai/mmmu-pro/${MMMU_PRO_DEFAULT_REVISION}/`;
+    expect(
+      [...committed!.imageById.values()].every((entry) =>
+        entry.url.startsWith(urlPrefix)
+      )
+    ).toBe(true);
+    expect(mmmuProMediaManifestFor("c".repeat(40))).toBeUndefined();
   });
 });

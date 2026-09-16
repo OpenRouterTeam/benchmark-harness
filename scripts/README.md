@@ -19,7 +19,7 @@ Both scripts read the same variables, so set them per run for the target bucket:
 
 | Variable | Value |
 | --- | --- |
-| `BENCH_MEDIA_S3_ENDPOINT` | `https://<cloudflare-account-id>.r2.cloudflarestorage.com` |
+| `BENCH_MEDIA_S3_ENDPOINT` | `https://<cloudflare-account-id>.r2.cloudflarestorage.com` (a trailing `/<bucket>` as shown in the R2 dashboard is stripped) |
 | `BENCH_MEDIA_S3_BUCKET` | Bucket name from the table above |
 | `BENCH_MEDIA_S3_ACCESS_KEY_ID` / `BENCH_MEDIA_S3_SECRET_ACCESS_KEY` | R2 API token scoped to that bucket |
 | `BENCH_MEDIA_PUBLIC_BASE_URL` | Public origin from the table above |

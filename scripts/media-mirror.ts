@@ -44,10 +44,24 @@ export function normalizeKeyPrefix(rawPrefix: string | undefined): string {
   return stripped === "" ? "" : `${stripped}/`;
 }
 
+export function normalizeS3Endpoint(
+  rawEndpoint: string,
+  bucket: string
+): string {
+  const endpoint = rawEndpoint.replace(/\/+$/, "");
+  return endpoint.endsWith(`/${bucket}`)
+    ? endpoint.slice(0, -(bucket.length + 1))
+    : endpoint;
+}
+
 export function readMediaMirrorEnv() {
+  const bucket = requireEnv("BENCH_MEDIA_S3_BUCKET");
   return {
-    endpoint: requireEnv("BENCH_MEDIA_S3_ENDPOINT"),
-    bucket: requireEnv("BENCH_MEDIA_S3_BUCKET"),
+    endpoint: normalizeS3Endpoint(
+      requireEnv("BENCH_MEDIA_S3_ENDPOINT"),
+      bucket
+    ),
+    bucket,
     accessKeyId: requireEnv("BENCH_MEDIA_S3_ACCESS_KEY_ID"),
     secretAccessKey: requireEnv("BENCH_MEDIA_S3_SECRET_ACCESS_KEY"),
     publicBaseUrl: requireEnv("BENCH_MEDIA_PUBLIC_BASE_URL").replace(

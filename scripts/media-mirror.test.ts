@@ -8,6 +8,7 @@ import {
   fetchHfRowPages,
   hashManifestEntries,
   normalizeKeyPrefix,
+  normalizeS3Endpoint,
   sha256Hex,
   uploadUnlessPresent,
   verifyPublished,
@@ -49,6 +50,26 @@ describe("normalizeKeyPrefix", () => {
     expect(normalizeKeyPrefix(undefined)).toBe("");
     expect(normalizeKeyPrefix("  ")).toBe("");
     expect(normalizeKeyPrefix("///")).toBe("");
+  });
+});
+
+describe("normalizeS3Endpoint", () => {
+  test("strips a bucket-suffixed endpoint as shown in the R2 dashboard", () => {
+    expect(
+      normalizeS3Endpoint(
+        "https://acct.r2.cloudflarestorage.com/mmmu-pro-mirror/",
+        "mmmu-pro-mirror"
+      )
+    ).toBe("https://acct.r2.cloudflarestorage.com");
+  });
+
+  test("leaves an account-level endpoint untouched", () => {
+    expect(
+      normalizeS3Endpoint(
+        "https://acct.r2.cloudflarestorage.com",
+        "mmmu-pro-mirror"
+      )
+    ).toBe("https://acct.r2.cloudflarestorage.com");
   });
 });
 

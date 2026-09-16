@@ -1,4 +1,5 @@
 import { z } from "../internal/zod";
+import manifestJson from "./mmmu-pro-media-manifest.json";
 
 export const MMMU_PRO_DATASET_PATH = "MMMU/MMMU_Pro";
 export const MMMU_PRO_VISION_SUBSET = "vision";
@@ -82,7 +83,9 @@ export function mirroredMmmuProImage(
   return image.url;
 }
 
-const MMMU_PRO_MEDIA_MANIFESTS: readonly MmmuProMediaManifest[] = [];
+const MMMU_PRO_MEDIA_MANIFESTS: readonly MmmuProMediaManifest[] = [
+  buildMmmuProMediaManifest(manifestJson),
+];
 
 export function mmmuProMediaManifestFor(
   revision: string
