@@ -168,6 +168,37 @@ export function isHfCachedAssetUrl(src: string): boolean {
   return src.startsWith(HF_CACHED_ASSETS_URL_PREFIX);
 }
 
+export function detectImageMimeType(
+  bytes: Uint8Array,
+  headerContentType: string | undefined
+): string {
+  const startsWith = (...expected: number[]): boolean =>
+    expected.every((value, index) => bytes[index] === value);
+  if (startsWith(0x89, 0x50, 0x4e, 0x47)) {
+    return "image/png";
+  }
+  if (startsWith(0xff, 0xd8, 0xff)) {
+    return "image/jpeg";
+  }
+  if (startsWith(0x47, 0x49, 0x46, 0x38)) {
+    return "image/gif";
+  }
+  if (
+    startsWith(0x52, 0x49, 0x46, 0x46) &&
+    bytes[8] === 0x57 &&
+    bytes[9] === 0x45 &&
+    bytes[10] === 0x42 &&
+    bytes[11] === 0x50
+  ) {
+    return "image/webp";
+  }
+  if (startsWith(0x42, 0x4d)) {
+    return "image/bmp";
+  }
+  const contentType = headerContentType?.split(";")[0]?.trim().toLowerCase();
+  return contentType?.startsWith("image/") ? contentType : "image/png";
+}
+
 interface PageState {
   readonly offset: number;
   readonly limit: number;
@@ -191,6 +222,7 @@ export function inlineHfRowImages(
 ): Effect<HfRowsResponse, DatasetError> {
   const headers =
     hfToken !== "" ? { Authorization: `Bearer ${hfToken}` } : undefined;
+  const assetClient = client.pipe(HttpClient.filterStatusOk);
   return forEach(
     page.rows,
     (row) =>
@@ -203,16 +235,18 @@ export function inlineHfRowImages(
           }
           const imageUrl = parsed.right.src;
           const urlWithoutQuery = imageUrl.split("?")[0] ?? imageUrl;
-          return client
+          return assetClient
             .get(imageUrl, headers !== undefined ? { headers } : undefined)
             .pipe(
               flatMap((response) =>
                 response.arrayBuffer.pipe(
                   map((arrayBuffer) => {
-                    const contentType =
-                      response.headers["content-type"]?.split(";")[0]?.trim() ||
-                      "image/png";
-                    const base64 = Buffer.from(arrayBuffer).toString("base64");
+                    const bytes = new Uint8Array(arrayBuffer);
+                    const contentType = detectImageMimeType(
+                      bytes,
+                      response.headers["content-type"]
+                    );
+                    const base64 = Buffer.from(bytes).toString("base64");
                     return [
                       key,
                       {
@@ -223,12 +257,21 @@ export function inlineHfRowImages(
                   })
                 )
               ),
-              mapError(
-                (cause) =>
-                  new DatasetError({
-                    message: `HF cached asset request failed (row_idx=${row.row_idx}, url=${urlWithoutQuery}): ${String(cause)}`,
-                  })
-              ),
+              mapError((cause) => {
+                const status =
+                  typeof cause === "object" &&
+                  cause !== null &&
+                  "response" in cause &&
+                  typeof cause.response === "object" &&
+                  cause.response !== null &&
+                  "status" in cause.response &&
+                  typeof cause.response.status === "number"
+                    ? cause.response.status
+                    : undefined;
+                return new DatasetError({
+                  message: `HF cached asset request failed (row_idx=${row.row_idx}, url=${urlWithoutQuery}, ${status === undefined ? "request error" : `status=${status}`})`,
+                });
+              }),
               retry(retrySchedule)
             );
         },

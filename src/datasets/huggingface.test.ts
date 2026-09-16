@@ -17,8 +17,10 @@ import { runCollect } from "effect/Stream";
 import type { Sample } from "../harness/core";
 import { Dataset } from "../harness/dataset";
 import { runHarnessPromise } from "../internal/effect-logger";
+import type { CacheStore } from "./cache-store";
 import {
   HF_CACHED_ASSETS_URL_PREFIX,
+  detectImageMimeType,
   hfFetchRetrySchedule,
   isHfCachedAssetUrl,
   makeHfDatasetLayer,
@@ -40,8 +42,16 @@ const headersByRequest: Record<string, string>[] = [];
 
 let restoreFetch: (() => void) | undefined;
 
-function stubFetch(response: unknown, assetBytes = new Uint8Array()): void {
+function stubFetch(
+  response: unknown,
+  assetBytes = new Uint8Array(),
+  options: {
+    readonly assetContentType?: string;
+    readonly assetStatuses?: readonly number[];
+  } = {}
+): void {
   const original = globalThis.fetch;
+  let assetRequestCount = 0;
   const stub: typeof fetch = (input, init) => {
     const req =
       input instanceof Request ? input : new Request(String(input), init);
@@ -51,10 +61,19 @@ function stubFetch(response: unknown, assetBytes = new Uint8Array()): void {
     });
     headersByRequest.push(headers);
     if (req.url.startsWith(HF_CACHED_ASSETS_URL_PREFIX)) {
+      const status =
+        options.assetStatuses?.[assetRequestCount] ??
+        options.assetStatuses?.at(-1) ??
+        200;
+      assetRequestCount++;
+      const assetHeaders =
+        options.assetContentType === undefined
+          ? {}
+          : { "content-type": options.assetContentType };
       return Promise.resolve(
         new Response(assetBytes, {
-          status: 200,
-          headers: { "content-type": "image/png; charset=utf-8" },
+          status,
+          headers: assetHeaders,
         })
       );
     }
@@ -69,6 +88,23 @@ function stubFetch(response: unknown, assetBytes = new Uint8Array()): void {
   restoreFetch = () => {
     globalThis.fetch = original;
     restoreFetch = undefined;
+  };
+}
+
+function recordingCacheStore(writes: unknown[]): CacheStore {
+  return {
+    backend: "disk",
+    enabled: true,
+    async readJson() {
+      return undefined;
+    },
+    async writeJson(_key, value) {
+      writes.push(value);
+    },
+    async tryHydrateCheckout() {
+      return false;
+    },
+    async snapshotCheckout() {},
   };
 }
 
@@ -198,6 +234,176 @@ describe("makeHfDatasetLayer", () => {
         (headers) => headers["authorization"] === "Bearer hf_test_token"
       )
     ).toBe(true);
+  });
+  it("sniffs PNG bytes when HF reports binary/octet-stream", async () => {
+    let fetchedRecord: Readonly<Record<string, unknown>> | undefined;
+    stubFetch(
+      {
+        rows: [
+          {
+            row_idx: 0,
+            row: {
+              image: {
+                src: `${HF_CACHED_ASSETS_URL_PREFIX}x/y.png`,
+                height: 1,
+                width: 2,
+              },
+            },
+          },
+        ],
+        num_rows_total: 1,
+      },
+      new Uint8Array([0x89, 0x50, 0x4e, 0x47]),
+      { assetContentType: "binary/octet-stream" }
+    );
+    const layer = makeHfDatasetLayer({
+      dataset: "test/dataset",
+      config: "default",
+      split: "train",
+      hfToken: "",
+      recordToSample: (record) => {
+        fetchedRecord = record;
+        return {
+          id: "image",
+          input: "unused",
+          target: { text: "unused" },
+        };
+      },
+    });
+    await fetchFirstSample(layer);
+    expect(fetchedRecord?.["image"]).toMatchObject({
+      src: "data:image/png;base64,iVBORw==",
+    });
+  });
+  it("sniffs JPEG bytes when the asset has no content type", async () => {
+    let fetchedRecord: Readonly<Record<string, unknown>> | undefined;
+    stubFetch(
+      {
+        rows: [
+          {
+            row_idx: 0,
+            row: {
+              image: { src: `${HF_CACHED_ASSETS_URL_PREFIX}x/y.jpg` },
+            },
+          },
+        ],
+        num_rows_total: 1,
+      },
+      new Uint8Array([0xff, 0xd8, 0xff]),
+      { assetContentType: undefined }
+    );
+    const layer = makeHfDatasetLayer({
+      dataset: "test/dataset",
+      config: "default",
+      split: "train",
+      hfToken: "",
+      recordToSample: (record) => {
+        fetchedRecord = record;
+        return {
+          id: "image",
+          input: "unused",
+          target: { text: "unused" },
+        };
+      },
+    });
+    await fetchFirstSample(layer);
+    expect(fetchedRecord?.["image"]).toMatchObject({
+      src: "data:image/jpeg;base64,/9j/",
+    });
+  });
+  it("fails cached asset requests and does not write a failed page", async () => {
+    const writes: unknown[] = [];
+    stubFetch(
+      {
+        rows: [
+          {
+            row_idx: 7,
+            row: {
+              image: {
+                src: `${HF_CACHED_ASSETS_URL_PREFIX}x/y.png?Expires=1&Signature=secret`,
+              },
+            },
+          },
+        ],
+        num_rows_total: 1,
+      },
+      new Uint8Array([1, 2, 3]),
+      { assetStatuses: [403] }
+    );
+    const layer = makeHfDatasetLayer({
+      dataset: "test/dataset",
+      config: "default",
+      split: "train",
+      hfToken: "",
+      retry: { maxRetries: 0, baseDelayMs: 0 },
+      cacheStore: recordingCacheStore(writes),
+      recordToSample: () => ({
+        id: "image",
+        input: "unused",
+        target: { text: "unused" },
+      }),
+    });
+    const error = await fetchFirstSample(layer).catch(
+      (cause: unknown) => cause
+    );
+    expect(String(error)).toContain("row_idx=7");
+    expect(String(error)).not.toContain("Signature");
+    expect(writes).toHaveLength(0);
+  });
+  it("retries a failed cached asset request", async () => {
+    let fetchedRecord: Readonly<Record<string, unknown>> | undefined;
+    stubFetch(
+      {
+        rows: [
+          {
+            row_idx: 0,
+            row: {
+              image: { src: `${HF_CACHED_ASSETS_URL_PREFIX}x/y.jpg` },
+            },
+          },
+        ],
+        num_rows_total: 1,
+      },
+      new Uint8Array([0xff, 0xd8, 0xff]),
+      { assetStatuses: [500, 200], assetContentType: "image/jpeg" }
+    );
+    const layer = makeHfDatasetLayer({
+      dataset: "test/dataset",
+      config: "default",
+      split: "train",
+      hfToken: "",
+      retry: { maxRetries: 1, baseDelayMs: 0 },
+      recordToSample: (record) => {
+        fetchedRecord = record;
+        return {
+          id: "image",
+          input: "unused",
+          target: { text: "unused" },
+        };
+      },
+    });
+    await fetchFirstSample(layer);
+    expect(fetchedRecord?.["image"]).toMatchObject({
+      src: "data:image/jpeg;base64,/9j/",
+    });
+    expect(headersByRequest).toHaveLength(3);
+  });
+});
+describe("detectImageMimeType", () => {
+  it.each([
+    [[0x89, 0x50, 0x4e, 0x47], undefined, "image/png"],
+    [[0xff, 0xd8, 0xff], undefined, "image/jpeg"],
+    [[0x47, 0x49, 0x46, 0x38], undefined, "image/gif"],
+    [
+      [0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x57, 0x45, 0x42, 0x50],
+      undefined,
+      "image/webp",
+    ],
+    [[0x42, 0x4d], undefined, "image/bmp"],
+    [[1, 2, 3], "image/webp; charset=utf-8", "image/webp"],
+    [[1, 2, 3], "application/octet-stream", "image/png"],
+  ])("detects %s with header %s as %s", (bytes, header, expected) => {
+    expect(detectImageMimeType(new Uint8Array(bytes), header)).toBe(expected);
   });
 });
 describe("isHfCachedAssetUrl", () => {
