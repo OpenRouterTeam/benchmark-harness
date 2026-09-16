@@ -10,7 +10,9 @@ const originalFetch = globalThis.fetch;
 let directory: string | undefined;
 afterEach(async () => {
   globalThis.fetch = originalFetch;
-  if (directory) await rm(directory, { recursive: true, force: true });
+  if (directory) {
+    await rm(directory, { recursive: true, force: true });
+  }
 });
 
 it("prepares original bytes and a complete manifest without storage credentials", async () => {
