@@ -1,5 +1,3 @@
-import type { S3Client } from "bun";
-
 function requireEnv(name: string): string {
   const value = process.env[name]?.trim();
   if (!value) {
@@ -25,21 +23,4 @@ export function readMediaMirrorEnv() {
     ),
     keyPrefix: normalizeKeyPrefix(process.env["BENCH_MEDIA_KEY_PREFIX"]),
   };
-}
-
-export async function uploadMedia(
-  s3: S3Client,
-  key: string,
-  bytes: Uint8Array,
-  contentType: string,
-  force = false
-): Promise<void> {
-  const target = s3.file(key);
-  if (!force) {
-    const existing = await target.stat().catch(() => undefined);
-    if (existing?.size === bytes.byteLength) {
-      return;
-    }
-  }
-  await target.write(bytes, { type: contentType });
 }

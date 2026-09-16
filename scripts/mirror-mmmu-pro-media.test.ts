@@ -4,7 +4,8 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { S3Client, type S3File } from "bun";
+import type { S3File } from "bun";
+import { S3Client } from "bun";
 
 import { mirrorMmmuProMedia } from "./mirror-mmmu-pro-media";
 

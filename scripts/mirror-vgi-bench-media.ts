@@ -10,7 +10,7 @@ import {
   downscaledVideoUrl,
 } from "../src/benchmarks/vgi-bench/benchmark";
 import { z } from "../src/internal/zod";
-import { readMediaMirrorEnv as readEnv, uploadMedia } from "./media-mirror";
+import { readMediaMirrorEnv as readEnv } from "./media-mirror";
 
 const HF_ROWS_BASE_URL = "https://datasets-server.huggingface.co/rows";
 const HF_PAGE_SIZE = 100;
@@ -252,7 +252,14 @@ async function mirrorVideo(
   if (options.dryRun) {
     return { kind: "mirrored", entry };
   }
-  await uploadMedia(s3, key, bytes, contentType, options.force);
+  const target = s3.file(key);
+  if (!options.force) {
+    const existing = await target.stat().catch(() => undefined);
+    if (existing !== undefined && existing.size === bytes.byteLength) {
+      return { kind: "mirrored", entry };
+    }
+  }
+  await target.write(bytes, { type: contentType });
   return { kind: "mirrored", entry };
 }
 

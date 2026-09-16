@@ -6,7 +6,7 @@ import { S3Client } from "bun";
 
 import { buildMmmuProMediaManifest } from "../src/benchmarks/mmmu-pro-media-manifest";
 import { z } from "../src/internal/zod";
-import { readMediaMirrorEnv, uploadMedia } from "./media-mirror";
+import { readMediaMirrorEnv } from "./media-mirror";
 
 const RowsSchema = z.object({
   rows: z.array(
@@ -36,7 +36,6 @@ export async function mirrorMmmuProMedia(options: {
     const response = await fetch(
       `https://datasets-server.huggingface.co/rows?dataset=MMMU/MMMU_Pro&config=vision&split=test&offset=${offset}&length=100`
     );
-    // The viewer ignores revision=, so check the revision it actually served.
     if (!response.ok || response.headers.get("x-revision") !== revision) {
       await response.body?.cancel();
       throw new Error(
@@ -76,8 +75,7 @@ export async function mirrorMmmuProMedia(options: {
           const sha256 = createHash("sha256").update(bytes).digest("hex");
           const contentType = Bun.file(source.pathname).type;
           const key = `${env.keyPrefix}mmmu-pro/${revision}/${sha256}${extname(source.pathname)}`;
-          // Always write the verified bytes; equal object sizes do not establish integrity.
-          await uploadMedia(s3, key, bytes, contentType, true);
+          await s3.file(key).write(bytes, { type: contentType });
           const url = `${env.publicBaseUrl}/${key}`;
           const check = await fetch(url);
           if (!check.ok) {
