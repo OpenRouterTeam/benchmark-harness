@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { join } from "node:path";
 
 import { FetchHttpClient, HttpClient } from "@effect/platform";
+import { file } from "bun";
 import { fromIterable } from "effect/Chunk";
 import { map as configMap, option, string } from "effect/Config";
 import type { DurationInput } from "effect/Duration";
@@ -205,9 +206,7 @@ function inlineHfRowImages(
                 response.arrayBuffer.pipe(
                   map((arrayBuffer) => {
                     const base64 = Buffer.from(arrayBuffer).toString("base64");
-                    const contentType = Bun.file(
-                      new URL(imageUrl).pathname
-                    ).type;
+                    const contentType = file(new URL(imageUrl).pathname).type;
                     return [
                       key,
                       {
