@@ -238,7 +238,9 @@ export class ModelError extends TaggedError("ModelError")<
 
 export function isRetryableModelError(error: ModelError): boolean {
   return (
-    error.status === 429 || (error.status !== undefined && error.status >= 500)
+    error.status === 408 ||
+    error.status === 429 ||
+    (error.status !== undefined && error.status >= 500)
   );
 }
 

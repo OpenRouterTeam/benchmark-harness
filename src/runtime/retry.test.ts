@@ -25,6 +25,8 @@ const rateLimit = new ModelError({ status: 429, message: "429" });
 
 const serverError = new ModelError({ status: 503, message: "503" });
 
+const timeoutError = new ModelError({ status: 408, message: "408" });
+
 const clientError = new ModelError({ status: 400, message: "400" });
 
 const warnSpies: {
@@ -128,7 +130,16 @@ describe("rateLimitRetrySchedule", () => {
     const result = await runHarnessPromise(flaky.pipe(retry(schedule)));
     expect(result).toBe(3);
   });
-  it("does not retry non-retryable 4xx (other than 429)", async () => {
+  it("retries transient 408 timeout errors", async () => {
+    let attempts = 0;
+    const flaky = suspend(() => {
+      attempts++;
+      return attempts < 3 ? fail(timeoutError) : succeed(attempts);
+    });
+    const result = await runHarnessPromise(flaky.pipe(retry(schedule)));
+    expect(result).toBe(3);
+  });
+  it("does not retry non-retryable 4xx (other than 408 and 429)", async () => {
     let attempts = 0;
     const program = suspend(() => {
       attempts++;
