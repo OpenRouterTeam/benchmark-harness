@@ -148,7 +148,7 @@ describe("makeHfDatasetLayer", () => {
     stubFetch(rowsPage({ numRowsTotal: 1, rows: 1 }));
     const layer = makeHfDatasetLayer({
       dataset: "test/dataset",
-      inlinePngImages: true,
+      inlineImages: true,
       config: "default",
       split: "train",
       hfToken: "hf_test_token",
@@ -167,7 +167,7 @@ describe("makeHfDatasetLayer", () => {
     stubFetch(rowsPage({ numRowsTotal: 1, rows: 1 }));
     const layer = makeHfDatasetLayer({
       dataset: "test/dataset",
-      inlinePngImages: true,
+      inlineImages: true,
       config: "default",
       split: "train",
       hfToken: "",
@@ -182,10 +182,16 @@ describe("makeHfDatasetLayer", () => {
     expect(headersByRequest.length).toBe(1);
     expect(headersByRequest[0]?.["authorization"]).toBeUndefined();
   });
-  it.each([false, true])(
-    "only inlines PNG assets when opted in (%s)",
-    async (inlinePngImages) => {
-      const imageUrl = `${HF_CACHED_ASSETS_URL_PREFIX}x/y.png?Expires=1&Signature=s`;
+  it.each([
+    [false, "png", "image/png"],
+    [true, "png", "image/png"],
+    [true, "jpg", "image/jpeg"],
+    [true, "webp", "image/webp"],
+    [true, "gif", "image/gif"],
+  ] as const)(
+    "inlines assets when opted in (%s, %s)",
+    async (inlineImages, extension, contentType) => {
+      const imageUrl = `${HF_CACHED_ASSETS_URL_PREFIX}x/y.${extension}?Expires=1&Signature=s`;
       const externalImage = {
         src: "https://example.com/a.png",
         height: 10,
@@ -207,7 +213,7 @@ describe("makeHfDatasetLayer", () => {
       );
       const layer = makeHfDatasetLayer({
         dataset: "test/dataset",
-        inlinePngImages,
+        inlineImages,
         config: "default",
         split: "train",
         hfToken: "hf_test_token",
@@ -223,7 +229,7 @@ describe("makeHfDatasetLayer", () => {
       await fetchFirstSample(layer);
       const image = fetchedRecord?.["image"];
       expect(image).toEqual({
-        src: inlinePngImages ? "data:image/png;base64,AAEC/w==" : imageUrl,
+        src: inlineImages ? `data:${contentType};base64,AAEC/w==` : imageUrl,
         height: 30,
         width: 40,
       });
@@ -231,7 +237,7 @@ describe("makeHfDatasetLayer", () => {
       expect(fetchedRecord?.["description"]).toBe("preserved");
       expect(
         headersByRequest.filter((headers) => headers["authorization"]).length
-      ).toBe(inlinePngImages ? 2 : 1);
+      ).toBe(inlineImages ? 2 : 1);
       expect(
         headersByRequest.some(
           (headers) => headers["authorization"] === "Bearer hf_test_token"
@@ -260,7 +266,7 @@ describe("makeHfDatasetLayer", () => {
     );
     const layer = makeHfDatasetLayer({
       dataset: "test/dataset",
-      inlinePngImages: true,
+      inlineImages: true,
       config: "default",
       split: "train",
       hfToken: "",
@@ -298,7 +304,7 @@ describe("makeHfDatasetLayer", () => {
     );
     const layer = makeHfDatasetLayer({
       dataset: "test/dataset",
-      inlinePngImages: true,
+      inlineImages: true,
       config: "default",
       split: "train",
       hfToken: "",

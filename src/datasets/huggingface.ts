@@ -89,7 +89,7 @@ function hfPageCacheKey(
     encodeCacheKeySegment(config.config),
     encodeCacheKeySegment(config.split),
     encodeCacheKeySegment(config.revision ?? "HEAD"),
-    `${offset}-${length}${config.inlinePngImages === true ? "-inline-png" : ""}.json`
+    `${offset}-${length}${config.inlineImages === true ? "-inline-images" : ""}.json`
   );
 }
 
@@ -138,7 +138,7 @@ export interface HfDatasetConfig {
     record: Readonly<Record<string, unknown>>,
     index: number
   ) => Sample;
-  readonly inlinePngImages?: boolean;
+  readonly inlineImages?: boolean;
   readonly pageSize?: number;
   readonly retry?: RetryConfig;
   readonly hfToken?: string;
@@ -205,11 +205,14 @@ function inlineHfRowImages(
                 response.arrayBuffer.pipe(
                   map((arrayBuffer) => {
                     const base64 = Buffer.from(arrayBuffer).toString("base64");
+                    const contentType = Bun.file(
+                      new URL(imageUrl).pathname
+                    ).type;
                     return [
                       key,
                       {
                         ...parsed.right,
-                        src: `data:image/png;base64,${base64}`,
+                        src: `data:${contentType};base64,${base64}`,
                       },
                     ] satisfies readonly [string, unknown];
                   })
@@ -320,7 +323,7 @@ export function makeHfPageFetcher(
         );
       }
       const page =
-        config.inlinePngImages === true
+        config.inlineImages === true
           ? yield* inlineHfRowImages(parsed.right, client, hfToken, fetchRetry)
           : parsed.right;
       if (cacheKey !== undefined) {

@@ -235,7 +235,7 @@ describe("huggingface page cache", () => {
           config: "default",
           split: "train",
           hfToken: "",
-          inlinePngImages: true,
+          inlineImages: true,
           recordToSample: () => ({
             id: "image",
             input: "unused",
@@ -244,7 +244,7 @@ describe("huggingface page cache", () => {
         })
       )
     ).toBe(1);
-    const file = cacheFile({}).replace("0-1.json", "0-1-inline-png.json");
+    const file = cacheFile({}).replace("0-1.json", "0-1-inline-images.json");
     expect(existsSync(file)).toBe(true);
     expect(readFileSync(file, "utf8")).toContain("data:image/png;base64,AwQF");
   });

@@ -114,7 +114,7 @@ export function makeMmmuProVisionDatasetLayer(
     dataset: MMMU_PRO_DATASET_PATH,
     config: MMMU_PRO_VISION_SUBSET,
     split: MMMU_PRO_SPLIT,
-    inlinePngImages: true,
+    inlineImages: true,
     recordToSample: (record, idx) =>
       mmmuProVisionRecordToSample(record, idx, opts?.imageDetail),
     ...definedValues({
