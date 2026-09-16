@@ -227,7 +227,7 @@ export function inlineHfRowImages(
               mapError(
                 (cause) =>
                   new DatasetError({
-                    message: `HF cached asset request failed (offset=${row.row_idx}, url=${urlWithoutQuery}): ${String(cause)}`,
+                    message: `HF cached asset request failed (row_idx=${row.row_idx}, url=${urlWithoutQuery}): ${String(cause)}`,
                   })
               ),
               retry(retrySchedule)
