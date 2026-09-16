@@ -49,7 +49,8 @@
     "check": "oxlint",
     "fix": "oxfmt src test scripts --write && oxlint --fix",
     "mirror-vgi-bench-media": "bun scripts/mirror-vgi-bench-media.ts",
-    "package-agent-runtime": "scripts/agent-runtime/package.sh"
+    "package-agent-runtime": "scripts/agent-runtime/package.sh",
+    "mirror-mmmu-pro-media": "bun scripts/mirror-mmmu-pro-media.ts"
   },
   "dependencies": {
     "@effect/platform": "0.95.0",

@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 
-import { S3Client } from "bun";
+import type { S3Client } from "bun";
 
 import {
   VGI_BENCH_CONFIG,
@@ -10,6 +10,12 @@ import {
   downscaledVideoUrl,
 } from "../src/benchmarks/vgi-bench/benchmark";
 import { z } from "../src/internal/zod";
+import {
+  createMediaMirrorClient,
+  readMediaMirrorEnv as readEnv,
+  uploadMedia,
+} from "./media-mirror";
+export { normalizeKeyPrefix } from "./media-mirror";
 
 const HF_ROWS_BASE_URL = "https://datasets-server.huggingface.co/rows";
 const HF_PAGE_SIZE = 100;
@@ -34,15 +40,7 @@ const CONTENT_TYPES: Record<string, string> = {
   mkv: "video/x-matroska",
 };
 
-interface MirrorEnv {
-  readonly endpoint: string;
-  readonly bucket: string;
-  readonly accessKeyId: string;
-  readonly secretAccessKey: string;
-  readonly publicBaseUrl: string;
-  readonly keyPrefix: string;
-  readonly hfToken: string | undefined;
-}
+type MirrorEnv = ReturnType<typeof readEnv>;
 
 interface MirrorOptions {
   readonly concurrency: number;
@@ -98,35 +96,6 @@ interface UnresolvedEntry {
 type MirrorOutcome =
   | { readonly kind: "mirrored"; readonly entry: ManifestEntry }
   | { readonly kind: "unresolved"; readonly reason: string };
-
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (value === undefined || value.trim() === "") {
-    throw new Error(`Missing required environment variable ${name}`);
-  }
-  return value.trim();
-}
-
-function readEnv(): MirrorEnv {
-  const publicBaseUrl = requireEnv("BENCH_MEDIA_PUBLIC_BASE_URL").replace(
-    /\/+$/,
-    ""
-  );
-  return {
-    endpoint: requireEnv("BENCH_MEDIA_S3_ENDPOINT"),
-    bucket: requireEnv("BENCH_MEDIA_S3_BUCKET"),
-    accessKeyId: requireEnv("BENCH_MEDIA_S3_ACCESS_KEY_ID"),
-    secretAccessKey: requireEnv("BENCH_MEDIA_S3_SECRET_ACCESS_KEY"),
-    publicBaseUrl,
-    keyPrefix: normalizeKeyPrefix(process.env["BENCH_MEDIA_KEY_PREFIX"]),
-    hfToken: process.env["HF_TOKEN"],
-  };
-}
-
-export function normalizeKeyPrefix(rawPrefix: string | undefined): string {
-  const stripped = (rawPrefix ?? "").trim().replaceAll(/^\/+|\/+$/g, "");
-  return stripped === "" ? "" : `${stripped}/`;
-}
 
 export function readOptions(argv: readonly string[]): MirrorOptions {
   const flag = (name: string): string | undefined => {
@@ -288,14 +257,7 @@ async function mirrorVideo(
   if (options.dryRun) {
     return { kind: "mirrored", entry };
   }
-  const target = s3.file(key);
-  if (!options.force) {
-    const existing = await target.stat().catch(() => undefined);
-    if (existing !== undefined && existing.size === bytes.byteLength) {
-      return { kind: "mirrored", entry };
-    }
-  }
-  await target.write(bytes, { type: contentType });
+  await uploadMedia(s3, key, bytes, contentType, options.force);
   return { kind: "mirrored", entry };
 }
 
@@ -334,12 +296,7 @@ export function hashManifest(entries: readonly ManifestEntry[]): string {
 async function main(): Promise<void> {
   const env = readEnv();
   const options = readOptions(process.argv.slice(2));
-  const s3 = new S3Client({
-    accessKeyId: env.accessKeyId,
-    secretAccessKey: env.secretAccessKey,
-    bucket: env.bucket,
-    endpoint: env.endpoint,
-  });
+  const s3 = createMediaMirrorClient(env);
   const allVideos = await fetchSourceVideos(options.revision, env.hfToken);
   const videos =
     options.limit === undefined ? allVideos : allVideos.slice(0, options.limit);
