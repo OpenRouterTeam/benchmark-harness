@@ -258,18 +258,12 @@ export function inlineHfRowImages(
                 )
               ),
               mapError((cause) => {
-                const status =
-                  typeof cause === "object" &&
-                  cause !== null &&
-                  "response" in cause &&
-                  typeof cause.response === "object" &&
-                  cause.response !== null &&
-                  "status" in cause.response &&
-                  typeof cause.response.status === "number"
-                    ? cause.response.status
-                    : undefined;
+                const detail =
+                  cause._tag === "ResponseError"
+                    ? `status=${cause.response.status}`
+                    : `${cause._tag}: ${cause.reason}`;
                 return new DatasetError({
-                  message: `HF cached asset request failed (row_idx=${row.row_idx}, url=${urlWithoutQuery}, ${status === undefined ? "request error" : `status=${status}`})`,
+                  message: `HF cached asset request failed (row_idx=${row.row_idx}, url=${urlWithoutQuery}, ${detail})`,
                 });
               }),
               retry(retrySchedule)
