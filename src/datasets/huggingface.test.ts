@@ -1,20 +1,26 @@
 import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 
+import { toReadonlyArray } from "effect/Chunk";
 import { fromMap } from "effect/ConfigProvider";
 import {
   fail,
   flatMap,
+  map,
   provide,
   retry,
   succeed,
   suspend,
   withConfigProvider,
 } from "effect/Effect";
+import { runCollect } from "effect/Stream";
 
+import type { Sample } from "../harness/core";
 import { Dataset } from "../harness/dataset";
 import { runHarnessPromise } from "../internal/effect-logger";
 import {
+  HF_CACHED_ASSETS_URL_PREFIX,
   hfFetchRetrySchedule,
+  isHfCachedAssetUrl,
   makeHfDatasetLayer,
   resolveHfToken,
 } from "./huggingface";
@@ -34,7 +40,7 @@ const headersByRequest: Record<string, string>[] = [];
 
 let restoreFetch: (() => void) | undefined;
 
-function stubFetch(response: unknown): void {
+function stubFetch(response: unknown, assetBytes = new Uint8Array()): void {
   const original = globalThis.fetch;
   const stub: typeof fetch = (input, init) => {
     const req =
@@ -44,6 +50,14 @@ function stubFetch(response: unknown): void {
       headers[key] = value;
     });
     headersByRequest.push(headers);
+    if (req.url.startsWith(HF_CACHED_ASSETS_URL_PREFIX)) {
+      return Promise.resolve(
+        new Response(assetBytes, {
+          status: 200,
+          headers: { "content-type": "image/png; charset=utf-8" },
+        })
+      );
+    }
     return Promise.resolve(
       new Response(JSON.stringify(response), {
         status: 200,
@@ -56,6 +70,18 @@ function stubFetch(response: unknown): void {
     globalThis.fetch = original;
     restoreFetch = undefined;
   };
+}
+
+function fetchFirstSample(
+  layer: ReturnType<typeof makeHfDatasetLayer>
+): Promise<Sample | undefined> {
+  return runHarnessPromise(
+    Dataset.pipe(
+      flatMap((d) => runCollect(d.stream({ start: 0, end: 1 }))),
+      map((samples) => toReadonlyArray(samples)[0]),
+      provide(layer)
+    )
+  );
 }
 
 function fetchOnceWithLayer(
@@ -119,6 +145,68 @@ describe("makeHfDatasetLayer", () => {
     expect(size).toBe(1);
     expect(headersByRequest.length).toBe(1);
     expect(headersByRequest[0]?.["authorization"]).toBeUndefined();
+  });
+  it("inlines cached asset images while preserving other row values", async () => {
+    const imageUrl = `${HF_CACHED_ASSETS_URL_PREFIX}x/y.png?Expires=1&Signature=s`;
+    const externalImage = {
+      src: "https://example.com/a.png",
+      height: 10,
+      width: 20,
+    };
+    const row = {
+      id: "image-row",
+      image: { src: imageUrl, height: 30, width: 40 },
+      externalImage,
+      description: "preserved",
+    };
+    let fetchedRecord: Readonly<Record<string, unknown>> | undefined;
+    stubFetch(
+      {
+        rows: [{ row_idx: 0, row }],
+        num_rows_total: 1,
+      },
+      new Uint8Array([0, 1, 2, 255])
+    );
+    const layer = makeHfDatasetLayer({
+      dataset: "test/dataset",
+      config: "default",
+      split: "train",
+      hfToken: "hf_test_token",
+      inlineImages: true,
+      recordToSample: (record) => {
+        fetchedRecord = record;
+        return {
+          id: String(record["id"] ?? ""),
+          input: "unused",
+          target: { text: "unused" },
+        };
+      },
+    });
+    await fetchFirstSample(layer);
+    const image = fetchedRecord?.["image"];
+    expect(image).toEqual({
+      src: "data:image/png;base64,AAEC/w==",
+      height: 30,
+      width: 40,
+    });
+    expect(fetchedRecord?.["externalImage"]).toEqual(externalImage);
+    expect(fetchedRecord?.["description"]).toBe("preserved");
+    expect(
+      headersByRequest.filter((headers) => headers["authorization"]).length
+    ).toBe(2);
+    expect(
+      headersByRequest.some(
+        (headers) => headers["authorization"] === "Bearer hf_test_token"
+      )
+    ).toBe(true);
+  });
+});
+describe("isHfCachedAssetUrl", () => {
+  it("recognizes only the Hugging Face cached-assets prefix", () => {
+    expect(
+      isHfCachedAssetUrl(`${HF_CACHED_ASSETS_URL_PREFIX}x/y.png?Expires=1`)
+    ).toBe(true);
+    expect(isHfCachedAssetUrl("https://example.com/a.png")).toBe(false);
   });
 });
 describe("hfFetchRetrySchedule", () => {

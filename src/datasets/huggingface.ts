@@ -9,6 +9,7 @@ import type { Effect } from "effect/Effect";
 import {
   fail,
   flatMap,
+  forEach,
   gen,
   map,
   mapError,
@@ -88,7 +89,7 @@ function hfPageCacheKey(
     encodeCacheKeySegment(config.config),
     encodeCacheKeySegment(config.split),
     encodeCacheKeySegment(config.revision ?? "HEAD"),
-    `${offset}-${length}.json`
+    `${offset}-${length}${config.inlineImages === true ? "-inline" : ""}.json`
   );
 }
 
@@ -142,6 +143,7 @@ export interface HfDatasetConfig {
   readonly hfToken?: string;
   readonly revision?: string;
   readonly cacheStore?: CacheStore;
+  readonly inlineImages?: boolean;
 }
 
 export const HfImageSchema = z.object({
@@ -160,6 +162,13 @@ export const HfRowsResponseSchema = z.object({
   num_rows_total: z.number().int(),
 });
 
+export const HF_CACHED_ASSETS_URL_PREFIX =
+  "https://datasets-server.huggingface.co/cached-assets/";
+
+export function isHfCachedAssetUrl(src: string): boolean {
+  return src.startsWith(HF_CACHED_ASSETS_URL_PREFIX);
+}
+
 interface PageState {
   readonly offset: number;
   readonly limit: number;
@@ -168,6 +177,72 @@ interface PageState {
 export type HfRowsResponse = z.infer<typeof HfRowsResponseSchema>;
 
 export type HfRow = HfRowsResponse["rows"][number];
+
+export function inlineHfRowImages(
+  page: HfRowsResponse,
+  client: HttpClient.HttpClient,
+  hfToken: string,
+  retrySchedule: Schedule<
+    {
+      readonly error: unknown;
+      readonly attempt: number;
+    },
+    unknown
+  >
+): Effect<HfRowsResponse, DatasetError> {
+  const headers =
+    hfToken !== "" ? { Authorization: `Bearer ${hfToken}` } : undefined;
+  return forEach(
+    page.rows,
+    (row) =>
+      forEach(
+        Object.entries(row.row),
+        ([key, value]) => {
+          const parsed = parseSchema(HfImageSchema, value);
+          if (Either.isLeft(parsed) || !isHfCachedAssetUrl(parsed.right.src)) {
+            return succeed([key, value] satisfies readonly [string, unknown]);
+          }
+          const imageUrl = parsed.right.src;
+          const urlWithoutQuery = imageUrl.split("?")[0] ?? imageUrl;
+          return client
+            .get(imageUrl, headers !== undefined ? { headers } : undefined)
+            .pipe(
+              flatMap((response) =>
+                response.arrayBuffer.pipe(
+                  map((arrayBuffer) => {
+                    const contentType =
+                      response.headers["content-type"]?.split(";")[0]?.trim() ||
+                      "image/png";
+                    const base64 = Buffer.from(arrayBuffer).toString("base64");
+                    return [
+                      key,
+                      {
+                        ...parsed.right,
+                        src: `data:${contentType};base64,${base64}`,
+                      },
+                    ] satisfies readonly [string, unknown];
+                  })
+                )
+              ),
+              mapError(
+                (cause) =>
+                  new DatasetError({
+                    message: `HF cached asset request failed (offset=${row.row_idx}, url=${urlWithoutQuery}): ${String(cause)}`,
+                  })
+              ),
+              retry(retrySchedule)
+            );
+        },
+        { concurrency: 8 }
+      ).pipe(
+        map((entries) => ({
+          ...row,
+          row: Object.fromEntries(entries),
+        }))
+      ),
+    { concurrency: 8 }
+  ).pipe(map((rows) => ({ ...page, rows })));
+}
 
 export type HfPageFetcher = (
   offset: number,
@@ -250,10 +325,14 @@ export function makeHfPageFetcher(
           })
         );
       }
+      const page =
+        config.inlineImages === true
+          ? yield* inlineHfRowImages(parsed.right, client, hfToken, fetchRetry)
+          : parsed.right;
       if (cacheKey !== undefined) {
-        yield* promise(() => store.writeJson(cacheKey, body));
+        yield* promise(() => store.writeJson(cacheKey, page));
       }
-      return parsed.right;
+      return page;
     });
 }
 

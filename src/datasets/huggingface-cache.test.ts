@@ -1,6 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { createHash } from "node:crypto";
-import { existsSync, mkdtempSync, rmSync, utimesSync } from "node:fs";
+import {
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  utimesSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -8,7 +14,7 @@ import { flatMap, provide } from "effect/Effect";
 
 import { Dataset } from "../harness/dataset";
 import { runHarnessPromise } from "../internal/effect-logger";
-import { makeHfDatasetLayer } from "./huggingface";
+import { HF_CACHED_ASSETS_URL_PREFIX, makeHfDatasetLayer } from "./huggingface";
 import { encodeCacheKeySegment } from "./local-cache";
 
 const ENV_VARS: readonly string[] = [
@@ -30,11 +36,19 @@ function rowsPage(opts: { numRowsTotal: number; rows: number }): unknown {
 let fetchCount = 0;
 let restoreFetch: (() => void) | undefined;
 
-function stubFetch(response: unknown): void {
+function stubFetch(response: unknown, assetBytes = new Uint8Array()): void {
   const original = globalThis.fetch;
   fetchCount = 0;
-  globalThis.fetch = async () => {
+  globalThis.fetch = async (input, init) => {
+    const request =
+      input instanceof Request ? input : new Request(String(input), init);
     fetchCount += 1;
+    if (request.url.startsWith(HF_CACHED_ASSETS_URL_PREFIX)) {
+      return new Response(assetBytes, {
+        status: 200,
+        headers: { "content-type": "image/png" },
+      });
+    }
     return new Response(JSON.stringify(response), {
       status: 200,
       headers: { "content-type": "application/json" },
@@ -46,12 +60,15 @@ function stubFetch(response: unknown): void {
   };
 }
 
-function makeLayer(opts: { revision?: string }) {
+function makeLayer(opts: { inlineImages?: boolean; revision?: string }) {
   return makeHfDatasetLayer({
     dataset: "test/dataset",
     config: "default",
     split: "train",
     hfToken: "",
+    ...(opts.inlineImages !== undefined && {
+      inlineImages: opts.inlineImages,
+    }),
     ...(opts.revision !== undefined && { revision: opts.revision }),
     recordToSample: (record) => ({
       id: String(record["id"] ?? ""),
@@ -103,7 +120,11 @@ describe("huggingface page cache", () => {
     }
   });
 
-  function cacheFile(opts: { revision?: string; token?: string }): string {
+  function cacheFile(opts: {
+    inlineImages?: boolean;
+    revision?: string;
+    token?: string;
+  }): string {
     const root = process.env.BENCH_DATASET_CACHE_DIR;
     if (root === undefined) {
       throw new Error("BENCH_DATASET_CACHE_DIR not set");
@@ -121,7 +142,7 @@ describe("huggingface page cache", () => {
       "default",
       "train",
       encodeCacheKeySegment(opts.revision ?? "HEAD"),
-      "0-1.json"
+      `0-1${opts.inlineImages === true ? "-inline" : ""}.json`
     );
   }
 
@@ -198,5 +219,26 @@ describe("huggingface page cache", () => {
     expect(await fetchSize(makeLayer({}))).toBe(1);
     expect(fetchCount).toBe(2);
     expect(existsSync(cacheFile({}))).toBe(true);
+  });
+
+  it("stores inlined images under a separate durable cache key", async () => {
+    const imageUrl = `${HF_CACHED_ASSETS_URL_PREFIX}x/y.png?Expires=1&Signature=s`;
+    stubFetch(
+      {
+        rows: [
+          {
+            row_idx: 0,
+            row: { id: 0, image: { src: imageUrl, height: 1, width: 2 } },
+          },
+        ],
+        num_rows_total: 1,
+      },
+      new Uint8Array([3, 4, 5])
+    );
+    expect(await fetchSize(makeLayer({ inlineImages: true }))).toBe(1);
+    const file = cacheFile({ inlineImages: true });
+    expect(existsSync(file)).toBe(true);
+    expect(existsSync(cacheFile({ inlineImages: false }))).toBe(false);
+    expect(readFileSync(file, "utf8")).toContain("data:image/png;base64,AwQF");
   });
 });
