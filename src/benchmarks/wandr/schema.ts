@@ -1,5 +1,6 @@
 import type { ValueOf } from "../../internal/guards";
 import { z, zInt } from "../../internal/zod";
+import { ModalSandboxOptionsSchema } from "../harbor/modal-schema";
 
 export const WANDR_DATASET_ID = "wandr" as const;
 
@@ -156,7 +157,7 @@ export type WandrServerTool = z.infer<typeof WandrServerToolSchema>;
 export const WandrOptionsSchema = z.object({
   taskSubset: z.array(z.string()).optional(),
   maxAgentTimeoutSec: z.number().positive().optional(),
-  modalEnv: z.string().default("main"),
+  ...ModalSandboxOptionsSchema.shape,
   stepLimit: zInt().default(DEFAULT_WANDR_STEP_LIMIT),
   serverTools: z
     .array(WandrServerToolSchema)

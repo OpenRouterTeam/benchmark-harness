@@ -75,6 +75,7 @@ function makeWandrLayer(
   const sandboxLayer = makeModalSandboxLayer({
     appName: "openrouter-wandr",
     environment: benchmarkConfig.modalEnv,
+    regions: benchmarkConfig.modalRegions,
   });
   const solverLayer = layerEffect(Solver)(
     gen(function* () {

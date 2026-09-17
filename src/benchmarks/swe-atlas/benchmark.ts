@@ -65,6 +65,7 @@ function makeSweAtlasLayer(
   const sandboxLayer = makeModalSandboxLayer({
     appName: "openrouter-swe-atlas",
     environment: benchmarkConfig.modalEnv,
+    regions: benchmarkConfig.modalRegions,
   });
   const solverLayer = layerEffect(Solver)(
     gen(function* () {

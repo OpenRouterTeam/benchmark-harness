@@ -147,6 +147,7 @@ describe("benchmark registry", () => {
       model: "openai/gpt-5.5",
       reasoningEffort: "high",
       modalEnv: "main",
+      modalRegions: ["us"],
       stepLimit: 64,
       serverTools: [
         { type: "openrouter:web_search" },
@@ -169,6 +170,7 @@ describe("benchmark registry", () => {
     expect(result.right.judgeModel).toBe("anthropic/claude-opus-4.5");
     expect(result.right.stepLimit).toBe(250);
     expect(result.right.modalEnv).toBe("main");
+    expect(result.right.modalRegions).toEqual(["us"]);
   });
 
   it("parses terminal-bench with the pi agent and the ori install url", () => {

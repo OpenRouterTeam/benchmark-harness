@@ -57,6 +57,7 @@ function makeDeepSweLayer(
   const sandboxLayer = makeModalSandboxLayer({
     appName: "openrouter-deep-swe",
     environment: benchmarkConfig.modalEnv,
+    regions: benchmarkConfig.modalRegions,
   });
   const solverLayer = layerEffect(Solver)(
     gen(function* () {

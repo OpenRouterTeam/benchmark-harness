@@ -22,6 +22,7 @@ import {
 } from "./benchmark-meta";
 import { DEFAULT_STEP_LIMIT as DEEP_SWE_DEFAULT_STEP_LIMIT } from "./deep-swe/schema";
 import { DracoPanelConfigSchema } from "./draco/schemas";
+import { ModalSandboxOptionsSchema } from "./harbor/modal-schema";
 import { SearchLaneConfigSchema } from "./search/core/config";
 import { DEFAULT_JUDGE_MODEL, DEFAULT_STEP_LIMIT } from "./swe-atlas/schema";
 import { BankingRetrievalConfigSchema } from "./tau3-bench-banking/retrieval-config";
@@ -148,7 +149,7 @@ const AgentPackageSchema = z
 export const TerminalBenchOptionsSchema = z.object({
   maxAgentTimeoutSec: z.number().positive().optional(),
   taskSubset: z.array(z.string()).optional(),
-  modalEnv: z.string().default("main"),
+  ...ModalSandboxOptionsSchema.shape,
   appendSystemPrompt: z.string().optional(),
   agent: z.enum(TERMINAL_BENCH_AGENTS).default(DEFAULT_TERMINAL_BENCH_AGENT),
   agentPackage: AgentPackageSchema.optional(),
@@ -193,7 +194,7 @@ export type IfStructBenchmarkConfig = z.infer<
 const AgenticOptionsSchema = z.object({
   taskSubset: z.array(z.string()).optional(),
   maxAgentTimeoutSec: z.number().positive().optional(),
-  modalEnv: z.string().default("main"),
+  ...ModalSandboxOptionsSchema.shape,
   agent: z.enum(HARBOR_AGENTS).default(DEFAULT_HARBOR_AGENT),
   agentPackage: AgentPackageSchema.optional(),
   oriInstallUrl: z.string().default(DEFAULT_ORI_INSTALL_URL),

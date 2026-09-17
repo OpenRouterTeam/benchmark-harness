@@ -5,7 +5,7 @@ import type { Effect } from "effect/Effect";
 import { catchAll, gen, tryPromise, void as effectVoid } from "effect/Effect";
 import type { Layer } from "effect/Layer";
 import { succeed } from "effect/Layer";
-import type { App } from "modal";
+import type { App, SandboxCreateParams } from "modal";
 import { ModalClient } from "modal";
 
 import type { SolverError } from "../../harness/core";
@@ -21,8 +21,27 @@ import { SandboxSession, makeSessionInstance, toSolverError } from "./sandbox";
 export interface ModalSandboxConfig {
   readonly appName: string;
   readonly environment?: string;
+  /** Modal placement regions (e.g. ["us"]). Empty or undefined leaves placement to Modal. */
+  readonly regions?: readonly string[];
   readonly tokenId?: string;
   readonly tokenSecret?: string;
+}
+
+export function toSandboxCreateParams(
+  regions: readonly string[] | undefined,
+  input: CreateSessionInput
+): SandboxCreateParams {
+  return {
+    timeoutMs: input.timeoutSec * 1000,
+    cpu: input.cpus,
+    memoryMiB: input.memoryMb,
+    blockNetwork: !input.allowInternet,
+    workdir: input.workdir,
+    command: [...input.keepAliveCommand],
+    ...(regions !== undefined && regions.length > 0
+      ? { regions: [...regions] }
+      : {}),
+  };
 }
 
 async function readStream(stream: AsyncIterable<string>): Promise<string> {
@@ -76,14 +95,11 @@ export function makeModalSandboxLayer(
       });
       const sandbox = yield* tryPromise({
         try: () =>
-          client.sandboxes.create(app, builtImage, {
-            timeoutMs: input.timeoutSec * 1000,
-            cpu: input.cpus,
-            memoryMiB: input.memoryMb,
-            blockNetwork: !input.allowInternet,
-            workdir: input.workdir,
-            command: [...input.keepAliveCommand],
-          }),
+          client.sandboxes.create(
+            app,
+            builtImage,
+            toSandboxCreateParams(config.regions, input)
+          ),
         catch: (e) => toSolverError("Failed to create Modal sandbox", e),
       });
       let handedOff = false;

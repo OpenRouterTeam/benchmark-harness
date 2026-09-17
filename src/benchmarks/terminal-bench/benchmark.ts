@@ -61,6 +61,7 @@ function makeTerminalBenchLayer(
   const sandboxLayer: Layer<SandboxSession> = makeModalSandboxLayer({
     appName: TERMINAL_BENCH_APP_NAME,
     environment: benchmarkConfig.modalEnv,
+    regions: benchmarkConfig.modalRegions,
   });
   const solverLayer = layerEffect(Solver)(
     gen(function* () {
