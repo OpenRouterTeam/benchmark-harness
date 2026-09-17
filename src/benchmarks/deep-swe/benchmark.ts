@@ -18,6 +18,7 @@ import {
   ResponsesModel,
 } from "../../providers/responses-model";
 import { DEEP_SWE_META } from "../benchmark-meta";
+import { resolveModalRegions } from "../harbor/modal-regions";
 import { makeModalSandboxLayer } from "../harbor/modal-sandbox";
 import { SandboxSession } from "../harbor/sandbox";
 import type { Benchmark, BenchmarkRunInput } from "../types";
@@ -57,7 +58,10 @@ function makeDeepSweLayer(
   const sandboxLayer = makeModalSandboxLayer({
     appName: "openrouter-deep-swe",
     environment: benchmarkConfig.modalEnv,
-    regions: benchmarkConfig.modalRegions,
+    regions: resolveModalRegions(
+      benchmarkConfig.model,
+      benchmarkConfig.modalRegions
+    ),
   });
   const solverLayer = layerEffect(Solver)(
     gen(function* () {

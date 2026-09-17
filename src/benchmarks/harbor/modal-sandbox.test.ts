@@ -3,10 +3,7 @@ import { describe, expect, it } from "bun:test";
 import { assertLeft, assertRight } from "../../internal/testing";
 import { parseSchema } from "../../internal/zod";
 import { toSandboxCreateParams } from "./modal-sandbox";
-import {
-  DEFAULT_MODAL_REGIONS,
-  ModalSandboxOptionsSchema,
-} from "./modal-schema";
+import { ModalSandboxOptionsSchema } from "./modal-schema";
 import type { CreateSessionInput } from "./sandbox";
 
 const input: CreateSessionInput = {
@@ -42,13 +39,17 @@ describe("toSandboxCreateParams", () => {
 });
 
 describe("ModalSandboxOptionsSchema", () => {
-  it("defaults to the main environment pinned to the broad US region", () => {
+  it("defaults to the main environment with no region override", () => {
     const parsed = parseSchema(ModalSandboxOptionsSchema, {});
     assertRight(parsed);
-    expect(parsed.right).toEqual({
-      modalEnv: "main",
-      modalRegions: [...DEFAULT_MODAL_REGIONS],
+    expect(parsed.right).toEqual({ modalEnv: "main" });
+  });
+
+  it("accepts explicit regions", () => {
+    const parsed = parseSchema(ModalSandboxOptionsSchema, {
+      modalRegions: ["us"],
     });
+    assertRight(parsed);
     expect(parsed.right.modalRegions).toEqual(["us"]);
   });
 

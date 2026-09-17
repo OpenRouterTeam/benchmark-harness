@@ -15,6 +15,7 @@ import { Solver } from "../../harness/solver";
 import { definedValues } from "../../internal/guards";
 import { getOriHarness } from "../agent-cli/harness";
 import { TERMINAL_BENCH_META } from "../benchmark-meta";
+import { resolveModalRegions } from "../harbor/modal-regions";
 import { makeModalSandboxLayer } from "../harbor/modal-sandbox";
 import { SandboxSession } from "../harbor/sandbox";
 import type { Benchmark, BenchmarkRunInput } from "../types";
@@ -61,7 +62,10 @@ function makeTerminalBenchLayer(
   const sandboxLayer: Layer<SandboxSession> = makeModalSandboxLayer({
     appName: TERMINAL_BENCH_APP_NAME,
     environment: benchmarkConfig.modalEnv,
-    regions: benchmarkConfig.modalRegions,
+    regions: resolveModalRegions(
+      benchmarkConfig.model,
+      benchmarkConfig.modalRegions
+    ),
   });
   const solverLayer = layerEffect(Solver)(
     gen(function* () {

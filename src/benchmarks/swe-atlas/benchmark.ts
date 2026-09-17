@@ -22,6 +22,7 @@ import {
   SWE_ATLAS_RF_META,
   SWE_ATLAS_TW_META,
 } from "../benchmark-meta";
+import { resolveModalRegions } from "../harbor/modal-regions";
 import { makeModalSandboxLayer } from "../harbor/modal-sandbox";
 import { SandboxSession } from "../harbor/sandbox";
 import type { Benchmark, BenchmarkRunInput } from "../types";
@@ -65,7 +66,10 @@ function makeSweAtlasLayer(
   const sandboxLayer = makeModalSandboxLayer({
     appName: "openrouter-swe-atlas",
     environment: benchmarkConfig.modalEnv,
-    regions: benchmarkConfig.modalRegions,
+    regions: resolveModalRegions(
+      benchmarkConfig.model,
+      benchmarkConfig.modalRegions
+    ),
   });
   const solverLayer = layerEffect(Solver)(
     gen(function* () {
