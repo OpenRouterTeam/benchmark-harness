@@ -233,6 +233,7 @@ export class ModelError extends TaggedError("ModelError")<
     readonly status?: number;
     readonly message: string;
     readonly retryAfterMs?: number;
+    readonly providerName?: string;
   } & ModelErrorIdentifiers
 > {}
 
@@ -243,10 +244,17 @@ export function isRetryableModelError(error: ModelError): boolean {
 }
 
 const SYSTEMIC_STATUS_CODES = new Set([401, 403, 404]);
+const PER_REQUEST_PROVIDER_STATUS_CODES = new Set([403, 404]);
 
 export function isSystemicModelError(error: ModelError): boolean {
   if (error.status === undefined) {
     return true;
+  }
+  if (
+    error.providerName !== undefined &&
+    PER_REQUEST_PROVIDER_STATUS_CODES.has(error.status)
+  ) {
+    return false;
   }
   return SYSTEMIC_STATUS_CODES.has(error.status);
 }

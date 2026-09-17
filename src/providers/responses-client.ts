@@ -122,8 +122,26 @@ export class ResponsesError extends TaggedError("ResponsesError")<
     readonly status?: number;
     readonly retryAfterMs?: number;
     readonly retryable: boolean;
+    readonly providerName?: string;
   } & ModelErrorIdentifiers
 > {}
+
+const ProviderErrorBodySchema = z.object({
+  error: z.object({
+    metadata: z.object({ provider_name: z.string() }),
+  }),
+});
+
+export function providerNameFromErrorBody(body: string): string | undefined {
+  try {
+    const parsed = ProviderErrorBodySchema.safeParse(JSON.parse(body));
+    return parsed.success
+      ? parsed.data.error.metadata.provider_name
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
 
 export function toModelError(error: ResponsesError): ModelError {
   const status = error.status ?? (error.retryable ? 500 : undefined);
@@ -132,6 +150,7 @@ export function toModelError(error: ResponsesError): ModelError {
       message: error.message,
       status,
       retryAfterMs: error.retryAfterMs,
+      providerName: error.providerName,
       ...pickModelErrorIdentifiers(error),
     })
   );
@@ -746,6 +765,7 @@ function toResponsesError(
         status: cause.statusCode,
         retryAfterMs,
         retryable: cause.statusCode === 429 || cause.statusCode >= 500,
+        providerName: providerNameFromErrorBody(cause.body),
         ...errorIdentifiers,
       })
     );
