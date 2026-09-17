@@ -128,6 +128,7 @@ export type Tau3BenchBankingConfig = z.infer<
 export const MmmuProVisionOptionsSchema = z.object({
   imageDetail: z.enum(IMAGE_DETAIL_VALUES).optional(),
   mediaResolution: z.enum(GEMINI_MEDIA_RESOLUTIONS).optional(),
+  datasetRevision: z.string().optional(),
 });
 
 export const MmmuProVisionBenchmarkConfigSchema = z.object({

@@ -1,5 +1,3 @@
-import { createHash } from "node:crypto";
-
 import { S3Client } from "bun";
 
 import {
@@ -10,21 +8,22 @@ import {
   downscaledVideoUrl,
 } from "../src/benchmarks/vgi-bench/benchmark";
 import { z } from "../src/internal/zod";
+import type { MediaMirrorEnv } from "./media-mirror";
+import {
+  describeFailure,
+  downloadBytes,
+  fetchHfRowPages,
+  hashManifestEntries,
+  mapWithConcurrency,
+  readMediaMirrorEnv,
+  sha256Hex,
+  uploadUnlessPresent,
+} from "./media-mirror";
 
-const HF_ROWS_BASE_URL = "https://datasets-server.huggingface.co/rows";
-const HF_PAGE_SIZE = 100;
-
-const HfRowsPageSchema = z.object({
-  rows: z.array(
-    z.object({
-      row: z.object({
-        video_id: z.string(),
-        video_url: z.string(),
-        question_id: z.number().int(),
-      }),
-    })
-  ),
-  num_rows_total: z.number().int(),
+const VgiRowSchema = z.object({
+  video_id: z.string(),
+  video_url: z.string(),
+  question_id: z.number().int(),
 });
 
 const CONTENT_TYPES: Record<string, string> = {
@@ -33,16 +32,6 @@ const CONTENT_TYPES: Record<string, string> = {
   mov: "video/quicktime",
   mkv: "video/x-matroska",
 };
-
-interface MirrorEnv {
-  readonly endpoint: string;
-  readonly bucket: string;
-  readonly accessKeyId: string;
-  readonly secretAccessKey: string;
-  readonly publicBaseUrl: string;
-  readonly keyPrefix: string;
-  readonly hfToken: string | undefined;
-}
 
 interface MirrorOptions {
   readonly concurrency: number;
@@ -99,35 +88,6 @@ type MirrorOutcome =
   | { readonly kind: "mirrored"; readonly entry: ManifestEntry }
   | { readonly kind: "unresolved"; readonly reason: string };
 
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (value === undefined || value.trim() === "") {
-    throw new Error(`Missing required environment variable ${name}`);
-  }
-  return value.trim();
-}
-
-function readEnv(): MirrorEnv {
-  const publicBaseUrl = requireEnv("BENCH_MEDIA_PUBLIC_BASE_URL").replace(
-    /\/+$/,
-    ""
-  );
-  return {
-    endpoint: requireEnv("BENCH_MEDIA_S3_ENDPOINT"),
-    bucket: requireEnv("BENCH_MEDIA_S3_BUCKET"),
-    accessKeyId: requireEnv("BENCH_MEDIA_S3_ACCESS_KEY_ID"),
-    secretAccessKey: requireEnv("BENCH_MEDIA_S3_SECRET_ACCESS_KEY"),
-    publicBaseUrl,
-    keyPrefix: normalizeKeyPrefix(process.env["BENCH_MEDIA_KEY_PREFIX"]),
-    hfToken: process.env["HF_TOKEN"],
-  };
-}
-
-export function normalizeKeyPrefix(rawPrefix: string | undefined): string {
-  const stripped = (rawPrefix ?? "").trim().replaceAll(/^\/+|\/+$/g, "");
-  return stripped === "" ? "" : `${stripped}/`;
-}
-
 export function readOptions(argv: readonly string[]): MirrorOptions {
   const flag = (name: string): string | undefined => {
     const prefixed = `--${name}=`;
@@ -173,28 +133,18 @@ async function fetchSourceVideos(
     string,
     { originalUrl: string; questionIds: number[] }
   >();
-  const headers: Record<string, string> =
-    hfToken === undefined ? {} : { authorization: `Bearer ${hfToken}` };
-  let offset = 0;
-  let total = Number.POSITIVE_INFINITY;
-  while (offset < total) {
-    const url = new URL(HF_ROWS_BASE_URL);
-    url.searchParams.set("dataset", VGI_BENCH_DATASET_PATH);
-    url.searchParams.set("config", VGI_BENCH_CONFIG);
-    url.searchParams.set("split", VGI_BENCH_SPLIT);
-    url.searchParams.set("revision", revision);
-    url.searchParams.set("offset", String(offset));
-    url.searchParams.set("length", String(HF_PAGE_SIZE));
-    const response = await fetch(url, { headers });
-    if (!response.ok) {
-      await response.body?.cancel();
-      throw new Error(
-        `Hugging Face rows request failed with ${response.status}`
-      );
-    }
-    const payload = HfRowsPageSchema.parse(await response.json());
-    total = payload.num_rows_total;
-    for (const { row } of payload.rows) {
+  const pages = fetchHfRowPages(
+    {
+      dataset: VGI_BENCH_DATASET_PATH,
+      config: VGI_BENCH_CONFIG,
+      split: VGI_BENCH_SPLIT,
+      revision,
+      hfToken,
+    },
+    VgiRowSchema
+  );
+  for await (const page of pages) {
+    for (const row of page.rows) {
       const existing = byVideoId.get(row.video_id);
       if (existing === undefined) {
         byVideoId.set(row.video_id, {
@@ -204,10 +154,6 @@ async function fetchSourceVideos(
       } else {
         existing.questionIds.push(row.question_id);
       }
-    }
-    offset += payload.rows.length;
-    if (payload.rows.length === 0) {
-      break;
     }
   }
   return [...byVideoId.entries()]
@@ -247,14 +193,10 @@ async function resolveSourceUrl(
   return undefined;
 }
 
-export function describeFailure(cause: unknown): string {
-  return cause instanceof Error ? cause.message : String(cause);
-}
-
 async function mirrorVideo(
   video: SourceVideo,
   candidates: readonly SourceCandidate[],
-  env: MirrorEnv,
+  env: MediaMirrorEnv,
   options: MirrorOptions,
   s3: S3Client
 ): Promise<MirrorOutcome> {
@@ -268,13 +210,8 @@ async function mirrorVideo(
   const extension = extensionOf(source.url);
   const contentType = CONTENT_TYPES[extension] ?? "application/octet-stream";
   const key = `${env.keyPrefix}${video.videoId}.${extension}`;
-  const download = await fetch(source.url);
-  if (!download.ok) {
-    await download.body?.cancel();
-    throw new Error(`Download of ${source.url} failed with ${download.status}`);
-  }
-  const bytes = new Uint8Array(await download.arrayBuffer());
-  const sha256 = createHash("sha256").update(bytes).digest("hex");
+  const bytes = await downloadBytes(source.url);
+  const sha256 = sha256Hex(bytes);
   const entry: ManifestEntry = {
     videoId: video.videoId,
     sourceUrl: source.url,
@@ -285,62 +222,28 @@ async function mirrorVideo(
     contentType,
     sha256,
   };
-  if (options.dryRun) {
-    return { kind: "mirrored", entry };
-  }
-  const target = s3.file(key);
-  if (!options.force) {
-    const existing = await target.stat().catch(() => undefined);
-    if (existing !== undefined && existing.size === bytes.byteLength) {
-      return { kind: "mirrored", entry };
-    }
-  }
-  await target.write(bytes, { type: contentType });
+  await uploadUnlessPresent(s3, key, bytes, contentType, options);
   return { kind: "mirrored", entry };
 }
 
-async function mapWithConcurrency<T, R>(
-  items: readonly T[],
-  concurrency: number,
-  worker: (item: T, index: number) => Promise<R>
-): Promise<readonly R[]> {
-  const results = new Array<R>(items.length);
-  let cursor = 0;
-  const runners = Array.from(
-    { length: Math.min(concurrency, items.length) },
-    async () => {
-      while (true) {
-        const index = cursor;
-        cursor += 1;
-        if (index >= items.length) {
-          return;
-        }
-        results[index] = await worker(items[index]!, index);
-      }
-    }
-  );
-  await Promise.all(runners);
-  return results;
-}
-
 export function hashManifest(entries: readonly ManifestEntry[]): string {
-  const hasher = createHash("sha256");
-  for (const entry of entries) {
-    hasher.update(`${entry.videoId}\u0000${entry.url}\u0000${entry.sha256}\n`);
-  }
-  return hasher.digest("hex");
+  return hashManifestEntries(
+    entries.map((entry) => ({
+      id: entry.videoId,
+      url: entry.url,
+      sha256: entry.sha256,
+    }))
+  );
 }
 
 async function main(): Promise<void> {
-  const env = readEnv();
+  const env = readMediaMirrorEnv();
   const options = readOptions(process.argv.slice(2));
-  const s3 = new S3Client({
-    accessKeyId: env.accessKeyId,
-    secretAccessKey: env.secretAccessKey,
-    bucket: env.bucket,
-    endpoint: env.endpoint,
-  });
-  const allVideos = await fetchSourceVideos(options.revision, env.hfToken);
+  const s3 = new S3Client(env);
+  const allVideos = await fetchSourceVideos(
+    options.revision,
+    process.env["HF_TOKEN"]
+  );
   const videos =
     options.limit === undefined ? allVideos : allVideos.slice(0, options.limit);
   process.stderr.write(

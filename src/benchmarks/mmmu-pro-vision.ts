@@ -18,16 +18,19 @@ import type {
 } from "./benchmark-config";
 import { MMMU_PRO_VISION_META } from "./benchmark-meta";
 import { defineSingleTurnBenchmark } from "./define-single-turn-benchmark";
+import type { MmmuProMediaManifest } from "./mmmu-pro-media-manifest";
+import {
+  MMMU_PRO_DATASET_PATH,
+  MMMU_PRO_DEFAULT_REVISION,
+  MMMU_PRO_SPLIT,
+  MMMU_PRO_VISION_SUBSET,
+  mirroredMmmuProImage,
+  mmmuProMediaManifestFor,
+} from "./mmmu-pro-media-manifest";
 import { MMMU_SYSTEM_MESSAGE, parseOptions } from "./mmmu-shared";
 import { buildDynamicMcqPrompt } from "./scorers/mcq/dynamic-prompt";
 import { mcqScorer } from "./scorers/mcq/scorer";
 import type { Benchmark } from "./types";
-
-const MMMU_PRO_DATASET_PATH = "MMMU/MMMU_Pro";
-
-const MMMU_PRO_VISION_SUBSET = "vision";
-
-const MMMU_PRO_SPLIT = "test";
 
 const DEFAULT_QUESTION =
   "Use the image to answer the question. Choose the best option.";
@@ -39,7 +42,8 @@ function asString(value: unknown, fallback: string): string {
 export function mmmuProVisionRecordToSample(
   record: Readonly<Record<string, unknown>>,
   index: number,
-  imageDetail?: ImageDetail
+  imageDetail?: ImageDetail,
+  mediaManifest?: MmmuProMediaManifest
 ): Sample {
   const id = asString(record["id"], `mmmu-pro-vision-${index}`);
   const questionRaw = record["question"];
@@ -55,19 +59,22 @@ export function mmmuProVisionRecordToSample(
       : `${question}\n\nAnswer succinctly.`;
   const contentParts: ContentPart[] = [{ type: "text", text: input }];
   let numImages = 0;
-  const imageField = record["image"];
-  if (isDefinedAndNotNull(imageField)) {
-    const parsed = parseSchema(HfImageSchema, imageField);
-    if (Either.isRight(parsed)) {
-      contentParts.push({
-        type: "image_url",
-        imageUrl: definedValues({
-          url: parsed.right.src,
-          detail: imageDetail,
-        }),
-      });
-      numImages++;
-    }
+  const parsedImage = parseSchema(HfImageSchema, record["image"]);
+  if (mediaManifest !== undefined && Either.isLeft(parsedImage)) {
+    throw new TypeError(`MMMU Pro image ${id} is missing or invalid`);
+  }
+  if (Either.isRight(parsedImage)) {
+    contentParts.push({
+      type: "image_url",
+      imageUrl: definedValues({
+        url:
+          mediaManifest === undefined
+            ? parsedImage.right.src
+            : mirroredMmmuProImage(mediaManifest, id, parsedImage.right.src),
+        detail: imageDetail,
+      }),
+    });
+    numImages++;
   }
   for (let i = 1; i <= 7; i++) {
     const imgField = record[`image_${i}`];
@@ -87,6 +94,9 @@ export function mmmuProVisionRecordToSample(
     });
     numImages++;
   }
+  if (mediaManifest !== undefined && numImages !== 1) {
+    throw new TypeError(`MMMU Pro vision expected one image for ${id}`);
+  }
   return {
     id,
     input,
@@ -98,6 +108,10 @@ export function mmmuProVisionRecordToSample(
       topic_difficulty: record["topic_difficulty"] ?? "",
       answer,
       num_images: numImages,
+      ...definedValues({
+        media_manifest_hash: mediaManifest?.manifestHash,
+        dataset_revision: mediaManifest?.revision,
+      }),
     },
   };
 }
@@ -105,20 +119,27 @@ export function mmmuProVisionRecordToSample(
 interface MmmuProVisionDatasetOpts {
   readonly imageDetail?: ImageDetail;
   readonly retry?: RetryConfig;
+  readonly revision?: string;
 }
 
 export function makeMmmuProVisionDatasetLayer(
   opts?: MmmuProVisionDatasetOpts
 ): Layer<DatasetTag> {
+  const revision = opts?.revision ?? MMMU_PRO_DEFAULT_REVISION;
+  const mediaManifest = mmmuProMediaManifestFor(revision);
   return makeHfDatasetLayer({
     dataset: MMMU_PRO_DATASET_PATH,
     config: MMMU_PRO_VISION_SUBSET,
     split: MMMU_PRO_SPLIT,
+    revision,
     recordToSample: (record, idx) =>
-      mmmuProVisionRecordToSample(record, idx, opts?.imageDetail),
-    ...definedValues({
-      retry: opts?.retry,
-    }),
+      mmmuProVisionRecordToSample(
+        record,
+        idx,
+        opts?.imageDetail,
+        mediaManifest
+      ),
+    ...definedValues({ retry: opts?.retry }),
   });
 }
 
@@ -158,6 +179,7 @@ export const MMMU_PRO_VISION_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
     makeMmmuProVisionDatasetLayer(
       definedValues({
         imageDetail: config.imageDetail,
+        revision: config.datasetRevision,
         retry: retryConfig,
       })
     ),

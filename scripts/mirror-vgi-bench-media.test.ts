@@ -4,10 +4,8 @@ import { VGI_BENCH_DEFAULT_REVISION } from "../src/benchmarks/vgi-bench/benchmar
 import type { ManifestEntry } from "./mirror-vgi-bench-media";
 import {
   candidateSources,
-  describeFailure,
   extensionOf,
   hashManifest,
-  normalizeKeyPrefix,
   readOptions,
 } from "./mirror-vgi-bench-media";
 
@@ -77,19 +75,6 @@ describe("readOptions", () => {
   });
 });
 
-describe("normalizeKeyPrefix", () => {
-  test("appends a single trailing slash to a real prefix", () => {
-    expect(normalizeKeyPrefix("vgi-bench")).toBe("vgi-bench/");
-    expect(normalizeKeyPrefix("/vgi-bench/v1/")).toBe("vgi-bench/v1/");
-  });
-
-  test("treats blank and slash-only prefixes as absent", () => {
-    expect(normalizeKeyPrefix(undefined)).toBe("");
-    expect(normalizeKeyPrefix("  ")).toBe("");
-    expect(normalizeKeyPrefix("///")).toBe("");
-  });
-});
-
 describe("candidateSources", () => {
   test("prefers the downscaled URL over the original", () => {
     expect(candidateSources("https://example.test/videos/clip.mp4")).toEqual([
@@ -105,18 +90,6 @@ describe("candidateSources", () => {
     expect(candidateSources("not a url")).toEqual([
       { url: "not a url", kind: "original" },
     ]);
-  });
-});
-
-describe("describeFailure", () => {
-  test("reports the message of an error", () => {
-    expect(describeFailure(new Error("Download failed with 503"))).toBe(
-      "Download failed with 503"
-    );
-  });
-
-  test("stringifies non-error causes", () => {
-    expect(describeFailure("socket hang up")).toBe("socket hang up");
   });
 });
 
