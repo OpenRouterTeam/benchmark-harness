@@ -30,10 +30,10 @@ import { initialTaskState, ScoreValue } from "../../harness/core";
 import { Solver } from "../../harness/solver";
 import type { ResponsesGenerateConfig } from "../../providers/responses-model";
 import { ResponsesModel } from "../../providers/responses-model";
+import type { CreateSessionInput, ExecResult } from "../../sandbox/session";
+import { makeFakeSandboxLayer, SandboxSession } from "../../sandbox/session";
 import type { InferenceOverride } from "../benchmark-config";
 import { SUBMIT_SENTINEL } from "../harbor/prompts";
-import type { CreateSessionInput, ExecResult } from "../harbor/sandbox";
-import { makeFakeSandboxLayer, SandboxSession } from "../harbor/sandbox";
 import {
   WANDR_BASE_IMAGE,
   WANDR_IMAGE_BUILD_STEPS,

@@ -1,13 +1,10 @@
 import type { Layer } from "effect/Layer";
 
-import type {
-  CreateSessionInput,
-  ExecResult,
-} from "../../src/benchmarks/harbor/sandbox";
+import type { CreateSessionInput, ExecResult } from "../../src/sandbox/session";
 import {
   makeFakeSandboxLayer,
   SandboxSession,
-} from "../../src/benchmarks/harbor/sandbox";
+} from "../../src/sandbox/session";
 
 export interface FakeTerminalBenchExecCall {
   readonly argv: readonly string[];

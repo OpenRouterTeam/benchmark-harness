@@ -3,6 +3,7 @@ import { gen, tryPromise } from "effect/Effect";
 import type { ModelMessage, ModelUsage } from "../../harness/core";
 import { MessageRole, SolverError } from "../../harness/core";
 import type { SolverService } from "../../harness/solver";
+import type { SandboxSessionFactory } from "../../sandbox/session";
 import type { OriHarnessDef } from "../agent-cli/harness";
 import type { AgentCliOpts } from "../agent-cli/runner";
 import {
@@ -10,7 +11,6 @@ import {
   agentImageBuildSteps,
   runAgentCli,
 } from "../agent-cli/runner";
-import type { SandboxSessionFactory } from "../harbor/sandbox";
 import { readTerminalBenchMeta } from "./dataset";
 import {
   agentNetworkDeviation,

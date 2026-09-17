@@ -39,15 +39,15 @@ import type {
   ResponsesModelService,
 } from "../../providers/responses-model";
 import { responsesMessage } from "../../providers/responses-model";
+import type {
+  SandboxSessionFactory,
+  SandboxSessionInstance,
+} from "../../sandbox/session";
+import { REMOTE_TEST_DIR, REMOTE_VERIFIER_SCRIPT } from "../../sandbox/session";
 import type { InferenceOverride } from "../benchmark-config";
 import type { AgentLoopInput } from "../harbor/agent-loop";
 import { AGENT_ENV, runAgentLoop } from "../harbor/agent-loop";
 import { BASH_RESPONSES_TOOL_DEFINITION } from "../harbor/prompts";
-import type {
-  SandboxSessionFactory,
-  SandboxSessionInstance,
-} from "../harbor/sandbox";
-import { REMOTE_TEST_DIR, REMOTE_VERIFIER_SCRIPT } from "../harbor/sandbox";
 import { loadWandrTask, readWandrSampleMeta } from "./dataset";
 import { buildWandrInstanceMessage, WANDR_SYSTEM_MESSAGE } from "./prompts";
 import type {

@@ -10,6 +10,11 @@ import type {
   ResponsesModelService,
 } from "../../providers/responses-model";
 import { responsesMessage } from "../../providers/responses-model";
+import type {
+  SandboxSessionInstance,
+  SandboxSessionFactory,
+} from "../../sandbox/session";
+import { REMOTE_TEST_DIR, REMOTE_VERIFIER_SCRIPT } from "../../sandbox/session";
 import { getOriHarness } from "../agent-cli/harness";
 import type { AgentCliOpts } from "../agent-cli/runner";
 import {
@@ -26,11 +31,6 @@ import {
   MINI_SWE_SYSTEM_MESSAGE,
 } from "../harbor/prompts";
 import { parseReward } from "../harbor/reward";
-import type {
-  SandboxSessionInstance,
-  SandboxSessionFactory,
-} from "../harbor/sandbox";
-import { REMOTE_TEST_DIR, REMOTE_VERIFIER_SCRIPT } from "../harbor/sandbox";
 import { loadTask, readSweAtlasMeta } from "./dataset";
 import {
   buildAgentCliSubmissionProtocol,

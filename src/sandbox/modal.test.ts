@@ -1,10 +1,10 @@
 import { describe, expect, it } from "bun:test";
 
-import { assertLeft, assertRight } from "../../internal/testing";
-import { parseSchema } from "../../internal/zod";
-import { toSandboxCreateParams } from "./modal-sandbox";
+import { assertLeft, assertRight } from "../internal/testing";
+import { parseSchema } from "../internal/zod";
+import { toSandboxCreateParams } from "./modal";
 import { ModalSandboxOptionsSchema } from "./modal-schema";
-import type { CreateSessionInput } from "./sandbox";
+import type { CreateSessionInput } from "./session";
 
 const input: CreateSessionInput = {
   imageTag: "python:3.12",
