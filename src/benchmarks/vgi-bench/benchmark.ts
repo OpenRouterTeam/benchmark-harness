@@ -23,6 +23,11 @@ import { mcqScorer } from "../scorers/mcq/scorer";
 import type { Benchmark } from "../types";
 import type { VgiBenchMediaManifest } from "./media-manifest";
 import { VGI_BENCH_MEDIA_MANIFEST } from "./media-manifest";
+import {
+  keepYoutubeSamples,
+  VGI_BENCH_VIDEO_SOURCE_YOUTUBE,
+  youtubeVideoUrl,
+} from "./youtube-video";
 
 export const VGI_BENCH_DATASET_PATH = "Seldon-Technologies/VGIBench";
 
@@ -100,6 +105,7 @@ export interface VgiBenchRecordToSampleOptions {
   readonly downscaledVideos?: boolean;
   readonly mediaManifest?: VgiBenchMediaManifest;
   readonly videoProcessing?: VideoProcessingMode;
+  readonly youtubeVideos?: boolean;
 }
 
 export function vgiBenchRecordToSample(
@@ -111,7 +117,11 @@ export function vgiBenchRecordToSample(
   const videoId = asString(record["video_id"], "video_id");
   let videoUrl = asString(record["video_url"], "video_url");
   const manifest = opts?.mediaManifest;
-  if (manifest !== undefined) {
+  const youtubeUrl =
+    opts?.youtubeVideos === true ? youtubeVideoUrl(videoId) : undefined;
+  if (youtubeUrl !== undefined) {
+    videoUrl = youtubeUrl;
+  } else if (manifest !== undefined) {
     const mirroredUrl = manifest.urlByVideoId.get(videoId);
     if (mirroredUrl === undefined) {
       throw new TypeError(
@@ -157,6 +167,8 @@ export function vgiBenchRecordToSample(
       family,
       media_manifest_hash: manifest?.manifestHash,
       video_processing: opts?.videoProcessing,
+      video_source:
+        youtubeUrl !== undefined ? VGI_BENCH_VIDEO_SOURCE_YOUTUBE : undefined,
       downscaled_videos:
         manifest === undefined && opts?.downscaledVideos === true
           ? true
@@ -194,6 +206,7 @@ function makeVgiBenchDatasetLayer(
           mediaManifest,
           downscaledVideos: opts?.downscaledVideos,
           videoProcessing: opts?.videoProcessing,
+          youtubeVideos: opts?.youtubeVideos,
         })
       ),
     revision,
@@ -201,7 +214,8 @@ function makeVgiBenchDatasetLayer(
       retry: opts?.retry,
     }),
   };
-  return makeHfDatasetLayer(config);
+  const layer = makeHfDatasetLayer(config);
+  return opts?.youtubeVideos === true ? keepYoutubeSamples(layer) : layer;
 }
 
 function vgiBenchSolver(
@@ -306,6 +320,7 @@ const VGI_BENCH_SINGLE_TURN_BENCHMARK = defineSingleTurnBenchmark({
       definedValues({
         downscaledVideos: config.downscaledVideos,
         videoProcessing: config.videoProcessing,
+        youtubeVideos: config.youtubeVideos,
         revision: config.datasetRevision ?? VGI_BENCH_DEFAULT_REVISION,
         retry: retryConfig,
       })
