@@ -16,6 +16,7 @@ import {
 import { getOrThrow } from "effect/Option";
 
 import { assertFailure } from "../../test/helpers/exit-asserts";
+import { isSystemicModelError } from "../harness/core";
 import { assertRight } from "../internal/testing";
 import { parseSchema, z } from "../internal/zod";
 import {
@@ -31,6 +32,7 @@ import {
   extractReasoning,
   findOutputItems,
   makeResponsesLayer,
+  providerNameFromErrorBody,
   Responses,
   ResponsesError,
   toModelError,
@@ -323,6 +325,52 @@ describe("toModelError", () => {
     );
     expect(err.status).toBeUndefined();
   });
+  it("carries the upstream provider name so a forwarded 403 is not treated as systemic", () => {
+    const err = toModelError(
+      new ResponsesError({
+        message: "forbidden",
+        retryable: false,
+        status: 403,
+        providerName: "Google AI Studio",
+      })
+    );
+    expect(err.providerName).toBe("Google AI Studio");
+    expect(isSystemicModelError(err)).toBe(false);
+    expect(
+      isSystemicModelError(
+        toModelError(
+          new ResponsesError({
+            message: "forbidden",
+            retryable: false,
+            status: 403,
+          })
+        )
+      )
+    ).toBe(true);
+  });
+});
+describe("providerNameFromErrorBody", () => {
+  it("reads provider_name from an OpenRouter provider error body", () => {
+    const body = JSON.stringify({
+      error: {
+        message: "Provider returned error",
+        code: 403,
+        metadata: {
+          raw: "PERMISSION_DENIED",
+          provider_name: "Google AI Studio",
+        },
+      },
+    });
+    expect(providerNameFromErrorBody(body)).toBe("Google AI Studio");
+  });
+  it("returns undefined for non-provider or non-JSON bodies", () => {
+    expect(
+      providerNameFromErrorBody(
+        JSON.stringify({ error: { message: "User not found.", code: 401 } })
+      )
+    ).toBeUndefined();
+    expect(providerNameFromErrorBody("<html>upstream</html>")).toBeUndefined();
+  });
 });
 describe("usageFromResponses", () => {
   it("maps camelCase SDK usage keys", () => {
@@ -537,6 +585,31 @@ describe("consumeStream", () => {
     expect(error.xRequestId).toBe("req-456");
     expect(error.message.match(/cf_ray=ray-123/g)).toHaveLength(1);
     expect(error.message.match(/x_request_id=req-456/g)).toHaveLength(1);
+  });
+  it("extracts the provider name from a forwarded provider error body", async () => {
+    const body = JSON.stringify({
+      error: {
+        message: "Provider returned error",
+        code: 403,
+        metadata: {
+          raw: "PERMISSION_DENIED",
+          provider_name: "Google AI Studio",
+        },
+      },
+    });
+    async function* stream(): AsyncGenerator<StreamEvents> {
+      throw new OpenRouterError("upstream", {
+        response: new Response(body, { status: 403 }),
+        request: new Request("https://example.test"),
+        body,
+      });
+    }
+    const error = await consumeStream(stream()).catch(
+      (cause: unknown) => cause
+    );
+    assert(error instanceof ResponsesError);
+    expect(error.status).toBe(403);
+    expect(error.providerName).toBe("Google AI Studio");
   });
 });
 describe("makeResponsesLayer", () => {
