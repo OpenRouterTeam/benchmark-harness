@@ -70,4 +70,40 @@ describe("keepYoutubeSamples", () => {
     expect(size).toBe(2);
     expect(samples.filter(isYoutubeSample)).toHaveLength(2);
   });
+
+  it("applies start/end ranges to the filtered samples, not the source rows", async () => {
+    const samples = [
+      sample("a", "youtube"),
+      sample("b"),
+      sample("c"),
+      sample("d", "youtube"),
+      sample("e"),
+      sample("f", "youtube"),
+      sample("g", "youtube"),
+    ];
+    const base = layerEffect(
+      Dataset,
+      succeed({
+        size: succeed(samples.length),
+        stream: (opts) =>
+          fromIterable(
+            samples.slice(opts?.start ?? 0, opts?.end ?? samples.length)
+          ),
+      })
+    );
+    const layer = keepYoutubeSamples(base);
+    const ids = async (start: number, end: number): Promise<string[]> => {
+      const collected = await runPromise(
+        Dataset.pipe(
+          flatMap((dataset) => runCollect(dataset.stream({ start, end }))),
+          provide(layer)
+        )
+      );
+      return [...collected].map((s) => s.id);
+    };
+    expect(await ids(0, 2)).toEqual(["a", "d"]);
+    expect(await ids(2, 4)).toEqual(["f", "g"]);
+    expect(await ids(1, 2)).toEqual(["d"]);
+    expect(await ids(4, 6)).toEqual([]);
+  });
 });
