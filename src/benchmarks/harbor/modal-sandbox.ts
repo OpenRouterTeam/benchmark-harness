@@ -21,7 +21,6 @@ import { SandboxSession, makeSessionInstance, toSolverError } from "./sandbox";
 export interface ModalSandboxConfig {
   readonly appName: string;
   readonly environment?: string;
-  /** Modal placement regions (e.g. ["us"]). Empty or undefined leaves placement to Modal. */
   readonly regions?: readonly string[];
   readonly tokenId?: string;
   readonly tokenSecret?: string;
