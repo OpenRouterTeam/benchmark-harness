@@ -39,7 +39,7 @@ describe("youtubeVideoUrl", () => {
 });
 
 describe("keepYoutubeSamples", () => {
-  it("drops samples whose video_source is not youtube", async () => {
+  it("drops samples whose video_source is not youtube and reports the filtered size", async () => {
     const samples = [
       sample("a", "youtube"),
       sample("b"),
@@ -53,13 +53,21 @@ describe("keepYoutubeSamples", () => {
         stream: () => fromIterable(samples),
       })
     );
+    const layer = keepYoutubeSamples(base);
     const collected = await runPromise(
       Dataset.pipe(
         flatMap((dataset) => runCollect(dataset.stream())),
-        provide(keepYoutubeSamples(base))
+        provide(layer)
+      )
+    );
+    const size = await runPromise(
+      Dataset.pipe(
+        flatMap((dataset) => dataset.size),
+        provide(layer)
       )
     );
     expect([...collected].map((s) => s.id)).toEqual(["a", "d"]);
+    expect(size).toBe(2);
     expect(samples.filter(isYoutubeSample)).toHaveLength(2);
   });
 });

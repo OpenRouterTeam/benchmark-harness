@@ -1,7 +1,7 @@
 import { get as getContext, make } from "effect/Context";
 import type { Layer } from "effect/Layer";
 import { map as mapLayer } from "effect/Layer";
-import { filter as streamFilter } from "effect/Stream";
+import { filter as streamFilter, runCount } from "effect/Stream";
 
 import type { Sample } from "../../harness/core";
 import { Dataset } from "../../harness/dataset";
@@ -24,10 +24,8 @@ export function isYoutubeSample(sample: Sample): boolean {
 export function keepYoutubeSamples(layer: Layer<Dataset>): Layer<Dataset> {
   return mapLayer(layer, (context) => {
     const dataset = getContext(context, Dataset);
-    return make(Dataset, {
-      size: dataset.size,
-      stream: (opts) =>
-        dataset.stream(opts).pipe(streamFilter(isYoutubeSample)),
-    });
+    const stream: Dataset["Type"]["stream"] = (opts) =>
+      dataset.stream(opts).pipe(streamFilter(isYoutubeSample));
+    return make(Dataset, { size: runCount(stream()), stream });
   });
 }
