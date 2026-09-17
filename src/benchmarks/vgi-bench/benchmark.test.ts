@@ -148,6 +148,38 @@ describe("vgiBenchRecordToSample", () => {
     expect(sample.metadata?.["downscaled_videos_requested"]).toBe(true);
   });
 
+  it("sends a YouTube watch URL and tags the source when youtubeVideos is set for a YouTube id", () => {
+    const sample = vgiBenchRecordToSample(
+      { ...VGI_RECORD, video_id: "BEIWgGUcz2o" },
+      0,
+      {
+        mediaManifest: TEST_MANIFEST,
+        videoProcessing: "static",
+        youtubeVideos: true,
+      }
+    );
+    expect(sample.contentParts![0]).toEqual({
+      type: "video_url",
+      videoUrl: {
+        url: "https://www.youtube.com/watch?v=BEIWgGUcz2o",
+        processing: "static",
+      },
+    });
+    expect(sample.metadata?.["video_source"]).toBe("youtube");
+  });
+
+  it("falls back to the manifest URL and leaves video_source unset for a non-YouTube id", () => {
+    const sample = vgiBenchRecordToSample(VGI_RECORD, 0, {
+      mediaManifest: TEST_MANIFEST,
+      youtubeVideos: true,
+    });
+    expect(sample.contentParts![0]).toEqual({
+      type: "video_url",
+      videoUrl: { url: "https://mirror.example.com/clip_007.mp4" },
+    });
+    expect(sample.metadata).not.toHaveProperty("video_source");
+  });
+
   it("throws when a video is missing from the media manifest", () => {
     expect(() =>
       vgiBenchRecordToSample({ ...VGI_RECORD, video_id: "clip_404" }, 0, {
@@ -277,6 +309,24 @@ describe("VGI-Bench registry", () => {
     });
     assertRight(result);
     expect(result.right.videoProcessing).toBe("agentic");
+  });
+
+  it("parses vgi_bench config with youtubeVideos and defaults it to false", () => {
+    const enabled = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "vgi_bench",
+      model: "google/gemini-3.8-flash",
+      reasoningEffort: "high",
+      youtubeVideos: true,
+    });
+    assertRight(enabled);
+    expect(enabled.right.youtubeVideos).toBe(true);
+    const defaulted = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "vgi_bench",
+      model: "google/gemini-3.8-flash",
+      reasoningEffort: "high",
+    });
+    assertRight(defaulted);
+    expect(defaulted.right.youtubeVideos).toBe(false);
   });
 
   it("rejects an unknown videoProcessing mode", () => {
