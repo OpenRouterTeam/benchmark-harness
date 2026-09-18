@@ -11,6 +11,12 @@ describe("resolveModalRegions", () => {
     expect(resolveModalRegions("sakana/fugu-max", undefined)).toEqual(["us"]);
   });
 
+  it("matches pins through the openrouter/ routing prefix", () => {
+    expect(
+      resolveModalRegions("openrouter/sakana/fugu-ultra", undefined)
+    ).toEqual(["us"]);
+  });
+
   it("leaves unpinned models to Modal's default placement", () => {
     expect(
       resolveModalRegions("anthropic/claude-opus-5", undefined)

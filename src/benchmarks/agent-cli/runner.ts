@@ -10,6 +10,7 @@ import {
 } from "effect/Effect";
 
 import { SolverError } from "../../harness/core";
+import { stripRoutingPrefix } from "../../harness/model-slug";
 import { definedValues } from "../../internal/guards";
 import { recordGenerationId } from "../../runtime/generation-ids";
 import type { SandboxSessionInstance } from "../../sandbox/session";
@@ -103,14 +104,7 @@ export interface AgentCliRunResult extends OriAgentRun {
   readonly failureDetail: string;
 }
 
-export function normalizeAgentModel(model: string): string {
-  const routingPrefix = "openrouter/";
-  if (!model.startsWith(routingPrefix)) {
-    return model;
-  }
-  const rest = model.slice(routingPrefix.length);
-  return rest.includes("/") ? rest : model;
-}
+export const normalizeAgentModel = stripRoutingPrefix;
 
 export function buildAgentCliEnv(opts: AgentCliOpts): Record<string, string> {
   const env: Record<string, string> = {
