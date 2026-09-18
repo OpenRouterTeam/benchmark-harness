@@ -4,6 +4,7 @@ import { GPQA_BENCHMARK } from "./gpqa";
 import { IFSTRUCT_BENCHMARK } from "./ifstruct/benchmark";
 import { MMLU_PRO_BENCHMARK } from "./mmlu-pro";
 import { MMMU_PRO_VISION_BENCHMARK } from "./mmmu-pro-vision";
+import { PROBABLY_DECISIONS_BENCHMARK } from "./probably-decisions/benchmark";
 import { BROWSECOMP_BENCHMARK } from "./search/browsecomp/benchmark";
 import { DSQA_BENCHMARK } from "./search/dsqa/benchmark";
 import { HLE_BENCHMARK } from "./search/hle/benchmark";
@@ -29,6 +30,7 @@ const BENCHMARKS: Record<string, Benchmark> = {
   [TERMINAL_BENCH_BENCHMARK.id]: TERMINAL_BENCH_BENCHMARK,
   [DRACO_BENCHMARK.id]: DRACO_BENCHMARK,
   [IFSTRUCT_BENCHMARK.id]: IFSTRUCT_BENCHMARK,
+  [PROBABLY_DECISIONS_BENCHMARK.id]: PROBABLY_DECISIONS_BENCHMARK,
   [SWE_ATLAS_QA_BENCHMARK.id]: SWE_ATLAS_QA_BENCHMARK,
   [SWE_ATLAS_TW_BENCHMARK.id]: SWE_ATLAS_TW_BENCHMARK,
   [SWE_ATLAS_RF_BENCHMARK.id]: SWE_ATLAS_RF_BENCHMARK,
