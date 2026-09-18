@@ -27,9 +27,9 @@ import type {
 import { responsesMessage } from "../../providers/responses-model";
 import type { RetryConfig } from "../../runtime/retry";
 import { transientSolverRetrySchedule } from "../../runtime/retry";
+import type { ExecResult, SandboxSessionInstance } from "../../sandbox/session";
 import { makeHarborStreamTracker } from "./agent-progress";
 import { formatObservation, isSubmitOutput } from "./prompts";
-import type { ExecResult, SandboxSessionInstance } from "./sandbox";
 
 export const AGENT_ENV: Readonly<Record<string, string>> = {
   PAGER: "cat",

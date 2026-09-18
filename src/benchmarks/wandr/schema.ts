@@ -1,6 +1,6 @@
 import type { ValueOf } from "../../internal/guards";
 import { z, zInt } from "../../internal/zod";
-import { ModalSandboxOptionsSchema } from "../harbor/modal-schema";
+import { ModalSandboxOptionsSchema } from "../../sandbox/modal-schema";
 
 export const WANDR_DATASET_ID = "wandr" as const;
 

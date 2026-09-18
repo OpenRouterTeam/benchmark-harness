@@ -4,12 +4,12 @@ import type { Effect } from "effect/Effect";
 import { gen } from "effect/Effect";
 
 import type { SolverError } from "../../harness/core";
-import { parseReward } from "../harbor/reward";
 import type {
   SandboxSessionFactory,
   SandboxSessionInstance,
-} from "../harbor/sandbox";
-import { REMOTE_TEST_DIR, REMOTE_VERIFIER_SCRIPT } from "../harbor/sandbox";
+} from "../../sandbox/session";
+import { REMOTE_TEST_DIR, REMOTE_VERIFIER_SCRIPT } from "../../sandbox/session";
+import { parseReward } from "../harbor/reward";
 import type { TerminalBenchSampleMeta } from "./dataset";
 
 export const CONTAINER_WORKDIR = "/app" as const;

@@ -7,6 +7,7 @@ import {
 import { ProviderSort } from "../internal/enums";
 import type { ValueOf } from "../internal/guards";
 import { z, zDefaultedText, zInt } from "../internal/zod";
+import { ModalSandboxOptionsSchema } from "../sandbox/modal-schema";
 import {
   AGENT_PACKAGE_PATTERN,
   DEFAULT_HARBOR_AGENT,
@@ -22,7 +23,6 @@ import {
 } from "./benchmark-meta";
 import { DEFAULT_STEP_LIMIT as DEEP_SWE_DEFAULT_STEP_LIMIT } from "./deep-swe/schema";
 import { DracoPanelConfigSchema } from "./draco/schemas";
-import { ModalSandboxOptionsSchema } from "./harbor/modal-schema";
 import { SearchLaneConfigSchema } from "./search/core/config";
 import { DEFAULT_JUDGE_MODEL, DEFAULT_STEP_LIMIT } from "./swe-atlas/schema";
 import { BankingRetrievalConfigSchema } from "./tau3-bench-banking/retrieval-config";

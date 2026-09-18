@@ -12,7 +12,7 @@ import {
 import { SolverError } from "../../harness/core";
 import { definedValues } from "../../internal/guards";
 import { recordGenerationId } from "../../runtime/generation-ids";
-import type { SandboxSessionInstance } from "../harbor/sandbox";
+import type { SandboxSessionInstance } from "../../sandbox/session";
 import type { OriAgentRun, OriHarnessDef } from "./harness";
 import type { OriChannel, OriReasoningEffort } from "./schema";
 import { DEFAULT_ORI_CHANNEL, DEFAULT_ORI_INSTALL_URL } from "./schema";

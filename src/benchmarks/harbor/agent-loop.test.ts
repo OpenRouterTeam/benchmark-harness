@@ -8,10 +8,10 @@ import { SolverError } from "../../harness/core";
 import { assertRight } from "../../internal/testing";
 import { parseSchema, z } from "../../internal/zod";
 import type { ResponsesModelService } from "../../providers/responses-model";
+import type { ExecResult, SandboxSessionInstance } from "../../sandbox/session";
 import { itemsToModelMessages, runAgentLoop } from "./agent-loop";
 import { makeHarborStreamTracker } from "./agent-progress";
 import { SUBMIT_SENTINEL } from "./prompts";
-import type { ExecResult, SandboxSessionInstance } from "./sandbox";
 
 function scriptedModel(firstCommand: string): ResponsesModelService {
   let turn = 0;

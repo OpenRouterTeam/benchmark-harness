@@ -8,15 +8,15 @@ import { succeed } from "effect/Layer";
 import type { App, SandboxCreateParams } from "modal";
 import { ModalClient } from "modal";
 
-import type { SolverError } from "../../harness/core";
-import { definedValues } from "../../internal/guards";
+import type { SolverError } from "../harness/core";
+import { definedValues } from "../internal/guards";
 import type {
   CreateSessionInput,
   SandboxExec,
   SandboxSessionInstance,
   UploadSpec,
-} from "./sandbox";
-import { SandboxSession, makeSessionInstance, toSolverError } from "./sandbox";
+} from "./session";
+import { SandboxSession, makeSessionInstance, toSolverError } from "./session";
 
 export interface ModalSandboxConfig {
   readonly appName: string;

@@ -1,4 +1,4 @@
-import { z } from "../../internal/zod";
+import { z } from "../internal/zod";
 
 export const DEFAULT_MODAL_ENV = "main" as const;
 

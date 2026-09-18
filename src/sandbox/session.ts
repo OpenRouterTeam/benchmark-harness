@@ -10,7 +10,7 @@ import {
 import type { Layer } from "effect/Layer";
 import { succeed as layerSucceed } from "effect/Layer";
 
-import { SolverError } from "../../harness/core";
+import { SolverError } from "../harness/core";
 
 export interface ExecResult {
   readonly stdout: string;
@@ -59,7 +59,7 @@ export interface CreateSessionInput {
 }
 
 export class SandboxSession extends Tag(
-  "@openrouter/bench-harness/benchmarks/harbor/sandbox/SandboxSession"
+  "@openrouter/bench-harness/sandbox/SandboxSession"
 )<
   SandboxSession,
   {

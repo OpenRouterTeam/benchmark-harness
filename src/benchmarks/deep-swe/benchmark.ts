@@ -17,12 +17,12 @@ import {
   makeResponsesModelLayer,
   ResponsesModel,
 } from "../../providers/responses-model";
+import { makeModalSandboxLayer } from "../../sandbox/modal";
+import { resolveModalRegions } from "../../sandbox/modal-regions";
+import { SandboxSession } from "../../sandbox/session";
 import { sandboxAgentCandidateModelsError } from "../agent-cli/candidate-models";
 import { isOriAgent } from "../agent-cli/schema";
 import { DEEP_SWE_META } from "../benchmark-meta";
-import { resolveModalRegions } from "../harbor/modal-regions";
-import { makeModalSandboxLayer } from "../harbor/modal-sandbox";
-import { SandboxSession } from "../harbor/sandbox";
 import type { Benchmark, BenchmarkRunInput } from "../types";
 import { DEEP_SWE_DATASET_ID, makeDeepSweDatasetLayer } from "./dataset";
 import { deepSweScorer } from "./scorer";
