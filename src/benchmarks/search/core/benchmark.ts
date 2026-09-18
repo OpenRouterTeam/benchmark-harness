@@ -53,6 +53,7 @@ export function searchSolverOptionsFromConfig({
   const requestedMaxOutputTokens = config.maxTokens ?? maxOutputTokens;
   return definedValues({
     model: config.model,
+    models: config.models,
     instructions,
     lane: config.lane,
     maxOutputTokens:

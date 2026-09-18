@@ -22,6 +22,7 @@ function resolveExcludedDomains(lane: SearchLaneConfig): readonly string[] {
 
 export interface SearchRequestOptions {
   readonly model: string;
+  readonly models?: readonly string[];
   readonly instructions: string;
   readonly problem: string;
   readonly lane: SearchLaneConfig;
@@ -123,6 +124,7 @@ export function buildSearchRequestBody(
     instructions: opts.instructions,
     input: [responsesMessage("user", opts.problem)],
     ...definedValues({
+      models: opts.models === undefined ? undefined : [...opts.models],
       maxOutputTokens: opts.maxOutputTokens,
       temperature: opts.temperature,
       reasoning: { effort: opts.reasoningEffort },

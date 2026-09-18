@@ -83,6 +83,7 @@ export interface ResponsesTurn {
 
 export interface ResponsesModelConfig {
   readonly model: string;
+  readonly models?: readonly string[];
   readonly apiKey: string;
   readonly baseUrl?: string;
   readonly sessionId?: string;
@@ -128,6 +129,7 @@ export function makeResponsesModelLayer(
               genConfig: generateConfig,
               retry: config.retry,
               onStreamEvent: options?.onStreamEvent,
+              ...definedValues({ models: config.models }),
             },
             responses
           ),
@@ -138,6 +140,7 @@ export function makeResponsesModelLayer(
 
 export interface ResponsesGenerateOpts {
   readonly model: string;
+  readonly models?: readonly string[];
   readonly input: readonly ResponsesInputItem[];
   readonly genConfig: ResponsesGenerateConfig;
   readonly retry?: RetryConfig;
@@ -173,6 +176,7 @@ export function generate(
     store: false,
     include: ["reasoning.encrypted_content"],
     ...definedValues({
+      models: opts.models !== undefined ? [...opts.models] : undefined,
       instructions: genConfig.instructions,
       temperature: genConfig.temperature,
       maxOutputTokens: genConfig.maxTokens,

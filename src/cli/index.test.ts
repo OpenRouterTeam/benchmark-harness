@@ -67,6 +67,64 @@ describe("bench-harness CLI", () => {
     }
   });
 
+  it("forwards candidate models from --solver-config to single-turn benchmarks", () => {
+    const args = parseArgs([
+      "--benchmark",
+      "gpqa_diamond",
+      "--model",
+      "openrouter/switchyard",
+      "--solver-config",
+      '{"models":["openai/gpt-4.1-nano","anthropic/claude-sonnet-4.5"]}',
+    ]);
+    const panelConfig: unknown = JSON.parse(args.solverConfig ?? "");
+    const config = buildBenchmarkConfig({
+      benchmarkId: args.benchmark,
+      model: args.model,
+      panelConfig,
+      artifactDir: undefined,
+      endpointId: undefined,
+      imageDetail: undefined,
+      reasoningEffort: args.reasoningEffort,
+    });
+    expect(config).toEqual({
+      benchmarkId: "gpqa_diamond",
+      model: "openrouter/switchyard",
+      models: ["openai/gpt-4.1-nano", "anthropic/claude-sonnet-4.5"],
+      reasoningEffort: "high",
+    });
+  });
+
+  it("keeps --image-detail when mmmu_pro_vision takes a solver config", () => {
+    const config = buildBenchmarkConfig({
+      benchmarkId: "mmmu_pro_vision",
+      model: "openrouter/switchyard",
+      panelConfig: { models: ["openai/gpt-4.1-nano", "openai/gpt-5"] },
+      artifactDir: undefined,
+      endpointId: undefined,
+      imageDetail: "high",
+      reasoningEffort: "low",
+    });
+    expect(config).toMatchObject({
+      benchmarkId: "mmmu_pro_vision",
+      imageDetail: "high",
+      models: ["openai/gpt-4.1-nano", "openai/gpt-5"],
+    });
+  });
+
+  it("rejects unknown solver-config keys for single-turn benchmarks", () => {
+    expect(() =>
+      buildBenchmarkConfig({
+        benchmarkId: "gpqa_diamond",
+        model: "openai/gpt-5",
+        panelConfig: { bogus: true },
+        artifactDir: undefined,
+        endpointId: undefined,
+        imageDetail: undefined,
+        reasoningEffort: "low",
+      })
+    ).toThrow("Unknown gpqa_diamond solver-config option(s): bogus");
+  });
+
   it("derives agent reasoning effort for ori lanes", () => {
     const config = buildBenchmarkConfig({
       benchmarkId: "terminal_bench",

@@ -19,6 +19,7 @@ export {
 
 export interface OpenRouterModelConfig {
   readonly model: string;
+  readonly models?: readonly string[];
   readonly apiKey: string;
   readonly baseUrl?: string;
   readonly sessionId?: string;
@@ -37,6 +38,7 @@ export function makeOpenRouterModelLayer(
   const responsesLayer = makeResponsesModelLayer(
     definedValues({
       model: config.model,
+      models: config.models,
       apiKey: config.apiKey,
       baseUrl:
         config.baseUrl !== undefined

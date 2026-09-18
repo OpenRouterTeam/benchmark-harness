@@ -437,6 +437,47 @@ describe("responses-model", () => {
       { id: "auto-router", cost_tier: "medium", cost_quality_tradeoff: 8 },
     ]);
   });
+  it("sends the configured candidate models list on every request", async () => {
+    const captured: {
+      value: CapturedRequest | undefined;
+    } = { value: undefined };
+    restore = installFetchStub(await readStreamFixture(), 200, captured);
+    const layer = makeResponsesModelLayer({
+      model: "openrouter/switchyard",
+      models: ["openai/gpt-4.1-nano", "anthropic/claude-sonnet-4.5"],
+      apiKey: "sk-test",
+    });
+    const exit = await runPromiseExit(
+      gen(function* run() {
+        const modelService = yield* ResponsesModel;
+        return yield* modelService.generate([], { reasoningEffort: "high" });
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    assertSuccess(exit);
+    expect(captured.value?.body["model"]).toBe("openrouter/switchyard");
+    expect(captured.value?.body["models"]).toEqual([
+      "openai/gpt-4.1-nano",
+      "anthropic/claude-sonnet-4.5",
+    ]);
+  });
+  it("omits the models field when no candidate list is configured", async () => {
+    const captured: {
+      value: CapturedRequest | undefined;
+    } = { value: undefined };
+    restore = installFetchStub(await readStreamFixture(), 200, captured);
+    const layer = makeResponsesModelLayer({
+      model: "openai/gpt-5",
+      apiKey: "sk-test",
+    });
+    const exit = await runPromiseExit(
+      gen(function* run() {
+        const modelService = yield* ResponsesModel;
+        return yield* modelService.generate([], { reasoningEffort: "high" });
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    assertSuccess(exit);
+    expect(captured.value?.body["models"]).toBeUndefined();
+  });
   it("omits plugins when no auto-router option is set", async () => {
     const captured: {
       value: CapturedRequest | undefined;

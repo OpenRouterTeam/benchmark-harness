@@ -65,6 +65,7 @@ function makeWandrLayer(
     makeResponsesModelLayer(
       definedValues({
         model: benchmarkConfig.model,
+        models: benchmarkConfig.models,
         apiKey: input.apiKey,
         baseUrl: input.baseUrl,
         sessionId: input.sessionId,
