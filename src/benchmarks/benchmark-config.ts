@@ -22,6 +22,10 @@ import {
 } from "./benchmark-meta";
 import { DEFAULT_STEP_LIMIT as DEEP_SWE_DEFAULT_STEP_LIMIT } from "./deep-swe/schema";
 import { DracoPanelConfigSchema } from "./draco/schemas";
+import {
+  PROBABLY_DECISIONS_ID,
+  ProbablyDecisionsOptionsSchema,
+} from "./probably-decisions/schema";
 import { SearchLaneConfigSchema } from "./search/core/config";
 import { DEFAULT_JUDGE_MODEL, DEFAULT_STEP_LIMIT } from "./swe-atlas/schema";
 import { BankingRetrievalConfigSchema } from "./tau3-bench-banking/retrieval-config";
@@ -190,6 +194,16 @@ export type IfStructBenchmarkConfig = z.infer<
   typeof IfStructBenchmarkConfigSchema
 >;
 
+export const ProbablyDecisionsConfigSchema = z.object({
+  benchmarkId: z.literal(PROBABLY_DECISIONS_ID),
+  ...FixedTemperatureBenchmarkBaseSchema.shape,
+  ...ProbablyDecisionsOptionsSchema.shape,
+});
+
+export type ProbablyDecisionsConfig = z.infer<
+  typeof ProbablyDecisionsConfigSchema
+>;
+
 const AgenticOptionsSchema = z.object({
   taskSubset: z.array(z.string()).optional(),
   maxAgentTimeoutSec: z.number().positive().optional(),
@@ -334,6 +348,7 @@ export const NativeBenchmarkRunConfigSchema = z.discriminatedUnion(
     TerminalBenchConfigSchema,
     DracoBenchmarkConfigSchema,
     IfStructBenchmarkConfigSchema,
+    ProbablyDecisionsConfigSchema,
     SweAtlasQaConfigSchema,
     SweAtlasTwConfigSchema,
     SweAtlasRfConfigSchema,
@@ -368,6 +383,7 @@ export const BENCHMARK_OPTIONS_SCHEMAS = {
   mmmu_pro_vision: MmmuProVisionOptionsSchema,
   terminal_bench: TerminalBenchOptionsSchema,
   ifstruct: IfStructOptionsSchema,
+  [PROBABLY_DECISIONS_ID]: ProbablyDecisionsOptionsSchema,
   swe_atlas_qa: SweAtlasOptionsSchema,
   swe_atlas_tw: SweAtlasOptionsSchema,
   swe_atlas_rf: SweAtlasOptionsSchema,
