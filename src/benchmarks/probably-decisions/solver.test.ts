@@ -10,8 +10,17 @@ import {
 import type { ModelMessage, ModelOutput } from "../../harness/core";
 import { MessageRole, initialTaskState } from "../../harness/core";
 import type { GenerateConfig, ModelService } from "../../harness/model";
+import type {
+  DecisionsChoiceRequest,
+  DecisionsService,
+} from "../../providers/decisions-client";
 import { decisionRecordToSample } from "./dataset";
-import { judgePrompt, parseJudgeCompletion } from "./judge";
+import {
+  chatJudge,
+  decisionsJudge,
+  judgePrompt,
+  parseJudgeCompletion,
+} from "./judge";
 import { ProbablyRunMetaSchema } from "./schema";
 import { makeDecisionSolver } from "./solver";
 
@@ -77,13 +86,94 @@ describe("probably-decisions judge adapter", () => {
     expect(parseJudgeCompletion('{"A": 1}', ["x", "y"])).toBeUndefined();
     expect(parseJudgeCompletion("no json", ["x"])).toBeUndefined();
   });
+
+  test("decisionsJudge sends lettered criteria and maps probabilities back to labels", async () => {
+    const requests: DecisionsChoiceRequest[] = [];
+    const decisions: DecisionsService = {
+      choose: (request) => {
+        requests.push(request);
+        return succeed({
+          probabilities: { A: 0.25, B: 0.75 },
+          usage: {
+            inputTokens: 10,
+            outputTokens: 2,
+            totalTokens: 12,
+            reasoningTokens: 0,
+            totalCost: 0.001,
+          },
+          generationTimeMs: 5,
+        });
+      },
+    };
+    const judge = decisionsJudge(decisions, "~typesafe/jev-latest", INFERENCE);
+    const call = await runPromise(judge("salt", "dossier text", ["x", "y"]));
+    expect(requests).toHaveLength(1);
+    expect(requests[0]?.model).toBe("~typesafe/jev-latest");
+    expect(requests[0]?.state).toEqual({ dossier: "dossier text" });
+    expect(requests[0]?.criteria).toEqual({ A: "x", B: "y" });
+    expect(call.probabilities).toEqual({ x: 0.25, y: 0.75 });
+    expect(call.usage?.totalCost).toBe(0.001);
+    expect(call.completion).toBe('{"A":0.25,"B":0.75}');
+  });
+
+  test("decisionsJudge drives the judgment program end to end", async () => {
+    const decisions: DecisionsService = {
+      choose: (request) => {
+        const keys = Object.keys(request.criteria);
+        const chosen = JSON.stringify(request.state).includes(
+          "new client fingerprint"
+        )
+          ? 0
+          : keys.length - 1;
+        return succeed({
+          probabilities: Object.fromEntries(
+            keys.map((key, i) => [
+              key,
+              i === chosen ? 0.97 : 0.03 / (keys.length - 1),
+            ])
+          ),
+          usage: {
+            inputTokens: 1,
+            outputTokens: 1,
+            totalTokens: 2,
+            reasoningTokens: 0,
+            totalCost: 0,
+          },
+          generationTimeMs: 1,
+        });
+      },
+    };
+    const unused: ModelService = {
+      generate: () =>
+        succeed(output({ role: MessageRole.Assistant, content: "" })),
+    };
+    const solver = makeDecisionSolver(unused, {
+      judge: decisionsJudge(decisions, "~typesafe/jev-latest", INFERENCE),
+      mode: "judgment",
+      program: "sentinel_case_v1",
+      maxResearchSteps: 4,
+      inference: INFERENCE,
+    });
+    const state = await runPromise(
+      solver(initialTaskState(decisionRecordToSample(LEAKED_RECORD), 0)).pipe(
+        provide(RUN_LAYER)
+      )
+    );
+    const run = ProbablyRunMetaSchema.parse(
+      state.sample.metadata?.["probablyRun"]
+    );
+    expect(state.completed).toBe(true);
+    expect(run.failure).toBeNull();
+    expect(run.judges.length).toBeGreaterThanOrEqual(1);
+    expect(state.output?.completion).toBe("key_revocation");
+  });
 });
 
 describe("probably-decisions solver", () => {
   test("judgment mode runs the program against the dossier and records judge traces", async () => {
     const judge = keywordJudge("new client fingerprint");
     const solver = makeDecisionSolver(judge, {
-      judge,
+      judge: chatJudge(judge, INFERENCE),
       mode: "judgment",
       program: "sentinel_case_v1",
       maxResearchSteps: 4,
@@ -147,7 +237,7 @@ describe("probably-decisions solver", () => {
       },
     };
     const solver = makeDecisionSolver(researcher, {
-      judge: keywordJudge("new client fingerprint"),
+      judge: chatJudge(keywordJudge("new client fingerprint"), INFERENCE),
       mode: "research",
       program: "sentinel_case_v1",
       maxResearchSteps: 6,
@@ -179,7 +269,7 @@ describe("probably-decisions solver", () => {
         succeed(output({ role: MessageRole.Assistant, content: "thinking" })),
     };
     const solver = makeDecisionSolver(silent, {
-      judge: silent,
+      judge: chatJudge(silent, INFERENCE),
       mode: "research",
       program: "sentinel_case_v1",
       maxResearchSteps: 2,

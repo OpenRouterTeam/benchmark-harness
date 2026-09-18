@@ -23,7 +23,8 @@ import { Either } from "../../internal/either";
 import { isRecord } from "../../internal/guards";
 import { withCallCacheSalt } from "../../runtime/response-cache";
 import { readDecisionSampleMeta } from "./dataset";
-import { JUDGE_SYSTEM_PROMPT, judgePrompt, judgeWithChatModel } from "./judge";
+import type { JudgeFn } from "./judge";
+import { JUDGE_SYSTEM_PROMPT, judgePrompt } from "./judge";
 import type { Value } from "./probably/language";
 import type { Provider, Run, TraceEvent } from "./probably/runtime";
 import { run as runProbably } from "./probably/runtime";
@@ -38,7 +39,7 @@ import type {
 import { MAX_DOSSIER_CHARS } from "./schema";
 
 export interface DecisionSolverOptions {
-  readonly judge: ModelService;
+  readonly judge: JudgeFn;
   readonly mode: ProbablyMode;
   readonly program: ProbablyProgramId;
   readonly maxResearchSteps: number;
@@ -156,7 +157,7 @@ interface JudgmentOutcome {
 }
 
 function runJudgment(
-  model: ModelService,
+  judge: JudgeFn,
   opts: DecisionSolverOptions,
   input: string,
   saltPrefix: string,
@@ -178,9 +179,7 @@ function runJudgment(
           role: MessageRole.User,
           content: judgePrompt(value, labels),
         });
-        const result = await runPromise(
-          either(judgeWithChatModel(model, opts.inference, salt, value, labels))
-        );
+        const result = await runPromise(either(judge(salt, value, labels)));
         if (isLeft(result)) {
           pending = result.left;
           throw new Error(result.left.message);

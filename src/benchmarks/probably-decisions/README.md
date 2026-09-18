@@ -5,7 +5,7 @@ Evaluates a model as the **judgment step** of a Trust and Safety decision progra
 ## How a sample runs
 
 1. `programs.ts` holds the fixed Probably program (`sentinel_case_v1`). It encodes the Sentinel scanner authority rules as `feels` / `match` judgments: compromised-key gate, static-attribute-only leads hold, load versus abuse, two-signal corroboration, remedy selection and the `account_ban` escalation bar. The program is the benchmark contract. A change to it is a benchmark behaviour change.
-2. `probably/runtime.ts` interprets the program. Every semantic judgment is delegated to a `Provider.judge(value, labels)` call, which `judge.ts` satisfies by prompting the model under test for a probability distribution over the lettered labels.
+2. `probably/runtime.ts` interprets the program. Every semantic judgment is delegated to a `Provider.judge(value, labels)` call, which `judge.ts` satisfies in one of two ways. Chat models are prompted for a JSON probability distribution over the lettered labels. Decisions models (`typesafe/*`, e.g. `~typesafe/jev-latest`) are called natively through `POST /api/alpha/decisions` with a single `choice` question whose criteria are the labels, and the returned `probabilities` are mapped back to labels. Routing is by model id (`isDecisionsModel` in `src/providers/decisions-client.ts`), no extra flag.
 3. **judgment mode** feeds the redacted dossier plus evidence sections straight into `input()`. **research mode** first runs a tool loop (`list_evidence_sections`, `read_evidence_section`, `submit_dossier`) with the model under test, then judges the submitted dossier with the configured `judgeModel` (default: the same model). Holding the program fixed lets a wrong action be attributed to research or to judgment.
 4. `scorer.ts` compares the program's final `print` to the gold action and records per-decision branch agreement, a Brier score on the chosen-branch distributions, enactment agreement (`hold` versus any restriction), evidence coverage and gold-fact recall (research mode only).
 
@@ -41,4 +41,10 @@ The primary score is `action_accuracy`. Run-level metrics also include `enactmen
 }
 ```
 
-Temperature is fixed at 0. `maxTokens` is intentionally never set. Use `chunkSize: 1` for research mode. The judge runs through the harness `ModelService` (chat completions), so `model` and `judgeModel` must be chat models. Decisions-only models such as `~typesafe/jev-latest` are rejected by the chat endpoint.
+Temperature is fixed at 0. `maxTokens` is intentionally never set. Use `chunkSize: 1` for research mode.
+
+### Jev and other Decisions models
+
+- **judgment mode**: set `model` to `~typesafe/jev-latest`. Every `feels` / `match` is one Decisions request. Temperature and reasoning settings do not apply to the Decisions endpoint. Provider preferences (`providerOnly`, `providerIgnore`, `allowFallbacks`, `sort`) are forwarded as `provider`.
+- **research mode**: the tool loop needs a chat model, so `model` must be a chat model and Jev goes in `judgeModel`. A Decisions model as `model` in research mode fails at startup with an explanatory error.
+- Judge transcripts still record the lettered prompt and the returned distribution as JSON, so traces from chat and Decisions judges are comparable.

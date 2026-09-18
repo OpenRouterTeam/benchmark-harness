@@ -15,12 +15,19 @@ import { Model } from "../../harness/model";
 import { Scorer } from "../../harness/scorer";
 import { Solver } from "../../harness/solver";
 import { definedValues } from "../../internal/guards";
+import type { DecisionsService } from "../../providers/decisions-client";
+import {
+  isDecisionsModel,
+  makeDecisionsService,
+} from "../../providers/decisions-client";
 import { makeOpenRouterModelLayer } from "../../providers/openrouter-model";
 import type { RetryConfig } from "../../runtime/retry";
 import type { ProbablyDecisionsConfig } from "../benchmark-config";
 import { PROBABLY_DECISIONS_META } from "../benchmark-meta";
 import type { Benchmark, BenchmarkRunInput } from "../types";
 import { makeDecisionDatasetLayer } from "./dataset";
+import type { JudgeFn } from "./judge";
+import { chatJudge, decisionsJudge } from "./judge";
 import { BUNDLED_DATASET_URL, PROBABLY_DECISIONS_ID } from "./schema";
 import {
   decisionPrimaryScore,
@@ -70,6 +77,29 @@ function makeLayer(
       new Error(`${PROBABLY_DECISIONS_ID} received mismatched benchmarkConfig`)
     );
   }
+  const judgeModel = benchmarkConfig.judgeModel ?? benchmarkConfig.model;
+  if (
+    benchmarkConfig.mode === "research" &&
+    isDecisionsModel(benchmarkConfig.model)
+  ) {
+    return layerFail(
+      new Error(
+        `${benchmarkConfig.model} is a Decisions model and cannot run the research tool loop; use a chat model as "model" and pass it as "judgeModel" instead`
+      )
+    );
+  }
+  const decisions: DecisionsService | undefined = isDecisionsModel(judgeModel)
+    ? makeDecisionsService(
+        definedValues({
+          apiKey: input.apiKey,
+          baseUrl: input.baseUrl,
+          sessionId: input.sessionId,
+          retry: input.modelRetry,
+          traceHeaders: input.traceHeaders,
+        })
+      )
+    : undefined;
+  const inference = decisionInferenceConfig(benchmarkConfig);
   const modelLayer =
     input.modelLayer ??
     makeOpenRouterModelLayer(
@@ -83,7 +113,7 @@ function makeLayer(
       })
     );
   const judgeLayer =
-    benchmarkConfig.judgeModel === undefined
+    benchmarkConfig.judgeModel === undefined || decisions !== undefined
       ? modelLayer
       : makeOpenRouterModelLayer(
           definedValues({
@@ -98,14 +128,17 @@ function makeLayer(
   const solverLayer = layerEffect(Solver)(
     gen(function* () {
       const model = yield* Model;
-      const judge = yield* Model.pipe(effectProvide(judgeLayer));
+      const judge: JudgeFn =
+        decisions !== undefined
+          ? decisionsJudge(decisions, judgeModel, inference)
+          : chatJudge(yield* Model.pipe(effectProvide(judgeLayer)), inference);
       return Solver.of(
         makeDecisionSolver(model, {
           judge,
           mode: benchmarkConfig.mode,
           program: benchmarkConfig.program,
           maxResearchSteps: benchmarkConfig.maxResearchSteps,
-          inference: decisionInferenceConfig(benchmarkConfig),
+          inference,
         })
       );
     })
