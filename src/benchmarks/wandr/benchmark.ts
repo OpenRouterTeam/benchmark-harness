@@ -19,6 +19,7 @@ import {
 } from "../../providers/responses-model";
 import type { InferenceOverride, WandrConfig } from "../benchmark-config";
 import { WANDR_META } from "../benchmark-meta";
+import { resolveModalRegions } from "../harbor/modal-regions";
 import { makeModalSandboxLayer } from "../harbor/modal-sandbox";
 import { SandboxSession } from "../harbor/sandbox";
 import type { Benchmark, BenchmarkRunInput } from "../types";
@@ -76,6 +77,10 @@ function makeWandrLayer(
   const sandboxLayer = makeModalSandboxLayer({
     appName: "openrouter-wandr",
     environment: benchmarkConfig.modalEnv,
+    regions: resolveModalRegions(
+      benchmarkConfig.model,
+      benchmarkConfig.modalRegions
+    ),
   });
   const solverLayer = layerEffect(Solver)(
     gen(function* () {

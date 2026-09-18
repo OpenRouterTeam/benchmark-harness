@@ -169,6 +169,7 @@ describe("benchmark registry", () => {
     expect(result.right.judgeModel).toBe("anthropic/claude-opus-4.5");
     expect(result.right.stepLimit).toBe(250);
     expect(result.right.modalEnv).toBe("main");
+    expect(result.right.modalRegions).toBeUndefined();
   });
 
   it("parses terminal-bench with the pi agent and the ori install url", () => {
