@@ -79,6 +79,7 @@ function makeBankingLayer(
     makeOpenRouterModelLayer(
       definedValues({
         model: config.model,
+        models: config.models,
         apiKey: input.apiKey,
         baseUrl: input.baseUrl,
         sessionId: input.sessionId,

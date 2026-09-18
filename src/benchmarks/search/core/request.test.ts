@@ -196,6 +196,26 @@ describe("buildSearchRequestBody", () => {
     expect(body.temperature).toBe(0);
     expect(body.reasoning).toEqual({ effort: "high" });
   });
+  it("threads the candidate models list and omits it by default", () => {
+    const routed = buildSearchRequestBody({
+      ...BASE,
+      model: "openrouter/switchyard",
+      models: ["openai/gpt-4.1-nano", "anthropic/claude-sonnet-4.5"],
+      lane: lane({}),
+      reasoningEffort: "high",
+    });
+    expect(routed.model).toBe("openrouter/switchyard");
+    expect(routed.models).toEqual([
+      "openai/gpt-4.1-nano",
+      "anthropic/claude-sonnet-4.5",
+    ]);
+    const plain = buildSearchRequestBody({
+      ...BASE,
+      lane: lane({}),
+      reasoningEffort: "high",
+    });
+    expect(plain.models).toBeUndefined();
+  });
   it("serializes deterministic provider routing through the SDK", () => {
     const body = buildSearchRequestBody({
       ...BASE,

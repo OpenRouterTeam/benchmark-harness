@@ -44,6 +44,7 @@ const EMPTY_SEARCH_RESPONSE_MESSAGE = "search response had no answer text";
 
 export interface SearchSolverOptions {
   readonly model: string;
+  readonly models?: readonly string[];
   readonly instructions: string;
   readonly lane: SearchLaneConfig;
   readonly timeoutMs?: number;
@@ -86,6 +87,7 @@ export function searchSolver(
       const body = buildSearchRequestBody(
         definedValues({
           model: opts.model,
+          models: opts.models,
           instructions: opts.instructions,
           problem: state.sample.input,
           lane: opts.lane,

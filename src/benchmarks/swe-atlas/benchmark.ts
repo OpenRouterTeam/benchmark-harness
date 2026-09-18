@@ -17,6 +17,8 @@ import {
   makeResponsesModelLayer,
   ResponsesModel,
 } from "../../providers/responses-model";
+import { sandboxAgentCandidateModelsError } from "../agent-cli/candidate-models";
+import { isOriAgent } from "../agent-cli/schema";
 import {
   SWE_ATLAS_QA_META,
   SWE_ATLAS_RF_META,
@@ -43,6 +45,16 @@ function makeSweAtlasLayer(
       new Error(`${expectedId} received mismatched benchmarkConfig`)
     );
   }
+  const candidateModelsError = isOriAgent(benchmarkConfig.agent)
+    ? sandboxAgentCandidateModelsError({
+        benchmarkId: benchmarkConfig.benchmarkId,
+        agent: benchmarkConfig.agent,
+        models: benchmarkConfig.models,
+      })
+    : undefined;
+  if (candidateModelsError !== undefined) {
+    return layerFail(candidateModelsError);
+  }
   const datasetLayer = makeSweAtlasDatasetLayer(
     definedValues({
       track,
@@ -55,6 +67,7 @@ function makeSweAtlasLayer(
     makeResponsesModelLayer(
       definedValues({
         model: benchmarkConfig.model,
+        models: benchmarkConfig.models,
         apiKey: input.apiKey,
         baseUrl: input.baseUrl,
         sessionId: input.sessionId,

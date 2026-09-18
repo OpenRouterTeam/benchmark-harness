@@ -13,6 +13,7 @@ import type { Dataset } from "../../harness/dataset";
 import { Scorer } from "../../harness/scorer";
 import { Solver } from "../../harness/solver";
 import { definedValues } from "../../internal/guards";
+import { sandboxAgentCandidateModelsError } from "../agent-cli/candidate-models";
 import { getOriHarness } from "../agent-cli/harness";
 import { TERMINAL_BENCH_META } from "../benchmark-meta";
 import { makeModalSandboxLayer } from "../harbor/modal-sandbox";
@@ -37,6 +38,14 @@ function makeTerminalBenchLayer(
     );
   }
   const { agent } = benchmarkConfig;
+  const candidateModelsError = sandboxAgentCandidateModelsError({
+    benchmarkId: benchmarkConfig.benchmarkId,
+    agent,
+    models: benchmarkConfig.models,
+  });
+  if (candidateModelsError !== undefined) {
+    return layerFail(candidateModelsError);
+  }
   const oriSolverOpts: OriSolverOpts = definedValues({
     model: benchmarkConfig.model,
     apiKey: input.apiKey,

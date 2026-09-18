@@ -64,6 +64,8 @@ export type FixedTemperatureInferenceOverride = Omit<
 
 export const ModelBenchmarkBaseSchema = z.object({
   model: z.string(),
+  /** OpenRouter `models` request field: candidate slugs a router model such as `openrouter/switchyard` chooses among. */
+  models: z.array(z.string().min(1)).optional(),
   endpointId: z.string().optional(),
   ...InferenceOverrideSchema.shape,
   maxRetries: z.number().optional(),

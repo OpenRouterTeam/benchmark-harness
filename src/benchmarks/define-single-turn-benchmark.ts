@@ -25,6 +25,7 @@ import type { Benchmark, BenchmarkRunInput } from "./types";
 export interface SingleTurnBenchmarkDefinition<
   C extends BenchmarkRunConfig & {
     readonly model: string;
+    readonly models?: readonly string[];
   },
 > {
   readonly id: C["benchmarkId"];
@@ -43,6 +44,7 @@ export interface SingleTurnBenchmarkDefinition<
 export function defineSingleTurnBenchmark<
   C extends BenchmarkRunConfig & {
     readonly model: string;
+    readonly models?: readonly string[];
   },
 >(definition: SingleTurnBenchmarkDefinition<C>): Benchmark {
   function makeLayer(
@@ -66,6 +68,7 @@ export function defineSingleTurnBenchmark<
       makeOpenRouterModelLayer(
         definedValues({
           model: benchmarkConfig.model,
+          models: benchmarkConfig.models,
           apiKey: input.apiKey,
           baseUrl: input.baseUrl,
           sessionId: input.sessionId,

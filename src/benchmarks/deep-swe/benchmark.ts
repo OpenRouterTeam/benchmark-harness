@@ -17,6 +17,8 @@ import {
   makeResponsesModelLayer,
   ResponsesModel,
 } from "../../providers/responses-model";
+import { sandboxAgentCandidateModelsError } from "../agent-cli/candidate-models";
+import { isOriAgent } from "../agent-cli/schema";
 import { DEEP_SWE_META } from "../benchmark-meta";
 import { makeModalSandboxLayer } from "../harbor/modal-sandbox";
 import { SandboxSession } from "../harbor/sandbox";
@@ -36,6 +38,16 @@ function makeDeepSweLayer(
       new Error(`${DEEP_SWE_DATASET_ID} received mismatched benchmarkConfig`)
     );
   }
+  const candidateModelsError = isOriAgent(benchmarkConfig.agent)
+    ? sandboxAgentCandidateModelsError({
+        benchmarkId: benchmarkConfig.benchmarkId,
+        agent: benchmarkConfig.agent,
+        models: benchmarkConfig.models,
+      })
+    : undefined;
+  if (candidateModelsError !== undefined) {
+    return layerFail(candidateModelsError);
+  }
   const datasetLayer = makeDeepSweDatasetLayer(
     definedValues({
       taskSubset: benchmarkConfig.taskSubset,
@@ -47,6 +59,7 @@ function makeDeepSweLayer(
     makeResponsesModelLayer(
       definedValues({
         model: benchmarkConfig.model,
+        models: benchmarkConfig.models,
         apiKey: input.apiKey,
         baseUrl: input.baseUrl,
         sessionId: input.sessionId,
