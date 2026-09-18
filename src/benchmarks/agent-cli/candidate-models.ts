@@ -1,8 +1,3 @@
-/**
- * Agent CLIs (ori-family agents) call the model from inside the sandbox with
- * only `TB_MODEL`, so a `models` candidate list configured on the benchmark
- * would silently be dropped. Fail the run up front instead.
- */
 export function sandboxAgentCandidateModelsError(opts: {
   readonly benchmarkId: string;
   readonly agent: string;

@@ -83,7 +83,6 @@ export interface ResponsesTurn {
 
 export interface ResponsesModelConfig {
   readonly model: string;
-  /** Sent as the OpenRouter `models` request field on every generation. */
   readonly models?: readonly string[];
   readonly apiKey: string;
   readonly baseUrl?: string;
