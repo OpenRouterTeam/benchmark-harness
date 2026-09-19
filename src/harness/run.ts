@@ -22,6 +22,7 @@ import { definedValues } from "../internal/guards";
 import { resetGenerationIds } from "../runtime/generation-ids";
 import type { ReplayedUsage } from "../runtime/generation-resolver";
 import { resolveCollectedGenerations } from "../runtime/generation-resolver";
+import { setCurrentSampleId } from "../runtime/request-session-id";
 import { setCurrentEpoch } from "../runtime/response-cache";
 import type {
   DatasetError,
@@ -260,6 +261,7 @@ function evaluateOne(
   );
   return resetGenerationIds.pipe(
     effectFlatMap(() => setCurrentEpoch(epoch)),
+    effectFlatMap(() => setCurrentSampleId(sample.id)),
     effectFlatMap(() =>
       evaluation.pipe(
         effectFlatMap((outcome) =>

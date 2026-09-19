@@ -12,6 +12,11 @@ import {
 import { SolverError } from "../../harness/core";
 import { definedValues } from "../../internal/guards";
 import { recordGenerationId } from "../../runtime/generation-ids";
+import {
+  buildRequestSessionId,
+  getCurrentSampleId,
+} from "../../runtime/request-session-id";
+import { getCurrentEpoch } from "../../runtime/response-cache";
 import type { SandboxSessionInstance } from "../../sandbox/session";
 import type { OriAgentRun, OriHarnessDef } from "./harness";
 import type { OriChannel, OriReasoningEffort } from "./schema";
@@ -202,9 +207,17 @@ export function runAgentCli(input: {
       });
     }
     yield* installOri({ session, harness, opts });
+    const epoch = yield* getCurrentEpoch;
+    const sampleId = yield* getCurrentSampleId;
+    const env = buildAgentCliEnv({
+      ...opts,
+      ...definedValues({
+        sessionId: buildRequestSessionId(opts.sessionId, epoch, sampleId),
+      }),
+    });
     const startedAt = yield* currentTimeMillis;
     const outcome = yield* session
-      .exec(["bash", "-c", script], buildAgentCliEnv(opts), timeoutMs)
+      .exec(["bash", "-c", script], env, timeoutMs)
       .pipe(
         map((run) => ({ stdout: run.stdout, exitCode: run.exitCode })),
         catchAll((cause) =>
