@@ -24,6 +24,7 @@ import {
   getCollectedGenerationIds,
   resetGenerationIds,
 } from "../runtime/generation-ids";
+import { setCurrentSampleId } from "../runtime/request-session-id";
 import { setCurrentEpoch, withRunAttempt } from "../runtime/response-cache";
 import type { ModelErrorIdentifiers } from "./request-identifiers";
 import {
@@ -902,6 +903,44 @@ describe("makeResponsesLayer", () => {
         top_k: 5,
       });
       expect(capturedBodies[0]).not.toHaveProperty("cache_salt");
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+  it("sends a per-sample x-session-id while keeping the run-scoped cache salt", async () => {
+    const originalFetch = globalThis.fetch;
+    const stream = await readStreamFixture();
+    let capturedHeaders: Headers | undefined;
+    globalThis.fetch = async (input, init) => {
+      const request =
+        input instanceof Request ? input : new Request(input, init);
+      capturedHeaders = request.headers;
+      return new Response(stream, {
+        status: 200,
+        headers: { "content-type": "text/event-stream" },
+      });
+    };
+    try {
+      await runPromise(
+        gen(function* run() {
+          yield* setCurrentEpoch(2);
+          yield* setCurrentSampleId("q/17");
+          const responses = yield* Responses;
+          yield* responses.send({ model: "m", input: [] }, { timeoutMs: 1000 });
+        }).pipe(
+          provide(
+            makeResponsesLayer({
+              apiKey: "sk-test",
+              baseUrl: "https://example.test",
+              sessionId: "wf-123",
+            })
+          )
+        )
+      );
+      expect(capturedHeaders?.get("x-session-id")).toBe("wf-123.2.q-17");
+      expect(capturedHeaders?.get("x-openrouter-cache-salt")).toBe(
+        "wf-123:epoch-2"
+      );
     } finally {
       globalThis.fetch = originalFetch;
     }

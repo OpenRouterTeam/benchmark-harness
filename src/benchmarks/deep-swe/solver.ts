@@ -26,6 +26,7 @@ import type {
   ResponsesModelService,
 } from "../../providers/responses-model";
 import { responsesMessage } from "../../providers/responses-model";
+import { buildRequestSessionId } from "../../runtime/request-session-id";
 import type {
   SandboxSessionInstance,
   SandboxSessionFactory,
@@ -115,6 +116,13 @@ export function makeDeepSweSolver(
         });
       const cliOpts: AgentCliOpts = {
         ...baseCliOpts,
+        ...definedValues({
+          sessionId: buildRequestSessionId(
+            baseCliOpts.sessionId,
+            state.epoch,
+            state.sample.id
+          ),
+        }),
         appendSystemPrompt:
           baseCliOpts.appendSystemPrompt === undefined ||
           baseCliOpts.appendSystemPrompt.length === 0
