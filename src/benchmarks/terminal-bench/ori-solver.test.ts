@@ -41,6 +41,8 @@ import {
   getCollectedGenerationIds,
   resetGenerationIds,
 } from "../../runtime/generation-ids";
+import { setCurrentSampleId } from "../../runtime/request-session-id";
+import { setCurrentEpoch } from "../../runtime/response-cache";
 import {
   BUN_RELEASE_SHA256,
   BUN_RELEASE_URL,
@@ -952,6 +954,46 @@ describe("terminal-bench pi via ori", () => {
       )
     );
     expect(execCalls[0]?.env["ORI_OPENROUTER_SESSION_ID"]).toBe("run-1234");
+  });
+
+  it("nests epoch and sample id into the session id ori forwards", async () => {
+    const execCalls: ExecCalls = [];
+    const layer = makeTerminalBenchFakeSandboxLayer({
+      reward: 1,
+      execCalls,
+      agentExitCode: 0,
+    });
+    const solverLayer = layerEffect(Solver)(
+      gen(function* () {
+        const sessionFactory = yield* SandboxSession;
+        return Solver.of(
+          oriSolver(
+            sessionFactory,
+            { ...SOLVER_OPTS, sessionId: "run-1234" },
+            getOriHarness("pi")
+          )
+        );
+      })
+    );
+    await runPromise(
+      gen(function* () {
+        yield* setCurrentEpoch(1);
+        yield* setCurrentSampleId("terminal_bench-adaptive-rejection-sampler");
+        const solver = yield* Solver;
+        return yield* solver(sampleState());
+      }).pipe(
+        provide(
+          layerMergeAll(
+            solverLayer.pipe(layerProvide(layer)),
+            noopProgressLayer,
+            noopCheckpointLayer
+          )
+        )
+      )
+    );
+    expect(execCalls[0]?.env["ORI_OPENROUTER_SESSION_ID"]).toBe(
+      "run-1234.1.terminal_bench-adaptive-rejection-sampler"
+    );
   });
 
   it("refuses a session id ori would silently replace", async () => {
