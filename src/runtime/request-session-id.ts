@@ -10,6 +10,8 @@ export const REQUEST_SESSION_ID_MAX_LENGTH = OPENROUTER_SESSION_ID_MAX_LENGTH;
 
 const SAMPLE_SEGMENT_HASH_LENGTH = 12;
 
+const FULL_IDENTITY_HASH_LENGTH = 32;
+
 export const currentSampleIdRef: FiberRef<string | undefined> = unsafeMake<
   string | undefined
 >(undefined);
@@ -25,6 +27,10 @@ function sanitizeSampleSegment(sampleId: string): string {
   return sampleId.replaceAll(/[^A-Za-z0-9_-]+/g, "-");
 }
 
+function hashHex(value: string, length: number): string {
+  return createHash("sha256").update(value).digest("hex").slice(0, length);
+}
+
 export function buildRequestSessionId(
   sessionId: string | undefined,
   epoch: number | undefined,
@@ -37,18 +43,24 @@ export function buildRequestSessionId(
     return sessionId;
   }
   const prefix = `${sessionId}.${epoch}.`;
-  const segment = sanitizeSampleSegment(sampleId);
+  const sanitized = sanitizeSampleSegment(sampleId);
+  const hash = hashHex(sampleId, SAMPLE_SEGMENT_HASH_LENGTH);
+  const segment = sanitized === sampleId ? sanitized : `${sanitized}-${hash}`;
   if (prefix.length + segment.length <= REQUEST_SESSION_ID_MAX_LENGTH) {
     return `${prefix}${segment}`;
   }
-  const hash = createHash("sha256")
-    .update(sampleId)
-    .digest("hex")
-    .slice(0, SAMPLE_SEGMENT_HASH_LENGTH);
   const budget =
     REQUEST_SESSION_ID_MAX_LENGTH - prefix.length - hash.length - 1;
-  if (budget <= 0) {
-    return sessionId;
+  if (budget > 0) {
+    return `${prefix}${sanitized.slice(0, budget)}-${hash}`;
   }
-  return `${prefix}${segment.slice(0, budget)}-${hash}`;
+  const identityHash = hashHex(
+    `${sessionId}.${epoch}.${sampleId}`,
+    FULL_IDENTITY_HASH_LENGTH
+  );
+  const head = sessionId.slice(
+    0,
+    REQUEST_SESSION_ID_MAX_LENGTH - identityHash.length - 1
+  );
+  return `${head}.${identityHash}`;
 }

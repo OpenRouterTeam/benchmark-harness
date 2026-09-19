@@ -937,7 +937,9 @@ describe("makeResponsesLayer", () => {
           )
         )
       );
-      expect(capturedHeaders?.get("x-session-id")).toBe("wf-123.2.q-17");
+      expect(capturedHeaders?.get("x-session-id")).toBe(
+        "wf-123.2.q-17-15b1d5a173de"
+      );
       expect(capturedHeaders?.get("x-openrouter-cache-salt")).toBe(
         "wf-123:epoch-2"
       );
