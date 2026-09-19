@@ -68,7 +68,7 @@
     "hyparquet": "1.26.1",
     "hyparquet-writer": "0.16.1",
     "modal": "0.8.0",
-    "smol-toml": "1.6.1",
+    "smol-toml": "1.7.1",
     "yaml": "2.8.3",
     "zod": "4.4.3"
   },
