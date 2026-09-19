@@ -4,8 +4,9 @@ import type { Effect } from "effect/Effect";
 import type { FiberRef } from "effect/FiberRef";
 import { get, set, unsafeMake } from "effect/FiberRef";
 
-/** Mirrors the `x-session-id` bound enforced by the OpenRouter router. */
-export const REQUEST_SESSION_ID_MAX_LENGTH = 256;
+export const OPENROUTER_SESSION_ID_MAX_LENGTH = 256;
+
+export const REQUEST_SESSION_ID_MAX_LENGTH = OPENROUTER_SESSION_ID_MAX_LENGTH;
 
 const SAMPLE_SEGMENT_HASH_LENGTH = 12;
 
@@ -21,14 +22,9 @@ export const getCurrentSampleId: Effect<string | undefined> =
   get(currentSampleIdRef);
 
 function sanitizeSampleSegment(sampleId: string): string {
-  return sampleId.replace(/[^A-Za-z0-9_-]+/g, "-");
+  return sampleId.replaceAll(/[^A-Za-z0-9_-]+/g, "-");
 }
 
-/**
- * Per-task session id sent as `x-session-id` so stateful routers treat each
- * sample as a fresh task instead of a continuation of the whole run. The run
- * session id stays the dot-prefix so run-level reporting still rolls up.
- */
 export function buildRequestSessionId(
   sessionId: string | undefined,
   epoch: number | undefined,
