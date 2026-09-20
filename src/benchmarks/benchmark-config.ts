@@ -21,6 +21,7 @@ import {
   TAU3_BENCH_BANKING_META,
   TAU_BENCH_AIRLINE_META,
 } from "./benchmark-meta";
+import { ChessMoveLadderOptionsSchema } from "./chess-move-ladder/schema";
 import { DEFAULT_STEP_LIMIT as DEEP_SWE_DEFAULT_STEP_LIMIT } from "./deep-swe/schema";
 import { DracoPanelConfigSchema } from "./draco/schemas";
 import { SearchLaneConfigSchema } from "./search/core/config";
@@ -192,6 +193,16 @@ export type IfStructBenchmarkConfig = z.infer<
   typeof IfStructBenchmarkConfigSchema
 >;
 
+export const ChessMoveLadderBenchmarkConfigSchema = z.object({
+  benchmarkId: z.literal("chess_move_ladder"),
+  ...ModelBenchmarkBaseSchema.shape,
+  ...ChessMoveLadderOptionsSchema.shape,
+});
+
+export type ChessMoveLadderBenchmarkConfig = z.infer<
+  typeof ChessMoveLadderBenchmarkConfigSchema
+>;
+
 const AgenticOptionsSchema = z.object({
   taskSubset: z.array(z.string()).optional(),
   maxAgentTimeoutSec: z.number().positive().optional(),
@@ -336,6 +347,7 @@ export const NativeBenchmarkRunConfigSchema = z.discriminatedUnion(
     TerminalBenchConfigSchema,
     DracoBenchmarkConfigSchema,
     IfStructBenchmarkConfigSchema,
+    ChessMoveLadderBenchmarkConfigSchema,
     SweAtlasQaConfigSchema,
     SweAtlasTwConfigSchema,
     SweAtlasRfConfigSchema,
@@ -370,6 +382,7 @@ export const BENCHMARK_OPTIONS_SCHEMAS = {
   mmmu_pro_vision: MmmuProVisionOptionsSchema,
   terminal_bench: TerminalBenchOptionsSchema,
   ifstruct: IfStructOptionsSchema,
+  chess_move_ladder: ChessMoveLadderOptionsSchema,
   swe_atlas_qa: SweAtlasOptionsSchema,
   swe_atlas_tw: SweAtlasOptionsSchema,
   swe_atlas_rf: SweAtlasOptionsSchema,
