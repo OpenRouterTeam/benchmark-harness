@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import { afterEach, beforeEach, describe, expect, it, jest } from "bun:test";
 import assert from "node:assert/strict";
 
 import { FetchHttpClient } from "@effect/platform";
@@ -67,7 +67,14 @@ describe("fetchCachedTextFile", () => {
 
   afterEach(() => {
     global.fetch = originalFetch;
+    jest.useRealTimers();
   });
+
+  async function flushMicrotasks(): Promise<void> {
+    for (let index = 0; index < 100; index++) {
+      await Promise.resolve();
+    }
+  }
 
   function stubFetch(responses: readonly Response[]): void {
     const stub: typeof global.fetch = (_input, init) => {
@@ -209,16 +216,22 @@ describe("fetchCachedTextFile", () => {
       new Response("recovered", { status: 200 }),
     ]);
     const { store } = makeMemoryStore();
-    const startedAt = performance.now();
+    jest.useFakeTimers();
 
-    await expect(
-      run({
-        ...REQUEST,
-        cacheStore: store,
-        retry: { maxRetries: 1, baseDelayMs: 1 },
-      })
-    ).resolves.toBe("recovered");
-    expect(performance.now() - startedAt).toBeGreaterThanOrEqual(900);
+    const result = run({
+      ...REQUEST,
+      cacheStore: store,
+      retry: { maxRetries: 1, baseDelayMs: 1 },
+    });
+    await flushMicrotasks();
+    expect(requestCount).toBe(1);
+
+    jest.advanceTimersByTime(999);
+    await flushMicrotasks();
+    expect(requestCount).toBe(1);
+
+    jest.advanceTimersByTime(1);
+    await expect(result).resolves.toBe("recovered");
     expect(requestCount).toBe(2);
   });
 
