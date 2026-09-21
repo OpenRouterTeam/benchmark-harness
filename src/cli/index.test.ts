@@ -12,6 +12,20 @@ describe("bench-harness CLI", () => {
     );
   });
 
+  it("leaves reasoning effort unset by default for adaptive-effort routers", () => {
+    expect(
+      parseArgs(["--model", "openrouter/jev"]).reasoningEffort
+    ).toBeUndefined();
+    expect(
+      parseArgs(["--model", "openrouter/jev:nitro"]).reasoningEffort
+    ).toBeUndefined();
+    expect(parseArgs(["--model", "openai/gpt-5"]).reasoningEffort).toBe("high");
+    expect(
+      parseArgs(["--model", "openrouter/jev", "--reasoning-effort", "high"])
+        .reasoningEffort
+    ).toBe("high");
+  });
+
   it("leaves reasoning effort unset for --reasoning-effort default", () => {
     const args = parseArgs([
       "--benchmark",

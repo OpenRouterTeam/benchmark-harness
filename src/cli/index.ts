@@ -19,7 +19,7 @@ import { benchmarkIds, getBenchmark } from "../benchmarks/registry";
 import type { CostTier, ReasoningEffort } from "../harness/constants";
 import {
   COST_TIERS,
-  DEFAULT_REASONING_EFFORT,
+  defaultReasoningEffortFor,
   ImageDetail,
   IMAGE_DETAIL_VALUES,
   REASONING_EFFORTS,
@@ -72,7 +72,10 @@ export function parseArgs(argv: readonly string[]): CliArgs {
     resumeId: get("--resume-id"),
     imageDetail: validateImageDetail(get("--image-detail")),
     costTier: validateCostTier(get("--cost-tier")),
-    reasoningEffort: validateReasoningEffort(get("--reasoning-effort")),
+    reasoningEffort: validateReasoningEffort(
+      get("--reasoning-effort"),
+      get("--model")
+    ),
   };
 }
 
@@ -307,10 +310,11 @@ function validateCostTier(raw: string | undefined): CostTier | undefined {
 const MODEL_DEFAULT_REASONING_EFFORT = "default";
 
 function validateReasoningEffort(
-  raw: string | undefined
+  raw: string | undefined,
+  model: string | undefined
 ): ReasoningEffort | undefined {
   if (raw === undefined) {
-    return DEFAULT_REASONING_EFFORT;
+    return defaultReasoningEffortFor(model);
   }
   if (raw === MODEL_DEFAULT_REASONING_EFFORT) {
     return undefined;

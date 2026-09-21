@@ -13,6 +13,18 @@ export type ReasoningEffort = ValueOf<typeof REASONING_EFFORTS>;
 
 export const DEFAULT_REASONING_EFFORT: ReasoningEffort = "high";
 
+export const ADAPTIVE_REASONING_EFFORT_MODELS = ["openrouter/jev"] as const;
+
+export function defaultReasoningEffortFor(
+  model: string | undefined
+): ReasoningEffort | undefined {
+  const baseModel = model?.split(":")[0];
+  return baseModel !== undefined &&
+    ADAPTIVE_REASONING_EFFORT_MODELS.some((slug) => slug === baseModel)
+    ? undefined
+    : DEFAULT_REASONING_EFFORT;
+}
+
 export const COST_TIERS = ["low", "medium", "high", "xhigh", "max"] as const;
 
 export type CostTier = ValueOf<typeof COST_TIERS>;
