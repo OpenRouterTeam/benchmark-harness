@@ -12,6 +12,28 @@ describe("bench-harness CLI", () => {
     );
   });
 
+  it("leaves reasoning effort unset for --reasoning-effort default", () => {
+    const args = parseArgs([
+      "--benchmark",
+      "gpqa_diamond",
+      "--model",
+      "openrouter/jev",
+      "--reasoning-effort",
+      "default",
+    ]);
+    expect(args.reasoningEffort).toBeUndefined();
+    const config = buildBenchmarkConfig({
+      benchmarkId: "gpqa_diamond",
+      model: "openrouter/jev",
+      panelConfig: undefined,
+      artifactDir: undefined,
+      endpointId: undefined,
+      imageDetail: undefined,
+      reasoningEffort: args.reasoningEffort,
+    });
+    expect(config).not.toHaveProperty("reasoningEffort");
+  });
+
   it("rejects an invalid --reasoning-effort value", () => {
     expect(() => parseArgs(["--reasoning-effort", "invalid"])).toThrow(
       "--reasoning-effort must be one of"

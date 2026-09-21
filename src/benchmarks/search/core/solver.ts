@@ -50,7 +50,7 @@ export interface SearchSolverOptions {
   readonly timeoutMs?: number;
   readonly maxOutputTokens?: number;
   readonly temperature?: number;
-  readonly reasoningEffort: ReasoningEffort;
+  readonly reasoningEffort?: ReasoningEffort;
   readonly endpointId?: string;
   readonly sort?: ProviderSort;
   readonly providerOrder?: readonly string[];

@@ -313,6 +313,7 @@ describe("responses-model", () => {
       },
     ]);
     expect(sentOptions?.extraBody).toBeUndefined();
+    expect(sentBody).not.toHaveProperty("reasoning");
     expect(exit.value.outputItems).toEqual([
       {
         type: "function_call",

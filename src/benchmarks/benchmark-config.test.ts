@@ -38,13 +38,14 @@ describe("benchmark config", () => {
     assertLeft(result);
   });
 
-  it("requires reasoningEffort in model benchmark configs", () => {
+  it("accepts model benchmark configs without reasoningEffort", () => {
     const result = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "gpqa_diamond",
       model: "openai/gpt-5",
     });
 
-    assertLeft(result);
+    assertRight(result);
+    expect(result.right).not.toHaveProperty("reasoningEffort");
   });
 
   it("parses injected benchmark configs with opaque options", () => {

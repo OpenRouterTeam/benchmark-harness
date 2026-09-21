@@ -196,6 +196,10 @@ describe("buildSearchRequestBody", () => {
     expect(body.temperature).toBe(0);
     expect(body.reasoning).toEqual({ effort: "high" });
   });
+  it("omits reasoning when no effort is requested", () => {
+    const body = buildSearchRequestBody({ ...BASE, lane: lane({}) });
+    expect(body).not.toHaveProperty("reasoning");
+  });
   it("threads the candidate models list and omits it by default", () => {
     const routed = buildSearchRequestBody({
       ...BASE,

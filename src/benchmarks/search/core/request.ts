@@ -28,7 +28,7 @@ export interface SearchRequestOptions {
   readonly lane: SearchLaneConfig;
   readonly maxOutputTokens?: number;
   readonly temperature?: number;
-  readonly reasoningEffort: ReasoningEffort;
+  readonly reasoningEffort?: ReasoningEffort;
   readonly sort?: ProviderSort;
   readonly providerOrder?: readonly string[];
   readonly providerOnly?: readonly string[];
@@ -127,7 +127,10 @@ export function buildSearchRequestBody(
       models: opts.models === undefined ? undefined : [...opts.models],
       maxOutputTokens: opts.maxOutputTokens,
       temperature: opts.temperature,
-      reasoning: { effort: opts.reasoningEffort },
+      reasoning:
+        opts.reasoningEffort !== undefined
+          ? { effort: opts.reasoningEffort }
+          : undefined,
       provider:
         opts.sort !== undefined ||
         opts.providerOrder !== undefined ||

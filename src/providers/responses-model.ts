@@ -185,8 +185,11 @@ export function generate(
           ? [...genConfig.tools]
           : undefined,
     }),
-    reasoning: { effort: genConfig.reasoningEffort },
     ...definedValues({
+      reasoning:
+        genConfig.reasoningEffort !== undefined
+          ? { effort: genConfig.reasoningEffort }
+          : undefined,
       provider: sendProvider ? providerPreferences : undefined,
     }),
     ...definedValues({
