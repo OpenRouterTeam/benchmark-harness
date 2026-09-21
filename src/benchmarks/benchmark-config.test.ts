@@ -47,6 +47,17 @@ describe("benchmark config", () => {
     assertLeft(result);
   });
 
+  it("accepts the explicit auto reasoning effort", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "gpqa_diamond",
+      model: "openrouter/jev",
+      reasoningEffort: "auto",
+    });
+
+    assertRight(result);
+    expect(result.right.reasoningEffort).toBe("auto");
+  });
+
   it("parses injected benchmark configs with opaque options", () => {
     const result = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "injected_benchmark",

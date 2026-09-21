@@ -18,11 +18,14 @@ import { DracoPanelConfigSchema } from "../benchmarks/draco/schemas";
 import { benchmarkIds, getBenchmark } from "../benchmarks/registry";
 import type { CostTier, ReasoningEffort } from "../harness/constants";
 import {
+  ADAPTIVE_REASONING_EFFORT,
+  ADAPTIVE_REASONING_EFFORT_MODELS,
   COST_TIERS,
-  DEFAULT_REASONING_EFFORT,
+  defaultReasoningEffortFor,
   ImageDetail,
   IMAGE_DETAIL_VALUES,
   REASONING_EFFORTS,
+  supportsAdaptiveReasoningEffort,
 } from "../harness/constants";
 import { makeProgressReporter } from "../harness/progress";
 import { runHarnessPromise } from "../internal/effect-logger";
@@ -72,7 +75,10 @@ export function parseArgs(argv: readonly string[]): CliArgs {
     resumeId: get("--resume-id"),
     imageDetail: validateImageDetail(get("--image-detail")),
     costTier: validateCostTier(get("--cost-tier")),
-    reasoningEffort: validateReasoningEffort(get("--reasoning-effort")),
+    reasoningEffort: validateReasoningEffort(
+      get("--reasoning-effort"),
+      get("--model")
+    ),
   };
 }
 
@@ -304,13 +310,24 @@ function validateCostTier(raw: string | undefined): CostTier | undefined {
   return raw;
 }
 
-function validateReasoningEffort(raw: string | undefined): ReasoningEffort {
+function validateReasoningEffort(
+  raw: string | undefined,
+  model: string | undefined
+): ReasoningEffort {
   if (raw === undefined) {
-    return DEFAULT_REASONING_EFFORT;
+    return defaultReasoningEffortFor(model);
   }
   if (!isMember(raw, REASONING_EFFORTS)) {
     throw new Error(
       `--reasoning-effort must be one of: ${REASONING_EFFORTS.join(", ")} (got "${raw}")`
+    );
+  }
+  if (
+    raw === ADAPTIVE_REASONING_EFFORT &&
+    (model === undefined || !supportsAdaptiveReasoningEffort(model))
+  ) {
+    throw new Error(
+      `--reasoning-effort ${ADAPTIVE_REASONING_EFFORT} is only supported for: ${ADAPTIVE_REASONING_EFFORT_MODELS.join(", ")} (got model "${model ?? ""}")`
     );
   }
   return raw;
@@ -372,6 +389,7 @@ function buildSchemaValidatedConfig(opts: {
     : undefined;
   if (
     optionsSchema !== undefined &&
+    reasoningEffort !== ADAPTIVE_REASONING_EFFORT &&
     Object.hasOwn(optionsSchema.shape, "agentReasoningEffort") &&
     !(
       typeof panelConfig === "object" &&

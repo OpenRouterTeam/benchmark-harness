@@ -9,6 +9,7 @@ import type {
 } from "@openrouter/sdk/models";
 
 import type { CostTier, ReasoningEffort } from "../../../harness/constants";
+import { reasoningRequestFor } from "../../../harness/constants";
 import type { ProviderSort } from "../../../internal/enums";
 import { definedValues } from "../../../internal/guards";
 import { buildAutoRouterPlugin } from "../../../providers/auto-router-plugin";
@@ -127,7 +128,7 @@ export function buildSearchRequestBody(
       models: opts.models === undefined ? undefined : [...opts.models],
       maxOutputTokens: opts.maxOutputTokens,
       temperature: opts.temperature,
-      reasoning: { effort: opts.reasoningEffort },
+      reasoning: reasoningRequestFor(opts.reasoningEffort),
       provider:
         opts.sort !== undefined ||
         opts.providerOrder !== undefined ||

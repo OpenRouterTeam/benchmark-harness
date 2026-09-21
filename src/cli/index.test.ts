@@ -4,6 +4,33 @@ import { buildBenchmarkConfig, parseArgs } from ".";
 describe("bench-harness CLI", () => {
   it("defaults --reasoning-effort to high", () => {
     expect(parseArgs([]).reasoningEffort).toBe("high");
+    expect(parseArgs(["--model", "openai/gpt-5"]).reasoningEffort).toBe("high");
+  });
+
+  it("defaults --reasoning-effort to auto for openrouter/jev", () => {
+    expect(parseArgs(["--model", "openrouter/jev"]).reasoningEffort).toBe(
+      "auto"
+    );
+    expect(parseArgs(["--model", "openrouter/jev:nitro"]).reasoningEffort).toBe(
+      "auto"
+    );
+    expect(
+      parseArgs(["--model", "openrouter/jev", "--reasoning-effort", "high"])
+        .reasoningEffort
+    ).toBe("high");
+    expect(
+      parseArgs(["--model", "openrouter/jev", "--reasoning-effort", "auto"])
+        .reasoningEffort
+    ).toBe("auto");
+  });
+
+  it("rejects --reasoning-effort auto for models without adaptive effort", () => {
+    expect(() =>
+      parseArgs(["--model", "openai/gpt-5", "--reasoning-effort", "auto"])
+    ).toThrow("--reasoning-effort auto is only supported for");
+    expect(() => parseArgs(["--reasoning-effort", "auto"])).toThrow(
+      "--reasoning-effort auto is only supported for"
+    );
   });
 
   it("accepts an explicit --reasoning-effort", () => {
@@ -138,6 +165,33 @@ describe("bench-harness CLI", () => {
     expect(config).toMatchObject({
       reasoningEffort: "xhigh",
       agentReasoningEffort: "xhigh",
+    });
+  });
+
+  it("does not derive an ori agent reasoning effort from auto", () => {
+    expect(() =>
+      buildBenchmarkConfig({
+        benchmarkId: "terminal_bench",
+        model: "openrouter/jev",
+        panelConfig: undefined,
+        artifactDir: undefined,
+        endpointId: undefined,
+        imageDetail: undefined,
+        reasoningEffort: "auto",
+      })
+    ).toThrow();
+    const config = buildBenchmarkConfig({
+      benchmarkId: "terminal_bench",
+      model: "openrouter/jev",
+      panelConfig: { agentReasoningEffort: "high" },
+      artifactDir: undefined,
+      endpointId: undefined,
+      imageDetail: undefined,
+      reasoningEffort: "auto",
+    });
+    expect(config).toMatchObject({
+      reasoningEffort: "auto",
+      agentReasoningEffort: "high",
     });
   });
 
