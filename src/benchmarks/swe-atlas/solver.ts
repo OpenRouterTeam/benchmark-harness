@@ -23,7 +23,7 @@ import {
   runAgentCli,
 } from "../agent-cli/runner";
 import type { HarborAgent } from "../agent-cli/schema";
-import { isOriAgent } from "../agent-cli/schema";
+import { isOriAgent, toOriReasoningEffort } from "../agent-cli/schema";
 import type { InferenceOverride } from "../benchmark-config";
 import { AGENT_ENV, probeSystemInfo, runAgentLoop } from "../harbor/agent-loop";
 import {
@@ -105,14 +105,24 @@ export function makeSweAtlasSolver(
       const task = loadTask(meta.taskId, meta.track, tasksRoot);
       const agent = opts.agent ?? "mini_swe";
       const cliHarness = isOriAgent(agent) ? getOriHarness(agent) : undefined;
-      const baseCliOpts: AgentCliOpts =
+      const agentReasoningEffort = toOriReasoningEffort(
+        opts.inference.reasoningEffort
+      );
+      const baseCliOpts: AgentCliOpts | undefined =
         opts.agentCli ??
-        definedValues({
-          model: opts.model,
-          apiKey: opts.apiKey,
-          endpointId: opts.endpointId,
-          agentReasoningEffort: opts.inference.reasoningEffort,
+        (agentReasoningEffort === undefined
+          ? undefined
+          : definedValues({
+              model: opts.model,
+              apiKey: opts.apiKey,
+              endpointId: opts.endpointId,
+              agentReasoningEffort,
+            }));
+      if (baseCliOpts === undefined) {
+        return yield* new SolverError({
+          message: `swe-atlas agent CLI requires a pinned reasoning effort (got "${opts.inference.reasoningEffort}")`,
         });
+      }
       const cliOpts: AgentCliOpts = {
         ...baseCliOpts,
         appendSystemPrompt: joinAgentPrompts(

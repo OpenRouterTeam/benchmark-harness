@@ -18,11 +18,14 @@ import { DracoPanelConfigSchema } from "../benchmarks/draco/schemas";
 import { benchmarkIds, getBenchmark } from "../benchmarks/registry";
 import type { CostTier, ReasoningEffort } from "../harness/constants";
 import {
+  ADAPTIVE_REASONING_EFFORT,
+  ADAPTIVE_REASONING_EFFORT_MODELS,
   COST_TIERS,
   defaultReasoningEffortFor,
   ImageDetail,
   IMAGE_DETAIL_VALUES,
   REASONING_EFFORTS,
+  supportsAdaptiveReasoningEffort,
 } from "../harness/constants";
 import { makeProgressReporter } from "../harness/progress";
 import { runHarnessPromise } from "../internal/effect-logger";
@@ -46,7 +49,7 @@ interface CliArgs {
   readonly resumeId?: string;
   readonly imageDetail?: ImageDetail;
   readonly costTier?: CostTier;
-  readonly reasoningEffort: ReasoningEffort | undefined;
+  readonly reasoningEffort: ReasoningEffort;
 }
 
 export function parseArgs(argv: readonly string[]): CliArgs {
@@ -193,7 +196,7 @@ function main(): Promise<void> {
         reasoningEffort: args.reasoningEffort,
       });
       process.stderr.write(
-        `Running ${args.benchmark}${args.model !== undefined ? ` on ${args.model}` : ""}${args.solverConfig !== undefined ? ` (solver-config=${args.solverConfig})` : ""}${artifactDir !== undefined ? ` (artifact-dir=${artifactDir})` : ""} (epochs=${epochs}, concurrency=${args.concurrency}, reasoning-effort=${args.reasoningEffort ?? MODEL_DEFAULT_REASONING_EFFORT}${range !== undefined ? `, range=${range.start ?? 0}..${range.end ?? "end"}` : ""}, session=${sessionId})...\n`
+        `Running ${args.benchmark}${args.model !== undefined ? ` on ${args.model}` : ""}${args.solverConfig !== undefined ? ` (solver-config=${args.solverConfig})` : ""}${artifactDir !== undefined ? ` (artifact-dir=${artifactDir})` : ""} (epochs=${epochs}, concurrency=${args.concurrency}, reasoning-effort=${args.reasoningEffort}${range !== undefined ? `, range=${range.start ?? 0}..${range.end ?? "end"}` : ""}, session=${sessionId})...\n`
       );
       const total = yield* promise(() =>
         resolveTotalEvaluations(args.benchmark, range, epochs)
@@ -307,21 +310,24 @@ function validateCostTier(raw: string | undefined): CostTier | undefined {
   return raw;
 }
 
-const MODEL_DEFAULT_REASONING_EFFORT = "default";
-
 function validateReasoningEffort(
   raw: string | undefined,
   model: string | undefined
-): ReasoningEffort | undefined {
+): ReasoningEffort {
   if (raw === undefined) {
     return defaultReasoningEffortFor(model);
   }
-  if (raw === MODEL_DEFAULT_REASONING_EFFORT) {
-    return undefined;
-  }
   if (!isMember(raw, REASONING_EFFORTS)) {
     throw new Error(
-      `--reasoning-effort must be one of: ${[...REASONING_EFFORTS, MODEL_DEFAULT_REASONING_EFFORT].join(", ")} (got "${raw}")`
+      `--reasoning-effort must be one of: ${REASONING_EFFORTS.join(", ")} (got "${raw}")`
+    );
+  }
+  if (
+    raw === ADAPTIVE_REASONING_EFFORT &&
+    (model === undefined || !supportsAdaptiveReasoningEffort(model))
+  ) {
+    throw new Error(
+      `--reasoning-effort ${ADAPTIVE_REASONING_EFFORT} is only supported for: ${ADAPTIVE_REASONING_EFFORT_MODELS.join(", ")} (got model "${model ?? ""}")`
     );
   }
   return raw;
@@ -341,7 +347,7 @@ function buildSchemaValidatedConfig(opts: {
   panelConfig: unknown;
   imageDetail?: ImageDetail;
   costTier?: CostTier;
-  reasoningEffort: ReasoningEffort | undefined;
+  reasoningEffort: ReasoningEffort;
 }): BenchmarkRunConfig {
   const {
     benchmarkId,
@@ -383,7 +389,7 @@ function buildSchemaValidatedConfig(opts: {
     : undefined;
   if (
     optionsSchema !== undefined &&
-    reasoningEffort !== undefined &&
+    reasoningEffort !== ADAPTIVE_REASONING_EFFORT &&
     Object.hasOwn(optionsSchema.shape, "agentReasoningEffort") &&
     !(
       typeof panelConfig === "object" &&
@@ -422,7 +428,7 @@ export function buildBenchmarkConfig(opts: {
   endpointId: string | undefined;
   imageDetail: ImageDetail | undefined;
   costTier?: CostTier;
-  reasoningEffort: ReasoningEffort | undefined;
+  reasoningEffort: ReasoningEffort;
 }): BenchmarkRunConfig {
   const {
     benchmarkId,

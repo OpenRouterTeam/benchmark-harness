@@ -1,3 +1,5 @@
+import type { ReasoningEffort } from "../../harness/constants";
+import { ADAPTIVE_REASONING_EFFORT } from "../../harness/constants";
 import type { ValueOf } from "../../internal/guards";
 
 export const ORI_AGENTS = ["pi", "claude", "prime-agent", "omp"] as const;
@@ -21,6 +23,12 @@ export const ORI_REASONING_EFFORTS = [
 ] as const;
 
 export type OriReasoningEffort = ValueOf<typeof ORI_REASONING_EFFORTS>;
+
+export function toOriReasoningEffort(
+  effort: ReasoningEffort
+): OriReasoningEffort | undefined {
+  return effort === ADAPTIVE_REASONING_EFFORT ? undefined : effort;
+}
 
 export const AGENT_PACKAGE_PATTERN = /^[A-Za-z0-9@/:._^=+-]+$/;
 

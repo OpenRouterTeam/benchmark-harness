@@ -44,7 +44,7 @@ export type GeminiMediaResolution = ValueOf<typeof GEMINI_MEDIA_RESOLUTIONS>;
 export const InferenceOverrideSchema = z.object({
   temperature: z.number().optional(),
   maxTokens: z.number().optional(),
-  reasoningEffort: z.enum(REASONING_EFFORTS).optional(),
+  reasoningEffort: z.enum(REASONING_EFFORTS),
   costTier: z.enum(COST_TIERS).optional(),
   timeoutMs: z.number().optional(),
   sort: z.nativeEnum(ProviderSort).optional(),

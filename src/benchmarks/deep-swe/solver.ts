@@ -39,7 +39,7 @@ import {
   runAgentCli,
 } from "../agent-cli/runner";
 import type { HarborAgent } from "../agent-cli/schema";
-import { isOriAgent } from "../agent-cli/schema";
+import { isOriAgent, toOriReasoningEffort } from "../agent-cli/schema";
 import type { InferenceOverride } from "../benchmark-config";
 import type { AgentLoopInput } from "../harbor/agent-loop";
 import { AGENT_ENV, probeSystemInfo, runAgentLoop } from "../harbor/agent-loop";
@@ -104,15 +104,25 @@ export function makeDeepSweSolver(
       const task = loadTask(meta.taskId, tasksRoot);
       const agent = opts.agent ?? "mini_swe";
       const cliHarness = isOriAgent(agent) ? getOriHarness(agent) : undefined;
-      const baseCliOpts: AgentCliOpts =
+      const agentReasoningEffort = toOriReasoningEffort(
+        opts.inference.reasoningEffort
+      );
+      const baseCliOpts: AgentCliOpts | undefined =
         opts.agentCli ??
-        definedValues({
-          model: opts.model,
-          apiKey: opts.apiKey,
-          endpointId: opts.endpointId,
-          sessionId: opts.sessionId,
-          agentReasoningEffort: opts.inference.reasoningEffort,
+        (agentReasoningEffort === undefined
+          ? undefined
+          : definedValues({
+              model: opts.model,
+              apiKey: opts.apiKey,
+              endpointId: opts.endpointId,
+              sessionId: opts.sessionId,
+              agentReasoningEffort,
+            }));
+      if (baseCliOpts === undefined) {
+        return yield* new SolverError({
+          message: `deep-swe agent CLI requires a pinned reasoning effort (got "${opts.inference.reasoningEffort}")`,
         });
+      }
       const cliOpts: AgentCliOpts = {
         ...baseCliOpts,
         appendSystemPrompt:

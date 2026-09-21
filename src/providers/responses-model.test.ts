@@ -313,7 +313,6 @@ describe("responses-model", () => {
       },
     ]);
     expect(sentOptions?.extraBody).toBeUndefined();
-    expect(sentBody).not.toHaveProperty("reasoning");
     expect(exit.value.outputItems).toEqual([
       {
         type: "function_call",
@@ -360,6 +359,26 @@ describe("responses-model", () => {
     assertSuccess(exit);
     expect(captured.value?.body["provider"]).toBeUndefined();
     expect(captured.value?.headers["x-or-endpoint-id"]).toBe("endpoint-1");
+  });
+  it("omits reasoning on the wire when effort is auto", async () => {
+    const captured: {
+      value: CapturedRequest | undefined;
+    } = { value: undefined };
+    restore = installFetchStub(await readStreamFixture(), 200, captured);
+    const layer = makeResponsesModelLayer({
+      model: "openrouter/jev",
+      apiKey: "sk-test",
+      retry: { baseDelayMs: 0, maxRetries: 0 },
+    });
+    const exit = await runPromiseExit(
+      gen(function* run() {
+        const model = yield* ResponsesModel;
+        return yield* model.generate([], { reasoningEffort: "auto" });
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    assertSuccess(exit);
+    expect(captured.value).toBeDefined();
+    expect(Object.hasOwn(captured.value?.body ?? {}, "reasoning")).toBe(false);
   });
   it("sends provider.only with fallbacks disabled on pinned runs", async () => {
     const captured: {

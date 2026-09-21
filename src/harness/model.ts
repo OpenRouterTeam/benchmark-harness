@@ -20,7 +20,7 @@ export interface GenerateConfig {
   readonly maxTokens?: number;
   readonly endpointId?: string;
   readonly tools?: readonly ToolDefinition[];
-  readonly reasoningEffort?: ReasoningEffort;
+  readonly reasoningEffort: ReasoningEffort;
   readonly costTier?: CostTier;
   readonly timeoutMs?: number;
   readonly sort?: ProviderSort;

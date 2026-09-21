@@ -4,48 +4,39 @@ import { buildBenchmarkConfig, parseArgs } from ".";
 describe("bench-harness CLI", () => {
   it("defaults --reasoning-effort to high", () => {
     expect(parseArgs([]).reasoningEffort).toBe("high");
+    expect(parseArgs(["--model", "openai/gpt-5"]).reasoningEffort).toBe("high");
+  });
+
+  it("defaults --reasoning-effort to auto for openrouter/jev", () => {
+    expect(parseArgs(["--model", "openrouter/jev"]).reasoningEffort).toBe(
+      "auto"
+    );
+    expect(parseArgs(["--model", "openrouter/jev:nitro"]).reasoningEffort).toBe(
+      "auto"
+    );
+    expect(
+      parseArgs(["--model", "openrouter/jev", "--reasoning-effort", "high"])
+        .reasoningEffort
+    ).toBe("high");
+    expect(
+      parseArgs(["--model", "openrouter/jev", "--reasoning-effort", "auto"])
+        .reasoningEffort
+    ).toBe("auto");
+  });
+
+  it("rejects --reasoning-effort auto for models without adaptive effort", () => {
+    expect(() =>
+      parseArgs(["--model", "openai/gpt-5", "--reasoning-effort", "auto"])
+    ).toThrow("--reasoning-effort auto is only supported for");
+    expect(() => parseArgs(["--reasoning-effort", "auto"])).toThrow(
+      "--reasoning-effort auto is only supported for"
+    );
   });
 
   it("accepts an explicit --reasoning-effort", () => {
     expect(parseArgs(["--reasoning-effort", "low"]).reasoningEffort).toBe(
       "low"
     );
-  });
-
-  it("leaves reasoning effort unset by default for adaptive-effort routers", () => {
-    expect(
-      parseArgs(["--model", "openrouter/jev"]).reasoningEffort
-    ).toBeUndefined();
-    expect(
-      parseArgs(["--model", "openrouter/jev:nitro"]).reasoningEffort
-    ).toBeUndefined();
-    expect(parseArgs(["--model", "openai/gpt-5"]).reasoningEffort).toBe("high");
-    expect(
-      parseArgs(["--model", "openrouter/jev", "--reasoning-effort", "high"])
-        .reasoningEffort
-    ).toBe("high");
-  });
-
-  it("leaves reasoning effort unset for --reasoning-effort default", () => {
-    const args = parseArgs([
-      "--benchmark",
-      "gpqa_diamond",
-      "--model",
-      "openrouter/jev",
-      "--reasoning-effort",
-      "default",
-    ]);
-    expect(args.reasoningEffort).toBeUndefined();
-    const config = buildBenchmarkConfig({
-      benchmarkId: "gpqa_diamond",
-      model: "openrouter/jev",
-      panelConfig: undefined,
-      artifactDir: undefined,
-      endpointId: undefined,
-      imageDetail: undefined,
-      reasoningEffort: args.reasoningEffort,
-    });
-    expect(config).not.toHaveProperty("reasoningEffort");
   });
 
   it("rejects an invalid --reasoning-effort value", () => {
@@ -174,6 +165,33 @@ describe("bench-harness CLI", () => {
     expect(config).toMatchObject({
       reasoningEffort: "xhigh",
       agentReasoningEffort: "xhigh",
+    });
+  });
+
+  it("does not derive an ori agent reasoning effort from auto", () => {
+    expect(() =>
+      buildBenchmarkConfig({
+        benchmarkId: "terminal_bench",
+        model: "openrouter/jev",
+        panelConfig: undefined,
+        artifactDir: undefined,
+        endpointId: undefined,
+        imageDetail: undefined,
+        reasoningEffort: "auto",
+      })
+    ).toThrow();
+    const config = buildBenchmarkConfig({
+      benchmarkId: "terminal_bench",
+      model: "openrouter/jev",
+      panelConfig: { agentReasoningEffort: "high" },
+      artifactDir: undefined,
+      endpointId: undefined,
+      imageDetail: undefined,
+      reasoningEffort: "auto",
+    });
+    expect(config).toMatchObject({
+      reasoningEffort: "auto",
+      agentReasoningEffort: "high",
     });
   });
 

@@ -20,6 +20,7 @@ import {
 import type { Layer } from "effect/Layer";
 import { effect, provide } from "effect/Layer";
 
+import { reasoningRequestFor } from "../harness/constants";
 import type { ModelUsage } from "../harness/core";
 import { ModelError } from "../harness/core";
 import type { GenerateConfig } from "../harness/model";
@@ -186,10 +187,7 @@ export function generate(
           : undefined,
     }),
     ...definedValues({
-      reasoning:
-        genConfig.reasoningEffort !== undefined
-          ? { effort: genConfig.reasoningEffort }
-          : undefined,
+      reasoning: reasoningRequestFor(genConfig.reasoningEffort),
       provider: sendProvider ? providerPreferences : undefined,
     }),
     ...definedValues({
