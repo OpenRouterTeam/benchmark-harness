@@ -21,6 +21,16 @@ import {
   TAU3_BENCH_BANKING_META,
   TAU_BENCH_AIRLINE_META,
 } from "./benchmark-meta";
+import {
+  DECISION_ARMS,
+  DECISION_TASK_IDS,
+  DECISION_VARIANTS,
+  DECISIONS_BENCHMARK_ID,
+  DecisionArm,
+  DecisionTaskId,
+  DecisionVariant,
+} from "./decisions/schema";
+import { DEFAULT_LANGUAGE as DECISIONS_DEFAULT_LANGUAGE } from "./decisions/tasks";
 import { DEFAULT_STEP_LIMIT as DEEP_SWE_DEFAULT_STEP_LIMIT } from "./deep-swe/schema";
 import { DracoPanelConfigSchema } from "./draco/schemas";
 import { SearchLaneConfigSchema } from "./search/core/config";
@@ -192,6 +202,23 @@ export type IfStructBenchmarkConfig = z.infer<
   typeof IfStructBenchmarkConfigSchema
 >;
 
+export const DecisionsOptionsSchema = z.object({
+  arm: z.enum(DECISION_ARMS).default(DecisionArm.Decision),
+  task: z.enum(DECISION_TASK_IDS).default(DecisionTaskId.Banking77),
+  variant: z.enum(DECISION_VARIANTS).default(DecisionVariant.Base),
+  language: zDefaultedText(DECISIONS_DEFAULT_LANGUAGE),
+});
+
+export const DecisionsBenchmarkConfigSchema = z.object({
+  benchmarkId: z.literal(DECISIONS_BENCHMARK_ID),
+  ...FixedTemperatureBenchmarkBaseSchema.shape,
+  ...DecisionsOptionsSchema.shape,
+});
+
+export type DecisionsBenchmarkConfig = z.infer<
+  typeof DecisionsBenchmarkConfigSchema
+>;
+
 const AgenticOptionsSchema = z.object({
   taskSubset: z.array(z.string()).optional(),
   maxAgentTimeoutSec: z.number().positive().optional(),
@@ -336,6 +363,7 @@ export const NativeBenchmarkRunConfigSchema = z.discriminatedUnion(
     TerminalBenchConfigSchema,
     DracoBenchmarkConfigSchema,
     IfStructBenchmarkConfigSchema,
+    DecisionsBenchmarkConfigSchema,
     SweAtlasQaConfigSchema,
     SweAtlasTwConfigSchema,
     SweAtlasRfConfigSchema,
@@ -370,6 +398,7 @@ export const BENCHMARK_OPTIONS_SCHEMAS = {
   mmmu_pro_vision: MmmuProVisionOptionsSchema,
   terminal_bench: TerminalBenchOptionsSchema,
   ifstruct: IfStructOptionsSchema,
+  decisions: DecisionsOptionsSchema,
   swe_atlas_qa: SweAtlasOptionsSchema,
   swe_atlas_tw: SweAtlasOptionsSchema,
   swe_atlas_rf: SweAtlasOptionsSchema,

@@ -49,6 +49,11 @@ export const IFSTRUCT_META = {
   defaultEpochs: 1,
 } as const satisfies BenchmarkMeta;
 
+export const DECISIONS_META = {
+  id: "decisions",
+  defaultEpochs: 1,
+} as const satisfies BenchmarkMeta;
+
 export const SWE_ATLAS_QA_META = {
   id: "swe_atlas_qa",
   defaultEpochs: 3,
@@ -108,6 +113,7 @@ const BENCHMARK_META: Readonly<Record<string, BenchmarkMeta>> = {
   [TERMINAL_BENCH_META.id]: TERMINAL_BENCH_META,
   [DRACO_META.id]: DRACO_META,
   [IFSTRUCT_META.id]: IFSTRUCT_META,
+  [DECISIONS_META.id]: DECISIONS_META,
   [SWE_ATLAS_QA_META.id]: SWE_ATLAS_QA_META,
   [SWE_ATLAS_TW_META.id]: SWE_ATLAS_TW_META,
   [SWE_ATLAS_RF_META.id]: SWE_ATLAS_RF_META,
