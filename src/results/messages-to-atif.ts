@@ -244,19 +244,22 @@ function appendToolObservation(
   steps: AtifStepDraft[],
   message: ModelMessage
 ): void {
-  const agentIndex = steps.findLastIndex((step) => step.source === "agent");
+  const matchedIndex =
+    message.toolCallId === undefined
+      ? -1
+      : steps.findLastIndex((step) =>
+          (step.tool_calls ?? []).some(
+            (toolCall) => toolCall.tool_call_id === message.toolCallId
+          )
+        );
   const observationIndex =
-    agentIndex === -1 && steps.length > 0 ? steps.length - 1 : agentIndex;
+    matchedIndex !== -1 ? matchedIndex : fallbackObservationIndex(steps);
   if (observationIndex === -1) {
     return;
   }
   const agentStep = steps[observationIndex]!;
-  const toolCallIds = new Set(
-    (agentStep.tool_calls ?? []).map((toolCall) => toolCall.tool_call_id)
-  );
   const toolCallId = message.toolCallId;
-  const hasMatchingToolCall =
-    toolCallId !== undefined && toolCallIds.has(toolCallId);
+  const hasMatchingToolCall = matchedIndex !== -1;
   const messageValue = messageToAtifMessage(message);
   const extra = definedValues({
     ...(!hasMatchingToolCall &&
@@ -279,4 +282,9 @@ function appendToolObservation(
     },
   };
   steps[observationIndex] = updatedStep;
+}
+
+function fallbackObservationIndex(steps: readonly AtifStepDraft[]): number {
+  const agentIndex = steps.findLastIndex((step) => step.source === "agent");
+  return agentIndex !== -1 ? agentIndex : steps.length - 1;
 }

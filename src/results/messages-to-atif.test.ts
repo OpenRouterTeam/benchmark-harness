@@ -78,6 +78,45 @@ describe("messagesToAtif", () => {
     ]);
   });
 
+  it("attaches observations to the steps that made each call", () => {
+    const trajectory = messagesToAtif({
+      model: "openai/gpt-4o-mini",
+      messages: [
+        { role: "user", content: "Search twice." },
+        {
+          role: "assistant",
+          content: "",
+          toolCalls: [
+            {
+              id: "call-1",
+              type: "function",
+              function: { name: "search", arguments: '{"query":"first"}' },
+            },
+          ],
+        },
+        {
+          role: "assistant",
+          content: "",
+          toolCalls: [
+            {
+              id: "call-2",
+              type: "function",
+              function: { name: "search", arguments: '{"query":"second"}' },
+            },
+          ],
+        },
+        { role: "tool", toolCallId: "call-1", content: "first result" },
+        { role: "tool", toolCallId: "call-2", content: "second result" },
+      ],
+    });
+    const firstObservation = trajectory?.steps[1]?.observation?.results[0];
+    const secondObservation = trajectory?.steps[2]?.observation?.results[0];
+    expect(firstObservation?.source_call_id).toBe("call-1");
+    expect(secondObservation?.source_call_id).toBe("call-2");
+    expect(firstObservation?.extra?.tool_call_id).toBeUndefined();
+    expect(secondObservation?.extra?.tool_call_id).toBeUndefined();
+  });
+
   it("preserves an unmatched tool id in result extra", () => {
     const trajectory = messagesToAtif({
       model: "openai/gpt-4o-mini",
