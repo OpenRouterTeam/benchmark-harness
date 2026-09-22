@@ -12,9 +12,8 @@ import { parseSchema } from "../internal/zod";
 import { responsesTurnToModelOutput } from "../providers/messages-to-responses";
 import { AtifTrajectorySchema } from "./atif-schema";
 import {
-  asyncBufferFromBytes,
+  mergeResultFilesToParquet,
   readResultRows,
-  resultRowsToParquet,
   runResultToParquet,
   rowScoreToNumber,
   summarizeChunkRows,
@@ -106,6 +105,26 @@ function readRows(buf: Buffer): Promise<readonly BenchmarkResultRow[]> {
   const file = asyncBufferFromArrayBuffer(bufferToArrayBuffer(buf));
   return readResultRows(file);
 }
+
+function sampleColumns(row: BenchmarkResultRow): Record<string, unknown> {
+  return {
+    sample_id: row.sample_id,
+    epoch: row.epoch,
+    input: row.input,
+    target: row.target,
+    score_value: row.score_value,
+    answer: row.answer,
+    explanation: row.explanation,
+    scorer_trajectory: row.scorer_trajectory,
+    trajectory: row.trajectory,
+    response_items: row.response_items,
+    request_body: row.request_body,
+    generation_ids: row.generation_ids,
+    messages: row.messages,
+    metadata: row.metadata,
+  };
+}
+
 describe("runResultToParquet", () => {
   const buffer = runResultToParquet({ result: RESULT, meta: META });
   let rows: readonly BenchmarkResultRow[];
@@ -736,43 +755,94 @@ describe("runResultToParquet", () => {
     expect(byKey["model"]).toBe("openai/gpt-4o-mini");
   });
 });
-describe("resultRowsToParquet", () => {
-  it("round-trips decoded rows and preserves concatenated row counts", async () => {
-    const firstBuffer = runResultToParquet({ result: RESULT, meta: META });
-    const secondBuffer = runResultToParquet({ result: RESULT, meta: META });
-    const firstRows = await readResultRows(
-      asyncBufferFromBytes(new Uint8Array(firstBuffer))
+describe("mergeResultFilesToParquet", () => {
+  it("round-trips one file and merges run-level values across files", async () => {
+    const firstRows = await readRows(
+      runResultToParquet({ result: RESULT, meta: META })
     );
-    const secondRows = await readResultRows(
-      asyncBufferFromBytes(new Uint8Array(secondBuffer))
+    const secondResult = {
+      metrics: {
+        accuracy: 0,
+        totalQuestions: 1,
+        correctAnswers: 0,
+        skippedQuestions: 1,
+      },
+      usage: {
+        inputTokens: 7,
+        outputTokens: 7,
+        totalTokens: 14,
+        reasoningTokens: 3,
+        totalCost: 0.02,
+        generationTimeMs: 300,
+      },
+      sampleScores: [
+        {
+          sampleId: "s2",
+          epoch: 0,
+          score: { value: ScoreValue.Incorrect, answer: "A", explanation: "" },
+        },
+        {
+          sampleId: "s2",
+          epoch: 1,
+          score: { value: ScoreValue.Skipped, answer: null, explanation: "" },
+        },
+      ],
+    } as const;
+    const secondRows = await readRows(
+      runResultToParquet({ result: secondResult, meta: META })
     );
-    const rewrittenRows = await readResultRows(
-      asyncBufferFromBytes(
-        new Uint8Array(
-          resultRowsToParquet(firstRows, {
-            task: META.task,
-            model: META.model,
-            createdAt: META.createdAt,
-          })
-        )
-      )
+    const singleRows = await readRows(
+      mergeResultFilesToParquet([firstRows], {
+        task: META.task,
+        model: META.model,
+        createdAt: META.createdAt,
+      })
     );
-    expect(rewrittenRows).toEqual(firstRows);
-    expect(summarizeChunkRows(rewrittenRows)).toEqual(
-      summarizeChunkRows(firstRows)
+    const mergedRows = await readRows(
+      mergeResultFilesToParquet([firstRows, [], secondRows], {
+        task: META.task,
+        model: META.model,
+        createdAt: META.createdAt,
+      })
     );
-    const concatenatedRows = await readResultRows(
-      asyncBufferFromBytes(
-        new Uint8Array(
-          resultRowsToParquet([...firstRows, ...secondRows], {
-            task: META.task,
-            model: META.model,
-            createdAt: META.createdAt,
-          })
-        )
-      )
+    const emptyRows = await readRows(
+      mergeResultFilesToParquet([[], []], {
+        task: META.task,
+        model: META.model,
+        createdAt: META.createdAt,
+      })
     );
-    expect(concatenatedRows).toHaveLength(firstRows.length + secondRows.length);
+
+    expect(singleRows.map(sampleColumns)).toEqual(firstRows.map(sampleColumns));
+    expect(emptyRows).toEqual([]);
+    const mergedSummary = summarizeChunkRows(mergedRows);
+    assert(mergedSummary);
+    expect(mergedSummary.accuracy).toBe(0.5);
+    expect(mergedSummary.totalQuestions).toBe(3);
+    expect(mergedSummary.correctAnswers).toBe(2);
+    expect(mergedSummary.inputTokens).toBe(107);
+    expect(mergedSummary.outputTokens).toBe(57);
+    expect(mergedSummary.totalTokens).toBe(164);
+    expect(mergedSummary.reasoningTokens).toBe(3);
+    expect(mergedSummary.totalCost).toBe(0.03);
+    expect(mergedSummary.generationTimeMs).toBe(1300);
+    expect(mergedSummary.epochResults).toEqual([
+      {
+        epoch: 0,
+        accuracy: 2 / 3,
+        totalQuestions: 3,
+        correctAnswers: 2,
+        skippedQuestions: 0,
+      },
+      {
+        epoch: 1,
+        accuracy: 0,
+        totalQuestions: 1,
+        correctAnswers: 0,
+        skippedQuestions: 1,
+      },
+    ]);
+    expect(mergedRows.every((row) => row.extra_scores === null)).toBe(true);
   });
 });
 describe("BenchmarkResultRowSchema", () => {

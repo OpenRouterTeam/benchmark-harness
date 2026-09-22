@@ -153,17 +153,83 @@ export function runResultToParquet(input: RunResultToParquetInput): Buffer {
   });
 }
 
-export function resultRowsToParquet(
-  rows: readonly BenchmarkResultRow[],
+// oxlint-disable-next-line openrouter/no-comments -- Documents a lossy public merge contract.
+/** Merged files omit benchmark-level extra scores and primary scores. */
+export function mergeResultFilesToParquet(
+  files: readonly (readonly BenchmarkResultRow[])[],
   meta: ResultRowsParquetMeta
 ): Buffer {
+  const nonEmptyFiles = files.filter((file) => file.length > 0);
+  const rows = nonEmptyFiles.flat();
+  const first = rows[0];
+  const createdAt = meta.createdAt ?? formatIso(unsafeNow());
+  const sampleScores = rowsToSampleScores(rows);
+  const metrics = aggregateScores(sampleScores);
+  const scoresByEpoch = new Map<number, SampleScore[]>();
+  for (const sampleScore of sampleScores) {
+    const scores = scoresByEpoch.get(sampleScore.epoch) ?? [];
+    scores.push(sampleScore);
+    scoresByEpoch.set(sampleScore.epoch, scores);
+  }
+  const epochMetrics = new Map(
+    [...scoresByEpoch].map(([epoch, scores]) => [
+      epoch,
+      aggregateScores(scores),
+    ])
+  );
+  const usage = {
+    inputTokens: 0,
+    outputTokens: 0,
+    totalTokens: 0,
+    reasoningTokens: 0,
+    totalCost: 0,
+    generationTimeMs: 0,
+  };
+  for (const file of nonEmptyFiles) {
+    const [row] = file;
+    if (row === undefined) {
+      continue;
+    }
+    usage.inputTokens += row.input_tokens;
+    usage.outputTokens += row.output_tokens;
+    usage.totalTokens += row.total_tokens;
+    usage.reasoningTokens += row.reasoning_tokens;
+    usage.totalCost += row.total_cost;
+    usage.generationTimeMs += row.generation_time_ms;
+  }
+  const mergedRows = rows.map((row) => {
+    const epoch = epochMetrics.get(row.epoch);
+    return {
+      ...row,
+      format_version: first?.format_version ?? RESULT_FORMAT_VERSION,
+      task: meta.task,
+      model: meta.model,
+      epochs: first?.epochs ?? 0,
+      temperature: first?.temperature ?? null,
+      benchmark_config: first?.benchmark_config ?? null,
+      created_at: createdAt,
+      accuracy: metrics.accuracy,
+      total_questions: metrics.totalQuestions,
+      correct_answers: metrics.correctAnswers,
+      input_tokens: usage.inputTokens,
+      output_tokens: usage.outputTokens,
+      total_tokens: usage.totalTokens,
+      reasoning_tokens: usage.reasoningTokens,
+      total_cost: usage.totalCost,
+      generation_time_ms: usage.generationTimeMs,
+      epoch_total_questions: epoch?.totalQuestions ?? 0,
+      epoch_correct_answers: epoch?.correctAnswers ?? 0,
+      extra_scores: null,
+      primary_score: null,
+    };
+  });
   const columnData = COLUMN_SPECS.map((spec) => ({
     name: spec.name,
     type: spec.type,
     nullable: spec.nullable,
-    data: rows.map((row) => row[spec.name] ?? null),
+    data: mergedRows.map((row) => row[spec.name] ?? null),
   }));
-  return writeParquet(columnData, meta);
+  return writeParquet(columnData, { ...meta, createdAt });
 }
 
 function writeParquet(
