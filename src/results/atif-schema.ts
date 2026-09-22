@@ -142,52 +142,10 @@ export type AtifStepSource = (typeof ATIF_STEP_SOURCES)[number];
 
 export const AtifStepSourceSchema = z.enum(ATIF_STEP_SOURCES);
 
-const ISO_8601_TIMESTAMP_PATTERN =
-  /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?(?:Z|([+-])(\d{2}):?(\d{2})|([+-])(\d{2}))?)?$/;
-
-function isIso8601Timestamp(value: string): boolean {
-  const match = ISO_8601_TIMESTAMP_PATTERN.exec(value);
-  if (match === null) {
-    return false;
-  }
-  const [
-    ,
-    year,
-    month,
-    day,
-    hour,
-    minute,
-    second,
-    ,
-    offsetHour,
-    offsetMinute,
-    ,
-    shortOffsetHour,
-  ] = match.map((group) => (group === undefined ? undefined : Number(group)));
-  if (year === undefined || month === undefined || day === undefined) {
-    return false;
-  }
-  const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
-  return (
-    month >= 1 &&
-    month <= 12 &&
-    day >= 1 &&
-    day <= daysInMonth &&
-    (hour ?? 0) <= 23 &&
-    (minute ?? 0) <= 59 &&
-    (second ?? 0) <= 59 &&
-    (offsetHour ?? shortOffsetHour ?? 0) <= 23 &&
-    (offsetMinute ?? 0) <= 59
-  );
-}
-
 export const AtifStepSchema = z
   .strictObject({
     step_id: z.number().int().min(1),
-    timestamp: z
-      .string()
-      .refine(isIso8601Timestamp, { message: "timestamp must be ISO 8601" })
-      .optional(),
+    timestamp: z.string().optional(),
     source: AtifStepSourceSchema,
     model_name: z.string().optional(),
     reasoning_effort: z.union([z.string(), z.number()]).optional(),

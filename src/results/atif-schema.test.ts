@@ -5,7 +5,6 @@ import { parseSchema } from "../internal/zod";
 import {
   AtifAudioSourceSchema,
   AtifContentPartSchema,
-  AtifStepSchema,
   AtifTrajectorySchema,
   AtifSubagentTrajectoryRefSchema,
 } from "./atif-schema";
@@ -214,41 +213,5 @@ describe("AtifTrajectorySchema", () => {
       path: "audio.mid",
     });
     assertLeft(parsed);
-  });
-
-  it("accepts Harbor ISO 8601 timestamps", () => {
-    for (const timestamp of [
-      "2026-09-22T01:12:00Z",
-      "2026-09-22T01:12:00.123+05:30",
-      "2026-09-22",
-      "2028-02-29T00:00:00+00:00",
-    ]) {
-      const parsed = parseSchema(AtifStepSchema, {
-        step_id: 1,
-        source: "user",
-        message: "hello",
-        timestamp,
-      });
-      assertRight(parsed);
-    }
-  });
-
-  it("rejects invalid Harbor ISO 8601 timestamps", () => {
-    for (const timestamp of [
-      "yesterday",
-      "2026-13-45T00:00:00Z",
-      "2026-02-30",
-      "2027-02-29T00:00:00Z",
-      "2026-04-31",
-      "2026-09-22T24:00:00Z",
-    ]) {
-      const parsed = parseSchema(AtifStepSchema, {
-        step_id: 1,
-        source: "user",
-        message: "hello",
-        timestamp,
-      });
-      assertLeft(parsed);
-    }
   });
 });

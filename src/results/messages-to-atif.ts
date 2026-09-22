@@ -29,10 +29,6 @@ interface AtifStepDraft {
   readonly extra?: Record<string, unknown>;
 }
 
-type ToolModelMessage = Omit<ModelMessage, "role"> & {
-  readonly role: "tool";
-};
-
 const IMAGE_MEDIA_TYPES: Readonly<
   Record<string, AtifImageSource["media_type"]>
 > = {
@@ -54,7 +50,7 @@ export function messagesToAtif(input: {
 
   const steps: AtifStepDraft[] = [];
   for (const message of input.messages) {
-    if (isToolModelMessage(message)) {
+    if (message.role === MessageRole.Tool) {
       appendToolObservation(steps, message);
       continue;
     }
@@ -246,7 +242,7 @@ function parseArguments(raw: string): Record<string, unknown> {
 
 function appendToolObservation(
   steps: AtifStepDraft[],
-  message: ToolModelMessage
+  message: ModelMessage
 ): void {
   const agentIndex = steps.findLastIndex((step) => step.source === "agent");
   const observationIndex =
@@ -283,10 +279,4 @@ function appendToolObservation(
     },
   };
   steps[observationIndex] = updatedStep;
-}
-
-function isToolModelMessage(
-  message: ModelMessage
-): message is ToolModelMessage {
-  return message.role === MessageRole.Tool;
 }
