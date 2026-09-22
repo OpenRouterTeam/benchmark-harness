@@ -10,6 +10,7 @@ import type { SampleScore } from "../harness/metric";
 import { assertRight, assertLeft } from "../internal/testing";
 import { parseSchema } from "../internal/zod";
 import { responsesTurnToModelOutput } from "../providers/messages-to-responses";
+import { AtifTrajectorySchema } from "./atif-schema";
 import {
   readResultRows,
   runResultToParquet,
@@ -231,6 +232,56 @@ describe("runResultToParquet", () => {
   it("writes null scorer_trajectory when the scorer recorded none", () => {
     for (const row of rows) {
       expect(row.scorer_trajectory).toBeNull();
+    }
+  });
+  it("serializes an ATIF trajectory from messages", async () => {
+    const messages: readonly ModelMessage[] = [
+      { role: MessageRole.System, content: "Be helpful." },
+      { role: MessageRole.User, content: "What is 2+2?" },
+      { role: MessageRole.Assistant, content: "4" },
+    ];
+    const rows = await readRows(
+      runResultToParquet({
+        result: {
+          metrics: METRICS,
+          usage: USAGE,
+          sampleScores: [
+            {
+              sampleId: "s0",
+              epoch: 0,
+              score: {
+                value: ScoreValue.Correct,
+                answer: "4",
+                explanation: "",
+              },
+              messages,
+            },
+          ],
+        },
+        meta: META,
+      })
+    );
+    expect(rows[0]?.trajectory).not.toBeNull();
+    const parsed = parseSchema(
+      AtifTrajectorySchema,
+      JSON.parse(rows[0]!.trajectory!)
+    );
+    assertRight(parsed);
+    expect(parsed.right.steps.map((step) => step.message)).toEqual([
+      "Be helpful.",
+      "What is 2+2?",
+      "4",
+    ]);
+  });
+  it("writes null trajectory when messages are absent", async () => {
+    const rows = await readRows(
+      runResultToParquet({
+        result: RESULT,
+        meta: META,
+      })
+    );
+    for (const row of rows) {
+      expect(row.trajectory).toBeNull();
     }
   });
   it("writes null response_items and generation_ids when the solver recorded none", () => {
@@ -678,7 +729,7 @@ describe("runResultToParquet", () => {
     const kv = metadata.key_value_metadata ?? [];
     const byKey = Object.fromEntries(kv.map((k) => [k.key, k.value]));
     expect(byKey["writer"]).toBe(RESULT_WRITER);
-    expect(byKey["schema_version"]).toBe("1");
+    expect(byKey["schema_version"]).toBe(String(RESULT_FORMAT_VERSION));
     expect(byKey["task"]).toBe("gpqa_diamond");
     expect(byKey["model"]).toBe("openai/gpt-4o-mini");
   });

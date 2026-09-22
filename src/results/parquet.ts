@@ -5,12 +5,7 @@ import { parquetWriteBuffer } from "hyparquet-writer";
 
 import type { BenchmarkRunConfig } from "../benchmarks/benchmark-config";
 import type { BenchmarkPrimaryScore } from "../benchmarks/types";
-import type {
-  ModelMessage,
-  ContentPart,
-  ToolCall,
-  UsageTotals,
-} from "../harness/core";
+import type { ModelMessage, ToolCall, UsageTotals } from "../harness/core";
 import { ScoreValue } from "../harness/core";
 import type { AggregateMetrics, SampleScore } from "../harness/metric";
 import { aggregateScores } from "../harness/metric";
@@ -18,6 +13,11 @@ import type { RunResult } from "../harness/run";
 import { Either } from "../internal/either";
 import { definedValues } from "../internal/guards";
 import { firstZodIssueMessage, parseSchema, z } from "../internal/zod";
+import {
+  citationToPojo,
+  contentPartToPojo,
+  messagesToAtif,
+} from "./messages-to-atif";
 import type { BenchmarkResultRow } from "./parquet-schema";
 import {
   RESULT_FORMAT_VERSION,
@@ -95,6 +95,7 @@ const COLUMN_SPECS = [
   { name: "answer", type: "STRING", nullable: true },
   { name: "explanation", type: "STRING", nullable: true },
   { name: "scorer_trajectory", type: "JSON", nullable: true },
+  { name: "trajectory", type: "JSON", nullable: true },
   { name: "response_items", type: "JSON", nullable: true },
   { name: "request_body", type: "JSON", nullable: true },
   { name: "generation_ids", type: "JSON", nullable: true },
@@ -241,6 +242,14 @@ function cellValue(name: ColumnName, ctx: RowContext, s: SampleScore): unknown {
         ? JSON.stringify(s.score.trajectory)
         : null;
     }
+    case "trajectory": {
+      const trajectory = messagesToAtif({
+        messages: s.messages ?? [],
+        model: ctx.meta.model,
+        scorerTrajectory: s.score.trajectory,
+      });
+      return trajectory === null ? null : JSON.stringify(trajectory);
+    }
     case "response_items": {
       return s.responseItems !== undefined && s.responseItems.length > 0
         ? JSON.stringify(s.responseItems)
@@ -290,12 +299,7 @@ function messageToPojo(msg: ModelMessage): Record<string, unknown> {
     pojo["reasoning"] = msg.reasoning;
   }
   if (msg.citations !== undefined && msg.citations.length > 0) {
-    pojo["citations"] = msg.citations.map((c) => ({
-      url: c.url,
-      title: c.title,
-      start_index: c.startIndex,
-      end_index: c.endIndex,
-    }));
+    pojo["citations"] = msg.citations.map(citationToPojo);
   }
   if (msg.contentParts !== undefined && msg.contentParts.length > 0) {
     pojo["content_parts"] = msg.contentParts.map(contentPartToPojo);
@@ -307,36 +311,6 @@ function messageToPojo(msg: ModelMessage): Record<string, unknown> {
     pojo["tool_call_id"] = msg.toolCallId;
   }
   return pojo;
-}
-
-function contentPartToPojo(part: ContentPart): Record<string, unknown> {
-  switch (part.type) {
-    case "image_url": {
-      return {
-        type: "image_url",
-        image_url: definedValues({
-          url: part.imageUrl.url,
-          detail: part.imageUrl.detail,
-        }),
-      };
-    }
-    case "text": {
-      return { type: "text", text: part.text };
-    }
-    case "video_url": {
-      return {
-        type: "video_url",
-        video_url: definedValues({
-          url: part.videoUrl.url,
-          processing: part.videoUrl.processing,
-        }),
-      };
-    }
-    default: {
-      part satisfies never;
-      throw new Error(`Unhandled content part type: ${part}`);
-    }
-  }
 }
 
 function toolCallToPojo(tc: ToolCall): Record<string, unknown> {
