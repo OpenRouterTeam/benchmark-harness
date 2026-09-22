@@ -53,6 +53,12 @@ export interface RunResultToParquetInput {
   readonly primaryScore?: BenchmarkPrimaryScore;
 }
 
+export interface ResultRowsParquetMeta {
+  readonly task: string;
+  readonly model: string;
+  readonly createdAt?: string;
+}
+
 interface ColumnSpec {
   readonly name: string;
   readonly type:
@@ -140,6 +146,36 @@ export function runResultToParquet(input: RunResultToParquetInput): Buffer {
     nullable: spec.nullable,
     data: sampleScores.map((s) => cellValue(spec.name, rowCtx, s)),
   }));
+  return writeParquet(columnData, {
+    task: meta.task,
+    model: meta.model,
+    createdAt,
+  });
+}
+
+export function resultRowsToParquet(
+  rows: readonly BenchmarkResultRow[],
+  meta: ResultRowsParquetMeta
+): Buffer {
+  const columnData = COLUMN_SPECS.map((spec) => ({
+    name: spec.name,
+    type: spec.type,
+    nullable: spec.nullable,
+    data: rows.map((row) => row[spec.name] ?? null),
+  }));
+  return writeParquet(columnData, meta);
+}
+
+function writeParquet(
+  columnData: {
+    readonly name: string;
+    readonly type: ColumnSpec["type"];
+    readonly nullable: boolean;
+    readonly data: unknown[];
+  }[],
+  meta: ResultRowsParquetMeta
+): Buffer {
+  const createdAt = meta.createdAt ?? formatIso(unsafeNow());
   const arrayBuffer = parquetWriteBuffer({
     columnData,
     codec: "SNAPPY",

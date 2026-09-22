@@ -12,7 +12,9 @@ import { parseSchema } from "../internal/zod";
 import { responsesTurnToModelOutput } from "../providers/messages-to-responses";
 import { AtifTrajectorySchema } from "./atif-schema";
 import {
+  asyncBufferFromBytes,
   readResultRows,
+  resultRowsToParquet,
   runResultToParquet,
   rowScoreToNumber,
   summarizeChunkRows,
@@ -732,6 +734,45 @@ describe("runResultToParquet", () => {
     expect(byKey["schema_version"]).toBe(String(RESULT_FORMAT_VERSION));
     expect(byKey["task"]).toBe("gpqa_diamond");
     expect(byKey["model"]).toBe("openai/gpt-4o-mini");
+  });
+});
+describe("resultRowsToParquet", () => {
+  it("round-trips decoded rows and preserves concatenated row counts", async () => {
+    const firstBuffer = runResultToParquet({ result: RESULT, meta: META });
+    const secondBuffer = runResultToParquet({ result: RESULT, meta: META });
+    const firstRows = await readResultRows(
+      asyncBufferFromBytes(new Uint8Array(firstBuffer))
+    );
+    const secondRows = await readResultRows(
+      asyncBufferFromBytes(new Uint8Array(secondBuffer))
+    );
+    const rewrittenRows = await readResultRows(
+      asyncBufferFromBytes(
+        new Uint8Array(
+          resultRowsToParquet(firstRows, {
+            task: META.task,
+            model: META.model,
+            createdAt: META.createdAt,
+          })
+        )
+      )
+    );
+    expect(rewrittenRows).toEqual(firstRows);
+    expect(summarizeChunkRows(rewrittenRows)).toEqual(
+      summarizeChunkRows(firstRows)
+    );
+    const concatenatedRows = await readResultRows(
+      asyncBufferFromBytes(
+        new Uint8Array(
+          resultRowsToParquet([...firstRows, ...secondRows], {
+            task: META.task,
+            model: META.model,
+            createdAt: META.createdAt,
+          })
+        )
+      )
+    );
+    expect(concatenatedRows).toHaveLength(firstRows.length + secondRows.length);
   });
 });
 describe("BenchmarkResultRowSchema", () => {
