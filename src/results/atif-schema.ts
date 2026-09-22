@@ -197,7 +197,7 @@ export const AtifTrajectorySchema = z
     steps: z.array(AtifStepSchema).min(1),
     notes: z.string().optional(),
     final_metrics: AtifFinalMetricsSchema.optional(),
-    continued_trajectory_ref: AtifSubagentTrajectoryRefSchema.optional(),
+    continued_trajectory_ref: z.string().optional(),
     extra: z.record(z.string(), z.unknown()).optional(),
     get subagent_trajectories() {
       return z.array(AtifTrajectorySchema).optional();

@@ -33,13 +33,15 @@ type ToolModelMessage = Omit<ModelMessage, "role"> & {
   readonly role: "tool";
 };
 
-const IMAGE_MEDIA_TYPES = {
+const IMAGE_MEDIA_TYPES: Readonly<
+  Record<string, AtifImageSource["media_type"]>
+> = {
   gif: "image/gif",
   jpeg: "image/jpeg",
   jpg: "image/jpeg",
   png: "image/png",
   webp: "image/webp",
-} as const satisfies Record<string, AtifImageSource["media_type"]>;
+};
 
 export function messagesToAtif(input: {
   readonly messages: readonly ModelMessage[];
@@ -215,49 +217,12 @@ function contentPartToAtif(part: ContentPart): AtifContentPart | undefined {
 function imageMediaType(
   url: string
 ): AtifImageSource["media_type"] | undefined {
-  const dataMatch = /^data:(image\/(?:jpeg|png|gif|webp))(?:[;,])/i.exec(url);
-  if (dataMatch?.[1] !== undefined) {
-    return imageMediaTypeFromLabel(dataMatch[1]);
-  }
-  const extension = /(?:^|[/?])[^/?#]+\.([a-z]+)(?:[?#]|$)/i.exec(url)?.[1];
-  return extension === undefined
+  const label =
+    /^data:image\/([a-z]+)[;,]/i.exec(url)?.[1] ??
+    /(?:^|[/?])[^/?#]+\.([a-z]+)(?:[?#]|$)/i.exec(url)?.[1];
+  return label === undefined
     ? undefined
-    : imageMediaTypeFromLabel(extension);
-}
-
-function imageMediaTypeFromLabel(
-  label: string
-): AtifImageSource["media_type"] | undefined {
-  switch (label.toLowerCase()) {
-    case "gif": {
-      return IMAGE_MEDIA_TYPES.gif;
-    }
-    case "jpeg":
-    case "jpg": {
-      return IMAGE_MEDIA_TYPES.jpeg;
-    }
-    case "png": {
-      return IMAGE_MEDIA_TYPES.png;
-    }
-    case "webp": {
-      return IMAGE_MEDIA_TYPES.webp;
-    }
-    case "image/gif": {
-      return IMAGE_MEDIA_TYPES.gif;
-    }
-    case "image/jpeg": {
-      return IMAGE_MEDIA_TYPES.jpeg;
-    }
-    case "image/png": {
-      return IMAGE_MEDIA_TYPES.png;
-    }
-    case "image/webp": {
-      return IMAGE_MEDIA_TYPES.webp;
-    }
-    default: {
-      return undefined;
-    }
-  }
+    : IMAGE_MEDIA_TYPES[label.toLowerCase()];
 }
 
 function toolCallToAtif(
