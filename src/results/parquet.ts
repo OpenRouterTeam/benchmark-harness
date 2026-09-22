@@ -149,8 +149,6 @@ export function runResultToParquet(input: RunResultToParquetInput): Buffer {
   });
 }
 
-// oxlint-disable-next-line openrouter/no-comments -- Documents a lossy public merge contract.
-/** Merged files omit benchmark-level extra scores and primary scores. */
 export function mergeResultFilesToParquet(
   files: readonly (readonly BenchmarkResultRow[])[],
   meta: ResultRowsParquetMeta
@@ -162,6 +160,8 @@ export function mergeResultFilesToParquet(
   const sampleScores = rowsToSampleScores(rows);
   const metrics = aggregateScores(sampleScores);
   const counts = epochCounts(sampleScores);
+  let primaryScoreValue = 0;
+  let primaryScoreWeight = 0;
   const usage = {
     inputTokens: 0,
     outputTokens: 0,
@@ -175,6 +175,12 @@ export function mergeResultFilesToParquet(
     if (row === undefined) {
       continue;
     }
+    const primaryScore = parsePrimaryScore(row.primary_score) ?? {
+      value: row.accuracy,
+      weight: row.total_questions,
+    };
+    primaryScoreValue += primaryScore.value * primaryScore.weight;
+    primaryScoreWeight += primaryScore.weight;
     usage.inputTokens += row.input_tokens;
     usage.outputTokens += row.output_tokens;
     usage.totalTokens += row.total_tokens;
@@ -182,6 +188,13 @@ export function mergeResultFilesToParquet(
     usage.totalCost += row.total_cost;
     usage.generationTimeMs += row.generation_time_ms;
   }
+  const primaryScore =
+    primaryScoreWeight > 0
+      ? {
+          value: primaryScoreValue / primaryScoreWeight,
+          weight: primaryScoreWeight,
+        }
+      : undefined;
   const mergedRows = rows.map((row) => {
     return {
       ...row,
@@ -192,7 +205,7 @@ export function mergeResultFilesToParquet(
       temperature: first?.temperature ?? null,
       benchmark_config: first?.benchmark_config ?? null,
       created_at: createdAt,
-      accuracy: metrics.accuracy,
+      accuracy: primaryScore?.value ?? metrics.accuracy,
       total_questions: metrics.totalQuestions,
       correct_answers: metrics.correctAnswers,
       input_tokens: usage.inputTokens,
@@ -204,7 +217,7 @@ export function mergeResultFilesToParquet(
       epoch_total_questions: counts.epochTotalQuestions,
       epoch_correct_answers: counts.epochCorrectAnswers,
       extra_scores: null,
-      primary_score: null,
+      primary_score: primaryScore ? JSON.stringify(primaryScore) : null,
     };
   });
   const columnData = COLUMN_SPECS.map((spec) => ({
