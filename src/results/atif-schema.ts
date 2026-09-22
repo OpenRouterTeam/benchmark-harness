@@ -7,17 +7,40 @@ export const AtifImageSourceSchema = z.strictObject({
 
 export type AtifImageSource = z.infer<typeof AtifImageSourceSchema>;
 
+const AUDIO_MEDIA_TYPE_ALIASES: Readonly<Record<string, string>> = {
+  "audio/mp3": "audio/mpeg",
+  "audio/mpga": "audio/mpeg",
+  "audio/x-mpeg": "audio/mpeg",
+  "audio/x-wav": "audio/wav",
+  "audio/wave": "audio/wav",
+  "audio/vnd.wave": "audio/wav",
+  "audio/x-m4a": "audio/mp4",
+  "audio/m4a": "audio/mp4",
+  "audio/x-aac": "audio/aac",
+  "audio/x-flac": "audio/flac",
+  "audio/x-aiff": "audio/aiff",
+};
+
 export const AtifAudioSourceSchema = z.strictObject({
-  media_type: z.enum([
-    "audio/wav",
-    "audio/mpeg",
-    "audio/mp4",
-    "audio/aac",
-    "audio/ogg",
-    "audio/flac",
-    "audio/webm",
-    "audio/aiff",
-  ]),
+  media_type: z.preprocess(
+    (value: unknown) => {
+      if (typeof value !== "string") {
+        return value;
+      }
+      const normalized = value.trim().toLowerCase();
+      return AUDIO_MEDIA_TYPE_ALIASES[normalized] ?? normalized;
+    },
+    z.enum([
+      "audio/wav",
+      "audio/mpeg",
+      "audio/mp4",
+      "audio/aac",
+      "audio/ogg",
+      "audio/flac",
+      "audio/webm",
+      "audio/aiff",
+    ])
+  ),
   path: z.string(),
   duration_sec: z.number().min(0).optional(),
 });
@@ -119,10 +142,27 @@ export type AtifStepSource = (typeof ATIF_STEP_SOURCES)[number];
 
 export const AtifStepSourceSchema = z.enum(ATIF_STEP_SOURCES);
 
+const ISO_8601_TIMESTAMP_PATTERN =
+  /^\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2}|[+-]\d{2})?)?$/;
+
 export const AtifStepSchema = z
   .strictObject({
     step_id: z.number().int().min(1),
-    timestamp: z.string().optional(),
+    timestamp: z
+      .string()
+      .refine(
+        (value) => {
+          const normalized = value.endsWith("Z")
+            ? `${value.slice(0, -1)}+00:00`
+            : value;
+          return (
+            ISO_8601_TIMESTAMP_PATTERN.test(normalized) &&
+            !Number.isNaN(Date.parse(normalized))
+          );
+        },
+        { message: "timestamp must be ISO 8601" }
+      )
+      .optional(),
     source: AtifStepSourceSchema,
     model_name: z.string().optional(),
     reasoning_effort: z.union([z.string(), z.number()]).optional(),

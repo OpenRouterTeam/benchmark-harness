@@ -261,13 +261,20 @@ function appendToolObservation(
   const toolCallId = message.toolCallId;
   const hasMatchingToolCall =
     toolCallId !== undefined && toolCallIds.has(toolCallId);
-  const result = definedValues({
-    ...(hasMatchingToolCall && { source_call_id: toolCallId }),
-    content: message.content,
+  const messageValue = messageToAtifMessage(message);
+  const extra = definedValues({
     ...(!hasMatchingToolCall &&
       toolCallId !== undefined && {
-        extra: { tool_call_id: toolCallId },
+        tool_call_id: toolCallId,
       }),
+    ...(messageValue.unsupportedContentParts.length > 0 && {
+      unsupported_content_parts: messageValue.unsupportedContentParts,
+    }),
+  });
+  const result = definedValues({
+    ...(hasMatchingToolCall && { source_call_id: toolCallId }),
+    content: messageValue.message,
+    ...(Object.keys(extra).length > 0 && { extra }),
   });
   const updatedStep: AtifStepDraft = {
     ...agentStep,

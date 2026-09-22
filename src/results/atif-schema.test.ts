@@ -3,7 +3,9 @@ import { describe, expect, it } from "bun:test";
 import { assertLeft, assertRight } from "../internal/testing";
 import { parseSchema } from "../internal/zod";
 import {
+  AtifAudioSourceSchema,
   AtifContentPartSchema,
+  AtifStepSchema,
   AtifTrajectorySchema,
   AtifSubagentTrajectoryRefSchema,
 } from "./atif-schema";
@@ -188,5 +190,57 @@ describe("AtifTrajectorySchema", () => {
   it("rejects content parts missing text", () => {
     const parsed = parseSchema(AtifContentPartSchema, { type: "text" });
     assertLeft(parsed);
+  });
+
+  it("normalizes Harbor audio media type aliases", () => {
+    const mp3 = parseSchema(AtifAudioSourceSchema, {
+      media_type: "audio/mp3",
+      path: "audio.mp3",
+    });
+    assertRight(mp3);
+    expect(mp3.right.media_type).toBe("audio/mpeg");
+
+    const wav = parseSchema(AtifAudioSourceSchema, {
+      media_type: " AUDIO/X-WAV ",
+      path: "audio.wav",
+    });
+    assertRight(wav);
+    expect(wav.right.media_type).toBe("audio/wav");
+  });
+
+  it("rejects unsupported audio media types", () => {
+    const parsed = parseSchema(AtifAudioSourceSchema, {
+      media_type: "audio/midi",
+      path: "audio.mid",
+    });
+    assertLeft(parsed);
+  });
+
+  it("accepts Harbor ISO 8601 timestamps", () => {
+    for (const timestamp of [
+      "2026-09-22T01:12:00Z",
+      "2026-09-22T01:12:00.123+05:30",
+      "2026-09-22",
+    ]) {
+      const parsed = parseSchema(AtifStepSchema, {
+        step_id: 1,
+        source: "user",
+        message: "hello",
+        timestamp,
+      });
+      assertRight(parsed);
+    }
+  });
+
+  it("rejects invalid Harbor ISO 8601 timestamps", () => {
+    for (const timestamp of ["yesterday", "2026-13-45T00:00:00Z"]) {
+      const parsed = parseSchema(AtifStepSchema, {
+        step_id: 1,
+        source: "user",
+        message: "hello",
+        timestamp,
+      });
+      assertLeft(parsed);
+    }
   });
 });

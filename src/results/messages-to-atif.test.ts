@@ -91,6 +91,59 @@ describe("messagesToAtif", () => {
     ]);
   });
 
+  it("maps tool content parts and preserves unsupported parts", () => {
+    const trajectory = messagesToAtif({
+      model: "openai/gpt-4o-mini",
+      messages: [
+        { role: "assistant", content: "Using a tool." },
+        {
+          role: "tool",
+          content: "",
+          contentParts: [
+            {
+              type: "image_url",
+              imageUrl: { url: "https://example.com/result.png" },
+            },
+          ],
+        },
+        {
+          role: "tool",
+          content: "",
+          contentParts: [
+            {
+              type: "video_url",
+              videoUrl: { url: "https://example.com/result.mp4" },
+            },
+          ],
+        },
+      ],
+    });
+    expect(trajectory?.steps[0]?.observation?.results).toEqual([
+      {
+        content: [
+          {
+            type: "image",
+            source: {
+              media_type: "image/png",
+              path: "https://example.com/result.png",
+            },
+          },
+        ],
+      },
+      {
+        content: "",
+        extra: {
+          unsupported_content_parts: [
+            {
+              type: "video_url",
+              video_url: { url: "https://example.com/result.mp4" },
+            },
+          ],
+        },
+      },
+    ]);
+  });
+
   it("uses a raw argument object when arguments are not JSON objects", () => {
     const trajectory = messagesToAtif({
       model: "openai/gpt-4o-mini",
