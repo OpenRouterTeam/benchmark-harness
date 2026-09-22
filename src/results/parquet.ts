@@ -53,6 +53,12 @@ export interface RunResultToParquetInput {
   readonly primaryScore?: BenchmarkPrimaryScore;
 }
 
+export interface ResultRowsParquetMeta {
+  readonly task: string;
+  readonly model: string;
+  readonly createdAt?: string;
+}
+
 interface ColumnSpec {
   readonly name: string;
   readonly type:
@@ -119,15 +125,11 @@ export function runResultToParquet(input: RunResultToParquetInput): Buffer {
     meta.benchmarkConfig !== undefined
       ? JSON.stringify(meta.benchmarkConfig)
       : null;
+  const counts = epochCounts(sampleScores);
   const rowCtx: RowContext = {
     metrics,
     usage,
-    epochTotalQuestions: sampleScores.filter(
-      (s) => s.score.value !== ScoreValue.Skipped
-    ).length,
-    epochCorrectAnswers: sampleScores.filter(
-      (s) => s.score.value === ScoreValue.Correct
-    ).length,
+    ...counts,
     meta,
     createdAt,
     extraScoresJson,
@@ -140,6 +142,104 @@ export function runResultToParquet(input: RunResultToParquetInput): Buffer {
     nullable: spec.nullable,
     data: sampleScores.map((s) => cellValue(spec.name, rowCtx, s)),
   }));
+  return writeParquet(columnData, {
+    task: meta.task,
+    model: meta.model,
+    createdAt,
+  });
+}
+
+// oxlint-disable-next-line openrouter/no-comments -- Documents a lossy public merge contract.
+/** Merged files omit benchmark-level extra scores and primary scores. */
+export function mergeResultFilesToParquet(
+  files: readonly (readonly BenchmarkResultRow[])[],
+  meta: ResultRowsParquetMeta
+): Buffer {
+  const nonEmptyFiles = files.filter((file) => file.length > 0);
+  const rows = nonEmptyFiles.flat();
+  const first = rows[0];
+  const createdAt = meta.createdAt ?? formatIso(unsafeNow());
+  const sampleScores = rowsToSampleScores(rows);
+  const metrics = aggregateScores(sampleScores);
+  const counts = epochCounts(sampleScores);
+  const usage = {
+    inputTokens: 0,
+    outputTokens: 0,
+    totalTokens: 0,
+    reasoningTokens: 0,
+    totalCost: 0,
+    generationTimeMs: 0,
+  };
+  for (const file of nonEmptyFiles) {
+    const [row] = file;
+    if (row === undefined) {
+      continue;
+    }
+    usage.inputTokens += row.input_tokens;
+    usage.outputTokens += row.output_tokens;
+    usage.totalTokens += row.total_tokens;
+    usage.reasoningTokens += row.reasoning_tokens;
+    usage.totalCost += row.total_cost;
+    usage.generationTimeMs += row.generation_time_ms;
+  }
+  const mergedRows = rows.map((row) => {
+    return {
+      ...row,
+      format_version: RESULT_FORMAT_VERSION,
+      task: meta.task,
+      model: meta.model,
+      epochs: first?.epochs ?? 0,
+      temperature: first?.temperature ?? null,
+      benchmark_config: first?.benchmark_config ?? null,
+      created_at: createdAt,
+      accuracy: metrics.accuracy,
+      total_questions: metrics.totalQuestions,
+      correct_answers: metrics.correctAnswers,
+      input_tokens: usage.inputTokens,
+      output_tokens: usage.outputTokens,
+      total_tokens: usage.totalTokens,
+      reasoning_tokens: usage.reasoningTokens,
+      total_cost: usage.totalCost,
+      generation_time_ms: usage.generationTimeMs,
+      epoch_total_questions: counts.epochTotalQuestions,
+      epoch_correct_answers: counts.epochCorrectAnswers,
+      extra_scores: null,
+      primary_score: null,
+    };
+  });
+  const columnData = COLUMN_SPECS.map((spec) => ({
+    name: spec.name,
+    type: spec.type,
+    nullable: spec.nullable,
+    data: mergedRows.map((row) => row[spec.name] ?? null),
+  }));
+  return writeParquet(columnData, { ...meta, createdAt });
+}
+
+function epochCounts(sampleScores: readonly SampleScore[]): {
+  readonly epochTotalQuestions: number;
+  readonly epochCorrectAnswers: number;
+} {
+  return {
+    epochTotalQuestions: sampleScores.filter(
+      (sampleScore) => sampleScore.score.value !== ScoreValue.Skipped
+    ).length,
+    epochCorrectAnswers: sampleScores.filter(
+      (sampleScore) => sampleScore.score.value === ScoreValue.Correct
+    ).length,
+  };
+}
+
+function writeParquet(
+  columnData: {
+    readonly name: string;
+    readonly type: ColumnSpec["type"];
+    readonly nullable: boolean;
+    readonly data: unknown[];
+  }[],
+  meta: ResultRowsParquetMeta
+): Buffer {
+  const createdAt = meta.createdAt ?? formatIso(unsafeNow());
   const arrayBuffer = parquetWriteBuffer({
     columnData,
     codec: "SNAPPY",

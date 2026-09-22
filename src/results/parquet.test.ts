@@ -12,6 +12,7 @@ import { parseSchema } from "../internal/zod";
 import { responsesTurnToModelOutput } from "../providers/messages-to-responses";
 import { AtifTrajectorySchema } from "./atif-schema";
 import {
+  mergeResultFilesToParquet,
   readResultRows,
   runResultToParquet,
   rowScoreToNumber,
@@ -104,6 +105,26 @@ function readRows(buf: Buffer): Promise<readonly BenchmarkResultRow[]> {
   const file = asyncBufferFromArrayBuffer(bufferToArrayBuffer(buf));
   return readResultRows(file);
 }
+
+function sampleColumns(row: BenchmarkResultRow): Record<string, unknown> {
+  return {
+    sample_id: row.sample_id,
+    epoch: row.epoch,
+    input: row.input,
+    target: row.target,
+    score_value: row.score_value,
+    answer: row.answer,
+    explanation: row.explanation,
+    scorer_trajectory: row.scorer_trajectory,
+    trajectory: row.trajectory,
+    response_items: row.response_items,
+    request_body: row.request_body,
+    generation_ids: row.generation_ids,
+    messages: row.messages,
+    metadata: row.metadata,
+  };
+}
+
 describe("runResultToParquet", () => {
   const buffer = runResultToParquet({ result: RESULT, meta: META });
   let rows: readonly BenchmarkResultRow[];
@@ -732,6 +753,110 @@ describe("runResultToParquet", () => {
     expect(byKey["schema_version"]).toBe(String(RESULT_FORMAT_VERSION));
     expect(byKey["task"]).toBe("gpqa_diamond");
     expect(byKey["model"]).toBe("openai/gpt-4o-mini");
+  });
+});
+describe("mergeResultFilesToParquet", () => {
+  it("round-trips one file and merges run-level values across files", async () => {
+    const firstRows = await readRows(
+      runResultToParquet({ result: RESULT, meta: META })
+    );
+    const secondResult = {
+      metrics: {
+        accuracy: 0,
+        totalQuestions: 1,
+        correctAnswers: 0,
+        skippedQuestions: 1,
+      },
+      usage: {
+        inputTokens: 7,
+        outputTokens: 7,
+        totalTokens: 14,
+        reasoningTokens: 3,
+        totalCost: 0.02,
+        generationTimeMs: 300,
+      },
+      sampleScores: [
+        {
+          sampleId: "s2",
+          epoch: 0,
+          score: { value: ScoreValue.Incorrect, answer: "A", explanation: "" },
+        },
+        {
+          sampleId: "s2",
+          epoch: 1,
+          score: { value: ScoreValue.Skipped, answer: null, explanation: "" },
+        },
+      ],
+    } as const;
+    const secondRows = await readRows(
+      runResultToParquet({ result: secondResult, meta: META })
+    );
+    const singleRows = await readRows(
+      mergeResultFilesToParquet([firstRows], {
+        task: META.task,
+        model: META.model,
+        createdAt: META.createdAt,
+      })
+    );
+    const mergedRows = await readRows(
+      mergeResultFilesToParquet([firstRows, [], secondRows], {
+        task: META.task,
+        model: META.model,
+        createdAt: META.createdAt,
+      })
+    );
+    const emptyRows = await readRows(
+      mergeResultFilesToParquet([[], []], {
+        task: META.task,
+        model: META.model,
+        createdAt: META.createdAt,
+      })
+    );
+
+    expect(singleRows.map(sampleColumns)).toEqual(firstRows.map(sampleColumns));
+    expect(singleRows.every((row) => row.format_version === 2)).toBe(true);
+    expect(
+      singleRows.every(
+        (row) =>
+          row.epoch_total_questions === 3 && row.epoch_correct_answers === 2
+      )
+    ).toBe(true);
+    expect(emptyRows).toEqual([]);
+    const mergedSummary = summarizeChunkRows(mergedRows);
+    assert(mergedSummary);
+    expect(mergedSummary.accuracy).toBe(0.5);
+    expect(mergedSummary.totalQuestions).toBe(3);
+    expect(mergedSummary.correctAnswers).toBe(2);
+    expect(mergedSummary.inputTokens).toBe(107);
+    expect(mergedSummary.outputTokens).toBe(57);
+    expect(mergedSummary.totalTokens).toBe(164);
+    expect(mergedSummary.reasoningTokens).toBe(3);
+    expect(mergedSummary.totalCost).toBe(0.03);
+    expect(mergedSummary.generationTimeMs).toBe(1300);
+    expect(mergedSummary.epochResults).toEqual([
+      {
+        epoch: 0,
+        accuracy: 2 / 3,
+        totalQuestions: 3,
+        correctAnswers: 2,
+        skippedQuestions: 0,
+      },
+      {
+        epoch: 1,
+        accuracy: 0,
+        totalQuestions: 1,
+        correctAnswers: 0,
+        skippedQuestions: 1,
+      },
+    ]);
+    expect(mergedRows.every((row) => row.format_version === 2)).toBe(true);
+    expect(
+      mergedRows.every(
+        (row) =>
+          row.epoch_total_questions === 4 && row.epoch_correct_answers === 2
+      )
+    ).toBe(true);
+    expect(mergedRows.every((row) => row.extra_scores === null)).toBe(true);
   });
 });
 describe("BenchmarkResultRowSchema", () => {
