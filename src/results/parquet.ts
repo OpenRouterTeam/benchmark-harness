@@ -162,6 +162,7 @@ export function mergeResultFilesToParquet(
   const counts = epochCounts(sampleScores);
   let primaryScoreValue = 0;
   let primaryScoreWeight = 0;
+  let hasPrimaryScore = false;
   const usage = {
     inputTokens: 0,
     outputTokens: 0,
@@ -175,7 +176,9 @@ export function mergeResultFilesToParquet(
     if (row === undefined) {
       continue;
     }
-    const primaryScore = parsePrimaryScore(row.primary_score) ?? {
+    const parsedPrimaryScore = parsePrimaryScore(row.primary_score);
+    hasPrimaryScore ||= parsedPrimaryScore !== undefined;
+    const primaryScore = parsedPrimaryScore ?? {
       value: row.accuracy,
       weight: row.total_questions,
     };
@@ -189,7 +192,7 @@ export function mergeResultFilesToParquet(
     usage.generationTimeMs += row.generation_time_ms;
   }
   const primaryScore =
-    primaryScoreWeight > 0
+    hasPrimaryScore && primaryScoreWeight > 0
       ? {
           value: primaryScoreValue / primaryScoreWeight,
           weight: primaryScoreWeight,

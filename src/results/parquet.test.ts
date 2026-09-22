@@ -997,6 +997,77 @@ describe("mergeResultFilesToParquet", () => {
       weight: 3,
     });
   });
+  it("keeps sample-grouped accuracy when no file has a primary score", async () => {
+    const firstRows = await readRows(
+      runResultToParquet({
+        result: {
+          metrics: {
+            accuracy: 1,
+            totalQuestions: 1,
+            correctAnswers: 1,
+            skippedQuestions: 0,
+          },
+          usage: USAGE,
+          sampleScores: [
+            {
+              sampleId: "A",
+              epoch: 0,
+              score: {
+                value: ScoreValue.Correct,
+                answer: "B",
+                explanation: "",
+              },
+            },
+          ],
+        },
+        meta: META,
+      })
+    );
+    const secondRows = await readRows(
+      runResultToParquet({
+        result: {
+          metrics: {
+            accuracy: 0.5,
+            totalQuestions: 2,
+            correctAnswers: 1,
+            skippedQuestions: 0,
+          },
+          usage: USAGE,
+          sampleScores: [
+            {
+              sampleId: "A",
+              epoch: 0,
+              score: {
+                value: ScoreValue.Correct,
+                answer: "B",
+                explanation: "",
+              },
+            },
+            {
+              sampleId: "B",
+              epoch: 0,
+              score: {
+                value: ScoreValue.Incorrect,
+                answer: "A",
+                explanation: "",
+              },
+            },
+          ],
+        },
+        meta: META,
+      })
+    );
+
+    const rows = await readRows(
+      mergeResultFilesToParquet([firstRows, secondRows], {
+        task: META.task,
+        model: META.model,
+        createdAt: META.createdAt,
+      })
+    );
+    expect(rows.every((row) => row.accuracy === 0.5)).toBe(true);
+    expect(rows.every((row) => row.primary_score === null)).toBe(true);
+  });
 });
 describe("BenchmarkResultRowSchema", () => {
   it("parses a valid row object", () => {
