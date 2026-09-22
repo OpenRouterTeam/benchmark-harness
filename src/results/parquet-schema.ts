@@ -1,6 +1,6 @@
 import { z } from "../internal/zod";
 
-export const RESULT_FORMAT_VERSION = 1 as const;
+export const RESULT_FORMAT_VERSION = 2 as const;
 
 export const RESULT_WRITER = "openrouter-bench" as const;
 
@@ -38,6 +38,7 @@ export const BenchmarkResultRowSchema = z.object({
   answer: z.string().nullable(),
   explanation: z.string().nullable(),
   scorer_trajectory: z.string().nullish(),
+  trajectory: z.string().nullish(),
   response_items: z.string().nullish(),
   request_body: z.string().nullish(),
   generation_ids: z.string().nullish(),

@@ -37,6 +37,7 @@
     "./solver": "./src/harness/solver.ts",
     "./parquet": "./src/results/parquet.ts",
     "./parquet-schema": "./src/results/parquet-schema.ts",
+    "./atif-schema": "./src/results/atif-schema.ts",
     "./progress": "./src/harness/progress.ts",
     "./result-store": "./src/results/result-store.ts",
     "./internal/log": "./src/internal/log.ts",
