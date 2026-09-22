@@ -858,6 +858,216 @@ describe("mergeResultFilesToParquet", () => {
     ).toBe(true);
     expect(mergedRows.every((row) => row.extra_scores === null)).toBe(true);
   });
+  it("weights primary scores from each file", async () => {
+    const firstRows = await readRows(
+      runResultToParquet({
+        result: {
+          metrics: {
+            accuracy: 1,
+            totalQuestions: 1,
+            correctAnswers: 1,
+            skippedQuestions: 0,
+          },
+          usage: USAGE,
+          sampleScores: [
+            {
+              sampleId: "s0",
+              epoch: 0,
+              score: {
+                value: ScoreValue.Correct,
+                answer: "B",
+                explanation: "",
+              },
+            },
+          ],
+        },
+        meta: META,
+        primaryScore: { value: 0.4, weight: 1 },
+      })
+    );
+    const secondRows = await readRows(
+      runResultToParquet({
+        result: {
+          metrics: {
+            accuracy: 0,
+            totalQuestions: 1,
+            correctAnswers: 0,
+            skippedQuestions: 0,
+          },
+          usage: USAGE,
+          sampleScores: [
+            {
+              sampleId: "s1",
+              epoch: 0,
+              score: {
+                value: ScoreValue.Incorrect,
+                answer: "A",
+                explanation: "",
+              },
+            },
+          ],
+        },
+        meta: META,
+        primaryScore: { value: 0.8, weight: 1 },
+      })
+    );
+
+    const rows = await readRows(
+      mergeResultFilesToParquet([firstRows, secondRows], {
+        task: META.task,
+        model: META.model,
+        createdAt: META.createdAt,
+      })
+    );
+    const summary = summarizeChunkRows(rows);
+    assert(summary);
+    for (const row of rows) {
+      expect(row.accuracy).toBeCloseTo(0.6);
+    }
+    const primaryScore: { readonly value: number; readonly weight: number } =
+      JSON.parse(rows[0]!.primary_score!);
+    expect(primaryScore.value).toBeCloseTo(0.6);
+    expect(primaryScore.weight).toBe(2);
+  });
+  it("falls back to each file's accuracy and question count without a primary score", async () => {
+    const firstRows = await readRows(
+      runResultToParquet({
+        result: {
+          metrics: {
+            accuracy: 1,
+            totalQuestions: 2,
+            correctAnswers: 2,
+            skippedQuestions: 0,
+          },
+          usage: USAGE,
+          sampleScores: [
+            {
+              sampleId: "s0",
+              epoch: 0,
+              score: {
+                value: ScoreValue.Correct,
+                answer: "B",
+                explanation: "",
+              },
+            },
+          ],
+        },
+        meta: META,
+        primaryScore: { value: 0.4, weight: 2 },
+      })
+    );
+    const secondRows = await readRows(
+      runResultToParquet({
+        result: {
+          metrics: {
+            accuracy: 1,
+            totalQuestions: 1,
+            correctAnswers: 1,
+            skippedQuestions: 0,
+          },
+          usage: USAGE,
+          sampleScores: [
+            {
+              sampleId: "s1",
+              epoch: 0,
+              score: {
+                value: ScoreValue.Correct,
+                answer: "A",
+                explanation: "",
+              },
+            },
+          ],
+        },
+        meta: META,
+      })
+    );
+
+    const rows = await readRows(
+      mergeResultFilesToParquet([firstRows, secondRows], {
+        task: META.task,
+        model: META.model,
+        createdAt: META.createdAt,
+      })
+    );
+    const summary = summarizeChunkRows(rows);
+    assert(summary);
+    expect(rows.every((row) => row.accuracy === 0.6)).toBe(true);
+    expect(JSON.parse(rows[0]!.primary_score!)).toEqual({
+      value: 0.6,
+      weight: 3,
+    });
+  });
+  it("keeps sample-grouped accuracy when no file has a primary score", async () => {
+    const firstRows = await readRows(
+      runResultToParquet({
+        result: {
+          metrics: {
+            accuracy: 1,
+            totalQuestions: 1,
+            correctAnswers: 1,
+            skippedQuestions: 0,
+          },
+          usage: USAGE,
+          sampleScores: [
+            {
+              sampleId: "A",
+              epoch: 0,
+              score: {
+                value: ScoreValue.Correct,
+                answer: "B",
+                explanation: "",
+              },
+            },
+          ],
+        },
+        meta: META,
+      })
+    );
+    const secondRows = await readRows(
+      runResultToParquet({
+        result: {
+          metrics: {
+            accuracy: 0.5,
+            totalQuestions: 2,
+            correctAnswers: 1,
+            skippedQuestions: 0,
+          },
+          usage: USAGE,
+          sampleScores: [
+            {
+              sampleId: "A",
+              epoch: 0,
+              score: {
+                value: ScoreValue.Correct,
+                answer: "B",
+                explanation: "",
+              },
+            },
+            {
+              sampleId: "B",
+              epoch: 0,
+              score: {
+                value: ScoreValue.Incorrect,
+                answer: "A",
+                explanation: "",
+              },
+            },
+          ],
+        },
+        meta: META,
+      })
+    );
+
+    const rows = await readRows(
+      mergeResultFilesToParquet([firstRows, secondRows], {
+        task: META.task,
+        model: META.model,
+        createdAt: META.createdAt,
+      })
+    );
+    expect(rows.every((row) => row.accuracy === 0.5)).toBe(true);
+    expect(rows.every((row) => row.primary_score === null)).toBe(true);
+  });
 });
 describe("BenchmarkResultRowSchema", () => {
   it("parses a valid row object", () => {
