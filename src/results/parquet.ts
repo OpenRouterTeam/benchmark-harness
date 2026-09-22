@@ -125,15 +125,11 @@ export function runResultToParquet(input: RunResultToParquetInput): Buffer {
     meta.benchmarkConfig !== undefined
       ? JSON.stringify(meta.benchmarkConfig)
       : null;
+  const counts = epochCounts(sampleScores);
   const rowCtx: RowContext = {
     metrics,
     usage,
-    epochTotalQuestions: sampleScores.filter(
-      (s) => s.score.value !== ScoreValue.Skipped
-    ).length,
-    epochCorrectAnswers: sampleScores.filter(
-      (s) => s.score.value === ScoreValue.Correct
-    ).length,
+    ...counts,
     meta,
     createdAt,
     extraScoresJson,
@@ -165,18 +161,7 @@ export function mergeResultFilesToParquet(
   const createdAt = meta.createdAt ?? formatIso(unsafeNow());
   const sampleScores = rowsToSampleScores(rows);
   const metrics = aggregateScores(sampleScores);
-  const scoresByEpoch = new Map<number, SampleScore[]>();
-  for (const sampleScore of sampleScores) {
-    const scores = scoresByEpoch.get(sampleScore.epoch) ?? [];
-    scores.push(sampleScore);
-    scoresByEpoch.set(sampleScore.epoch, scores);
-  }
-  const epochMetrics = new Map(
-    [...scoresByEpoch].map(([epoch, scores]) => [
-      epoch,
-      aggregateScores(scores),
-    ])
-  );
+  const counts = epochCounts(sampleScores);
   const usage = {
     inputTokens: 0,
     outputTokens: 0,
@@ -198,10 +183,9 @@ export function mergeResultFilesToParquet(
     usage.generationTimeMs += row.generation_time_ms;
   }
   const mergedRows = rows.map((row) => {
-    const epoch = epochMetrics.get(row.epoch);
     return {
       ...row,
-      format_version: first?.format_version ?? RESULT_FORMAT_VERSION,
+      format_version: RESULT_FORMAT_VERSION,
       task: meta.task,
       model: meta.model,
       epochs: first?.epochs ?? 0,
@@ -217,8 +201,8 @@ export function mergeResultFilesToParquet(
       reasoning_tokens: usage.reasoningTokens,
       total_cost: usage.totalCost,
       generation_time_ms: usage.generationTimeMs,
-      epoch_total_questions: epoch?.totalQuestions ?? 0,
-      epoch_correct_answers: epoch?.correctAnswers ?? 0,
+      epoch_total_questions: counts.epochTotalQuestions,
+      epoch_correct_answers: counts.epochCorrectAnswers,
       extra_scores: null,
       primary_score: null,
     };
@@ -230,6 +214,20 @@ export function mergeResultFilesToParquet(
     data: mergedRows.map((row) => row[spec.name] ?? null),
   }));
   return writeParquet(columnData, { ...meta, createdAt });
+}
+
+function epochCounts(sampleScores: readonly SampleScore[]): {
+  readonly epochTotalQuestions: number;
+  readonly epochCorrectAnswers: number;
+} {
+  return {
+    epochTotalQuestions: sampleScores.filter(
+      (sampleScore) => sampleScore.score.value !== ScoreValue.Skipped
+    ).length,
+    epochCorrectAnswers: sampleScores.filter(
+      (sampleScore) => sampleScore.score.value === ScoreValue.Correct
+    ).length,
+  };
 }
 
 function writeParquet(

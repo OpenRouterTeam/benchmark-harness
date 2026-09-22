@@ -814,6 +814,13 @@ describe("mergeResultFilesToParquet", () => {
     );
 
     expect(singleRows.map(sampleColumns)).toEqual(firstRows.map(sampleColumns));
+    expect(singleRows.every((row) => row.format_version === 2)).toBe(true);
+    expect(
+      singleRows.every(
+        (row) =>
+          row.epoch_total_questions === 3 && row.epoch_correct_answers === 2
+      )
+    ).toBe(true);
     expect(emptyRows).toEqual([]);
     const mergedSummary = summarizeChunkRows(mergedRows);
     assert(mergedSummary);
@@ -842,6 +849,13 @@ describe("mergeResultFilesToParquet", () => {
         skippedQuestions: 1,
       },
     ]);
+    expect(mergedRows.every((row) => row.format_version === 2)).toBe(true);
+    expect(
+      mergedRows.every(
+        (row) =>
+          row.epoch_total_questions === 4 && row.epoch_correct_answers === 2
+      )
+    ).toBe(true);
     expect(mergedRows.every((row) => row.extra_scores === null)).toBe(true);
   });
 });
