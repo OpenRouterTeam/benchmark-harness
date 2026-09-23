@@ -501,6 +501,7 @@ export function buildBenchmarkConfig(opts: {
     case "swe_atlas_tw":
     case "swe_atlas_rf":
     case "deep_swe":
+    case "recovery_bench":
     case "wandr":
     case "search_browsecomp":
     case "search_hle":
