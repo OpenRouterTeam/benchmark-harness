@@ -67,7 +67,9 @@ describe("benchmark config", () => {
     });
 
     assertLeft(result);
-    expect(result.left.message).toContain("switchyardAlgorithm");
+    expect(result.left.issues.map((issue) => issue.path)).toEqual([
+      ["switchyardAlgorithm"],
+    ]);
   });
 
   it("accepts switchyardAlgorithm on switchyard variants and omitted algorithms elsewhere", () => {

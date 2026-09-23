@@ -418,7 +418,10 @@ export const BenchmarkRunConfigSchema = z
       !("model" in config) ||
       config.switchyardAlgorithm === undefined ||
       stripVariantSuffix(config.model) === SWITCHYARD_MODEL,
-    `switchyardAlgorithm requires model ${SWITCHYARD_MODEL}`
+    {
+      message: `switchyardAlgorithm requires model ${SWITCHYARD_MODEL}`,
+      path: ["switchyardAlgorithm"],
+    }
   );
 
 export type BenchmarkRunConfig = z.infer<typeof BenchmarkRunConfigSchema>;
