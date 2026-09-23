@@ -5,9 +5,11 @@ import {
   SWITCHYARD_ALGORITHMS,
   VIDEO_PROCESSING_MODES,
 } from "../harness/constants";
+import { stripVariantSuffix } from "../harness/model";
 import { ProviderSort } from "../internal/enums";
 import type { ValueOf } from "../internal/guards";
 import { z, zDefaultedText, zInt } from "../internal/zod";
+import { SWITCHYARD_MODEL } from "../providers/switchyard-router-plugin";
 import { ModalSandboxOptionsSchema } from "../sandbox/modal-schema";
 import {
   AGENT_PACKAGE_PATTERN,
@@ -409,10 +411,15 @@ export type InjectedBenchmarkRunConfig = z.infer<
   typeof InjectedBenchmarkRunConfigSchema
 >;
 
-export const BenchmarkRunConfigSchema = z.union([
-  NativeBenchmarkRunConfigSchema,
-  InjectedBenchmarkRunConfigSchema,
-]);
+export const BenchmarkRunConfigSchema = z
+  .union([NativeBenchmarkRunConfigSchema, InjectedBenchmarkRunConfigSchema])
+  .refine(
+    (config) =>
+      !("model" in config) ||
+      config.switchyardAlgorithm === undefined ||
+      stripVariantSuffix(config.model) === SWITCHYARD_MODEL,
+    `switchyardAlgorithm requires model ${SWITCHYARD_MODEL}`
+  );
 
 export type BenchmarkRunConfig = z.infer<typeof BenchmarkRunConfigSchema>;
 

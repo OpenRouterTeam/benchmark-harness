@@ -58,6 +58,38 @@ describe("benchmark config", () => {
     expect(result.right.reasoningEffort).toBe("auto");
   });
 
+  it("rejects switchyardAlgorithm on a non-switchyard model", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "gpqa_diamond",
+      model: "openai/gpt-5",
+      reasoningEffort: "high",
+      switchyardAlgorithm: "stage",
+    });
+
+    assertLeft(result);
+    expect(result.left.message).toContain("switchyardAlgorithm");
+  });
+
+  it("accepts switchyardAlgorithm on switchyard variants and omitted algorithms elsewhere", () => {
+    for (const model of ["nvidia/switchyard", "nvidia/switchyard:online"]) {
+      assertRight(
+        parseSchema(BenchmarkRunConfigSchema, {
+          benchmarkId: "search_hle",
+          model,
+          reasoningEffort: "high",
+          switchyardAlgorithm: "stage",
+        })
+      );
+    }
+    assertRight(
+      parseSchema(BenchmarkRunConfigSchema, {
+        benchmarkId: "injected_benchmark",
+        model: "openai/gpt-5",
+        reasoningEffort: "high",
+      })
+    );
+  });
+
   it("parses injected benchmark configs with opaque options", () => {
     const result = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "injected_benchmark",
