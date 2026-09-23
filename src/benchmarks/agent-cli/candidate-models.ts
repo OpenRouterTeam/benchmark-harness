@@ -1,8 +1,10 @@
+import type { SwitchyardAlgorithm } from "../../harness/constants";
+
 export function sandboxAgentCandidateModelsError(opts: {
   readonly benchmarkId: string;
   readonly agent: string;
   readonly models: readonly string[] | undefined;
-  readonly switchyardAlgorithm: string | undefined;
+  readonly switchyardAlgorithm: SwitchyardAlgorithm | undefined;
 }): Error | undefined {
   if (opts.models !== undefined) {
     return new Error(
