@@ -1,5 +1,11 @@
 import { afterAll, describe, expect, it } from "bun:test";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import {
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -38,6 +44,7 @@ import {
   SolverError,
 } from "../../harness/core";
 import { Solver } from "../../harness/solver";
+import { REMOTE_VERIFIER_SCRIPT } from "../../sandbox/session";
 import { getOriHarness } from "../agent-cli/harness";
 import { terminalBenchScorer } from "../terminal-bench/scorer";
 import { REMOTE_INSTRUCTION } from "../terminal-bench/session";
@@ -49,7 +56,11 @@ import {
   SUMMARY_FALLBACK,
 } from "./prompts";
 import type { RecoveryBenchSolverOpts, Summarizer } from "./solver";
-import { recoveryBenchSolver, resolveMessageContext } from "./solver";
+import {
+  recoveryBenchSolver,
+  resolveMessageContext,
+  uploadInstruction,
+} from "./solver";
 import { resetCheckoutCache, seedTasksRoot } from "./tasks-source";
 import { sha256Hex, verifyTrajectoryBytes } from "./trajectory-source";
 
@@ -430,6 +441,90 @@ describe("recovery-bench solver", () => {
       summaryUsed: true,
       summaryFellBack: true,
     });
+  });
+
+  it("keeps summarizer usage and latency when the summary text is empty", async () => {
+    const usage = {
+      inputTokens: 50,
+      outputTokens: 0,
+      totalTokens: 250,
+      reasoningTokens: 200,
+      totalCost: 0.003,
+    };
+    const resolved = await runPromise(
+      resolveMessageContext("summary", PRIOR_MESSAGES, () =>
+        succeed({ text: "   ", usage, generationTimeMs: 700 })
+      )
+    );
+    expect(resolved).toEqual({
+      context: SUMMARY_FALLBACK,
+      summaryUsed: true,
+      summaryFellBack: true,
+      summary: { text: "   ", usage, generationTimeMs: 700 },
+    });
+
+    const finalState = await runSolver(
+      makeTerminalBenchFakeSandboxLayer({
+        reward: 1,
+        agentEventStream: CLAUDE_STREAM,
+      }),
+      baseOpts({
+        messageMode: "summary",
+        summarize: () => succeed({ text: "", usage, generationTimeMs: 700 }),
+      })
+    );
+    const meta = finalState.sample.metadata as Record<string, unknown>;
+    expect(meta.summaryFellBack).toBe(true);
+    expect(meta.summaryCost).toBe(0.003);
+    expect(meta.summaryTimeMs).toBe(700);
+    expect(finalState.output?.usage.totalCost).toBeCloseTo(0.013);
+    expect(finalState.output?.usage.reasoningTokens).toBe(200);
+    expect(finalState.output?.generationTimeMs).toBe(2200);
+  });
+
+  it("destroys the sandbox when the verifier fails after replay", async () => {
+    let destroyed = 0;
+    const exit = await runSolverExit(
+      makeTerminalBenchFakeSandboxLayer({
+        reward: 1,
+        agentEventStream: CLAUDE_STREAM,
+        onDestroy: () => {
+          destroyed += 1;
+        },
+        execOverride: (argv) => {
+          if (argv.join(" ").includes(REMOTE_VERIFIER_SCRIPT)) {
+            throw new Error("verifier exec lost");
+          }
+          return undefined;
+        },
+      }),
+      baseOpts()
+    );
+    assertFailure(exit);
+    expect(destroyed).toBe(1);
+  });
+
+  it("removes the temporary instruction directory when the upload fails", async () => {
+    const before = readdirSync(tmpdir()).filter((d) =>
+      d.startsWith("recovery-bench-instruction-")
+    );
+    const session = {
+      sandboxId: "fake",
+      exec: () => fail(new SolverError({ message: "unused" })),
+      uploadFile: () => fail(new SolverError({ message: "upload refused" })),
+      uploadDir: () => fail(new SolverError({ message: "unused" })),
+      downloadFile: () => fail(new SolverError({ message: "unused" })),
+      destroy: () => succeed(undefined),
+    };
+    const exit = await runPromiseExit(uploadInstruction(session, "hello"));
+    assertFailure(exit);
+    expect(getOrThrow(failureOption(exit.cause)).message).toBe(
+      "upload refused"
+    );
+    const after = readdirSync(tmpdir()).filter((d) =>
+      d.startsWith("recovery-bench-instruction-")
+    );
+    expect(after).toEqual(before);
   });
 
   it("fails before creating a sandbox when the trajectory is malformed or the instruction is too large", async () => {

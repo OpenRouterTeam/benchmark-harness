@@ -3,7 +3,15 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import type { Effect } from "effect/Effect";
-import { either, gen, sync, tryPromise } from "effect/Effect";
+import {
+  catchAll,
+  either,
+  ensuring,
+  gen,
+  sync,
+  tryPromise,
+  void as effectVoid,
+} from "effect/Effect";
 
 import type { ModelMessage, ModelUsage } from "../../harness/core";
 import { MessageRole, SolverError } from "../../harness/core";
@@ -135,11 +143,19 @@ export function resolveMessageContext(
       };
     }
     const summary = yield* either(summarize(messages));
-    if (Either.isLeft(summary) || summary.right.text.trim().length === 0) {
+    if (Either.isLeft(summary)) {
       return {
         context: SUMMARY_FALLBACK,
         summaryUsed: true,
         summaryFellBack: true,
+      };
+    }
+    if (summary.right.text.trim().length === 0) {
+      return {
+        context: SUMMARY_FALLBACK,
+        summaryUsed: true,
+        summaryFellBack: true,
+        summary: summary.right,
       };
     }
     return {
@@ -166,7 +182,7 @@ function addUsage(
   };
 }
 
-function uploadInstruction(
+export function uploadInstruction(
   session: SandboxSessionInstance,
   instruction: string
 ): Effect<void, SolverError> {
@@ -174,13 +190,13 @@ function uploadInstruction(
     const dir = yield* sync(() =>
       mkdtempSync(join(tmpdir(), "recovery-bench-instruction-"))
     );
-    try {
-      const localPath = join(dir, "instruction.md");
+    const localPath = join(dir, "instruction.md");
+    yield* gen(function* () {
       yield* sync(() => writeFileSync(localPath, instruction));
       yield* session.uploadFile(localPath, REMOTE_INSTRUCTION);
-    } finally {
-      rmSync(dir, { recursive: true, force: true });
-    }
+    }).pipe(
+      ensuring(sync(() => rmSync(dir, { recursive: true, force: true })))
+    );
   });
 }
 
@@ -244,7 +260,7 @@ export function recoveryBenchSolver(
         extraTimeoutSec: replayBudgetSec,
       });
 
-      try {
+      return yield* gen(function* () {
         const replay = yield* replayFailedTrajectory(
           session,
           trajectory.right,
@@ -311,8 +327,6 @@ export function recoveryBenchSolver(
           },
           completed: true,
         };
-      } finally {
-        yield* session.destroy();
-      }
+      }).pipe(ensuring(session.destroy().pipe(catchAll(() => effectVoid))));
     });
 }
