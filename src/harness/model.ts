@@ -2,7 +2,11 @@ import { Tag } from "effect/Context";
 import type { Effect } from "effect/Effect";
 
 import type { ProviderSort } from "../internal/enums";
-import type { CostTier, ReasoningEffort } from "./constants";
+import type {
+  CostTier,
+  ReasoningEffort,
+  SwitchyardAlgorithm,
+} from "./constants";
 import type {
   ModelMessage,
   ModelError,
@@ -30,6 +34,7 @@ export interface GenerateConfig {
   readonly cloudflareVersion?: string;
   readonly costQualityTradeoff?: number;
   readonly pinModel?: boolean;
+  readonly switchyardAlgorithm?: SwitchyardAlgorithm;
   readonly extraBody?: Readonly<Record<string, unknown>>;
 }
 

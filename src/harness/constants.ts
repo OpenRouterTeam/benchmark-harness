@@ -47,6 +47,17 @@ export const COST_TIERS = ["low", "medium", "high", "xhigh", "max"] as const;
 
 export type CostTier = ValueOf<typeof COST_TIERS>;
 
+export const SWITCHYARD_ALGORITHMS = [
+  "capability",
+  "stage",
+  "auto",
+  "random",
+  "composite",
+  "passthrough",
+] as const;
+
+export type SwitchyardAlgorithm = ValueOf<typeof SWITCHYARD_ALGORITHMS>;
+
 export const ImageDetail = {
   Auto: "auto",
   Low: "low",

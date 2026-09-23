@@ -516,6 +516,75 @@ describe("responses-model", () => {
     assertSuccess(exit);
     expect(captured.value?.body["plugins"]).toBeUndefined();
   });
+  it("sends the switchyard-router plugin with the configured algorithm", async () => {
+    const captured: {
+      value: CapturedRequest | undefined;
+    } = { value: undefined };
+    restore = installFetchStub(await readStreamFixture(), 200, captured);
+    const layer = makeResponsesModelLayer({
+      model: "nvidia/switchyard",
+      models: ["openai/gpt-4.1-nano", "anthropic/claude-sonnet-4.5"],
+      apiKey: "sk-test",
+    });
+    const exit = await runPromiseExit(
+      gen(function* run() {
+        const modelService = yield* ResponsesModel;
+        return yield* modelService.generate([], {
+          reasoningEffort: "high",
+          switchyardAlgorithm: "stage",
+        });
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    assertSuccess(exit);
+    expect(captured.value?.body["model"]).toBe("nvidia/switchyard");
+    expect(captured.value?.body["models"]).toEqual([
+      "openai/gpt-4.1-nano",
+      "anthropic/claude-sonnet-4.5",
+    ]);
+    expect(captured.value?.body["plugins"]).toEqual([
+      { id: "switchyard-router", algorithm: "stage" },
+    ]);
+  });
+  it("omits the switchyard-router plugin when the algorithm is unset", async () => {
+    const captured: {
+      value: CapturedRequest | undefined;
+    } = { value: undefined };
+    restore = installFetchStub(await readStreamFixture(), 200, captured);
+    const layer = makeResponsesModelLayer({
+      model: "nvidia/switchyard",
+      models: ["openai/gpt-4.1-nano", "anthropic/claude-sonnet-4.5"],
+      apiKey: "sk-test",
+    });
+    const exit = await runPromiseExit(
+      gen(function* run() {
+        const modelService = yield* ResponsesModel;
+        return yield* modelService.generate([], { reasoningEffort: "high" });
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    assertSuccess(exit);
+    expect(captured.value?.body["plugins"]).toBeUndefined();
+  });
+  it("ignores switchyardAlgorithm for models other than nvidia/switchyard", async () => {
+    const captured: {
+      value: CapturedRequest | undefined;
+    } = { value: undefined };
+    restore = installFetchStub(await readStreamFixture(), 200, captured);
+    const layer = makeResponsesModelLayer({
+      model: "openai/gpt-5",
+      apiKey: "sk-test",
+    });
+    const exit = await runPromiseExit(
+      gen(function* run() {
+        const modelService = yield* ResponsesModel;
+        return yield* modelService.generate([], {
+          reasoningEffort: "high",
+          switchyardAlgorithm: "stage",
+        });
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    assertSuccess(exit);
+    expect(captured.value?.body["plugins"]).toBeUndefined();
+  });
   it("forwards streamed events and fails retryably on a failed event", async () => {
     const captured: {
       value: CapturedRequest | undefined;

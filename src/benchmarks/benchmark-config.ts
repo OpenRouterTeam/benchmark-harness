@@ -2,6 +2,7 @@ import {
   COST_TIERS,
   IMAGE_DETAIL_VALUES,
   REASONING_EFFORTS,
+  SWITCHYARD_ALGORITHMS,
   VIDEO_PROCESSING_MODES,
 } from "../harness/constants";
 import { ProviderSort } from "../internal/enums";
@@ -54,6 +55,7 @@ export const InferenceOverrideSchema = z.object({
   cloudflareVersion: z.string().optional(),
   costQualityTradeoff: z.number().int().min(0).max(10).optional(),
   pinModel: z.boolean().optional(),
+  switchyardAlgorithm: z.enum(SWITCHYARD_ALGORITHMS).optional(),
 });
 
 export type InferenceOverride = z.infer<typeof InferenceOverrideSchema>;
