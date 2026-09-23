@@ -5,6 +5,8 @@ import { fail as layerFail, succeed as layerSucceed } from "effect/Layer";
 import { fromIterable } from "effect/Stream";
 
 import type { InjectedBenchmarkRunConfig } from "../benchmarks/benchmark-config";
+import { defineSingleTurnBenchmark } from "../benchmarks/define-single-turn-benchmark";
+import { gpqaScorer, gpqaSolver } from "../benchmarks/gpqa";
 import type { Benchmark } from "../benchmarks/types";
 import { Dataset } from "../harness/dataset";
 import { assertLeft, assertRight } from "../internal/testing";
@@ -109,15 +111,90 @@ describe("benchmark runner by id", () => {
         }),
     };
 
-    const result = await warmDatasetById(
-      benchmark.id,
-      { start: 15, end: 19 },
-      benchmark
-    );
+    const result = await warmDatasetById({
+      benchmarkId: benchmark.id,
+      benchmarkConfig: INJECTED_CONFIG,
+      range: { start: 15, end: 19 },
+      injectedBenchmark: benchmark,
+    });
 
     assertRight(result);
     expect(result.right).toBe(4);
     expect(streamOptions).toEqual([{ start: 15, end: 19 }]);
+  });
+
+  it("warms the config-selected dataset layer", async () => {
+    const selectedConfigs: InjectedBenchmarkRunConfig[] = [];
+    const samples = Array.from({ length: 2 }, (_, index) => ({
+      id: `sample-${index}`,
+      input: "unused",
+      target: { text: "unused" },
+    }));
+    const benchmark = defineSingleTurnBenchmark({
+      id: "warmable_injected_benchmark",
+      temperature: 0,
+      defaultEpochs: 1,
+      isConfig: (config): config is InjectedBenchmarkRunConfig =>
+        config.benchmarkId === "warmable_injected_benchmark",
+      makeDatasetLayer: () =>
+        layerSucceed(Dataset, {
+          stream: () => fromIterable([]),
+          size: succeed(0),
+        }),
+      makeDatasetLayerForConfig: (config) => {
+        selectedConfigs.push(config);
+        return layerSucceed(Dataset, {
+          stream: () => fromIterable(samples),
+          size: succeed(samples.length),
+        });
+      },
+      scorer: gpqaScorer,
+      makeSolver: (model) =>
+        gpqaSolver(model, { inference: { reasoningEffort: "medium" } }),
+    });
+    const benchmarkConfig = {
+      ...INJECTED_CONFIG,
+      benchmarkId: benchmark.id,
+    };
+
+    const result = await warmDatasetById({
+      benchmarkId: benchmark.id,
+      benchmarkConfig,
+      range: { start: 3, end: 5 },
+      injectedBenchmark: benchmark,
+    });
+
+    assertRight(result);
+    expect(result.right).toBe(2);
+    expect(selectedConfigs).toEqual([benchmarkConfig]);
+  });
+
+  it("rejects a mismatched config in the config-selected dataset layer", async () => {
+    const benchmark = defineSingleTurnBenchmark({
+      id: "warmable_injected_benchmark",
+      temperature: 0,
+      defaultEpochs: 1,
+      isConfig: (config): config is InjectedBenchmarkRunConfig =>
+        config.benchmarkId === "warmable_injected_benchmark",
+      makeDatasetLayer: () =>
+        layerSucceed(Dataset, {
+          stream: () => fromIterable([]),
+          size: succeed(0),
+        }),
+      scorer: gpqaScorer,
+      makeSolver: (model) =>
+        gpqaSolver(model, { inference: { reasoningEffort: "medium" } }),
+    });
+
+    const result = await warmDatasetById({
+      benchmarkId: benchmark.id,
+      benchmarkConfig: INJECTED_CONFIG,
+      range: { start: 0, end: 1 },
+      injectedBenchmark: benchmark,
+    });
+
+    assertLeft(result);
+    expect(result.left).toContain("received mismatched benchmarkConfig");
   });
 
   it("rejects an injected benchmark whose id does not match", async () => {

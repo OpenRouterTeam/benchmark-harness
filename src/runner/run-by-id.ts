@@ -175,18 +175,27 @@ export function datasetSizeById(
     .catch((error) => Either.left(String(error)));
 }
 
-export function warmDatasetById(
-  benchmarkId: string,
-  range: { readonly start: number; readonly end: number },
-  injectedBenchmark?: Benchmark<InjectedBenchmarkRunConfig>
-): AsyncEither<number, string> {
-  const benchmarkResult = resolveBenchmark(benchmarkId, injectedBenchmark);
+export function warmDatasetById(input: {
+  readonly benchmarkId: string;
+  readonly benchmarkConfig: BenchmarkRunConfig;
+  readonly range: { readonly start: number; readonly end: number };
+  readonly datasetRetry?: RetryConfig;
+  readonly injectedBenchmark?: Benchmark<InjectedBenchmarkRunConfig>;
+}): AsyncEither<number, string> {
+  const benchmarkResult = resolveBenchmark(
+    input.benchmarkId,
+    input.injectedBenchmark
+  );
   if (Either.isLeft(benchmarkResult)) {
     return Promise.resolve(Either.left(benchmarkResult.left));
   }
-  const datasetLayer = benchmarkResult.right.makeDatasetLayer();
+  const datasetLayer =
+    benchmarkResult.right.makeDatasetLayerForConfig?.(
+      input.benchmarkConfig,
+      input.datasetRetry
+    ) ?? benchmarkResult.right.makeDatasetLayer(input.datasetRetry);
   const program = Dataset.pipe(
-    flatMap((dataset) => runCount(dataset.stream(range)))
+    flatMap((dataset) => runCount(dataset.stream(input.range)))
   );
   return runHarnessPromise(program.pipe(provide(datasetLayer)))
     .then((count) => Either.right(count))
