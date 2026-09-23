@@ -54,10 +54,16 @@ function makeConfiguredDatasetLayer(
   );
 }
 
+function isRecoveryBenchConfig(
+  config: BenchmarkRunConfig
+): config is RecoveryBenchConfig {
+  return config.benchmarkId === "recovery_bench";
+}
+
 function makeRecoveryBenchDatasetLayerForConfig(
   config: BenchmarkRunConfig
 ): Layer<Dataset, Error> {
-  if (config.benchmarkId !== "recovery_bench") {
+  if (!isRecoveryBenchConfig(config)) {
     return layerFail(
       new Error("recovery_bench received mismatched benchmarkConfig")
     );
