@@ -8,7 +8,11 @@ import type { InjectedBenchmarkRunConfig } from "../benchmarks/benchmark-config"
 import type { Benchmark } from "../benchmarks/types";
 import { Dataset } from "../harness/dataset";
 import { assertLeft, assertRight } from "../internal/testing";
-import { datasetSizeById, runBenchmarkById } from "./run-by-id";
+import {
+  datasetSizeById,
+  runBenchmarkById,
+  warmDatasetById,
+} from "./run-by-id";
 
 const INJECTED_BENCHMARK: Benchmark<InjectedBenchmarkRunConfig> = {
   id: "injected_benchmark",
@@ -84,6 +88,36 @@ describe("benchmark runner by id", () => {
 
     assertRight(result);
     expect(result.right).toBe(7);
+  });
+
+  it("warms an injected benchmark dataset range", async () => {
+    const streamOptions: { start?: number; end?: number }[] = [];
+    const samples = Array.from({ length: 4 }, (_, index) => ({
+      id: `sample-${index}`,
+      input: "unused",
+      target: { text: "unused" },
+    }));
+    const benchmark: Benchmark<InjectedBenchmarkRunConfig> = {
+      ...INJECTED_BENCHMARK,
+      makeDatasetLayer: () =>
+        layerSucceed(Dataset, {
+          stream: (opts) => {
+            streamOptions.push(opts ?? {});
+            return fromIterable(samples);
+          },
+          size: succeed(samples.length),
+        }),
+    };
+
+    const result = await warmDatasetById(
+      benchmark.id,
+      { start: 15, end: 19 },
+      benchmark
+    );
+
+    assertRight(result);
+    expect(result.right).toBe(4);
+    expect(streamOptions).toEqual([{ start: 15, end: 19 }]);
   });
 
   it("rejects an injected benchmark whose id does not match", async () => {

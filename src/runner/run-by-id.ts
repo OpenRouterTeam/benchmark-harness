@@ -5,6 +5,7 @@ import {
   provide as layerProvide,
   succeed as layerSucceed,
 } from "effect/Layer";
+import { runCount } from "effect/Stream";
 
 import type {
   BenchmarkRunConfig,
@@ -171,6 +172,24 @@ export function datasetSizeById(
   const program = Dataset.pipe(flatMap((d) => d.size));
   return runHarnessPromise(program.pipe(provide(datasetLayer)))
     .then((size) => Either.right(size))
+    .catch((error) => Either.left(String(error)));
+}
+
+export function warmDatasetById(
+  benchmarkId: string,
+  range: { readonly start: number; readonly end: number },
+  injectedBenchmark?: Benchmark<InjectedBenchmarkRunConfig>
+): AsyncEither<number, string> {
+  const benchmarkResult = resolveBenchmark(benchmarkId, injectedBenchmark);
+  if (Either.isLeft(benchmarkResult)) {
+    return Promise.resolve(Either.left(benchmarkResult.left));
+  }
+  const datasetLayer = benchmarkResult.right.makeDatasetLayer();
+  const program = Dataset.pipe(
+    flatMap((dataset) => runCount(dataset.stream(range)))
+  );
+  return runHarnessPromise(program.pipe(provide(datasetLayer)))
+    .then((count) => Either.right(count))
     .catch((error) => Either.left(String(error)));
 }
 

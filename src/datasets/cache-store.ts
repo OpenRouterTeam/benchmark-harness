@@ -207,7 +207,10 @@ export function makeDefaultGcsClient(bucket: string): GcsObjectClient {
     },
     async uploadObject(key, content, contentType = "application/octet-stream") {
       try {
-        await bucketRef.file(key).save(content, { contentType });
+        await bucketRef.file(key).save(content, {
+          contentType,
+          resumable: false,
+        });
       } catch (error) {
         wLog("GCS cache upload failed", { key, error: String(error) });
       }
