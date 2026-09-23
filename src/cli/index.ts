@@ -103,6 +103,7 @@ function resolveRange(args: CliArgs):
 
 function resolveTotalEvaluations(
   benchmarkId: string,
+  benchmarkConfig: BenchmarkRunConfig,
   range:
     | {
         start?: number;
@@ -111,15 +112,17 @@ function resolveTotalEvaluations(
     | undefined,
   epochs: number
 ): Promise<number | undefined> {
-  return datasetSizeById(benchmarkId).then((sizeResult) => {
-    if (Either.isLeft(sizeResult)) {
-      return undefined;
+  return datasetSizeById({ benchmarkId, benchmarkConfig }).then(
+    (sizeResult) => {
+      if (Either.isLeft(sizeResult)) {
+        return undefined;
+      }
+      const size = sizeResult.right;
+      const start = Math.min(range?.start ?? 0, size);
+      const end = Math.min(range?.end ?? size, size);
+      return Math.max(0, end - start) * epochs;
     }
-    const size = sizeResult.right;
-    const start = Math.min(range?.start ?? 0, size);
-    const end = Math.min(range?.end ?? size, size);
-    return Math.max(0, end - start) * epochs;
-  });
+  );
 }
 
 function resolveSessionId(): string {
@@ -199,7 +202,12 @@ function main(): Promise<void> {
         `Running ${args.benchmark}${args.model !== undefined ? ` on ${args.model}` : ""}${args.solverConfig !== undefined ? ` (solver-config=${args.solverConfig})` : ""}${artifactDir !== undefined ? ` (artifact-dir=${artifactDir})` : ""} (epochs=${epochs}, concurrency=${args.concurrency}, reasoning-effort=${args.reasoningEffort}${range !== undefined ? `, range=${range.start ?? 0}..${range.end ?? "end"}` : ""}, session=${sessionId})...\n`
       );
       const total = yield* promise(() =>
-        resolveTotalEvaluations(args.benchmark, range, epochs)
+        resolveTotalEvaluations(
+          args.benchmark,
+          benchmarkRunConfig,
+          range,
+          epochs
+        )
       );
       const bar = new SingleBar(
         {
