@@ -9,15 +9,24 @@ import {
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { failureOption } from "effect/Cause";
+import { failureOption, isInterrupted } from "effect/Cause";
+import {
+  await as deferredAwait,
+  make as deferredMake,
+  succeed as deferredSucceed,
+} from "effect/Deferred";
 import {
   fail,
+  fork,
   gen,
+  map,
+  never,
   provide,
   runPromise,
   runPromiseExit,
   succeed,
 } from "effect/Effect";
+import { interrupt as interruptFiber } from "effect/Fiber";
 import type { Layer } from "effect/Layer";
 import {
   effect as layerEffect,
@@ -501,6 +510,57 @@ describe("recovery-bench solver", () => {
       baseOpts()
     );
     assertFailure(exit);
+    expect(destroyed).toBe(1);
+  });
+
+  it("destroys the sandbox when the solver fiber is interrupted mid-replay", async () => {
+    let destroyed = 0;
+    const replayStarted = await runPromise(deferredMake<void>());
+    const fake = makeTerminalBenchFakeSandboxLayer({
+      reward: 1,
+      agentEventStream: CLAUDE_STREAM,
+      onDestroy: () => {
+        destroyed += 1;
+      },
+    });
+    const hanging: Layer<SandboxSession> = layerEffect(SandboxSession)(
+      gen(function* () {
+        const factory = yield* SandboxSession;
+        return SandboxSession.of({
+          ...factory,
+          create: (input) =>
+            map(factory.create(input), (session) => ({
+              ...session,
+              exec: (argv, env, timeoutMs) =>
+                argv[2] === "make broken"
+                  ? gen(function* () {
+                      yield* deferredSucceed(replayStarted, undefined);
+                      return yield* never;
+                    })
+                  : session.exec(argv, env, timeoutMs),
+            })),
+        });
+      })
+    ).pipe(layerProvide(fake));
+
+    const exit = await runPromise(
+      gen(function* () {
+        const solver = yield* Solver;
+        const fiber = yield* fork(solver(sampleState()));
+        yield* deferredAwait(replayStarted);
+        return yield* interruptFiber(fiber);
+      }).pipe(
+        provide(
+          layerMergeAll(
+            solverLayer(hanging, baseOpts()),
+            noopProgressLayer,
+            noopCheckpointLayer
+          )
+        )
+      )
+    );
+    assertFailure(exit);
+    expect(isInterrupted(exit.cause)).toBe(true);
     expect(destroyed).toBe(1);
   });
 

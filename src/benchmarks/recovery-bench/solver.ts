@@ -8,9 +8,9 @@ import {
   either,
   ensuring,
   gen,
+  logWarning,
   sync,
   tryPromise,
-  void as effectVoid,
 } from "effect/Effect";
 
 import type { ModelMessage, ModelUsage } from "../../harness/core";
@@ -182,6 +182,17 @@ function addUsage(
   };
 }
 
+function destroyQuietly(session: SandboxSessionInstance): Effect<void> {
+  return session.destroy().pipe(
+    catchAll((error) =>
+      logWarning("recovery-bench-sandbox-destroy-failed", {
+        sandbox_id: session.sandboxId,
+        error: error.message,
+      })
+    )
+  );
+}
+
 export function uploadInstruction(
   session: SandboxSessionInstance,
   instruction: string
@@ -327,6 +338,6 @@ export function recoveryBenchSolver(
           },
           completed: true,
         };
-      }).pipe(ensuring(session.destroy().pipe(catchAll(() => effectVoid))));
+      }).pipe(ensuring(destroyQuietly(session)));
     });
 }
