@@ -44,6 +44,7 @@ function makeDeepSweLayer(
         benchmarkId: benchmarkConfig.benchmarkId,
         agent: benchmarkConfig.agent,
         models: benchmarkConfig.models,
+        switchyardAlgorithm: benchmarkConfig.switchyardAlgorithm,
       })
     : undefined;
   if (candidateModelsError !== undefined) {
@@ -118,6 +119,7 @@ function makeDeepSweLayer(
               cloudflareVersion: benchmarkConfig.cloudflareVersion,
               costTier: benchmarkConfig.costTier,
               costQualityTradeoff: benchmarkConfig.costQualityTradeoff,
+              switchyardAlgorithm: benchmarkConfig.switchyardAlgorithm,
             },
           })
         )

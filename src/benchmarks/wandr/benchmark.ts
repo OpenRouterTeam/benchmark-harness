@@ -43,6 +43,7 @@ export function wandrInferenceOverride(config: WandrConfig): InferenceOverride {
     cloudflareVersion: config.cloudflareVersion,
     costTier: config.costTier,
     costQualityTradeoff: config.costQualityTradeoff,
+    switchyardAlgorithm: config.switchyardAlgorithm,
   };
 }
 

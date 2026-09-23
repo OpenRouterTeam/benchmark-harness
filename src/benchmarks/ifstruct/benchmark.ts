@@ -172,6 +172,7 @@ export const IFSTRUCT_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
           cloudflareVersion: config.cloudflareVersion,
           costTier: config.costTier,
           costQualityTradeoff: config.costQualityTradeoff,
+          switchyardAlgorithm: config.switchyardAlgorithm,
         },
       })
     ),

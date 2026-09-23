@@ -51,6 +51,7 @@ function makeSweAtlasLayer(
         benchmarkId: benchmarkConfig.benchmarkId,
         agent: benchmarkConfig.agent,
         models: benchmarkConfig.models,
+        switchyardAlgorithm: benchmarkConfig.switchyardAlgorithm,
       })
     : undefined;
   if (candidateModelsError !== undefined) {
@@ -127,6 +128,7 @@ function makeSweAtlasLayer(
               cloudflareVersion: benchmarkConfig.cloudflareVersion,
               costTier: benchmarkConfig.costTier,
               costQualityTradeoff: benchmarkConfig.costQualityTradeoff,
+              switchyardAlgorithm: benchmarkConfig.switchyardAlgorithm,
             },
           })
         )

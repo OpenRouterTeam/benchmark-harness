@@ -25,7 +25,7 @@ import type { ModelUsage } from "../harness/core";
 import { ModelError } from "../harness/core";
 import type { GenerateConfig } from "../harness/model";
 import { stripVariantSuffix } from "../harness/model";
-import { definedValues, isRecord } from "../internal/guards";
+import { definedValues, isRecord, isUnknownArray } from "../internal/guards";
 import type { RetryConfig } from "../runtime/retry";
 import { rateLimitRetrySchedule, retrySalted } from "../runtime/retry";
 import { buildAutoRouterPlugin } from "./auto-router-plugin";
@@ -40,6 +40,7 @@ import {
   unwrapStreamEvent,
   usageFromResponses,
 } from "./responses-client";
+import { buildSwitchyardRouterPlugin } from "./switchyard-router-plugin";
 
 export type ResponsesInputItem = Record<string, unknown>;
 
@@ -171,6 +172,10 @@ export function generate(
   const requestModel = genConfig.model ?? opts.model;
   const baseModel = stripVariantSuffix(requestModel);
   const autoRouterPlugin = buildAutoRouterPlugin(baseModel, genConfig);
+  const switchyardRouterPlugin = buildSwitchyardRouterPlugin(
+    baseModel,
+    genConfig.switchyardAlgorithm
+  );
   const body = {
     model: requestModel,
     input: toSdkInput(opts.input),
@@ -198,7 +203,17 @@ export function generate(
     "X-OR-Endpoint-Id": genConfig.endpointId,
     "Cloudflare-Workers-Version-Overrides": genConfig.cloudflareVersion,
   });
-  const extraBody = genConfig.extraBody;
+  const callerPlugins = genConfig.extraBody?.["plugins"];
+  const extraBody =
+    switchyardRouterPlugin !== undefined
+      ? {
+          ...genConfig.extraBody,
+          plugins: [
+            ...(isUnknownArray(callerPlugins) ? callerPlugins : []),
+            switchyardRouterPlugin,
+          ],
+        }
+      : genConfig.extraBody;
   let identifiers: ModelErrorIdentifiers = {};
   const requestAttempt = suspend(() => {
     identifiers = {};

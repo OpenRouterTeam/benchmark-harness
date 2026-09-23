@@ -202,6 +202,7 @@ export const MMMU_PRO_VISION_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
           cloudflareVersion: config.cloudflareVersion,
           costTier: config.costTier,
           costQualityTradeoff: config.costQualityTradeoff,
+          switchyardAlgorithm: config.switchyardAlgorithm,
         },
       })
     ),

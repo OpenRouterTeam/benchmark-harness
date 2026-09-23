@@ -342,6 +342,7 @@ const VGI_BENCH_SINGLE_TURN_BENCHMARK = defineSingleTurnBenchmark({
           cloudflareVersion: config.cloudflareVersion,
           costTier: config.costTier,
           costQualityTradeoff: config.costQualityTradeoff,
+          switchyardAlgorithm: config.switchyardAlgorithm,
         },
       })
     ),
