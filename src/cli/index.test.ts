@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { buildBenchmarkConfig, parseArgs } from ".";
+import { buildBenchmarkConfig, parseArgs, resolveSessionId } from ".";
 describe("bench-harness CLI", () => {
   it("defaults --reasoning-effort to high", () => {
     expect(parseArgs([]).reasoningEffort).toBe("high");
@@ -191,5 +191,38 @@ describe("bench-harness CLI", () => {
       benchmarkId: "tau3_bench_banking",
       retrievalConfig: "bm25_grep",
     });
+  });
+});
+
+describe("resolveSessionId", () => {
+  const withWorkflowId = <T>(value: string, run: () => T): T => {
+    const prev = process.env["BENCH_CHILD_WORKFLOW_ID"];
+    process.env["BENCH_CHILD_WORKFLOW_ID"] = value;
+    try {
+      return run();
+    } finally {
+      if (prev === undefined) {
+        delete process.env["BENCH_CHILD_WORKFLOW_ID"];
+      } else {
+        process.env["BENCH_CHILD_WORKFLOW_ID"] = prev;
+      }
+    }
+  };
+
+  it("uses BENCH_CHILD_WORKFLOW_ID when set", () => {
+    expect(withWorkflowId("trial-1", resolveSessionId)).toBe("trial-1");
+  });
+
+  it("treats an empty run identifier as unset rather than malformed", () => {
+    expect(withWorkflowId("", resolveSessionId)).toMatch(/^[0-9a-f-]{36}$/);
+  });
+
+  it("rejects control characters that would break the x-session-id header", () => {
+    expect(() => withWorkflowId("trial-1\n", resolveSessionId)).toThrow(
+      "control character"
+    );
+    expect(() => withWorkflowId("trial\u007F", resolveSessionId)).toThrow(
+      "control character"
+    );
   });
 });

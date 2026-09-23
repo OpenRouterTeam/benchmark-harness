@@ -123,10 +123,28 @@ function resolveTotalEvaluations(
   );
 }
 
-function resolveSessionId(): string {
+const CONTROL_CHAR_MAX = 0x1f;
+const DELETE_CHAR = 0x7f;
+
+function hasControlCharacter(value: string): boolean {
+  for (const char of value) {
+    const code = char.codePointAt(0) ?? 0;
+    if (code <= CONTROL_CHAR_MAX || code === DELETE_CHAR) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function resolveSessionId(): string {
   const envOpt = runSync(string("BENCH_CHILD_WORKFLOW_ID").pipe(option));
   const raw = getOrNull(envOpt);
   const fromEnv = raw === null || raw.length === 0 ? null : raw;
+  if (fromEnv !== null && hasControlCharacter(fromEnv)) {
+    throw new Error(
+      `BENCH_CHILD_WORKFLOW_ID contains a control character, which is not a valid x-session-id header value (got ${JSON.stringify(fromEnv)}).`
+    );
+  }
   return fromEnv ?? runSync(sync(() => crypto.randomUUID()));
 }
 
