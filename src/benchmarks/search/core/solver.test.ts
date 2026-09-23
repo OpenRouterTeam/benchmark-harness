@@ -342,7 +342,7 @@ describe("searchSolver", () => {
       ],
     });
   });
-  it("sends only the switchyard-router plugin with server tools", async () => {
+  it("sends only the switchyard-router plugin with server tools, ignoring the variant suffix", async () => {
     let sentOptions: ResponsesSendOptions | undefined;
     const solver = searchSolver(
       {
@@ -352,7 +352,7 @@ describe("searchSolver", () => {
         },
       },
       {
-        model: "nvidia/switchyard",
+        model: "nvidia/switchyard:online",
         instructions: "i",
         lane: LANE,
         switchyardAlgorithm: "stage",

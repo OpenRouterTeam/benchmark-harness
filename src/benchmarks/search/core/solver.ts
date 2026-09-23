@@ -20,6 +20,7 @@ import type {
 } from "../../../harness/constants";
 import type { ResponseItem, TaskState } from "../../../harness/core";
 import { MessageRole, ModelError } from "../../../harness/core";
+import { stripVariantSuffix } from "../../../harness/model";
 import type { ProgressReporterService } from "../../../harness/progress";
 import { ProgressReporter } from "../../../harness/progress";
 import type { SolverService } from "../../../harness/solver";
@@ -56,7 +57,7 @@ function switchyardExtraBody(
   opts: Pick<SearchSolverOptions, "model" | "switchyardAlgorithm">
 ): Readonly<Record<string, unknown>> | undefined {
   const plugin = buildSwitchyardRouterPlugin(
-    opts.model,
+    stripVariantSuffix(opts.model),
     opts.switchyardAlgorithm
   );
   if (plugin === undefined) {
