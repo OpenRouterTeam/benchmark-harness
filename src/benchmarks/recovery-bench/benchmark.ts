@@ -94,6 +94,7 @@ function makeRecoveryBenchLayer(
   const agentCli: AgentCliOpts = definedValues({
     model: benchmarkConfig.model,
     apiKey: input.apiKey,
+    baseUrl: input.baseUrl,
     sessionId: input.sessionId,
     endpointId: benchmarkConfig.endpointId,
     agentPackage: benchmarkConfig.agentPackage,
