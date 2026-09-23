@@ -13,6 +13,7 @@ import { PassThrough, Readable } from "node:stream";
 
 import type { GcsObjectClient } from "./cache-store";
 import {
+  datasetCacheWriteFailures,
   makeDiskCacheStore,
   makeGcsCacheStore,
   pipeTarGzTo,
@@ -251,6 +252,22 @@ describe("GcsCacheStore", () => {
     const client = makeMemoryGcsClient();
     const store = makeGcsCacheStore({ bucket: "b", client });
     expect(await store.readJson("missing.json")).toBeUndefined();
+  });
+
+  it("counts JSON write failures", async () => {
+    const baseClient = makeMemoryGcsClient();
+    const client: GcsObjectClient = {
+      ...baseClient,
+      async uploadObject() {
+        throw new Error("upload failed");
+      },
+    };
+    const store = makeGcsCacheStore({ bucket: "b", client });
+    const failuresBefore = datasetCacheWriteFailures();
+
+    await store.writeJson("failed.json", { ok: false });
+
+    expect(datasetCacheWriteFailures()).toBe(failuresBefore + 1);
   });
 
   it("snapshotCheckout + tryHydrateCheckout round-trip a directory tree", async () => {

@@ -111,7 +111,7 @@ function resolveTotalEvaluations(
     | undefined,
   epochs: number
 ): Promise<number | undefined> {
-  return datasetSizeById(benchmarkId).then((sizeResult) => {
+  return datasetSizeById({ benchmarkId }).then((sizeResult) => {
     if (Either.isLeft(sizeResult)) {
       return undefined;
     }

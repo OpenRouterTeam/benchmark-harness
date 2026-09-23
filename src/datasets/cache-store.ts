@@ -13,6 +13,12 @@ import {
   writeJsonCacheFileAtomic,
 } from "./local-cache";
 
+let writeFailures = 0;
+
+export function datasetCacheWriteFailures(): number {
+  return writeFailures;
+}
+
 export const CACHE_BACKEND_ENV = "BENCH_DATASET_CACHE_BACKEND";
 export const GCS_BUCKET_ENV = "BENCH_GCS_BUCKET";
 export const GCS_PREFIX_ENV = "BENCH_GCS_PREFIX";
@@ -142,7 +148,10 @@ export function makeDiskCacheStore(): CacheStore {
       if (root === undefined) {
         return;
       }
-      writeJsonCacheFileAtomic(join(root, key), value);
+      const written = writeJsonCacheFileAtomic(join(root, key), value);
+      if (!written) {
+        writeFailures += 1;
+      }
     },
     async tryHydrateCheckout() {
       return false;
@@ -212,6 +221,7 @@ export function makeDefaultGcsClient(bucket: string): GcsObjectClient {
           resumable: false,
         });
       } catch (error) {
+        writeFailures += 1;
         wLog("GCS cache upload failed", { key, error: String(error) });
       }
     },
@@ -284,6 +294,7 @@ export function makeGcsCacheStore(opts: GcsCacheStoreOptions): CacheStore {
           "application/json"
         );
       } catch (error) {
+        writeFailures += 1;
         wLog("GCS cache write failed", { key: full, error: String(error) });
       }
     },
