@@ -696,6 +696,38 @@ describe("terminal-bench ori solver", () => {
     expect(script).not.toContain("ORI_CHANNEL");
   });
 
+  it("passes the instruction as a positional after `--` so a leading dash is not parsed as a flag", () => {
+    const script = ORI_HARNESSES.claude.buildRunScript({
+      instructionPath: "/instruction.txt",
+      logPath: "/logs/agent/claude.txt",
+      reasoningEffort: "medium",
+      hasSystemPrompt: true,
+      hasAppendSystemPrompt: false,
+      hasAllowedTools: false,
+      hasDisallowedTools: false,
+      isolateAgentConfig: true,
+    });
+    expect(script).toBe(
+      [
+        "set -euo pipefail",
+        "export HOME=/root",
+        "export IS_SANDBOX=1",
+        "mkdir -p /logs/agent",
+        'ori claude --model "$TB_MODEL" \\',
+        "  --reasoning-effort medium -- \\",
+        "  -p --output-format stream-json \\",
+        "  --verbose \\",
+        "  --permission-mode bypassPermissions \\",
+        '  --system-prompt "$TB_SYSTEM_PROMPT" \\',
+        "  --exclude-dynamic-system-prompt-sections \\",
+        "  -- \\",
+        '  "$(cat /instruction.txt)" \\',
+        "  2>&1 </dev/null | stdbuf -oL tee /logs/agent/claude.txt",
+      ].join("\n")
+    );
+    expect(script).not.toContain('-p "$(cat');
+  });
+
   it("fails the sample when ori cannot be installed and never runs the agent", async () => {
     const execCalls: ExecCalls = [];
     const exit = await runOriSolverExit(

@@ -356,8 +356,7 @@ const CLAUDE_HARNESS: OriHarnessDef = {
       "mkdir -p /logs/agent",
       'ori claude --model "$TB_MODEL" \\',
       `  --reasoning-effort ${options.reasoningEffort} -- \\`,
-      `  -p "$(cat ${options.instructionPath})" \\`,
-      "  --output-format stream-json \\",
+      "  -p --output-format stream-json \\",
       "  --verbose \\",
       "  --permission-mode bypassPermissions \\",
       ...(options.hasSystemPrompt
@@ -375,6 +374,8 @@ const CLAUDE_HARNESS: OriHarnessDef = {
       ...(options.isolateAgentConfig
         ? ["  --exclude-dynamic-system-prompt-sections \\"]
         : []),
+      "  -- \\",
+      `  "$(cat ${options.instructionPath})" \\`,
       `  2>&1 </dev/null | stdbuf -oL tee ${options.logPath}`,
     ].join("\n"),
   parseRun: parseClaudeStream,
