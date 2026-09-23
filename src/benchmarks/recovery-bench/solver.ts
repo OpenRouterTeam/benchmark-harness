@@ -224,6 +224,10 @@ export function recoveryBenchSolver(
         });
       }
 
+      const replayBudgetSec =
+        planReplay(trajectory.right.commands).commands.length *
+        replayTimeoutSec;
+
       const tasksDir = yield* tryPromise({
         try: () => ensureTasksCheckedOut(),
         catch: (e: unknown) =>
@@ -237,6 +241,7 @@ export function recoveryBenchSolver(
         meta,
         tasksDir,
         imageBuildSteps: agentImageBuildSteps(harness, opts.agentCli),
+        extraTimeoutSec: replayBudgetSec,
       });
 
       try {

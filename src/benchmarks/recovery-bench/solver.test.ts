@@ -275,6 +275,7 @@ describe("recovery-bench solver", () => {
     expect(creates[0]?.imageTag).toBe(META.dockerImage);
     expect(creates[0]?.cpus).toBe(META.cpus);
     expect(creates[0]?.memoryMb).toBe(META.memoryMb);
+    expect(creates[0]?.timeoutSec).toBe(900 + 600 + 2 * 15 + 300);
     expect(creates[0]?.allowInternet).toBe(true);
     expect(replayCommands(execCalls)).toEqual([
       ["ls /app", 15000],
