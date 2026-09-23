@@ -13,15 +13,11 @@ import {
   tryPromise,
 } from "effect/Effect";
 
-import type {
-  ModelMessage,
-  ModelUsage,
-  ServerToolUseCounts,
-} from "../../harness/core";
+import type { ModelMessage, ModelUsage } from "../../harness/core";
 import { MessageRole, SolverError } from "../../harness/core";
 import type { SolverService } from "../../harness/solver";
+import { mergeModelUsages } from "../../harness/usage";
 import { Either } from "../../internal/either";
-import { definedValues } from "../../internal/guards";
 import type {
   SandboxSessionFactory,
   SandboxSessionInstance,
@@ -169,46 +165,6 @@ export function resolveMessageContext(
       summaryFellBack: false,
       summary: summary.right,
     };
-  });
-}
-
-function addCounter(
-  a: number | undefined,
-  b: number | undefined
-): number | undefined {
-  return a === undefined && b === undefined ? undefined : (a ?? 0) + (b ?? 0);
-}
-
-function addServerToolUse(
-  a: ServerToolUseCounts | undefined,
-  b: ServerToolUseCounts | undefined
-): ServerToolUseCounts | undefined {
-  if (a === undefined && b === undefined) {
-    return undefined;
-  }
-  return definedValues({
-    webSearchRequests: addCounter(a?.webSearchRequests, b?.webSearchRequests),
-    toolCallsRequested: addCounter(
-      a?.toolCallsRequested,
-      b?.toolCallsRequested
-    ),
-    toolCallsExecuted: addCounter(a?.toolCallsExecuted, b?.toolCallsExecuted),
-  });
-}
-
-function addUsage(
-  a: ModelUsage | undefined,
-  b: ModelUsage | undefined
-): ModelUsage {
-  const x = a ?? ZERO_USAGE;
-  const y = b ?? ZERO_USAGE;
-  return definedValues({
-    inputTokens: (x.inputTokens ?? 0) + (y.inputTokens ?? 0),
-    outputTokens: (x.outputTokens ?? 0) + (y.outputTokens ?? 0),
-    totalTokens: (x.totalTokens ?? 0) + (y.totalTokens ?? 0),
-    reasoningTokens: (x.reasoningTokens ?? 0) + (y.reasoningTokens ?? 0),
-    totalCost: (x.totalCost ?? 0) + (y.totalCost ?? 0),
-    serverToolUse: addServerToolUse(x.serverToolUse, y.serverToolUse),
   });
 }
 
@@ -361,7 +317,9 @@ export function recoveryBenchSolver(
           output: {
             completion,
             message: { role: MessageRole.Assistant, content: completion },
-            usage: addUsage(run.usage, resolved.summary?.usage),
+            usage:
+              mergeModelUsages([run.usage, resolved.summary?.usage]) ??
+              ZERO_USAGE,
             generationTimeMs:
               (run.generationTimeMs ?? 0) +
               (resolved.summary?.generationTimeMs ?? 0),

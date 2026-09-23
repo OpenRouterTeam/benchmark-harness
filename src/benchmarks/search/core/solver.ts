@@ -18,6 +18,7 @@ import { MessageRole, ModelError } from "../../../harness/core";
 import type { ProgressReporterService } from "../../../harness/progress";
 import { ProgressReporter } from "../../../harness/progress";
 import type { SolverService } from "../../../harness/solver";
+import { mergeModelUsages } from "../../../harness/usage";
 import { runHarnessSync } from "../../../internal/effect-logger";
 import type { ProviderSort } from "../../../internal/enums";
 import { definedValues, isRecord } from "../../../internal/guards";
@@ -36,7 +37,6 @@ import { rateLimitRetrySchedule, retrySalted } from "../../../runtime/retry";
 import type { SearchLaneConfig } from "./config";
 import { makeSearchProgressTracker } from "./progress";
 import { buildSearchRequestBody } from "./request";
-import { mergeModelUsages } from "./usage";
 
 export const DEFAULT_SEARCH_TIMEOUT_MS = 420000;
 

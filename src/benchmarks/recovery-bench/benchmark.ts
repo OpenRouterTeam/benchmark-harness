@@ -54,6 +54,12 @@ function makeConfiguredDatasetLayer(
   );
 }
 
+function mismatchedConfigLayer<Out>(): Layer<Out, Error> {
+  return layerFail(
+    new Error("recovery_bench received mismatched benchmarkConfig")
+  );
+}
+
 function isRecoveryBenchConfig(
   config: BenchmarkRunConfig
 ): config is RecoveryBenchConfig {
@@ -64,9 +70,7 @@ function makeRecoveryBenchDatasetLayerForConfig(
   config: BenchmarkRunConfig
 ): Layer<Dataset, Error> {
   if (!isRecoveryBenchConfig(config)) {
-    return layerFail(
-      new Error("recovery_bench received mismatched benchmarkConfig")
-    );
+    return mismatchedConfigLayer();
   }
   return makeConfiguredDatasetLayer(config);
 }
@@ -75,10 +79,8 @@ function makeRecoveryBenchLayer(
   input: BenchmarkRunInput
 ): Layer<Dataset | Solver | Scorer, Error, HttpClient.HttpClient> {
   const { benchmarkConfig } = input;
-  if (benchmarkConfig.benchmarkId !== "recovery_bench") {
-    return layerFail(
-      new Error("recovery_bench received mismatched benchmarkConfig")
-    );
+  if (!isRecoveryBenchConfig(benchmarkConfig)) {
+    return mismatchedConfigLayer();
   }
   const { agent } = benchmarkConfig;
   const candidateModelsError = sandboxAgentCandidateModelsError({

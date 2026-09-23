@@ -5,6 +5,7 @@ import type { Score, Target, TaskState } from "../../../harness/core";
 import { ScoreValue } from "../../../harness/core";
 import type { RunResult } from "../../../harness/run";
 import type { SolverService } from "../../../harness/solver";
+import { mergeModelUsages } from "../../../harness/usage";
 import { Either } from "../../../internal/either";
 import { definedValues } from "../../../internal/guards";
 import { parseSchema, z } from "../../../internal/zod";
@@ -16,7 +17,6 @@ import { makeSearchBenchmarkLayer } from "../core/benchmark";
 import { WIDESEARCH_INSTRUCTIONS } from "../core/prompts";
 import type { SearchSolverOptions } from "../core/solver";
 import { searchSolver } from "../core/solver";
-import { mergeModelUsages } from "../core/usage";
 import { makeWideSearchDatasetLayer } from "./dataset";
 import {
   gradeWideSearch,
