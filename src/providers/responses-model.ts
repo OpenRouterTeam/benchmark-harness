@@ -25,7 +25,7 @@ import type { ModelUsage } from "../harness/core";
 import { ModelError } from "../harness/core";
 import type { GenerateConfig } from "../harness/model";
 import { stripVariantSuffix } from "../harness/model";
-import { definedValues, isRecord } from "../internal/guards";
+import { definedValues, isRecord, isUnknownArray } from "../internal/guards";
 import type { RetryConfig } from "../runtime/retry";
 import { rateLimitRetrySchedule, retrySalted } from "../runtime/retry";
 import { buildAutoRouterPlugin } from "./auto-router-plugin";
@@ -203,9 +203,16 @@ export function generate(
     "X-OR-Endpoint-Id": genConfig.endpointId,
     "Cloudflare-Workers-Version-Overrides": genConfig.cloudflareVersion,
   });
+  const callerPlugins = genConfig.extraBody?.["plugins"];
   const extraBody =
     switchyardRouterPlugin !== undefined
-      ? { ...genConfig.extraBody, plugins: [switchyardRouterPlugin] }
+      ? {
+          ...genConfig.extraBody,
+          plugins: [
+            ...(isUnknownArray(callerPlugins) ? callerPlugins : []),
+            switchyardRouterPlugin,
+          ],
+        }
       : genConfig.extraBody;
   let identifiers: ModelErrorIdentifiers = {};
   const requestAttempt = suspend(() => {

@@ -564,6 +564,38 @@ describe("responses-model", () => {
     assertSuccess(exit);
     expect(captured.value?.body["plugins"]).toBeUndefined();
   });
+  it("appends the switchyard-router plugin after caller-supplied extraBody plugins", async () => {
+    const captured: {
+      value: CapturedRequest | undefined;
+    } = { value: undefined };
+    restore = installFetchStub(await readStreamFixture(), 200, captured);
+    const layer = makeResponsesModelLayer({
+      model: "nvidia/switchyard",
+      models: ["openai/gpt-4.1-nano", "anthropic/claude-sonnet-4.5"],
+      apiKey: "sk-test",
+    });
+    const exit = await runPromiseExit(
+      gen(function* run() {
+        const modelService = yield* ResponsesModel;
+        return yield* modelService.generate([], {
+          reasoningEffort: "high",
+          switchyardAlgorithm: "stage",
+          extraBody: {
+            plugins: [{ id: "web" }],
+            cache_control: { type: "ephemeral" },
+          },
+        });
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    assertSuccess(exit);
+    expect(captured.value?.body["plugins"]).toEqual([
+      { id: "web" },
+      { id: "switchyard-router", algorithm: "stage" },
+    ]);
+    expect(captured.value?.body["cache_control"]).toEqual({
+      type: "ephemeral",
+    });
+  });
   it("ignores switchyardAlgorithm for models other than nvidia/switchyard", async () => {
     const captured: {
       value: CapturedRequest | undefined;
