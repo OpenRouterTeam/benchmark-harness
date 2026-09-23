@@ -21,6 +21,7 @@ import type {
   BenchmarkMetadata,
   BenchmarkRunInput,
 } from "../benchmarks/types";
+import { datasetCacheWriteFailures } from "../datasets/cache-store";
 import { Dataset } from "../harness/dataset";
 import type {
   CheckpointStoreService,
@@ -159,16 +160,24 @@ export function runBenchmarkById(
     .catch((error) => Either.left(String(error)));
 }
 
-export function datasetSizeById(
-  benchmarkId: string,
-  injectedBenchmark?: Benchmark<InjectedBenchmarkRunConfig>
-): AsyncEither<number, string> {
-  const benchmarkResult = resolveBenchmark(benchmarkId, injectedBenchmark);
+export function datasetSizeById(input: {
+  readonly benchmarkId: string;
+  readonly benchmarkConfig?: BenchmarkRunConfig;
+  readonly injectedBenchmark?: Benchmark<InjectedBenchmarkRunConfig>;
+}): AsyncEither<number, string> {
+  const benchmarkResult = resolveBenchmark(
+    input.benchmarkId,
+    input.injectedBenchmark
+  );
   if (Either.isLeft(benchmarkResult)) {
     return Promise.resolve(Either.left(benchmarkResult.left));
   }
   const benchmark = benchmarkResult.right;
-  const datasetLayer = benchmark.makeDatasetLayer();
+  const datasetLayer =
+    input.benchmarkConfig === undefined
+      ? benchmark.makeDatasetLayer()
+      : (benchmark.makeDatasetLayerForConfig?.(input.benchmarkConfig) ??
+        benchmark.makeDatasetLayer());
   const program = Dataset.pipe(flatMap((d) => d.size));
   return runHarnessPromise(program.pipe(provide(datasetLayer)))
     .then((size) => Either.right(size))
@@ -189,6 +198,7 @@ export function warmDatasetById(input: {
   if (Either.isLeft(benchmarkResult)) {
     return Promise.resolve(Either.left(benchmarkResult.left));
   }
+  const failuresBefore = datasetCacheWriteFailures();
   const datasetLayer =
     benchmarkResult.right.makeDatasetLayerForConfig?.(
       input.benchmarkConfig,
@@ -198,7 +208,12 @@ export function warmDatasetById(input: {
     flatMap((dataset) => runCount(dataset.stream(input.range)))
   );
   return runHarnessPromise(program.pipe(provide(datasetLayer)))
-    .then((count) => Either.right(count))
+    .then((count) => {
+      const failures = datasetCacheWriteFailures() - failuresBefore;
+      return failures > 0
+        ? Either.left(`dataset cache warmup: ${failures} cache write(s) failed`)
+        : Either.right(count);
+    })
     .catch((error) => Either.left(String(error)));
 }
 
