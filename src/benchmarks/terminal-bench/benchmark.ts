@@ -43,6 +43,7 @@ function makeTerminalBenchLayer(
     benchmarkId: benchmarkConfig.benchmarkId,
     agent,
     models: benchmarkConfig.models,
+    switchyardAlgorithm: benchmarkConfig.switchyardAlgorithm,
   });
   if (candidateModelsError !== undefined) {
     return layerFail(candidateModelsError);
