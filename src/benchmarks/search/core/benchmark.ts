@@ -72,6 +72,7 @@ export function searchSolverOptionsFromConfig({
     versionOverride: config.cloudflareVersion,
     costQualityTradeoff: config.costQualityTradeoff,
     costTier: config.costTier,
+    switchyardAlgorithm: config.switchyardAlgorithm,
     retry,
   });
 }

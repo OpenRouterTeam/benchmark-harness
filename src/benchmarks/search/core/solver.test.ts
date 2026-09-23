@@ -316,6 +316,76 @@ describe("searchSolver", () => {
       "X-Provider-Flags": "alpha",
     });
   });
+  it("appends the switchyard-router plugin after the serialized web plugin", async () => {
+    let sentOptions: ResponsesSendOptions | undefined;
+    const solver = searchSolver(
+      {
+        send: (_body, options) => {
+          sentOptions = options;
+          return effectSucceed(fixtureResult({ text: "x" }));
+        },
+      },
+      {
+        model: "nvidia/switchyard",
+        instructions: "i",
+        lane: makeLane({ webSearch: "plugin", maxResults: 4 }),
+        switchyardAlgorithm: "stage",
+      }
+    );
+    await runSolver(
+      solver(initialTaskState({ id: "s", input: "q", target: { text: "t" } }))
+    );
+    expect(sentOptions?.extraBody).toEqual({
+      plugins: [
+        expect.objectContaining({ id: "web", max_results: 4 }),
+        { id: "switchyard-router", algorithm: "stage" },
+      ],
+    });
+  });
+  it("sends only the switchyard-router plugin with server tools", async () => {
+    let sentOptions: ResponsesSendOptions | undefined;
+    const solver = searchSolver(
+      {
+        send: (_body, options) => {
+          sentOptions = options;
+          return effectSucceed(fixtureResult({ text: "x" }));
+        },
+      },
+      {
+        model: "nvidia/switchyard",
+        instructions: "i",
+        lane: LANE,
+        switchyardAlgorithm: "stage",
+      }
+    );
+    await runSolver(
+      solver(initialTaskState({ id: "s", input: "q", target: { text: "t" } }))
+    );
+    expect(sentOptions?.extraBody).toEqual({
+      plugins: [{ id: "switchyard-router", algorithm: "stage" }],
+    });
+  });
+  it("sends no extra body when the model is not switchyard", async () => {
+    let sentOptions: ResponsesSendOptions | undefined;
+    const solver = searchSolver(
+      {
+        send: (_body, options) => {
+          sentOptions = options;
+          return effectSucceed(fixtureResult({ text: "x" }));
+        },
+      },
+      {
+        model: "m",
+        instructions: "i",
+        lane: LANE,
+        switchyardAlgorithm: "stage",
+      }
+    );
+    await runSolver(
+      solver(initialTaskState({ id: "s", input: "q", target: { text: "t" } }))
+    );
+    expect(sentOptions?.extraBody).toBeUndefined();
+  });
   it("trims whitespace from the answer", async () => {
     const solver = searchSolver(
       fixtureService(fixtureResult({ text: "  Exact Answer: 7\n" })),

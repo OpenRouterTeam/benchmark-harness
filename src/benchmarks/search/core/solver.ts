@@ -1,4 +1,5 @@
 import type { ResponsesRequest, StreamEvents } from "@openrouter/sdk/models";
+import { responsesRequestToJSON } from "@openrouter/sdk/models";
 import type { Effect } from "effect/Effect";
 import {
   catchTag,
@@ -12,7 +13,11 @@ import {
   timeoutFail,
 } from "effect/Effect";
 
-import type { CostTier, ReasoningEffort } from "../../../harness/constants";
+import type {
+  CostTier,
+  ReasoningEffort,
+  SwitchyardAlgorithm,
+} from "../../../harness/constants";
 import type { ResponseItem, TaskState } from "../../../harness/core";
 import { MessageRole, ModelError } from "../../../harness/core";
 import type { ProgressReporterService } from "../../../harness/progress";
@@ -20,7 +25,11 @@ import { ProgressReporter } from "../../../harness/progress";
 import type { SolverService } from "../../../harness/solver";
 import { runHarnessSync } from "../../../internal/effect-logger";
 import type { ProviderSort } from "../../../internal/enums";
-import { definedValues, isRecord } from "../../../internal/guards";
+import {
+  definedValues,
+  isRecord,
+  isUnknownArray,
+} from "../../../internal/guards";
 import type {
   ResponsesResult,
   ResponsesSendOptions,
@@ -31,6 +40,7 @@ import {
   toModelError,
   usageFromResponses,
 } from "../../../providers/responses-client";
+import { buildSwitchyardRouterPlugin } from "../../../providers/switchyard-router-plugin";
 import type { RetryConfig } from "../../../runtime/retry";
 import { rateLimitRetrySchedule, retrySalted } from "../../../runtime/retry";
 import type { SearchLaneConfig } from "./config";
@@ -41,6 +51,23 @@ import { mergeModelUsages } from "./usage";
 export const DEFAULT_SEARCH_TIMEOUT_MS = 420000;
 
 const EMPTY_SEARCH_RESPONSE_MESSAGE = "search response had no answer text";
+function switchyardExtraBody(
+  body: ResponsesRequest,
+  opts: Pick<SearchSolverOptions, "model" | "switchyardAlgorithm">
+): Readonly<Record<string, unknown>> | undefined {
+  const plugin = buildSwitchyardRouterPlugin(
+    opts.model,
+    opts.switchyardAlgorithm
+  );
+  if (plugin === undefined) {
+    return undefined;
+  }
+  const wire: unknown = JSON.parse(responsesRequestToJSON(body));
+  const wirePlugins = isRecord(wire) ? wire["plugins"] : undefined;
+  return {
+    plugins: [...(isUnknownArray(wirePlugins) ? wirePlugins : []), plugin],
+  };
+}
 
 export interface SearchSolverOptions {
   readonly model: string;
@@ -60,6 +87,7 @@ export interface SearchSolverOptions {
   readonly versionOverride?: string;
   readonly costQualityTradeoff?: number;
   readonly costTier?: CostTier;
+  readonly switchyardAlgorithm?: SwitchyardAlgorithm;
   readonly retry?: RetryConfig;
 }
 
@@ -103,6 +131,7 @@ export function searchSolver(
           costTier: opts.costTier,
         })
       );
+      const extraBody = switchyardExtraBody(body, opts);
       const extraHeaders =
         opts.endpointId === undefined && !opts.lane.providerFlags?.length
           ? undefined
@@ -118,6 +147,7 @@ export function searchSolver(
         definedValues({
           timeoutMs: opts.timeoutMs ?? DEFAULT_SEARCH_TIMEOUT_MS,
           extraHeaders,
+          extraBody,
           versionOverride: opts.versionOverride,
         });
       const { result, attemptResults } = yield* sendWithRetry({
