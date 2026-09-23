@@ -24,6 +24,10 @@ import { SandboxSession } from "../../sandbox/session";
 import { sandboxAgentCandidateModelsError } from "../agent-cli/candidate-models";
 import { getOriHarness } from "../agent-cli/harness";
 import type { AgentCliOpts } from "../agent-cli/runner";
+import type {
+  BenchmarkRunConfig,
+  RecoveryBenchConfig,
+} from "../benchmark-config";
 import { RECOVERY_BENCH_META } from "../benchmark-meta";
 import { terminalBenchScorer } from "../terminal-bench/scorer";
 import type { Benchmark, BenchmarkRunInput } from "../types";
@@ -37,6 +41,29 @@ import { fetchTrajectoryText } from "./trajectory-source";
 export const RECOVERY_BENCH_ID = RECOVERY_BENCH_META.id;
 
 const RECOVERY_BENCH_APP_NAME = "openrouter-recovery-bench" as const;
+
+function makeConfiguredDatasetLayer(
+  benchmarkConfig: RecoveryBenchConfig
+): Layer<Dataset> {
+  return makeRecoveryBenchDatasetLayer(
+    definedValues({
+      taskSubset: benchmarkConfig.taskSubset,
+      maxAgentTimeoutSec: benchmarkConfig.maxAgentTimeoutSec,
+      maxInstructionBytes: benchmarkConfig.maxInstructionBytes,
+    })
+  );
+}
+
+function makeRecoveryBenchDatasetLayerForConfig(
+  config: BenchmarkRunConfig
+): Layer<Dataset, Error> {
+  if (config.benchmarkId !== "recovery_bench") {
+    return layerFail(
+      new Error("recovery_bench received mismatched benchmarkConfig")
+    );
+  }
+  return makeConfiguredDatasetLayer(config);
+}
 
 function makeRecoveryBenchLayer(
   input: BenchmarkRunInput
@@ -71,13 +98,7 @@ function makeRecoveryBenchLayer(
     disallowedTools: benchmarkConfig.disallowedTools,
     isolateAgentConfig: benchmarkConfig.isolateAgentConfig,
   });
-  const datasetLayer = makeRecoveryBenchDatasetLayer(
-    definedValues({
-      taskSubset: benchmarkConfig.taskSubset,
-      maxAgentTimeoutSec: benchmarkConfig.maxAgentTimeoutSec,
-      maxInstructionBytes: benchmarkConfig.maxInstructionBytes,
-    })
-  );
+  const datasetLayer = makeConfiguredDatasetLayer(benchmarkConfig);
   const sandboxLayer: Layer<SandboxSession> = makeModalSandboxLayer({
     appName: RECOVERY_BENCH_APP_NAME,
     environment: benchmarkConfig.modalEnv,
@@ -149,6 +170,7 @@ function makeRecoveryBenchLayer(
 export const RECOVERY_BENCH_BENCHMARK: Benchmark = {
   id: RECOVERY_BENCH_ID,
   makeDatasetLayer: () => makeRecoveryBenchDatasetLayer(),
+  makeDatasetLayerForConfig: makeRecoveryBenchDatasetLayerForConfig,
   temperature: 0,
   defaultEpochs: RECOVERY_BENCH_META.defaultEpochs,
   degradeSolverErrors: true,

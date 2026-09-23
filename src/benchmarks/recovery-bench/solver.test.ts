@@ -439,6 +439,44 @@ describe("recovery-bench solver", () => {
     expect(finalState.output?.generationTimeMs).toBe(1900);
   });
 
+  it("keeps server tool-use counters when combining agent and summary usage", async () => {
+    const stream = CLAUDE_STREAM.replace(
+      '"usage":{"input_tokens":100,"output_tokens":20}',
+      '"usage":{"input_tokens":100,"output_tokens":20,"server_tool_use":{"web_search_requests":2}}'
+    );
+    expect(stream).not.toBe(CLAUDE_STREAM);
+    const summarize: Summarizer = () =>
+      succeed({
+        text: "The agent ran make and it failed.",
+        usage: {
+          inputTokens: 50,
+          outputTokens: 10,
+          totalTokens: 60,
+          reasoningTokens: 0,
+          totalCost: 0.002,
+          serverToolUse: { webSearchRequests: 1, toolCallsRequested: 3 },
+        },
+      });
+    const finalState = await runSolver(
+      makeTerminalBenchFakeSandboxLayer({
+        reward: 1,
+        agentEventStream: stream,
+      }),
+      baseOpts({ messageMode: "summary", summarize })
+    );
+    expect(finalState.output?.usage.serverToolUse).toEqual({
+      webSearchRequests: 3,
+      toolCallsRequested: 3,
+    });
+    const plain = await runSolver(
+      makeTerminalBenchFakeSandboxLayer({
+        reward: 1,
+        agentEventStream: CLAUDE_STREAM,
+      })
+    );
+    expect(plain.output?.usage.serverToolUse).toBeUndefined();
+  });
+
   it("falls back to the fixed summary when the summarizer fails", async () => {
     const resolved = await runPromise(
       resolveMessageContext("summary", PRIOR_MESSAGES, () =>
