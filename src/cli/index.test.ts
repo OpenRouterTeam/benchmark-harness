@@ -24,6 +24,20 @@ describe("bench-harness CLI", () => {
     ).toBe("auto");
   });
 
+  it("defaults --reasoning-effort to auto for typesafe/jev-router", () => {
+    expect(parseArgs(["--model", "typesafe/jev-router"]).reasoningEffort).toBe(
+      "auto"
+    );
+    expect(
+      parseArgs([
+        "--model",
+        "typesafe/jev-router",
+        "--reasoning-effort",
+        "auto",
+      ]).reasoningEffort
+    ).toBe("auto");
+  });
+
   it("rejects --reasoning-effort auto for models without adaptive effort", () => {
     expect(() =>
       parseArgs(["--model", "openai/gpt-5", "--reasoning-effort", "auto"])
