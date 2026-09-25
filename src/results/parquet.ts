@@ -28,6 +28,7 @@ import {
   RESULT_FORMAT_VERSION,
   RESULT_WRITER,
   BenchmarkResultRowSchema,
+  ScorerTrajectorySchema,
 } from "./parquet-schema";
 
 export interface ExtraScore {
@@ -120,10 +121,7 @@ export function runResultToParquet(input: RunResultToParquetInput): Buffer {
   const { result, meta, extraScores, primaryScore } = input;
   const { metrics, usage, sampleScores } = result;
   const createdAt = meta.createdAt ?? formatIso(unsafeNow());
-  const extraScoresJson =
-    extraScores !== undefined && extraScores.length > 0
-      ? JSON.stringify(extraScores)
-      : null;
+  const extraScoresJson = extraScoresToJson(extraScores);
   const primaryScoreJson =
     primaryScore !== undefined ? JSON.stringify(primaryScore) : null;
   const benchmarkConfigJson =
@@ -160,6 +158,7 @@ export interface MergeResultFilesInput {
   readonly files: readonly ResultFileReader[];
   readonly meta: ResultRowsParquetMeta;
   readonly writer: Writer;
+  readonly runLevelScores?: (result: RunResult) => readonly ExtraScore[];
 }
 
 export interface MergedResultFiles {
@@ -218,8 +217,22 @@ export async function mergeResultFilesToParquet(
 ): Promise<MergedResultFiles> {
   const { files, meta, writer } = input;
   const createdAt = meta.createdAt ?? formatIso(unsafeNow());
-  const scan = await scanResultFiles(files);
-  const runColumns = mergedRunColumns(scan, { ...meta, createdAt });
+  const scan = await scanResultFiles(
+    files,
+    input.runLevelScores === undefined
+      ? rowsToSampleScores
+      : rowsToScoredSamples
+  );
+  const extraScores = input.runLevelScores?.({
+    metrics: aggregateScores(scan.sampleScores),
+    usage: scan.usage,
+    sampleScores: scan.sampleScores,
+  });
+  const runColumns = mergedRunColumns(scan, {
+    ...meta,
+    createdAt,
+    extraScoresJson: extraScoresToJson(extraScores),
+  });
   const parquetWriter = new ParquetWriter({
     writer,
     schema: RESULT_SCHEMA,
@@ -267,7 +280,8 @@ export async function mergeResultFilesToParquet(
 }
 
 async function scanResultFiles(
-  files: readonly ResultFileReader[]
+  files: readonly ResultFileReader[],
+  toSampleScores: (rows: readonly BenchmarkResultRow[]) => SampleScore[]
 ): Promise<ResultFilesScan> {
   const rowCounts: number[] = [];
   const runFingerprints: (string | undefined)[] = [];
@@ -297,7 +311,7 @@ async function scanResultFiles(
       temperature: row.temperature,
       benchmark_config: row.benchmark_config,
     };
-    for (const sampleScore of rowsToSampleScores(rows)) {
+    for (const sampleScore of toSampleScores(rows)) {
       sampleScores.push(sampleScore);
     }
     const parsedPrimaryScore = parsePrimaryScore(row.primary_score);
@@ -367,7 +381,10 @@ function sameSampleScore(
 
 function mergedRunColumns(
   scan: ResultFilesScan,
-  meta: ResultRowsParquetMeta & { readonly createdAt: string }
+  meta: ResultRowsParquetMeta & {
+    readonly createdAt: string;
+    readonly extraScoresJson: string | null;
+  }
 ): MergedRunColumns {
   const metrics = aggregateScores(scan.sampleScores);
   const counts = epochCounts(scan.sampleScores);
@@ -390,7 +407,7 @@ function mergedRunColumns(
     generation_time_ms: scan.usage.generationTimeMs,
     epoch_total_questions: counts.epochTotalQuestions,
     epoch_correct_answers: counts.epochCorrectAnswers,
-    extra_scores: null,
+    extra_scores: meta.extraScoresJson,
     primary_score: scan.primaryScore ? JSON.stringify(scan.primaryScore) : null,
   };
 }
@@ -689,6 +706,54 @@ function rowsToSampleScores(
       explanation: "",
     },
   }));
+}
+
+function rowsToScoredSamples(
+  rows: readonly BenchmarkResultRow[]
+): SampleScore[] {
+  return rows.map((row) =>
+    definedValues({
+      sampleId: row.sample_id,
+      epoch: row.epoch,
+      score: definedValues({
+        value: rowScoreValue(row.score_value),
+        answer: row.answer,
+        explanation: row.explanation ?? "",
+        trajectory: parseJsonColumn(
+          ScorerTrajectorySchema,
+          row.scorer_trajectory
+        ),
+      }),
+      metadata: parseJsonColumn(
+        z.record(z.string(), z.unknown()),
+        row.metadata
+      ),
+    })
+  );
+}
+
+function parseJsonColumn<T>(
+  schema: z.ZodType<T>,
+  raw: string | null | undefined
+): T | undefined {
+  if (raw === null || raw === undefined) {
+    return undefined;
+  }
+  const parsed = parseSchema(schema, JSON.parse(raw));
+  if (Either.isLeft(parsed)) {
+    throw new Error(
+      `Invalid result column: ${firstZodIssueMessage(parsed.left)}`
+    );
+  }
+  return parsed.right;
+}
+
+function extraScoresToJson(
+  extraScores: readonly ExtraScore[] | undefined
+): string | null {
+  return extraScores !== undefined && extraScores.length > 0
+    ? JSON.stringify(extraScores)
+    : null;
 }
 
 export function summarizeChunkRows(

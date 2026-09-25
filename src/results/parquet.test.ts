@@ -12,7 +12,7 @@ import { assertRight, assertLeft } from "../internal/testing";
 import { parseSchema } from "../internal/zod";
 import { responsesTurnToModelOutput } from "../providers/messages-to-responses";
 import { AtifTrajectorySchema } from "./atif-schema";
-import type { MergedResultFiles } from "./parquet";
+import type { MergeResultFilesInput, MergedResultFiles } from "./parquet";
 import {
   mergeResultFilesToParquet,
   readResultRows,
@@ -109,13 +109,15 @@ function readRows(buf: Buffer): Promise<readonly BenchmarkResultRow[]> {
 }
 
 async function mergeToBytes(
-  files: readonly (readonly BenchmarkResultRow[])[]
+  files: readonly (readonly BenchmarkResultRow[])[],
+  runLevelScores?: MergeResultFilesInput["runLevelScores"]
 ): Promise<{ readonly bytes: Buffer; readonly merged: MergedResultFiles }> {
   const writer = new ByteWriter();
   const merged = await mergeResultFilesToParquet({
     files: files.map((rows) => () => Promise.resolve(rows)),
     meta: { task: META.task, model: META.model, createdAt: META.createdAt },
     writer,
+    ...(runLevelScores !== undefined && { runLevelScores }),
   });
   return { bytes: Buffer.from(writer.getBuffer()), merged };
 }
@@ -860,6 +862,80 @@ describe("mergeResultFilesToParquet", () => {
       )
     ).toBe(true);
     expect(mergedRows.every((row) => row.extra_scores === null)).toBe(true);
+  });
+  it("recomputes run-level extra scores over every merged sample", async () => {
+    const fileRows = await Promise.all(
+      [
+        { sampleId: "s0", category: "math", value: ScoreValue.Correct },
+        { sampleId: "s1", category: "math", value: ScoreValue.Incorrect },
+        { sampleId: "s2", category: "law", value: ScoreValue.Correct },
+      ].map(({ sampleId, category, value }) =>
+        readRows(
+          runResultToParquet({
+            result: {
+              metrics: METRICS,
+              usage: USAGE,
+              sampleScores: [
+                {
+                  sampleId,
+                  epoch: 0,
+                  score: {
+                    value,
+                    answer: `${sampleId}-answer`,
+                    explanation: `${sampleId}-why`,
+                    trajectory: { kind: "judge_runs", runs: [{ sampleId }] },
+                  },
+                  metadata: { category },
+                },
+              ],
+            },
+            meta: META,
+            extraScores: [
+              { name: "chunk_only", metrics: { accuracy: { value: 1 } } },
+            ],
+          })
+        )
+      )
+    );
+    const seen: SampleScore[] = [];
+    const { bytes } = await mergeToBytes(fileRows, (result) => {
+      seen.push(...result.sampleScores);
+      const math = result.sampleScores.filter(
+        (s) => s.metadata?.["category"] === "math"
+      );
+      return [
+        {
+          name: "math",
+          metrics: {
+            total_questions: { value: math.length },
+            correct: {
+              value: math.filter((s) => s.score.value === ScoreValue.Correct)
+                .length,
+            },
+          },
+        },
+      ];
+    });
+    const mergedRows = await readRows(bytes);
+
+    expect(seen.map((s) => s.score)).toEqual(
+      ["s0", "s1", "s2"].map((sampleId, index) => ({
+        value: index === 1 ? ScoreValue.Incorrect : ScoreValue.Correct,
+        answer: `${sampleId}-answer`,
+        explanation: `${sampleId}-why`,
+        trajectory: { kind: "judge_runs", runs: [{ sampleId }] },
+      }))
+    );
+    expect(
+      mergedRows.map((row) => JSON.parse(row.extra_scores ?? "null"))
+    ).toEqual(
+      Array.from({ length: 3 }, () => [
+        {
+          name: "math",
+          metrics: { total_questions: { value: 2 }, correct: { value: 1 } },
+        },
+      ])
+    );
   });
   it("weights primary scores from each file", async () => {
     const firstRows = await readRows(
