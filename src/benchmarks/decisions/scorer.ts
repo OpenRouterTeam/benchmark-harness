@@ -13,6 +13,7 @@ import {
   DECISION_OUTCOME_METADATA_KEY,
   DECISION_SPEC_METADATA_KEY,
   DecisionTaskSpecSchema,
+  DecisionVariant,
 } from "./schema";
 
 export interface DecisionSampleRecord {
@@ -37,6 +38,12 @@ export function decisionRecordFromMetadata(
   return { spec: spec.right, outcome };
 }
 
+function hasOrderedRubric(spec: DecisionTaskSpec): boolean {
+  return (
+    spec.question.type === "score" && spec.variant !== DecisionVariant.Shuffled
+  );
+}
+
 export function observationFor(
   record: DecisionSampleRecord
 ): ObservationMetrics {
@@ -45,7 +52,7 @@ export function observationFor(
     distribution: record.outcome.distribution,
     gold: record.spec.gold,
     goldKnowable: record.spec.goldKnowable,
-    ordinal: record.spec.question.type === "score",
+    ordinal: hasOrderedRubric(record.spec),
   });
 }
 

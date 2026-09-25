@@ -162,6 +162,20 @@ describe("scoreDecisionRecord", () => {
     expect(explanation.rps).not.toBeNull();
     expect(explanation.absoluteLevelError).toBeCloseTo(0.5, 12);
   });
+  it("omits ordinal metrics for shuffled score rubrics", () => {
+    const record = {
+      spec: { ...SCORE_SPEC, variant: DecisionVariant.Shuffled },
+      outcome: outcome({ "0": 0, "1": 0.5, "2": 0.5 }),
+    };
+    const explanation = explanationOf(record);
+    expect(explanation.rps).toBeNull();
+    expect(explanation.absoluteLevelError).toBeNull();
+    const reversed = explanationOf({
+      ...record,
+      spec: { ...SCORE_SPEC, variant: DecisionVariant.Reversed },
+    });
+    expect(reversed.absoluteLevelError).toBeCloseTo(0.5, 12);
+  });
 });
 
 describe("decisionRecordFromMetadata", () => {
