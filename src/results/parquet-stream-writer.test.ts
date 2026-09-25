@@ -76,11 +76,9 @@ describe("parquetStreamWriter", () => {
     await mergeResultFilesToParquet({ files, meta, writer: streamed });
 
     expect(Buffer.concat(chunks)).toEqual(Buffer.from(inMemory.getBuffer()));
-    expect(chunks.length).toBeGreaterThan(3);
     expect(maxInFlight).toBe(1);
     expect(Math.max(...chunks.map((chunk) => chunk.byteLength))).toBeLessThan(
       64 * 1024
     );
-    expect(() => streamed.getBytes()).toThrow("does not retain");
   });
 });

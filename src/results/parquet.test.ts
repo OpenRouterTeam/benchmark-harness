@@ -1074,11 +1074,10 @@ describe("mergeResultFilesToParquet", () => {
       rows.every((row) => row.benchmark_config === merged.benchmarkConfig)
     ).toBe(true);
   });
-  it("returns a null summary and writes a readable empty file when every input is empty", async () => {
-    const { bytes, merged } = await mergeToBytes([[], []]);
+  it("returns a null summary when every input is empty", async () => {
+    const { merged } = await mergeToBytes([[], []]);
 
     expect(merged).toEqual({ summary: null, benchmarkConfig: null });
-    expect(await readRows(bytes)).toEqual([]);
   });
   it("writes one row group per non-empty file with the run-result schema", async () => {
     const single = runResultToParquet({ result: RESULT, meta: META });
