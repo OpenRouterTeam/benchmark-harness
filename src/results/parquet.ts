@@ -1,7 +1,12 @@
 import { unsafeNow, formatIso } from "effect/DateTime";
 import type { AsyncBuffer } from "hyparquet";
 import { parquetReadObjects } from "hyparquet";
-import { parquetWriteBuffer } from "hyparquet-writer";
+import type { KeyValue, Writer } from "hyparquet-writer";
+import {
+  ParquetWriter,
+  parquetWriteBuffer,
+  schemaFromColumnData,
+} from "hyparquet-writer";
 
 import type { BenchmarkRunConfig } from "../benchmarks/benchmark-config";
 import type { BenchmarkPrimaryScore } from "../benchmarks/types";
@@ -149,20 +154,114 @@ export function runResultToParquet(input: RunResultToParquetInput): Buffer {
   });
 }
 
-export function mergeResultFilesToParquet(
-  files: readonly (readonly BenchmarkResultRow[])[],
-  meta: ResultRowsParquetMeta
-): Buffer {
-  const nonEmptyFiles = files.filter((file) => file.length > 0);
-  const rows = nonEmptyFiles.flat();
-  const first = rows[0];
+export type ResultFileReader = () => Promise<readonly BenchmarkResultRow[]>;
+
+export interface MergeResultFilesInput {
+  readonly files: readonly ResultFileReader[];
+  readonly meta: ResultRowsParquetMeta;
+  readonly writer: Writer;
+}
+
+export interface MergedResultFiles {
+  readonly summary: ChunkResultSummary | null;
+  readonly benchmarkConfig: string | null;
+}
+
+type MergedRunColumns = Pick<
+  BenchmarkResultRow,
+  | "format_version"
+  | "task"
+  | "model"
+  | "epochs"
+  | "temperature"
+  | "benchmark_config"
+  | "created_at"
+  | "accuracy"
+  | "total_questions"
+  | "correct_answers"
+  | "input_tokens"
+  | "output_tokens"
+  | "total_tokens"
+  | "reasoning_tokens"
+  | "total_cost"
+  | "generation_time_ms"
+  | "epoch_total_questions"
+  | "epoch_correct_answers"
+  | "extra_scores"
+  | "primary_score"
+>;
+
+interface ResultFilesScan {
+  readonly rowCounts: readonly number[];
+  readonly sampleScores: readonly SampleScore[];
+  readonly usage: UsageTotals;
+  readonly primaryScore: BenchmarkPrimaryScore | undefined;
+  readonly first:
+    | Pick<BenchmarkResultRow, "epochs" | "temperature" | "benchmark_config">
+    | undefined;
+}
+
+const RESULT_SCHEMA = schemaFromColumnData({
+  columnData: COLUMN_SPECS.map((spec) => ({
+    name: spec.name,
+    type: spec.type,
+    nullable: spec.nullable,
+    data: [],
+  })),
+});
+
+export async function mergeResultFilesToParquet(
+  input: MergeResultFilesInput
+): Promise<MergedResultFiles> {
+  const { files, meta, writer } = input;
   const createdAt = meta.createdAt ?? formatIso(unsafeNow());
-  const sampleScores = rowsToSampleScores(rows);
-  const metrics = aggregateScores(sampleScores);
-  const counts = epochCounts(sampleScores);
-  let primaryScoreValue = 0;
-  let primaryScoreWeight = 0;
-  let hasPrimaryScore = false;
+  const scan = await scanResultFiles(files);
+  const runColumns = mergedRunColumns(scan, { ...meta, createdAt });
+  const parquetWriter = new ParquetWriter({
+    writer,
+    schema: RESULT_SCHEMA,
+    codec: "SNAPPY",
+    kvMetadata: resultKvMetadata({ ...meta, createdAt }),
+  });
+  for (const [index, readFile] of files.entries()) {
+    const expectedRows = scan.rowCounts[index] ?? 0;
+    if (expectedRows === 0) {
+      continue;
+    }
+    const rows = await readFile();
+    if (rows.length !== expectedRows) {
+      throw new Error(
+        `Result file ${index} changed between merge passes: expected ${expectedRows} rows, read ${rows.length}`
+      );
+    }
+    const mergedRows = rows.map((row) => ({ ...row, ...runColumns }));
+    await parquetWriter.write({
+      columnData: COLUMN_SPECS.map((spec) => ({
+        name: spec.name,
+        data: mergedRows.map((row) => row[spec.name] ?? null),
+      })),
+      rowGroupSize: mergedRows.length,
+    });
+  }
+  await parquetWriter.finish();
+  return {
+    summary:
+      scan.first === undefined
+        ? null
+        : summarizeSampleScores(scan.sampleScores, {
+            ...scan.usage,
+            temperature: scan.first.temperature,
+            ...definedValues({ primaryScore: scan.primaryScore }),
+          }),
+    benchmarkConfig: runColumns.benchmark_config ?? null,
+  };
+}
+
+async function scanResultFiles(
+  files: readonly ResultFileReader[]
+): Promise<ResultFilesScan> {
+  const rowCounts: number[] = [];
+  const sampleScores: SampleScore[] = [];
   const usage = {
     inputTokens: 0,
     outputTokens: 0,
@@ -171,10 +270,24 @@ export function mergeResultFilesToParquet(
     totalCost: 0,
     generationTimeMs: 0,
   };
-  for (const file of nonEmptyFiles) {
-    const [row] = file;
+  let first: ResultFilesScan["first"];
+  let primaryScoreValue = 0;
+  let primaryScoreWeight = 0;
+  let hasPrimaryScore = false;
+  for (const readFile of files) {
+    const rows = await readFile();
+    rowCounts.push(rows.length);
+    const [row] = rows;
     if (row === undefined) {
       continue;
+    }
+    first ??= {
+      epochs: row.epochs,
+      temperature: row.temperature,
+      benchmark_config: row.benchmark_config,
+    };
+    for (const sampleScore of rowsToSampleScores(rows)) {
+      sampleScores.push(sampleScore);
     }
     const parsedPrimaryScore = parsePrimaryScore(row.primary_score);
     hasPrimaryScore ||= parsedPrimaryScore !== undefined;
@@ -191,45 +304,49 @@ export function mergeResultFilesToParquet(
     usage.totalCost += row.total_cost;
     usage.generationTimeMs += row.generation_time_ms;
   }
-  const primaryScore =
-    hasPrimaryScore && primaryScoreWeight > 0
-      ? {
-          value: primaryScoreValue / primaryScoreWeight,
-          weight: primaryScoreWeight,
-        }
-      : undefined;
-  const mergedRows = rows.map((row) => {
-    return {
-      ...row,
-      format_version: RESULT_FORMAT_VERSION,
-      task: meta.task,
-      model: meta.model,
-      epochs: first?.epochs ?? 0,
-      temperature: first?.temperature ?? null,
-      benchmark_config: first?.benchmark_config ?? null,
-      created_at: createdAt,
-      accuracy: primaryScore?.value ?? metrics.accuracy,
-      total_questions: metrics.totalQuestions,
-      correct_answers: metrics.correctAnswers,
-      input_tokens: usage.inputTokens,
-      output_tokens: usage.outputTokens,
-      total_tokens: usage.totalTokens,
-      reasoning_tokens: usage.reasoningTokens,
-      total_cost: usage.totalCost,
-      generation_time_ms: usage.generationTimeMs,
-      epoch_total_questions: counts.epochTotalQuestions,
-      epoch_correct_answers: counts.epochCorrectAnswers,
-      extra_scores: null,
-      primary_score: primaryScore ? JSON.stringify(primaryScore) : null,
-    };
-  });
-  const columnData = COLUMN_SPECS.map((spec) => ({
-    name: spec.name,
-    type: spec.type,
-    nullable: spec.nullable,
-    data: mergedRows.map((row) => row[spec.name] ?? null),
-  }));
-  return writeParquet(columnData, { ...meta, createdAt });
+  return {
+    rowCounts,
+    sampleScores,
+    usage,
+    first,
+    primaryScore:
+      hasPrimaryScore && primaryScoreWeight > 0
+        ? {
+            value: primaryScoreValue / primaryScoreWeight,
+            weight: primaryScoreWeight,
+          }
+        : undefined,
+  };
+}
+
+function mergedRunColumns(
+  scan: ResultFilesScan,
+  meta: ResultRowsParquetMeta & { readonly createdAt: string }
+): MergedRunColumns {
+  const metrics = aggregateScores(scan.sampleScores);
+  const counts = epochCounts(scan.sampleScores);
+  return {
+    format_version: RESULT_FORMAT_VERSION,
+    task: meta.task,
+    model: meta.model,
+    epochs: scan.first?.epochs ?? 0,
+    temperature: scan.first?.temperature ?? null,
+    benchmark_config: scan.first?.benchmark_config ?? null,
+    created_at: meta.createdAt,
+    accuracy: scan.primaryScore?.value ?? metrics.accuracy,
+    total_questions: metrics.totalQuestions,
+    correct_answers: metrics.correctAnswers,
+    input_tokens: scan.usage.inputTokens,
+    output_tokens: scan.usage.outputTokens,
+    total_tokens: scan.usage.totalTokens,
+    reasoning_tokens: scan.usage.reasoningTokens,
+    total_cost: scan.usage.totalCost,
+    generation_time_ms: scan.usage.generationTimeMs,
+    epoch_total_questions: counts.epochTotalQuestions,
+    epoch_correct_answers: counts.epochCorrectAnswers,
+    extra_scores: null,
+    primary_score: scan.primaryScore ? JSON.stringify(scan.primaryScore) : null,
+  };
 }
 
 function epochCounts(sampleScores: readonly SampleScore[]): {
@@ -259,15 +376,21 @@ function writeParquet(
   const arrayBuffer = parquetWriteBuffer({
     columnData,
     codec: "SNAPPY",
-    kvMetadata: [
-      { key: "writer", value: RESULT_WRITER },
-      { key: "schema_version", value: String(RESULT_FORMAT_VERSION) },
-      { key: "task", value: meta.task },
-      { key: "model", value: meta.model },
-      { key: "created_at", value: createdAt },
-    ],
+    kvMetadata: resultKvMetadata({ ...meta, createdAt }),
   });
   return Buffer.from(arrayBuffer);
+}
+
+function resultKvMetadata(
+  meta: ResultRowsParquetMeta & { readonly createdAt: string }
+): KeyValue[] {
+  return [
+    { key: "writer", value: RESULT_WRITER },
+    { key: "schema_version", value: String(RESULT_FORMAT_VERSION) },
+    { key: "task", value: meta.task },
+    { key: "model", value: meta.model },
+    { key: "created_at", value: meta.createdAt },
+  ];
 }
 
 function cellValue(name: ColumnName, ctx: RowContext, s: SampleScore): unknown {
@@ -516,7 +639,7 @@ function rowsToSampleScores(
     epoch: row.epoch,
     score: {
       value: rowScoreValue(row.score_value),
-      answer: row.answer,
+      answer: null,
       explanation: "",
     },
   }));
@@ -529,7 +652,24 @@ export function summarizeChunkRows(
   if (first === undefined) {
     return null;
   }
-  const sampleScores = rowsToSampleScores(rows);
+  return summarizeSampleScores(rowsToSampleScores(rows), {
+    inputTokens: first.input_tokens,
+    outputTokens: first.output_tokens,
+    totalTokens: first.total_tokens,
+    reasoningTokens: first.reasoning_tokens,
+    totalCost: first.total_cost,
+    generationTimeMs: first.generation_time_ms,
+    temperature: first.temperature,
+    ...definedValues({
+      primaryScore: parsePrimaryScore(first.primary_score),
+    }),
+  });
+}
+
+function summarizeSampleScores(
+  sampleScores: readonly SampleScore[],
+  run: Omit<ChunkResultSummary, keyof AggregateMetrics | "epochResults">
+): ChunkResultSummary {
   const metrics = aggregateScores(sampleScores);
   const byEpoch = new Map<number, SampleScore[]>();
   for (const sampleScore of sampleScores) {
@@ -540,19 +680,5 @@ export function summarizeChunkRows(
   const epochResults = [...byEpoch.entries()]
     .toSorted(([a], [b]) => a - b)
     .map(([epoch, scores]) => ({ epoch, ...aggregateScores(scores) }));
-  const primaryScore = parsePrimaryScore(first.primary_score);
-  return {
-    ...metrics,
-    inputTokens: first.input_tokens,
-    outputTokens: first.output_tokens,
-    totalTokens: first.total_tokens,
-    reasoningTokens: first.reasoning_tokens,
-    totalCost: first.total_cost,
-    generationTimeMs: first.generation_time_ms,
-    temperature: first.temperature,
-    ...definedValues({
-      primaryScore,
-    }),
-    epochResults,
-  };
+  return { ...metrics, ...run, epochResults };
 }
