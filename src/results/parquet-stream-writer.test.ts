@@ -53,7 +53,7 @@ function resultRows(sampleCount: number): ReturnType<typeof readResultRows> {
 
 describe("parquetStreamWriter", () => {
   it("streams the same bytes an in-memory merge produces, in bounded chunks", async () => {
-    const rows = await resultRows(50);
+    const rows = await resultRows(250);
     const files = [rows, rows, rows].map((file) => () => Promise.resolve(file));
     const meta = {
       task: META.task,
@@ -78,6 +78,9 @@ describe("parquetStreamWriter", () => {
     expect(Buffer.concat(chunks)).toEqual(Buffer.from(inMemory.getBuffer()));
     expect(chunks.length).toBeGreaterThan(3);
     expect(maxInFlight).toBe(1);
+    expect(Math.max(...chunks.map((chunk) => chunk.byteLength))).toBeLessThan(
+      64 * 1024
+    );
     expect(() => streamed.getBytes()).toThrow("does not retain");
   });
 });

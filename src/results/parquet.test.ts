@@ -1141,6 +1141,55 @@ describe("mergeResultFilesToParquet", () => {
       })
     ).rejects.toThrow("Result file 0 changed between merge passes");
   });
+  it("rejects a file whose scores change between passes without changing length", async () => {
+    const rows = await readRows(
+      runResultToParquet({ result: RESULT, meta: META })
+    );
+    const flipped = rows.map((row) => ({
+      ...row,
+      score_value:
+        row.score_value === ScoreValue.Correct
+          ? ScoreValue.Incorrect
+          : ScoreValue.Correct,
+    }));
+    let calls = 0;
+
+    await expect(
+      mergeResultFilesToParquet({
+        files: [
+          () => {
+            calls += 1;
+            return Promise.resolve(calls === 1 ? rows : flipped);
+          },
+        ],
+        meta: { task: META.task, model: META.model, createdAt: META.createdAt },
+        writer: new ByteWriter(),
+      })
+    ).rejects.toThrow("Result file 0 changed between merge passes");
+  });
+  it("rejects a file whose run-level usage changes between passes", async () => {
+    const rows = await readRows(
+      runResultToParquet({ result: RESULT, meta: META })
+    );
+    const changed = rows.map((row) => ({
+      ...row,
+      input_tokens: row.input_tokens + 1,
+    }));
+    let calls = 0;
+
+    await expect(
+      mergeResultFilesToParquet({
+        files: [
+          () => {
+            calls += 1;
+            return Promise.resolve(calls === 1 ? rows : changed);
+          },
+        ],
+        meta: { task: META.task, model: META.model, createdAt: META.createdAt },
+        writer: new ByteWriter(),
+      })
+    ).rejects.toThrow("Result file 0 changed between merge passes");
+  });
 });
 
 describe("BenchmarkResultRowSchema", () => {

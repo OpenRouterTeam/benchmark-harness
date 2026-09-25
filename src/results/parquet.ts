@@ -193,6 +193,7 @@ type MergedRunColumns = Pick<
 
 interface ResultFilesScan {
   readonly rowCounts: readonly number[];
+  readonly runFingerprints: readonly (string | undefined)[];
   readonly sampleScores: readonly SampleScore[];
   readonly usage: UsageTotals;
   readonly primaryScore: BenchmarkPrimaryScore | undefined;
@@ -200,6 +201,8 @@ interface ResultFilesScan {
     | Pick<BenchmarkResultRow, "epochs" | "temperature" | "benchmark_config">
     | undefined;
 }
+
+const MERGE_ROW_GROUP_ROWS = 100;
 
 const RESULT_SCHEMA = schemaFromColumnData({
   columnData: COLUMN_SPECS.map((spec) => ({
@@ -223,24 +226,30 @@ export async function mergeResultFilesToParquet(
     codec: "SNAPPY",
     kvMetadata: resultKvMetadata({ ...meta, createdAt }),
   });
+  let sampleOffset = 0;
   for (const [index, readFile] of files.entries()) {
     const expectedRows = scan.rowCounts[index] ?? 0;
     if (expectedRows === 0) {
       continue;
     }
     const rows = await readFile();
-    if (rows.length !== expectedRows) {
-      throw new Error(
-        `Result file ${index} changed between merge passes: expected ${expectedRows} rows, read ${rows.length}`
+    const unchanged =
+      rows.length === expectedRows &&
+      runFingerprint(rows[0]) === scan.runFingerprints[index] &&
+      rows.every((row, rowIndex) =>
+        sameSampleScore(row, scan.sampleScores[sampleOffset + rowIndex])
       );
+    if (!unchanged) {
+      throw new Error(`Result file ${index} changed between merge passes`);
     }
+    sampleOffset += expectedRows;
     const mergedRows = rows.map((row) => ({ ...row, ...runColumns }));
     await parquetWriter.write({
       columnData: COLUMN_SPECS.map((spec) => ({
         name: spec.name,
         data: mergedRows.map((row) => row[spec.name] ?? null),
       })),
-      rowGroupSize: mergedRows.length,
+      rowGroupSize: MERGE_ROW_GROUP_ROWS,
     });
   }
   await parquetWriter.finish();
@@ -261,6 +270,7 @@ async function scanResultFiles(
   files: readonly ResultFileReader[]
 ): Promise<ResultFilesScan> {
   const rowCounts: number[] = [];
+  const runFingerprints: (string | undefined)[] = [];
   const sampleScores: SampleScore[] = [];
   const usage = {
     inputTokens: 0,
@@ -277,6 +287,7 @@ async function scanResultFiles(
   for (const readFile of files) {
     const rows = await readFile();
     rowCounts.push(rows.length);
+    runFingerprints.push(runFingerprint(rows[0]));
     const [row] = rows;
     if (row === undefined) {
       continue;
@@ -306,6 +317,7 @@ async function scanResultFiles(
   }
   return {
     rowCounts,
+    runFingerprints,
     sampleScores,
     usage,
     first,
@@ -317,6 +329,40 @@ async function scanResultFiles(
           }
         : undefined,
   };
+}
+
+function runFingerprint(
+  row: BenchmarkResultRow | undefined
+): string | undefined {
+  if (row === undefined) {
+    return undefined;
+  }
+  return JSON.stringify([
+    row.epochs,
+    row.temperature,
+    row.benchmark_config ?? null,
+    row.accuracy,
+    row.total_questions,
+    row.primary_score,
+    row.input_tokens,
+    row.output_tokens,
+    row.total_tokens,
+    row.reasoning_tokens,
+    row.total_cost,
+    row.generation_time_ms,
+  ]);
+}
+
+function sameSampleScore(
+  row: BenchmarkResultRow,
+  sampleScore: SampleScore | undefined
+): boolean {
+  return (
+    sampleScore !== undefined &&
+    row.sample_id === sampleScore.sampleId &&
+    row.epoch === sampleScore.epoch &&
+    rowScoreValue(row.score_value) === sampleScore.score.value
+  );
 }
 
 function mergedRunColumns(
