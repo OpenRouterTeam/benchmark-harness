@@ -2,10 +2,10 @@ import {
   COST_TIERS,
   IMAGE_DETAIL_VALUES,
   REASONING_EFFORTS,
+  stripVariantSuffix,
   SWITCHYARD_ALGORITHMS,
   VIDEO_PROCESSING_MODES,
 } from "../harness/constants";
-import { stripVariantSuffix } from "../harness/model-slug";
 import { ProviderSort } from "../internal/enums";
 import type { ValueOf } from "../internal/guards";
 import { z, zDefaultedText, zInt } from "../internal/zod";

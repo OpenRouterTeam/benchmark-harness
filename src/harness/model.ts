@@ -14,7 +14,7 @@ import type {
   ToolDefinition,
 } from "./core";
 
-export { stripVariantSuffix } from "./model-slug";
+export { stripVariantSuffix } from "./constants";
 
 export interface GenerateConfig {
   readonly temperature?: number;
