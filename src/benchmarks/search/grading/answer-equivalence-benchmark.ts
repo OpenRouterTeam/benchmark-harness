@@ -5,6 +5,7 @@ import type { Score, Target, TaskState } from "../../../harness/core";
 import { ScoreValue } from "../../../harness/core";
 import type { RunResult } from "../../../harness/run";
 import type { SolverService } from "../../../harness/solver";
+import { mergeModelUsages } from "../../../harness/usage";
 import { Either } from "../../../internal/either";
 import { definedValues } from "../../../internal/guards";
 import { parseSchema } from "../../../internal/zod";
@@ -13,7 +14,6 @@ import { judgeCall } from "../../../judge/judge";
 import type { ResponsesService } from "../../../providers/responses-client";
 import type { SearchSolverOptions } from "../core/solver";
 import { searchSolver } from "../core/solver";
-import { mergeModelUsages } from "../core/usage";
 import type { AnswerEquivalenceVerdict } from "./answer-equivalence";
 import {
   ANSWER_EQUIVALENCE_JUDGE_CONFIG,

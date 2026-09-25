@@ -25,6 +25,7 @@ import { DEFAULT_ORI_CHANNEL, DEFAULT_ORI_INSTALL_URL } from "./schema";
 const EXIT_DETAIL_TAIL_CHARS = 500;
 
 export const ORI_SESSION_ID_ENV = "ORI_OPENROUTER_SESSION_ID" as const;
+export const ORI_BASE_URL_ENV = "ORI_OPENROUTER_BASE_URL" as const;
 
 export const AGENT_EXEC_UNAVAILABLE_EXIT = -1;
 
@@ -89,6 +90,7 @@ export function isSafeOriSessionId(sessionId: string): boolean {
 export interface AgentCliOpts {
   readonly model: string;
   readonly apiKey: string;
+  readonly baseUrl?: string;
   readonly sessionId?: string;
   readonly endpointId?: string;
   readonly agentPackage?: string;
@@ -122,6 +124,9 @@ export function buildAgentCliEnv(opts: AgentCliOpts): Record<string, string> {
     OPENROUTER_API_KEY: opts.apiKey,
     TB_MODEL: normalizeAgentModel(opts.model),
   };
+  if (opts.baseUrl !== undefined) {
+    env[ORI_BASE_URL_ENV] = opts.baseUrl;
+  }
   if (opts.endpointId !== undefined) {
     env["OPENROUTER_ENDPOINT_ID"] = opts.endpointId;
   }
