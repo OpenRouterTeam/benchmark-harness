@@ -52,6 +52,12 @@ import { mergeModelUsages } from "./usage";
 export const DEFAULT_SEARCH_TIMEOUT_MS = 420000;
 
 const EMPTY_SEARCH_RESPONSE_MESSAGE = "search response had no answer text";
+function pluginsInWireShape(body: ResponsesRequest): readonly unknown[] {
+  const wireBody: unknown = JSON.parse(responsesRequestToJSON(body));
+  const wirePlugins = isRecord(wireBody) ? wireBody["plugins"] : undefined;
+  return isUnknownArray(wirePlugins) ? wirePlugins : [];
+}
+
 function switchyardExtraBody(
   body: ResponsesRequest,
   opts: Pick<SearchSolverOptions, "model" | "switchyardAlgorithm">
@@ -63,11 +69,7 @@ function switchyardExtraBody(
   if (plugin === undefined) {
     return undefined;
   }
-  const wire: unknown = JSON.parse(responsesRequestToJSON(body));
-  const wirePlugins = isRecord(wire) ? wire["plugins"] : undefined;
-  return {
-    plugins: [...(isUnknownArray(wirePlugins) ? wirePlugins : []), plugin],
-  };
+  return { plugins: [...pluginsInWireShape(body), plugin] };
 }
 
 export interface SearchSolverOptions {
