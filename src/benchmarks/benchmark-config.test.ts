@@ -1,4 +1,5 @@
 import { describe, expect, it } from "bun:test";
+import { spawnSync } from "node:child_process";
 
 import { assertLeft, assertRight } from "../internal/testing";
 import { parseSchema } from "../internal/zod";
@@ -12,6 +13,16 @@ import {
 } from "./benchmark-config";
 
 describe("benchmark config", () => {
+  it("loads with frozen globals in a workflow sandbox", () => {
+    const result = spawnSync(
+      process.execPath,
+      ["-e", 'Object.freeze(Error); await import("./benchmark-config.ts");'],
+      { cwd: import.meta.dirname, encoding: "utf8" }
+    );
+    expect(result.stderr).toBe("");
+    expect(result.status).toBe(0);
+  });
+
   it("keeps native configs precise while parsing them through the native schema", () => {
     const result = parseSchema(NativeBenchmarkRunConfigSchema, {
       benchmarkId: "search_hle",
