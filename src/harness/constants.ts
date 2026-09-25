@@ -22,7 +22,10 @@ export type ReasoningEffort = ValueOf<typeof REASONING_EFFORTS>;
 
 export const DEFAULT_REASONING_EFFORT: ReasoningEffort = "high";
 
-export const ADAPTIVE_REASONING_EFFORT_MODELS = ["openrouter/jev"] as const;
+export const ADAPTIVE_REASONING_EFFORT_MODELS = [
+  "openrouter/jev",
+  "typesafe/jev-router",
+] as const;
 
 export function supportsAdaptiveReasoningEffort(model: string): boolean {
   const baseModel = model.split(":")[0];
