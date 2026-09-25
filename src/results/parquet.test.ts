@@ -3,6 +3,7 @@ import assert from "node:assert";
 
 import type { AsyncBuffer } from "hyparquet";
 import { parquetMetadata } from "hyparquet";
+import { ByteWriter } from "hyparquet-writer";
 
 import type { ModelMessage, ResponseItem } from "../harness/core";
 import { MessageRole, ScoreValue } from "../harness/core";
@@ -11,6 +12,7 @@ import { assertRight, assertLeft } from "../internal/testing";
 import { parseSchema } from "../internal/zod";
 import { responsesTurnToModelOutput } from "../providers/messages-to-responses";
 import { AtifTrajectorySchema } from "./atif-schema";
+import type { MergedResultFiles } from "./parquet";
 import {
   mergeResultFilesToParquet,
   readResultRows,
@@ -104,6 +106,25 @@ function bufferToArrayBuffer(buf: Buffer): ArrayBuffer {
 function readRows(buf: Buffer): Promise<readonly BenchmarkResultRow[]> {
   const file = asyncBufferFromArrayBuffer(bufferToArrayBuffer(buf));
   return readResultRows(file);
+}
+
+async function mergeToBytes(
+  files: readonly (readonly BenchmarkResultRow[])[]
+): Promise<{ readonly bytes: Buffer; readonly merged: MergedResultFiles }> {
+  const writer = new ByteWriter();
+  const merged = await mergeResultFilesToParquet({
+    files: files.map((rows) => () => Promise.resolve(rows)),
+    meta: { task: META.task, model: META.model, createdAt: META.createdAt },
+    writer,
+  });
+  return { bytes: Buffer.from(writer.getBuffer()), merged };
+}
+
+async function mergedRowsOf(
+  files: readonly (readonly BenchmarkResultRow[])[]
+): Promise<readonly BenchmarkResultRow[]> {
+  const { bytes } = await mergeToBytes(files);
+  return readRows(bytes);
 }
 
 function sampleColumns(row: BenchmarkResultRow): Record<string, unknown> {
@@ -791,27 +812,9 @@ describe("mergeResultFilesToParquet", () => {
     const secondRows = await readRows(
       runResultToParquet({ result: secondResult, meta: META })
     );
-    const singleRows = await readRows(
-      mergeResultFilesToParquet([firstRows], {
-        task: META.task,
-        model: META.model,
-        createdAt: META.createdAt,
-      })
-    );
-    const mergedRows = await readRows(
-      mergeResultFilesToParquet([firstRows, [], secondRows], {
-        task: META.task,
-        model: META.model,
-        createdAt: META.createdAt,
-      })
-    );
-    const emptyRows = await readRows(
-      mergeResultFilesToParquet([[], []], {
-        task: META.task,
-        model: META.model,
-        createdAt: META.createdAt,
-      })
-    );
+    const singleRows = await mergedRowsOf([firstRows]);
+    const mergedRows = await mergedRowsOf([firstRows, [], secondRows]);
+    const emptyRows = await mergedRowsOf([[], []]);
 
     expect(singleRows.map(sampleColumns)).toEqual(firstRows.map(sampleColumns));
     expect(singleRows.every((row) => row.format_version === 2)).toBe(true);
@@ -912,13 +915,7 @@ describe("mergeResultFilesToParquet", () => {
       })
     );
 
-    const rows = await readRows(
-      mergeResultFilesToParquet([firstRows, secondRows], {
-        task: META.task,
-        model: META.model,
-        createdAt: META.createdAt,
-      })
-    );
+    const rows = await mergedRowsOf([firstRows, secondRows]);
     const summary = summarizeChunkRows(rows);
     assert(summary);
     for (const row of rows) {
@@ -982,13 +979,7 @@ describe("mergeResultFilesToParquet", () => {
       })
     );
 
-    const rows = await readRows(
-      mergeResultFilesToParquet([firstRows, secondRows], {
-        task: META.task,
-        model: META.model,
-        createdAt: META.createdAt,
-      })
-    );
+    const rows = await mergedRowsOf([firstRows, secondRows]);
     const summary = summarizeChunkRows(rows);
     assert(summary);
     expect(rows.every((row) => row.accuracy === 0.6)).toBe(true);
@@ -1058,17 +1049,148 @@ describe("mergeResultFilesToParquet", () => {
       })
     );
 
-    const rows = await readRows(
-      mergeResultFilesToParquet([firstRows, secondRows], {
-        task: META.task,
-        model: META.model,
-        createdAt: META.createdAt,
-      })
-    );
+    const rows = await mergedRowsOf([firstRows, secondRows]);
     expect(rows.every((row) => row.accuracy === 0.5)).toBe(true);
     expect(rows.every((row) => row.primary_score === null)).toBe(true);
   });
+  it("returns the summary and benchmark config of the written rows", async () => {
+    const firstRows = await readRows(
+      runResultToParquet({
+        result: RESULT,
+        meta: { ...META, benchmarkConfig: { maxTokens: 128 } },
+        primaryScore: { value: 0.25, weight: 4 },
+      })
+    );
+    const secondRows = await readRows(
+      runResultToParquet({ result: RESULT, meta: META })
+    );
+    const { bytes, merged } = await mergeToBytes([firstRows, [], secondRows]);
+    const rows = await readRows(bytes);
+
+    expect(merged.summary).toEqual(summarizeChunkRows(rows));
+    expect(merged.benchmarkConfig).toBe(firstRows[0]!.benchmark_config);
+    expect(merged.benchmarkConfig).not.toBeNull();
+    expect(
+      rows.every((row) => row.benchmark_config === merged.benchmarkConfig)
+    ).toBe(true);
+  });
+  it("returns a null summary when every input is empty", async () => {
+    const { merged } = await mergeToBytes([[], []]);
+
+    expect(merged).toEqual({ summary: null, benchmarkConfig: null });
+  });
+  it("writes one row group per non-empty file with the run-result schema", async () => {
+    const single = runResultToParquet({ result: RESULT, meta: META });
+    const firstRows = await readRows(single);
+    const { bytes } = await mergeToBytes([firstRows, [], firstRows]);
+    const mergedMeta = parquetMetadata(bufferToArrayBuffer(bytes));
+    const singleMeta = parquetMetadata(bufferToArrayBuffer(single));
+
+    expect(mergedMeta.row_groups.map((group) => group.num_rows)).toEqual([
+      BigInt(firstRows.length),
+      BigInt(firstRows.length),
+    ]);
+    expect(mergedMeta.schema).toEqual(singleMeta.schema);
+    expect(mergedMeta.key_value_metadata).toEqual(
+      singleMeta.key_value_metadata
+    );
+  });
+  it("reads files one at a time, twice each", async () => {
+    const rows = await readRows(
+      runResultToParquet({ result: RESULT, meta: META })
+    );
+    const reads: number[] = [];
+    let inFlight = 0;
+    let maxInFlight = 0;
+    const reader =
+      (index: number) => async (): Promise<readonly BenchmarkResultRow[]> => {
+        inFlight += 1;
+        maxInFlight = Math.max(maxInFlight, inFlight);
+        reads.push(index);
+        await Promise.resolve();
+        inFlight -= 1;
+        return index === 1 ? [] : rows;
+      };
+
+    await mergeResultFilesToParquet({
+      files: [reader(0), reader(1), reader(2)],
+      meta: { task: META.task, model: META.model, createdAt: META.createdAt },
+      writer: new ByteWriter(),
+    });
+
+    expect(maxInFlight).toBe(1);
+    expect(reads).toEqual([0, 1, 2, 0, 2]);
+  });
+  it("rejects a file whose row count changes between passes", async () => {
+    const rows = await readRows(
+      runResultToParquet({ result: RESULT, meta: META })
+    );
+    let calls = 0;
+
+    await expect(
+      mergeResultFilesToParquet({
+        files: [
+          () => {
+            calls += 1;
+            return Promise.resolve(calls === 1 ? rows : rows.slice(1));
+          },
+        ],
+        meta: { task: META.task, model: META.model, createdAt: META.createdAt },
+        writer: new ByteWriter(),
+      })
+    ).rejects.toThrow("Result file 0 changed between merge passes");
+  });
+  it("rejects a file whose scores change between passes without changing length", async () => {
+    const rows = await readRows(
+      runResultToParquet({ result: RESULT, meta: META })
+    );
+    const flipped = rows.map((row) => ({
+      ...row,
+      score_value:
+        row.score_value === ScoreValue.Correct
+          ? ScoreValue.Incorrect
+          : ScoreValue.Correct,
+    }));
+    let calls = 0;
+
+    await expect(
+      mergeResultFilesToParquet({
+        files: [
+          () => {
+            calls += 1;
+            return Promise.resolve(calls === 1 ? rows : flipped);
+          },
+        ],
+        meta: { task: META.task, model: META.model, createdAt: META.createdAt },
+        writer: new ByteWriter(),
+      })
+    ).rejects.toThrow("Result file 0 changed between merge passes");
+  });
+  it("rejects a file whose run-level usage changes between passes", async () => {
+    const rows = await readRows(
+      runResultToParquet({ result: RESULT, meta: META })
+    );
+    const changed = rows.map((row) => ({
+      ...row,
+      input_tokens: row.input_tokens + 1,
+    }));
+    let calls = 0;
+
+    await expect(
+      mergeResultFilesToParquet({
+        files: [
+          () => {
+            calls += 1;
+            return Promise.resolve(calls === 1 ? rows : changed);
+          },
+        ],
+        meta: { task: META.task, model: META.model, createdAt: META.createdAt },
+        writer: new ByteWriter(),
+      })
+    ).rejects.toThrow("Result file 0 changed between merge passes");
+  });
 });
+
 describe("BenchmarkResultRowSchema", () => {
   it("parses a valid row object", () => {
     const parsed = parseSchema(BenchmarkResultRowSchema, {
