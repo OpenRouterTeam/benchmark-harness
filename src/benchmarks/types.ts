@@ -10,11 +10,11 @@ import type { ResponsesModel } from "../providers/responses-model";
 import type { RetryConfig } from "../runtime/retry";
 import type {
   BenchmarkRunConfig,
-  NativeBenchmarkRunConfig,
+  MendelBenchmarkRunConfig,
 } from "./benchmark-config";
 
 export interface BenchmarkRunInput<
-  Config extends BenchmarkRunConfig = NativeBenchmarkRunConfig,
+  Config extends BenchmarkRunConfig = MendelBenchmarkRunConfig,
 > {
   readonly apiKey: string;
   readonly baseUrl?: string;
@@ -38,7 +38,7 @@ export interface BenchmarkPrimaryScore {
 }
 
 export interface Benchmark<
-  Config extends BenchmarkRunConfig = NativeBenchmarkRunConfig,
+  Config extends BenchmarkRunConfig = MendelBenchmarkRunConfig,
 > {
   readonly id: string;
   readonly makeDatasetLayer: (retryConfig?: RetryConfig) => Layer<Dataset>;

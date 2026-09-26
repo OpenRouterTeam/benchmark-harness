@@ -37,7 +37,7 @@ const INJECTED_CONFIG = {
 } as const;
 
 describe("benchmark runner by id", () => {
-  it("runs an injected benchmark instead of the native registry", async () => {
+  it("runs an injected benchmark instead of the Mendel registry", async () => {
     const result = await runBenchmarkById({
       benchmarkId: INJECTED_BENCHMARK.id,
       injectedBenchmark: INJECTED_BENCHMARK,
@@ -66,7 +66,7 @@ describe("benchmark runner by id", () => {
     expect(result.left).toContain("injected benchmark is required");
   });
 
-  it("rejects an injected benchmark for a native config", async () => {
+  it("rejects an injected benchmark for a Mendel config", async () => {
     const result = await runBenchmarkById({
       benchmarkId: "search_hle",
       injectedBenchmark: INJECTED_BENCHMARK,
@@ -81,7 +81,7 @@ describe("benchmark runner by id", () => {
     });
 
     assertLeft(result);
-    expect(result.left).toContain("cannot be supplied for native benchmark");
+    expect(result.left).toContain("cannot be supplied for Mendel benchmark");
   });
 
   it("resolves dataset size from an injected benchmark", async () => {
