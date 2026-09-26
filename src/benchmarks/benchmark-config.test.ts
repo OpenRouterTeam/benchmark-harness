@@ -9,7 +9,7 @@ import {
   isInjectedBenchmarkConfig,
   isModelBenchmarkConfig,
   isSearchBenchmarkConfig,
-  MendelBenchmarkRunConfigSchema,
+  KeplerBenchmarkRunConfigSchema,
 } from "./benchmark-config";
 
 describe("benchmark config", () => {
@@ -23,8 +23,8 @@ describe("benchmark config", () => {
     expect(result.status).toBe(0);
   });
 
-  it("keeps Mendel configs precise while parsing them through the Mendel schema", () => {
-    const result = parseSchema(MendelBenchmarkRunConfigSchema, {
+  it("keeps Kepler configs precise while parsing them through the Kepler schema", () => {
+    const result = parseSchema(KeplerBenchmarkRunConfigSchema, {
       benchmarkId: "search_hle",
       model: "openai/gpt-5.4",
       reasoningEffort: "high",
@@ -40,7 +40,7 @@ describe("benchmark config", () => {
     expect(isModelBenchmarkConfig(result.right)).toBe(true);
   });
 
-  it("does not let malformed Mendel configs fall through to the injected variant", () => {
+  it("does not let malformed Kepler configs fall through to the injected variant", () => {
     const result = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "gpqa_diamond",
       model: 42,
@@ -140,7 +140,7 @@ describe("benchmark config", () => {
     expect(result.right.options).toEqual({});
   });
 
-  it("rejects an injected config that reuses a Mendel benchmark id", () => {
+  it("rejects an injected config that reuses a Kepler benchmark id", () => {
     const result = parseSchema(InjectedBenchmarkRunConfigSchema, {
       benchmarkId: "gpqa_diamond",
       model: "injected/model",

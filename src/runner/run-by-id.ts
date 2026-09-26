@@ -12,7 +12,7 @@ import type {
   InjectedBenchmarkRunConfig,
 } from "../benchmarks/benchmark-config";
 import {
-  isMendelBenchmarkConfig,
+  isKeplerBenchmarkConfig,
   modelFromConfig,
 } from "../benchmarks/benchmark-config";
 import { getBenchmark } from "../benchmarks/registry";
@@ -241,20 +241,20 @@ function resolveRunBenchmark(input: RunBenchmarkInput): Either.Either<
   },
   string
 > {
-  if (isMendelBenchmarkConfig(input.benchmarkConfig)) {
+  if (isKeplerBenchmarkConfig(input.benchmarkConfig)) {
     if (input.injectedBenchmark !== undefined) {
       return Either.left(
-        `An injected benchmark cannot be supplied for Mendel benchmark "${input.benchmarkId}"`
+        `An injected benchmark cannot be supplied for Kepler benchmark "${input.benchmarkId}"`
       );
     }
-    const mendelBenchmark = getBenchmark(input.benchmarkId);
-    if (mendelBenchmark === undefined) {
+    const keplerBenchmark = getBenchmark(input.benchmarkId);
+    if (keplerBenchmark === undefined) {
       return Either.left(`Unknown benchmark "${input.benchmarkId}"`);
     }
     return Either.right({
-      benchmark: mendelBenchmark,
+      benchmark: keplerBenchmark,
       benchmarkLayer: makeBenchmarkLayer(
-        mendelBenchmark,
+        keplerBenchmark,
         input,
         input.benchmarkConfig
       ),

@@ -329,7 +329,7 @@ export type SearchBenchmarkConfig =
   | DsqaBenchmarkConfig
   | WideSearchBenchmarkConfig;
 
-export const MendelBenchmarkRunConfigSchema = z.discriminatedUnion(
+export const KeplerBenchmarkRunConfigSchema = z.discriminatedUnion(
   "benchmarkId",
   [
     GpqaBenchmarkConfigSchema,
@@ -353,18 +353,18 @@ export const MendelBenchmarkRunConfigSchema = z.discriminatedUnion(
   ]
 );
 
-export type MendelBenchmarkRunConfig = z.infer<
-  typeof MendelBenchmarkRunConfigSchema
+export type KeplerBenchmarkRunConfig = z.infer<
+  typeof KeplerBenchmarkRunConfigSchema
 >;
 
-type MendelModelBenchmarkConfig = Extract<
-  MendelBenchmarkRunConfig,
+type KeplerModelBenchmarkConfig = Extract<
+  KeplerBenchmarkRunConfig,
   {
     model: string;
   }
 >;
 
-export type ModelBenchmarkId = MendelModelBenchmarkConfig["benchmarkId"];
+export type ModelBenchmarkId = KeplerModelBenchmarkConfig["benchmarkId"];
 
 export const BENCHMARK_OPTIONS_SCHEMAS = {
   gpqa_diamond: GpqaOptionsSchema,
@@ -386,8 +386,8 @@ export const BENCHMARK_OPTIONS_SCHEMAS = {
   vgi_bench: VgiBenchOptionsSchema,
 } as const satisfies Record<ModelBenchmarkId, z.ZodObject<z.ZodRawShape>>;
 
-const MENDEL_BENCHMARK_ID_SET: ReadonlySet<string> = new Set(
-  MendelBenchmarkRunConfigSchema.options.flatMap((schema) => {
+const KEPLER_BENCHMARK_ID_SET: ReadonlySet<string> = new Set(
+  KeplerBenchmarkRunConfigSchema.options.flatMap((schema) => {
     const benchmarkId = schema.shape.benchmarkId;
     return benchmarkId instanceof z.ZodLiteral ? [benchmarkId.value] : [];
   })
@@ -397,8 +397,8 @@ const InjectedBenchmarkIdSchema = z
   .string()
   .min(1)
   .refine(
-    (benchmarkId) => !MENDEL_BENCHMARK_ID_SET.has(benchmarkId),
-    "Injected benchmark ids must not reuse Mendel benchmark ids"
+    (benchmarkId) => !KEPLER_BENCHMARK_ID_SET.has(benchmarkId),
+    "Injected benchmark ids must not reuse Kepler benchmark ids"
   );
 
 export const InjectedBenchmarkRunConfigSchema = z.object({
@@ -412,7 +412,7 @@ export type InjectedBenchmarkRunConfig = z.infer<
 >;
 
 export const BenchmarkRunConfigSchema = z
-  .union([MendelBenchmarkRunConfigSchema, InjectedBenchmarkRunConfigSchema])
+  .union([KeplerBenchmarkRunConfigSchema, InjectedBenchmarkRunConfigSchema])
   .refine(
     (config) =>
       !("model" in config) ||
@@ -427,7 +427,7 @@ export const BenchmarkRunConfigSchema = z
 export type BenchmarkRunConfig = z.infer<typeof BenchmarkRunConfigSchema>;
 
 export type ModelBenchmarkConfig =
-  | MendelModelBenchmarkConfig
+  | KeplerModelBenchmarkConfig
   | InjectedBenchmarkRunConfig;
 
 export function isModelBenchmarkConfig(
@@ -436,16 +436,16 @@ export function isModelBenchmarkConfig(
   return "model" in config;
 }
 
-export function isMendelBenchmarkConfig(
+export function isKeplerBenchmarkConfig(
   config: BenchmarkRunConfig
-): config is MendelBenchmarkRunConfig {
-  return MENDEL_BENCHMARK_ID_SET.has(config.benchmarkId);
+): config is KeplerBenchmarkRunConfig {
+  return KEPLER_BENCHMARK_ID_SET.has(config.benchmarkId);
 }
 
 export function isInjectedBenchmarkConfig(
   config: BenchmarkRunConfig
 ): config is InjectedBenchmarkRunConfig {
-  return !isMendelBenchmarkConfig(config);
+  return !isKeplerBenchmarkConfig(config);
 }
 
 const SEARCH_BENCHMARK_ID_SET: ReadonlySet<string> = new Set([
