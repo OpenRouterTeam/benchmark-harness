@@ -16,7 +16,7 @@ import { definedValues } from "../../internal/guards";
 import { makeModalSandboxLayer } from "../../sandbox/modal";
 import { resolveModalRegions } from "../../sandbox/modal-regions";
 import { SandboxSession } from "../../sandbox/session";
-import { sandboxAgentCandidateModelsError } from "../agent-cli/candidate-models";
+import { sandboxAgentPluginError } from "../agent-cli/candidate-models";
 import { getOriHarness } from "../agent-cli/harness";
 import { TERMINAL_BENCH_META } from "../benchmark-meta";
 import type { Benchmark, BenchmarkRunInput } from "../types";
@@ -39,7 +39,7 @@ function makeTerminalBenchLayer(
     );
   }
   const { agent } = benchmarkConfig;
-  const candidateModelsError = sandboxAgentCandidateModelsError({
+  const candidateModelsError = sandboxAgentPluginError({
     benchmarkId: benchmarkConfig.benchmarkId,
     agent,
     models: benchmarkConfig.models,

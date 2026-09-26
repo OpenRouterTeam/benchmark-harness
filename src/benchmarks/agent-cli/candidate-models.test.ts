@@ -1,11 +1,11 @@
 import { describe, expect, it } from "bun:test";
 
-import { sandboxAgentCandidateModelsError } from "./candidate-models";
+import { sandboxAgentPluginError } from "./candidate-models";
 
-describe("sandboxAgentCandidateModelsError", () => {
+describe("sandboxAgentPluginError", () => {
   it("returns undefined when no candidate list or algorithm is configured", () => {
     expect(
-      sandboxAgentCandidateModelsError({
+      sandboxAgentPluginError({
         benchmarkId: "terminal_bench",
         agent: "pi",
         models: undefined,
@@ -14,7 +14,7 @@ describe("sandboxAgentCandidateModelsError", () => {
     ).toBeUndefined();
   });
   it("names the benchmark and agent when a candidate list would be dropped", () => {
-    const error = sandboxAgentCandidateModelsError({
+    const error = sandboxAgentPluginError({
       benchmarkId: "terminal_bench",
       agent: "pi",
       models: ["openai/gpt-4.1-nano", "anthropic/claude-sonnet-4.5"],
@@ -25,7 +25,7 @@ describe("sandboxAgentCandidateModelsError", () => {
     );
   });
   it("names the benchmark and agent when a switchyard algorithm would be dropped", () => {
-    const error = sandboxAgentCandidateModelsError({
+    const error = sandboxAgentPluginError({
       benchmarkId: "terminal_bench",
       agent: "pi",
       models: undefined,

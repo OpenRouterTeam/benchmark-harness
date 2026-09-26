@@ -20,7 +20,7 @@ import {
 import { makeModalSandboxLayer } from "../../sandbox/modal";
 import { resolveModalRegions } from "../../sandbox/modal-regions";
 import { SandboxSession } from "../../sandbox/session";
-import { sandboxAgentCandidateModelsError } from "../agent-cli/candidate-models";
+import { sandboxAgentPluginError } from "../agent-cli/candidate-models";
 import { isOriAgent } from "../agent-cli/schema";
 import {
   SWE_ATLAS_QA_META,
@@ -47,7 +47,7 @@ function makeSweAtlasLayer(
     );
   }
   const candidateModelsError = isOriAgent(benchmarkConfig.agent)
-    ? sandboxAgentCandidateModelsError({
+    ? sandboxAgentPluginError({
         benchmarkId: benchmarkConfig.benchmarkId,
         agent: benchmarkConfig.agent,
         models: benchmarkConfig.models,
