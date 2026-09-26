@@ -12,7 +12,7 @@ import type {
   InjectedBenchmarkRunConfig,
 } from "../benchmarks/benchmark-config";
 import {
-  isNativeBenchmarkConfig,
+  isKeplerBenchmarkConfig,
   modelFromConfig,
 } from "../benchmarks/benchmark-config";
 import { getBenchmark } from "../benchmarks/registry";
@@ -241,20 +241,20 @@ function resolveRunBenchmark(input: RunBenchmarkInput): Either.Either<
   },
   string
 > {
-  if (isNativeBenchmarkConfig(input.benchmarkConfig)) {
+  if (isKeplerBenchmarkConfig(input.benchmarkConfig)) {
     if (input.injectedBenchmark !== undefined) {
       return Either.left(
-        `An injected benchmark cannot be supplied for native benchmark "${input.benchmarkId}"`
+        `An injected benchmark cannot be supplied for Kepler benchmark "${input.benchmarkId}"`
       );
     }
-    const nativeBenchmark = getBenchmark(input.benchmarkId);
-    if (nativeBenchmark === undefined) {
+    const keplerBenchmark = getBenchmark(input.benchmarkId);
+    if (keplerBenchmark === undefined) {
       return Either.left(`Unknown benchmark "${input.benchmarkId}"`);
     }
     return Either.right({
-      benchmark: nativeBenchmark,
+      benchmark: keplerBenchmark,
       benchmarkLayer: makeBenchmarkLayer(
-        nativeBenchmark,
+        keplerBenchmark,
         input,
         input.benchmarkConfig
       ),
