@@ -62,9 +62,11 @@ describe("ModalSandboxOptionsSchema", () => {
   });
 
   it("rejects blank region identifiers", () => {
-    const parsed = parseSchema(ModalSandboxOptionsSchema, {
-      modalRegions: [""],
-    });
-    assertLeft(parsed);
+    for (const region of ["", " ", "\t", "us east", " us"]) {
+      const parsed = parseSchema(ModalSandboxOptionsSchema, {
+        modalRegions: [region],
+      });
+      assertLeft(parsed);
+    }
   });
 });
