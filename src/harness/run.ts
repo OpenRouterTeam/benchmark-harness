@@ -366,7 +366,10 @@ export function runBenchmark(
           effectGen(function* () {
             const updated = accumulateOutcome(acc, item);
             const reporter = yield* ProgressReporter;
-            yield* reporter.onSampleComplete(updated.scores.length);
+            yield* reporter.onSampleComplete(
+              updated.scores.length,
+              item.sampleScore
+            );
             return updated;
           })
         ),

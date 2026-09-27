@@ -3,6 +3,7 @@ import type { Effect } from "effect/Effect";
 import { sync } from "effect/Effect";
 
 import { z } from "../internal/zod";
+import type { SampleScore } from "./metric";
 
 export type SampleProgressEvent =
   | SampleStartEvent
@@ -52,7 +53,10 @@ export interface SubmitEvent {
 export interface ProgressReporterService {
   readonly onSampleStart: (event: SampleStartEvent) => Effect<void>;
   readonly onSampleEnd: (event: SampleEndEvent) => Effect<void>;
-  readonly onSampleComplete: (count: number) => Effect<void>;
+  readonly onSampleComplete: (
+    count: number,
+    score: SampleScore
+  ) => Effect<void>;
   readonly onAgentStep: (
     event: AgentStepEvent,
     sampleId: string,
@@ -74,7 +78,7 @@ export const NOOP_PROGRESS_REPORTER: ProgressReporterService = {
 export function makeProgressReporter(callbacks: {
   readonly onSampleStart?: (event: SampleStartEvent) => void;
   readonly onSampleEnd?: (event: SampleEndEvent) => void;
-  readonly onSampleComplete?: (count: number) => void;
+  readonly onSampleComplete?: (count: number, score: SampleScore) => void;
   readonly onAgentStep?: (
     event: AgentStepEvent,
     sampleId: string,
@@ -84,7 +88,8 @@ export function makeProgressReporter(callbacks: {
   return {
     onSampleStart: (e) => sync(() => callbacks.onSampleStart?.(e)),
     onSampleEnd: (e) => sync(() => callbacks.onSampleEnd?.(e)),
-    onSampleComplete: (n) => sync(() => callbacks.onSampleComplete?.(n)),
+    onSampleComplete: (n, score) =>
+      sync(() => callbacks.onSampleComplete?.(n, score)),
     onAgentStep: (e, id, ep) => sync(() => callbacks.onAgentStep?.(e, id, ep)),
   };
 }

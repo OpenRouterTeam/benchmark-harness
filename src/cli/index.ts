@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+import { appendFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 
 import { Presets, SingleBar } from "cli-progress";
@@ -217,6 +218,13 @@ function main(): Promise<void> {
         Presets.shades_classic
       );
       let currentSample = "";
+      const resultsDir = join(process.cwd(), "bench-results");
+      mkdirSync(resultsDir, { recursive: true });
+      const scoresPath = join(
+        resultsDir,
+        `${args.benchmark}-${(args.model ?? args.benchmark).replaceAll("/", "_")}-${sessionId}.scores.jsonl`
+      );
+      process.stderr.write(`Writing per-sample scores to ${scoresPath}\n`);
       if (total !== undefined) {
         bar.start(total, 0, { sample: "" });
       }
@@ -231,12 +239,21 @@ function main(): Promise<void> {
             baseUrl: baseUrl ? baseUrl : undefined,
             range,
             sessionId,
-            resultStore: makeLocalResultStore({
-              dir: join(process.cwd(), "bench-results"),
-            }),
+            resultStore: makeLocalResultStore({ dir: resultsDir }),
             progressReporter: makeProgressReporter({
-              onSampleComplete: (completed) =>
-                bar.update(completed, { sample: currentSample }),
+              onSampleComplete: (completed, score) => {
+                appendFileSync(
+                  scoresPath,
+                  `${JSON.stringify({
+                    sampleId: score.sampleId,
+                    epoch: score.epoch,
+                    value: score.score.value,
+                    explanation: score.score.explanation?.slice(0, 2000),
+                    metadata: score.metadata,
+                  })}\n`
+                );
+                bar.update(completed, { sample: currentSample });
+              },
               onSampleStart: (event) => {
                 currentSample = `#${event.sampleIndex}`;
                 bar.update({ sample: currentSample });

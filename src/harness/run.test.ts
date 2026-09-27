@@ -25,7 +25,8 @@ import { MessageRole, ModelError, ScoreValue } from "./core";
 import { Dataset } from "./dataset";
 import type { ModelService } from "./model";
 import { Model } from "./model";
-import type { CheckpointStore, ProgressReporter } from "./progress";
+import type { CheckpointStore } from "./progress";
+import { makeProgressReporter, ProgressReporter } from "./progress";
 import { runBenchmark } from "./run";
 import { Scorer } from "./scorer";
 import type { SolverService } from "./solver";
@@ -171,6 +172,41 @@ describe("runBenchmark", () => {
     expect(result.usage.outputTokens).toBe(30);
     expect(result.usage.generationTimeMs).toBe(600);
     expect(result.sampleScores[0]?.generationIds).toEqual(["fake-Q1 target B"]);
+  });
+  it("reports each finished sample's score as it completes", async () => {
+    const model = fakeModel((input) =>
+      input.includes("Q1") ? "Answer: B" : "Answer: A"
+    );
+    const solver = chain(
+      systemMessage("You are a helpful assistant."),
+      generate(model.service, { temperature: 0.5, reasoningEffort: "high" })
+    );
+    const reported: { count: number; sampleId: string; value: string }[] = [];
+    const layers = mergeAll(
+      fakeDatasetLayer(SAMPLES),
+      layerSucceed(Solver, Solver.of(solver)),
+      layerSucceed(Scorer, Scorer.of(mcqScorer)),
+      model.layer,
+      layerSucceed(
+        ProgressReporter,
+        makeProgressReporter({
+          onSampleComplete: (count, score) =>
+            reported.push({
+              count,
+              sampleId: score.sampleId,
+              value: score.score.value,
+            }),
+        })
+      ),
+      noopCheckpointLayer
+    );
+    await runPromise(
+      runBenchmark({ epochs: 1, maxConcurrency: 1 }).pipe(provide(layers))
+    );
+    expect(reported).toEqual([
+      { count: 1, sampleId: "s-correct", value: ScoreValue.Correct },
+      { count: 2, sampleId: "s-wrong", value: ScoreValue.Incorrect },
+    ]);
   });
   it("captures per-sample message trajectories", async () => {
     const model = fakeModel(() => "Answer: B");
