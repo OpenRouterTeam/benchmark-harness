@@ -360,7 +360,7 @@ export function runBenchmark(
                 withLogSpan("sample")
               )
             ),
-          { concurrency: config.maxConcurrency }
+          { concurrency: config.maxConcurrency, unordered: true }
         ),
         streamRunFoldEffect(initialAcc, (acc, item) =>
           effectGen(function* () {

@@ -203,10 +203,15 @@ describe("runBenchmark", () => {
     await runPromise(
       runBenchmark({ epochs: 1, maxConcurrency: 1 }).pipe(provide(layers))
     );
-    expect(reported).toEqual([
-      { count: 1, sampleId: "s-correct", value: ScoreValue.Correct },
-      { count: 2, sampleId: "s-wrong", value: ScoreValue.Incorrect },
-    ]);
+    expect(reported.map(({ count }) => count)).toEqual([1, 2]);
+    expect(
+      reported.map(({ sampleId, value }) => ({ sampleId, value }))
+    ).toEqual(
+      expect.arrayContaining([
+        { sampleId: "s-correct", value: ScoreValue.Correct },
+        { sampleId: "s-wrong", value: ScoreValue.Incorrect },
+      ])
+    );
   });
   it("captures per-sample message trajectories", async () => {
     const model = fakeModel(() => "Answer: B");
