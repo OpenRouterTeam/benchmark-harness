@@ -202,6 +202,7 @@ export function generate(
   const extraHeaders = definedValues({
     "X-OR-Endpoint-Id": genConfig.endpointId,
     "Cloudflare-Workers-Version-Overrides": genConfig.cloudflareVersion,
+    "X-OpenRouter-Experiment-Ids": genConfig.experimentIds?.join(","),
   });
   const callerPlugins = genConfig.extraBody?.["plugins"];
   const extraBody =

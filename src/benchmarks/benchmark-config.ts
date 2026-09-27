@@ -55,6 +55,11 @@ export const InferenceOverrideSchema = z.object({
   providerIgnore: z.array(z.string()).optional(),
   allowFallbacks: z.boolean().optional(),
   cloudflareVersion: z.string().optional(),
+  experimentIds: z
+    .array(z.string().regex(/^[a-z0-9][a-z0-9_.-]{0,63}$/))
+    .min(1)
+    .max(16)
+    .optional(),
   costQualityTradeoff: z.number().int().min(0).max(10).optional(),
   pinModel: z.boolean().optional(),
   switchyardAlgorithm: z.enum(SWITCHYARD_ALGORITHMS).optional(),

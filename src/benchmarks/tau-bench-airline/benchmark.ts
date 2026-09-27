@@ -119,6 +119,7 @@ function makeAirlineLayer(
       providerIgnore: benchmarkConfig.providerIgnore,
       allowFallbacks: benchmarkConfig.allowFallbacks,
       cloudflareVersion: benchmarkConfig.cloudflareVersion,
+      experimentIds: benchmarkConfig.experimentIds,
       costTier: benchmarkConfig.costTier,
       costQualityTradeoff: benchmarkConfig.costQualityTradeoff,
       pinModel: benchmarkConfig.pinModel,
