@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 import { readFile } from "node:fs/promises";
 
 import type { Effect } from "effect/Effect";
-import { fail, runPromise, succeed, suspend } from "effect/Effect";
+import { either, fail, runPromise, succeed, suspend } from "effect/Effect";
 
 import { SolverError } from "../../harness/core";
 import { assertRight } from "../../internal/testing";
@@ -176,6 +176,47 @@ describe("agent-loop retry resilience", () => {
       toolCallsRequested: 0,
       toolCallsExecuted: 4,
     });
+  });
+  it("ends the sample once the sandbox has shut down instead of looping", async () => {
+    let execCalls = 0;
+    let modelCalls = 0;
+    const model = scriptedModel("git status");
+    const counted: ResponsesModelService = {
+      ...model,
+      generate: (input, config, options) => {
+        modelCalls += 1;
+        return model.generate(input, config, options);
+      },
+    };
+    const session: SandboxSessionInstance = {
+      ...failingThenSucceedingSandbox(0).instance,
+      exec: () =>
+        suspend(() => {
+          execCalls += 1;
+          return fail(
+            new SolverError({
+              message:
+                "exec(git status) failed: ClientError: TaskExecStart NOT_FOUND: Modal Sandbox with container ID ta-1 not found. This means this Sandbox has already shut down.",
+            })
+          );
+        }),
+    };
+    const result = await runPromise(
+      either(
+        runAgentLoop({
+          model: counted,
+          session,
+          initialInput: INITIAL_INPUT,
+          genConfig: { ...GEN_CONFIG, reasoningEffort: "low" },
+          stepLimit: 50,
+          perCommandTimeoutMs: 1000,
+          execRetry: { baseDelayMs: 0, maxRetries: 1 },
+        })
+      )
+    );
+    expect(result._tag).toBe("Left");
+    expect(modelCalls).toBe(1);
+    expect(execCalls).toBe(2);
   });
   it("retries sandbox failure, appends function_call_output items, and submits", async () => {
     const sandbox = failingThenSucceedingSandbox(2);

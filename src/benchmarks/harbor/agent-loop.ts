@@ -1,6 +1,7 @@
 import type { Effect } from "effect/Effect";
 import {
   catchTag,
+  fail,
   gen,
   map,
   orElseSucceed,
@@ -296,11 +297,13 @@ function execCommands(input: ExecCommandsInput): Effect<
         .pipe(
           retry(transientSolverRetrySchedule(input.execRetry ?? {})),
           catchTag("SolverError", (solverErr: SolverError) =>
-            succeed<ExecResult>({
-              stdout: "",
-              stderr: `Error: command execution failed: ${solverErr.message}`,
-              exitCode: -1,
-            })
+            isSandboxGone(solverErr)
+              ? fail(solverErr)
+              : succeed<ExecResult>({
+                  stdout: "",
+                  stderr: `Error: command execution failed: ${solverErr.message}`,
+                  exitCode: -1,
+                })
           )
         );
       input.input.push(
@@ -502,4 +505,11 @@ function toModelUsage(acc: UsageAccumulator): ModelUsage {
         }
       : undefined,
   });
+}
+
+/** A terminated sandbox fails every later command, so the sample must end instead of looping. */
+function isSandboxGone(error: SolverError): boolean {
+  return /NOT_FOUND: Modal Sandbox .* not found|has already shut down/.test(
+    error.message
+  );
 }
