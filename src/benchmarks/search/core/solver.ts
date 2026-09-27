@@ -86,6 +86,7 @@ export interface SearchSolverOptions {
   readonly providerIgnore?: readonly string[];
   readonly allowFallbacks?: boolean;
   readonly versionOverride?: string;
+  readonly experimentIds?: readonly string[];
   readonly costQualityTradeoff?: number;
   readonly costTier?: CostTier;
   readonly switchyardAlgorithm?: SwitchyardAlgorithm;
@@ -134,7 +135,9 @@ export function searchSolver(
       );
       const extraBody = switchyardExtraBody(body, opts);
       const extraHeaders =
-        opts.endpointId === undefined && !opts.lane.providerFlags?.length
+        opts.endpointId === undefined &&
+        !opts.lane.providerFlags?.length &&
+        opts.experimentIds === undefined
           ? undefined
           : definedValues({
               "X-OR-Endpoint-Id": opts.endpointId,
@@ -143,6 +146,7 @@ export function searchSolver(
                 opts.lane.providerFlags.length > 0
                   ? opts.lane.providerFlags.join(",")
                   : undefined,
+              "X-OpenRouter-Experiment-Ids": opts.experimentIds?.join(","),
             });
       const sendOptions = (): ResponsesSendOptions =>
         definedValues({

@@ -340,6 +340,7 @@ const VGI_BENCH_SINGLE_TURN_BENCHMARK = defineSingleTurnBenchmark({
           providerIgnore: config.providerIgnore,
           allowFallbacks: config.allowFallbacks,
           cloudflareVersion: config.cloudflareVersion,
+          experimentIds: config.experimentIds,
           costTier: config.costTier,
           costQualityTradeoff: config.costQualityTradeoff,
           switchyardAlgorithm: config.switchyardAlgorithm,

@@ -126,6 +126,7 @@ function makeSweAtlasLayer(
               providerIgnore: benchmarkConfig.providerIgnore,
               allowFallbacks: benchmarkConfig.allowFallbacks,
               cloudflareVersion: benchmarkConfig.cloudflareVersion,
+              experimentIds: benchmarkConfig.experimentIds,
               costTier: benchmarkConfig.costTier,
               costQualityTradeoff: benchmarkConfig.costQualityTradeoff,
               switchyardAlgorithm: benchmarkConfig.switchyardAlgorithm,
