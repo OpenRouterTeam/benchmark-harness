@@ -6,12 +6,17 @@ import {
   forEach,
   gen,
   map,
+  serviceOption,
   succeed,
 } from "effect/Effect";
+import { isNone } from "effect/Option";
 
 import { SolverError } from "../../harness/core";
+import type { ModelUsage } from "../../harness/core";
 import { definedValues } from "../../internal/guards";
+import { wLog } from "../../internal/log";
 import { recordGenerationId } from "../../runtime/generation-ids";
+import { GenerationResolver } from "../../runtime/generation-resolver";
 import {
   buildRequestSessionId,
   getCurrentSampleId,
@@ -33,6 +38,45 @@ const LOG_RECOVERY_TIMEOUT_MS = 60000;
 const ORI_BOOTSTRAP_TIMEOUT_MS = 300000;
 
 const BOOTSTRAP_DETAIL_TAIL_CHARS = 1000;
+
+const BILLED_COST_LOOKUP_CONCURRENCY = 8;
+
+export function resolveBilledCost(
+  generationIds: readonly string[]
+): Effect<number | undefined> {
+  return gen(function* () {
+    const resolver = yield* serviceOption(GenerationResolver);
+    if (isNone(resolver) || generationIds.length === 0) {
+      return undefined;
+    }
+    const resolved = yield* forEach(
+      generationIds,
+      (id) => resolver.value.resolveSourceGeneration(id),
+      { concurrency: BILLED_COST_LOOKUP_CONCURRENCY }
+    );
+    const costs = resolved.flatMap((entry) =>
+      entry?.usage === undefined ? [] : [entry.usage.totalCost]
+    );
+    if (costs.length < generationIds.length) {
+      wLog("Agent generation cost lookups failed; billed cost is partial", {
+        generation_count: generationIds.length,
+        resolved_count: costs.length,
+      });
+    }
+    return costs.length === 0
+      ? undefined
+      : costs.reduce((total, cost) => total + cost, 0);
+  });
+}
+
+function withBilledCost(
+  usage: ModelUsage | undefined,
+  billedCost: number | undefined
+): ModelUsage | undefined {
+  return usage === undefined || billedCost === undefined
+    ? usage
+    : { ...usage, totalCost: billedCost };
+}
 
 function recoverAfterExecFailure(
   session: SandboxSessionInstance,
@@ -233,8 +277,10 @@ export function runAgentCli(input: {
     yield* forEach(parsed.generationIds, (id) => recordGenerationId(id), {
       discard: true,
     });
+    const billedCost = yield* resolveBilledCost(parsed.generationIds);
     return {
       ...parsed,
+      usage: withBilledCost(parsed.usage, billedCost),
       generationTimeMs: parsed.generationTimeMs ?? elapsedMs,
       exitCode: run.exitCode,
       rawStream: run.stdout,
