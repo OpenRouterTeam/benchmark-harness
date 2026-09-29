@@ -201,6 +201,18 @@ export type IfStructBenchmarkConfig = z.infer<
   typeof IfStructBenchmarkConfigSchema
 >;
 
+export const ToolCallFormatsOptionsSchema = z.object({});
+
+export const ToolCallFormatsBenchmarkConfigSchema = z.object({
+  benchmarkId: z.literal("toolcall_formats"),
+  ...ModelBenchmarkBaseSchema.shape,
+  ...ToolCallFormatsOptionsSchema.shape,
+});
+
+export type ToolCallFormatsBenchmarkConfig = z.infer<
+  typeof ToolCallFormatsBenchmarkConfigSchema
+>;
+
 const AgenticOptionsSchema = z.object({
   taskSubset: z.array(z.string()).optional(),
   maxAgentTimeoutSec: z.number().positive().optional(),
@@ -345,6 +357,7 @@ export const KeplerBenchmarkRunConfigSchema = z.discriminatedUnion(
     TerminalBenchConfigSchema,
     DracoBenchmarkConfigSchema,
     IfStructBenchmarkConfigSchema,
+    ToolCallFormatsBenchmarkConfigSchema,
     SweAtlasQaConfigSchema,
     SweAtlasTwConfigSchema,
     SweAtlasRfConfigSchema,
@@ -379,6 +392,7 @@ export const BENCHMARK_OPTIONS_SCHEMAS = {
   mmmu_pro_vision: MmmuProVisionOptionsSchema,
   terminal_bench: TerminalBenchOptionsSchema,
   ifstruct: IfStructOptionsSchema,
+  toolcall_formats: ToolCallFormatsOptionsSchema,
   swe_atlas_qa: SweAtlasOptionsSchema,
   swe_atlas_tw: SweAtlasOptionsSchema,
   swe_atlas_rf: SweAtlasOptionsSchema,
