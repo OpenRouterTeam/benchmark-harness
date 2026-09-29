@@ -17,6 +17,7 @@ import { definedValues } from "../../internal/guards";
 import { wLog } from "../../internal/log";
 import { recordGenerationId } from "../../runtime/generation-ids";
 import { GenerationResolver } from "../../runtime/generation-resolver";
+import type { ReplayedUsage } from "../../runtime/generation-resolver";
 import {
   buildRequestSessionId,
   getCurrentSampleId,
@@ -41,9 +42,18 @@ const BOOTSTRAP_DETAIL_TAIL_CHARS = 1000;
 
 const BILLED_COST_LOOKUP_CONCURRENCY = 8;
 
-export function resolveBilledCost(
+const ZERO_BILLED_USAGE: ReplayedUsage = {
+  inputTokens: 0,
+  outputTokens: 0,
+  totalTokens: 0,
+  reasoningTokens: 0,
+  totalCost: 0,
+  generationTimeMs: 0,
+};
+
+export function resolveBilledUsage(
   generationIds: readonly string[]
-): Effect<number | undefined> {
+): Effect<ReplayedUsage | undefined> {
   return gen(function* () {
     const resolver = yield* serviceOption(GenerationResolver);
     if (isNone(resolver) || generationIds.length === 0) {
@@ -54,28 +64,52 @@ export function resolveBilledCost(
       (id) => resolver.value.resolveSourceGeneration(id),
       { concurrency: BILLED_COST_LOOKUP_CONCURRENCY }
     );
-    const costs = resolved.flatMap((entry) =>
-      entry?.usage === undefined ? [] : [entry.usage.totalCost]
+    const usages = resolved.flatMap((entry) =>
+      entry?.usage === undefined ? [] : [entry.usage]
     );
-    if (costs.length < generationIds.length) {
-      wLog("Agent generation cost lookups failed; billed cost is partial", {
+    if (usages.length < generationIds.length) {
+      wLog("Agent generation cost lookups incomplete; keeping agent cost", {
         generation_count: generationIds.length,
-        resolved_count: costs.length,
+        resolved_count: usages.length,
       });
+      return undefined;
     }
-    return costs.length === 0
-      ? undefined
-      : costs.reduce((total, cost) => total + cost, 0);
+    let total = ZERO_BILLED_USAGE;
+    for (const next of usages) {
+      total = sumUsage(total, next);
+    }
+    return total;
   });
 }
 
-function withBilledCost(
+function sumUsage(total: ReplayedUsage, next: ReplayedUsage): ReplayedUsage {
+  return {
+    inputTokens: total.inputTokens + next.inputTokens,
+    outputTokens: total.outputTokens + next.outputTokens,
+    totalTokens: total.totalTokens + next.totalTokens,
+    reasoningTokens: total.reasoningTokens + next.reasoningTokens,
+    totalCost: total.totalCost + next.totalCost,
+    generationTimeMs: total.generationTimeMs + next.generationTimeMs,
+  };
+}
+
+export function withBilledUsage(
   usage: ModelUsage | undefined,
-  billedCost: number | undefined
+  billed: ReplayedUsage | undefined
 ): ModelUsage | undefined {
-  return usage === undefined || billedCost === undefined
-    ? usage
-    : { ...usage, totalCost: billedCost };
+  if (billed === undefined) {
+    return usage;
+  }
+  if (usage === undefined) {
+    return {
+      inputTokens: billed.inputTokens,
+      outputTokens: billed.outputTokens,
+      totalTokens: billed.totalTokens,
+      reasoningTokens: billed.reasoningTokens,
+      totalCost: billed.totalCost,
+    };
+  }
+  return { ...usage, totalCost: billed.totalCost };
 }
 
 function recoverAfterExecFailure(
@@ -277,10 +311,10 @@ export function runAgentCli(input: {
     yield* forEach(parsed.generationIds, (id) => recordGenerationId(id), {
       discard: true,
     });
-    const billedCost = yield* resolveBilledCost(parsed.generationIds);
+    const billedUsage = yield* resolveBilledUsage(parsed.generationIds);
     return {
       ...parsed,
-      usage: withBilledCost(parsed.usage, billedCost),
+      usage: withBilledUsage(parsed.usage, billedUsage),
       generationTimeMs: parsed.generationTimeMs ?? elapsedMs,
       exitCode: run.exitCode,
       rawStream: run.stdout,
