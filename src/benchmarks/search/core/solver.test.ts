@@ -316,6 +316,29 @@ describe("searchSolver", () => {
       "X-Provider-Flags": "alpha",
     });
   });
+  it("forwards experiment ids as a joined header", async () => {
+    let sentOptions: ResponsesSendOptions | undefined;
+    const solver = searchSolver(
+      {
+        send: (_body, options) => {
+          sentOptions = options;
+          return effectSucceed(fixtureResult({ text: "x" }));
+        },
+      },
+      {
+        model: "m",
+        instructions: "i",
+        lane: LANE,
+        experimentIds: ["jev-finish-deesc", "control"],
+      }
+    );
+    await runSolver(
+      solver(initialTaskState({ id: "s", input: "q", target: { text: "t" } }))
+    );
+    expect(sentOptions?.extraHeaders).toEqual({
+      "X-OpenRouter-Experiment-Ids": "jev-finish-deesc,control",
+    });
+  });
   it("appends the switchyard-router plugin after the serialized web plugin", async () => {
     let sentOptions: ResponsesSendOptions | undefined;
     const solver = searchSolver(
