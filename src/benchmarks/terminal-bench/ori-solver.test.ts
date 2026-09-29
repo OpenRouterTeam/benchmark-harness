@@ -10,13 +10,16 @@ import {
   provide,
   runPromise,
   runPromiseExit,
+  succeed,
 } from "effect/Effect";
 import type { Exit } from "effect/Exit";
 import type { Layer } from "effect/Layer";
 import {
   effect as layerEffect,
+  empty as layerEmpty,
   mergeAll as layerMergeAll,
   provide as layerProvide,
+  succeed as layerSucceed,
 } from "effect/Layer";
 import { getOrThrow } from "effect/Option";
 
@@ -41,6 +44,8 @@ import {
   getCollectedGenerationIds,
   resetGenerationIds,
 } from "../../runtime/generation-ids";
+import type { GenerationResolverService } from "../../runtime/generation-resolver";
+import { GenerationResolver } from "../../runtime/generation-resolver";
 import { setCurrentSampleId } from "../../runtime/request-session-id";
 import { setCurrentEpoch } from "../../runtime/response-cache";
 import {
@@ -783,7 +788,10 @@ describe("terminal-bench pi via ori", () => {
     }),
   ].join("\n");
 
-  async function runPi(opts?: Partial<OriSolverOpts>) {
+  async function runPi(
+    opts?: Partial<OriSolverOpts>,
+    resolver?: GenerationResolverService
+  ) {
     const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
       testOutput: "1 passed",
@@ -811,12 +819,45 @@ describe("terminal-bench pi via ori", () => {
           layerMergeAll(
             solverLayer.pipe(layerProvide(layer)),
             noopProgressLayer,
-            noopCheckpointLayer
+            noopCheckpointLayer,
+            resolver === undefined
+              ? layerEmpty
+              : layerSucceed(GenerationResolver, resolver)
           )
         )
       )
     );
   }
+
+  it("replaces pi's catalog-priced cost with the billed generation cost", async () => {
+    const requested: string[] = [];
+    const finalState = await runPi(undefined, {
+      resolveSourceGeneration: (generationId) => {
+        requested.push(generationId);
+        return succeed({
+          sourceId: generationId,
+          usage: {
+            inputTokens: 1969,
+            outputTokens: 47,
+            totalTokens: 2016,
+            reasoningTokens: 33,
+            totalCost: 0.0415,
+            generationTimeMs: 900,
+          },
+        });
+      },
+    });
+    expect(requested).toEqual(["gen-1786730156-Pvo7AI2n4sxz8jRnYAEf"]);
+    expect(finalState.output?.usage?.totalCost).toBe(0.0415);
+    expect(finalState.output?.usage?.inputTokens).toBe(1969);
+  });
+
+  it("keeps pi's reported cost when no generation cost resolves", async () => {
+    const finalState = await runPi(undefined, {
+      resolveSourceGeneration: () => succeed(undefined),
+    });
+    expect(finalState.output?.usage?.totalCost).toBe(0.002204);
+  });
 
   it("parses pi usage, cost, reasoning tokens and generation ids", async () => {
     const finalState = await runPi();
