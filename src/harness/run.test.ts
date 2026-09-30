@@ -324,6 +324,48 @@ describe("runBenchmark", () => {
     expect(result.metrics.skippedQuestions).toBe(1);
     expect(result.metrics.accuracy).toBe(1);
   });
+  it("scores a sample as Skipped (excluded from accuracy) when the model exhausts 408 retries", async () => {
+    const service: ModelService = {
+      generate: (messages) => {
+        const userMsg =
+          messages.find((m) => m.role === MessageRole.User)?.content ?? "";
+        if (userMsg.includes("Q1")) {
+          return effectFail(
+            new ModelError({
+              message: "OpenRouter HTTP 408: request timed out",
+              status: 408,
+            })
+          );
+        }
+        return effectSucceed({
+          completion: "Answer: B",
+          message: { role: MessageRole.Assistant, content: "Answer: B" },
+          generationTimeMs: 100,
+        });
+      },
+    };
+    const model = { service, layer: layerSucceed(Model, Model.of(service)) };
+    const solver = generate(model.service, {
+      temperature: 0,
+      reasoningEffort: "high",
+    });
+    const layers = mergeAll(
+      fakeDatasetLayer(SAMPLES),
+      layerSucceed(Solver, Solver.of(solver)),
+      layerSucceed(Scorer, Scorer.of(mcqScorer)),
+      model.layer,
+      noopProgressLayer,
+      noopCheckpointLayer
+    );
+    const result = await runPromise(
+      runBenchmark({ epochs: 1, maxConcurrency: 2 }).pipe(provide(layers))
+    );
+    const skipped = result.sampleScores.find((s) => s.sampleId === "s-correct");
+    expect(skipped?.score.value).toBe(ScoreValue.Skipped);
+    expect(result.metrics.totalQuestions).toBe(1);
+    expect(result.metrics.skippedQuestions).toBe(1);
+    expect(result.metrics.accuracy).toBe(1);
+  });
   it("scores a sample as Incorrect (counted against accuracy) on a non-retryable model error", async () => {
     const service: ModelService = {
       generate: (messages) => {
