@@ -24,6 +24,7 @@ import {
 import { getCurrentEpoch } from "../../runtime/response-cache";
 import type { SandboxSessionInstance } from "../../sandbox/session";
 import type { OriAgentRun, OriHarnessDef } from "./harness";
+import { AGENT_REQUEST_PLUGINS_ENV } from "./harness";
 import type { OriChannel, OriReasoningEffort } from "./schema";
 import { DEFAULT_ORI_CHANNEL, DEFAULT_ORI_INSTALL_URL } from "./schema";
 
@@ -130,6 +131,10 @@ export function isSafeOriSessionId(sessionId: string): boolean {
   return true;
 }
 
+export type AgentRequestPlugin = Readonly<Record<string, unknown>> & {
+  readonly id: string;
+};
+
 export interface AgentCliOpts {
   readonly model: string;
   readonly apiKey: string;
@@ -144,6 +149,7 @@ export interface AgentCliOpts {
   readonly allowedTools?: readonly string[];
   readonly disallowedTools?: readonly string[];
   readonly isolateAgentConfig?: boolean;
+  readonly requestPlugins?: readonly AgentRequestPlugin[];
 }
 
 export interface AgentCliRunResult extends OriAgentRun {
@@ -185,6 +191,10 @@ export function buildAgentCliEnv(opts: AgentCliOpts): Record<string, string> {
   const disallowedTools = opts.disallowedTools ?? [];
   if (disallowedTools.length > 0) {
     env["TB_DISALLOWED_TOOLS"] = disallowedTools.join(" ");
+  }
+  const requestPlugins = opts.requestPlugins ?? [];
+  if (requestPlugins.length > 0) {
+    env[AGENT_REQUEST_PLUGINS_ENV] = JSON.stringify(requestPlugins);
   }
   return env;
 }
@@ -230,6 +240,7 @@ export function runAgentCli(input: {
   readonly timeoutMs: number;
 }): Effect<AgentCliRunResult, SolverError> {
   const { session, harness, opts, instructionPath, timeoutMs } = input;
+  const requestPlugins = opts.requestPlugins ?? [];
   const script = harness.buildRunScript({
     instructionPath,
     logPath: harness.remoteLogPath,
@@ -239,8 +250,14 @@ export function runAgentCli(input: {
     hasAllowedTools: (opts.allowedTools ?? []).length > 0,
     hasDisallowedTools: (opts.disallowedTools ?? []).length > 0,
     isolateAgentConfig: opts.isolateAgentConfig === true,
+    hasRequestPlugins: requestPlugins.length > 0,
   });
   return gen(function* () {
+    if (requestPlugins.length > 0 && !harness.forwardsRequestPlugins) {
+      return yield* new SolverError({
+        message: `the ${harness.id} agent does not forward OpenRouter request plugins (${requestPlugins.map((plugin) => plugin.id).join(", ")}) from inside the sandbox`,
+      });
+    }
     if (
       opts.sessionId !== undefined &&
       opts.sessionId.length > 0 &&
