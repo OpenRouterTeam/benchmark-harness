@@ -3,6 +3,7 @@ import assert from "node:assert";
 
 import type { AsyncBuffer } from "hyparquet";
 import { parquetMetadata } from "hyparquet";
+import { ByteWriter } from "hyparquet-writer";
 
 import type { ModelMessage, ResponseItem } from "../harness/core";
 import { MessageRole, ScoreValue } from "../harness/core";
@@ -10,7 +11,10 @@ import type { SampleScore } from "../harness/metric";
 import { assertRight, assertLeft } from "../internal/testing";
 import { parseSchema } from "../internal/zod";
 import { responsesTurnToModelOutput } from "../providers/messages-to-responses";
+import { AtifTrajectorySchema } from "./atif-schema";
+import type { MergeResultFilesInput, MergedResultFiles } from "./parquet";
 import {
+  mergeResultFilesToParquet,
   readResultRows,
   runResultToParquet,
   rowScoreToNumber,
@@ -103,6 +107,47 @@ function readRows(buf: Buffer): Promise<readonly BenchmarkResultRow[]> {
   const file = asyncBufferFromArrayBuffer(bufferToArrayBuffer(buf));
   return readResultRows(file);
 }
+
+async function mergeToBytes(
+  files: readonly (readonly BenchmarkResultRow[])[],
+  runLevelScores?: MergeResultFilesInput["runLevelScores"]
+): Promise<{ readonly bytes: Buffer; readonly merged: MergedResultFiles }> {
+  const writer = new ByteWriter();
+  const merged = await mergeResultFilesToParquet({
+    files: files.map((rows) => () => Promise.resolve(rows)),
+    meta: { task: META.task, model: META.model, createdAt: META.createdAt },
+    writer,
+    ...(runLevelScores !== undefined && { runLevelScores }),
+  });
+  return { bytes: Buffer.from(writer.getBuffer()), merged };
+}
+
+async function mergedRowsOf(
+  files: readonly (readonly BenchmarkResultRow[])[]
+): Promise<readonly BenchmarkResultRow[]> {
+  const { bytes } = await mergeToBytes(files);
+  return readRows(bytes);
+}
+
+function sampleColumns(row: BenchmarkResultRow): Record<string, unknown> {
+  return {
+    sample_id: row.sample_id,
+    epoch: row.epoch,
+    input: row.input,
+    target: row.target,
+    score_value: row.score_value,
+    answer: row.answer,
+    explanation: row.explanation,
+    scorer_trajectory: row.scorer_trajectory,
+    trajectory: row.trajectory,
+    response_items: row.response_items,
+    request_body: row.request_body,
+    generation_ids: row.generation_ids,
+    messages: row.messages,
+    metadata: row.metadata,
+  };
+}
+
 describe("runResultToParquet", () => {
   const buffer = runResultToParquet({ result: RESULT, meta: META });
   let rows: readonly BenchmarkResultRow[];
@@ -231,6 +276,56 @@ describe("runResultToParquet", () => {
   it("writes null scorer_trajectory when the scorer recorded none", () => {
     for (const row of rows) {
       expect(row.scorer_trajectory).toBeNull();
+    }
+  });
+  it("serializes an ATIF trajectory from messages", async () => {
+    const messages: readonly ModelMessage[] = [
+      { role: MessageRole.System, content: "Be helpful." },
+      { role: MessageRole.User, content: "What is 2+2?" },
+      { role: MessageRole.Assistant, content: "4" },
+    ];
+    const rows = await readRows(
+      runResultToParquet({
+        result: {
+          metrics: METRICS,
+          usage: USAGE,
+          sampleScores: [
+            {
+              sampleId: "s0",
+              epoch: 0,
+              score: {
+                value: ScoreValue.Correct,
+                answer: "4",
+                explanation: "",
+              },
+              messages,
+            },
+          ],
+        },
+        meta: META,
+      })
+    );
+    expect(rows[0]?.trajectory).not.toBeNull();
+    const parsed = parseSchema(
+      AtifTrajectorySchema,
+      JSON.parse(rows[0]!.trajectory!)
+    );
+    assertRight(parsed);
+    expect(parsed.right.steps.map((step) => step.message)).toEqual([
+      "Be helpful.",
+      "What is 2+2?",
+      "4",
+    ]);
+  });
+  it("writes null trajectory when messages are absent", async () => {
+    const rows = await readRows(
+      runResultToParquet({
+        result: RESULT,
+        meta: META,
+      })
+    );
+    for (const row of rows) {
+      expect(row.trajectory).toBeNull();
     }
   });
   it("writes null response_items and generation_ids when the solver recorded none", () => {
@@ -678,11 +773,500 @@ describe("runResultToParquet", () => {
     const kv = metadata.key_value_metadata ?? [];
     const byKey = Object.fromEntries(kv.map((k) => [k.key, k.value]));
     expect(byKey["writer"]).toBe(RESULT_WRITER);
-    expect(byKey["schema_version"]).toBe("1");
+    expect(byKey["schema_version"]).toBe(String(RESULT_FORMAT_VERSION));
     expect(byKey["task"]).toBe("gpqa_diamond");
     expect(byKey["model"]).toBe("openai/gpt-4o-mini");
   });
 });
+describe("mergeResultFilesToParquet", () => {
+  it("round-trips one file and merges run-level values across files", async () => {
+    const firstRows = await readRows(
+      runResultToParquet({ result: RESULT, meta: META })
+    );
+    const secondResult = {
+      metrics: {
+        accuracy: 0,
+        totalQuestions: 1,
+        correctAnswers: 0,
+        skippedQuestions: 1,
+      },
+      usage: {
+        inputTokens: 7,
+        outputTokens: 7,
+        totalTokens: 14,
+        reasoningTokens: 3,
+        totalCost: 0.02,
+        generationTimeMs: 300,
+      },
+      sampleScores: [
+        {
+          sampleId: "s2",
+          epoch: 0,
+          score: { value: ScoreValue.Incorrect, answer: "A", explanation: "" },
+        },
+        {
+          sampleId: "s2",
+          epoch: 1,
+          score: { value: ScoreValue.Skipped, answer: null, explanation: "" },
+        },
+      ],
+    } as const;
+    const secondRows = await readRows(
+      runResultToParquet({ result: secondResult, meta: META })
+    );
+    const singleRows = await mergedRowsOf([firstRows]);
+    const mergedRows = await mergedRowsOf([firstRows, [], secondRows]);
+    const emptyRows = await mergedRowsOf([[], []]);
+
+    expect(singleRows.map(sampleColumns)).toEqual(firstRows.map(sampleColumns));
+    expect(singleRows.every((row) => row.format_version === 2)).toBe(true);
+    expect(
+      singleRows.every(
+        (row) =>
+          row.epoch_total_questions === 3 && row.epoch_correct_answers === 2
+      )
+    ).toBe(true);
+    expect(emptyRows).toEqual([]);
+    const mergedSummary = summarizeChunkRows(mergedRows);
+    assert(mergedSummary);
+    expect(mergedSummary.accuracy).toBe(0.5);
+    expect(mergedSummary.totalQuestions).toBe(3);
+    expect(mergedSummary.correctAnswers).toBe(2);
+    expect(mergedSummary.inputTokens).toBe(107);
+    expect(mergedSummary.outputTokens).toBe(57);
+    expect(mergedSummary.totalTokens).toBe(164);
+    expect(mergedSummary.reasoningTokens).toBe(3);
+    expect(mergedSummary.totalCost).toBe(0.03);
+    expect(mergedSummary.generationTimeMs).toBe(1300);
+    expect(mergedSummary.epochResults).toEqual([
+      {
+        epoch: 0,
+        accuracy: 2 / 3,
+        totalQuestions: 3,
+        correctAnswers: 2,
+        skippedQuestions: 0,
+      },
+      {
+        epoch: 1,
+        accuracy: 0,
+        totalQuestions: 1,
+        correctAnswers: 0,
+        skippedQuestions: 1,
+      },
+    ]);
+    expect(mergedRows.every((row) => row.format_version === 2)).toBe(true);
+    expect(
+      mergedRows.every(
+        (row) =>
+          row.epoch_total_questions === 4 && row.epoch_correct_answers === 2
+      )
+    ).toBe(true);
+    expect(mergedRows.every((row) => row.extra_scores === null)).toBe(true);
+  });
+  it("recomputes run-level extra scores over every merged sample", async () => {
+    const fileRows = await Promise.all(
+      [
+        { sampleId: "s0", category: "math", value: ScoreValue.Correct },
+        { sampleId: "s1", category: "math", value: ScoreValue.Incorrect },
+        { sampleId: "s2", category: "law", value: ScoreValue.Correct },
+      ].map(({ sampleId, category, value }) =>
+        readRows(
+          runResultToParquet({
+            result: {
+              metrics: METRICS,
+              usage: USAGE,
+              sampleScores: [
+                {
+                  sampleId,
+                  epoch: 0,
+                  score: {
+                    value,
+                    answer: `${sampleId}-answer`,
+                    explanation: `${sampleId}-why`,
+                    trajectory: { kind: "judge_runs", runs: [{ sampleId }] },
+                  },
+                  metadata: { category },
+                },
+              ],
+            },
+            meta: META,
+            extraScores: [
+              { name: "chunk_only", metrics: { accuracy: { value: 1 } } },
+            ],
+          })
+        )
+      )
+    );
+    const seen: SampleScore[] = [];
+    const { bytes } = await mergeToBytes(fileRows, (result) => {
+      seen.push(...result.sampleScores);
+      const math = result.sampleScores.filter(
+        (s) => s.metadata?.["category"] === "math"
+      );
+      return [
+        {
+          name: "math",
+          metrics: {
+            total_questions: { value: math.length },
+            correct: {
+              value: math.filter((s) => s.score.value === ScoreValue.Correct)
+                .length,
+            },
+          },
+        },
+      ];
+    });
+    const mergedRows = await readRows(bytes);
+
+    expect(seen.map((s) => s.score)).toEqual(
+      ["s0", "s1", "s2"].map((sampleId, index) => ({
+        value: index === 1 ? ScoreValue.Incorrect : ScoreValue.Correct,
+        answer: `${sampleId}-answer`,
+        explanation: `${sampleId}-why`,
+        trajectory: { kind: "judge_runs", runs: [{ sampleId }] },
+      }))
+    );
+    expect(
+      mergedRows.map((row) => JSON.parse(row.extra_scores ?? "null"))
+    ).toEqual(
+      Array.from({ length: 3 }, () => [
+        {
+          name: "math",
+          metrics: { total_questions: { value: 2 }, correct: { value: 1 } },
+        },
+      ])
+    );
+  });
+  it("weights primary scores from each file", async () => {
+    const firstRows = await readRows(
+      runResultToParquet({
+        result: {
+          metrics: {
+            accuracy: 1,
+            totalQuestions: 1,
+            correctAnswers: 1,
+            skippedQuestions: 0,
+          },
+          usage: USAGE,
+          sampleScores: [
+            {
+              sampleId: "s0",
+              epoch: 0,
+              score: {
+                value: ScoreValue.Correct,
+                answer: "B",
+                explanation: "",
+              },
+            },
+          ],
+        },
+        meta: META,
+        primaryScore: { value: 0.4, weight: 1 },
+      })
+    );
+    const secondRows = await readRows(
+      runResultToParquet({
+        result: {
+          metrics: {
+            accuracy: 0,
+            totalQuestions: 1,
+            correctAnswers: 0,
+            skippedQuestions: 0,
+          },
+          usage: USAGE,
+          sampleScores: [
+            {
+              sampleId: "s1",
+              epoch: 0,
+              score: {
+                value: ScoreValue.Incorrect,
+                answer: "A",
+                explanation: "",
+              },
+            },
+          ],
+        },
+        meta: META,
+        primaryScore: { value: 0.8, weight: 1 },
+      })
+    );
+
+    const rows = await mergedRowsOf([firstRows, secondRows]);
+    const summary = summarizeChunkRows(rows);
+    assert(summary);
+    for (const row of rows) {
+      expect(row.accuracy).toBeCloseTo(0.6);
+    }
+    const primaryScore: { readonly value: number; readonly weight: number } =
+      JSON.parse(rows[0]!.primary_score!);
+    expect(primaryScore.value).toBeCloseTo(0.6);
+    expect(primaryScore.weight).toBe(2);
+  });
+  it("falls back to each file's accuracy and question count without a primary score", async () => {
+    const firstRows = await readRows(
+      runResultToParquet({
+        result: {
+          metrics: {
+            accuracy: 1,
+            totalQuestions: 2,
+            correctAnswers: 2,
+            skippedQuestions: 0,
+          },
+          usage: USAGE,
+          sampleScores: [
+            {
+              sampleId: "s0",
+              epoch: 0,
+              score: {
+                value: ScoreValue.Correct,
+                answer: "B",
+                explanation: "",
+              },
+            },
+          ],
+        },
+        meta: META,
+        primaryScore: { value: 0.4, weight: 2 },
+      })
+    );
+    const secondRows = await readRows(
+      runResultToParquet({
+        result: {
+          metrics: {
+            accuracy: 1,
+            totalQuestions: 1,
+            correctAnswers: 1,
+            skippedQuestions: 0,
+          },
+          usage: USAGE,
+          sampleScores: [
+            {
+              sampleId: "s1",
+              epoch: 0,
+              score: {
+                value: ScoreValue.Correct,
+                answer: "A",
+                explanation: "",
+              },
+            },
+          ],
+        },
+        meta: META,
+      })
+    );
+
+    const rows = await mergedRowsOf([firstRows, secondRows]);
+    const summary = summarizeChunkRows(rows);
+    assert(summary);
+    expect(rows.every((row) => row.accuracy === 0.6)).toBe(true);
+    expect(JSON.parse(rows[0]!.primary_score!)).toEqual({
+      value: 0.6,
+      weight: 3,
+    });
+  });
+  it("keeps sample-grouped accuracy when no file has a primary score", async () => {
+    const firstRows = await readRows(
+      runResultToParquet({
+        result: {
+          metrics: {
+            accuracy: 1,
+            totalQuestions: 1,
+            correctAnswers: 1,
+            skippedQuestions: 0,
+          },
+          usage: USAGE,
+          sampleScores: [
+            {
+              sampleId: "A",
+              epoch: 0,
+              score: {
+                value: ScoreValue.Correct,
+                answer: "B",
+                explanation: "",
+              },
+            },
+          ],
+        },
+        meta: META,
+      })
+    );
+    const secondRows = await readRows(
+      runResultToParquet({
+        result: {
+          metrics: {
+            accuracy: 0.5,
+            totalQuestions: 2,
+            correctAnswers: 1,
+            skippedQuestions: 0,
+          },
+          usage: USAGE,
+          sampleScores: [
+            {
+              sampleId: "A",
+              epoch: 0,
+              score: {
+                value: ScoreValue.Correct,
+                answer: "B",
+                explanation: "",
+              },
+            },
+            {
+              sampleId: "B",
+              epoch: 0,
+              score: {
+                value: ScoreValue.Incorrect,
+                answer: "A",
+                explanation: "",
+              },
+            },
+          ],
+        },
+        meta: META,
+      })
+    );
+
+    const rows = await mergedRowsOf([firstRows, secondRows]);
+    expect(rows.every((row) => row.accuracy === 0.5)).toBe(true);
+    expect(rows.every((row) => row.primary_score === null)).toBe(true);
+  });
+  it("returns the summary and benchmark config of the written rows", async () => {
+    const firstRows = await readRows(
+      runResultToParquet({
+        result: RESULT,
+        meta: { ...META, benchmarkConfig: { maxTokens: 128 } },
+        primaryScore: { value: 0.25, weight: 4 },
+      })
+    );
+    const secondRows = await readRows(
+      runResultToParquet({ result: RESULT, meta: META })
+    );
+    const { bytes, merged } = await mergeToBytes([firstRows, [], secondRows]);
+    const rows = await readRows(bytes);
+
+    expect(merged.summary).toEqual(summarizeChunkRows(rows));
+    expect(merged.benchmarkConfig).toBe(firstRows[0]!.benchmark_config);
+    expect(merged.benchmarkConfig).not.toBeNull();
+    expect(
+      rows.every((row) => row.benchmark_config === merged.benchmarkConfig)
+    ).toBe(true);
+  });
+  it("returns a null summary when every input is empty", async () => {
+    const { merged } = await mergeToBytes([[], []]);
+
+    expect(merged).toEqual({ summary: null, benchmarkConfig: null });
+  });
+  it("writes one row group per non-empty file with the run-result schema", async () => {
+    const single = runResultToParquet({ result: RESULT, meta: META });
+    const firstRows = await readRows(single);
+    const { bytes } = await mergeToBytes([firstRows, [], firstRows]);
+    const mergedMeta = parquetMetadata(bufferToArrayBuffer(bytes));
+    const singleMeta = parquetMetadata(bufferToArrayBuffer(single));
+
+    expect(mergedMeta.row_groups.map((group) => group.num_rows)).toEqual([
+      BigInt(firstRows.length),
+      BigInt(firstRows.length),
+    ]);
+    expect(mergedMeta.schema).toEqual(singleMeta.schema);
+    expect(mergedMeta.key_value_metadata).toEqual(
+      singleMeta.key_value_metadata
+    );
+  });
+  it("reads files one at a time, twice each", async () => {
+    const rows = await readRows(
+      runResultToParquet({ result: RESULT, meta: META })
+    );
+    const reads: number[] = [];
+    let inFlight = 0;
+    let maxInFlight = 0;
+    const reader =
+      (index: number) => async (): Promise<readonly BenchmarkResultRow[]> => {
+        inFlight += 1;
+        maxInFlight = Math.max(maxInFlight, inFlight);
+        reads.push(index);
+        await Promise.resolve();
+        inFlight -= 1;
+        return index === 1 ? [] : rows;
+      };
+
+    await mergeResultFilesToParquet({
+      files: [reader(0), reader(1), reader(2)],
+      meta: { task: META.task, model: META.model, createdAt: META.createdAt },
+      writer: new ByteWriter(),
+    });
+
+    expect(maxInFlight).toBe(1);
+    expect(reads).toEqual([0, 1, 2, 0, 2]);
+  });
+  it("rejects a file whose row count changes between passes", async () => {
+    const rows = await readRows(
+      runResultToParquet({ result: RESULT, meta: META })
+    );
+    let calls = 0;
+
+    await expect(
+      mergeResultFilesToParquet({
+        files: [
+          () => {
+            calls += 1;
+            return Promise.resolve(calls === 1 ? rows : rows.slice(1));
+          },
+        ],
+        meta: { task: META.task, model: META.model, createdAt: META.createdAt },
+        writer: new ByteWriter(),
+      })
+    ).rejects.toThrow("Result file 0 changed between merge passes");
+  });
+  it("rejects a file whose scores change between passes without changing length", async () => {
+    const rows = await readRows(
+      runResultToParquet({ result: RESULT, meta: META })
+    );
+    const flipped = rows.map((row) => ({
+      ...row,
+      score_value:
+        row.score_value === ScoreValue.Correct
+          ? ScoreValue.Incorrect
+          : ScoreValue.Correct,
+    }));
+    let calls = 0;
+
+    await expect(
+      mergeResultFilesToParquet({
+        files: [
+          () => {
+            calls += 1;
+            return Promise.resolve(calls === 1 ? rows : flipped);
+          },
+        ],
+        meta: { task: META.task, model: META.model, createdAt: META.createdAt },
+        writer: new ByteWriter(),
+      })
+    ).rejects.toThrow("Result file 0 changed between merge passes");
+  });
+  it("rejects a file whose run-level usage changes between passes", async () => {
+    const rows = await readRows(
+      runResultToParquet({ result: RESULT, meta: META })
+    );
+    const changed = rows.map((row) => ({
+      ...row,
+      input_tokens: row.input_tokens + 1,
+    }));
+    let calls = 0;
+
+    await expect(
+      mergeResultFilesToParquet({
+        files: [
+          () => {
+            calls += 1;
+            return Promise.resolve(calls === 1 ? rows : changed);
+          },
+        ],
+        meta: { task: META.task, model: META.model, createdAt: META.createdAt },
+        writer: new ByteWriter(),
+      })
+    ).rejects.toThrow("Result file 0 changed between merge passes");
+  });
+});
+
 describe("BenchmarkResultRowSchema", () => {
   it("parses a valid row object", () => {
     const parsed = parseSchema(BenchmarkResultRowSchema, {

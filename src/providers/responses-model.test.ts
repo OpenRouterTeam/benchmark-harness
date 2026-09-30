@@ -190,6 +190,7 @@ describe("responses-model", () => {
               maxTokens: 256,
               sort: ProviderSort.Price,
               cloudflareVersion: "ver-1",
+              experimentIds: ["jev-finish-deesc", "control"],
               extraBody: { custom_field: "value" },
             });
             const generationIds = yield* getCollectedGenerationIds;
@@ -244,6 +245,9 @@ describe("responses-model", () => {
     expect(
       captured.value?.headers["cloudflare-workers-version-overrides"]
     ).toBe("ver-1");
+    expect(captured.value?.headers["x-openrouter-experiment-ids"]).toBe(
+      "jev-finish-deesc,control"
+    );
     expect(captured.value?.headers["x-session-id"]).toBe("session-1");
   });
   it("preserves legacy checkpoint items and maps SDK function calls", async () => {
@@ -359,6 +363,26 @@ describe("responses-model", () => {
     assertSuccess(exit);
     expect(captured.value?.body["provider"]).toBeUndefined();
     expect(captured.value?.headers["x-or-endpoint-id"]).toBe("endpoint-1");
+  });
+  it("omits reasoning on the wire when effort is auto", async () => {
+    const captured: {
+      value: CapturedRequest | undefined;
+    } = { value: undefined };
+    restore = installFetchStub(await readStreamFixture(), 200, captured);
+    const layer = makeResponsesModelLayer({
+      model: "openrouter/jev",
+      apiKey: "sk-test",
+      retry: { baseDelayMs: 0, maxRetries: 0 },
+    });
+    const exit = await runPromiseExit(
+      gen(function* run() {
+        const model = yield* ResponsesModel;
+        return yield* model.generate([], { reasoningEffort: "auto" });
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    assertSuccess(exit);
+    expect(captured.value).toBeDefined();
+    expect(Object.hasOwn(captured.value?.body ?? {}, "reasoning")).toBe(false);
   });
   it("sends provider.only with fallbacks disabled on pinned runs", async () => {
     const captured: {
@@ -491,6 +515,107 @@ describe("responses-model", () => {
       gen(function* run() {
         const modelService = yield* ResponsesModel;
         return yield* modelService.generate([], { reasoningEffort: "high" });
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    assertSuccess(exit);
+    expect(captured.value?.body["plugins"]).toBeUndefined();
+  });
+  it("sends the switchyard-router plugin with the configured algorithm", async () => {
+    const captured: {
+      value: CapturedRequest | undefined;
+    } = { value: undefined };
+    restore = installFetchStub(await readStreamFixture(), 200, captured);
+    const layer = makeResponsesModelLayer({
+      model: "nvidia/switchyard",
+      models: ["openai/gpt-4.1-nano", "anthropic/claude-sonnet-4.5"],
+      apiKey: "sk-test",
+    });
+    const exit = await runPromiseExit(
+      gen(function* run() {
+        const modelService = yield* ResponsesModel;
+        return yield* modelService.generate([], {
+          reasoningEffort: "high",
+          switchyardAlgorithm: "stage",
+        });
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    assertSuccess(exit);
+    expect(captured.value?.body["model"]).toBe("nvidia/switchyard");
+    expect(captured.value?.body["models"]).toEqual([
+      "openai/gpt-4.1-nano",
+      "anthropic/claude-sonnet-4.5",
+    ]);
+    expect(captured.value?.body["plugins"]).toEqual([
+      { id: "switchyard-router", algorithm: "stage" },
+    ]);
+  });
+  it("omits the switchyard-router plugin when the algorithm is unset", async () => {
+    const captured: {
+      value: CapturedRequest | undefined;
+    } = { value: undefined };
+    restore = installFetchStub(await readStreamFixture(), 200, captured);
+    const layer = makeResponsesModelLayer({
+      model: "nvidia/switchyard",
+      models: ["openai/gpt-4.1-nano", "anthropic/claude-sonnet-4.5"],
+      apiKey: "sk-test",
+    });
+    const exit = await runPromiseExit(
+      gen(function* run() {
+        const modelService = yield* ResponsesModel;
+        return yield* modelService.generate([], { reasoningEffort: "high" });
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    assertSuccess(exit);
+    expect(captured.value?.body["plugins"]).toBeUndefined();
+  });
+  it("appends the switchyard-router plugin after caller-supplied extraBody plugins", async () => {
+    const captured: {
+      value: CapturedRequest | undefined;
+    } = { value: undefined };
+    restore = installFetchStub(await readStreamFixture(), 200, captured);
+    const layer = makeResponsesModelLayer({
+      model: "nvidia/switchyard",
+      models: ["openai/gpt-4.1-nano", "anthropic/claude-sonnet-4.5"],
+      apiKey: "sk-test",
+    });
+    const exit = await runPromiseExit(
+      gen(function* run() {
+        const modelService = yield* ResponsesModel;
+        return yield* modelService.generate([], {
+          reasoningEffort: "high",
+          switchyardAlgorithm: "stage",
+          extraBody: {
+            plugins: [{ id: "web" }],
+            cache_control: { type: "ephemeral" },
+          },
+        });
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    assertSuccess(exit);
+    expect(captured.value?.body["plugins"]).toEqual([
+      { id: "web" },
+      { id: "switchyard-router", algorithm: "stage" },
+    ]);
+    expect(captured.value?.body["cache_control"]).toEqual({
+      type: "ephemeral",
+    });
+  });
+  it("ignores switchyardAlgorithm for models other than nvidia/switchyard", async () => {
+    const captured: {
+      value: CapturedRequest | undefined;
+    } = { value: undefined };
+    restore = installFetchStub(await readStreamFixture(), 200, captured);
+    const layer = makeResponsesModelLayer({
+      model: "openai/gpt-5",
+      apiKey: "sk-test",
+    });
+    const exit = await runPromiseExit(
+      gen(function* run() {
+        const modelService = yield* ResponsesModel;
+        return yield* modelService.generate([], {
+          reasoningEffort: "high",
+          switchyardAlgorithm: "stage",
+        });
       }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
     );
     assertSuccess(exit);

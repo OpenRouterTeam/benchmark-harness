@@ -267,7 +267,10 @@ export function paginateHfRows<T>(opts: {
 }): Stream<T, DatasetError> {
   const start = opts.start ?? 0;
   const requestedEnd = opts.end;
-  const initialState: PageState = { offset: start, limit: opts.pageSize };
+  const initialState: PageState = {
+    offset: start - (start % opts.pageSize),
+    limit: opts.pageSize,
+  };
   return paginateChunkEffect(initialState, (state: PageState) =>
     opts.fetchPage(state.offset, state.limit).pipe(
       flatMap((page) => {

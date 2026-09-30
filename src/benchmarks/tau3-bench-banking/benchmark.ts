@@ -67,9 +67,11 @@ function makeBankingLayer(
       providerIgnore: config.providerIgnore,
       allowFallbacks: config.allowFallbacks,
       cloudflareVersion: config.cloudflareVersion,
+      experimentIds: config.experimentIds,
       costTier: config.costTier,
       costQualityTradeoff: config.costQualityTradeoff,
       pinModel: config.pinModel,
+      switchyardAlgorithm: config.switchyardAlgorithm,
     },
     retrievalConfig: config.retrievalConfig,
   });
