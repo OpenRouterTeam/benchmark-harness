@@ -45,6 +45,41 @@ export const DEFAULT_AGENT_RUNTIME_URL =
 export const DEFAULT_AGENT_RUNTIME_SHA256 =
   "7b59b9f3053b729f3d32da06154f68552e753b77da0b1dc497f53a860a8c8af2" as const;
 
+export const AGENT_REQUEST_PLUGINS_ENV = "TB_OPENROUTER_PLUGINS" as const;
+
+const PI_REQUEST_PLUGINS_EXTENSION_DIR = "/root/.bench-harness";
+
+export const PI_REQUEST_PLUGINS_EXTENSION_PATH =
+  `${PI_REQUEST_PLUGINS_EXTENSION_DIR}/openrouter-request-plugins.ts` as const;
+
+const PI_REQUEST_PLUGINS_EXTENSION_EOF = "TB_PI_REQUEST_PLUGINS_EXTENSION";
+
+export const PI_REQUEST_PLUGINS_EXTENSION_SOURCE = [
+  `const plugins = JSON.parse(process.env.${AGENT_REQUEST_PLUGINS_ENV} ?? "[]");`,
+  "const pluginIds = new Set(plugins.map((plugin) => plugin.id));",
+  "export default function registerRequestPlugins(pi) {",
+  '  pi.on("before_provider_request", (event) => {',
+  "    const payload = event.payload;",
+  '    if (typeof payload !== "object" || payload === null || Array.isArray(payload)) {',
+  "      return undefined;",
+  "    }",
+  "    const callerPlugins = Array.isArray(payload.plugins)",
+  "      ? payload.plugins.filter((plugin) => !pluginIds.has(plugin?.id))",
+  "      : [];",
+  "    return { ...payload, plugins: [...callerPlugins, ...plugins] };",
+  "  });",
+  "}",
+].join("\n");
+
+function writePiRequestPluginsExtension(): string[] {
+  return [
+    `mkdir -p ${PI_REQUEST_PLUGINS_EXTENSION_DIR}`,
+    `cat > ${PI_REQUEST_PLUGINS_EXTENSION_PATH} <<'${PI_REQUEST_PLUGINS_EXTENSION_EOF}'`,
+    PI_REQUEST_PLUGINS_EXTENSION_SOURCE,
+    PI_REQUEST_PLUGINS_EXTENSION_EOF,
+  ];
+}
+
 export interface OriRunScriptOptions {
   readonly instructionPath: string;
   readonly logPath: string;
@@ -54,6 +89,7 @@ export interface OriRunScriptOptions {
   readonly hasAllowedTools: boolean;
   readonly hasDisallowedTools: boolean;
   readonly isolateAgentConfig: boolean;
+  readonly hasRequestPlugins?: boolean;
 }
 
 export interface OriImageStepsOptions {
@@ -83,6 +119,7 @@ export interface OriHarnessDef {
   readonly defaultPackage: string;
   readonly binaryName: string;
   readonly remoteLogPath: string;
+  readonly forwardsRequestPlugins: boolean;
   readonly imageBuildSteps: (options: OriImageStepsOptions) => string[];
   readonly buildBootstrapScript: (options: OriBootstrapOptions) => string;
   readonly buildRunScript: (options: OriRunScriptOptions) => string;
@@ -340,6 +377,7 @@ const CLAUDE_HARNESS: OriHarnessDef = {
   defaultPackage: DEFAULT_CLAUDE_PACKAGE,
   binaryName: "claude",
   remoteLogPath: "/logs/agent/claude.txt",
+  forwardsRequestPlugins: false,
   imageBuildSteps: (options) =>
     buildAgentImageSteps({
       ...options,
@@ -385,6 +423,7 @@ const ORI_PI_HARNESS: OriHarnessDef = {
   defaultPackage: DEFAULT_PI_AGENT_PACKAGE,
   binaryName: "pi",
   remoteLogPath: "/logs/agent/pi.txt",
+  forwardsRequestPlugins: true,
   imageBuildSteps: (options) =>
     buildAgentImageSteps({
       ...options,
@@ -398,9 +437,15 @@ const ORI_PI_HARNESS: OriHarnessDef = {
       "set -euo pipefail",
       "export HOME=/root",
       "mkdir -p /logs/agent",
+      ...(options.hasRequestPlugins === true
+        ? writePiRequestPluginsExtension()
+        : []),
       'ori pi --model "$TB_MODEL" \\',
       `  --reasoning-effort ${options.reasoningEffort} -- \\`,
       "  --print --mode json --no-session \\",
+      ...(options.hasRequestPlugins === true
+        ? [`  --extension ${PI_REQUEST_PLUGINS_EXTENSION_PATH} \\`]
+        : []),
       ...(options.hasSystemPrompt
         ? ['  --system-prompt "$TB_SYSTEM_PROMPT" \\']
         : []),
@@ -430,6 +475,7 @@ const PRIME_AGENT_HARNESS: OriHarnessDef = {
   defaultPackage: DEFAULT_PRIME_AGENT_PACKAGE,
   binaryName: "prime-agent",
   remoteLogPath: "/logs/agent/prime-agent.txt",
+  forwardsRequestPlugins: false,
   imageBuildSteps: (options) =>
     buildAgentImageSteps({
       ...options,
@@ -486,6 +532,7 @@ const OMP_HARNESS: OriHarnessDef = {
   defaultPackage: DEFAULT_OMP_PACKAGE,
   binaryName: "omp",
   remoteLogPath: "/logs/agent/omp.txt",
+  forwardsRequestPlugins: false,
   imageBuildSteps: (options) => buildOmpImageSteps(options.agentPackage),
   buildBootstrapScript: (options) =>
     buildBootstrapScript({ ...options, binaryName: "omp" }),
