@@ -27,6 +27,8 @@ export const DEFAULT_PRIME_AGENT_PACKAGE =
 
 export const DEFAULT_OMP_PACKAGE = "@oh-my-pi/pi-coding-agent@18.1.2" as const;
 
+export const ORI_CODE_PACKAGE = "ori" as const;
+
 export const OMP_BUN_VERSION = "bun-v1.3.14" as const;
 
 export const BUN_RELEASE_URL =
@@ -145,6 +147,17 @@ function buildOmpImageSteps(agentPackage: string): string[] {
   ];
 }
 
+function buildOriCodeImageSteps(agentPackage: string): string[] {
+  if (agentPackage !== ORI_CODE_PACKAGE) {
+    throw new Error(
+      `ori code ships inside the ori CLI and takes no agentPackage; got ${JSON.stringify(agentPackage)} (pin the CLI with oriChannel instead)`
+    );
+  }
+  return [
+    "RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates git",
+  ];
+}
+
 function buildBootstrapScript(opts: {
   oriInstallUrl: string;
   oriChannel: OriChannel;
@@ -152,10 +165,14 @@ function buildBootstrapScript(opts: {
 }): string {
   const channelPrefix =
     opts.oriChannel === "stable" ? "" : `ORI_CHANNEL=${opts.oriChannel} `;
+  const versionCheck =
+    opts.binaryName === "ori"
+      ? "ori --version"
+      : `ori --version && ${opts.binaryName} --version`;
   return [
     "set -euo pipefail",
     `curl -fsSL ${opts.oriInstallUrl} | ${channelPrefix}ORI_INSTALL_DIR=${ORI_INSTALL_DIR} bash`,
-    `ori --version && ${opts.binaryName} --version`,
+    versionCheck,
   ].join("\n");
 }
 
@@ -518,11 +535,47 @@ const OMP_HARNESS: OriHarnessDef = {
   parseRun: parseJsonAgentStream,
 };
 
+const ORI_CODE_HARNESS: OriHarnessDef = {
+  id: "code",
+  defaultPackage: ORI_CODE_PACKAGE,
+  binaryName: "ori",
+  remoteLogPath: "/logs/agent/ori-code.txt",
+  imageBuildSteps: (options) => buildOriCodeImageSteps(options.agentPackage),
+  buildBootstrapScript: (options) =>
+    buildBootstrapScript({ ...options, binaryName: "ori" }),
+  buildRunScript: (options) =>
+    [
+      "set -euo pipefail",
+      "export HOME=/root",
+      "mkdir -p /logs/agent",
+      ...(options.hasSystemPrompt || options.hasAppendSystemPrompt
+        ? [
+            'echo "ori code does not support system prompt overrides" >&2',
+            "exit 2",
+          ]
+        : []),
+      ...(options.hasAllowedTools || options.hasDisallowedTools
+        ? [
+            'echo "ori code does not support tool allow/deny lists" >&2',
+            "exit 2",
+          ]
+        : []),
+      'ori code --model "$TB_MODEL" \\',
+      `  --reasoning-effort ${options.reasoningEffort} \\`,
+      "  --approvals self-drive \\",
+      "  --output jsonl \\",
+      `  --prompt-file ${options.instructionPath} \\`,
+      `  2>&1 </dev/null | grep -v -e '"type":"reasoning.delta"' -e '"type":"tool.output.delta"' | stdbuf -oL tee ${options.logPath}`,
+    ].join("\n"),
+  parseRun: parseOriCodeStream,
+};
+
 export const ORI_HARNESSES: Readonly<Record<OriAgent, OriHarnessDef>> = {
   claude: CLAUDE_HARNESS,
   pi: ORI_PI_HARNESS,
   "prime-agent": PRIME_AGENT_HARNESS,
   omp: OMP_HARNESS,
+  code: ORI_CODE_HARNESS,
 };
 
 export function getOriHarness(agent: OriAgent): OriHarnessDef {
@@ -536,6 +589,142 @@ function reasoningTokensOf(usage: Record<string, unknown>): number {
   }
   const reasoningTokens = usage["reasoningTokens"];
   return typeof reasoningTokens === "number" ? reasoningTokens : 0;
+}
+
+function oriCodeFailureStatus(payload: unknown): string | undefined {
+  const failure = isRecord(payload) ? payload["failure"] : undefined;
+  const code = optionalStringField(failure, "code");
+  const message = optionalStringField(failure, "message");
+  if (code === undefined) {
+    return message;
+  }
+  return message === undefined ? code : `${code}: ${message}`;
+}
+
+function parseOriCodeStream(stdout: string): OriAgentRun {
+  let inputTokens = 0;
+  let outputTokens = 0;
+  let totalCost = 0;
+  let turns = 0;
+  let toolCalls = 0;
+  let isError = false;
+  let apiErrorStatus: string | undefined;
+  let finalText: string | undefined;
+  let generationTimeMs: number | undefined;
+  let model: string | undefined;
+  let pendingText = "";
+  const generationIds: string[] = [];
+  const assistantMessages: ModelMessage[] = [];
+  const responseItems: ResponseItem[] = [];
+  const flushText = () => {
+    if (pendingText.length === 0) {
+      return;
+    }
+    finalText = pendingText;
+    assistantMessages.push(
+      definedValues({
+        role: MessageRole.Assistant,
+        content: pendingText,
+        model,
+      })
+    );
+    pendingText = "";
+  };
+  for (const line of stdout.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith("{")) {
+      continue;
+    }
+    const parsed = Either.try(() => JSON.parse(trimmed));
+    if (Either.isLeft(parsed) || !isRecord(parsed.right)) {
+      continue;
+    }
+    const envelope = parsed.right;
+    responseItems.push(envelope);
+    if (envelope["kind"] === "result") {
+      if (envelope["ok"] !== true) {
+        isError = true;
+        apiErrorStatus ??= optionalStringField(envelope["error"], "message");
+      }
+      continue;
+    }
+    const streamEvent = envelope["event"];
+    if (!isRecord(streamEvent) || streamEvent["type"] !== "runtime.event") {
+      continue;
+    }
+    const event = streamEvent["event"];
+    if (!isRecord(event)) {
+      continue;
+    }
+    const payload = event["payload"];
+    model = optionalStringField(event, "model") ?? model;
+    switch (event["type"]) {
+      case "assistant.text.delta": {
+        pendingText += optionalStringField(payload, "delta") ?? "";
+        break;
+      }
+      case "tool.started": {
+        flushText();
+        toolCalls++;
+        break;
+      }
+      case "turn.succeeded": {
+        flushText();
+        turns++;
+        generationTimeMs =
+          (generationTimeMs ?? 0) +
+          (optionalNumberField(payload, "durationMs") ?? 0);
+        const usage = isRecord(payload) ? payload["usage"] : undefined;
+        if (isRecord(usage)) {
+          inputTokens += numberField(usage, "inputTokens");
+          outputTokens += numberField(usage, "outputTokens");
+          totalCost += numberField(usage, "costUsd");
+          const ids = usage["generationIds"];
+          if (Array.isArray(ids)) {
+            for (const id of ids) {
+              if (typeof id === "string" && !generationIds.includes(id)) {
+                generationIds.push(id);
+              }
+            }
+          }
+        }
+        break;
+      }
+      case "turn.failed":
+      case "session.failed":
+      case "runtime.error": {
+        flushText();
+        isError = true;
+        apiErrorStatus = oriCodeFailureStatus(payload) ?? apiErrorStatus;
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+  flushText();
+  const hasTokens = inputTokens + outputTokens !== 0;
+  return {
+    usage: hasTokens
+      ? {
+          inputTokens,
+          outputTokens,
+          totalTokens: inputTokens + outputTokens,
+          reasoningTokens: 0,
+          totalCost,
+        }
+      : undefined,
+    generationIds,
+    generationTimeMs,
+    finalText,
+    assistantMessages,
+    responseItems,
+    isError,
+    apiErrorStatus,
+    turns: turns > 0 ? turns : undefined,
+    toolCalls,
+  };
 }
 
 function parseJsonAgentStream(stdout: string): OriAgentRun {
