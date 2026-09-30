@@ -27,12 +27,22 @@ describe("sandboxAgentPluginError", () => {
   it("names the benchmark and agent when a switchyard algorithm would be dropped", () => {
     const error = sandboxAgentPluginError({
       benchmarkId: "terminal_bench",
-      agent: "pi",
+      agent: "claude",
       models: undefined,
       switchyardAlgorithm: "stage",
     });
     expect(error?.message).toBe(
-      "terminal_bench cannot use switchyardAlgorithm: the pi agent calls the model from inside the sandbox, which does not forward the switchyard-router plugin"
+      "terminal_bench cannot use switchyardAlgorithm: the claude agent calls the model from inside the sandbox and does not forward the switchyard-router plugin (supported agents: pi)"
     );
+  });
+  it("accepts a switchyard algorithm for an agent that forwards the plugin", () => {
+    expect(
+      sandboxAgentPluginError({
+        benchmarkId: "terminal_bench",
+        agent: "pi",
+        models: undefined,
+        switchyardAlgorithm: "stage",
+      })
+    ).toBeUndefined();
   });
 });

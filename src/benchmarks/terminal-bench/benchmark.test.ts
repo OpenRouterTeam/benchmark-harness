@@ -38,4 +38,16 @@ describe("terminal_bench layer", () => {
       "terminal_bench cannot use costTier: the claude agent calls the model from inside the sandbox and does not forward the auto-router plugin (supported agents: pi)"
     );
   });
+
+  it("rejects a switchyard algorithm for an agent that cannot forward the switchyard-router plugin", async () => {
+    const exit = await buildLayer({
+      agent: "claude",
+      model: "nvidia/switchyard",
+      switchyardAlgorithm: "stage",
+    });
+    assertFailure(exit);
+    expect(getOrThrow(failureOption(exit.cause)).message).toBe(
+      "terminal_bench cannot use switchyardAlgorithm: the claude agent calls the model from inside the sandbox and does not forward the switchyard-router plugin (supported agents: pi)"
+    );
+  });
 });
