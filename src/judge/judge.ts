@@ -6,6 +6,7 @@ import type { Effect } from "effect/Effect";
 import { fail, flatMap, mapError, succeed } from "effect/Effect";
 
 import type { ReasoningEffort } from "../harness/constants";
+import { reasoningRequestFor } from "../harness/constants";
 import type { ModelUsage } from "../harness/core";
 import { ModelError } from "../harness/core";
 import { Either } from "../internal/either";
@@ -67,7 +68,7 @@ export function judgeCall<T>(
     text,
     instructions: spec.instructions,
     temperature: config.temperature,
-    reasoning: { effort: config.reasoningEffort },
+    reasoning: reasoningRequestFor(config.reasoningEffort),
   });
   const sendOptions = definedValues({
     timeoutMs: config.timeoutMs ?? DEFAULT_JUDGE_TIMEOUT_MS,

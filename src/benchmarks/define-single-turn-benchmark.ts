@@ -47,6 +47,28 @@ export function defineSingleTurnBenchmark<
     readonly models?: readonly string[];
   },
 >(definition: SingleTurnBenchmarkDefinition<C>): Benchmark {
+  function selectDatasetLayer(
+    config: C,
+    retryConfig?: RetryConfig
+  ): Layer<Dataset> {
+    return (
+      definition.makeDatasetLayerForConfig?.(config, retryConfig) ??
+      definition.makeDatasetLayer(retryConfig)
+    );
+  }
+
+  function makeDatasetLayerForConfig(
+    config: BenchmarkRunConfig,
+    retryConfig?: RetryConfig
+  ): Layer<Dataset, Error> {
+    if (!definition.isConfig(config)) {
+      return layerFail(
+        new Error(`${definition.id} received mismatched benchmarkConfig`)
+      );
+    }
+    return selectDatasetLayer(config, retryConfig);
+  }
+
   function makeLayer(
     input: BenchmarkRunInput
   ): Layer<Dataset | Solver | Scorer, Error, HttpClient.HttpClient> {
@@ -56,13 +78,10 @@ export function defineSingleTurnBenchmark<
         new Error(`${definition.id} received mismatched benchmarkConfig`)
       );
     }
-    const datasetLayer =
-      definition.makeDatasetLayerForConfig !== undefined
-        ? definition.makeDatasetLayerForConfig(
-            benchmarkConfig,
-            input.datasetRetry
-          )
-        : definition.makeDatasetLayer(input.datasetRetry);
+    const datasetLayer = selectDatasetLayer(
+      benchmarkConfig,
+      input.datasetRetry
+    );
     const modelLayer =
       input.modelLayer ??
       makeOpenRouterModelLayer(
@@ -88,6 +107,7 @@ export function defineSingleTurnBenchmark<
   return {
     id: definition.id,
     makeDatasetLayer: definition.makeDatasetLayer,
+    makeDatasetLayerForConfig,
     temperature: definition.temperature,
     defaultEpochs: definition.defaultEpochs,
     makeLayer,

@@ -30,6 +30,10 @@ import { definedValues, isRecord } from "../internal/guards";
 import { parseSchema, z } from "../internal/zod";
 import { filterTraceHeaders } from "../runner/trace-headers";
 import { recordGenerationId } from "../runtime/generation-ids";
+import {
+  buildRequestSessionId,
+  getCurrentSampleId,
+} from "../runtime/request-session-id";
 import type { ResponseCacheAttemptState } from "../runtime/response-cache";
 import {
   buildResponseCacheSalt,
@@ -185,7 +189,8 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
   const send = (
     body: ResponsesRequest,
     options: ResponsesSendOptions,
-    attemptState: ResponseCacheAttemptState
+    attemptState: ResponseCacheAttemptState,
+    requestSessionId: string | undefined
   ): Effect<ResponsesResult, ResponsesError> => {
     let identifiers: ModelErrorIdentifiers = {};
     let isCacheHit = false;
@@ -227,7 +232,7 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
           : undefined,
       }),
       ...definedValues({
-        "x-session-id": config.sessionId,
+        "x-session-id": requestSessionId,
         [RESPONSE_CACHE_SALT_HEADER]: attemptState.cacheSalt,
       }),
       [RESPONSE_CACHE_HEADER]: "true",
@@ -311,15 +316,26 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
       retryAttempt: getCurrentRetryAttempt,
       runAttempt: getCurrentRunAttempt,
       callSalt: getCurrentCallSalt,
+      sampleId: getCurrentSampleId,
     }).pipe(
-      flatMap(({ epoch, retryAttempt, runAttempt, callSalt }) => {
+      flatMap(({ epoch, retryAttempt, runAttempt, callSalt, sampleId }) => {
         const cacheSalt = buildResponseCacheSalt(
           config.sessionId,
           epoch,
           retryAttempt,
           callSalt
         );
-        return send(body, options, { runAttempt, retryAttempt, cacheSalt });
+        const requestSessionId = buildRequestSessionId(
+          config.sessionId,
+          epoch,
+          sampleId
+        );
+        return send(
+          body,
+          options,
+          { runAttempt, retryAttempt, cacheSalt },
+          requestSessionId
+        );
       })
     );
   };

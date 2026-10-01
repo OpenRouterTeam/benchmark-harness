@@ -16,8 +16,9 @@ import { definedValues } from "../../internal/guards";
 import { makeModalSandboxLayer } from "../../sandbox/modal";
 import { resolveModalRegions } from "../../sandbox/modal-regions";
 import { SandboxSession } from "../../sandbox/session";
-import { sandboxAgentCandidateModelsError } from "../agent-cli/candidate-models";
+import { sandboxAgentPluginError } from "../agent-cli/candidate-models";
 import { getOriHarness } from "../agent-cli/harness";
+import { sandboxAgentRequestPlugins } from "../agent-cli/request-plugins";
 import { TERMINAL_BENCH_META } from "../benchmark-meta";
 import type { Benchmark, BenchmarkRunInput } from "../types";
 import { makeTerminalBenchDatasetLayer } from "./dataset";
@@ -39,13 +40,27 @@ function makeTerminalBenchLayer(
     );
   }
   const { agent } = benchmarkConfig;
-  const candidateModelsError = sandboxAgentCandidateModelsError({
+  const candidateModelsError = sandboxAgentPluginError({
     benchmarkId: benchmarkConfig.benchmarkId,
     agent,
     models: benchmarkConfig.models,
+    switchyardAlgorithm: benchmarkConfig.switchyardAlgorithm,
   });
   if (candidateModelsError !== undefined) {
     return layerFail(candidateModelsError);
+  }
+  const harness = getOriHarness(agent);
+  const requestPlugins = sandboxAgentRequestPlugins({
+    benchmarkId: benchmarkConfig.benchmarkId,
+    harness,
+    model: benchmarkConfig.model,
+    costTier: benchmarkConfig.costTier,
+    costQualityTradeoff: benchmarkConfig.costQualityTradeoff,
+    pinModel: benchmarkConfig.pinModel,
+    switchyardAlgorithm: benchmarkConfig.switchyardAlgorithm,
+  });
+  if (requestPlugins instanceof Error) {
+    return layerFail(requestPlugins);
   }
   const oriSolverOpts: OriSolverOpts = definedValues({
     model: benchmarkConfig.model,
@@ -61,6 +76,7 @@ function makeTerminalBenchLayer(
     allowedTools: benchmarkConfig.allowedTools,
     disallowedTools: benchmarkConfig.disallowedTools,
     isolateAgentConfig: benchmarkConfig.isolateAgentConfig,
+    requestPlugins: requestPlugins.length > 0 ? requestPlugins : undefined,
   });
   const datasetLayer = makeTerminalBenchDatasetLayer(
     definedValues({
@@ -79,9 +95,7 @@ function makeTerminalBenchLayer(
   const solverLayer = layerEffect(Solver)(
     gen(function* () {
       const sessionFactory = yield* SandboxSession;
-      return Solver.of(
-        oriSolver(sessionFactory, oriSolverOpts, getOriHarness(agent))
-      );
+      return Solver.of(oriSolver(sessionFactory, oriSolverOpts, harness));
     })
   );
   const scorerLayer = layerSucceed(Scorer, Scorer.of(terminalBenchScorer));

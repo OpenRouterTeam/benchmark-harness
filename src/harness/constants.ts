@@ -1,6 +1,8 @@
 import type { ValueOf } from "../internal/guards";
 
-export const REASONING_EFFORTS = [
+export const ADAPTIVE_REASONING_EFFORT = "auto";
+
+export const PINNED_REASONING_EFFORTS = [
   "xhigh",
   "high",
   "medium",
@@ -9,13 +11,55 @@ export const REASONING_EFFORTS = [
   "none",
 ] as const;
 
+export type PinnedReasoningEffort = ValueOf<typeof PINNED_REASONING_EFFORTS>;
+
+export const REASONING_EFFORTS = [
+  ...PINNED_REASONING_EFFORTS,
+  ADAPTIVE_REASONING_EFFORT,
+] as const;
+
 export type ReasoningEffort = ValueOf<typeof REASONING_EFFORTS>;
 
 export const DEFAULT_REASONING_EFFORT: ReasoningEffort = "high";
 
+export const ADAPTIVE_REASONING_EFFORT_MODELS = [
+  "openrouter/jev",
+  "typesafe/jev-router",
+] as const;
+
+export function supportsAdaptiveReasoningEffort(model: string): boolean {
+  const baseModel = model.split(":")[0];
+  return ADAPTIVE_REASONING_EFFORT_MODELS.some((slug) => slug === baseModel);
+}
+
+export function defaultReasoningEffortFor(
+  model: string | undefined
+): ReasoningEffort {
+  return model !== undefined && supportsAdaptiveReasoningEffort(model)
+    ? ADAPTIVE_REASONING_EFFORT
+    : DEFAULT_REASONING_EFFORT;
+}
+
+export function reasoningRequestFor(
+  effort: ReasoningEffort
+): { readonly effort: PinnedReasoningEffort } | undefined {
+  return effort === ADAPTIVE_REASONING_EFFORT ? undefined : { effort };
+}
+
 export const COST_TIERS = ["low", "medium", "high", "xhigh", "max"] as const;
 
 export type CostTier = ValueOf<typeof COST_TIERS>;
+
+export const SWITCHYARD_ALGORITHMS = [
+  "capability",
+  "stage",
+  "auto",
+  "random",
+  "composite",
+  "passthrough",
+] as const;
+
+export type SwitchyardAlgorithm = ValueOf<typeof SWITCHYARD_ALGORITHMS>;
 
 export const ImageDetail = {
   Auto: "auto",
@@ -42,3 +86,8 @@ export const VIDEO_PROCESSING_MODES = [
 ] as const;
 
 export type VideoProcessingMode = ValueOf<typeof VIDEO_PROCESSING_MODES>;
+
+export function stripVariantSuffix(model: string): string {
+  const idx = model.indexOf(":");
+  return idx <= 0 ? model : model.slice(0, idx);
+}

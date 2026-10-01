@@ -15,4 +15,16 @@ describe("WANDR benchmark configuration", () => {
     assertRight(parsed);
     expect(wandrInferenceOverride(parsed.right).costTier).toBe("high");
   });
+  it("forwards switchyardAlgorithm into the solver inference override", () => {
+    const parsed = parseSchema(WandrConfigSchema, {
+      benchmarkId: "wandr",
+      model: "nvidia/switchyard",
+      reasoningEffort: "high",
+      switchyardAlgorithm: "stage",
+    });
+    assertRight(parsed);
+    expect(wandrInferenceOverride(parsed.right).switchyardAlgorithm).toBe(
+      "stage"
+    );
+  });
 });

@@ -2,11 +2,14 @@ import {
   COST_TIERS,
   IMAGE_DETAIL_VALUES,
   REASONING_EFFORTS,
+  stripVariantSuffix,
+  SWITCHYARD_ALGORITHMS,
   VIDEO_PROCESSING_MODES,
 } from "../harness/constants";
 import { ProviderSort } from "../internal/enums";
 import type { ValueOf } from "../internal/guards";
 import { z, zDefaultedText, zInt } from "../internal/zod";
+import { SWITCHYARD_MODEL } from "../providers/switchyard-router-plugin";
 import { ModalSandboxOptionsSchema } from "../sandbox/modal-schema";
 import {
   AGENT_PACKAGE_PATTERN,
@@ -52,8 +55,14 @@ export const InferenceOverrideSchema = z.object({
   providerIgnore: z.array(z.string()).optional(),
   allowFallbacks: z.boolean().optional(),
   cloudflareVersion: z.string().optional(),
+  experimentIds: z
+    .array(z.string().regex(/^[a-z0-9][a-z0-9_.-]{0,63}$/))
+    .min(1)
+    .max(16)
+    .optional(),
   costQualityTradeoff: z.number().int().min(0).max(10).optional(),
   pinModel: z.boolean().optional(),
+  switchyardAlgorithm: z.enum(SWITCHYARD_ALGORITHMS).optional(),
 });
 
 export type InferenceOverride = z.infer<typeof InferenceOverrideSchema>;
@@ -325,7 +334,7 @@ export type SearchBenchmarkConfig =
   | DsqaBenchmarkConfig
   | WideSearchBenchmarkConfig;
 
-export const NativeBenchmarkRunConfigSchema = z.discriminatedUnion(
+export const KeplerBenchmarkRunConfigSchema = z.discriminatedUnion(
   "benchmarkId",
   [
     GpqaBenchmarkConfigSchema,
@@ -349,18 +358,18 @@ export const NativeBenchmarkRunConfigSchema = z.discriminatedUnion(
   ]
 );
 
-export type NativeBenchmarkRunConfig = z.infer<
-  typeof NativeBenchmarkRunConfigSchema
+export type KeplerBenchmarkRunConfig = z.infer<
+  typeof KeplerBenchmarkRunConfigSchema
 >;
 
-type NativeModelBenchmarkConfig = Extract<
-  NativeBenchmarkRunConfig,
+type KeplerModelBenchmarkConfig = Extract<
+  KeplerBenchmarkRunConfig,
   {
     model: string;
   }
 >;
 
-export type ModelBenchmarkId = NativeModelBenchmarkConfig["benchmarkId"];
+export type ModelBenchmarkId = KeplerModelBenchmarkConfig["benchmarkId"];
 
 export const BENCHMARK_OPTIONS_SCHEMAS = {
   gpqa_diamond: GpqaOptionsSchema,
@@ -382,8 +391,8 @@ export const BENCHMARK_OPTIONS_SCHEMAS = {
   vgi_bench: VgiBenchOptionsSchema,
 } as const satisfies Record<ModelBenchmarkId, z.ZodObject<z.ZodRawShape>>;
 
-const NATIVE_BENCHMARK_ID_SET: ReadonlySet<string> = new Set(
-  NativeBenchmarkRunConfigSchema.options.flatMap((schema) => {
+const KEPLER_BENCHMARK_ID_SET: ReadonlySet<string> = new Set(
+  KeplerBenchmarkRunConfigSchema.options.flatMap((schema) => {
     const benchmarkId = schema.shape.benchmarkId;
     return benchmarkId instanceof z.ZodLiteral ? [benchmarkId.value] : [];
   })
@@ -393,8 +402,8 @@ const InjectedBenchmarkIdSchema = z
   .string()
   .min(1)
   .refine(
-    (benchmarkId) => !NATIVE_BENCHMARK_ID_SET.has(benchmarkId),
-    "Injected benchmark ids must not reuse native benchmark ids"
+    (benchmarkId) => !KEPLER_BENCHMARK_ID_SET.has(benchmarkId),
+    "Injected benchmark ids must not reuse Kepler benchmark ids"
   );
 
 export const InjectedBenchmarkRunConfigSchema = z.object({
@@ -407,15 +416,23 @@ export type InjectedBenchmarkRunConfig = z.infer<
   typeof InjectedBenchmarkRunConfigSchema
 >;
 
-export const BenchmarkRunConfigSchema = z.union([
-  NativeBenchmarkRunConfigSchema,
-  InjectedBenchmarkRunConfigSchema,
-]);
+export const BenchmarkRunConfigSchema = z
+  .union([KeplerBenchmarkRunConfigSchema, InjectedBenchmarkRunConfigSchema])
+  .refine(
+    (config) =>
+      !("model" in config) ||
+      config.switchyardAlgorithm === undefined ||
+      stripVariantSuffix(config.model) === SWITCHYARD_MODEL,
+    {
+      message: `requires model ${SWITCHYARD_MODEL}`,
+      path: ["switchyardAlgorithm"],
+    }
+  );
 
 export type BenchmarkRunConfig = z.infer<typeof BenchmarkRunConfigSchema>;
 
 export type ModelBenchmarkConfig =
-  | NativeModelBenchmarkConfig
+  | KeplerModelBenchmarkConfig
   | InjectedBenchmarkRunConfig;
 
 export function isModelBenchmarkConfig(
@@ -424,16 +441,16 @@ export function isModelBenchmarkConfig(
   return "model" in config;
 }
 
-export function isNativeBenchmarkConfig(
+export function isKeplerBenchmarkConfig(
   config: BenchmarkRunConfig
-): config is NativeBenchmarkRunConfig {
-  return NATIVE_BENCHMARK_ID_SET.has(config.benchmarkId);
+): config is KeplerBenchmarkRunConfig {
+  return KEPLER_BENCHMARK_ID_SET.has(config.benchmarkId);
 }
 
 export function isInjectedBenchmarkConfig(
   config: BenchmarkRunConfig
 ): config is InjectedBenchmarkRunConfig {
-  return !isNativeBenchmarkConfig(config);
+  return !isKeplerBenchmarkConfig(config);
 }
 
 const SEARCH_BENCHMARK_ID_SET: ReadonlySet<string> = new Set([

@@ -45,6 +45,114 @@ export const DEFAULT_AGENT_RUNTIME_URL =
 export const DEFAULT_AGENT_RUNTIME_SHA256 =
   "7b59b9f3053b729f3d32da06154f68552e753b77da0b1dc497f53a860a8c8af2" as const;
 
+export const AGENT_REQUEST_PLUGINS_ENV = "TB_OPENROUTER_PLUGINS" as const;
+
+const PI_REQUEST_PLUGINS_EXTENSION_DIR = "/root/.bench-harness";
+
+export const PI_REQUEST_PLUGINS_EXTENSION_PATH =
+  `${PI_REQUEST_PLUGINS_EXTENSION_DIR}/openrouter-request-plugins.ts` as const;
+
+const PI_REQUEST_PLUGINS_EXTENSION_EOF = "TB_PI_REQUEST_PLUGINS_EXTENSION";
+
+export const PI_REQUEST_PLUGINS_EXTENSION_SOURCE = [
+  `const plugins = JSON.parse(process.env.${AGENT_REQUEST_PLUGINS_ENV} ?? "[]");`,
+  "const pluginIds = new Set(plugins.map((plugin) => plugin.id));",
+  "export default function registerRequestPlugins(pi) {",
+  '  pi.on("before_provider_request", (event) => {',
+  "    const payload = event.payload;",
+  '    if (typeof payload !== "object" || payload === null || Array.isArray(payload)) {',
+  "      return undefined;",
+  "    }",
+  "    const callerPlugins = Array.isArray(payload.plugins)",
+  "      ? payload.plugins.filter((plugin) => !pluginIds.has(plugin?.id))",
+  "      : [];",
+  "    return { ...payload, plugins: [...callerPlugins, ...plugins] };",
+  "  });",
+  "}",
+].join("\n");
+
+function writePiRequestPluginsExtension(): string[] {
+  return [
+    `mkdir -p ${PI_REQUEST_PLUGINS_EXTENSION_DIR}`,
+    `cat > ${PI_REQUEST_PLUGINS_EXTENSION_PATH} <<'${PI_REQUEST_PLUGINS_EXTENSION_EOF}'`,
+    PI_REQUEST_PLUGINS_EXTENSION_SOURCE,
+    PI_REQUEST_PLUGINS_EXTENSION_EOF,
+  ];
+}
+
+export const OPENROUTER_GENERATION_COST_EVENT =
+  "openrouter_generation_cost" as const;
+
+export const PI_USAGE_EXTENSION_PATH =
+  `${PI_REQUEST_PLUGINS_EXTENSION_DIR}/openrouter-usage.ts` as const;
+
+const PI_USAGE_EXTENSION_EOF = "TB_PI_USAGE_EXTENSION";
+
+export const PI_USAGE_EXTENSION_SOURCE = [
+  `const COST_EVENT = "${OPENROUTER_GENERATION_COST_EVENT}";`,
+  "function requestUrl(input) {",
+  '  if (typeof input === "string") return input;',
+  "  if (input instanceof URL) return input.href;",
+  '  return typeof input?.url === "string" ? input.url : "";',
+  "}",
+  "async function reportCost(body) {",
+  "  const reader = body.getReader();",
+  "  const decoder = new TextDecoder();",
+  '  let buffer = "";',
+  "  let id;",
+  "  let cost;",
+  "  const readLine = (line) => {",
+  '    if (!line.startsWith("data:")) return;',
+  "    const data = line.slice(5).trim();",
+  '    if (data === "" || data === "[DONE]") return;',
+  "    try {",
+  "      const chunk = JSON.parse(data);",
+  '      if (id === undefined && typeof chunk?.id === "string") id = chunk.id;',
+  '      if (typeof chunk?.usage?.cost === "number") cost = chunk.usage.cost;',
+  "    } catch {}",
+  "  };",
+  "  for (;;) {",
+  "    const { done, value } = await reader.read();",
+  "    if (done) break;",
+  "    buffer += decoder.decode(value, { stream: true });",
+  '    const lines = buffer.split("\\n");',
+  '    buffer = lines.pop() ?? "";',
+  "    lines.forEach(readLine);",
+  "  }",
+  "  readLine(buffer);",
+  '  if (typeof id === "string" && id.length > 0 && Number.isFinite(cost)) {',
+  '    process.stdout.write(JSON.stringify({ type: COST_EVENT, id, cost }) + "\\n");',
+  "  }",
+  "}",
+  "export default function registerOpenRouterUsage() {",
+  "  if (globalThis.__benchHarnessUsageFetch === true) return;",
+  "  globalThis.__benchHarnessUsageFetch = true;",
+  "  const originalFetch = globalThis.fetch;",
+  "  globalThis.fetch = async (input, init) => {",
+  "    const response = await originalFetch(input, init);",
+  '    if (!response.ok || response.body === null || !requestUrl(input).includes("/chat/completions")) {',
+  "      return response;",
+  "    }",
+  "    const [forAgent, forUsage] = response.body.tee();",
+  "    reportCost(forUsage).catch(() => undefined);",
+  "    return new Response(forAgent, {",
+  "      status: response.status,",
+  "      statusText: response.statusText,",
+  "      headers: response.headers,",
+  "    });",
+  "  };",
+  "}",
+].join("\n");
+
+function writePiUsageExtension(): string[] {
+  return [
+    `mkdir -p ${PI_REQUEST_PLUGINS_EXTENSION_DIR}`,
+    `cat > ${PI_USAGE_EXTENSION_PATH} <<'${PI_USAGE_EXTENSION_EOF}'`,
+    PI_USAGE_EXTENSION_SOURCE,
+    PI_USAGE_EXTENSION_EOF,
+  ];
+}
+
 export interface OriRunScriptOptions {
   readonly instructionPath: string;
   readonly logPath: string;
@@ -54,6 +162,7 @@ export interface OriRunScriptOptions {
   readonly hasAllowedTools: boolean;
   readonly hasDisallowedTools: boolean;
   readonly isolateAgentConfig: boolean;
+  readonly hasRequestPlugins?: boolean;
 }
 
 export interface OriImageStepsOptions {
@@ -68,6 +177,7 @@ export interface OriBootstrapOptions {
 export interface OriAgentRun {
   readonly usage: ModelUsage | undefined;
   readonly generationIds: readonly string[];
+  readonly reportedGenerationCosts?: ReadonlyMap<string, number>;
   readonly generationTimeMs: number | undefined;
   readonly finalText: string | undefined;
   readonly assistantMessages: readonly ModelMessage[];
@@ -83,6 +193,7 @@ export interface OriHarnessDef {
   readonly defaultPackage: string;
   readonly binaryName: string;
   readonly remoteLogPath: string;
+  readonly forwardsRequestPlugins: boolean;
   readonly imageBuildSteps: (options: OriImageStepsOptions) => string[];
   readonly buildBootstrapScript: (options: OriBootstrapOptions) => string;
   readonly buildRunScript: (options: OriRunScriptOptions) => string;
@@ -340,6 +451,7 @@ const CLAUDE_HARNESS: OriHarnessDef = {
   defaultPackage: DEFAULT_CLAUDE_PACKAGE,
   binaryName: "claude",
   remoteLogPath: "/logs/agent/claude.txt",
+  forwardsRequestPlugins: false,
   imageBuildSteps: (options) =>
     buildAgentImageSteps({
       ...options,
@@ -385,6 +497,7 @@ const ORI_PI_HARNESS: OriHarnessDef = {
   defaultPackage: DEFAULT_PI_AGENT_PACKAGE,
   binaryName: "pi",
   remoteLogPath: "/logs/agent/pi.txt",
+  forwardsRequestPlugins: true,
   imageBuildSteps: (options) =>
     buildAgentImageSteps({
       ...options,
@@ -398,9 +511,17 @@ const ORI_PI_HARNESS: OriHarnessDef = {
       "set -euo pipefail",
       "export HOME=/root",
       "mkdir -p /logs/agent",
+      ...writePiUsageExtension(),
+      ...(options.hasRequestPlugins === true
+        ? writePiRequestPluginsExtension()
+        : []),
       'ori pi --model "$TB_MODEL" \\',
       `  --reasoning-effort ${options.reasoningEffort} -- \\`,
       "  --print --mode json --no-session \\",
+      ...(options.hasRequestPlugins === true
+        ? [`  --extension ${PI_REQUEST_PLUGINS_EXTENSION_PATH} \\`]
+        : []),
+      `  --extension ${PI_USAGE_EXTENSION_PATH} \\`,
       ...(options.hasSystemPrompt
         ? ['  --system-prompt "$TB_SYSTEM_PROMPT" \\']
         : []),
@@ -430,6 +551,7 @@ const PRIME_AGENT_HARNESS: OriHarnessDef = {
   defaultPackage: DEFAULT_PRIME_AGENT_PACKAGE,
   binaryName: "prime-agent",
   remoteLogPath: "/logs/agent/prime-agent.txt",
+  forwardsRequestPlugins: false,
   imageBuildSteps: (options) =>
     buildAgentImageSteps({
       ...options,
@@ -486,6 +608,7 @@ const OMP_HARNESS: OriHarnessDef = {
   defaultPackage: DEFAULT_OMP_PACKAGE,
   binaryName: "omp",
   remoteLogPath: "/logs/agent/omp.txt",
+  forwardsRequestPlugins: false,
   imageBuildSteps: (options) => buildOmpImageSteps(options.agentPackage),
   buildBootstrapScript: (options) =>
     buildBootstrapScript({ ...options, binaryName: "omp" }),
@@ -538,6 +661,21 @@ function reasoningTokensOf(usage: Record<string, unknown>): number {
   return typeof reasoningTokens === "number" ? reasoningTokens : 0;
 }
 
+function recordReportedCost(
+  costs: Map<string, number>,
+  event: Record<string, unknown>
+): void {
+  const { id, cost } = event;
+  if (
+    typeof id === "string" &&
+    id.length > 0 &&
+    typeof cost === "number" &&
+    Number.isFinite(cost)
+  ) {
+    costs.set(id, cost);
+  }
+}
+
 function parseJsonAgentStream(stdout: string): OriAgentRun {
   let inputTokens = 0;
   let outputTokens = 0;
@@ -552,6 +690,7 @@ function parseJsonAgentStream(stdout: string): OriAgentRun {
   let apiErrorStatus: string | undefined;
   let finalText: string | undefined;
   const generationIds: string[] = [];
+  const reportedGenerationCosts = new Map<string, number>();
   const assistantMessages: ModelMessage[] = [];
   const responseItems: ResponseItem[] = [];
   for (const line of stdout.split("\n")) {
@@ -564,8 +703,12 @@ function parseJsonAgentStream(stdout: string): OriAgentRun {
       continue;
     }
     const event = parsed.right;
-    responseItems.push(event);
     const eventType = event["type"];
+    if (eventType === OPENROUTER_GENERATION_COST_EVENT) {
+      recordReportedCost(reportedGenerationCosts, event);
+      continue;
+    }
+    responseItems.push(event);
     if (eventType === "turn_end") {
       turns++;
       continue;
@@ -658,6 +801,7 @@ function parseJsonAgentStream(stdout: string): OriAgentRun {
         }
       : undefined,
     generationIds,
+    reportedGenerationCosts,
     generationTimeMs: undefined,
     finalText,
     assistantMessages,

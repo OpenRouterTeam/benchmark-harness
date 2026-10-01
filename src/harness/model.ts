@@ -2,7 +2,11 @@ import { Tag } from "effect/Context";
 import type { Effect } from "effect/Effect";
 
 import type { ProviderSort } from "../internal/enums";
-import type { CostTier, ReasoningEffort } from "./constants";
+import type {
+  CostTier,
+  ReasoningEffort,
+  SwitchyardAlgorithm,
+} from "./constants";
 import type {
   ModelMessage,
   ModelError,
@@ -10,10 +14,7 @@ import type {
   ToolDefinition,
 } from "./core";
 
-export function stripVariantSuffix(model: string): string {
-  const idx = model.indexOf(":");
-  return idx <= 0 ? model : model.slice(0, idx);
-}
+export { stripVariantSuffix } from "./constants";
 
 export interface GenerateConfig {
   readonly temperature?: number;
@@ -28,8 +29,10 @@ export interface GenerateConfig {
   readonly providerIgnore?: readonly string[];
   readonly allowFallbacks?: boolean;
   readonly cloudflareVersion?: string;
+  readonly experimentIds?: readonly string[];
   readonly costQualityTradeoff?: number;
   readonly pinModel?: boolean;
+  readonly switchyardAlgorithm?: SwitchyardAlgorithm;
   readonly extraBody?: Readonly<Record<string, unknown>>;
 }
 

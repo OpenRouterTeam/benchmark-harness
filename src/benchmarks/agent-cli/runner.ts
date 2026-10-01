@@ -6,15 +6,26 @@ import {
   forEach,
   gen,
   map,
+  serviceOption,
   succeed,
 } from "effect/Effect";
+import { isNone } from "effect/Option";
 
 import { SolverError } from "../../harness/core";
+import type { ModelUsage } from "../../harness/core";
 import { stripRoutingPrefix } from "../../harness/model-slug";
 import { definedValues } from "../../internal/guards";
+import { wLog } from "../../internal/log";
 import { recordGenerationId } from "../../runtime/generation-ids";
+import { GenerationResolver } from "../../runtime/generation-resolver";
+import {
+  buildRequestSessionId,
+  getCurrentSampleId,
+} from "../../runtime/request-session-id";
+import { getCurrentEpoch } from "../../runtime/response-cache";
 import type { SandboxSessionInstance } from "../../sandbox/session";
 import type { OriAgentRun, OriHarnessDef } from "./harness";
+import { AGENT_REQUEST_PLUGINS_ENV } from "./harness";
 import type { OriChannel, OriReasoningEffort } from "./schema";
 import { DEFAULT_ORI_CHANNEL, DEFAULT_ORI_INSTALL_URL } from "./schema";
 
@@ -29,6 +40,52 @@ const LOG_RECOVERY_TIMEOUT_MS = 60000;
 const ORI_BOOTSTRAP_TIMEOUT_MS = 300000;
 
 const BOOTSTRAP_DETAIL_TAIL_CHARS = 1000;
+
+const BILLED_COST_LOOKUP_CONCURRENCY = 8;
+
+export function resolveBilledCost(
+  generationIds: readonly string[],
+  reportedCosts: ReadonlyMap<string, number> = new Map()
+): Effect<number | undefined> {
+  return gen(function* () {
+    const resolver = yield* serviceOption(GenerationResolver);
+    const ids = [...new Set([...generationIds, ...reportedCosts.keys()])];
+    if (isNone(resolver) || ids.length === 0) {
+      return undefined;
+    }
+    const resolved = yield* forEach(
+      ids,
+      (id) => resolver.value.resolveSourceGeneration(id),
+      { concurrency: BILLED_COST_LOOKUP_CONCURRENCY }
+    );
+    const costs = ids.flatMap((id, index) => {
+      const billed = resolved[index]?.usage?.totalCost;
+      const reported = reportedCosts.get(id);
+      if (billed === undefined) {
+        return reported === undefined ? [] : [reported];
+      }
+      return [reported === undefined ? billed : Math.max(billed, reported)];
+    });
+    if (costs.length < ids.length) {
+      wLog("Agent generation cost lookups failed; billed cost is partial", {
+        generation_count: ids.length,
+        resolved_count: costs.length,
+      });
+    }
+    return costs.length === 0
+      ? undefined
+      : costs.reduce((total, cost) => total + cost, 0);
+  });
+}
+
+function withBilledCost(
+  usage: ModelUsage | undefined,
+  billedCost: number | undefined
+): ModelUsage | undefined {
+  return usage === undefined || billedCost === undefined
+    ? usage
+    : { ...usage, totalCost: billedCost };
+}
 
 function recoverAfterExecFailure(
   session: SandboxSessionInstance,
@@ -82,6 +139,10 @@ export function isSafeOriSessionId(sessionId: string): boolean {
   return true;
 }
 
+export type AgentRequestPlugin = Readonly<Record<string, unknown>> & {
+  readonly id: string;
+};
+
 export interface AgentCliOpts {
   readonly model: string;
   readonly apiKey: string;
@@ -96,6 +157,7 @@ export interface AgentCliOpts {
   readonly allowedTools?: readonly string[];
   readonly disallowedTools?: readonly string[];
   readonly isolateAgentConfig?: boolean;
+  readonly requestPlugins?: readonly AgentRequestPlugin[];
 }
 
 export interface AgentCliRunResult extends OriAgentRun {
@@ -130,6 +192,10 @@ export function buildAgentCliEnv(opts: AgentCliOpts): Record<string, string> {
   const disallowedTools = opts.disallowedTools ?? [];
   if (disallowedTools.length > 0) {
     env["TB_DISALLOWED_TOOLS"] = disallowedTools.join(" ");
+  }
+  const requestPlugins = opts.requestPlugins ?? [];
+  if (requestPlugins.length > 0) {
+    env[AGENT_REQUEST_PLUGINS_ENV] = JSON.stringify(requestPlugins);
   }
   return env;
 }
@@ -175,6 +241,7 @@ export function runAgentCli(input: {
   readonly timeoutMs: number;
 }): Effect<AgentCliRunResult, SolverError> {
   const { session, harness, opts, instructionPath, timeoutMs } = input;
+  const requestPlugins = opts.requestPlugins ?? [];
   const script = harness.buildRunScript({
     instructionPath,
     logPath: harness.remoteLogPath,
@@ -184,8 +251,14 @@ export function runAgentCli(input: {
     hasAllowedTools: (opts.allowedTools ?? []).length > 0,
     hasDisallowedTools: (opts.disallowedTools ?? []).length > 0,
     isolateAgentConfig: opts.isolateAgentConfig === true,
+    hasRequestPlugins: requestPlugins.length > 0,
   });
   return gen(function* () {
+    if (requestPlugins.length > 0 && !harness.forwardsRequestPlugins) {
+      return yield* new SolverError({
+        message: `the ${harness.id} agent does not forward OpenRouter request plugins (${requestPlugins.map((plugin) => plugin.id).join(", ")}) from inside the sandbox`,
+      });
+    }
     if (
       opts.sessionId !== undefined &&
       opts.sessionId.length > 0 &&
@@ -196,9 +269,17 @@ export function runAgentCli(input: {
       });
     }
     yield* installOri({ session, harness, opts });
+    const epoch = yield* getCurrentEpoch;
+    const sampleId = yield* getCurrentSampleId;
+    const env = buildAgentCliEnv({
+      ...opts,
+      ...definedValues({
+        sessionId: buildRequestSessionId(opts.sessionId, epoch, sampleId),
+      }),
+    });
     const startedAt = yield* currentTimeMillis;
     const outcome = yield* session
-      .exec(["bash", "-c", script], buildAgentCliEnv(opts), timeoutMs)
+      .exec(["bash", "-c", script], env, timeoutMs)
       .pipe(
         map((run) => ({ stdout: run.stdout, exitCode: run.exitCode })),
         catchAll((cause) =>
@@ -214,8 +295,13 @@ export function runAgentCli(input: {
     yield* forEach(parsed.generationIds, (id) => recordGenerationId(id), {
       discard: true,
     });
+    const billedCost = yield* resolveBilledCost(
+      parsed.generationIds,
+      parsed.reportedGenerationCosts
+    );
     return {
       ...parsed,
+      usage: withBilledCost(parsed.usage, billedCost),
       generationTimeMs: parsed.generationTimeMs ?? elapsedMs,
       exitCode: run.exitCode,
       rawStream: run.stdout,

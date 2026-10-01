@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 
+import { toReadonlyArray } from "effect/Chunk";
 import { fromMap } from "effect/ConfigProvider";
 import {
   fail,
@@ -10,12 +11,14 @@ import {
   suspend,
   withConfigProvider,
 } from "effect/Effect";
+import { runCollect } from "effect/Stream";
 
 import { Dataset } from "../harness/dataset";
 import { runHarnessPromise } from "../internal/effect-logger";
 import {
   hfFetchRetrySchedule,
   makeHfDatasetLayer,
+  paginateHfRows,
   resolveHfToken,
 } from "./huggingface";
 
@@ -162,6 +165,63 @@ describe("hfFetchRetrySchedule", () => {
     expect(warn).not.toHaveBeenCalled();
   });
 });
+
+describe("paginateHfRows", () => {
+  it("aligns initial pages and filters rows before the requested start", async () => {
+    const calls: { offset: number; length: number }[] = [];
+    const result = await runHarnessPromise(
+      runCollect(
+        paginateHfRows({
+          fetchPage: (offset, length) => {
+            calls.push({ offset, length });
+            return succeed({
+              rows: Array.from({ length }, (_, index) => ({
+                row_idx: offset + index,
+                row: { id: offset + index },
+              })),
+              num_rows_total: 300,
+            });
+          },
+          pageSize: 100,
+          start: 15,
+          end: 20,
+          mapRow: (row) => row.row_idx,
+        })
+      )
+    );
+
+    expect(calls).toEqual([{ offset: 0, length: 100 }]);
+    expect(toReadonlyArray(result)).toEqual([15, 16, 17, 18, 19]);
+  });
+
+  it("aligns a later start to its page boundary", async () => {
+    const calls: { offset: number; length: number }[] = [];
+    const result = await runHarnessPromise(
+      runCollect(
+        paginateHfRows({
+          fetchPage: (offset, length) => {
+            calls.push({ offset, length });
+            return succeed({
+              rows: Array.from({ length }, (_, index) => ({
+                row_idx: offset + index,
+                row: { id: offset + index },
+              })),
+              num_rows_total: 300,
+            });
+          },
+          pageSize: 100,
+          start: 250,
+          end: 255,
+          mapRow: (row) => row.row_idx,
+        })
+      )
+    );
+
+    expect(calls).toEqual([{ offset: 200, length: 100 }]);
+    expect(toReadonlyArray(result)).toEqual([250, 251, 252, 253, 254]);
+  });
+});
+
 describe("resolveHfToken", () => {
   it("reads HF_TOKEN from Effect Config", async () => {
     await expect(

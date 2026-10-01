@@ -134,14 +134,19 @@ export function sweepStaleStagingDirs(
   }
 }
 
-export function writeJsonCacheFileAtomic(path: string, value: unknown): void {
+export function writeJsonCacheFileAtomic(
+  path: string,
+  value: unknown
+): boolean {
   try {
     mkdirOwnerOnly(dirname(path));
     const tmp = `${path}.${process.pid}.${Math.random().toString(36).slice(2)}.tmp`;
     writeFileSync(tmp, JSON.stringify(value), { mode: 0o600 });
     renameSync(tmp, path);
+    return true;
   } catch (error) {
     wLog("dataset cache write failed", { path, error: String(error) });
+    return false;
   }
 }
 

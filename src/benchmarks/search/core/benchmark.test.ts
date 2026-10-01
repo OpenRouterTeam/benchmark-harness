@@ -62,6 +62,7 @@ describe("searchSolverOptionsFromConfig", () => {
       providerIgnore: ["bedrock"],
       allowFallbacks: false,
       cloudflareVersion: "worker-version",
+      switchyardAlgorithm: "stage",
     } as const;
     const options = searchSolverOptionsFromConfig({
       config,
@@ -89,6 +90,7 @@ describe("searchSolverOptionsFromConfig", () => {
       providerIgnore: ["bedrock"],
       allowFallbacks: false,
       versionOverride: "worker-version",
+      switchyardAlgorithm: "stage",
       retry: { maxRetries: 2, baseDelayMs: 3 },
     });
     expect(

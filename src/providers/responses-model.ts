@@ -20,11 +20,12 @@ import {
 import type { Layer } from "effect/Layer";
 import { effect, provide } from "effect/Layer";
 
+import { reasoningRequestFor } from "../harness/constants";
 import type { ModelUsage } from "../harness/core";
 import { ModelError } from "../harness/core";
 import type { GenerateConfig } from "../harness/model";
 import { stripVariantSuffix } from "../harness/model";
-import { definedValues, isRecord } from "../internal/guards";
+import { definedValues, isRecord, isUnknownArray } from "../internal/guards";
 import type { RetryConfig } from "../runtime/retry";
 import { rateLimitRetrySchedule, retrySalted } from "../runtime/retry";
 import { buildAutoRouterPlugin } from "./auto-router-plugin";
@@ -39,6 +40,7 @@ import {
   unwrapStreamEvent,
   usageFromResponses,
 } from "./responses-client";
+import { buildSwitchyardRouterPlugin } from "./switchyard-router-plugin";
 
 export type ResponsesInputItem = Record<string, unknown>;
 
@@ -170,6 +172,10 @@ export function generate(
   const requestModel = genConfig.model ?? opts.model;
   const baseModel = stripVariantSuffix(requestModel);
   const autoRouterPlugin = buildAutoRouterPlugin(baseModel, genConfig);
+  const switchyardRouterPlugin = buildSwitchyardRouterPlugin(
+    baseModel,
+    genConfig.switchyardAlgorithm
+  );
   const body = {
     model: requestModel,
     input: toSdkInput(opts.input),
@@ -185,8 +191,8 @@ export function generate(
           ? [...genConfig.tools]
           : undefined,
     }),
-    reasoning: { effort: genConfig.reasoningEffort },
     ...definedValues({
+      reasoning: reasoningRequestFor(genConfig.reasoningEffort),
       provider: sendProvider ? providerPreferences : undefined,
     }),
     ...definedValues({
@@ -196,8 +202,19 @@ export function generate(
   const extraHeaders = definedValues({
     "X-OR-Endpoint-Id": genConfig.endpointId,
     "Cloudflare-Workers-Version-Overrides": genConfig.cloudflareVersion,
+    "X-OpenRouter-Experiment-Ids": genConfig.experimentIds?.join(","),
   });
-  const extraBody = genConfig.extraBody;
+  const callerPlugins = genConfig.extraBody?.["plugins"];
+  const extraBody =
+    switchyardRouterPlugin !== undefined
+      ? {
+          ...genConfig.extraBody,
+          plugins: [
+            ...(isUnknownArray(callerPlugins) ? callerPlugins : []),
+            switchyardRouterPlugin,
+          ],
+        }
+      : genConfig.extraBody;
   let identifiers: ModelErrorIdentifiers = {};
   const requestAttempt = suspend(() => {
     identifiers = {};

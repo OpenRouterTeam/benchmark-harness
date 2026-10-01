@@ -5,13 +5,14 @@ import {
   provide as layerProvide,
   succeed as layerSucceed,
 } from "effect/Layer";
+import { runCount } from "effect/Stream";
 
 import type {
   BenchmarkRunConfig,
   InjectedBenchmarkRunConfig,
 } from "../benchmarks/benchmark-config";
 import {
-  isNativeBenchmarkConfig,
+  isKeplerBenchmarkConfig,
   modelFromConfig,
 } from "../benchmarks/benchmark-config";
 import { getBenchmark } from "../benchmarks/registry";
@@ -20,6 +21,7 @@ import type {
   BenchmarkMetadata,
   BenchmarkRunInput,
 } from "../benchmarks/types";
+import { datasetCacheWriteFailures } from "../datasets/cache-store";
 import { Dataset } from "../harness/dataset";
 import type {
   CheckpointStoreService,
@@ -158,19 +160,60 @@ export function runBenchmarkById(
     .catch((error) => Either.left(String(error)));
 }
 
-export function datasetSizeById(
-  benchmarkId: string,
-  injectedBenchmark?: Benchmark<InjectedBenchmarkRunConfig>
-): AsyncEither<number, string> {
-  const benchmarkResult = resolveBenchmark(benchmarkId, injectedBenchmark);
+export function datasetSizeById(input: {
+  readonly benchmarkId: string;
+  readonly benchmarkConfig?: BenchmarkRunConfig;
+  readonly injectedBenchmark?: Benchmark<InjectedBenchmarkRunConfig>;
+}): AsyncEither<number, string> {
+  const benchmarkResult = resolveBenchmark(
+    input.benchmarkId,
+    input.injectedBenchmark
+  );
   if (Either.isLeft(benchmarkResult)) {
     return Promise.resolve(Either.left(benchmarkResult.left));
   }
   const benchmark = benchmarkResult.right;
-  const datasetLayer = benchmark.makeDatasetLayer();
+  const datasetLayer =
+    input.benchmarkConfig === undefined
+      ? benchmark.makeDatasetLayer()
+      : (benchmark.makeDatasetLayerForConfig?.(input.benchmarkConfig) ??
+        benchmark.makeDatasetLayer());
   const program = Dataset.pipe(flatMap((d) => d.size));
   return runHarnessPromise(program.pipe(provide(datasetLayer)))
     .then((size) => Either.right(size))
+    .catch((error) => Either.left(String(error)));
+}
+
+export function warmDatasetById(input: {
+  readonly benchmarkId: string;
+  readonly benchmarkConfig: BenchmarkRunConfig;
+  readonly range: { readonly start: number; readonly end: number };
+  readonly datasetRetry?: RetryConfig;
+  readonly injectedBenchmark?: Benchmark<InjectedBenchmarkRunConfig>;
+}): AsyncEither<number, string> {
+  const benchmarkResult = resolveBenchmark(
+    input.benchmarkId,
+    input.injectedBenchmark
+  );
+  if (Either.isLeft(benchmarkResult)) {
+    return Promise.resolve(Either.left(benchmarkResult.left));
+  }
+  const failuresBefore = datasetCacheWriteFailures();
+  const datasetLayer =
+    benchmarkResult.right.makeDatasetLayerForConfig?.(
+      input.benchmarkConfig,
+      input.datasetRetry
+    ) ?? benchmarkResult.right.makeDatasetLayer(input.datasetRetry);
+  const program = Dataset.pipe(
+    flatMap((dataset) => runCount(dataset.stream(input.range)))
+  );
+  return runHarnessPromise(program.pipe(provide(datasetLayer)))
+    .then((count) => {
+      const failures = datasetCacheWriteFailures() - failuresBefore;
+      return failures > 0
+        ? Either.left(`dataset cache warmup: ${failures} cache write(s) failed`)
+        : Either.right(count);
+    })
     .catch((error) => Either.left(String(error)));
 }
 
@@ -198,20 +241,20 @@ function resolveRunBenchmark(input: RunBenchmarkInput): Either.Either<
   },
   string
 > {
-  if (isNativeBenchmarkConfig(input.benchmarkConfig)) {
+  if (isKeplerBenchmarkConfig(input.benchmarkConfig)) {
     if (input.injectedBenchmark !== undefined) {
       return Either.left(
-        `An injected benchmark cannot be supplied for native benchmark "${input.benchmarkId}"`
+        `An injected benchmark cannot be supplied for Kepler benchmark "${input.benchmarkId}"`
       );
     }
-    const nativeBenchmark = getBenchmark(input.benchmarkId);
-    if (nativeBenchmark === undefined) {
+    const keplerBenchmark = getBenchmark(input.benchmarkId);
+    if (keplerBenchmark === undefined) {
       return Either.left(`Unknown benchmark "${input.benchmarkId}"`);
     }
     return Either.right({
-      benchmark: nativeBenchmark,
+      benchmark: keplerBenchmark,
       benchmarkLayer: makeBenchmarkLayer(
-        nativeBenchmark,
+        keplerBenchmark,
         input,
         input.benchmarkConfig
       ),
