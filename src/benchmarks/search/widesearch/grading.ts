@@ -2,13 +2,13 @@ import type { Effect } from "effect/Effect";
 import { gen, map, succeed } from "effect/Effect";
 
 import type { ModelError, ModelUsage } from "../../../harness/core";
+import { mergeModelUsages } from "../../../harness/usage";
 import { Either } from "../../../internal/either";
 import type { ValueOf } from "../../../internal/guards";
 import { z } from "../../../internal/zod";
 import type { JudgeConfig, JudgeResult } from "../../../judge/judge";
 import { judgeCall } from "../../../judge/judge";
 import type { ResponsesService } from "../../../providers/responses-client";
-import { mergeModelUsages } from "../core/usage";
 import type { AlignmentVerdict, CellJudgeVerdict } from "./judges";
 import { alignmentJudgeSpec, cellJudgeSpec } from "./judges";
 import type { WideSearchEvaluation } from "./table";

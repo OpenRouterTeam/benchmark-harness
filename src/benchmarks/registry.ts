@@ -4,6 +4,7 @@ import { GPQA_BENCHMARK } from "./gpqa";
 import { IFSTRUCT_BENCHMARK } from "./ifstruct/benchmark";
 import { MMLU_PRO_BENCHMARK } from "./mmlu-pro";
 import { MMMU_PRO_VISION_BENCHMARK } from "./mmmu-pro-vision";
+import { RECOVERY_BENCH_BENCHMARK } from "./recovery-bench/benchmark";
 import { BROWSECOMP_BENCHMARK } from "./search/browsecomp/benchmark";
 import { DSQA_BENCHMARK } from "./search/dsqa/benchmark";
 import { HLE_BENCHMARK } from "./search/hle/benchmark";
@@ -27,6 +28,7 @@ const BENCHMARKS: Record<string, Benchmark> = {
   [TAU3_BENCH_BANKING_BENCHMARK.id]: TAU3_BENCH_BANKING_BENCHMARK,
   [MMMU_PRO_VISION_BENCHMARK.id]: MMMU_PRO_VISION_BENCHMARK,
   [TERMINAL_BENCH_BENCHMARK.id]: TERMINAL_BENCH_BENCHMARK,
+  [RECOVERY_BENCH_BENCHMARK.id]: RECOVERY_BENCH_BENCHMARK,
   [DRACO_BENCHMARK.id]: DRACO_BENCHMARK,
   [IFSTRUCT_BENCHMARK.id]: IFSTRUCT_BENCHMARK,
   [SWE_ATLAS_QA_BENCHMARK.id]: SWE_ATLAS_QA_BENCHMARK,
