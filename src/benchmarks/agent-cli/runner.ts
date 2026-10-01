@@ -24,7 +24,10 @@ import {
 import { getCurrentEpoch } from "../../runtime/response-cache";
 import type { SandboxSessionInstance } from "../../sandbox/session";
 import type { OriAgentRun, OriHarnessDef } from "./harness";
-import { AGENT_REQUEST_PLUGINS_ENV } from "./harness";
+import {
+  AGENT_CANDIDATE_MODELS_ENV,
+  AGENT_REQUEST_PLUGINS_ENV,
+} from "./harness";
 import type { OriChannel, OriReasoningEffort } from "./schema";
 import { DEFAULT_ORI_CHANNEL, DEFAULT_ORI_INSTALL_URL } from "./schema";
 
@@ -150,6 +153,7 @@ export interface AgentCliOpts {
   readonly disallowedTools?: readonly string[];
   readonly isolateAgentConfig?: boolean;
   readonly requestPlugins?: readonly AgentRequestPlugin[];
+  readonly models?: readonly string[];
 }
 
 export interface AgentCliRunResult extends OriAgentRun {
@@ -196,6 +200,10 @@ export function buildAgentCliEnv(opts: AgentCliOpts): Record<string, string> {
   if (requestPlugins.length > 0) {
     env[AGENT_REQUEST_PLUGINS_ENV] = JSON.stringify(requestPlugins);
   }
+  const models = opts.models ?? [];
+  if (models.length > 0) {
+    env[AGENT_CANDIDATE_MODELS_ENV] = JSON.stringify(models);
+  }
   return env;
 }
 
@@ -241,6 +249,7 @@ export function runAgentCli(input: {
 }): Effect<AgentCliRunResult, SolverError> {
   const { session, harness, opts, instructionPath, timeoutMs } = input;
   const requestPlugins = opts.requestPlugins ?? [];
+  const models = opts.models ?? [];
   const script = harness.buildRunScript({
     instructionPath,
     logPath: harness.remoteLogPath,
@@ -250,12 +259,17 @@ export function runAgentCli(input: {
     hasAllowedTools: (opts.allowedTools ?? []).length > 0,
     hasDisallowedTools: (opts.disallowedTools ?? []).length > 0,
     isolateAgentConfig: opts.isolateAgentConfig === true,
-    hasRequestPlugins: requestPlugins.length > 0,
+    loadsRequestExtension: requestPlugins.length > 0 || models.length > 0,
   });
   return gen(function* () {
     if (requestPlugins.length > 0 && !harness.forwardsRequestPlugins) {
       return yield* new SolverError({
         message: `the ${harness.id} agent does not forward OpenRouter request plugins (${requestPlugins.map((plugin) => plugin.id).join(", ")}) from inside the sandbox`,
+      });
+    }
+    if (models.length > 0 && !harness.forwardsRequestPlugins) {
+      return yield* new SolverError({
+        message: `the ${harness.id} agent does not forward the OpenRouter models list from inside the sandbox`,
       });
     }
     if (
