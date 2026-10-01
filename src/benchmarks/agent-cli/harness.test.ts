@@ -10,6 +10,8 @@ import {
   ORI_HARNESSES,
   PI_REQUEST_PLUGINS_EXTENSION_PATH,
   PI_REQUEST_PLUGINS_EXTENSION_SOURCE,
+  PI_USAGE_EXTENSION_PATH,
+  PI_USAGE_EXTENSION_SOURCE,
 } from "./harness";
 import type { OriRunScriptOptions } from "./harness";
 
@@ -205,5 +207,104 @@ describe("pi request plugins run script", () => {
         .filter((harness) => harness.forwardsRequestPlugins)
         .map((harness) => harness.id)
     ).toEqual(["pi"]);
+  });
+});
+
+async function loadUsageExtension(): Promise<void> {
+  const dir = mkdtempSync(join(tmpdir(), "pi-usage-"));
+  const path = join(dir, "openrouter-usage.ts");
+  writeFileSync(path, PI_USAGE_EXTENSION_SOURCE);
+  const extension: { readonly default: () => void } = await import(path);
+  extension.default();
+}
+
+function sseResponse(lines: readonly string[]): Response {
+  return new Response(lines.map((line) => `${line}\n\n`).join(""), {
+    status: 200,
+    headers: { "Content-Type": "text/event-stream" },
+  });
+}
+
+describe("pi usage extension", () => {
+  it("reports the OpenRouter usage cost per streamed response without altering the body", async () => {
+    const originalFetch = globalThis.fetch;
+    const originalWrite = process.stdout.write.bind(process.stdout);
+    const written: string[] = [];
+    const body = [
+      'data: {"id":"gen-root","choices":[{"delta":{"content":"hi"}}]}',
+      'data: {"id":"gen-root","choices":[],"usage":{"prompt_tokens":1,"cost":1.25}}',
+      "data: [DONE]",
+    ];
+    globalThis.fetch = Object.assign(
+      (input: string | URL | Request) =>
+        Promise.resolve(
+          String(input).includes("/chat/completions")
+            ? sseResponse(body)
+            : new Response("{}")
+        ),
+      { preconnect: originalFetch.preconnect }
+    );
+    process.stdout.write = (chunk: string | Uint8Array): boolean => {
+      written.push(String(chunk));
+      return true;
+    };
+    try {
+      Reflect.deleteProperty(globalThis, "__benchHarnessUsageFetch");
+      await loadUsageExtension();
+      const response = await fetch(
+        "https://openrouter.ai/api/v1/chat/completions"
+      );
+      expect(await response.text()).toBe(
+        body.map((line) => `${line}\n\n`).join("")
+      );
+      await fetch("https://openrouter.ai/api/v1/models");
+      await new Promise((resolve) => {
+        setImmediate(resolve);
+      });
+    } finally {
+      globalThis.fetch = originalFetch;
+      process.stdout.write = originalWrite;
+      Reflect.deleteProperty(globalThis, "__benchHarnessUsageFetch");
+    }
+    expect(written).toEqual([
+      `${JSON.stringify({ type: "openrouter_generation_cost", id: "gen-root", cost: 1.25 })}\n`,
+    ]);
+  });
+
+  it("is always written and loaded by the pi run script", () => {
+    const script = getOriHarness("pi").buildRunScript({
+      ...RUN_OPTIONS,
+      isolateAgentConfig: true,
+    });
+    expect(script).toContain(
+      `cat > ${PI_USAGE_EXTENSION_PATH} <<'TB_PI_USAGE_EXTENSION'\n${PI_USAGE_EXTENSION_SOURCE}\nTB_PI_USAGE_EXTENSION\n`
+    );
+    expect(script).toContain(`--extension ${PI_USAGE_EXTENSION_PATH}`);
+  });
+
+  it("parses reported costs out of the pi event stream", () => {
+    const run = getOriHarness("pi").parseRun(
+      [
+        JSON.stringify({
+          type: "message_end",
+          message: { role: "assistant", responseId: "gen-root", content: [] },
+        }),
+        JSON.stringify({
+          type: "openrouter_generation_cost",
+          id: "gen-root",
+          cost: 1.25,
+        }),
+        JSON.stringify({
+          type: "openrouter_generation_cost",
+          id: "gen-bad",
+          cost: "x",
+        }),
+      ].join("\n")
+    );
+    expect(run.generationIds).toEqual(["gen-root"]);
+    expect([...(run.reportedGenerationCosts ?? new Map())]).toEqual([
+      ["gen-root", 1.25],
+    ]);
+    expect(run.responseItems).toHaveLength(1);
   });
 });
