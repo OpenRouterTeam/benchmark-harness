@@ -47,6 +47,8 @@ export const DEFAULT_AGENT_RUNTIME_SHA256 =
 
 export const AGENT_REQUEST_PLUGINS_ENV = "TB_OPENROUTER_PLUGINS" as const;
 
+export const AGENT_CANDIDATE_MODELS_ENV = "TB_OPENROUTER_MODELS" as const;
+
 const PI_REQUEST_PLUGINS_EXTENSION_DIR = "/root/.bench-harness";
 
 export const PI_REQUEST_PLUGINS_EXTENSION_PATH =
@@ -56,6 +58,7 @@ const PI_REQUEST_PLUGINS_EXTENSION_EOF = "TB_PI_REQUEST_PLUGINS_EXTENSION";
 
 export const PI_REQUEST_PLUGINS_EXTENSION_SOURCE = [
   `const plugins = JSON.parse(process.env.${AGENT_REQUEST_PLUGINS_ENV} ?? "[]");`,
+  `const models = JSON.parse(process.env.${AGENT_CANDIDATE_MODELS_ENV} ?? "[]");`,
   "const pluginIds = new Set(plugins.map((plugin) => plugin.id));",
   "export default function registerRequestPlugins(pi) {",
   '  pi.on("before_provider_request", (event) => {',
@@ -63,10 +66,15 @@ export const PI_REQUEST_PLUGINS_EXTENSION_SOURCE = [
   '    if (typeof payload !== "object" || payload === null || Array.isArray(payload)) {',
   "      return undefined;",
   "    }",
+  "    const { max_output_tokens: _maxOutputTokens, ...uncapped } = payload;",
+  "    const withModels = models.length > 0 ? { ...uncapped, models } : payload;",
+  "    if (plugins.length === 0) {",
+  "      return withModels;",
+  "    }",
   "    const callerPlugins = Array.isArray(payload.plugins)",
   "      ? payload.plugins.filter((plugin) => !pluginIds.has(plugin?.id))",
   "      : [];",
-  "    return { ...payload, plugins: [...callerPlugins, ...plugins] };",
+  "    return { ...withModels, plugins: [...callerPlugins, ...plugins] };",
   "  });",
   "}",
 ].join("\n");
@@ -162,7 +170,7 @@ export interface OriRunScriptOptions {
   readonly hasAllowedTools: boolean;
   readonly hasDisallowedTools: boolean;
   readonly isolateAgentConfig: boolean;
-  readonly hasRequestPlugins?: boolean;
+  readonly loadsRequestExtension?: boolean;
 }
 
 export interface OriImageStepsOptions {
@@ -512,13 +520,13 @@ const ORI_PI_HARNESS: OriHarnessDef = {
       "export HOME=/root",
       "mkdir -p /logs/agent",
       ...writePiUsageExtension(),
-      ...(options.hasRequestPlugins === true
+      ...(options.loadsRequestExtension === true
         ? writePiRequestPluginsExtension()
         : []),
       'ori pi --model "$TB_MODEL" \\',
       `  --reasoning-effort ${options.reasoningEffort} -- \\`,
       "  --print --mode json --no-session \\",
-      ...(options.hasRequestPlugins === true
+      ...(options.loadsRequestExtension === true
         ? [`  --extension ${PI_REQUEST_PLUGINS_EXTENSION_PATH} \\`]
         : []),
       `  --extension ${PI_USAGE_EXTENSION_PATH} \\`,

@@ -10,9 +10,12 @@ export function sandboxAgentPluginError(opts: {
   readonly models: readonly string[] | undefined;
   readonly switchyardAlgorithm: SwitchyardAlgorithm | undefined;
 }): Error | undefined {
-  if (opts.models !== undefined) {
+  if (
+    opts.models !== undefined &&
+    !forwardsSwitchyardRouterPlugin(opts.agent)
+  ) {
     return new Error(
-      `${opts.benchmarkId} cannot use candidate models: the ${opts.agent} agent calls the model from inside the sandbox, which does not forward the models list`
+      `${opts.benchmarkId} cannot use candidate models: the ${opts.agent} agent calls the model from inside the sandbox and does not forward the models list (supported agents: ${SWITCHYARD_ROUTER_PLUGIN_AGENTS.join(", ")})`
     );
   }
   if (
