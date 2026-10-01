@@ -52,8 +52,13 @@ export function resolveBilledCost(
   return gen(function* () {
     const resolver = yield* serviceOption(GenerationResolver);
     const ids = [...new Set([...generationIds, ...reportedCosts.keys()])];
-    if (isNone(resolver) || ids.length === 0) {
+    if (ids.length === 0) {
       return undefined;
+    }
+    if (isNone(resolver)) {
+      return reportedCosts.size === 0
+        ? undefined
+        : [...reportedCosts.values()].reduce((total, cost) => total + cost, 0);
     }
     const resolved = yield* forEach(
       ids,
@@ -80,13 +85,21 @@ export function resolveBilledCost(
   });
 }
 
-function withBilledCost(
+export function withBilledCost(
   usage: ModelUsage | undefined,
   billedCost: number | undefined
 ): ModelUsage | undefined {
-  return usage === undefined || billedCost === undefined
-    ? usage
-    : { ...usage, totalCost: billedCost };
+  if (billedCost === undefined) {
+    return usage;
+  }
+  return {
+    inputTokens: 0,
+    outputTokens: 0,
+    totalTokens: 0,
+    reasoningTokens: 0,
+    ...usage,
+    totalCost: billedCost,
+  };
 }
 
 function recoverAfterExecFailure(
