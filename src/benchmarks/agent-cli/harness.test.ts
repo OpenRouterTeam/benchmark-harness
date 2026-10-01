@@ -112,7 +112,13 @@ describe("pi request plugins extension", () => {
       ["z-ai/glm-5.3-flash", "anthropic/claude-opus-5.5"]
     );
     expect(
-      handler({ payload: { model: "nvidia/switchyard", input: [] } })
+      handler({
+        payload: {
+          model: "nvidia/switchyard",
+          input: [],
+          max_output_tokens: 235_929,
+        },
+      })
     ).toEqual({
       model: "nvidia/switchyard",
       input: [],
@@ -133,6 +139,21 @@ describe("pi request plugins extension", () => {
     ).toEqual({
       model: "nvidia/switchyard",
       models: ["deepseek/deepseek-v4.1-flash", "openai/gpt-6-sol"],
+    });
+  });
+
+  it("keeps max_output_tokens when no candidate models are configured", async () => {
+    const handler = await loadRequestPluginsHandler([
+      { id: "auto-router", cost_tier: "low" },
+    ]);
+    expect(
+      handler({
+        payload: { model: "openrouter/auto", max_output_tokens: 235_929 },
+      })
+    ).toEqual({
+      model: "openrouter/auto",
+      max_output_tokens: 235_929,
+      plugins: [{ id: "auto-router", cost_tier: "low" }],
     });
   });
 
