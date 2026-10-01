@@ -52,6 +52,12 @@ import { mergeModelUsages } from "./usage";
 export const DEFAULT_SEARCH_TIMEOUT_MS = 420000;
 
 const EMPTY_SEARCH_RESPONSE_MESSAGE = "search response had no answer text";
+function pluginsInWireShape(body: ResponsesRequest): readonly unknown[] {
+  const wireBody: unknown = JSON.parse(responsesRequestToJSON(body));
+  const wirePlugins = isRecord(wireBody) ? wireBody["plugins"] : undefined;
+  return isUnknownArray(wirePlugins) ? wirePlugins : [];
+}
+
 function switchyardExtraBody(
   body: ResponsesRequest,
   opts: Pick<SearchSolverOptions, "model" | "switchyardAlgorithm">
@@ -63,11 +69,7 @@ function switchyardExtraBody(
   if (plugin === undefined) {
     return undefined;
   }
-  const wire: unknown = JSON.parse(responsesRequestToJSON(body));
-  const wirePlugins = isRecord(wire) ? wire["plugins"] : undefined;
-  return {
-    plugins: [...(isUnknownArray(wirePlugins) ? wirePlugins : []), plugin],
-  };
+  return { plugins: [...pluginsInWireShape(body), plugin] };
 }
 
 export interface SearchSolverOptions {
@@ -86,6 +88,7 @@ export interface SearchSolverOptions {
   readonly providerIgnore?: readonly string[];
   readonly allowFallbacks?: boolean;
   readonly versionOverride?: string;
+  readonly experimentIds?: readonly string[];
   readonly costQualityTradeoff?: number;
   readonly costTier?: CostTier;
   readonly switchyardAlgorithm?: SwitchyardAlgorithm;
@@ -134,7 +137,9 @@ export function searchSolver(
       );
       const extraBody = switchyardExtraBody(body, opts);
       const extraHeaders =
-        opts.endpointId === undefined && !opts.lane.providerFlags?.length
+        opts.endpointId === undefined &&
+        !opts.lane.providerFlags?.length &&
+        opts.experimentIds === undefined
           ? undefined
           : definedValues({
               "X-OR-Endpoint-Id": opts.endpointId,
@@ -143,6 +148,7 @@ export function searchSolver(
                 opts.lane.providerFlags.length > 0
                   ? opts.lane.providerFlags.join(",")
                   : undefined,
+              "X-OpenRouter-Experiment-Ids": opts.experimentIds?.join(","),
             });
       const sendOptions = (): ResponsesSendOptions =>
         definedValues({

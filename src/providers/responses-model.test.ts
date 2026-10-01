@@ -190,6 +190,7 @@ describe("responses-model", () => {
               maxTokens: 256,
               sort: ProviderSort.Price,
               cloudflareVersion: "ver-1",
+              experimentIds: ["jev-finish-deesc", "control"],
               extraBody: { custom_field: "value" },
             });
             const generationIds = yield* getCollectedGenerationIds;
@@ -244,6 +245,9 @@ describe("responses-model", () => {
     expect(
       captured.value?.headers["cloudflare-workers-version-overrides"]
     ).toBe("ver-1");
+    expect(captured.value?.headers["x-openrouter-experiment-ids"]).toBe(
+      "jev-finish-deesc,control"
+    );
     expect(captured.value?.headers["x-session-id"]).toBe("session-1");
   });
   it("preserves legacy checkpoint items and maps SDK function calls", async () => {

@@ -70,6 +70,7 @@ export function searchSolverOptionsFromConfig({
     providerIgnore: config.providerIgnore,
     allowFallbacks: config.allowFallbacks,
     versionOverride: config.cloudflareVersion,
+    experimentIds: config.experimentIds,
     costQualityTradeoff: config.costQualityTradeoff,
     costTier: config.costTier,
     switchyardAlgorithm: config.switchyardAlgorithm,

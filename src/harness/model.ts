@@ -29,6 +29,7 @@ export interface GenerateConfig {
   readonly providerIgnore?: readonly string[];
   readonly allowFallbacks?: boolean;
   readonly cloudflareVersion?: string;
+  readonly experimentIds?: readonly string[];
   readonly costQualityTradeoff?: number;
   readonly pinModel?: boolean;
   readonly switchyardAlgorithm?: SwitchyardAlgorithm;
