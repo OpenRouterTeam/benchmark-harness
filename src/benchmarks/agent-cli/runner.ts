@@ -43,24 +43,31 @@ const BOOTSTRAP_DETAIL_TAIL_CHARS = 1000;
 const BILLED_COST_LOOKUP_CONCURRENCY = 8;
 
 export function resolveBilledCost(
-  generationIds: readonly string[]
+  generationIds: readonly string[],
+  reportedCosts: ReadonlyMap<string, number> = new Map()
 ): Effect<number | undefined> {
   return gen(function* () {
     const resolver = yield* serviceOption(GenerationResolver);
-    if (isNone(resolver) || generationIds.length === 0) {
+    const ids = [...new Set([...generationIds, ...reportedCosts.keys()])];
+    if (isNone(resolver) || ids.length === 0) {
       return undefined;
     }
     const resolved = yield* forEach(
-      generationIds,
+      ids,
       (id) => resolver.value.resolveSourceGeneration(id),
       { concurrency: BILLED_COST_LOOKUP_CONCURRENCY }
     );
-    const costs = resolved.flatMap((entry) =>
-      entry?.usage === undefined ? [] : [entry.usage.totalCost]
-    );
-    if (costs.length < generationIds.length) {
+    const costs = ids.flatMap((id, index) => {
+      const billed = resolved[index]?.usage?.totalCost;
+      const reported = reportedCosts.get(id);
+      if (billed === undefined) {
+        return reported === undefined ? [] : [reported];
+      }
+      return [reported === undefined ? billed : Math.max(billed, reported)];
+    });
+    if (costs.length < ids.length) {
       wLog("Agent generation cost lookups failed; billed cost is partial", {
-        generation_count: generationIds.length,
+        generation_count: ids.length,
         resolved_count: costs.length,
       });
     }
@@ -294,7 +301,10 @@ export function runAgentCli(input: {
     yield* forEach(parsed.generationIds, (id) => recordGenerationId(id), {
       discard: true,
     });
-    const billedCost = yield* resolveBilledCost(parsed.generationIds);
+    const billedCost = yield* resolveBilledCost(
+      parsed.generationIds,
+      parsed.reportedGenerationCosts
+    );
     return {
       ...parsed,
       usage: withBilledCost(parsed.usage, billedCost),
