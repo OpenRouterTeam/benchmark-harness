@@ -57,6 +57,7 @@ function makeTerminalBenchLayer(
     costTier: benchmarkConfig.costTier,
     costQualityTradeoff: benchmarkConfig.costQualityTradeoff,
     pinModel: benchmarkConfig.pinModel,
+    switchyardAlgorithm: benchmarkConfig.switchyardAlgorithm,
   });
   if (requestPlugins instanceof Error) {
     return layerFail(requestPlugins);

@@ -6,6 +6,16 @@ export const ORI_AGENTS = ["pi", "claude", "prime-agent", "omp"] as const;
 
 export type OriAgent = ValueOf<typeof ORI_AGENTS>;
 
+export const SWITCHYARD_ROUTER_PLUGIN_AGENTS = [
+  "pi",
+] as const satisfies readonly OriAgent[];
+
+export function forwardsSwitchyardRouterPlugin(agent: string): boolean {
+  return SWITCHYARD_ROUTER_PLUGIN_AGENTS.some(
+    (candidate) => candidate === agent
+  );
+}
+
 export const HARBOR_AGENTS = ["mini_swe", ...ORI_AGENTS] as const;
 
 export type HarborAgent = ValueOf<typeof HARBOR_AGENTS>;
