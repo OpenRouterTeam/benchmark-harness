@@ -94,6 +94,7 @@ describe("bench-harness CLI", () => {
       "mmlu_pro",
       "mmmu_pro_vision",
       "ifstruct",
+      "toolcall_formats",
     ] as const) {
       const config = buildBenchmarkConfig({
         benchmarkId,
