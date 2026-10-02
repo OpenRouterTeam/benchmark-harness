@@ -24,7 +24,10 @@ import {
 import { getCurrentEpoch } from "../../runtime/response-cache";
 import type { SandboxSessionInstance } from "../../sandbox/session";
 import type { OriAgentRun, OriHarnessDef } from "./harness";
-import { AGENT_REQUEST_PLUGINS_ENV } from "./harness";
+import {
+  AGENT_CANDIDATE_MODELS_ENV,
+  AGENT_REQUEST_PLUGINS_ENV,
+} from "./harness";
 import type { OriChannel, OriReasoningEffort } from "./schema";
 import { DEFAULT_ORI_CHANNEL, DEFAULT_ORI_INSTALL_URL } from "./schema";
 
@@ -43,24 +46,36 @@ const BOOTSTRAP_DETAIL_TAIL_CHARS = 1000;
 const BILLED_COST_LOOKUP_CONCURRENCY = 8;
 
 export function resolveBilledCost(
-  generationIds: readonly string[]
+  generationIds: readonly string[],
+  reportedCosts: ReadonlyMap<string, number> = new Map()
 ): Effect<number | undefined> {
   return gen(function* () {
     const resolver = yield* serviceOption(GenerationResolver);
-    if (isNone(resolver) || generationIds.length === 0) {
+    const ids = [...new Set([...generationIds, ...reportedCosts.keys()])];
+    if (ids.length === 0) {
       return undefined;
     }
+    if (isNone(resolver)) {
+      return reportedCosts.size === 0
+        ? undefined
+        : [...reportedCosts.values()].reduce((total, cost) => total + cost, 0);
+    }
     const resolved = yield* forEach(
-      generationIds,
+      ids,
       (id) => resolver.value.resolveSourceGeneration(id),
       { concurrency: BILLED_COST_LOOKUP_CONCURRENCY }
     );
-    const costs = resolved.flatMap((entry) =>
-      entry?.usage === undefined ? [] : [entry.usage.totalCost]
-    );
-    if (costs.length < generationIds.length) {
+    const costs = ids.flatMap((id, index) => {
+      const billed = resolved[index]?.usage?.totalCost;
+      const reported = reportedCosts.get(id);
+      if (billed === undefined) {
+        return reported === undefined ? [] : [reported];
+      }
+      return [reported === undefined ? billed : Math.max(billed, reported)];
+    });
+    if (costs.length < ids.length) {
       wLog("Agent generation cost lookups failed; billed cost is partial", {
-        generation_count: generationIds.length,
+        generation_count: ids.length,
         resolved_count: costs.length,
       });
     }
@@ -70,13 +85,21 @@ export function resolveBilledCost(
   });
 }
 
-function withBilledCost(
+export function withBilledCost(
   usage: ModelUsage | undefined,
   billedCost: number | undefined
 ): ModelUsage | undefined {
-  return usage === undefined || billedCost === undefined
-    ? usage
-    : { ...usage, totalCost: billedCost };
+  if (billedCost === undefined) {
+    return usage;
+  }
+  return {
+    inputTokens: 0,
+    outputTokens: 0,
+    totalTokens: 0,
+    reasoningTokens: 0,
+    ...usage,
+    totalCost: billedCost,
+  };
 }
 
 function recoverAfterExecFailure(
@@ -150,6 +173,7 @@ export interface AgentCliOpts {
   readonly disallowedTools?: readonly string[];
   readonly isolateAgentConfig?: boolean;
   readonly requestPlugins?: readonly AgentRequestPlugin[];
+  readonly models?: readonly string[];
 }
 
 export interface AgentCliRunResult extends OriAgentRun {
@@ -196,6 +220,10 @@ export function buildAgentCliEnv(opts: AgentCliOpts): Record<string, string> {
   if (requestPlugins.length > 0) {
     env[AGENT_REQUEST_PLUGINS_ENV] = JSON.stringify(requestPlugins);
   }
+  const models = opts.models ?? [];
+  if (models.length > 0) {
+    env[AGENT_CANDIDATE_MODELS_ENV] = JSON.stringify(models);
+  }
   return env;
 }
 
@@ -241,6 +269,7 @@ export function runAgentCli(input: {
 }): Effect<AgentCliRunResult, SolverError> {
   const { session, harness, opts, instructionPath, timeoutMs } = input;
   const requestPlugins = opts.requestPlugins ?? [];
+  const models = opts.models ?? [];
   const script = harness.buildRunScript({
     instructionPath,
     logPath: harness.remoteLogPath,
@@ -250,12 +279,17 @@ export function runAgentCli(input: {
     hasAllowedTools: (opts.allowedTools ?? []).length > 0,
     hasDisallowedTools: (opts.disallowedTools ?? []).length > 0,
     isolateAgentConfig: opts.isolateAgentConfig === true,
-    hasRequestPlugins: requestPlugins.length > 0,
+    loadsRequestExtension: requestPlugins.length > 0 || models.length > 0,
   });
   return gen(function* () {
     if (requestPlugins.length > 0 && !harness.forwardsRequestPlugins) {
       return yield* new SolverError({
         message: `the ${harness.id} agent does not forward OpenRouter request plugins (${requestPlugins.map((plugin) => plugin.id).join(", ")}) from inside the sandbox`,
+      });
+    }
+    if (models.length > 0 && !harness.forwardsRequestPlugins) {
+      return yield* new SolverError({
+        message: `the ${harness.id} agent does not forward the OpenRouter models list from inside the sandbox`,
       });
     }
     if (
@@ -294,7 +328,10 @@ export function runAgentCli(input: {
     yield* forEach(parsed.generationIds, (id) => recordGenerationId(id), {
       discard: true,
     });
-    const billedCost = yield* resolveBilledCost(parsed.generationIds);
+    const billedCost = yield* resolveBilledCost(
+      parsed.generationIds,
+      parsed.reportedGenerationCosts
+    );
     return {
       ...parsed,
       usage: withBilledCost(parsed.usage, billedCost),

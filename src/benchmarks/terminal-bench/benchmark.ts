@@ -57,6 +57,7 @@ function makeTerminalBenchLayer(
     costTier: benchmarkConfig.costTier,
     costQualityTradeoff: benchmarkConfig.costQualityTradeoff,
     pinModel: benchmarkConfig.pinModel,
+    switchyardAlgorithm: benchmarkConfig.switchyardAlgorithm,
   });
   if (requestPlugins instanceof Error) {
     return layerFail(requestPlugins);
@@ -76,6 +77,7 @@ function makeTerminalBenchLayer(
     disallowedTools: benchmarkConfig.disallowedTools,
     isolateAgentConfig: benchmarkConfig.isolateAgentConfig,
     requestPlugins: requestPlugins.length > 0 ? requestPlugins : undefined,
+    models: benchmarkConfig.models,
   });
   const datasetLayer = makeTerminalBenchDatasetLayer(
     definedValues({

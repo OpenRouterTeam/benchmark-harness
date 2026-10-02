@@ -21,6 +21,8 @@ import { makeModalSandboxLayer } from "../../sandbox/modal";
 import { resolveModalRegions } from "../../sandbox/modal-regions";
 import { SandboxSession } from "../../sandbox/session";
 import { sandboxAgentPluginError } from "../agent-cli/candidate-models";
+import { getOriHarness } from "../agent-cli/harness";
+import { sandboxAgentRequestPlugins } from "../agent-cli/request-plugins";
 import { isOriAgent } from "../agent-cli/schema";
 import {
   SWE_ATLAS_QA_META,
@@ -56,6 +58,20 @@ function makeSweAtlasLayer(
     : undefined;
   if (candidateModelsError !== undefined) {
     return layerFail(candidateModelsError);
+  }
+  const requestPlugins = isOriAgent(benchmarkConfig.agent)
+    ? sandboxAgentRequestPlugins({
+        benchmarkId: benchmarkConfig.benchmarkId,
+        harness: getOriHarness(benchmarkConfig.agent),
+        model: benchmarkConfig.model,
+        costTier: undefined,
+        costQualityTradeoff: undefined,
+        pinModel: undefined,
+        switchyardAlgorithm: benchmarkConfig.switchyardAlgorithm,
+      })
+    : [];
+  if (requestPlugins instanceof Error) {
+    return layerFail(requestPlugins);
   }
   const datasetLayer = makeSweAtlasDatasetLayer(
     definedValues({
@@ -114,6 +130,9 @@ function makeSweAtlasLayer(
               allowedTools: benchmarkConfig.allowedTools,
               disallowedTools: benchmarkConfig.disallowedTools,
               isolateAgentConfig: benchmarkConfig.isolateAgentConfig,
+              requestPlugins:
+                requestPlugins.length > 0 ? requestPlugins : undefined,
+              models: benchmarkConfig.models,
             }),
             endpointId: benchmarkConfig.endpointId,
             inference: {
