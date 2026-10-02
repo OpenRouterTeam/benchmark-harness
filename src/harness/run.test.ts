@@ -172,6 +172,19 @@ describe("runBenchmark", () => {
     expect(result.usage.generationTimeMs).toBe(600);
     expect(result.sampleScores[0]?.generationIds).toEqual(["fake-Q1 target B"]);
   });
+  it("runs only the requested epoch", async () => {
+    const model = fakeModel(() => "Answer: B");
+    const solver = generate(model.service, {
+      temperature: 0.5,
+      reasoningEffort: "high",
+    });
+    const result = await runPromise(
+      runBenchmark({ epochs: 3, epoch: 2, maxConcurrency: 4 }).pipe(
+        provide(makeLayers(model, solver))
+      )
+    );
+    expect(result.sampleScores.map((score) => score.epoch)).toEqual([2, 2]);
+  });
   it("captures per-sample message trajectories", async () => {
     const model = fakeModel(() => "Answer: B");
     const solver = chain(

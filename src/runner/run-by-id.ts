@@ -56,6 +56,7 @@ export interface RunBenchmarkInput {
   readonly baseUrl?: string;
   readonly benchmarkConfig: BenchmarkRunConfig;
   readonly epochs: number;
+  readonly epoch?: number;
   readonly maxConcurrency: number;
   readonly range?: {
     readonly start?: number;
@@ -96,6 +97,7 @@ export function runBenchmarkById(
   const model = modelFromConfig(input.benchmarkConfig);
   const runConfig: RunConfig = definedValues({
     epochs: input.epochs,
+    epoch: input.epoch,
     maxConcurrency: input.maxConcurrency,
     range: input.range,
     degradeSolverErrors: benchmark.degradeSolverErrors,

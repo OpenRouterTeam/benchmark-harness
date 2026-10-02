@@ -49,6 +49,7 @@ import { Solver } from "./solver";
 
 export interface RunConfig {
   readonly epochs: number;
+  readonly epoch?: number;
   readonly maxConcurrency: number;
   readonly range?: {
     readonly start?: number;
@@ -83,7 +84,7 @@ type EvalOutcome = {
 
 function sampleEpochStream(
   dataset: DatasetService,
-  epochs: number,
+  epochs: readonly number[],
   range:
     | {
         readonly start?: number;
@@ -96,7 +97,7 @@ function sampleEpochStream(
     streamZipWithIndex,
     streamFlatMap(([sample, i]) =>
       streamFromIterable(
-        Array.from({ length: epochs }, (_, epoch) => ({
+        epochs.map((epoch) => ({
           sample,
           epoch,
           sampleIndex: baseIndex + i,
@@ -337,7 +338,9 @@ export function runBenchmark(
     effectFlatMap((dataset) => {
       const sampleEpochs = sampleEpochStream(
         dataset,
-        config.epochs,
+        config.epoch === undefined
+          ? Array.from({ length: config.epochs }, (_, epoch) => epoch)
+          : [config.epoch],
         config.range
       );
       const initialAcc: FoldAccumulator = {
