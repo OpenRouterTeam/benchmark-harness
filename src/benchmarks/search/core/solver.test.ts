@@ -341,9 +341,11 @@ describe("searchSolver", () => {
   });
   it("appends the switchyard-router plugin after the serialized web plugin", async () => {
     let sentOptions: ResponsesSendOptions | undefined;
+    let sent: ResponsesRequest | undefined;
     const solver = searchSolver(
       {
-        send: (_body, options) => {
+        send: (body, options) => {
+          sent = body;
           sentOptions = options;
           return effectSucceed(fixtureResult({ text: "x" }));
         },
@@ -355,7 +357,7 @@ describe("searchSolver", () => {
         switchyardAlgorithm: "stage",
       }
     );
-    await runSolver(
+    const state = await runSolver(
       solver(initialTaskState({ id: "s", input: "q", target: { text: "t" } }))
     );
     expect(sentOptions?.extraBody).toEqual({
@@ -364,6 +366,7 @@ describe("searchSolver", () => {
         { id: "switchyard-router", algorithm: "stage" },
       ],
     });
+    expect(state.requestBody).toEqual({ ...sent, ...sentOptions?.extraBody });
   });
   it("sends only the switchyard-router plugin with server tools, ignoring the variant suffix", async () => {
     let sentOptions: ResponsesSendOptions | undefined;

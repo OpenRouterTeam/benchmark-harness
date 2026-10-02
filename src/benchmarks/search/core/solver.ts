@@ -175,6 +175,7 @@ export function searchSolver(
       return completedState({
         state,
         request: body,
+        extraBody,
         result,
         attemptResults,
         text: result.text.trim(),
@@ -268,12 +269,14 @@ function makeStreamEventReporter(
 function completedState({
   state,
   request,
+  extraBody,
   result,
   attemptResults,
   text,
 }: {
   readonly state: TaskState;
   readonly request: ResponsesRequest;
+  readonly extraBody: Readonly<Record<string, unknown>> | undefined;
   readonly result: ResponsesResult;
   readonly attemptResults: readonly ResponsesResult[];
   readonly text: string;
@@ -310,7 +313,7 @@ function completedState({
         : []),
     ],
     responseItems: responseItemsForCall(request, result),
-    requestBody: { ...request },
+    requestBody: { ...request, ...extraBody },
     output: definedValues({
       completion: text,
       message: { role: MessageRole.Assistant, content: text },
