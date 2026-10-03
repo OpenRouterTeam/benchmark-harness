@@ -29,7 +29,7 @@ describe("scoreToolCalls", () => {
     expect(score.value).toBe(ScoreValue.Correct);
   });
 
-  it("flags Morph's stringified numbers as a schema violation", () => {
+  it("flags stringified numbers as a schema violation", () => {
     const score = scoreToolCalls(READ_SLICE_STRICT, [
       call("read", '{"limit":"41","offset":"40","path":"src/server.ts"}'),
     ]);

@@ -9,7 +9,7 @@ The cases are synthetic, written by OpenRouter, and live in `cases.ts`. There is
 ## Evaluation method
 
 - Temperature is fixed at 0. Each sample sends one system message, one user prompt, and the scenario's tools encoded with the sample's variant. `strict` is always sent explicitly, so non-strict variants do not depend on how the API defaults a missing flag.
-- The nullable encodings mark optional fields required, reproducing coding-agent strict-mode rewrites (for example pi's `anyOf [number, null]`), which is where broken grammars and parsers show up.
+- The nullable encodings mark optional fields required, reproducing coding-agent strict-mode rewrites (`anyOf [number, null]`), which is where broken grammars and parsers show up.
 - `*_omit_requested` scenarios ask the model to leave optional arguments out. Under the nullable encodings those keys are still `required`, so only a stack that constrains decoding to the schema emits them. Under `omitted`, leaving them out is correct.
 - `*_wrong_type_requested` scenarios ask for a scalar as a JSON string (`"50"`). A constrained stack still emits the schema type, so a string there is a `schema_violation`.
 - `scorer.ts` validates each returned call against the exact schema sent (`json-schema.ts`), then against the expected values. Expected calls list only values the prompt states unambiguously. Keys the prompt leaves unset, or asks to omit, are left out of the expectation, so the schema still enforces their presence and type but any value the model picks passes.

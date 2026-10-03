@@ -45,7 +45,7 @@ describe("toolcall_formats cases", () => {
     });
   });
 
-  it("matches pi's strict rewrite for anyof_null_strict", () => {
+  it("matches the coding-agent strict rewrite for anyof_null_strict", () => {
     const parameters = readParameters(
       "toolcall_formats-read_slice-anyof_null_strict"
     );

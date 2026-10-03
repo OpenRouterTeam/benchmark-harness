@@ -85,7 +85,7 @@ async function solveRead(toolCall: {
     readCallModel(toolCall.arguments, recorded),
     {
       endpointId: "endpoint-1",
-      inference: { reasoningEffort: "high", providerOnly: ["morph"] },
+      inference: { reasoningEffort: "high", providerOnly: ["provider-a"] },
     }
   );
   const score = await runPromise(
@@ -137,7 +137,7 @@ describe("toolCallFormatsSolver", () => {
     expect(recorded.config).toMatchObject({
       temperature: 0,
       reasoningEffort: "high",
-      providerOnly: ["morph"],
+      providerOnly: ["provider-a"],
       endpointId: "endpoint-1",
       tools: [
         {
