@@ -16,6 +16,7 @@ import {
 import { TAU_BENCH_AIRLINE_BENCHMARK } from "./tau-bench-airline/benchmark";
 import { TAU3_BENCH_BANKING_BENCHMARK } from "./tau3-bench-banking/benchmark";
 import { TERMINAL_BENCH_BENCHMARK } from "./terminal-bench/benchmark";
+import { TOOLCALL_FORMATS_BENCHMARK } from "./toolcall-formats/benchmark";
 import type { Benchmark } from "./types";
 import { VGI_BENCH_BENCHMARK } from "./vgi-bench/benchmark";
 import { WANDR_BENCHMARK } from "./wandr/benchmark";
@@ -29,6 +30,7 @@ const BENCHMARKS: Record<string, Benchmark> = {
   [TERMINAL_BENCH_BENCHMARK.id]: TERMINAL_BENCH_BENCHMARK,
   [DRACO_BENCHMARK.id]: DRACO_BENCHMARK,
   [IFSTRUCT_BENCHMARK.id]: IFSTRUCT_BENCHMARK,
+  [TOOLCALL_FORMATS_BENCHMARK.id]: TOOLCALL_FORMATS_BENCHMARK,
   [SWE_ATLAS_QA_BENCHMARK.id]: SWE_ATLAS_QA_BENCHMARK,
   [SWE_ATLAS_TW_BENCHMARK.id]: SWE_ATLAS_TW_BENCHMARK,
   [SWE_ATLAS_RF_BENCHMARK.id]: SWE_ATLAS_RF_BENCHMARK,
