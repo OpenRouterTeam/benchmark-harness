@@ -70,7 +70,7 @@
     "hyparquet": "1.26.1",
     "hyparquet-writer": "0.16.1",
     "modal": "0.8.0",
-    "smol-toml": "1.8.0",
+    "smol-toml": "1.9.0",
     "yaml": "2.8.3",
     "zod": "4.4.3"
   },
@@ -85,5 +85,8 @@
     "typescript": "7.0.2",
     "ultracite": "7.10.1"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "overrides": {
+    "tinypool": "2.1.2"
+  }
 }
