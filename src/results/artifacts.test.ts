@@ -232,6 +232,7 @@ describe("offloadInlineBase64", () => {
             image_url: { url: "https://x.test/a.png" },
           },
           notBase64: { data: "not base64!", mimeType: "image/png" },
+          truncated: "data:image/png;base64,AAAAA",
         },
       },
     ]);
@@ -240,6 +241,19 @@ describe("offloadInlineBase64", () => {
 
     expect(result).toEqual(input);
     expect(sink.puts).toHaveLength(0);
+  });
+
+  it("matches the data URL scheme, media type and base64 marker case-insensitively", async () => {
+    const sink = memorySink();
+    const result = await offload(
+      runResult([{ metadata: { url: `DATA:IMAGE/PNG;BASE64,${PNG}` } }]),
+      sink
+    );
+
+    expect(result.sampleScores[0]?.metadata).toEqual({
+      url: `gs://results/run-1/artifacts/sha256/${sha256(PNG)}.png`,
+    });
+    expect(sink.puts).toHaveLength(1);
   });
 
   it("retries a failed upload and uses the pointer once it succeeds", async () => {

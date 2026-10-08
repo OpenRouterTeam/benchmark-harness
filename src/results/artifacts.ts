@@ -23,7 +23,7 @@ export class ArtifactUploadError extends TaggedError("ArtifactUploadError")<{
   readonly message: string;
 }> {}
 
-const DATA_URL = /^data:([\w.+-]+\/[\w.+-]+)(?:;[^,;]*)*;base64,(.*)$/s;
+const DATA_URL = /^data:([\w.+-]+\/[\w.+-]+)(?:;[^,;]*)*;base64,(.*)$/is;
 const BASE64 = /^[A-Za-z0-9+/]+={0,2}$/;
 
 const EXTENSIONS: Readonly<Record<string, string>> = {
@@ -77,7 +77,7 @@ function replaceBase64(
     const match = DATA_URL.exec(value);
     return match?.[1] !== undefined &&
       match[2] !== undefined &&
-      BASE64.test(match[2])
+      isBase64(match[2])
       ? replacePayload(match[1], match[2])
       : value;
   }
@@ -95,7 +95,7 @@ function replaceBase64(
         contentType !== undefined &&
         typeof field === "string" &&
         !field.startsWith("data:") &&
-        BASE64.test(field)
+        isBase64(field)
           ? replacePayload(contentType, field)
           : replaceBase64(field, replacePayload),
       ];
@@ -132,6 +132,10 @@ function toArtifact(contentType: string, base64: string): InlineArtifact {
     contentType,
     bytes,
   };
+}
+
+function isBase64(value: string): boolean {
+  return value.length % 4 !== 1 && BASE64.test(value);
 }
 
 function extensionFor(contentType: string): string {
