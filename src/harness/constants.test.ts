@@ -13,6 +13,7 @@ describe("reasoning effort constants", () => {
 
   it("maps auto to no reasoning object and pins every other effort", () => {
     expect(reasoningRequestFor("auto")).toBeUndefined();
+    expect(reasoningRequestFor("max")).toEqual({ effort: "max" });
     expect(reasoningRequestFor("high")).toEqual({ effort: "high" });
     expect(reasoningRequestFor("none")).toEqual({ effort: "none" });
   });

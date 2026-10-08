@@ -3,6 +3,7 @@ import type { ValueOf } from "../internal/guards";
 export const ADAPTIVE_REASONING_EFFORT = "auto";
 
 export const PINNED_REASONING_EFFORTS = [
+  "max",
   "xhigh",
   "high",
   "medium",
