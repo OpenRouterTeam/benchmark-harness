@@ -1,3 +1,5 @@
+import { stripRoutingPrefix } from "../harness/model-slug";
+
 export const MODAL_US_REGIONS = ["us"] as const;
 
 export interface ModalRegionPin {
@@ -17,5 +19,6 @@ export function resolveModalRegions(
   if (configured !== undefined) {
     return configured;
   }
-  return pins.find((pin) => model.startsWith(pin.modelPrefix))?.regions;
+  const slug = stripRoutingPrefix(model);
+  return pins.find((pin) => slug.startsWith(pin.modelPrefix))?.regions;
 }
