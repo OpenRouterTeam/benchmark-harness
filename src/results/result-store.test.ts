@@ -92,9 +92,10 @@ describe("makeLocalResultStore", () => {
       makeLocalResultStore({
         dir: mkdtempSync(join(tmpdir(), "result-store-")),
         artifactSink: {
+          uriFor: (path) => `gs://results/run-1/${path}`,
           put: (artifact) => {
             uploads.push(artifact.path);
-            return Promise.resolve(`gs://results/run-1/${artifact.path}`);
+            return Promise.resolve();
           },
         },
       })

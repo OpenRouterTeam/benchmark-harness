@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 
 import { TaggedError } from "effect/Data";
 import type { Effect } from "effect/Effect";
-import { forEach, map, retry, tryPromise } from "effect/Effect";
+import { as, forEach, retry, tryPromise } from "effect/Effect";
 import { exponential, intersect, recurs } from "effect/Schedule";
 
 import type { RunResult } from "../harness/run";
@@ -15,7 +15,8 @@ export interface InlineArtifact {
 }
 
 export interface ArtifactSink {
-  readonly put: (artifact: InlineArtifact) => Promise<string>;
+  readonly uriFor: (path: string) => string;
+  readonly put: (artifact: InlineArtifact) => Promise<void>;
 }
 
 export class ArtifactUploadError extends TaggedError("ArtifactUploadError")<{
@@ -40,21 +41,20 @@ export function offloadInlineBase64(
   sink: ArtifactSink,
   retryConfig: RetryConfig = {}
 ): Effect<RunResult, ArtifactUploadError> {
-  const found = new PayloadMap<InlineArtifact>();
-  visit(result.sampleScores, (payload, contentType, base64) => {
-    if (found.get(contentType, payload) === undefined) {
-      found.set(contentType, payload, toArtifact(contentType, base64));
+  const artifactsByPath = new Map<string, InlineArtifact>();
+  const sampleScores = replaceBase64(
+    result.sampleScores,
+    (contentType, base64) => {
+      const artifact = toArtifact(contentType, base64);
+      artifactsByPath.set(artifact.path, artifact);
+      return sink.uriFor(artifact.path);
     }
-    return payload;
-  });
-  const uniqueByPath = new Map(
-    found.values().map((artifact) => [artifact.path, artifact])
-  );
+  ) as RunResult["sampleScores"];
   const schedule = exponential(retryConfig.baseDelayMs ?? 500).pipe(
     intersect(recurs(retryConfig.maxRetries ?? 4))
   );
   return forEach(
-    uniqueByPath.values(),
+    artifactsByPath.values(),
     (artifact) =>
       tryPromise({
         try: () => sink.put(artifact),
@@ -62,62 +62,27 @@ export function offloadInlineBase64(
           new ArtifactUploadError({
             message: `Failed to upload ${artifact.path}: ${String(cause)}`,
           }),
-      }).pipe(
-        retry(schedule),
-        map((uri) => [artifact.path, uri] as const)
-      ),
-    { concurrency: UPLOAD_CONCURRENCY }
-  ).pipe(
-    map((uploaded) => {
-      const uriByPath = new Map(uploaded);
-      return {
-        ...result,
-        sampleScores: visit(result.sampleScores, (payload, contentType) => {
-          const artifact = found.get(contentType, payload);
-          return (artifact && uriByPath.get(artifact.path)) ?? payload;
-        }) as RunResult["sampleScores"],
-      };
-    })
-  );
+      }).pipe(retry(schedule)),
+    { concurrency: UPLOAD_CONCURRENCY, discard: true }
+  ).pipe(as({ ...result, sampleScores }));
 }
 
-class PayloadMap<V> {
-  private readonly byContentType = new Map<string, Map<string, V>>();
+type ReplacePayload = (contentType: string, base64: string) => string;
 
-  get(contentType: string, payload: string): V | undefined {
-    return this.byContentType.get(contentType)?.get(payload);
-  }
-
-  set(contentType: string, payload: string, value: V): void {
-    const byPayload = this.byContentType.get(contentType) ?? new Map();
-    byPayload.set(payload, value);
-    this.byContentType.set(contentType, byPayload);
-  }
-
-  values(): V[] {
-    return [...this.byContentType.values()].flatMap((byPayload) => [
-      ...byPayload.values(),
-    ]);
-  }
-}
-
-type OnPayload = (
-  payload: string,
-  contentType: string,
-  base64: string
-) => string;
-
-function visit(value: unknown, onPayload: OnPayload): unknown {
+function replaceBase64(
+  value: unknown,
+  replacePayload: ReplacePayload
+): unknown {
   if (typeof value === "string") {
     const match = DATA_URL.exec(value);
     return match?.[1] !== undefined &&
       match[2] !== undefined &&
       BASE64.test(match[2])
-      ? onPayload(value, match[1], match[2])
+      ? replacePayload(match[1], match[2])
       : value;
   }
   if (Array.isArray(value)) {
-    return value.map((item) => visit(item, onPayload));
+    return value.map((item) => replaceBase64(item, replacePayload));
   }
   if (!isPlainObject(value)) {
     return value;
@@ -131,8 +96,8 @@ function visit(value: unknown, onPayload: OnPayload): unknown {
         typeof field === "string" &&
         !field.startsWith("data:") &&
         BASE64.test(field)
-          ? onPayload(field, contentType, field)
-          : visit(field, onPayload),
+          ? replacePayload(contentType, field)
+          : replaceBase64(field, replacePayload),
       ];
     })
   );

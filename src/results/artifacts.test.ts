@@ -52,20 +52,21 @@ function memorySink(failures = 0): ArtifactSink & {
   let remainingFailures = failures;
   return {
     puts,
+    uriFor: (path) => `gs://results/run-1/${path}`,
     put: (artifact) => {
       puts.push(artifact);
       if (remainingFailures > 0) {
         remainingFailures -= 1;
         return Promise.reject(new Error("503 from bucket"));
       }
-      return Promise.resolve(`gs://results/run-1/${artifact.path}`);
+      return Promise.resolve();
     },
   };
 }
 
-function offload(result: RunResult, sink: ArtifactSink) {
+function offload(result: RunResult, sink: ArtifactSink): Promise<RunResult> {
   return runHarnessPromise(
-    either(offloadInlineBase64(result, sink, { baseDelayMs: 1 }))
+    offloadInlineBase64(result, sink, { baseDelayMs: 1 })
   );
 }
 
@@ -94,12 +95,7 @@ describe("offloadInlineBase64", () => {
     );
 
     const path = `artifacts/sha256/${sha256(PNG)}.png`;
-    expect(result._tag).toBe("Right");
-    expect(
-      result._tag === "Right"
-        ? result.right.sampleScores[0]?.messages?.[0]?.contentParts
-        : undefined
-    ).toEqual([
+    expect(result.sampleScores[0]?.messages?.[0]?.contentParts).toEqual([
       { type: "text", text: "Which organ?" },
       { type: "image_url", imageUrl: { url: `gs://results/run-1/${path}` } },
     ]);
@@ -145,9 +141,7 @@ describe("offloadInlineBase64", () => {
 
     const uri = (base64: string, ext: string) =>
       `gs://results/run-1/artifacts/sha256/${sha256(base64)}.${ext}`;
-    expect(
-      result._tag === "Right" ? result.right.sampleScores[0] : undefined
-    ).toMatchObject({
+    expect(result.sampleScores[0]).toMatchObject({
       metadata: {
         oriImage: {
           type: "image",
@@ -210,11 +204,7 @@ describe("offloadInlineBase64", () => {
       data: `gs://results/run-1/artifacts/sha256/${sha256(PNG)}.png`,
     };
     const pointerResult = { role: "toolResult", content: [pointer] };
-    expect(
-      result._tag === "Right"
-        ? result.right.sampleScores.map((sample) => sample.metadata)
-        : undefined
-    ).toEqual([
+    expect(result.sampleScores.map((sample) => sample.metadata)).toEqual([
       {
         events: [
           { type: "tool_execution_end", result: { content: [pointer] } },
@@ -248,7 +238,7 @@ describe("offloadInlineBase64", () => {
 
     const result = await offload(input, sink);
 
-    expect(result._tag === "Right" ? result.right : undefined).toEqual(input);
+    expect(result).toEqual(input);
     expect(sink.puts).toHaveLength(0);
   });
 
@@ -259,11 +249,7 @@ describe("offloadInlineBase64", () => {
       sink
     );
 
-    expect(
-      result._tag === "Right"
-        ? result.right.sampleScores[0]?.metadata
-        : undefined
-    ).toEqual({
+    expect(result.sampleScores[0]?.metadata).toEqual({
       url: `gs://results/run-1/artifacts/sha256/${sha256(PNG)}.png`,
     });
     expect(sink.puts).toHaveLength(3);
