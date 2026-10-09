@@ -5,7 +5,7 @@ export const MMMU_PRO_DATASET_PATH = "MMMU/MMMU_Pro";
 export const MMMU_PRO_VISION_SUBSET = "vision";
 export const MMMU_PRO_SPLIT = "test";
 export const MMMU_PRO_DEFAULT_REVISION =
-  "563f3e84bb3b90893083a1f039cfa13077f2302b";
+  "0d7426df4ccb3d8704a992fe6850abee7c262127";
 
 const HF_ORIGIN = "https://datasets-server.huggingface.co";
 const CACHED_ASSET_ROOT = `/cached-assets/${MMMU_PRO_DATASET_PATH}/`;
@@ -29,6 +29,9 @@ const MmmuProMediaManifestSchema = z.object({
       })
     )
     .min(1),
+  excluded: z.array(
+    z.object({ id: z.string().min(1), reason: z.string().min(1) })
+  ),
 });
 
 type ManifestImage = z.infer<
@@ -39,6 +42,7 @@ export interface MmmuProMediaManifest {
   readonly revision: string;
   readonly manifestHash: string;
   readonly imageById: ReadonlyMap<string, ManifestImage>;
+  readonly excludedIds: ReadonlySet<string>;
 }
 
 export function buildMmmuProMediaManifest(raw: unknown): MmmuProMediaManifest {
@@ -58,10 +62,18 @@ export function buildMmmuProMediaManifest(raw: unknown): MmmuProMediaManifest {
     }
     imageById.set(image.id, image);
   }
+  const excludedIds = new Set<string>();
+  for (const { id } of manifest.excluded) {
+    if (imageById.has(id) || excludedIds.has(id)) {
+      throw new TypeError(`MMMU Pro media manifest lists ${id} more than once`);
+    }
+    excludedIds.add(id);
+  }
   return {
     revision: manifest.revision,
     manifestHash: manifest.manifestHash,
     imageById,
+    excludedIds,
   };
 }
 

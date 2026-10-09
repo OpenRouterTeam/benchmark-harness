@@ -18,7 +18,10 @@ const image = {
   sha256: "b".repeat(64),
 };
 
-function rawManifest(images = [image]) {
+function rawManifest(
+  images = [image],
+  excluded: { id: string; reason: string }[] = []
+) {
   return {
     dataset: "MMMU/MMMU_Pro",
     config: "vision",
@@ -26,6 +29,7 @@ function rawManifest(images = [image]) {
     revision,
     images,
     manifestHash: "0".repeat(64),
+    excluded,
   };
 }
 
@@ -108,12 +112,57 @@ describe("MMMU Pro mirrored media", () => {
     expect(() => buildMmmuProMediaManifest({})).toThrow();
   });
 
+  it("rejects an excluded id that is also mirrored or listed twice", () => {
+    const reason = "image changed upstream";
+    expect(() =>
+      buildMmmuProMediaManifest(
+        rawManifest([image], [{ id: image.id, reason }])
+      )
+    ).toThrow("more than once");
+    expect(() =>
+      buildMmmuProMediaManifest(
+        rawManifest(
+          [image],
+          [
+            { id: "other", reason },
+            { id: "other", reason },
+          ]
+        )
+      )
+    ).toThrow("more than once");
+  });
+
+  it("maps an excluded record without consulting the mirror", () => {
+    const manifest = buildMmmuProMediaManifest(
+      rawManifest([image], [{ id: "excluded_1", reason: "image changed" }])
+    );
+    const src = `https://datasets-server.huggingface.co/cached-assets/MMMU/MMMU_Pro/--/${"c".repeat(40)}/--/vision/test/1/image/image.png`;
+    const sample = mmmuProVisionRecordToSample(
+      {
+        id: "excluded_1",
+        question: "Q",
+        answer: "A",
+        options: "['x','y']",
+        image: { src },
+      },
+      1,
+      undefined,
+      manifest
+    );
+    expect(manifest.excludedIds.has("excluded_1")).toBe(true);
+    expect(sample.contentParts?.[1]).toMatchObject({ imageUrl: { url: src } });
+  });
+
   it("ships a complete committed manifest for the default revision only", () => {
     const committed = mmmuProMediaManifestFor(MMMU_PRO_DEFAULT_REVISION);
     expect(committed).toBeDefined();
     expect(committed!.revision).toBe(MMMU_PRO_DEFAULT_REVISION);
-    expect(committed!.imageById.size).toBe(1730);
-    const urlPrefix = `https://mmmu-pro-mirror.openrouter.ai/mmmu-pro/${MMMU_PRO_DEFAULT_REVISION}/`;
+    expect(committed!.imageById.size + committed!.excludedIds.size).toBe(1730);
+    expect([...committed!.excludedIds].sort()).toEqual([
+      "test_Chemistry_240",
+      "validation_Finance_5",
+    ]);
+    const urlPrefix = "https://mmmu-pro-mirror.openrouter.ai/mmmu-pro/";
     expect(
       [...committed!.imageById.values()].every((entry) =>
         entry.url.startsWith(urlPrefix)

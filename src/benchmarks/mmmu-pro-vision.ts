@@ -1,9 +1,12 @@
+import { map } from "effect/Effect";
 import type { Layer } from "effect/Layer";
+import { effect, provide } from "effect/Layer";
+import { filter } from "effect/Stream";
 
 import { HfImageSchema, makeHfDatasetLayer } from "../datasets/huggingface";
 import type { ImageDetail } from "../harness/constants";
 import type { ContentPart, Sample } from "../harness/core";
-import type { Dataset as DatasetTag } from "../harness/dataset";
+import { Dataset } from "../harness/dataset";
 import type { GenerateConfig, ModelService } from "../harness/model";
 import type { SolverService } from "../harness/solver";
 import { chain, generate, systemMessage } from "../harness/solver";
@@ -68,7 +71,7 @@ export function mmmuProVisionRecordToSample(
       type: "image_url",
       imageUrl: definedValues({
         url:
-          mediaManifest === undefined
+          mediaManifest === undefined || mediaManifest.excludedIds.has(id)
             ? parsedImage.right.src
             : mirroredMmmuProImage(mediaManifest, id, parsedImage.right.src),
         detail: imageDetail,
@@ -124,10 +127,10 @@ interface MmmuProVisionDatasetOpts {
 
 export function makeMmmuProVisionDatasetLayer(
   opts?: MmmuProVisionDatasetOpts
-): Layer<DatasetTag> {
+): Layer<Dataset> {
   const revision = opts?.revision ?? MMMU_PRO_DEFAULT_REVISION;
   const mediaManifest = mmmuProMediaManifestFor(revision);
-  return makeHfDatasetLayer({
+  const hfLayer = makeHfDatasetLayer({
     dataset: MMMU_PRO_DATASET_PATH,
     config: MMMU_PRO_VISION_SUBSET,
     split: MMMU_PRO_SPLIT,
@@ -141,6 +144,22 @@ export function makeMmmuProVisionDatasetLayer(
       ),
     ...definedValues({ retry: opts?.retry }),
   });
+  const excludedIds = mediaManifest?.excludedIds;
+  if (excludedIds === undefined || excludedIds.size === 0) {
+    return hfLayer;
+  }
+  return effect(
+    Dataset,
+    map(Dataset, (inner) =>
+      Dataset.of({
+        stream: (streamOpts) =>
+          inner
+            .stream(streamOpts)
+            .pipe(filter((sample) => !excludedIds.has(sample.id))),
+        size: inner.size,
+      })
+    )
+  ).pipe(provide(hfLayer));
 }
 
 export function mmmuProVisionSolver(
