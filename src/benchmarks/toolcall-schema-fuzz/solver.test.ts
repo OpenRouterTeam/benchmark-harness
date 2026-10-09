@@ -2,11 +2,12 @@ import { describe, expect, it } from "bun:test";
 import assert from "node:assert";
 
 import { HttpClient, HttpClientResponse } from "@effect/platform";
-import { provide, runPromiseExit, succeed } from "effect/Effect";
+import { squash } from "effect/Cause";
+import { never, provide, runPromiseExit, succeed } from "effect/Effect";
 import { isFailure, isSuccess } from "effect/Exit";
 import { mergeAll, succeed as layerSucceed } from "effect/Layer";
 
-import { initialTaskState } from "../../harness/core";
+import { initialTaskState, ModelError } from "../../harness/core";
 import {
   CheckpointStore,
   NOOP_CHECKPOINT_STORE,
@@ -125,5 +126,45 @@ describe("buildRequestBody", () => {
       }
     );
     expect(body).not.toHaveProperty("provider");
+  });
+});
+
+describe("toolCallSchemaFuzzSolver timeouts", () => {
+  it("fails the sample with a 408 ModelError instead of a SolverError", async () => {
+    const entry = ENTRY;
+    assert(entry !== undefined);
+    const solver = toolCallSchemaFuzzSolver(
+      HttpClient.make(() => never),
+      {
+        options: {
+          model: "test-model",
+          apiKey: "test-key",
+          reasoningEffort: "none",
+          timeoutMs: 10,
+          retry: { maxRetries: 0 },
+        },
+        cases: caseLookup([entry]),
+      }
+    );
+    const exit = await runPromiseExit(
+      solver(
+        initialTaskState({
+          id: entry.id,
+          input: entry.prompt,
+          target: { text: "" },
+        })
+      ).pipe(
+        provide(
+          mergeAll(
+            layerSucceed(ProgressReporter, NOOP_PROGRESS_REPORTER),
+            layerSucceed(CheckpointStore, NOOP_CHECKPOINT_STORE)
+          )
+        )
+      )
+    );
+    assert(isFailure(exit));
+    const error = squash(exit.cause);
+    assert(error instanceof ModelError);
+    expect(error.status).toBe(408);
   });
 });

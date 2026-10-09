@@ -174,11 +174,12 @@ function requestCompletion(
       ? withTimeout(client.execute(request), options.timeoutMs)
       : client.execute(request);
   return execute.pipe(
-    mapError(
-      (error) =>
-        new SolverError({
-          message: `OpenRouter request failed: ${error.message}`,
-        })
+    mapError((error) =>
+      error instanceof ModelError
+        ? error
+        : new SolverError({
+            message: `OpenRouter request failed: ${error.message}`,
+          })
     ),
     flatMap((response) =>
       gen(function* () {
