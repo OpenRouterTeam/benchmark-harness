@@ -1,6 +1,5 @@
 import type { HttpClient, HttpClientError } from "@effect/platform";
 import { HttpClientRequest } from "@effect/platform";
-import type * as HttpClientResponse from "@effect/platform/HttpClientResponse";
 import { millis } from "effect/Duration";
 import type { Effect } from "effect/Effect";
 import { catchTag, fail, flatMap, gen, mapError, timeout } from "effect/Effect";
@@ -130,10 +129,10 @@ function readError(error: HttpClientError.HttpClientError): SolverError {
   });
 }
 
-function withTimeout<A>(
-  effect: Effect<A, HttpClientError.HttpClientError>,
+function withTimeout<A, E>(
+  effect: Effect<A, E>,
   timeoutMs: number
-): Effect<A, HttpClientError.HttpClientError | ModelError> {
+): Effect<A, E | ModelError> {
   return effect.pipe(
     timeout(millis(timeoutMs)),
     catchTag("TimeoutException", () =>
@@ -151,7 +150,7 @@ function requestCompletion(
   client: HttpClient.HttpClient,
   options: ToolCallSchemaFuzzSolverOptions,
   requestBody: Readonly<Record<string, unknown>>
-): Effect<HttpClientResponse.HttpClientResponse, ModelError | SolverError> {
+): Effect<unknown, ModelError | SolverError> {
   const baseUrl = (options.baseUrl ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
   const request = HttpClientRequest.post(`${baseUrl}/chat/completions`).pipe(
     HttpClientRequest.setHeaders({
@@ -169,22 +168,17 @@ function requestCompletion(
     }),
     HttpClientRequest.bodyUnsafeJson(requestBody)
   );
-  const execute =
-    options.timeoutMs !== undefined && options.timeoutMs > 0
-      ? withTimeout(client.execute(request), options.timeoutMs)
-      : client.execute(request);
-  return execute.pipe(
-    mapError((error) =>
-      error instanceof ModelError
-        ? error
-        : new SolverError({
-            message: `OpenRouter request failed: ${error.message}`,
-          })
+  const completion = client.execute(request).pipe(
+    mapError(
+      (error) =>
+        new SolverError({
+          message: `OpenRouter request failed: ${error.message}`,
+        })
     ),
     flatMap((response) =>
       gen(function* () {
         if (response.status >= 200 && response.status < 300) {
-          return response;
+          return yield* response.json.pipe(mapError(readError));
         }
         const text = yield* response.text.pipe(mapError(readError));
         const message = `OpenRouter HTTP ${response.status}: ${text}`;
@@ -195,6 +189,9 @@ function requestCompletion(
       })
     )
   );
+  return options.timeoutMs !== undefined && options.timeoutMs > 0
+    ? withTimeout(completion, options.timeoutMs)
+    : completion;
 }
 
 export function toolCallSchemaFuzzSolver(
@@ -223,11 +220,10 @@ export function toolCallSchemaFuzzSolver(
         },
         options
       );
-      const response = yield* retrySalted(
+      const body = yield* retrySalted(
         requestCompletion(client, options, requestBody),
         rateLimitRetrySchedule(options.retry)
       );
-      const body = yield* response.json.pipe(mapError(readError));
       const parsed = parseSchema(CompletionResponseSchema, body);
       if (Either.isLeft(parsed)) {
         return yield* new SolverError({
