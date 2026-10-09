@@ -24,12 +24,13 @@ export function buildRouterPlugin(
 ): RouterPluginConfig | undefined {
   const baseModel = model === undefined ? undefined : stripVariantSuffix(model);
   switch (baseModel) {
-    case "typesafe/jev-router":
+    case "typesafe/jev-router": {
       return options.costTier === undefined
         ? undefined
         : { id: "jev-router", cost_tier: options.costTier };
+    }
     case "openrouter/auto":
-    case "openrouter/auto-beta":
+    case "openrouter/auto-beta": {
       if (
         options.costTier === undefined &&
         options.costQualityTradeoff === undefined &&
@@ -44,10 +45,12 @@ export function buildRouterPlugin(
         cost_quality_tradeoff: options.costQualityTradeoff,
         pin_model: options.pinModel === true ? true : undefined,
       } satisfies RouterPluginConfig);
-    default:
+    }
+    default: {
       return buildSwitchyardRouterPlugin(
         baseModel,
         options.switchyardAlgorithm
       );
+    }
   }
 }
