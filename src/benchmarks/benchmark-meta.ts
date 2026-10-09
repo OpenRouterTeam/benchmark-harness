@@ -55,6 +55,12 @@ export const TOOLCALL_FORMATS_META = {
   temperature: 0,
 } as const satisfies BenchmarkMeta;
 
+export const TOOLCALL_SCHEMA_FUZZ_META = {
+  id: "toolcall_schema_fuzz",
+  defaultEpochs: 1,
+  temperature: 0,
+} as const satisfies BenchmarkMeta;
+
 export const SWE_ATLAS_QA_META = {
   id: "swe_atlas_qa",
   defaultEpochs: 3,
@@ -115,6 +121,7 @@ const BENCHMARK_META: Readonly<Record<string, BenchmarkMeta>> = {
   [DRACO_META.id]: DRACO_META,
   [IFSTRUCT_META.id]: IFSTRUCT_META,
   [TOOLCALL_FORMATS_META.id]: TOOLCALL_FORMATS_META,
+  [TOOLCALL_SCHEMA_FUZZ_META.id]: TOOLCALL_SCHEMA_FUZZ_META,
   [SWE_ATLAS_QA_META.id]: SWE_ATLAS_QA_META,
   [SWE_ATLAS_TW_META.id]: SWE_ATLAS_TW_META,
   [SWE_ATLAS_RF_META.id]: SWE_ATLAS_RF_META,

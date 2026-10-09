@@ -506,6 +506,7 @@ export function buildBenchmarkConfig(opts: {
     case "mmlu_pro":
     case "ifstruct":
     case "toolcall_formats":
+    case "toolcall_schema_fuzz":
     case "swe_atlas_qa":
     case "swe_atlas_tw":
     case "swe_atlas_rf":
