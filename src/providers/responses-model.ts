@@ -29,6 +29,7 @@ import { definedValues, isRecord, isUnknownArray } from "../internal/guards";
 import type { RetryConfig } from "../runtime/retry";
 import { rateLimitRetrySchedule, retrySalted } from "../runtime/retry";
 import { buildAutoRouterPlugin } from "./auto-router-plugin";
+import { buildJevRouterPlugin } from "./jev-router-plugin";
 import type { ModelErrorIdentifiers } from "./request-identifiers";
 import { appendModelErrorIdentifiers } from "./request-identifiers";
 import type { ResponsesResult, ResponsesService } from "./responses-client";
@@ -172,10 +173,9 @@ export function generate(
   const requestModel = genConfig.model ?? opts.model;
   const baseModel = stripVariantSuffix(requestModel);
   const autoRouterPlugin = buildAutoRouterPlugin(baseModel, genConfig);
-  const switchyardRouterPlugin = buildSwitchyardRouterPlugin(
-    baseModel,
-    genConfig.switchyardAlgorithm
-  );
+  const wireRouterPlugin =
+    buildJevRouterPlugin(baseModel, genConfig.costTier) ??
+    buildSwitchyardRouterPlugin(baseModel, genConfig.switchyardAlgorithm);
   const body = {
     model: requestModel,
     input: toSdkInput(opts.input),
@@ -206,12 +206,12 @@ export function generate(
   });
   const callerPlugins = genConfig.extraBody?.["plugins"];
   const extraBody =
-    switchyardRouterPlugin !== undefined
+    wireRouterPlugin !== undefined
       ? {
           ...genConfig.extraBody,
           plugins: [
             ...(isUnknownArray(callerPlugins) ? callerPlugins : []),
-            switchyardRouterPlugin,
+            wireRouterPlugin,
           ],
         }
       : genConfig.extraBody;

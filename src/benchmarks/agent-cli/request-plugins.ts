@@ -5,6 +5,7 @@ import {
   buildAutoRouterPlugin,
   toWireAutoRouterPlugin,
 } from "../../providers/auto-router-plugin";
+import { buildJevRouterPlugin } from "../../providers/jev-router-plugin";
 import { buildSwitchyardRouterPlugin } from "../../providers/switchyard-router-plugin";
 import type { OriHarnessDef } from "./harness";
 import { ORI_HARNESSES } from "./harness";
@@ -25,11 +26,13 @@ export function sandboxAgentRequestPlugins(opts: {
     costQualityTradeoff: opts.costQualityTradeoff,
     pinModel: opts.pinModel,
   });
+  const jevRouterPlugin = buildJevRouterPlugin(baseModel, opts.costTier);
   const switchyardRouterPlugin = buildSwitchyardRouterPlugin(
     baseModel,
     opts.switchyardAlgorithm
   );
   const plugins: AgentRequestPlugin[] = [
+    ...(jevRouterPlugin === undefined ? [] : [{ ...jevRouterPlugin }]),
     ...(autoRouterPlugin === undefined
       ? []
       : [toWireAutoRouterPlugin(autoRouterPlugin)]),
@@ -41,7 +44,8 @@ export function sandboxAgentRequestPlugins(opts: {
     return plugins;
   }
   const fields = [
-    autoRouterPlugin !== undefined && opts.costTier !== undefined
+    (autoRouterPlugin !== undefined || jevRouterPlugin !== undefined) &&
+    opts.costTier !== undefined
       ? "costTier"
       : undefined,
     autoRouterPlugin !== undefined && opts.costQualityTradeoff !== undefined

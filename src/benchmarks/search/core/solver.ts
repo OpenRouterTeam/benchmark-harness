@@ -31,6 +31,7 @@ import {
   isRecord,
   isUnknownArray,
 } from "../../../internal/guards";
+import { buildJevRouterPlugin } from "../../../providers/jev-router-plugin";
 import type {
   ResponsesResult,
   ResponsesSendOptions,
@@ -58,14 +59,14 @@ function pluginsInWireShape(body: ResponsesRequest): readonly unknown[] {
   return isUnknownArray(wirePlugins) ? wirePlugins : [];
 }
 
-function switchyardExtraBody(
+function routerExtraBody(
   body: ResponsesRequest,
-  opts: Pick<SearchSolverOptions, "model" | "switchyardAlgorithm">
+  opts: Pick<SearchSolverOptions, "model" | "costTier" | "switchyardAlgorithm">
 ): Readonly<Record<string, unknown>> | undefined {
-  const plugin = buildSwitchyardRouterPlugin(
-    stripVariantSuffix(opts.model),
-    opts.switchyardAlgorithm
-  );
+  const baseModel = stripVariantSuffix(opts.model);
+  const plugin =
+    buildJevRouterPlugin(baseModel, opts.costTier) ??
+    buildSwitchyardRouterPlugin(baseModel, opts.switchyardAlgorithm);
   if (plugin === undefined) {
     return undefined;
   }
@@ -135,7 +136,7 @@ export function searchSolver(
           costTier: opts.costTier,
         })
       );
-      const extraBody = switchyardExtraBody(body, opts);
+      const extraBody = routerExtraBody(body, opts);
       const extraHeaders =
         opts.endpointId === undefined &&
         !opts.lane.providerFlags?.length &&
