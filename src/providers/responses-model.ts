@@ -24,12 +24,9 @@ import { reasoningRequestFor } from "../harness/constants";
 import type { ModelUsage } from "../harness/core";
 import { ModelError } from "../harness/core";
 import type { GenerateConfig } from "../harness/model";
-import { stripVariantSuffix } from "../harness/model";
 import { definedValues, isRecord, isUnknownArray } from "../internal/guards";
 import type { RetryConfig } from "../runtime/retry";
 import { rateLimitRetrySchedule, retrySalted } from "../runtime/retry";
-import { buildAutoRouterPlugin } from "./auto-router-plugin";
-import { buildJevRouterPlugin } from "./jev-router-plugin";
 import type { ModelErrorIdentifiers } from "./request-identifiers";
 import { appendModelErrorIdentifiers } from "./request-identifiers";
 import type { ResponsesResult, ResponsesService } from "./responses-client";
@@ -41,7 +38,7 @@ import {
   unwrapStreamEvent,
   usageFromResponses,
 } from "./responses-client";
-import { buildSwitchyardRouterPlugin } from "./switchyard-router-plugin";
+import { buildRouterPlugin } from "./router-plugin";
 
 export type ResponsesInputItem = Record<string, unknown>;
 
@@ -171,11 +168,7 @@ export function generate(
   });
   const sendProvider = Object.keys(providerPreferences).length > 0;
   const requestModel = genConfig.model ?? opts.model;
-  const baseModel = stripVariantSuffix(requestModel);
-  const autoRouterPlugin = buildAutoRouterPlugin(baseModel, genConfig);
-  const wireRouterPlugin =
-    buildJevRouterPlugin(baseModel, genConfig.costTier) ??
-    buildSwitchyardRouterPlugin(baseModel, genConfig.switchyardAlgorithm);
+  const wireRouterPlugin = buildRouterPlugin(requestModel, genConfig);
   const body = {
     model: requestModel,
     input: toSdkInput(opts.input),
@@ -194,9 +187,6 @@ export function generate(
     ...definedValues({
       reasoning: reasoningRequestFor(genConfig.reasoningEffort),
       provider: sendProvider ? providerPreferences : undefined,
-    }),
-    ...definedValues({
-      plugins: autoRouterPlugin !== undefined ? [autoRouterPlugin] : undefined,
     }),
   } satisfies ResponsesRequest;
   const extraHeaders = definedValues({

@@ -339,37 +339,55 @@ describe("searchSolver", () => {
       "X-OpenRouter-Experiment-Ids": "jev-finish-deesc,control",
     });
   });
-  it.each(["plugin", "server-tool"] as const)(
-    "forwards Jev high alongside search %s requests",
-    async (webSearch) => {
-      let sentOptions: ResponsesSendOptions | undefined;
-      let sent: ResponsesRequest | undefined;
-      const solver = searchSolver(
-        {
-          send: (body, options) => {
-            sent = body;
-            sentOptions = options;
-            return effectSucceed(fixtureResult({ text: "x" }));
+  describe.each([
+    ["openrouter/auto", "auto-router"],
+    ["openrouter/auto-beta", "auto-beta-router"],
+    ["typesafe/jev-router", "jev-router"],
+  ] as const)("%s routing", (model, pluginId) => {
+    it.each(["plugin", "server-tool"] as const)(
+      "forwards high alongside search %s requests",
+      async (webSearch) => {
+        let sentOptions: ResponsesSendOptions | undefined;
+        let sent: ResponsesRequest | undefined;
+        const solver = searchSolver(
+          {
+            send: (body, options) => {
+              sent = body;
+              sentOptions = options;
+              return effectSucceed(fixtureResult({ text: "x" }));
+            },
           },
-        },
-        {
-          model: "typesafe/jev-router:nitro",
-          instructions: "i",
-          lane: makeLane({ webSearch, maxResults: 4 }),
-          costTier: "high",
-        }
-      );
-      const state = await runSolver(
-        solver(initialTaskState({ id: "s", input: "q", target: { text: "t" } }))
-      );
-      expect(sentOptions?.extraBody?.["plugins"]).toContainEqual({
-        id: "jev-router",
-        cost_tier: "high",
-      });
-      expect(state.requestBody).toEqual({ ...sent, ...sentOptions?.extraBody });
-      expect(sentOptions?.extraHeaders).toBeUndefined();
-    }
-  );
+          {
+            model: `${model}:nitro`,
+            instructions: "i",
+            lane: makeLane({ webSearch, maxResults: 4 }),
+            costTier: "high",
+            costQualityTradeoff: 8,
+          }
+        );
+        const state = await runSolver(
+          solver(
+            initialTaskState({ id: "s", input: "q", target: { text: "t" } })
+          )
+        );
+        const routerPlugin =
+          pluginId === "jev-router"
+            ? { id: pluginId, cost_tier: "high" }
+            : { id: pluginId, cost_tier: "high", cost_quality_tradeoff: 8 };
+        expect(sentOptions?.extraBody?.["plugins"]).toEqual([
+          ...(webSearch === "plugin"
+            ? [expect.objectContaining({ id: "web", max_results: 4 })]
+            : []),
+          routerPlugin,
+        ]);
+        expect(state.requestBody).toEqual({
+          ...sent,
+          ...sentOptions?.extraBody,
+        });
+        expect(sentOptions?.extraHeaders).toBeUndefined();
+      }
+    );
+  });
 
   it("appends the switchyard-router plugin after the serialized web plugin", async () => {
     let sentOptions: ResponsesSendOptions | undefined;

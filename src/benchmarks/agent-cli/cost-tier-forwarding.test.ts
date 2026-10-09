@@ -14,7 +14,11 @@ import {
 import { DEEP_SWE_BENCHMARK } from "../deep-swe/benchmark";
 import { SWE_ATLAS_QA_BENCHMARK } from "../swe-atlas/benchmark";
 
-describe("coding benchmark Jev tiers", () => {
+describe.each([
+  ["openrouter/auto", "auto-router"],
+  ["openrouter/auto-beta", "auto-beta-router"],
+  ["typesafe/jev-router", "jev-router"],
+] as const)("coding benchmark %s tiers", (model, pluginId) => {
   it.each([
     {
       id: "deep_swe",
@@ -27,7 +31,7 @@ describe("coding benchmark Jev tiers", () => {
       benchmark: SWE_ATLAS_QA_BENCHMARK,
     },
   ] as const)(
-    "refuses an unforwardable Jev tier before starting $id",
+    "refuses an unforwardable tier before starting $id",
     async ({ id, schema, benchmark }) => {
       const exit = await runPromiseExit(
         scoped(
@@ -37,7 +41,7 @@ describe("coding benchmark Jev tiers", () => {
               sessionId: "run-1",
               benchmarkConfig: schema.parse({
                 benchmarkId: id,
-                model: "typesafe/jev-router",
+                model,
                 reasoningEffort: "auto",
                 agentReasoningEffort: "high",
                 agent: "claude",
@@ -49,7 +53,7 @@ describe("coding benchmark Jev tiers", () => {
       );
       assertFailure(exit);
       expect(getOrThrow(failureOption(exit.cause)).message).toBe(
-        `${id} cannot use costTier: the claude agent calls the model from inside the sandbox and does not forward the jev-router plugin (supported agents: pi)`
+        `${id} cannot use costTier: the claude agent calls the model from inside the sandbox and does not forward the ${pluginId} plugin (supported agents: pi)`
       );
     }
   );

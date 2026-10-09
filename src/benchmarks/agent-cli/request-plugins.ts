@@ -1,12 +1,6 @@
 import type { SwitchyardAlgorithm } from "../../harness/constants";
-import { stripVariantSuffix } from "../../harness/constants";
 import type { GenerateConfig } from "../../harness/model";
-import {
-  buildAutoRouterPlugin,
-  toWireAutoRouterPlugin,
-} from "../../providers/auto-router-plugin";
-import { buildJevRouterPlugin } from "../../providers/jev-router-plugin";
-import { buildSwitchyardRouterPlugin } from "../../providers/switchyard-router-plugin";
+import { buildRouterPlugin } from "../../providers/router-plugin";
 import type { OriHarnessDef } from "./harness";
 import { ORI_HARNESSES } from "./harness";
 import type { AgentRequestPlugin } from "./runner";
@@ -20,41 +14,25 @@ export function sandboxAgentRequestPlugins(opts: {
   readonly pinModel: boolean | undefined;
   readonly switchyardAlgorithm?: SwitchyardAlgorithm | undefined;
 }): readonly AgentRequestPlugin[] | Error {
-  const baseModel = stripVariantSuffix(opts.model);
-  const autoRouterPlugin = buildAutoRouterPlugin(baseModel, {
-    costTier: opts.costTier,
-    costQualityTradeoff: opts.costQualityTradeoff,
-    pinModel: opts.pinModel,
-  });
-  const jevRouterPlugin = buildJevRouterPlugin(baseModel, opts.costTier);
-  const switchyardRouterPlugin = buildSwitchyardRouterPlugin(
-    baseModel,
-    opts.switchyardAlgorithm
-  );
-  const plugins: AgentRequestPlugin[] = [
-    ...(jevRouterPlugin === undefined ? [] : [{ ...jevRouterPlugin }]),
-    ...(autoRouterPlugin === undefined
-      ? []
-      : [toWireAutoRouterPlugin(autoRouterPlugin)]),
-    ...(switchyardRouterPlugin === undefined
-      ? []
-      : [{ ...switchyardRouterPlugin }]),
-  ];
-  if (plugins.length === 0 || opts.harness.forwardsRequestPlugins) {
+  const plugin = buildRouterPlugin(opts.model, opts);
+  if (plugin === undefined) {
+    return [];
+  }
+  const plugins = [{ ...plugin }];
+  if (opts.harness.forwardsRequestPlugins) {
     return plugins;
   }
+  const isAutoRouter =
+    plugin.id === "auto-router" || plugin.id === "auto-beta-router";
   const fields = [
-    (autoRouterPlugin !== undefined || jevRouterPlugin !== undefined) &&
-    opts.costTier !== undefined
+    plugin.id !== "switchyard-router" && opts.costTier !== undefined
       ? "costTier"
       : undefined,
-    autoRouterPlugin !== undefined && opts.costQualityTradeoff !== undefined
+    isAutoRouter && opts.costQualityTradeoff !== undefined
       ? "costQualityTradeoff"
       : undefined,
-    autoRouterPlugin !== undefined && opts.pinModel === true
-      ? "pinModel"
-      : undefined,
-    switchyardRouterPlugin !== undefined ? "switchyardAlgorithm" : undefined,
+    isAutoRouter && opts.pinModel === true ? "pinModel" : undefined,
+    plugin.id === "switchyard-router" ? "switchyardAlgorithm" : undefined,
   ].filter((field) => field !== undefined);
   const forwardingAgents = Object.values(ORI_HARNESSES)
     .filter((harness) => harness.forwardsRequestPlugins)

@@ -20,7 +20,6 @@ import type {
 } from "../../../harness/constants";
 import type { ResponseItem, TaskState } from "../../../harness/core";
 import { MessageRole, ModelError } from "../../../harness/core";
-import { stripVariantSuffix } from "../../../harness/model";
 import type { ProgressReporterService } from "../../../harness/progress";
 import { ProgressReporter } from "../../../harness/progress";
 import type { SolverService } from "../../../harness/solver";
@@ -31,7 +30,6 @@ import {
   isRecord,
   isUnknownArray,
 } from "../../../internal/guards";
-import { buildJevRouterPlugin } from "../../../providers/jev-router-plugin";
 import type {
   ResponsesResult,
   ResponsesSendOptions,
@@ -42,7 +40,7 @@ import {
   toModelError,
   usageFromResponses,
 } from "../../../providers/responses-client";
-import { buildSwitchyardRouterPlugin } from "../../../providers/switchyard-router-plugin";
+import { buildRouterPlugin } from "../../../providers/router-plugin";
 import type { RetryConfig } from "../../../runtime/retry";
 import { rateLimitRetrySchedule, retrySalted } from "../../../runtime/retry";
 import type { SearchLaneConfig } from "./config";
@@ -61,12 +59,12 @@ function pluginsInWireShape(body: ResponsesRequest): readonly unknown[] {
 
 function routerExtraBody(
   body: ResponsesRequest,
-  opts: Pick<SearchSolverOptions, "model" | "costTier" | "switchyardAlgorithm">
+  opts: Pick<
+    SearchSolverOptions,
+    "model" | "costTier" | "costQualityTradeoff" | "switchyardAlgorithm"
+  >
 ): Readonly<Record<string, unknown>> | undefined {
-  const baseModel = stripVariantSuffix(opts.model);
-  const plugin =
-    buildJevRouterPlugin(baseModel, opts.costTier) ??
-    buildSwitchyardRouterPlugin(baseModel, opts.switchyardAlgorithm);
+  const plugin = buildRouterPlugin(opts.model, opts);
   if (plugin === undefined) {
     return undefined;
   }
@@ -132,8 +130,6 @@ export function searchSolver(
           providerOnly: opts.providerOnly,
           providerIgnore: opts.providerIgnore,
           allowFallbacks: opts.allowFallbacks,
-          costQualityTradeoff: opts.costQualityTradeoff,
-          costTier: opts.costTier,
         })
       );
       const extraBody = routerExtraBody(body, opts);

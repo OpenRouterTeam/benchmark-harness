@@ -280,16 +280,4 @@ describe("buildSearchRequestBody", () => {
       },
     ]);
   });
-  it("serializes search auto-router costTier as cost_tier through the SDK", () => {
-    const body = buildSearchRequestBody({
-      ...BASE,
-      model: "openrouter/auto",
-      lane: lane({}),
-      costTier: "high",
-    });
-    expect(body.plugins).toEqual([{ id: "auto-router", costTier: "high" }]);
-    expect(JSON.parse(responsesRequestToJSON(body))).toMatchObject({
-      plugins: [{ id: "auto-router", cost_tier: "high" }],
-    });
-  });
 });

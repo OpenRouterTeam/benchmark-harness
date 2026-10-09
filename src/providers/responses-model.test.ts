@@ -439,49 +439,55 @@ describe("responses-model", () => {
       ]);
     });
   }
-  it.each(["low", "medium", "high"] as const)(
-    "preserves Jev %s on subsequent turns without experiment headers",
-    async (tier) => {
-      const captured: { value: CapturedRequest | undefined } = {
-        value: undefined,
-      };
-      restore = installFetchStub(await readStreamFixture(), 200, captured);
-      const layer = makeResponsesModelLayer({
-        model: "typesafe/jev-router",
-        apiKey: "sk-test",
-      });
-      const exit = await runPromiseExit(
-        gen(function* run() {
-          const modelService = yield* ResponsesModel;
-          const config = {
-            costTier: tier,
-            reasoningEffort: "auto",
-            extraBody: { plugins: [{ id: "web" }] },
-          } as const;
-          yield* modelService.generate(
-            [responsesMessage("user", "first turn")],
-            config
-          );
-          expect(captured.value?.body["plugins"]).toEqual([
-            { id: "web" },
-            { id: "jev-router", cost_tier: tier },
-          ]);
-          return yield* modelService.generate(
-            [responsesMessage("user", "continue")],
-            config
-          );
-        }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
-      );
-      assertSuccess(exit);
-      expect(captured.value?.body["plugins"]).toEqual([
-        { id: "web" },
-        { id: "jev-router", cost_tier: tier },
-      ]);
-      expect(
-        captured.value?.headers["x-openrouter-experiment-ids"]
-      ).toBeUndefined();
-    }
-  );
+  describe.each([
+    ["openrouter/auto", "auto-router"],
+    ["openrouter/auto-beta", "auto-beta-router"],
+    ["typesafe/jev-router", "jev-router"],
+  ] as const)("%s cost tiers", (model, pluginId) => {
+    it.each(["low", "medium", "high"] as const)(
+      "preserves %s on subsequent turns without experiment headers",
+      async (tier) => {
+        const captured: { value: CapturedRequest | undefined } = {
+          value: undefined,
+        };
+        restore = installFetchStub(await readStreamFixture(), 200, captured);
+        const layer = makeResponsesModelLayer({
+          model,
+          apiKey: "sk-test",
+        });
+        const exit = await runPromiseExit(
+          gen(function* run() {
+            const modelService = yield* ResponsesModel;
+            const config = {
+              costTier: tier,
+              reasoningEffort: "auto",
+              extraBody: { plugins: [{ id: "web" }] },
+            } as const;
+            yield* modelService.generate(
+              [responsesMessage("user", "first turn")],
+              config
+            );
+            expect(captured.value?.body["plugins"]).toEqual([
+              { id: "web" },
+              { id: pluginId, cost_tier: tier },
+            ]);
+            return yield* modelService.generate(
+              [responsesMessage("user", "continue")],
+              config
+            );
+          }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+        );
+        assertSuccess(exit);
+        expect(captured.value?.body["plugins"]).toEqual([
+          { id: "web" },
+          { id: pluginId, cost_tier: tier },
+        ]);
+        expect(
+          captured.value?.headers["x-openrouter-experiment-ids"]
+        ).toBeUndefined();
+      }
+    );
+  });
 
   it("leaves the Jev default unset and does not send Auto Router-only controls", async () => {
     const captured: { value: CapturedRequest | undefined } = {
