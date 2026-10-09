@@ -157,12 +157,9 @@ describe("MMMU Pro mirrored media", () => {
     const committed = mmmuProMediaManifestFor(MMMU_PRO_DEFAULT_REVISION);
     expect(committed).toBeDefined();
     expect(committed!.revision).toBe(MMMU_PRO_DEFAULT_REVISION);
-    expect(committed!.imageById.size + committed!.excludedIds.size).toBe(1730);
-    expect([...committed!.excludedIds].sort()).toEqual([
-      "test_Chemistry_240",
-      "validation_Finance_5",
-    ]);
-    const urlPrefix = "https://mmmu-pro-mirror.openrouter.ai/mmmu-pro/";
+    expect(committed!.imageById.size).toBe(1730);
+    expect(committed!.excludedIds.size).toBe(0);
+    const urlPrefix = `https://mmmu-pro-mirror.openrouter.ai/mmmu-pro/${MMMU_PRO_DEFAULT_REVISION}/`;
     expect(
       [...committed!.imageById.values()].every((entry) =>
         entry.url.startsWith(urlPrefix)
