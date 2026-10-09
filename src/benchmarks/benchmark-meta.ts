@@ -16,6 +16,11 @@ export const MMLU_PRO_META = {
   defaultEpochs: 1,
 } as const satisfies BenchmarkMeta;
 
+export const MMMU_PRO_VISION_META = {
+  id: "mmmu_pro_vision",
+  defaultEpochs: 1,
+} as const satisfies BenchmarkMeta;
+
 export const TAU_BENCH_AIRLINE_META = {
   id: "tau_bench_verified_airline",
   defaultEpochs: 1,
@@ -67,6 +72,7 @@ export const VGI_BENCH_META = {
 const BENCHMARK_META: Readonly<Record<string, BenchmarkMeta>> = {
   [GPQA_META.id]: GPQA_META,
   [MMLU_PRO_META.id]: MMLU_PRO_META,
+  [MMMU_PRO_VISION_META.id]: MMMU_PRO_VISION_META,
   [TAU_BENCH_AIRLINE_META.id]: TAU_BENCH_AIRLINE_META,
   [DRACO_META.id]: DRACO_META,
   [IFSTRUCT_META.id]: IFSTRUCT_META,

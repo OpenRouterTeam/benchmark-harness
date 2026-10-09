@@ -75,6 +75,7 @@ describe("bench-harness CLI", () => {
         panelConfig: undefined,
         artifactDir: undefined,
         endpointId: undefined,
+        imageDetail: undefined,
         costTier: args.costTier,
         reasoningEffort: args.reasoningEffort,
       })
@@ -91,6 +92,7 @@ describe("bench-harness CLI", () => {
     for (const benchmarkId of [
       "gpqa_diamond",
       "mmlu_pro",
+      "mmmu_pro_vision",
       "ifstruct",
       "toolcall_formats",
     ] as const) {
@@ -100,6 +102,7 @@ describe("bench-harness CLI", () => {
         panelConfig: undefined,
         artifactDir: undefined,
         endpointId: undefined,
+        imageDetail: undefined,
         reasoningEffort: "low",
       });
       expect(config).toMatchObject({ reasoningEffort: "low" });
@@ -122,6 +125,7 @@ describe("bench-harness CLI", () => {
       panelConfig,
       artifactDir: undefined,
       endpointId: undefined,
+      imageDetail: undefined,
       reasoningEffort: args.reasoningEffort,
     });
     expect(config).toEqual({
@@ -129,6 +133,23 @@ describe("bench-harness CLI", () => {
       model: "openrouter/switchyard",
       models: ["openai/gpt-4.1-nano", "anthropic/claude-sonnet-4.5"],
       reasoningEffort: "high",
+    });
+  });
+
+  it("keeps --image-detail when mmmu_pro_vision takes a solver config", () => {
+    const config = buildBenchmarkConfig({
+      benchmarkId: "mmmu_pro_vision",
+      model: "openrouter/switchyard",
+      panelConfig: { models: ["openai/gpt-4.1-nano", "openai/gpt-5"] },
+      artifactDir: undefined,
+      endpointId: undefined,
+      imageDetail: "high",
+      reasoningEffort: "low",
+    });
+    expect(config).toMatchObject({
+      benchmarkId: "mmmu_pro_vision",
+      imageDetail: "high",
+      models: ["openai/gpt-4.1-nano", "openai/gpt-5"],
     });
   });
 
@@ -140,10 +161,12 @@ describe("bench-harness CLI", () => {
         panelConfig: { bogus: true },
         artifactDir: undefined,
         endpointId: undefined,
+        imageDetail: undefined,
         reasoningEffort: "low",
       })
     ).toThrow("Unknown gpqa_diamond solver-config option(s): bogus");
   });
+
 });
 
 describe("resolveSessionId", () => {

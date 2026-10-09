@@ -1,0 +1,210 @@
+import type { Layer } from "effect/Layer";
+
+import { HfImageSchema, makeHfDatasetLayer } from "../datasets/huggingface";
+import type { ImageDetail } from "../harness/constants";
+import type { ContentPart, Sample } from "../harness/core";
+import type { Dataset as DatasetTag } from "../harness/dataset";
+import type { GenerateConfig, ModelService } from "../harness/model";
+import type { SolverService } from "../harness/solver";
+import { chain, generate, systemMessage } from "../harness/solver";
+import { Either } from "../internal/either";
+import { definedValues, isDefinedAndNotNull } from "../internal/guards";
+import { parseSchema } from "../internal/zod";
+import type { RetryConfig } from "../runtime/retry";
+import type {
+  InferenceOverride,
+  GeminiMediaResolution,
+  MmmuProVisionBenchmarkConfig,
+} from "./benchmark-config";
+import { MMMU_PRO_VISION_META } from "./benchmark-meta";
+import { defineSingleTurnBenchmark } from "./define-single-turn-benchmark";
+import type { MmmuProMediaManifest } from "./mmmu-pro-media-manifest";
+import {
+  MMMU_PRO_DATASET_PATH,
+  MMMU_PRO_DEFAULT_REVISION,
+  MMMU_PRO_SPLIT,
+  MMMU_PRO_VISION_SUBSET,
+  mirroredMmmuProImage,
+  mmmuProMediaManifestFor,
+} from "./mmmu-pro-media-manifest";
+import { MMMU_SYSTEM_MESSAGE, parseOptions } from "./mmmu-shared";
+import { buildDynamicMcqPrompt } from "./scorers/mcq/dynamic-prompt";
+import { mcqScorer } from "./scorers/mcq/scorer";
+import type { Benchmark } from "./types";
+
+const DEFAULT_QUESTION =
+  "Use the image to answer the question. Choose the best option.";
+
+function asString(value: unknown, fallback: string): string {
+  return typeof value === "string" ? value : fallback;
+}
+
+export function mmmuProVisionRecordToSample(
+  record: Readonly<Record<string, unknown>>,
+  index: number,
+  imageDetail?: ImageDetail,
+  mediaManifest?: MmmuProMediaManifest
+): Sample {
+  const id = asString(record["id"], `mmmu-pro-vision-${index}`);
+  const questionRaw = record["question"];
+  const question =
+    typeof questionRaw === "string" && questionRaw.trim().length > 0
+      ? questionRaw.trim()
+      : DEFAULT_QUESTION;
+  const answer = asString(record["answer"], "");
+  const options = parseOptions(record["options"]);
+  const input =
+    options.length > 0
+      ? buildDynamicMcqPrompt(question, options)
+      : `${question}\n\nAnswer succinctly.`;
+  const contentParts: ContentPart[] = [{ type: "text", text: input }];
+  let numImages = 0;
+  const parsedImage = parseSchema(HfImageSchema, record["image"]);
+  if (mediaManifest !== undefined && Either.isLeft(parsedImage)) {
+    throw new TypeError(`MMMU Pro image ${id} is missing or invalid`);
+  }
+  if (Either.isRight(parsedImage)) {
+    contentParts.push({
+      type: "image_url",
+      imageUrl: definedValues({
+        url:
+          mediaManifest === undefined
+            ? parsedImage.right.src
+            : mirroredMmmuProImage(mediaManifest, id, parsedImage.right.src),
+        detail: imageDetail,
+      }),
+    });
+    numImages++;
+  }
+  for (let i = 1; i <= 7; i++) {
+    const imgField = record[`image_${i}`];
+    if (!isDefinedAndNotNull(imgField)) {
+      continue;
+    }
+    const parsed = parseSchema(HfImageSchema, imgField);
+    if (Either.isLeft(parsed)) {
+      continue;
+    }
+    contentParts.push({
+      type: "image_url",
+      imageUrl: definedValues({
+        url: parsed.right.src,
+        detail: imageDetail,
+      }),
+    });
+    numImages++;
+  }
+  if (mediaManifest !== undefined && numImages !== 1) {
+    throw new TypeError(`MMMU Pro vision expected one image for ${id}`);
+  }
+  return {
+    id,
+    input,
+    target: { text: answer },
+    contentParts: numImages > 0 ? contentParts : undefined,
+    metadata: {
+      question_type: "multiple-choice",
+      subject: record["subject"] ?? "",
+      topic_difficulty: record["topic_difficulty"] ?? "",
+      answer,
+      num_images: numImages,
+      ...definedValues({
+        media_manifest_hash: mediaManifest?.manifestHash,
+        dataset_revision: mediaManifest?.revision,
+      }),
+    },
+  };
+}
+
+interface MmmuProVisionDatasetOpts {
+  readonly imageDetail?: ImageDetail;
+  readonly retry?: RetryConfig;
+  readonly revision?: string;
+}
+
+export function makeMmmuProVisionDatasetLayer(
+  opts?: MmmuProVisionDatasetOpts
+): Layer<DatasetTag> {
+  const revision = opts?.revision ?? MMMU_PRO_DEFAULT_REVISION;
+  const mediaManifest = mmmuProMediaManifestFor(revision);
+  return makeHfDatasetLayer({
+    dataset: MMMU_PRO_DATASET_PATH,
+    config: MMMU_PRO_VISION_SUBSET,
+    split: MMMU_PRO_SPLIT,
+    revision,
+    recordToSample: (record, idx) =>
+      mmmuProVisionRecordToSample(
+        record,
+        idx,
+        opts?.imageDetail,
+        mediaManifest
+      ),
+    ...definedValues({ retry: opts?.retry }),
+  });
+}
+
+export function mmmuProVisionSolver(
+  model: ModelService,
+  opts: {
+    readonly endpointId?: string;
+    readonly inference: InferenceOverride;
+    readonly mediaResolution?: GeminiMediaResolution;
+  }
+): SolverService {
+  const config: GenerateConfig = {
+    temperature: 0,
+    ...definedValues(opts.inference),
+    ...definedValues({
+      endpointId: opts.endpointId,
+      extraBody:
+        opts.mediaResolution !== undefined
+          ? { media_resolution: opts.mediaResolution }
+          : undefined,
+    }),
+  };
+  return chain(systemMessage(MMMU_SYSTEM_MESSAGE), generate(model, config));
+}
+
+export const MMMU_PRO_VISION_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
+  id: "mmmu_pro_vision",
+  temperature: 0,
+  defaultEpochs: MMMU_PRO_VISION_META.defaultEpochs,
+  isConfig: (config): config is MmmuProVisionBenchmarkConfig =>
+    config.benchmarkId === "mmmu_pro_vision",
+  makeDatasetLayer: (retryConfig) =>
+    makeMmmuProVisionDatasetLayer(
+      retryConfig !== undefined ? { retry: retryConfig } : undefined
+    ),
+  makeDatasetLayerForConfig: (config, retryConfig) =>
+    makeMmmuProVisionDatasetLayer(
+      definedValues({
+        imageDetail: config.imageDetail,
+        revision: config.datasetRevision,
+        retry: retryConfig,
+      })
+    ),
+  scorer: mcqScorer,
+  makeSolver: (model, config) =>
+    mmmuProVisionSolver(
+      model,
+      definedValues({
+        endpointId: config.endpointId,
+        mediaResolution: config.mediaResolution,
+        inference: {
+          temperature: config.temperature,
+          maxTokens: config.maxTokens,
+          reasoningEffort: config.reasoningEffort,
+          timeoutMs: config.timeoutMs,
+          sort: config.sort,
+          providerOnly: config.providerOnly,
+          providerIgnore: config.providerIgnore,
+          allowFallbacks: config.allowFallbacks,
+          cloudflareVersion: config.cloudflareVersion,
+          experimentIds: config.experimentIds,
+          costTier: config.costTier,
+          costQualityTradeoff: config.costQualityTradeoff,
+          switchyardAlgorithm: config.switchyardAlgorithm,
+        },
+      })
+    ),
+});

@@ -1,16 +1,27 @@
 import {
   COST_TIERS,
+  IMAGE_DETAIL_VALUES,
   REASONING_EFFORTS,
   stripVariantSuffix,
   SWITCHYARD_ALGORITHMS,
   VIDEO_PROCESSING_MODES,
 } from "../harness/constants";
 import { ProviderSort } from "../internal/enums";
+import type { ValueOf } from "../internal/guards";
 import { z, zDefaultedText } from "../internal/zod";
 import { SWITCHYARD_MODEL } from "../providers/switchyard-router-plugin";
 import { TAU_BENCH_AIRLINE_META } from "./benchmark-meta";
 import { DracoPanelConfigSchema } from "./draco/schemas";
 import { SearchLaneConfigSchema } from "./search/core/config";
+
+export const GEMINI_MEDIA_RESOLUTIONS = [
+  "MEDIA_RESOLUTION_UNSPECIFIED",
+  "MEDIA_RESOLUTION_LOW",
+  "MEDIA_RESOLUTION_MEDIUM",
+  "MEDIA_RESOLUTION_HIGH",
+] as const;
+
+export type GeminiMediaResolution = ValueOf<typeof GEMINI_MEDIA_RESOLUTIONS>;
 
 export const InferenceOverrideSchema = z.object({
   temperature: z.number().optional(),
@@ -87,6 +98,22 @@ export const TauBenchAirlineConfigSchema = z.object({
 });
 
 export type TauBenchAirlineConfig = z.infer<typeof TauBenchAirlineConfigSchema>;
+
+export const MmmuProVisionOptionsSchema = z.object({
+  imageDetail: z.enum(IMAGE_DETAIL_VALUES).optional(),
+  mediaResolution: z.enum(GEMINI_MEDIA_RESOLUTIONS).optional(),
+  datasetRevision: z.string().optional(),
+});
+
+export const MmmuProVisionBenchmarkConfigSchema = z.object({
+  benchmarkId: z.literal("mmmu_pro_vision"),
+  ...ModelBenchmarkBaseSchema.shape,
+  ...MmmuProVisionOptionsSchema.shape,
+});
+
+export type MmmuProVisionBenchmarkConfig = z.infer<
+  typeof MmmuProVisionBenchmarkConfigSchema
+>;
 
 export const DracoBenchmarkConfigSchema = z.object({
   benchmarkId: z.literal("draco"),
@@ -193,6 +220,7 @@ export const KeplerBenchmarkRunConfigSchema = z.discriminatedUnion(
     GpqaBenchmarkConfigSchema,
     MmluProBenchmarkConfigSchema,
     TauBenchAirlineConfigSchema,
+    MmmuProVisionBenchmarkConfigSchema,
     DracoBenchmarkConfigSchema,
     IfStructBenchmarkConfigSchema,
     ToolCallFormatsBenchmarkConfigSchema,
@@ -221,6 +249,7 @@ export const BENCHMARK_OPTIONS_SCHEMAS = {
   gpqa_diamond: GpqaOptionsSchema,
   mmlu_pro: MmluProOptionsSchema,
   tau_bench_verified_airline: TauBenchOptionsSchema,
+  mmmu_pro_vision: MmmuProVisionOptionsSchema,
   ifstruct: IfStructOptionsSchema,
   toolcall_formats: ToolCallFormatsOptionsSchema,
   search_browsecomp: SearchBenchmarkOptionsSchema,
