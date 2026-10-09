@@ -128,6 +128,7 @@ export async function mirrorMmmuProMedia(options: MirrorMmmuProOptions) {
     revision,
     manifestHash: hashManifestEntries(images),
     images,
+    excluded: [],
   };
   buildMmmuProMediaManifest(manifest);
   if (!uploadOptions.dryRun) {
