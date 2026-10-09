@@ -130,22 +130,31 @@ describe("buildRequestBody", () => {
 });
 
 describe("toolCallSchemaFuzzSolver timeouts", () => {
-  it("fails the sample with a 408 ModelError instead of a SolverError", async () => {
+  const neverResponds = HttpClient.make(() => never);
+  const stallsBody = HttpClient.make((request) =>
+    succeed(
+      HttpClientResponse.fromWeb(
+        request,
+        new Response(new ReadableStream(), { status: 200 })
+      )
+    )
+  );
+  it.each([
+    ["never responds", neverResponds],
+    ["sends headers but stalls the body", stallsBody],
+  ])("fails with a 408 ModelError when the server %s", async (_, client) => {
     const entry = ENTRY;
     assert(entry !== undefined);
-    const solver = toolCallSchemaFuzzSolver(
-      HttpClient.make(() => never),
-      {
-        options: {
-          model: "test-model",
-          apiKey: "test-key",
-          reasoningEffort: "none",
-          timeoutMs: 10,
-          retry: { maxRetries: 0 },
-        },
-        cases: caseLookup([entry]),
-      }
-    );
+    const solver = toolCallSchemaFuzzSolver(client, {
+      options: {
+        model: "test-model",
+        apiKey: "test-key",
+        reasoningEffort: "none",
+        timeoutMs: 10,
+        retry: { maxRetries: 0 },
+      },
+      cases: caseLookup([entry]),
+    });
     const exit = await runPromiseExit(
       solver(
         initialTaskState({
