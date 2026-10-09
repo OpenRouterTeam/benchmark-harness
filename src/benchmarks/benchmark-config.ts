@@ -33,6 +33,7 @@ import {
   DEFAULT_TERMINAL_BENCH_AGENT,
   TERMINAL_BENCH_AGENTS,
 } from "./terminal-bench/schema";
+import { ToolCallSchemaFuzzGenerator } from "./toolcall-schema-fuzz/options";
 import { WandrOptionsSchema } from "./wandr/schema";
 
 export const GEMINI_MEDIA_RESOLUTIONS = [
@@ -213,6 +214,22 @@ export type ToolCallFormatsBenchmarkConfig = z.infer<
   typeof ToolCallFormatsBenchmarkConfigSchema
 >;
 
+export const ToolCallSchemaFuzzOptionsSchema = z.object({
+  generator: z
+    .enum(ToolCallSchemaFuzzGenerator)
+    .default(ToolCallSchemaFuzzGenerator.Realistic),
+});
+
+export const ToolCallSchemaFuzzBenchmarkConfigSchema = z.object({
+  benchmarkId: z.literal("toolcall_schema_fuzz"),
+  ...FixedTemperatureBenchmarkBaseSchema.shape,
+  ...ToolCallSchemaFuzzOptionsSchema.shape,
+});
+
+export type ToolCallSchemaFuzzBenchmarkConfig = z.infer<
+  typeof ToolCallSchemaFuzzBenchmarkConfigSchema
+>;
+
 const AgenticOptionsSchema = z.object({
   taskSubset: z.array(z.string()).optional(),
   maxAgentTimeoutSec: z.number().positive().optional(),
@@ -358,6 +375,7 @@ export const KeplerBenchmarkRunConfigSchema = z.discriminatedUnion(
     DracoBenchmarkConfigSchema,
     IfStructBenchmarkConfigSchema,
     ToolCallFormatsBenchmarkConfigSchema,
+    ToolCallSchemaFuzzBenchmarkConfigSchema,
     SweAtlasQaConfigSchema,
     SweAtlasTwConfigSchema,
     SweAtlasRfConfigSchema,
@@ -393,6 +411,7 @@ export const BENCHMARK_OPTIONS_SCHEMAS = {
   terminal_bench: TerminalBenchOptionsSchema,
   ifstruct: IfStructOptionsSchema,
   toolcall_formats: ToolCallFormatsOptionsSchema,
+  toolcall_schema_fuzz: ToolCallSchemaFuzzOptionsSchema,
   swe_atlas_qa: SweAtlasOptionsSchema,
   swe_atlas_tw: SweAtlasOptionsSchema,
   swe_atlas_rf: SweAtlasOptionsSchema,
