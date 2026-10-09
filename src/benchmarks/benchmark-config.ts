@@ -26,6 +26,12 @@ import {
 } from "./benchmark-meta";
 import { DEFAULT_STEP_LIMIT as DEEP_SWE_DEFAULT_STEP_LIMIT } from "./deep-swe/schema";
 import { DracoPanelConfigSchema } from "./draco/schemas";
+import {
+  DEFAULT_RECOVERY_BENCH_MESSAGE_MODE,
+  DEFAULT_REPLAY_COMMAND_TIMEOUT_SEC,
+  MAX_RECOVERY_INSTRUCTION_BYTES,
+  RECOVERY_BENCH_MESSAGE_MODES,
+} from "./recovery-bench/schema";
 import { SearchLaneConfigSchema } from "./search/core/config";
 import { DEFAULT_JUDGE_MODEL, DEFAULT_STEP_LIMIT } from "./swe-atlas/schema";
 import { BankingRetrievalConfigSchema } from "./tau3-bench-banking/retrieval-config";
@@ -179,6 +185,29 @@ export const TerminalBenchConfigSchema = z.object({
 });
 
 export type TerminalBenchConfig = z.infer<typeof TerminalBenchConfigSchema>;
+
+export const RecoveryBenchOptionsSchema = z.object({
+  ...TerminalBenchOptionsSchema.shape,
+  messageMode: z
+    .enum(RECOVERY_BENCH_MESSAGE_MODES)
+    .default(DEFAULT_RECOVERY_BENCH_MESSAGE_MODE),
+  replayCommandTimeoutSec: z
+    .number()
+    .positive()
+    .default(DEFAULT_REPLAY_COMMAND_TIMEOUT_SEC),
+  maxInstructionBytes: zInt()
+    .positive()
+    .default(MAX_RECOVERY_INSTRUCTION_BYTES),
+  summaryModel: z.string().min(1).optional(),
+});
+
+export const RecoveryBenchConfigSchema = z.object({
+  benchmarkId: z.literal("recovery_bench"),
+  ...ModelBenchmarkBaseSchema.shape,
+  ...RecoveryBenchOptionsSchema.shape,
+});
+
+export type RecoveryBenchConfig = z.infer<typeof RecoveryBenchConfigSchema>;
 
 export const DracoBenchmarkConfigSchema = z.object({
   benchmarkId: z.literal("draco"),
@@ -355,6 +384,7 @@ export const KeplerBenchmarkRunConfigSchema = z.discriminatedUnion(
     Tau3BenchBankingConfigSchema,
     MmmuProVisionBenchmarkConfigSchema,
     TerminalBenchConfigSchema,
+    RecoveryBenchConfigSchema,
     DracoBenchmarkConfigSchema,
     IfStructBenchmarkConfigSchema,
     ToolCallFormatsBenchmarkConfigSchema,
@@ -391,6 +421,7 @@ export const BENCHMARK_OPTIONS_SCHEMAS = {
   tau3_bench_banking: Tau3BenchBankingOptionsSchema,
   mmmu_pro_vision: MmmuProVisionOptionsSchema,
   terminal_bench: TerminalBenchOptionsSchema,
+  recovery_bench: RecoveryBenchOptionsSchema,
   ifstruct: IfStructOptionsSchema,
   toolcall_formats: ToolCallFormatsOptionsSchema,
   swe_atlas_qa: SweAtlasOptionsSchema,

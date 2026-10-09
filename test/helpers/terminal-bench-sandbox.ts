@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 import type { Layer } from "effect/Layer";
 
 import type { CreateSessionInput, ExecResult } from "../../src/sandbox/session";
@@ -24,6 +26,9 @@ export interface FakeTerminalBenchBehavior {
   readonly recoveredLog?: string;
   readonly oriInstallScripts?: string[];
   readonly oriInstallExitCode?: number;
+  readonly uploadedFiles?: { remotePath: string; content: string }[];
+  readonly execOverride?: (argv: readonly string[]) => ExecResult | undefined;
+  readonly onDestroy?: () => void;
 }
 
 const AGENT_COMMAND_MARKERS = [
@@ -50,6 +55,13 @@ export function makeTerminalBenchFakeSandboxLayer(
     onUploadDir: (localDir, remoteDir) => {
       behavior.uploadedDirs?.push({ localDir, remoteDir });
     },
+    onDestroy: behavior.onDestroy,
+    onUploadFile: (localPath, remotePath) => {
+      behavior.uploadedFiles?.push({
+        remotePath,
+        content: readFileSync(localPath, "utf8"),
+      });
+    },
     execHandler: (argv, env, timeoutMs): ExecResult => {
       const joined = argv.join(" ");
       if (joined.includes(ORI_INSTALL_MARKER)) {
@@ -61,6 +73,10 @@ export function makeTerminalBenchFakeSandboxLayer(
         };
       }
       behavior.execCalls?.push({ argv: [...argv], env: { ...env }, timeoutMs });
+      const override = behavior.execOverride?.(argv);
+      if (override !== undefined) {
+        return override;
+      }
       if (joined.startsWith("cat /logs/agent/")) {
         return {
           stdout: behavior.recoveredLog ?? "",
