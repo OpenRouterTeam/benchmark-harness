@@ -144,7 +144,6 @@ describe("bench-harness CLI", () => {
       })
     ).toThrow("Unknown gpqa_diamond solver-config option(s): bogus");
   });
-
 });
 
 describe("resolveSessionId", () => {
