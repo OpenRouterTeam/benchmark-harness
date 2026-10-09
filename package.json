@@ -27,6 +27,7 @@
     "./constants": "./src/harness/constants.ts",
     "./dataset": "./src/harness/dataset.ts",
     "./datasets/huggingface": "./src/datasets/huggingface.ts",
+    "./datasets/toolcall-schema-fuzz/wordings.json": "./src/datasets/toolcall-schema-fuzz/wordings.json",
     "./model": "./src/harness/model.ts",
     "./metric": "./src/harness/metric.ts",
     "./providers/openrouter-model": "./src/providers/openrouter-model.ts",
