@@ -64,7 +64,7 @@ function makeSweAtlasLayer(
         benchmarkId: benchmarkConfig.benchmarkId,
         harness: getOriHarness(benchmarkConfig.agent),
         model: benchmarkConfig.model,
-        costTier: undefined,
+        costTier: benchmarkConfig.costTier,
         costQualityTradeoff: undefined,
         pinModel: undefined,
         switchyardAlgorithm: benchmarkConfig.switchyardAlgorithm,

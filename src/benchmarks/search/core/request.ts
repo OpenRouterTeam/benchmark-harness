@@ -8,11 +8,10 @@ import type {
   WebSearchServerToolOpenRouter,
 } from "@openrouter/sdk/models";
 
-import type { CostTier, ReasoningEffort } from "../../../harness/constants";
+import type { ReasoningEffort } from "../../../harness/constants";
 import { reasoningRequestFor } from "../../../harness/constants";
 import type { ProviderSort } from "../../../internal/enums";
 import { definedValues } from "../../../internal/guards";
-import { buildAutoRouterPlugin } from "../../../providers/auto-router-plugin";
 import { responsesMessage } from "../../../providers/responses-model";
 import { BENCHMARK_LEAK_EXCLUDED_DOMAINS } from "./blocklist";
 import type { SearchLaneConfig, WebFetchConfig } from "./config";
@@ -35,8 +34,6 @@ export interface SearchRequestOptions {
   readonly providerOnly?: readonly string[];
   readonly providerIgnore?: readonly string[];
   readonly allowFallbacks?: boolean;
-  readonly costQualityTradeoff?: number;
-  readonly costTier?: CostTier;
 }
 
 function toSearchToolParams(
@@ -116,10 +113,6 @@ export function buildSearchRequestBody(
   opts: SearchRequestOptions
 ): ResponsesRequest {
   const { lane } = opts;
-  const autoRouterPlugin = buildAutoRouterPlugin(
-    opts.model === "openrouter/auto" ? opts.model : undefined,
-    opts
-  );
   const base: ResponsesRequest = {
     model: opts.model,
     instructions: opts.instructions,
@@ -155,18 +148,13 @@ export function buildSearchRequestBody(
     }),
   };
   if (lane.webSearch === "plugin") {
-    const webPlugins = [
-      ...(autoRouterPlugin === undefined ? [] : [autoRouterPlugin]),
-      buildWebPlugin(lane),
-    ];
-    return { ...base, plugins: webPlugins };
+    return { ...base, plugins: [buildWebPlugin(lane)] };
   }
   return {
     ...base,
     tools: [...buildServerTools(lane)],
     ...definedValues({
       maxToolCalls: lane.maxAgentTurns,
-      plugins: autoRouterPlugin !== undefined ? [autoRouterPlugin] : undefined,
     }),
   };
 }

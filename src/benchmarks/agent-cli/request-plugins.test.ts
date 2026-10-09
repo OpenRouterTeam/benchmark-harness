@@ -14,6 +14,39 @@ const BASE = {
 } as const;
 
 describe("sandboxAgentRequestPlugins", () => {
+  it.each(["low", "medium", "high"] as const)(
+    "forwards Jev %s to pi without Auto Router-only options",
+    (tier) => {
+      expect(
+        sandboxAgentRequestPlugins({
+          ...BASE,
+          harness: getOriHarness("pi"),
+          model: "typesafe/jev-router:nitro",
+          costTier: tier,
+          costQualityTradeoff: 8,
+          pinModel: true,
+        })
+      ).toEqual([{ id: "jev-router", cost_tier: tier }]);
+    }
+  );
+
+  it.each(["claude", "prime-agent", "omp"] as const)(
+    "rejects a Jev tier that %s cannot forward",
+    (agent) => {
+      const result = sandboxAgentRequestPlugins({
+        ...BASE,
+        harness: getOriHarness(agent),
+        model: "typesafe/jev-router",
+        costTier: "high",
+      });
+      expect(result).toEqual(
+        new Error(
+          `terminal_bench cannot use costTier: the ${agent} agent calls the model from inside the sandbox and does not forward the jev-router plugin (supported agents: pi)`
+        )
+      );
+    }
+  );
+
   it("builds the auto-router plugin in wire form for pi", () => {
     for (const costTier of ["low", "medium", "high"] as const) {
       expect(

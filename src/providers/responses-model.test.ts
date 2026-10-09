@@ -415,6 +415,8 @@ describe("responses-model", () => {
   for (const [model, pluginId] of [
     ["openrouter/auto", "auto-router"],
     ["openrouter/auto-beta", "auto-beta-router"],
+    ["typesafe/jev-router", "jev-router"],
+    ["typesafe/jev-router:nitro", "jev-router"],
   ] as const) {
     it(`sends cost_tier on the ${pluginId} plugin`, async () => {
       const captured: {
@@ -437,6 +439,107 @@ describe("responses-model", () => {
       ]);
     });
   }
+  describe.each([
+    ["openrouter/auto", "auto-router"],
+    ["openrouter/auto-beta", "auto-beta-router"],
+    ["typesafe/jev-router", "jev-router"],
+  ] as const)("%s cost tiers", (model, pluginId) => {
+    it.each(["low", "medium", "high"] as const)(
+      "preserves %s on subsequent turns without experiment headers",
+      async (tier) => {
+        const captured: { value: CapturedRequest | undefined } = {
+          value: undefined,
+        };
+        restore = installFetchStub(await readStreamFixture(), 200, captured);
+        const layer = makeResponsesModelLayer({
+          model,
+          apiKey: "sk-test",
+        });
+        const exit = await runPromiseExit(
+          gen(function* run() {
+            const modelService = yield* ResponsesModel;
+            const config = {
+              costTier: tier,
+              reasoningEffort: "auto",
+              extraBody: { plugins: [{ id: "web" }] },
+            } as const;
+            yield* modelService.generate(
+              [responsesMessage("user", "first turn")],
+              config
+            );
+            expect(captured.value?.body["plugins"]).toEqual([
+              { id: "web" },
+              { id: pluginId, cost_tier: tier },
+            ]);
+            return yield* modelService.generate(
+              [responsesMessage("user", "continue")],
+              config
+            );
+          }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+        );
+        assertSuccess(exit);
+        expect(captured.value?.body["plugins"]).toEqual([
+          { id: "web" },
+          { id: pluginId, cost_tier: tier },
+        ]);
+        expect(
+          captured.value?.headers["x-openrouter-experiment-ids"]
+        ).toBeUndefined();
+      }
+    );
+  });
+
+  it.each([
+    ["openrouter/auto", "auto-router"],
+    ["openrouter/auto-beta", "auto-beta-router"],
+    ["typesafe/jev-router", "jev-router"],
+  ] as const)(
+    "preserves an explicit %s plugin override without duplicates",
+    async (model, pluginId) => {
+      const captured: { value: CapturedRequest | undefined } = {
+        value: undefined,
+      };
+      restore = installFetchStub(await readStreamFixture(), 200, captured);
+      const layer = makeResponsesModelLayer({ model, apiKey: "sk-test" });
+      const plugins = [{ id: "web" }, { id: pluginId, cost_tier: "low" }];
+      const exit = await runPromiseExit(
+        gen(function* run() {
+          const modelService = yield* ResponsesModel;
+          return yield* modelService.generate([], {
+            costTier: "high",
+            reasoningEffort: "auto",
+            extraBody: { plugins },
+          });
+        }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      );
+      assertSuccess(exit);
+      expect(captured.value?.body["plugins"]).toEqual(plugins);
+    }
+  );
+
+  it("leaves the Jev default unset and does not send Auto Router-only controls", async () => {
+    const captured: { value: CapturedRequest | undefined } = {
+      value: undefined,
+    };
+    restore = installFetchStub(await readStreamFixture(), 200, captured);
+    const layer = makeResponsesModelLayer({
+      model: "typesafe/jev-router",
+      apiKey: "sk-test",
+    });
+    const exit = await runPromiseExit(
+      gen(function* run() {
+        const modelService = yield* ResponsesModel;
+        return yield* modelService.generate([], {
+          reasoningEffort: "auto",
+          costQualityTradeoff: 8,
+          pinModel: true,
+        });
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    assertSuccess(exit);
+    expect(captured.value?.body["plugins"]).toBeUndefined();
+  });
+
   it("sends cost_tier alongside the deprecated numeric tradeoff", async () => {
     const captured: {
       value: CapturedRequest | undefined;

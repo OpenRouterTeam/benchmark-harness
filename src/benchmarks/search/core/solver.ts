@@ -20,7 +20,6 @@ import type {
 } from "../../../harness/constants";
 import type { ResponseItem, TaskState } from "../../../harness/core";
 import { MessageRole, ModelError } from "../../../harness/core";
-import { stripVariantSuffix } from "../../../harness/model";
 import type { ProgressReporterService } from "../../../harness/progress";
 import { ProgressReporter } from "../../../harness/progress";
 import type { SolverService } from "../../../harness/solver";
@@ -41,7 +40,7 @@ import {
   toModelError,
   usageFromResponses,
 } from "../../../providers/responses-client";
-import { buildSwitchyardRouterPlugin } from "../../../providers/switchyard-router-plugin";
+import { buildRouterPlugin } from "../../../providers/router-plugin";
 import type { RetryConfig } from "../../../runtime/retry";
 import { rateLimitRetrySchedule, retrySalted } from "../../../runtime/retry";
 import type { SearchLaneConfig } from "./config";
@@ -58,14 +57,14 @@ function pluginsInWireShape(body: ResponsesRequest): readonly unknown[] {
   return isUnknownArray(wirePlugins) ? wirePlugins : [];
 }
 
-function switchyardExtraBody(
+function routerExtraBody(
   body: ResponsesRequest,
-  opts: Pick<SearchSolverOptions, "model" | "switchyardAlgorithm">
+  opts: Pick<
+    SearchSolverOptions,
+    "model" | "costTier" | "costQualityTradeoff" | "switchyardAlgorithm"
+  >
 ): Readonly<Record<string, unknown>> | undefined {
-  const plugin = buildSwitchyardRouterPlugin(
-    stripVariantSuffix(opts.model),
-    opts.switchyardAlgorithm
-  );
+  const plugin = buildRouterPlugin(opts.model, opts);
   if (plugin === undefined) {
     return undefined;
   }
@@ -131,11 +130,9 @@ export function searchSolver(
           providerOnly: opts.providerOnly,
           providerIgnore: opts.providerIgnore,
           allowFallbacks: opts.allowFallbacks,
-          costQualityTradeoff: opts.costQualityTradeoff,
-          costTier: opts.costTier,
         })
       );
-      const extraBody = switchyardExtraBody(body, opts);
+      const extraBody = routerExtraBody(body, opts);
       const extraHeaders =
         opts.endpointId === undefined &&
         !opts.lane.providerFlags?.length &&
