@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { PassThrough } from "node:stream";
 
-import { promise, succeed } from "effect/Effect";
+import { die, fail, promise, succeed } from "effect/Effect";
 import { fail as layerFail, succeed as layerSucceed } from "effect/Layer";
 import { fromEffect, fromIterable } from "effect/Stream";
 
@@ -12,6 +12,8 @@ import type { Benchmark } from "../benchmarks/types";
 import { makeGcsCacheStore } from "../datasets/cache-store";
 import { Dataset } from "../harness/dataset";
 import { assertLeft, assertRight } from "../internal/testing";
+import { ArtifactUploadError } from "../results/artifacts";
+import type { ResultStoreService } from "../results/result-store";
 import {
   datasetSizeById,
   runBenchmarkById,
@@ -307,5 +309,55 @@ describe("benchmark runner by id", () => {
     assertRight(defaulted);
     expect(configured.right).toBe(80);
     expect(defaulted.right).toBe(100);
+  });
+
+  describe("result store failures", () => {
+    const benchmark = defineSingleTurnBenchmark({
+      id: "empty_injected_benchmark",
+      temperature: 0,
+      defaultEpochs: 1,
+      isConfig: (config): config is InjectedBenchmarkRunConfig =>
+        config.benchmarkId === "empty_injected_benchmark",
+      makeDatasetLayer: () =>
+        layerSucceed(Dataset, {
+          stream: () => fromIterable([]),
+          size: succeed(0),
+        }),
+      scorer: gpqaScorer,
+      makeSolver: (model) =>
+        gpqaSolver(model, { inference: { reasoningEffort: "medium" } }),
+    });
+
+    function runWithStore(resultStore: ResultStoreService) {
+      return runBenchmarkById({
+        benchmarkId: benchmark.id,
+        injectedBenchmark: benchmark,
+        apiKey: "unused",
+        benchmarkConfig: { ...INJECTED_CONFIG, benchmarkId: benchmark.id },
+        epochs: 1,
+        maxConcurrency: 1,
+        sessionId: "test",
+        resultStore,
+      });
+    }
+
+    it("fails the run when artifact uploads are exhausted", async () => {
+      const result = await runWithStore({
+        write: () =>
+          fail(new ArtifactUploadError({ message: "Failed to upload a.png" })),
+      });
+
+      assertLeft(result);
+      expect(result.left).toBe("Failed to upload a.png");
+    });
+
+    it("still returns the run when the parquet write throws", async () => {
+      const result = await runWithStore({
+        write: () => die(new Error("disk full")),
+      });
+
+      assertRight(result);
+      expect(result.right.resultsPath).toBeNull();
+    });
   });
 });
