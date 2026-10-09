@@ -454,16 +454,6 @@ export function buildBenchmarkConfig(opts: {
         reasoningEffort,
       });
     }
-    case "tau3_bench_banking": {
-      return buildSchemaValidatedConfig({
-        benchmarkId: "tau3_bench_banking",
-        model: requireModel("tau3_bench_banking", model),
-        endpointId,
-        panelConfig,
-        costTier,
-        reasoningEffort,
-      });
-    }
     case "draco": {
       const panel = parseSchema(DracoPanelConfigSchema, panelConfig);
       if (Either.isLeft(panel)) {

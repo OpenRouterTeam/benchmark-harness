@@ -28,12 +28,6 @@ export const TAU_BENCH_AIRLINE_META = {
   userModel: "google/gemini-2.5-flash",
 } as const satisfies BenchmarkMeta;
 
-export const TAU3_BENCH_BANKING_META = {
-  id: "tau3_bench_banking",
-  defaultEpochs: 5,
-  userModel: "openai/gpt-5.4-mini",
-} as const satisfies BenchmarkMeta;
-
 export const DRACO_META = {
   id: "draco",
   defaultEpochs: 1,
@@ -80,7 +74,6 @@ const BENCHMARK_META: Readonly<Record<string, BenchmarkMeta>> = {
   [MMLU_PRO_META.id]: MMLU_PRO_META,
   [MMMU_PRO_VISION_META.id]: MMMU_PRO_VISION_META,
   [TAU_BENCH_AIRLINE_META.id]: TAU_BENCH_AIRLINE_META,
-  [TAU3_BENCH_BANKING_META.id]: TAU3_BENCH_BANKING_META,
   [DRACO_META.id]: DRACO_META,
   [IFSTRUCT_META.id]: IFSTRUCT_META,
   [TOOLCALL_FORMATS_META.id]: TOOLCALL_FORMATS_META,

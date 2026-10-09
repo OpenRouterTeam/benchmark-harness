@@ -166,47 +166,6 @@ describe("bench-harness CLI", () => {
       })
     ).toThrow("Unknown gpqa_diamond solver-config option(s): bogus");
   });
-
-  it("passes tau3 retrieval config through the generic solver config", () => {
-    const args = parseArgs([
-      "--benchmark",
-      "tau3_bench_banking",
-      "--model",
-      "openai/gpt-4o-mini",
-      "--solver-config",
-      '{"retrievalConfig":"bm25_grep"}',
-    ]);
-    const panelConfig: unknown = JSON.parse(args.solverConfig ?? "");
-    const config = buildBenchmarkConfig({
-      benchmarkId: args.benchmark,
-      model: args.model,
-      panelConfig,
-      artifactDir: undefined,
-      endpointId: undefined,
-      imageDetail: undefined,
-      reasoningEffort: args.reasoningEffort,
-    });
-    expect(config).toMatchObject({
-      benchmarkId: "tau3_bench_banking",
-      retrievalConfig: "bm25_grep",
-    });
-  });
-
-  it("materializes the bm25_grep default for tau3", () => {
-    const config = buildBenchmarkConfig({
-      benchmarkId: "tau3_bench_banking",
-      model: "openai/gpt-4o-mini",
-      panelConfig: undefined,
-      artifactDir: undefined,
-      endpointId: undefined,
-      imageDetail: undefined,
-      reasoningEffort: "high",
-    });
-    expect(config).toMatchObject({
-      benchmarkId: "tau3_bench_banking",
-      retrievalConfig: "bm25_grep",
-    });
-  });
 });
 
 describe("resolveSessionId", () => {
