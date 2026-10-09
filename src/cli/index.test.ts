@@ -75,7 +75,6 @@ describe("bench-harness CLI", () => {
         panelConfig: undefined,
         artifactDir: undefined,
         endpointId: undefined,
-        imageDetail: undefined,
         costTier: args.costTier,
         reasoningEffort: args.reasoningEffort,
       })
@@ -92,7 +91,6 @@ describe("bench-harness CLI", () => {
     for (const benchmarkId of [
       "gpqa_diamond",
       "mmlu_pro",
-      "mmmu_pro_vision",
       "ifstruct",
       "toolcall_formats",
     ] as const) {
@@ -102,7 +100,6 @@ describe("bench-harness CLI", () => {
         panelConfig: undefined,
         artifactDir: undefined,
         endpointId: undefined,
-        imageDetail: undefined,
         reasoningEffort: "low",
       });
       expect(config).toMatchObject({ reasoningEffort: "low" });
@@ -125,7 +122,6 @@ describe("bench-harness CLI", () => {
       panelConfig,
       artifactDir: undefined,
       endpointId: undefined,
-      imageDetail: undefined,
       reasoningEffort: args.reasoningEffort,
     });
     expect(config).toEqual({
@@ -133,23 +129,6 @@ describe("bench-harness CLI", () => {
       model: "openrouter/switchyard",
       models: ["openai/gpt-4.1-nano", "anthropic/claude-sonnet-4.5"],
       reasoningEffort: "high",
-    });
-  });
-
-  it("keeps --image-detail when mmmu_pro_vision takes a solver config", () => {
-    const config = buildBenchmarkConfig({
-      benchmarkId: "mmmu_pro_vision",
-      model: "openrouter/switchyard",
-      panelConfig: { models: ["openai/gpt-4.1-nano", "openai/gpt-5"] },
-      artifactDir: undefined,
-      endpointId: undefined,
-      imageDetail: "high",
-      reasoningEffort: "low",
-    });
-    expect(config).toMatchObject({
-      benchmarkId: "mmmu_pro_vision",
-      imageDetail: "high",
-      models: ["openai/gpt-4.1-nano", "openai/gpt-5"],
     });
   });
 
@@ -161,52 +140,11 @@ describe("bench-harness CLI", () => {
         panelConfig: { bogus: true },
         artifactDir: undefined,
         endpointId: undefined,
-        imageDetail: undefined,
         reasoningEffort: "low",
       })
     ).toThrow("Unknown gpqa_diamond solver-config option(s): bogus");
   });
 
-  it("passes tau3 retrieval config through the generic solver config", () => {
-    const args = parseArgs([
-      "--benchmark",
-      "tau3_bench_banking",
-      "--model",
-      "openai/gpt-4o-mini",
-      "--solver-config",
-      '{"retrievalConfig":"bm25_grep"}',
-    ]);
-    const panelConfig: unknown = JSON.parse(args.solverConfig ?? "");
-    const config = buildBenchmarkConfig({
-      benchmarkId: args.benchmark,
-      model: args.model,
-      panelConfig,
-      artifactDir: undefined,
-      endpointId: undefined,
-      imageDetail: undefined,
-      reasoningEffort: args.reasoningEffort,
-    });
-    expect(config).toMatchObject({
-      benchmarkId: "tau3_bench_banking",
-      retrievalConfig: "bm25_grep",
-    });
-  });
-
-  it("materializes the bm25_grep default for tau3", () => {
-    const config = buildBenchmarkConfig({
-      benchmarkId: "tau3_bench_banking",
-      model: "openai/gpt-4o-mini",
-      panelConfig: undefined,
-      artifactDir: undefined,
-      endpointId: undefined,
-      imageDetail: undefined,
-      reasoningEffort: "high",
-    });
-    expect(config).toMatchObject({
-      benchmarkId: "tau3_bench_banking",
-      retrievalConfig: "bm25_grep",
-    });
-  });
 });
 
 describe("resolveSessionId", () => {

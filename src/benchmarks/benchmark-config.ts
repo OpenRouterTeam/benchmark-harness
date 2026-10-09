@@ -1,31 +1,16 @@
 import {
   COST_TIERS,
-  IMAGE_DETAIL_VALUES,
   REASONING_EFFORTS,
   stripVariantSuffix,
   SWITCHYARD_ALGORITHMS,
   VIDEO_PROCESSING_MODES,
 } from "../harness/constants";
 import { ProviderSort } from "../internal/enums";
-import type { ValueOf } from "../internal/guards";
 import { z, zDefaultedText } from "../internal/zod";
 import { SWITCHYARD_MODEL } from "../providers/switchyard-router-plugin";
-import {
-  TAU3_BENCH_BANKING_META,
-  TAU_BENCH_AIRLINE_META,
-} from "./benchmark-meta";
+import { TAU_BENCH_AIRLINE_META } from "./benchmark-meta";
 import { DracoPanelConfigSchema } from "./draco/schemas";
 import { SearchLaneConfigSchema } from "./search/core/config";
-import { BankingRetrievalConfigSchema } from "./tau3-bench-banking/retrieval-config";
-
-export const GEMINI_MEDIA_RESOLUTIONS = [
-  "MEDIA_RESOLUTION_UNSPECIFIED",
-  "MEDIA_RESOLUTION_LOW",
-  "MEDIA_RESOLUTION_MEDIUM",
-  "MEDIA_RESOLUTION_HIGH",
-] as const;
-
-export type GeminiMediaResolution = ValueOf<typeof GEMINI_MEDIA_RESOLUTIONS>;
 
 export const InferenceOverrideSchema = z.object({
   temperature: z.number().optional(),
@@ -102,38 +87,6 @@ export const TauBenchAirlineConfigSchema = z.object({
 });
 
 export type TauBenchAirlineConfig = z.infer<typeof TauBenchAirlineConfigSchema>;
-
-export const Tau3BenchBankingOptionsSchema = z.object({
-  userModel: zDefaultedText(TAU3_BENCH_BANKING_META.userModel),
-  userReasoningEffort: z.enum(REASONING_EFFORTS).default("medium"),
-  retrievalConfig: BankingRetrievalConfigSchema,
-});
-
-export const Tau3BenchBankingConfigSchema = z.object({
-  benchmarkId: z.literal("tau3_bench_banking"),
-  ...FixedTemperatureBenchmarkBaseSchema.shape,
-  ...Tau3BenchBankingOptionsSchema.shape,
-});
-
-export type Tau3BenchBankingConfig = z.infer<
-  typeof Tau3BenchBankingConfigSchema
->;
-
-export const MmmuProVisionOptionsSchema = z.object({
-  imageDetail: z.enum(IMAGE_DETAIL_VALUES).optional(),
-  mediaResolution: z.enum(GEMINI_MEDIA_RESOLUTIONS).optional(),
-  datasetRevision: z.string().optional(),
-});
-
-export const MmmuProVisionBenchmarkConfigSchema = z.object({
-  benchmarkId: z.literal("mmmu_pro_vision"),
-  ...ModelBenchmarkBaseSchema.shape,
-  ...MmmuProVisionOptionsSchema.shape,
-});
-
-export type MmmuProVisionBenchmarkConfig = z.infer<
-  typeof MmmuProVisionBenchmarkConfigSchema
->;
 
 export const DracoBenchmarkConfigSchema = z.object({
   benchmarkId: z.literal("draco"),
@@ -240,8 +193,6 @@ export const KeplerBenchmarkRunConfigSchema = z.discriminatedUnion(
     GpqaBenchmarkConfigSchema,
     MmluProBenchmarkConfigSchema,
     TauBenchAirlineConfigSchema,
-    Tau3BenchBankingConfigSchema,
-    MmmuProVisionBenchmarkConfigSchema,
     DracoBenchmarkConfigSchema,
     IfStructBenchmarkConfigSchema,
     ToolCallFormatsBenchmarkConfigSchema,
@@ -270,8 +221,6 @@ export const BENCHMARK_OPTIONS_SCHEMAS = {
   gpqa_diamond: GpqaOptionsSchema,
   mmlu_pro: MmluProOptionsSchema,
   tau_bench_verified_airline: TauBenchOptionsSchema,
-  tau3_bench_banking: Tau3BenchBankingOptionsSchema,
-  mmmu_pro_vision: MmmuProVisionOptionsSchema,
   ifstruct: IfStructOptionsSchema,
   toolcall_formats: ToolCallFormatsOptionsSchema,
   search_browsecomp: SearchBenchmarkOptionsSchema,

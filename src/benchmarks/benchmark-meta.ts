@@ -16,22 +16,11 @@ export const MMLU_PRO_META = {
   defaultEpochs: 1,
 } as const satisfies BenchmarkMeta;
 
-export const MMMU_PRO_VISION_META = {
-  id: "mmmu_pro_vision",
-  defaultEpochs: 1,
-} as const satisfies BenchmarkMeta;
-
 export const TAU_BENCH_AIRLINE_META = {
   id: "tau_bench_verified_airline",
   defaultEpochs: 1,
   temperature: 0,
   userModel: "google/gemini-2.5-flash",
-} as const satisfies BenchmarkMeta;
-
-export const TAU3_BENCH_BANKING_META = {
-  id: "tau3_bench_banking",
-  defaultEpochs: 5,
-  userModel: "openai/gpt-5.4-mini",
 } as const satisfies BenchmarkMeta;
 
 export const DRACO_META = {
@@ -78,9 +67,7 @@ export const VGI_BENCH_META = {
 const BENCHMARK_META: Readonly<Record<string, BenchmarkMeta>> = {
   [GPQA_META.id]: GPQA_META,
   [MMLU_PRO_META.id]: MMLU_PRO_META,
-  [MMMU_PRO_VISION_META.id]: MMMU_PRO_VISION_META,
   [TAU_BENCH_AIRLINE_META.id]: TAU_BENCH_AIRLINE_META,
-  [TAU3_BENCH_BANKING_META.id]: TAU3_BENCH_BANKING_META,
   [DRACO_META.id]: DRACO_META,
   [IFSTRUCT_META.id]: IFSTRUCT_META,
   [TOOLCALL_FORMATS_META.id]: TOOLCALL_FORMATS_META,

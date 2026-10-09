@@ -20,8 +20,6 @@ import {
   ADAPTIVE_REASONING_EFFORT_MODELS,
   COST_TIERS,
   defaultReasoningEffortFor,
-  ImageDetail,
-  IMAGE_DETAIL_VALUES,
   REASONING_EFFORTS,
   supportsAdaptiveReasoningEffort,
 } from "../harness/constants";
@@ -45,7 +43,6 @@ interface CliArgs {
   readonly solverConfig?: string;
   readonly artifactDir?: string;
   readonly resumeId?: string;
-  readonly imageDetail?: ImageDetail;
   readonly costTier?: CostTier;
   readonly reasoningEffort: ReasoningEffort;
 }
@@ -71,7 +68,6 @@ export function parseArgs(argv: readonly string[]): CliArgs {
     solverConfig: get("--solver-config"),
     artifactDir: get("--artifact-dir"),
     resumeId: get("--resume-id"),
-    imageDetail: validateImageDetail(get("--image-detail")),
     costTier: validateCostTier(get("--cost-tier")),
     reasoningEffort: validateReasoningEffort(
       get("--reasoning-effort"),
@@ -205,7 +201,6 @@ function main(): Promise<void> {
         panelConfig: effectivePanelConfig,
         artifactDir,
         endpointId: args.endpointId,
-        imageDetail: args.imageDetail,
         costTier: args.costTier,
         reasoningEffort: args.reasoningEffort,
       });
@@ -305,18 +300,6 @@ function main(): Promise<void> {
   );
 }
 
-function validateImageDetail(raw: string | undefined): ImageDetail | undefined {
-  if (raw === undefined) {
-    return undefined;
-  }
-  if (!isMember(raw, ImageDetail)) {
-    throw new Error(
-      `--image-detail must be one of: ${IMAGE_DETAIL_VALUES.join(", ")} (got "${raw}")`
-    );
-  }
-  return raw;
-}
-
 function validateCostTier(raw: string | undefined): CostTier | undefined {
   if (raw === undefined) {
     return undefined;
@@ -364,7 +347,6 @@ function buildSchemaValidatedConfig(opts: {
   model: string;
   endpointId: string | undefined;
   panelConfig: unknown;
-  imageDetail?: ImageDetail;
   costTier?: CostTier;
   reasoningEffort: ReasoningEffort;
 }): BenchmarkRunConfig {
@@ -373,7 +355,6 @@ function buildSchemaValidatedConfig(opts: {
     model,
     endpointId,
     panelConfig,
-    imageDetail,
     costTier,
     reasoningEffort,
   } = opts;
@@ -381,7 +362,6 @@ function buildSchemaValidatedConfig(opts: {
     benchmarkId,
     model,
     endpointId,
-    imageDetail,
     costTier,
     reasoningEffort,
   });
@@ -430,7 +410,6 @@ export function buildBenchmarkConfig(opts: {
   panelConfig: unknown;
   artifactDir: string | undefined;
   endpointId: string | undefined;
-  imageDetail: ImageDetail | undefined;
   costTier?: CostTier;
   reasoningEffort: ReasoningEffort;
 }): BenchmarkRunConfig {
@@ -454,16 +433,6 @@ export function buildBenchmarkConfig(opts: {
         reasoningEffort,
       });
     }
-    case "tau3_bench_banking": {
-      return buildSchemaValidatedConfig({
-        benchmarkId: "tau3_bench_banking",
-        model: requireModel("tau3_bench_banking", model),
-        endpointId,
-        panelConfig,
-        costTier,
-        reasoningEffort,
-      });
-    }
     case "draco": {
       const panel = parseSchema(DracoPanelConfigSchema, panelConfig);
       if (Either.isLeft(panel)) {
@@ -476,17 +445,6 @@ export function buildBenchmarkConfig(opts: {
           artifactDir,
         }),
       };
-    }
-    case "mmmu_pro_vision": {
-      return buildSchemaValidatedConfig({
-        benchmarkId: "mmmu_pro_vision",
-        model: requireModel("mmmu_pro_vision", model),
-        endpointId,
-        panelConfig,
-        imageDetail: opts.imageDetail,
-        costTier,
-        reasoningEffort,
-      });
     }
     case "gpqa_diamond":
     case "mmlu_pro":
