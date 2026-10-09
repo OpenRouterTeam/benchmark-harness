@@ -489,6 +489,34 @@ describe("responses-model", () => {
     );
   });
 
+  it.each([
+    ["openrouter/auto", "auto-router"],
+    ["openrouter/auto-beta", "auto-beta-router"],
+    ["typesafe/jev-router", "jev-router"],
+  ] as const)(
+    "preserves an explicit %s plugin override without duplicates",
+    async (model, pluginId) => {
+      const captured: { value: CapturedRequest | undefined } = {
+        value: undefined,
+      };
+      restore = installFetchStub(await readStreamFixture(), 200, captured);
+      const layer = makeResponsesModelLayer({ model, apiKey: "sk-test" });
+      const plugins = [{ id: "web" }, { id: pluginId, cost_tier: "low" }];
+      const exit = await runPromiseExit(
+        gen(function* run() {
+          const modelService = yield* ResponsesModel;
+          return yield* modelService.generate([], {
+            costTier: "high",
+            reasoningEffort: "auto",
+            extraBody: { plugins },
+          });
+        }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      );
+      assertSuccess(exit);
+      expect(captured.value?.body["plugins"]).toEqual(plugins);
+    }
+  );
+
   it("leaves the Jev default unset and does not send Auto Router-only controls", async () => {
     const captured: { value: CapturedRequest | undefined } = {
       value: undefined,

@@ -195,8 +195,14 @@ export function generate(
     "X-OpenRouter-Experiment-Ids": genConfig.experimentIds?.join(","),
   });
   const callerPlugins = genConfig.extraBody?.["plugins"];
+  const hasRouterOverride =
+    wireRouterPlugin !== undefined &&
+    isUnknownArray(callerPlugins) &&
+    callerPlugins.some(
+      (plugin) => isRecord(plugin) && plugin["id"] === wireRouterPlugin.id
+    );
   const extraBody =
-    wireRouterPlugin !== undefined
+    wireRouterPlugin !== undefined && !hasRouterOverride
       ? {
           ...genConfig.extraBody,
           plugins: [
