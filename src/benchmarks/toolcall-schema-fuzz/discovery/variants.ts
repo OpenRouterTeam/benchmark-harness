@@ -138,7 +138,7 @@ const shrinkScalar: Rewrite = ({ schema, value }) => {
     const half = [...value].slice(0, Math.ceil([...value].length / 2)).join("");
     return [{ edit: "halve string", schema, value: half }];
   }
-  if (typeof value === "number" && value !== 0) {
+  if (typeof value === "number" && value !== 0 && value !== 0.5) {
     return [
       { edit: "zero number", schema, value: Number.isInteger(value) ? 0 : 0.5 },
     ];

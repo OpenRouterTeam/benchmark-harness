@@ -74,3 +74,22 @@ describe("widerVariants", () => {
     expect(variants[2]?.args).toEqual({ a: [7], b: ["xy", 3] });
   });
 });
+
+describe("simplerVariants scalar shrinking", () => {
+  it("does not re-emit an already minimal fractional value", () => {
+    const parameters = {
+      type: "object",
+      properties: { amount: { type: "number" } },
+      required: ["amount"],
+      additionalProperties: false,
+    };
+    const variants = simplerVariants({ parameters, args: { amount: 0.5 } });
+    expect(
+      variants.some(
+        (variant) =>
+          JSON.stringify(variant.args) === JSON.stringify({ amount: 0.5 }) &&
+          JSON.stringify(variant.parameters) === JSON.stringify(parameters)
+      )
+    ).toBe(false);
+  });
+});

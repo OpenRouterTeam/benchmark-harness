@@ -161,7 +161,7 @@ async function closestPassing(
       args: variant.args,
     };
     const observed = await observe(search, { candidate: next, provider });
-    if (observed.runs > 0 && observed.failures === 0) {
+    if (observed.runs === search.config.repeats && observed.failures === 0) {
       return next;
     }
     if (search.spent >= search.config.budget) {
@@ -239,7 +239,9 @@ async function realisticControl(
     return undefined;
   }
   const observed = await observe(search, { candidate: realistic, provider });
-  return observed.runs > 0 && observed.failures === 0 ? realistic : undefined;
+  return observed.runs === search.config.repeats && observed.failures === 0
+    ? realistic
+    : undefined;
 }
 
 async function investigate(

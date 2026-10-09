@@ -13,9 +13,10 @@ import {
   NOOP_PROGRESS_REPORTER,
   ProgressReporter,
 } from "../../harness/progress";
+import { ProviderSort } from "../../internal/enums";
 import { caseLookup } from "./cases";
 import { TOOLCALL_SCHEMA_FUZZ_REALISTIC_CASES } from "./realistic/wordings";
-import { toolCallSchemaFuzzSolver } from "./solver";
+import { buildRequestBody, toolCallSchemaFuzzSolver } from "./solver";
 
 const [ENTRY] = TOOLCALL_SCHEMA_FUZZ_REALISTIC_CASES;
 
@@ -86,5 +87,43 @@ describe("toolCallSchemaFuzzSolver", () => {
     expect(exit.value.output?.rawResponse).toStrictEqual({
       finish_reason: "length",
     });
+  });
+});
+
+describe("buildRequestBody", () => {
+  it("forwards shared inference overrides", () => {
+    const body = buildRequestBody(
+      { messages: [] },
+      {
+        model: "openrouter/auto",
+        apiKey: "test",
+        reasoningEffort: "none",
+        maxTokens: 256,
+        sort: ProviderSort.Price,
+        providerOnly: ["fireworks"],
+        costTier: "low",
+        pinModel: true,
+      }
+    );
+    expect(body).toMatchObject({
+      model: "openrouter/auto",
+      max_tokens: 256,
+      provider: { sort: ProviderSort.Price, only: ["fireworks"] },
+      plugins: [{ id: "auto-router", cost_tier: "low", pin_model: true }],
+    });
+  });
+
+  it("drops provider sort when an endpoint is pinned", () => {
+    const body = buildRequestBody(
+      { messages: [] },
+      {
+        model: "openai/gpt-4.1",
+        apiKey: "test",
+        reasoningEffort: "none",
+        endpointId: "endpoint",
+        sort: ProviderSort.Price,
+      }
+    );
+    expect(body).not.toHaveProperty("provider");
   });
 });

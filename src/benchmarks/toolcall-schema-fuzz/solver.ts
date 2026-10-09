@@ -1,25 +1,27 @@
 import type { HttpClient, HttpClientError } from "@effect/platform";
 import { HttpClientRequest } from "@effect/platform";
 import type * as HttpClientResponse from "@effect/platform/HttpClientResponse";
+import { millis } from "effect/Duration";
 import type { Effect } from "effect/Effect";
-import { flatMap, gen, mapError } from "effect/Effect";
+import { catchTag, fail, flatMap, gen, mapError, timeout } from "effect/Effect";
 
 import type {
+  CostTier,
   ReasoningEffort,
   SwitchyardAlgorithm,
 } from "../../harness/constants";
-import { stripVariantSuffix } from "../../harness/constants";
 import type { ModelOutput, ModelUsage, TaskState } from "../../harness/core";
 import { ModelError, SolverError } from "../../harness/core";
 import type { SolverService } from "../../harness/solver";
 import { Either } from "../../internal/either";
+import type { ProviderSort } from "../../internal/enums";
 import { definedValues } from "../../internal/guards";
 import { parseSchema, z } from "../../internal/zod";
 import {
   BENCH_HARNESS_APP_REFERRER,
   BENCH_HARNESS_APP_TITLE,
 } from "../../providers/app-identity";
-import { buildSwitchyardRouterPlugin } from "../../providers/switchyard-router-plugin";
+import { buildRouterPlugin } from "../../providers/router-plugin";
 import type { RetryConfig } from "../../runtime/retry";
 import { rateLimitRetrySchedule, retrySalted } from "../../runtime/retry";
 import { TOOLCALL_SCHEMA_FUZZ_META } from "../benchmark-meta";
@@ -38,6 +40,14 @@ export interface ToolCallSchemaFuzzSolverOptions {
   readonly baseUrl?: string;
   readonly sessionId?: string;
   readonly endpointId?: string;
+  readonly maxTokens?: number;
+  readonly timeoutMs?: number;
+  readonly sort?: ProviderSort;
+  readonly cloudflareVersion?: string;
+  readonly experimentIds?: readonly string[];
+  readonly costTier?: CostTier;
+  readonly costQualityTradeoff?: number;
+  readonly pinModel?: boolean;
   readonly providerOnly?: readonly string[];
   readonly providerIgnore?: readonly string[];
   readonly allowFallbacks?: boolean;
@@ -86,18 +96,17 @@ export function buildRequestBody(
   options: ToolCallSchemaFuzzSolverOptions
 ): Readonly<Record<string, unknown>> {
   const provider = definedValues({
+    sort: options.endpointId === undefined ? options.sort : undefined,
     only: options.providerOnly,
     ignore: options.providerIgnore,
     allow_fallbacks: options.allowFallbacks,
   });
-  const plugin = buildSwitchyardRouterPlugin(
-    stripVariantSuffix(options.model),
-    options.switchyardAlgorithm
-  );
+  const plugin = buildRouterPlugin(options.model, options);
   return {
     ...request,
     model: options.model,
     stream: false,
+    ...(options.maxTokens !== undefined && { max_tokens: options.maxTokens }),
     ...(Object.keys(provider).length > 0 && { provider }),
     ...(options.models !== undefined && { models: options.models }),
     ...(plugin !== undefined && { plugins: [plugin] }),
@@ -121,6 +130,23 @@ function readError(error: HttpClientError.HttpClientError): SolverError {
   });
 }
 
+function withTimeout<A>(
+  effect: Effect<A, HttpClientError.HttpClientError>,
+  timeoutMs: number
+): Effect<A, HttpClientError.HttpClientError | ModelError> {
+  return effect.pipe(
+    timeout(millis(timeoutMs)),
+    catchTag("TimeoutException", () =>
+      fail(
+        new ModelError({
+          status: 408,
+          message: `Request timed out after ${timeoutMs}ms`,
+        })
+      )
+    )
+  );
+}
+
 function requestCompletion(
   client: HttpClient.HttpClient,
   options: ToolCallSchemaFuzzSolverOptions,
@@ -137,11 +163,17 @@ function requestCompletion(
       ...definedValues({
         "x-session-id": options.sessionId,
         "X-OR-Endpoint-Id": options.endpointId,
+        "Cloudflare-Workers-Version-Overrides": options.cloudflareVersion,
+        "X-OpenRouter-Experiment-Ids": options.experimentIds?.join(","),
       }),
     }),
     HttpClientRequest.bodyUnsafeJson(requestBody)
   );
-  return client.execute(request).pipe(
+  const execute =
+    options.timeoutMs !== undefined && options.timeoutMs > 0
+      ? withTimeout(client.execute(request), options.timeoutMs)
+      : client.execute(request);
+  return execute.pipe(
     mapError(
       (error) =>
         new SolverError({
