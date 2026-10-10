@@ -10,7 +10,7 @@ All data is synthetic and written by OpenRouter; there is no customer traffic in
 - `realistic/wordings.json` rewords every grid shape as a realistic tool, keys, values and request. It was written offline by an LLM rewriter (`cli/reword.ts`, writer and checker models recorded in the file) and accepted only when a second model reproduced the call. The arguments are invented, not sampled from real requests.
 - `regressions.json` is where `cli/discover.ts` records confirmed, shrunk failures, each with its closest passing control. It is empty today.
 
-All of it is released under this repository's license. Sample ids are stable; never rename one.
+The dataset (`realistic/wordings.json`, `regressions.json` and the cases built from them) is released under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/). The code is Apache-2.0 like the rest of the repository. Sample ids are stable; never rename one.
 
 ## Evaluation method
 
