@@ -89,6 +89,23 @@ describe("toolCallSchemaFuzzSolver", () => {
       finish_reason: "length",
     });
   });
+
+  it.each([400, 422])(
+    "records a %d rejection for the scorer instead of failing the run",
+    async (status) => {
+      const exit = await solve(new Response("bad schema", { status }));
+      assert(isSuccess(exit));
+      expect(exit.value.output?.rawResponse).toStrictEqual({
+        rejected: { status, message: `OpenRouter HTTP ${status}: bad schema` },
+      });
+      expect(exit.value.output?.message.toolCalls).toStrictEqual([]);
+    }
+  );
+
+  it("fails the run on an auth error", async () => {
+    const exit = await solve(new Response("no key", { status: 401 }));
+    expect(isFailure(exit)).toBe(true);
+  });
 });
 
 describe("buildRequestBody", () => {

@@ -32,6 +32,16 @@ export const TOOLCALL_SCHEMA_FUZZ_SYSTEM_MESSAGE =
 
 const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 
+const REJECTED_STATUSES: ReadonlySet<number> = new Set([400, 422]);
+
+type CompletionResult =
+  | { readonly kind: "completed"; readonly body: unknown }
+  | {
+      readonly kind: "rejected";
+      readonly status: number;
+      readonly message: string;
+    };
+
 export interface ToolCallSchemaFuzzSolverOptions {
   readonly model: string;
   readonly apiKey: string;
@@ -150,7 +160,7 @@ function requestCompletion(
   client: HttpClient.HttpClient,
   options: ToolCallSchemaFuzzSolverOptions,
   requestBody: Readonly<Record<string, unknown>>
-): Effect<unknown, ModelError | SolverError> {
+): Effect<CompletionResult, ModelError | SolverError> {
   const baseUrl = (options.baseUrl ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
   const request = HttpClientRequest.post(`${baseUrl}/chat/completions`).pipe(
     HttpClientRequest.setHeaders({
@@ -178,12 +188,20 @@ function requestCompletion(
     flatMap((response) =>
       gen(function* () {
         if (response.status >= 200 && response.status < 300) {
-          return yield* response.json.pipe(mapError(readError));
+          const body: unknown = yield* response.json.pipe(mapError(readError));
+          return { kind: "completed", body } as const;
         }
         const text = yield* response.text.pipe(mapError(readError));
         const message = `OpenRouter HTTP ${response.status}: ${text}`;
         if (response.status === 429 || response.status >= 500) {
           return yield* new ModelError({ status: response.status, message });
+        }
+        if (REJECTED_STATUSES.has(response.status)) {
+          return {
+            kind: "rejected",
+            status: response.status,
+            message,
+          } as const;
         }
         return yield* new SolverError({ message });
       })
@@ -220,11 +238,21 @@ export function toolCallSchemaFuzzSolver(
         },
         options
       );
-      const body = yield* retrySalted(
+      const result = yield* retrySalted(
         requestCompletion(client, options, requestBody),
         rateLimitRetrySchedule(options.retry)
       );
-      const parsed = parseSchema(CompletionResponseSchema, body);
+      if (result.kind === "rejected") {
+        const output: ModelOutput = {
+          completion: "",
+          message: { role: "assistant", content: "", toolCalls: [] },
+          rawResponse: {
+            rejected: { status: result.status, message: result.message },
+          },
+        };
+        return { ...state, requestBody, output, completed: true };
+      }
+      const parsed = parseSchema(CompletionResponseSchema, result.body);
       if (Either.isLeft(parsed)) {
         return yield* new SolverError({
           message: `OpenRouter response parse error: ${parsed.left.message}`,

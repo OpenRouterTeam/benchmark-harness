@@ -214,6 +214,31 @@ describe("toolCallSchemaFuzzScorer", () => {
     });
   });
 
+  it("fails a request the serving stack rejected", async () => {
+    assert(entry !== undefined);
+    const state = stateFor(entry.id, []);
+    assert(state.output !== undefined);
+    const score = await runHarnessPromise(
+      toolCallSchemaFuzzScorer(
+        {
+          ...state,
+          output: {
+            ...state.output,
+            rawResponse: {
+              rejected: { status: 400, message: "OpenRouter HTTP 400: bad" },
+            },
+          },
+        },
+        TARGET
+      )
+    );
+    expect(score).toStrictEqual({
+      value: ScoreValue.Incorrect,
+      answer: null,
+      explanation: "request_rejected: OpenRouter HTTP 400: bad",
+    });
+  });
+
   it("rejects samples that are not in the dataset", async () => {
     const score = await runHarnessPromise(
       toolCallSchemaFuzzScorer(stateFor("nope", []), TARGET)

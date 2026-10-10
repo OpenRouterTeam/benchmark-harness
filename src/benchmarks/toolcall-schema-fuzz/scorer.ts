@@ -19,6 +19,7 @@ const FuzzFailure = {
   ValueMismatch: "value_mismatch",
   UnknownCase: "unknown_case",
   Truncated: "truncated",
+  RequestRejected: "request_rejected",
 } as const;
 
 interface Failure {
@@ -251,6 +252,14 @@ export function makeToolCallSchemaFuzzScorer(cases: CaseLookup): ScorerService {
           value: ScoreValue.Incorrect,
           answer: null,
           explanation: `${FuzzFailure.UnknownCase}: no toolcall_schema_fuzz case for sample ${state.sample.id}`,
+        };
+      }
+      const rejected = state.output?.rawResponse?.rejected;
+      if (isRecord(rejected)) {
+        return {
+          value: ScoreValue.Incorrect,
+          answer: null,
+          explanation: `${FuzzFailure.RequestRejected}: ${String(rejected.message)}`,
         };
       }
       if (state.output?.rawResponse?.finish_reason === "length") {
