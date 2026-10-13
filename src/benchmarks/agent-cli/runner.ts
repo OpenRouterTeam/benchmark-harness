@@ -268,7 +268,7 @@ export function runAgentCli(input: {
   readonly opts: AgentCliOpts;
   readonly instructionPath: string;
   readonly timeoutMs: number;
-}): Effect<AgentCliRunResult, SolverError, ProgressReporter> {
+}): Effect<AgentCliRunResult, SolverError> {
   const { session, harness, opts, instructionPath, timeoutMs } = input;
   const requestPlugins = opts.requestPlugins ?? [];
   const models = opts.models ?? [];
@@ -359,16 +359,19 @@ function reportShellCommands(
   responseItems: readonly ResponseItem[],
   sampleId: string | undefined,
   epoch: number | undefined
-): Effect<void, never, ProgressReporter> {
+): Effect<void> {
   return gen(function* () {
     if (sampleId === undefined || epoch === undefined) {
       return;
     }
-    const reporter = yield* ProgressReporter;
+    const reporter = yield* serviceOption(ProgressReporter);
+    if (isNone(reporter)) {
+      return;
+    }
     yield* forEach(
       extractShellCommands(responseItems),
       (command, index) =>
-        reporter.onAgentStep(
+        reporter.value.onAgentStep(
           { type: "tool-call", step: index, toolCallIndex: index, command },
           sampleId,
           epoch
