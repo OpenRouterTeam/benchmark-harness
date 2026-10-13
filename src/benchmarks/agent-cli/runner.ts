@@ -24,6 +24,7 @@ import {
 } from "../../runtime/request-session-id";
 import { getCurrentEpoch } from "../../runtime/response-cache";
 import type { SandboxSessionInstance } from "../../sandbox/session";
+import { truncateCommand } from "../harbor/agent-loop";
 import type { OriAgentRun, OriHarnessDef } from "./harness";
 import {
   AGENT_CANDIDATE_MODELS_ENV,
@@ -372,7 +373,12 @@ function reportShellCommands(
       extractShellCommands(responseItems),
       (command, index) =>
         reporter.value.onAgentStep(
-          { type: "tool-call", step: index, toolCallIndex: index, command },
+          {
+            type: "tool-call",
+            step: index,
+            toolCallIndex: index,
+            command: truncateCommand(command),
+          },
           sampleId,
           epoch
         ),
