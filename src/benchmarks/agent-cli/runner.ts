@@ -12,7 +12,8 @@ import {
 import { isNone } from "effect/Option";
 
 import { SolverError } from "../../harness/core";
-import type { ModelUsage } from "../../harness/core";
+import type { ModelUsage, ResponseItem } from "../../harness/core";
+import { ProgressReporter } from "../../harness/progress";
 import { definedValues } from "../../internal/guards";
 import { wLog } from "../../internal/log";
 import { recordGenerationId } from "../../runtime/generation-ids";
@@ -27,6 +28,7 @@ import type { OriAgentRun, OriHarnessDef } from "./harness";
 import {
   AGENT_CANDIDATE_MODELS_ENV,
   AGENT_REQUEST_PLUGINS_ENV,
+  extractShellCommands,
 } from "./harness";
 import type { OriChannel, OriReasoningEffort } from "./schema";
 import { DEFAULT_ORI_CHANNEL, DEFAULT_ORI_INSTALL_URL } from "./schema";
@@ -266,7 +268,7 @@ export function runAgentCli(input: {
   readonly opts: AgentCliOpts;
   readonly instructionPath: string;
   readonly timeoutMs: number;
-}): Effect<AgentCliRunResult, SolverError> {
+}): Effect<AgentCliRunResult, SolverError, ProgressReporter> {
   const { session, harness, opts, instructionPath, timeoutMs } = input;
   const requestPlugins = opts.requestPlugins ?? [];
   const models = opts.models ?? [];
@@ -325,6 +327,7 @@ export function runAgentCli(input: {
     const elapsedMs = (yield* currentTimeMillis) - startedAt;
     const run = outcome;
     const parsed = harness.parseRun(run.stdout);
+    yield* reportShellCommands(parsed.responseItems, sampleId, epoch);
     yield* forEach(parsed.generationIds, (id) => recordGenerationId(id), {
       discard: true,
     });
@@ -349,6 +352,29 @@ export function runAgentCli(input: {
         })
       ),
     };
+  });
+}
+
+function reportShellCommands(
+  responseItems: readonly ResponseItem[],
+  sampleId: string | undefined,
+  epoch: number | undefined
+): Effect<void, never, ProgressReporter> {
+  return gen(function* () {
+    if (sampleId === undefined || epoch === undefined) {
+      return;
+    }
+    const reporter = yield* ProgressReporter;
+    yield* forEach(
+      extractShellCommands(responseItems),
+      (command, index) =>
+        reporter.onAgentStep(
+          { type: "tool-call", step: index, toolCallIndex: index, command },
+          sampleId,
+          epoch
+        ),
+      { discard: true }
+    );
   });
 }
 

@@ -6,6 +6,7 @@ import { join } from "node:path";
 import {
   AGENT_CANDIDATE_MODELS_ENV,
   AGENT_REQUEST_PLUGINS_ENV,
+  extractShellCommands,
   getOriHarness,
   ORI_HARNESSES,
   PI_REQUEST_PLUGINS_EXTENSION_PATH,
@@ -306,5 +307,93 @@ describe("pi usage extension", () => {
       ["gen-root", 1.25],
     ]);
     expect(run.responseItems).toHaveLength(1);
+  });
+});
+
+describe("extractShellCommands", () => {
+  it("reads Claude Code Bash tool_use blocks in stream order", () => {
+    const commands = extractShellCommands([
+      {
+        type: "assistant",
+        message: {
+          content: [
+            { type: "text", text: "Looking around." },
+            {
+              type: "tool_use",
+              id: "t1",
+              name: "Bash",
+              input: { command: "ls" },
+            },
+            {
+              type: "tool_use",
+              id: "t2",
+              name: "Edit",
+              input: { file_path: "a" },
+            },
+          ],
+        },
+      },
+      {
+        type: "assistant",
+        message: {
+          content: [
+            {
+              type: "tool_use",
+              id: "t3",
+              name: "Bash",
+              input: { command: "curl https://example.com" },
+            },
+          ],
+        },
+      },
+      { type: "result", result: "done" },
+    ]);
+    expect(commands).toEqual(["ls", "curl https://example.com"]);
+  });
+
+  it("reads pi tool_execution_start events named bash", () => {
+    const commands = extractShellCommands([
+      {
+        type: "tool_execution_start",
+        toolCallId: "tool-1",
+        toolName: "bash",
+        args: { command: "git clone https://github.com/a/b" },
+      },
+      {
+        type: "tool_execution_start",
+        toolCallId: "tool-2",
+        toolName: "read",
+        args: { path: "README.md" },
+      },
+      {
+        type: "tool_execution_end",
+        toolCallId: "tool-1",
+        toolName: "bash",
+        result: {},
+        isError: false,
+      },
+    ]);
+    expect(commands).toEqual(["git clone https://github.com/a/b"]);
+  });
+
+  it("ignores empty, missing, and non-string commands", () => {
+    expect(
+      extractShellCommands([
+        {
+          type: "tool_execution_start",
+          toolName: "bash",
+          args: { command: "" },
+        },
+        { type: "tool_execution_start", toolName: "bash", args: {} },
+        {
+          type: "tool_execution_start",
+          toolName: "bash",
+          args: { command: 3 },
+        },
+        { type: "tool_execution_start", toolName: "bash" },
+        { type: "assistant", message: { content: "plain text" } },
+        { type: "assistant" },
+      ])
+    ).toEqual([]);
   });
 });

@@ -441,6 +441,51 @@ function parseClaudeStream(stdout: string): OriAgentRun {
   };
 }
 
+const SHELL_TOOL_NAMES: ReadonlySet<string> = new Set(["bash", "Bash"]);
+
+export function extractShellCommands(
+  responseItems: readonly ResponseItem[]
+): string[] {
+  const commands: string[] = [];
+  for (const event of responseItems) {
+    const eventType = event["type"];
+    if (eventType === "tool_execution_start") {
+      pushShellCommand(commands, event["toolName"], event["args"]);
+      continue;
+    }
+    if (eventType !== "assistant") {
+      continue;
+    }
+    const { message } = event;
+    if (!isRecord(message) || !Array.isArray(message["content"])) {
+      continue;
+    }
+    for (const block of message["content"]) {
+      if (isRecord(block) && block["type"] === "tool_use") {
+        pushShellCommand(commands, block["name"], block["input"]);
+      }
+    }
+  }
+  return commands;
+}
+
+function pushShellCommand(
+  commands: string[],
+  name: unknown,
+  args: unknown
+): void {
+  if (typeof name !== "string" || !SHELL_TOOL_NAMES.has(name)) {
+    return;
+  }
+  if (!isRecord(args)) {
+    return;
+  }
+  const command = args["command"];
+  if (typeof command === "string" && command.length > 0) {
+    commands.push(command);
+  }
+}
+
 function countToolUseBlocks(content: unknown): number {
   if (!Array.isArray(content)) {
     return 0;
