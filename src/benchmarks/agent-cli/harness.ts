@@ -49,6 +49,8 @@ export const AGENT_REQUEST_PLUGINS_ENV = "TB_OPENROUTER_PLUGINS" as const;
 
 export const AGENT_CANDIDATE_MODELS_ENV = "TB_OPENROUTER_MODELS" as const;
 
+export const AGENT_PROVIDER_ORDER_ENV = "TB_OPENROUTER_PROVIDER_ORDER" as const;
+
 const PI_REQUEST_PLUGINS_EXTENSION_DIR = "/root/.bench-harness";
 
 export const PI_REQUEST_PLUGINS_EXTENSION_PATH =
@@ -59,6 +61,7 @@ const PI_REQUEST_PLUGINS_EXTENSION_EOF = "TB_PI_REQUEST_PLUGINS_EXTENSION";
 export const PI_REQUEST_PLUGINS_EXTENSION_SOURCE = [
   `const plugins = JSON.parse(process.env.${AGENT_REQUEST_PLUGINS_ENV} ?? "[]");`,
   `const models = JSON.parse(process.env.${AGENT_CANDIDATE_MODELS_ENV} ?? "[]");`,
+  `const providerOrder = JSON.parse(process.env.${AGENT_PROVIDER_ORDER_ENV} ?? "[]");`,
   "const pluginIds = new Set(plugins.map((plugin) => plugin.id));",
   "export default function registerRequestPlugins(pi) {",
   '  pi.on("before_provider_request", (event) => {',
@@ -67,7 +70,13 @@ export const PI_REQUEST_PLUGINS_EXTENSION_SOURCE = [
   "      return undefined;",
   "    }",
   "    const { max_output_tokens: _maxOutputTokens, ...uncapped } = payload;",
-  "    const withModels = models.length > 0 ? { ...uncapped, models } : payload;",
+  "    const withCandidates = models.length > 0 ? { ...uncapped, models } : payload;",
+  "    const callerProvider =",
+  '      typeof payload.provider === "object" && payload.provider !== null ? payload.provider : {};',
+  "    const withModels =",
+  "      providerOrder.length > 0",
+  "        ? { ...withCandidates, provider: { ...callerProvider, order: providerOrder } }",
+  "        : withCandidates;",
   "    if (plugins.length === 0) {",
   "      return withModels;",
   "    }",

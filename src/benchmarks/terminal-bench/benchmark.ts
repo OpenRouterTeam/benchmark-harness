@@ -78,6 +78,7 @@ function makeTerminalBenchLayer(
     isolateAgentConfig: benchmarkConfig.isolateAgentConfig,
     requestPlugins: requestPlugins.length > 0 ? requestPlugins : undefined,
     models: benchmarkConfig.models,
+    providerOrder: benchmarkConfig.providerOrder,
   });
   const datasetLayer = makeTerminalBenchDatasetLayer(
     definedValues({
