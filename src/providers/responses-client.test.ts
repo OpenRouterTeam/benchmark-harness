@@ -705,6 +705,44 @@ describe("makeResponsesLayer", () => {
     }
   });
 
+  it("keeps an explicit extraBody input override", async () => {
+    const originalFetch = globalThis.fetch;
+    const stream = await readStreamFixture();
+    const capturedBodies: unknown[] = [];
+    globalThis.fetch = async (request) => {
+      assert(request instanceof Request);
+      capturedBodies.push(await request.json());
+      return new Response(stream, {
+        status: 200,
+        headers: { "content-type": "text/event-stream" },
+      });
+    };
+    try {
+      await runPromise(
+        gen(function* run() {
+          const responses = yield* Responses;
+          yield* responses.send(
+            {
+              model: "m",
+              input: [{ type: "message", role: "user", content: "hi" }],
+            },
+            { timeoutMs: 1000, extraBody: { input: [] } }
+          );
+        }).pipe(
+          provide(
+            makeResponsesLayer({
+              apiKey: "sk-test",
+              baseUrl: "https://example.test",
+            })
+          )
+        )
+      );
+      expect(capturedBodies).toEqual([expect.objectContaining({ input: [] })]);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
   it("records generation ids and applies default or explicit prompt caching", async () => {
     const originalFetch = globalThis.fetch;
     const stream = await readStreamFixture();
