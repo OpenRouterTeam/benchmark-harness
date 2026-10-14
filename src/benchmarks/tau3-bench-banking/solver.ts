@@ -54,6 +54,8 @@ const MAX_STEPS = 200;
 
 const MAX_ERRORS = 10;
 
+export const MAX_CONVERSATION_CHARS = 16_000_000;
+
 const BANKING_TEMPERATURE = 0;
 
 export const TerminationReason = {
@@ -61,6 +63,7 @@ export const TerminationReason = {
   AgentStop: "AGENT_STOP",
   MaxSteps: "MAX_STEPS",
   TooManyErrors: "TOO_MANY_ERRORS",
+  ConversationTooLarge: "CONVERSATION_TOO_LARGE",
 } as const;
 
 const Role = {
@@ -110,6 +113,17 @@ function selectUserTurnEffect(opts: {
       return opts.turnState satisfies never;
     }
   }
+}
+
+export function messageChars(message: ModelMessage): number {
+  const toolCallChars = (message.toolCalls ?? []).reduce(
+    (sum, toolCall) =>
+      sum + toolCall.function.name.length + toolCall.function.arguments.length,
+    0
+  );
+  return (
+    message.content.length + (message.reasoning?.length ?? 0) + toolCallChars
+  );
 }
 
 function isToolErrorResult(result: string): boolean {
@@ -235,6 +249,14 @@ export function bankingSolver({
       let userTurnState: UserTurnState = "initial";
       let terminationReason: string = TerminationReason.MaxSteps;
       let done = false;
+      let conversationChars = messages.reduce(
+        (sum, message) => sum + messageChars(message),
+        0
+      );
+      const pushMessage = (message: ModelMessage): void => {
+        messages.push(message);
+        conversationChars += messageChars(message);
+      };
       while (!done) {
         if (stepCount >= MAX_STEPS) {
           terminationReason = TerminationReason.MaxSteps;
@@ -242,6 +264,10 @@ export function bankingSolver({
         }
         if (numToolErrors >= MAX_ERRORS) {
           terminationReason = TerminationReason.TooManyErrors;
+          break;
+        }
+        if (conversationChars > MAX_CONVERSATION_CHARS) {
+          terminationReason = TerminationReason.ConversationTooLarge;
           break;
         }
         switch (role) {
@@ -282,7 +308,7 @@ export function bankingSolver({
             } else {
               userTurnState = "awaiting_reply";
               const userResponse = userTurn.content;
-              messages.push({ role: MessageRole.User, content: userResponse });
+              pushMessage({ role: MessageRole.User, content: userResponse });
               if (STOP_TOKENS.some((t) => userResponse.includes(t))) {
                 terminationReason = TerminationReason.UserStop;
                 done = true;
@@ -303,7 +329,7 @@ export function bankingSolver({
               accUsage.totalCost += output.usage.totalCost ?? 0;
             }
             const assistantMsg = output.message;
-            messages.push(assistantMsg);
+            pushMessage(assistantMsg);
             const toolCalls = assistantMsg.toolCalls ?? [];
             if (toolCalls.length > 0) {
               role = Role.Env;
@@ -325,11 +351,14 @@ export function bankingSolver({
               if (isToolErrorResult(toolResultStr)) {
                 numToolErrors++;
               }
-              messages.push({
+              pushMessage({
                 role: MessageRole.Tool,
                 content: toolResultStr,
                 toolCallId: tc.id,
               });
+              if (conversationChars > MAX_CONVERSATION_CHARS) {
+                break;
+              }
             }
             role = Role.Agent;
             break;
