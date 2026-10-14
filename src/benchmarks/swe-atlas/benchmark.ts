@@ -133,6 +133,7 @@ function makeSweAtlasLayer(
               requestPlugins:
                 requestPlugins.length > 0 ? requestPlugins : undefined,
               models: benchmarkConfig.models,
+              providerOrder: benchmarkConfig.providerOrder,
             }),
             endpointId: benchmarkConfig.endpointId,
             inference: {

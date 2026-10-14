@@ -5,6 +5,7 @@ import { join } from "node:path";
 
 import {
   AGENT_CANDIDATE_MODELS_ENV,
+  AGENT_PROVIDER_ORDER_ENV,
   AGENT_REQUEST_PLUGINS_ENV,
   getOriHarness,
   ORI_HARNESSES,
@@ -30,13 +31,20 @@ type ProviderRequestHandler = (event: { readonly payload: unknown }) => unknown;
 
 async function loadRequestPluginsHandler(
   plugins: readonly unknown[],
-  models?: readonly string[]
+  models?: readonly string[],
+  providerOrder?: readonly string[]
 ): Promise<ProviderRequestHandler> {
   const dir = mkdtempSync(join(tmpdir(), "pi-request-plugins-"));
   const path = join(dir, "openrouter-request-plugins.ts");
   writeFileSync(path, PI_REQUEST_PLUGINS_EXTENSION_SOURCE);
   const previous = process.env[AGENT_REQUEST_PLUGINS_ENV];
   const previousModels = process.env[AGENT_CANDIDATE_MODELS_ENV];
+  const previousOrder = process.env[AGENT_PROVIDER_ORDER_ENV];
+  if (providerOrder === undefined) {
+    Reflect.deleteProperty(process.env, AGENT_PROVIDER_ORDER_ENV);
+  } else {
+    process.env[AGENT_PROVIDER_ORDER_ENV] = JSON.stringify(providerOrder);
+  }
   process.env[AGENT_REQUEST_PLUGINS_ENV] = JSON.stringify(plugins);
   if (models === undefined) {
     Reflect.deleteProperty(process.env, AGENT_CANDIDATE_MODELS_ENV);
@@ -71,10 +79,28 @@ async function loadRequestPluginsHandler(
     } else {
       process.env[AGENT_CANDIDATE_MODELS_ENV] = previousModels;
     }
+    if (previousOrder === undefined) {
+      Reflect.deleteProperty(process.env, AGENT_PROVIDER_ORDER_ENV);
+    } else {
+      process.env[AGENT_PROVIDER_ORDER_ENV] = previousOrder;
+    }
   }
 }
 
 describe("pi request plugins extension", () => {
+  it("sets the configured provider order and keeps the caller's other provider preferences", async () => {
+    const handler = await loadRequestPluginsHandler([], undefined, [
+      "Together",
+      "DigitalOcean",
+    ]);
+    expect(
+      handler({ payload: { model: "m", provider: { sort: "price" } } })
+    ).toStrictEqual({
+      model: "m",
+      provider: { sort: "price", order: ["Together", "DigitalOcean"] },
+    });
+  });
+
   it("adds the configured plugins to the provider payload", async () => {
     const handler = await loadRequestPluginsHandler([
       { id: "auto-router", cost_tier: "low" },
