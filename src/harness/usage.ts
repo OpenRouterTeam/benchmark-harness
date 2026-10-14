@@ -1,5 +1,5 @@
-import type { ModelUsage, ServerToolUseCounts } from "../../../harness/core";
-import { definedValues } from "../../../internal/guards";
+import { definedValues } from "../internal/guards";
+import type { ModelUsage, ServerToolUseCounts } from "./core";
 
 function sum(values: readonly (number | undefined)[]): number | undefined {
   const defined = values.filter(
