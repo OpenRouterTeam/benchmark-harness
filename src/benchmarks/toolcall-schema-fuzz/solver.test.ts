@@ -118,6 +118,7 @@ describe("buildRequestBody", () => {
         reasoningEffort: "none",
         maxTokens: 256,
         sort: ProviderSort.Price,
+        providerOrder: ["together", "fireworks"],
         providerOnly: ["fireworks"],
         costTier: "low",
         pinModel: true,
@@ -126,7 +127,11 @@ describe("buildRequestBody", () => {
     expect(body).toMatchObject({
       model: "openrouter/auto",
       max_tokens: 256,
-      provider: { sort: ProviderSort.Price, only: ["fireworks"] },
+      provider: {
+        sort: ProviderSort.Price,
+        order: ["together", "fireworks"],
+        only: ["fireworks"],
+      },
       plugins: [{ id: "auto-router", cost_tier: "low", pin_model: true }],
     });
   });

@@ -412,6 +412,30 @@ describe("responses-model", () => {
       allow_fallbacks: false,
     });
   });
+  it("sends provider.order with fallbacks left on", async () => {
+    const captured: {
+      value: CapturedRequest | undefined;
+    } = { value: undefined };
+    restore = installFetchStub(await readStreamFixture(), 200, captured);
+    const layer = makeResponsesModelLayer({
+      model: "deepseek/deepseek-v4-flash",
+      apiKey: "sk-test",
+      retry: { baseDelayMs: 0, maxRetries: 0 },
+    });
+    const exit = await runPromiseExit(
+      gen(function* run() {
+        const model = yield* ResponsesModel;
+        return yield* model.generate([], {
+          providerOrder: ["together", "digitalocean"],
+          reasoningEffort: "high",
+        });
+      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+    );
+    assertSuccess(exit);
+    expect(captured.value?.body["provider"]).toEqual({
+      order: ["together", "digitalocean"],
+    });
+  });
   for (const [model, pluginId] of [
     ["openrouter/auto", "auto-router"],
     ["openrouter/auto-beta", "auto-beta-router"],

@@ -83,6 +83,7 @@ function makeLayer(
               costQualityTradeoff: config.costQualityTradeoff,
               pinModel: config.pinModel,
               providerOnly: config.providerOnly,
+              providerOrder: config.providerOrder,
               providerIgnore: config.providerIgnore,
               allowFallbacks: config.allowFallbacks,
               switchyardAlgorithm: config.switchyardAlgorithm,
