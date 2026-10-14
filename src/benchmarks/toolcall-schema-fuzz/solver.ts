@@ -57,6 +57,7 @@ export interface ToolCallSchemaFuzzSolverOptions {
   readonly costTier?: CostTier;
   readonly costQualityTradeoff?: number;
   readonly pinModel?: boolean;
+  readonly providerOrder?: readonly string[];
   readonly providerOnly?: readonly string[];
   readonly providerIgnore?: readonly string[];
   readonly allowFallbacks?: boolean;
@@ -106,6 +107,7 @@ export function buildRequestBody(
 ): Readonly<Record<string, unknown>> {
   const provider = definedValues({
     sort: options.endpointId === undefined ? options.sort : undefined,
+    order: options.providerOrder,
     only: options.providerOnly,
     ignore: options.providerIgnore,
     allow_fallbacks: options.allowFallbacks,

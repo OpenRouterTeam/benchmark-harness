@@ -216,6 +216,7 @@ export const MMMU_PRO_VISION_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
           timeoutMs: config.timeoutMs,
           sort: config.sort,
           providerOnly: config.providerOnly,
+          providerOrder: config.providerOrder,
           providerIgnore: config.providerIgnore,
           allowFallbacks: config.allowFallbacks,
           cloudflareVersion: config.cloudflareVersion,
