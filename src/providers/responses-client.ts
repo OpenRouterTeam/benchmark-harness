@@ -4,6 +4,7 @@ import type {
   ResponsesRequest,
   StreamEvents,
 } from "@openrouter/sdk/models";
+import { InputsUnion$outboundSchema } from "@openrouter/sdk/models";
 import {
   ConnectionError,
   InvalidRequestError,
@@ -21,6 +22,14 @@ import type { Effect } from "effect/Effect";
 import { all, fail, flatMap, map, sync, tap, tryPromise } from "effect/Effect";
 import type { Layer } from "effect/Layer";
 import { succeed as layerSucceed } from "effect/Layer";
+import {
+  encodeText,
+  fromIterable,
+  intersperseAffixes,
+  map as mapStream,
+  rechunk,
+  toReadableStream,
+} from "effect/Stream";
 
 import type { Citation, ModelUsage } from "../harness/core";
 import { ModelError } from "../harness/core";
@@ -196,10 +205,13 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
     let isCacheHit = false;
     let cacheStatus: string | undefined;
     let cacheSourceId: string | undefined;
+    let streamedInput: readonly unknown[] | undefined;
     const httpClient = new HTTPClient({
       fetcher: async (input, init) => {
         const request = await mergeExtraBody(input, init, options.extraBody);
-        const response = await fetch(request);
+        const response = await fetch(
+          await streamInputItems(request, streamedInput)
+        );
         identifiers = modelErrorIdentifiersFromFetchHeaders(response.headers);
         cacheStatus =
           response.headers.get(RESPONSE_CACHE_STATUS_HEADER) ?? undefined;
@@ -241,8 +253,15 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
     return tryPromise({
       try: async (signal) => {
         identifiers = {};
+        const outboundInput = outboundInputItems(body.input);
+        streamedInput =
+          options.extraBody !== undefined &&
+          Object.hasOwn(options.extraBody, "input")
+            ? undefined
+            : outboundInput;
         const requestBody = {
           ...body,
+          ...(outboundInput === undefined ? {} : { input: [] }),
           ...definedValues({
             cacheControl:
               body.cacheControl === undefined &&
@@ -340,6 +359,51 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
     );
   };
   return layerSucceed(Responses, Responses.of({ send: sendWithCacheSalt }));
+}
+
+function outboundInputItems(
+  input: ResponsesRequest["input"]
+): readonly unknown[] | undefined {
+  if (!Array.isArray(input) || input.length === 0) {
+    return undefined;
+  }
+  const parsed = InputsUnion$outboundSchema.safeParse(input);
+  return parsed.success && Array.isArray(parsed.data) ? parsed.data : undefined;
+}
+
+export async function streamInputItems(
+  request: Request,
+  items: readonly unknown[] | undefined
+): Promise<Request> {
+  if (items === undefined) {
+    return request;
+  }
+  const parsed: unknown = JSON.parse(await request.clone().text());
+  if (
+    !isRecord(parsed) ||
+    !Array.isArray(parsed["input"]) ||
+    parsed["input"].length > 0
+  ) {
+    return request;
+  }
+  const { input: _placeholder, ...rest } = parsed;
+  const restJson = JSON.stringify(rest);
+  const suffix = restJson === "{}" ? "]}" : `],${restJson.slice(1)}`;
+  const body = fromIterable(items).pipe(
+    rechunk(1),
+    mapStream((item) => JSON.stringify(item)),
+    intersperseAffixes({ start: '{"input":[', middle: ",", end: suffix }),
+    encodeText,
+    toReadableStream
+  );
+  const init: RequestInit & { readonly duplex: "half" } = {
+    method: request.method,
+    headers: request.headers,
+    signal: request.signal,
+    body,
+    duplex: "half",
+  };
+  return new Request(request.url, init);
 }
 
 async function mergeExtraBody(
