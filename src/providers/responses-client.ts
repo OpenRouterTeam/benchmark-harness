@@ -22,6 +22,14 @@ import type { Effect } from "effect/Effect";
 import { all, fail, flatMap, map, sync, tap, tryPromise } from "effect/Effect";
 import type { Layer } from "effect/Layer";
 import { succeed as layerSucceed } from "effect/Layer";
+import {
+  encodeText,
+  fromIterable,
+  intersperseAffixes,
+  map as mapStream,
+  rechunk,
+  toReadableStream,
+} from "effect/Stream";
 
 import type { Citation, ModelUsage } from "../harness/core";
 import { ModelError } from "../harness/core";
@@ -348,9 +356,6 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
   return layerSucceed(Responses, Responses.of({ send: sendWithCacheSalt }));
 }
 
-const STREAMED_BODY_CHUNK_CHARS = 1_000_000;
-const textEncoder = new TextEncoder();
-
 function outboundInputItems(
   input: ResponsesRequest["input"]
 ): readonly unknown[] | undefined {
@@ -379,22 +384,13 @@ export async function streamInputItems(
   const { input: _placeholder, ...rest } = parsed;
   const restJson = JSON.stringify(rest);
   const suffix = restJson === "{}" ? "]}" : `],${restJson.slice(1)}`;
-  let index = 0;
-  const body = new ReadableStream<Uint8Array>({
-    pull(controller) {
-      let chunk = index === 0 ? '{"input":[' : "";
-      while (index < items.length && chunk.length < STREAMED_BODY_CHUNK_CHARS) {
-        chunk += `${index > 0 ? "," : ""}${JSON.stringify(items[index])}`;
-        index += 1;
-      }
-      if (index === items.length) {
-        controller.enqueue(textEncoder.encode(`${chunk}${suffix}`));
-        controller.close();
-        return;
-      }
-      controller.enqueue(textEncoder.encode(chunk));
-    },
-  });
+  const body = fromIterable(items).pipe(
+    rechunk(1),
+    mapStream((item) => JSON.stringify(item)),
+    intersperseAffixes({ start: '{"input":[', middle: ",", end: suffix }),
+    encodeText,
+    toReadableStream
+  );
   const init: RequestInit & { readonly duplex: "half" } = {
     method: request.method,
     headers: request.headers,
