@@ -253,14 +253,15 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
     return tryPromise({
       try: async (signal) => {
         identifiers = {};
+        const outboundInput = outboundInputItems(body.input);
         streamedInput =
           options.extraBody !== undefined &&
           Object.hasOwn(options.extraBody, "input")
             ? undefined
-            : outboundInputItems(body.input);
+            : outboundInput;
         const requestBody = {
           ...body,
-          ...(streamedInput === undefined ? {} : { input: [] }),
+          ...(outboundInput === undefined ? {} : { input: [] }),
           ...definedValues({
             cacheControl:
               body.cacheControl === undefined &&
