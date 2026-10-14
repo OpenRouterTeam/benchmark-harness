@@ -614,6 +614,97 @@ describe("consumeStream", () => {
   });
 });
 describe("makeResponsesLayer", () => {
+  it("streams input items as JSON identical to the SDK body", async () => {
+    const originalFetch = globalThis.fetch;
+    const stream = await readStreamFixture();
+    const input = [
+      { type: "message", role: "user", content: "hi" },
+      {
+        type: "function_call",
+        callId: "c1",
+        name: "KB_search",
+        arguments: "{}",
+      },
+      {
+        type: "function_call_output",
+        callId: "c1",
+        output: "’".repeat(1_000_000),
+      },
+      {
+        type: "function_call_output",
+        callId: "c1",
+        output: "x".repeat(1_000_000),
+      },
+    ] as const;
+    const captured: { body: unknown; isStream: boolean; chunks: number }[] = [];
+    globalThis.fetch = async (request, init) => {
+      assert(request instanceof Request);
+      assert(init === undefined);
+      const isStream = request.body !== null;
+      let chunks = 0;
+      let text = "";
+      const decoder = new TextDecoder();
+      for await (const chunk of request.body ?? []) {
+        chunks += 1;
+        text += decoder.decode(chunk, { stream: true });
+      }
+      captured.push({ body: JSON.parse(text), isStream, chunks });
+      return new Response(stream, {
+        status: 200,
+        headers: { "content-type": "text/event-stream" },
+      });
+    };
+    try {
+      await runPromise(
+        gen(function* run() {
+          const responses = yield* Responses;
+          yield* responses.send(
+            { model: "m", input: [...input] },
+            { timeoutMs: 1000, extraBody: { transforms: ["t"] } }
+          );
+        }).pipe(
+          provide(
+            makeResponsesLayer({
+              apiKey: "sk-test",
+              baseUrl: "https://example.test",
+            })
+          )
+        )
+      );
+      expect(captured).toHaveLength(1);
+      expect(captured[0]?.chunks).toBeGreaterThan(1);
+      expect(captured[0]?.body).toEqual({
+        model: "m",
+        service_tier: "auto",
+        store: false,
+        input: [
+          { type: "message", role: "user", content: "hi" },
+          {
+            type: "function_call",
+            call_id: "c1",
+            name: "KB_search",
+            arguments: "{}",
+          },
+          {
+            type: "function_call_output",
+            call_id: "c1",
+            output: "’".repeat(1_000_000),
+          },
+          {
+            type: "function_call_output",
+            call_id: "c1",
+            output: "x".repeat(1_000_000),
+          },
+        ],
+        cache_control: { type: "ephemeral" },
+        stream: true,
+        transforms: ["t"],
+      });
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
   it("records generation ids and applies default or explicit prompt caching", async () => {
     const originalFetch = globalThis.fetch;
     const stream = await readStreamFixture();
