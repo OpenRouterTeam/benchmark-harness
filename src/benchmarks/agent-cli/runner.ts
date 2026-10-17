@@ -378,6 +378,7 @@ function reportShellCommands(
             step: index,
             toolCallIndex: index,
             command: truncateCommand(command),
+            fullCommand: command,
           },
           sampleId,
           epoch

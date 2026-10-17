@@ -289,6 +289,7 @@ function execCommands(input: ExecCommandsInput): Effect<
           step: input.step,
           toolCallIndex,
           command: truncateCommand(command),
+          fullCommand: command,
         });
       }
       const result = yield* input.session
