@@ -85,12 +85,14 @@ describe("makeSearchProgressTracker", () => {
       step: 1,
       toolCallIndex: 1,
       command: "capital of France",
+      fullCommand: "capital of France",
     });
     expect(track(SERVER_TOOL_SEARCH_DONE)).toEqual({
       type: "tool-call",
       step: 2,
       toolCallIndex: 2,
       command: "population of Paris",
+      fullCommand: "population of Paris",
     });
   });
   it("falls back to the item type when the search action carries no query", () => {
@@ -106,6 +108,7 @@ describe("makeSearchProgressTracker", () => {
       step: 0,
       toolCallIndex: 1,
       command: "web_search_call",
+      fullCommand: "web_search_call",
     });
   });
   it("ignores non-search item completions and delta events", () => {

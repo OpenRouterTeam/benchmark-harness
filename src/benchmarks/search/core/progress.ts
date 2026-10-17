@@ -25,7 +25,13 @@ export function makeSearchProgressTracker(): (
         }
         step = event.outputIndex;
         toolCallIndex += 1;
-        return { type: "tool-call", step, toolCallIndex, command };
+        return {
+          type: "tool-call",
+          step,
+          toolCallIndex,
+          command,
+          fullCommand: command,
+        };
       }
       default: {
         return undefined;

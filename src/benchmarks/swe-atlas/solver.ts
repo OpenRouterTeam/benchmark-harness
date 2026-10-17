@@ -3,6 +3,7 @@ import { gen, tryPromise } from "effect/Effect";
 
 import type { ModelUsage } from "../../harness/core";
 import { MessageRole, SolverError } from "../../harness/core";
+import { ProgressReporter } from "../../harness/progress";
 import type { SolverService } from "../../harness/solver";
 import { definedValues } from "../../internal/guards";
 import type {
@@ -25,6 +26,7 @@ import {
 import type { HarborAgent } from "../agent-cli/schema";
 import { isOriAgent, toOriReasoningEffort } from "../agent-cli/schema";
 import type { InferenceOverride } from "../benchmark-config";
+import type { AgentLoopInput } from "../harbor/agent-loop";
 import { AGENT_ENV, probeSystemInfo, runAgentLoop } from "../harbor/agent-loop";
 import {
   BASH_RESPONSES_TOOL_DEFINITION,
@@ -214,9 +216,16 @@ export function makeSweAtlasSolver(
           };
         }
         const systemInfo = yield* probeSystemInfo(session);
+        const reporter = yield* ProgressReporter;
+        const epoch = state.epoch;
+        const onStep: AgentLoopInput["onStep"] =
+          epoch !== undefined
+            ? (e) => reporter.onAgentStep(e, state.sample.id, epoch)
+            : undefined;
         const loop = yield* runAgentLoop({
           model,
           session,
+          onStep,
           initialInput: [
             responsesMessage(
               "user",
