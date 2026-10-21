@@ -35,6 +35,7 @@
     "./runtime/retry": "./src/runtime/retry.ts",
     "./scorer": "./src/harness/scorer.ts",
     "./solver": "./src/harness/solver.ts",
+    "./artifacts": "./src/results/artifacts.ts",
     "./parquet": "./src/results/parquet.ts",
     "./parquet-schema": "./src/results/parquet-schema.ts",
     "./parquet-stream-writer": "./src/results/parquet-stream-writer.ts",

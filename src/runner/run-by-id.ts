@@ -1,5 +1,5 @@
 import { FetchHttpClient } from "@effect/platform";
-import { flatMap, provide } from "effect/Effect";
+import { flatMap, match, provide } from "effect/Effect";
 import {
   mergeAll as layerMergeAll,
   provide as layerProvide,
@@ -139,21 +139,27 @@ export function runBenchmarkById(
     .then((result) => {
       if (input.resultStore !== undefined) {
         return runHarnessPromise(
-          input.resultStore.write({
-            result,
-            benchmark,
-            benchmarkConfig: input.benchmarkConfig,
-            epochs: input.epochs,
-            sessionId: input.sessionId,
-          })
-        )
-          .then((resultsPath) => Either.right({ result, resultsPath }))
-          .catch((storeErr) => {
-            wLog("Failed to persist benchmark results", {
-              error: String(storeErr),
-            });
-            return Either.right({ result, resultsPath: null });
+          input.resultStore
+            .write({
+              result,
+              benchmark,
+              benchmarkConfig: input.benchmarkConfig,
+              epochs: input.epochs,
+              sessionId: input.sessionId,
+            })
+            .pipe(
+              match({
+                onFailure: (uploadErr) => Either.left(uploadErr.message),
+                onSuccess: (resultsPath) =>
+                  Either.right({ result, resultsPath }),
+              })
+            )
+        ).catch((storeErr) => {
+          wLog("Failed to persist benchmark results", {
+            error: String(storeErr),
           });
+          return Either.right({ result, resultsPath: null });
+        });
       }
       return Either.right({ result, resultsPath: null });
     })
