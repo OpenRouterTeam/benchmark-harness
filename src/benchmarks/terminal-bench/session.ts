@@ -44,8 +44,10 @@ export function createTerminalBenchSession(input: {
   readonly meta: TerminalBenchSampleMeta;
   readonly tasksDir: string;
   readonly imageBuildSteps: readonly string[];
+  readonly extraTimeoutSec?: number;
 }): Effect<SandboxSessionInstance, SolverError> {
   const { sessionFactory, meta, tasksDir, imageBuildSteps } = input;
+  const extraTimeoutSec = input.extraTimeoutSec ?? 0;
   const taskDir = join(tasksDir, meta.taskId);
   return sessionFactory.create({
     imageTag: meta.dockerImage,
@@ -53,6 +55,7 @@ export function createTerminalBenchSession(input: {
     timeoutSec:
       meta.maxAgentTimeoutSec +
       meta.maxTestTimeoutSec +
+      extraTimeoutSec +
       SANDBOX_TIMEOUT_MARGIN_SEC,
     cpus: meta.cpus,
     memoryMb: meta.memoryMb,

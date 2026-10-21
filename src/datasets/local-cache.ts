@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import {
   chmodSync,
   existsSync,
@@ -54,8 +55,19 @@ export function datasetCacheRoot(): string | undefined {
   return join(homedir(), ".cache", "openrouter-bench-harness");
 }
 
+export const MAX_CACHE_KEY_SEGMENT_LENGTH = 200;
+
 export function encodeCacheKeySegment(segment: string): string {
-  return encodeURIComponent(segment);
+  const encoded = encodeURIComponent(segment);
+  if (encoded.length <= MAX_CACHE_KEY_SEGMENT_LENGTH) {
+    return encoded;
+  }
+  const digest = createHash("sha256").update(segment).digest("hex");
+  const prefix = encoded.slice(
+    0,
+    MAX_CACHE_KEY_SEGMENT_LENGTH - digest.length - 1
+  );
+  return `${prefix}-${digest}`;
 }
 
 export interface ReadJsonCacheFileOptions {

@@ -205,6 +205,58 @@ describe("benchmark registry", () => {
     expect(result.right.agent).toBe("claude");
   });
 
+  it("parses recovery_bench with terminal-bench agent options plus recovery defaults", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "recovery_bench",
+      model: "deepseek/deepseek-v4",
+      reasoningEffort: "high",
+      agentReasoningEffort: "high",
+    });
+    assertRight(result);
+    if (result.right.benchmarkId !== "recovery_bench") {
+      throw new Error("expected recovery_bench config");
+    }
+    expect(result.right.agent).toBe("pi");
+    expect(result.right.messageMode).toBe("full");
+    expect(result.right.replayCommandTimeoutSec).toBe(15);
+    expect(result.right.maxInstructionBytes).toBe(64000);
+    expect(result.right.summaryModel).toBeUndefined();
+    const summary = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "recovery_bench",
+      model: "deepseek/deepseek-v4",
+      reasoningEffort: "high",
+      agentReasoningEffort: "high",
+      messageMode: "summary",
+      summaryModel: "anthropic/claude-haiku-4.5",
+      taskSubset: ["path-tracing-reverse"],
+    });
+    assertRight(summary);
+    if (summary.right.benchmarkId !== "recovery_bench") {
+      throw new Error("expected recovery_bench config");
+    }
+    expect(summary.right.messageMode).toBe("summary");
+    expect(summary.right.summaryModel).toBe("anthropic/claude-haiku-4.5");
+    assertLeft(
+      parseSchema(BenchmarkRunConfigSchema, {
+        benchmarkId: "recovery_bench",
+        model: "deepseek/deepseek-v4",
+        reasoningEffort: "high",
+        agentReasoningEffort: "high",
+        messageMode: "partial",
+      })
+    );
+  });
+
+  it("registers recovery_bench with terminal-bench scoring defaults", () => {
+    const b = getBenchmark("recovery_bench");
+    expect(b?.id).toBe("recovery_bench");
+    expect(b?.temperature).toBe(0);
+    expect(b?.defaultEpochs).toBe(1);
+    expect(b?.degradeSolverErrors).toBe(true);
+    expect(getBenchmarkMeta("recovery_bench")?.defaultEpochs).toBe(1);
+    expect(benchmarkIds()).toContain("recovery_bench");
+  });
+
   it("accepts Prime Agent for terminal-bench and harbor benchmarks", () => {
     for (const benchmarkId of ["terminal_bench", "deep_swe"] as const) {
       const result = parseSchema(BenchmarkRunConfigSchema, {
