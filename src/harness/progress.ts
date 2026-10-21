@@ -105,6 +105,7 @@ export interface AgentToolCallEvent {
   readonly step: number;
   readonly toolCallIndex: number;
   readonly command: string;
+  readonly fullCommand: string;
 }
 
 export interface AgentSubmitEvent {

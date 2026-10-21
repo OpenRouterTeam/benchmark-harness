@@ -12,7 +12,8 @@ import {
 import { isNone } from "effect/Option";
 
 import { SolverError } from "../../harness/core";
-import type { ModelUsage } from "../../harness/core";
+import type { ModelUsage, ResponseItem } from "../../harness/core";
+import { ProgressReporter } from "../../harness/progress";
 import { definedValues } from "../../internal/guards";
 import { wLog } from "../../internal/log";
 import { recordGenerationId } from "../../runtime/generation-ids";
@@ -23,11 +24,13 @@ import {
 } from "../../runtime/request-session-id";
 import { getCurrentEpoch } from "../../runtime/response-cache";
 import type { SandboxSessionInstance } from "../../sandbox/session";
+import { truncateCommand } from "../harbor/agent-loop";
 import type { OriAgentRun, OriHarnessDef } from "./harness";
 import {
   AGENT_CANDIDATE_MODELS_ENV,
   AGENT_PROVIDER_ORDER_ENV,
   AGENT_REQUEST_PLUGINS_ENV,
+  extractShellCommands,
 } from "./harness";
 import type { OriChannel, OriReasoningEffort } from "./schema";
 import { DEFAULT_ORI_CHANNEL, DEFAULT_ORI_INSTALL_URL } from "./schema";
@@ -340,6 +343,7 @@ export function runAgentCli(input: {
     const elapsedMs = (yield* currentTimeMillis) - startedAt;
     const run = outcome;
     const parsed = harness.parseRun(run.stdout);
+    yield* reportShellCommands(parsed.responseItems, sampleId, epoch);
     yield* forEach(parsed.generationIds, (id) => recordGenerationId(id), {
       discard: true,
     });
@@ -364,6 +368,38 @@ export function runAgentCli(input: {
         })
       ),
     };
+  });
+}
+
+function reportShellCommands(
+  responseItems: readonly ResponseItem[],
+  sampleId: string | undefined,
+  epoch: number | undefined
+): Effect<void> {
+  return gen(function* () {
+    if (sampleId === undefined || epoch === undefined) {
+      return;
+    }
+    const reporter = yield* serviceOption(ProgressReporter);
+    if (isNone(reporter)) {
+      return;
+    }
+    yield* forEach(
+      extractShellCommands(responseItems),
+      (command, index) =>
+        reporter.value.onAgentStep(
+          {
+            type: "tool-call",
+            step: index,
+            toolCallIndex: index,
+            command: truncateCommand(command),
+            fullCommand: command,
+          },
+          sampleId,
+          epoch
+        ),
+      { discard: true }
+    );
   });
 }
 
