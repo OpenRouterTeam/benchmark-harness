@@ -73,7 +73,7 @@
     "modal": "0.8.0",
     "smol-toml": "1.9.0",
     "yaml": "2.8.3",
-    "zod": "4.4.3"
+    "zod": "4.6.6"
   },
   "devDependencies": {
     "@effect/tsgo": "0.31.0",
@@ -88,6 +88,7 @@
   },
   "license": "Apache-2.0",
   "overrides": {
-    "tinypool": "2.1.2"
+    "tinypool": "2.1.2",
+    "zod": "4.6.6"
   }
 }
