@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -8,6 +8,7 @@ import {
   AGENT_PROVIDER_ORDER_ENV,
   AGENT_REQUEST_PLUGINS_ENV,
   getOriHarness,
+  OMP_BUN_VERSION,
   ORI_HARNESSES,
   PI_REQUEST_PLUGINS_EXTENSION_PATH,
   PI_REQUEST_PLUGINS_EXTENSION_SOURCE,
@@ -332,5 +333,20 @@ describe("pi usage extension", () => {
       ["gen-root", 1.25],
     ]);
     expect(run.responseItems).toHaveLength(1);
+  });
+});
+
+describe("OMP_BUN_VERSION", () => {
+  it("matches the repo's packageManager and CI setup-bun pins", () => {
+    const root = join(import.meta.dir, "../../..");
+    const { packageManager } = JSON.parse(
+      readFileSync(join(root, "package.json"), "utf8")
+    ) as { packageManager: string };
+    const ci = readFileSync(join(root, ".github/workflows/ci.yml"), "utf8");
+    const version = OMP_BUN_VERSION.replace(/^bun-v/u, "");
+    expect(packageManager).toBe(`bun@${version}`);
+    expect([...ci.matchAll(/bun-version:\s*(\S+)/gu)].map((m) => m[1])).toEqual(
+      [version]
+    );
   });
 });
