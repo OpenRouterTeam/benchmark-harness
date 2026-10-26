@@ -337,16 +337,17 @@ describe("pi usage extension", () => {
 });
 
 describe("OMP_BUN_VERSION", () => {
-  it("matches the repo's packageManager and CI setup-bun pins", () => {
+  it("matches the repo's packageManager, @types/bun, and CI setup-bun pins", () => {
     const root = join(import.meta.dir, "../../..");
-    const { packageManager } = JSON.parse(
+    const { packageManager, devDependencies } = JSON.parse(
       readFileSync(join(root, "package.json"), "utf8")
-    ) as { packageManager: string };
+    ) as { packageManager: string; devDependencies: Record<string, string> };
     const ci = readFileSync(join(root, ".github/workflows/ci.yml"), "utf8");
     const version = OMP_BUN_VERSION.replace(/^bun-v/u, "");
     expect(packageManager).toBe(`bun@${version}`);
-    expect([...ci.matchAll(/bun-version:\s*(\S+)/gu)].map((m) => m[1])).toEqual(
-      [version]
-    );
+    expect(devDependencies["@types/bun"]).toBe(version);
+    expect(
+      [...ci.matchAll(/bun-version:\s*["']?([^\s"']+)["']?/gu)].map((m) => m[1])
+    ).toEqual([version]);
   });
 });
