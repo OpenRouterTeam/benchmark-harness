@@ -27,13 +27,13 @@ export const DEFAULT_PRIME_AGENT_PACKAGE =
 
 export const DEFAULT_OMP_PACKAGE = "@oh-my-pi/pi-coding-agent@18.1.2" as const;
 
-export const OMP_BUN_VERSION = "bun-v1.3.14" as const;
+export const OMP_BUN_VERSION = "bun-v1.4.4" as const;
 
 export const BUN_RELEASE_URL =
   `https://github.com/oven-sh/bun/releases/download/${OMP_BUN_VERSION}/bun-linux-x64.zip` as const;
 
 export const BUN_RELEASE_SHA256 =
-  "951ee2aee855f08595aeec6225226a298d3fea83a3dcd6465c09cbccdf7e848f" as const;
+  "bf8ccbfb2b0b80159e0f9a6d15c55317add8077534dbc6130a3edb52fccb395c" as const;
 
 function verifiedDownload(url: string, sha256: string, dest: string): string {
   return `curl -fsSL ${JSON.stringify(url)} -o ${dest} && echo "${sha256}  ${dest}" | sha256sum -c -`;
