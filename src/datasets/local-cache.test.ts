@@ -17,6 +17,7 @@ import {
   CHECKOUT_COMPLETE_MARKER,
   DATASET_CACHE_DIR_ENV,
   DATASET_CACHE_DISABLE_ENV,
+  MAX_CACHE_KEY_SEGMENT_LENGTH,
   STALE_STAGING_MAX_AGE_MS,
   datasetCacheRoot,
   encodeCacheKeySegment,
@@ -109,6 +110,18 @@ describe("local-cache", () => {
         "TIGER-Lab%2FMMLU-Pro"
       );
       expect(encodeCacheKeySegment("plain")).toBe("plain");
+    });
+
+    it("hashes segments that would exceed the filename length limit", () => {
+      const base =
+        "https://media.githubusercontent.com/media/letta-ai/recovery-bench/c5f83f2ba4f882a9b544c7bf0fa9be1bc3859c78/";
+      const long = `${base}${"a/".repeat(120)}task.json`;
+      const sibling = `${base}${"a/".repeat(120)}other.json`;
+      const encoded = encodeCacheKeySegment(long);
+      expect(encoded.length).toBe(MAX_CACHE_KEY_SEGMENT_LENGTH);
+      expect(encoded).toMatch(/^https%3A%2F%2F.*-[0-9a-f]{64}$/);
+      expect(encoded).toBe(encodeCacheKeySegment(long));
+      expect(encoded).not.toBe(encodeCacheKeySegment(sibling));
     });
   });
 
