@@ -39,6 +39,8 @@ import type {
   TaskState,
 } from "../../harness/core";
 import { initialTaskState, ScoreValue } from "../../harness/core";
+import type { AgentStepEvent } from "../../harness/progress";
+import { makeProgressReporter, ProgressReporter } from "../../harness/progress";
 import { Solver } from "../../harness/solver";
 import {
   getCollectedGenerationIds,
@@ -137,7 +139,9 @@ seedTasksDir(fakeTasksDir);
 
 async function runOriSolver(
   sandboxLayer: Layer<SandboxSession>,
-  opts: OriSolverOpts = SOLVER_OPTS
+  opts: OriSolverOpts = SOLVER_OPTS,
+  progressLayer: Layer<ProgressReporter> = noopProgressLayer,
+  sampleContext?: { readonly sampleId: string; readonly epoch: number }
 ): Promise<TaskState> {
   const solverLayer = layerEffect(Solver)(
     gen(function* () {
@@ -149,13 +153,17 @@ async function runOriSolver(
   );
   return runPromise(
     gen(function* () {
+      if (sampleContext !== undefined) {
+        yield* setCurrentSampleId(sampleContext.sampleId);
+        yield* setCurrentEpoch(sampleContext.epoch);
+      }
       const solver = yield* Solver;
       return yield* solver(sampleState());
     }).pipe(
       provide(
         layerMergeAll(
           solverLayer.pipe(layerProvide(sandboxLayer)),
-          noopProgressLayer,
+          progressLayer,
           noopCheckpointLayer
         )
       )
@@ -237,6 +245,74 @@ function sampleState(): ReturnType<typeof initialTaskState> {
 }
 
 describe("terminal-bench ori solver", () => {
+  it("reports one tool-call progress event per shell command with the display and full command", async () => {
+    const longCommand = `curl -fsSL https://github.com/o/r/archive/main.tar.gz -o /tmp/main.tar.gz && ${"x".repeat(200)}`;
+    const stream = [
+      JSON.stringify({ type: "system", subtype: "init", session_id: "s-1" }),
+      JSON.stringify({
+        type: "assistant",
+        message: {
+          id: GENERATION_ID,
+          role: "assistant",
+          model: "anthropic/claude-opus-5",
+          content: [
+            { type: "text", text: "Fetching." },
+            {
+              type: "tool_use",
+              id: "toolu_1",
+              name: "Bash",
+              input: { command: longCommand },
+            },
+          ],
+        },
+      }),
+      JSON.stringify({
+        type: "result",
+        subtype: "success",
+        is_error: false,
+        result: "Done.",
+        duration_ms: 10,
+        total_cost_usd: 0.01,
+        api_error_status: null,
+        usage: { input_tokens: 1, output_tokens: 1 },
+      }),
+    ].join("\n");
+    const steps: { event: AgentStepEvent; sampleId: string; epoch: number }[] =
+      [];
+    const recordingProgressLayer = layerSucceed(
+      ProgressReporter,
+      makeProgressReporter({
+        onAgentStep: (event, sampleId, epoch) => {
+          steps.push({ event, sampleId, epoch });
+        },
+      })
+    );
+    const finalState = await runOriSolver(
+      makeTerminalBenchFakeSandboxLayer({
+        reward: 1,
+        testOutput: "1 passed",
+        agentEventStream: stream,
+        agentExitCode: 0,
+      }),
+      SOLVER_OPTS,
+      recordingProgressLayer,
+      { sampleId: "sample-1", epoch: 2 }
+    );
+    expect(longCommand.length).toBeGreaterThan(200);
+    expect(steps.map((step) => step.event)).toEqual([
+      {
+        type: "tool-call",
+        step: 0,
+        toolCallIndex: 1,
+        command: `${longCommand.slice(0, 200)}…`,
+        fullCommand: longCommand,
+      },
+    ]);
+    expect(steps[0]?.sampleId).toBe("sample-1");
+    expect(steps[0]?.epoch).toBe(2);
+    expect(finalState.sample.metadata?.["agentToolCalls"]).toBe(1);
+  });
+
   it("stashes reward=1 and scores Correct when tests pass", async () => {
     const layer = makeTerminalBenchFakeSandboxLayer({
       reward: 1,
