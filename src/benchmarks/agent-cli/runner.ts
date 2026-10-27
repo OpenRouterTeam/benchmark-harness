@@ -376,7 +376,7 @@ function reportShellCommands(
           {
             type: "tool-call",
             step: index,
-            toolCallIndex: index,
+            toolCallIndex: index + 1,
             command: truncateCommand(command),
             fullCommand: command,
           },
