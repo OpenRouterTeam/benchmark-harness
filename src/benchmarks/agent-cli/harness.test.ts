@@ -376,6 +376,25 @@ describe("extractShellCommands", () => {
     expect(commands).toEqual(["git clone https://github.com/a/b"]);
   });
 
+  it("yields nothing for prime-agent ipython events, which carry Python cells", () => {
+    expect(
+      extractShellCommands([
+        {
+          type: "tool_execution_start",
+          toolCallId: "tool-1",
+          toolName: "ipython",
+          args: { code: "import os; os.system('curl http://x')" },
+        },
+        {
+          type: "tool_execution_start",
+          toolCallId: "tool-2",
+          toolName: "ipython",
+          args: { command: "curl http://x" },
+        },
+      ])
+    ).toEqual([]);
+  });
+
   it("ignores empty, missing, and non-string commands", () => {
     expect(
       extractShellCommands([
