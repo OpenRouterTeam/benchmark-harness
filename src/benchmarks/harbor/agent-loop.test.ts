@@ -5,6 +5,7 @@ import type { Effect } from "effect/Effect";
 import { fail, runPromise, succeed, suspend } from "effect/Effect";
 
 import { SolverError } from "../../harness/core";
+import type { AgentStepEvent } from "../../harness/progress";
 import { assertRight } from "../../internal/testing";
 import { parseSchema, z } from "../../internal/zod";
 import type { ResponsesModelService } from "../../providers/responses-model";
@@ -175,6 +176,30 @@ describe("agent-loop retry resilience", () => {
       webSearchRequests: 2,
       toolCallsRequested: 0,
       toolCallsExecuted: 4,
+    });
+  });
+  it("reports the truncated command for display and the full command for classification", async () => {
+    const longCommand =
+      `cd /app && make && curl https://github.com/o/r`.padStart(260, "x");
+    const events: AgentStepEvent[] = [];
+    await runPromise(
+      runAgentLoop({
+        model: scriptedModel(longCommand),
+        session: failingThenSucceedingSandbox(0).instance,
+        initialInput: INITIAL_INPUT,
+        genConfig: GEN_CONFIG,
+        stepLimit: 3,
+        perCommandTimeoutMs: 1000,
+        onStep: (event) => {
+          events.push(event);
+          return succeed(undefined);
+        },
+      })
+    );
+    const toolCall = events.find((event) => event.type === "tool-call");
+    expect(toolCall).toMatchObject({
+      command: `${longCommand.slice(0, 200)}…`,
+      fullCommand: longCommand,
     });
   });
   it("retries sandbox failure, appends function_call_output items, and submits", async () => {

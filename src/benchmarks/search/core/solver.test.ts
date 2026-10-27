@@ -540,6 +540,7 @@ describe("searchSolver", () => {
           step: 0,
           toolCallIndex: 1,
           command: "who?",
+          fullCommand: "who?",
         },
         sampleId: "s",
         epoch: 2,

@@ -289,6 +289,7 @@ function execCommands(input: ExecCommandsInput): Effect<
           step: input.step,
           toolCallIndex,
           command: truncateCommand(command),
+          fullCommand: command,
         });
       }
       const result = yield* input.session
@@ -323,7 +324,7 @@ function execCommands(input: ExecCommandsInput): Effect<
 
 const MAX_COMMAND_LEN = 200;
 
-function truncateCommand(command: string): string {
+export function truncateCommand(command: string): string {
   return command.length > MAX_COMMAND_LEN
     ? `${command.slice(0, MAX_COMMAND_LEN)}…`
     : command;
