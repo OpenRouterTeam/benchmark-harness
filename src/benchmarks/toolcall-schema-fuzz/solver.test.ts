@@ -76,6 +76,14 @@ function solve(httpResponse: Response) {
   );
 }
 
+const UPSTREAM_REJECTION = JSON.stringify({
+  error: {
+    message: "Provider returned error",
+    code: 400,
+    metadata: { raw: "invalid 'parameters' schema", provider_name: "Azure" },
+  },
+});
+
 describe("toolCallSchemaFuzzSolver", () => {
   it("records a completed response", async () => {
     const exit = await solve(completion("stop"));
@@ -93,14 +101,38 @@ describe("toolCallSchemaFuzzSolver", () => {
   it.each([400, 422])(
     "records a %d rejection for the scorer instead of failing the run",
     async (status) => {
-      const exit = await solve(new Response("bad schema", { status }));
+      const exit = await solve(new Response(UPSTREAM_REJECTION, { status }));
       assert(isSuccess(exit));
       expect(exit.value.output?.rawResponse).toStrictEqual({
-        rejected: { status, message: `OpenRouter HTTP ${status}: bad schema` },
+        rejected: {
+          status,
+          message: `OpenRouter HTTP ${status}: ${UPSTREAM_REJECTION}`,
+        },
       });
       expect(exit.value.output?.message.toolCalls).toStrictEqual([]);
     }
   );
+
+  it.each([
+    [
+      "no provider in the error",
+      JSON.stringify({ error: { message: "bad max_tokens", code: 400 } }),
+    ],
+    [
+      "a null provider",
+      JSON.stringify({
+        error: {
+          message: "bad max_tokens",
+          code: 400,
+          metadata: { provider_name: null },
+        },
+      }),
+    ],
+    ["a non-JSON body", "bad request"],
+  ])("fails the run on a 400 with %s", async (_label, body) => {
+    const exit = await solve(new Response(body, { status: 400 }));
+    expect(isFailure(exit)).toBe(true);
+  });
 
   it("fails the run on an auth error", async () => {
     const exit = await solve(new Response("no key", { status: 401 }));
@@ -118,6 +150,7 @@ describe("buildRequestBody", () => {
         reasoningEffort: "none",
         maxTokens: 256,
         sort: ProviderSort.Price,
+        providerOrder: ["together", "fireworks"],
         providerOnly: ["fireworks"],
         costTier: "low",
         pinModel: true,
@@ -126,7 +159,11 @@ describe("buildRequestBody", () => {
     expect(body).toMatchObject({
       model: "openrouter/auto",
       max_tokens: 256,
-      provider: { sort: ProviderSort.Price, only: ["fireworks"] },
+      provider: {
+        sort: ProviderSort.Price,
+        order: ["together", "fireworks"],
+        only: ["fireworks"],
+      },
       plugins: [{ id: "auto-router", cost_tier: "low", pin_model: true }],
     });
   });

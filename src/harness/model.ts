@@ -25,6 +25,7 @@ export interface GenerateConfig {
   readonly costTier?: CostTier;
   readonly timeoutMs?: number;
   readonly sort?: ProviderSort;
+  readonly providerOrder?: readonly string[];
   readonly providerOnly?: readonly string[];
   readonly providerIgnore?: readonly string[];
   readonly allowFallbacks?: boolean;

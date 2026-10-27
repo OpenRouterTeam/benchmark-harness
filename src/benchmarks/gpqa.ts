@@ -142,6 +142,7 @@ export const GPQA_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
           timeoutMs: config.timeoutMs,
           sort: config.sort,
           providerOnly: config.providerOnly,
+          providerOrder: config.providerOrder,
           providerIgnore: config.providerIgnore,
           allowFallbacks: config.allowFallbacks,
           cloudflareVersion: config.cloudflareVersion,

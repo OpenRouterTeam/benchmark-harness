@@ -123,6 +123,7 @@ function makeDeepSweLayer(
               requestPlugins:
                 requestPlugins.length > 0 ? requestPlugins : undefined,
               models: benchmarkConfig.models,
+              providerOrder: benchmarkConfig.providerOrder,
             }),
             endpointId: benchmarkConfig.endpointId,
             sessionId: input.sessionId,
@@ -133,6 +134,7 @@ function makeDeepSweLayer(
               timeoutMs: benchmarkConfig.timeoutMs,
               sort: benchmarkConfig.sort,
               providerOnly: benchmarkConfig.providerOnly,
+              providerOrder: benchmarkConfig.providerOrder,
               providerIgnore: benchmarkConfig.providerIgnore,
               allowFallbacks: benchmarkConfig.allowFallbacks,
               cloudflareVersion: benchmarkConfig.cloudflareVersion,

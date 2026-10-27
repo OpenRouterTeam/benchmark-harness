@@ -52,6 +52,7 @@ export const InferenceOverrideSchema = z.object({
   costTier: z.enum(COST_TIERS).optional(),
   timeoutMs: z.number().optional(),
   sort: z.nativeEnum(ProviderSort).optional(),
+  providerOrder: z.array(z.string()).optional(),
   providerOnly: z.array(z.string()).optional(),
   providerIgnore: z.array(z.string()).optional(),
   allowFallbacks: z.boolean().optional(),

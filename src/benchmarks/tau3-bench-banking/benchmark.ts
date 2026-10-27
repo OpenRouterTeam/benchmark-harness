@@ -63,6 +63,7 @@ function makeBankingLayer(
       reasoningEffort: config.reasoningEffort,
       timeoutMs: config.timeoutMs,
       sort: config.sort,
+      providerOrder: config.providerOrder,
       providerOnly: config.providerOnly,
       providerIgnore: config.providerIgnore,
       allowFallbacks: config.allowFallbacks,

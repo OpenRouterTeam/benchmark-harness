@@ -156,6 +156,10 @@ export function generate(
     genConfig.sort !== undefined && genConfig.endpointId === undefined;
   const providerPreferences = definedValues({
     sort: sendSort ? genConfig.sort : undefined,
+    order:
+      genConfig.providerOrder !== undefined
+        ? [...genConfig.providerOrder]
+        : undefined,
     only:
       genConfig.providerOnly !== undefined
         ? [...genConfig.providerOnly]

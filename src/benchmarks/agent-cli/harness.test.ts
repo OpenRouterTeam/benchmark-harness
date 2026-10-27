@@ -1,13 +1,15 @@
 import { describe, expect, it } from "bun:test";
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import {
   AGENT_CANDIDATE_MODELS_ENV,
+  AGENT_PROVIDER_ORDER_ENV,
   AGENT_REQUEST_PLUGINS_ENV,
   extractShellCommands,
   getOriHarness,
+  OMP_BUN_VERSION,
   ORI_HARNESSES,
   PI_REQUEST_PLUGINS_EXTENSION_PATH,
   PI_REQUEST_PLUGINS_EXTENSION_SOURCE,
@@ -31,13 +33,20 @@ type ProviderRequestHandler = (event: { readonly payload: unknown }) => unknown;
 
 async function loadRequestPluginsHandler(
   plugins: readonly unknown[],
-  models?: readonly string[]
+  models?: readonly string[],
+  providerOrder?: readonly string[]
 ): Promise<ProviderRequestHandler> {
   const dir = mkdtempSync(join(tmpdir(), "pi-request-plugins-"));
   const path = join(dir, "openrouter-request-plugins.ts");
   writeFileSync(path, PI_REQUEST_PLUGINS_EXTENSION_SOURCE);
   const previous = process.env[AGENT_REQUEST_PLUGINS_ENV];
   const previousModels = process.env[AGENT_CANDIDATE_MODELS_ENV];
+  const previousOrder = process.env[AGENT_PROVIDER_ORDER_ENV];
+  if (providerOrder === undefined) {
+    Reflect.deleteProperty(process.env, AGENT_PROVIDER_ORDER_ENV);
+  } else {
+    process.env[AGENT_PROVIDER_ORDER_ENV] = JSON.stringify(providerOrder);
+  }
   process.env[AGENT_REQUEST_PLUGINS_ENV] = JSON.stringify(plugins);
   if (models === undefined) {
     Reflect.deleteProperty(process.env, AGENT_CANDIDATE_MODELS_ENV);
@@ -72,10 +81,28 @@ async function loadRequestPluginsHandler(
     } else {
       process.env[AGENT_CANDIDATE_MODELS_ENV] = previousModels;
     }
+    if (previousOrder === undefined) {
+      Reflect.deleteProperty(process.env, AGENT_PROVIDER_ORDER_ENV);
+    } else {
+      process.env[AGENT_PROVIDER_ORDER_ENV] = previousOrder;
+    }
   }
 }
 
 describe("pi request plugins extension", () => {
+  it("sets the configured provider order and keeps the caller's other provider preferences", async () => {
+    const handler = await loadRequestPluginsHandler([], undefined, [
+      "Together",
+      "DigitalOcean",
+    ]);
+    expect(
+      handler({ payload: { model: "m", provider: { sort: "price" } } })
+    ).toStrictEqual({
+      model: "m",
+      provider: { sort: "price", order: ["Together", "DigitalOcean"] },
+    });
+  });
+
   it("adds the configured plugins to the provider payload", async () => {
     const handler = await loadRequestPluginsHandler([
       { id: "auto-router", cost_tier: "low" },
@@ -414,5 +441,21 @@ describe("extractShellCommands", () => {
         { type: "assistant" },
       ])
     ).toEqual([]);
+  });
+});
+
+describe("OMP_BUN_VERSION", () => {
+  it("matches the repo's packageManager, @types/bun, and CI setup-bun pins", () => {
+    const root = join(import.meta.dir, "../../..");
+    const { packageManager, devDependencies } = JSON.parse(
+      readFileSync(join(root, "package.json"), "utf8")
+    ) as { packageManager: string; devDependencies: Record<string, string> };
+    const ci = readFileSync(join(root, ".github/workflows/ci.yml"), "utf8");
+    const version = OMP_BUN_VERSION.replace(/^bun-v/u, "");
+    expect(packageManager).toBe(`bun@${version}`);
+    expect(devDependencies["@types/bun"]).toBe(version);
+    expect(
+      [...ci.matchAll(/bun-version:\s*["']?([^\s"']+)["']?/gu)].map((m) => m[1])
+    ).toEqual([version]);
   });
 });

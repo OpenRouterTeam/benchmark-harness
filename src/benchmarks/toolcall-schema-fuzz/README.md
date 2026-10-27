@@ -15,7 +15,7 @@ The dataset (`realistic/wordings.json`, `regressions.json` and the cases built f
 ## Evaluation method
 
 - Temperature is fixed at 0. Requests go to `/chat/completions` with the case's system message, replayed history and tools; `parallel_tool_calls` is set for the parallel scenario.
-- `scorer.ts` validates each returned call against the exact schema sent (`json-schema.ts`), then compares it with the expected call. Failures are `no_tool_call`, `call_count`, `unknown_tool`, `wrong_tool`, `invalid_json`, `schema_violation` (wrong type or shape), `value_mismatch` (schema-valid but altered), `request_rejected` (the stack returned HTTP 400 or 422 for the request, e.g. an unsupported schema keyword) and `truncated` (skipped, not failed). Other 4xx responses (auth, unknown model) abort the run.
+- `scorer.ts` validates each returned call against the exact schema sent (`json-schema.ts`), then compares it with the expected call. Failures are `no_tool_call`, `call_count`, `unknown_tool`, `wrong_tool`, `invalid_json`, `schema_violation` (wrong type or shape), `value_mismatch` (schema-valid but altered), `request_rejected` (a provider in the serving stack returned HTTP 400 or 422 for the request, e.g. an unsupported schema keyword) and `truncated` (skipped, not failed). A 400 or 422 that names no provider (OpenRouter rejected a run-level setting such as `max_tokens` or the routing preferences) and other 4xx responses (auth, unknown model) abort the run.
 - `cli/report.ts` prints per-case stability and per-construct and per-scenario totals from result parquet files.
 
 ## Running

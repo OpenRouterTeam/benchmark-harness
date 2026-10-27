@@ -34,6 +34,20 @@ const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 
 const REJECTED_STATUSES: ReadonlySet<number> = new Set([400, 422]);
 
+const UpstreamRejectionSchema = z.object({
+  error: z.object({
+    metadata: z.object({ provider_name: z.string().min(1) }),
+  }),
+});
+
+function isUpstreamRejection(text: string): boolean {
+  const json = Either.try((): unknown => JSON.parse(text));
+  return (
+    Either.isRight(json) &&
+    Either.isRight(parseSchema(UpstreamRejectionSchema, json.right))
+  );
+}
+
 type CompletionResult =
   | { readonly kind: "completed"; readonly body: unknown }
   | {
@@ -57,6 +71,7 @@ export interface ToolCallSchemaFuzzSolverOptions {
   readonly costTier?: CostTier;
   readonly costQualityTradeoff?: number;
   readonly pinModel?: boolean;
+  readonly providerOrder?: readonly string[];
   readonly providerOnly?: readonly string[];
   readonly providerIgnore?: readonly string[];
   readonly allowFallbacks?: boolean;
@@ -106,6 +121,7 @@ export function buildRequestBody(
 ): Readonly<Record<string, unknown>> {
   const provider = definedValues({
     sort: options.endpointId === undefined ? options.sort : undefined,
+    order: options.providerOrder,
     only: options.providerOnly,
     ignore: options.providerIgnore,
     allow_fallbacks: options.allowFallbacks,
@@ -196,7 +212,10 @@ function requestCompletion(
         if (response.status === 429 || response.status >= 500) {
           return yield* new ModelError({ status: response.status, message });
         }
-        if (REJECTED_STATUSES.has(response.status)) {
+        if (
+          REJECTED_STATUSES.has(response.status) &&
+          isUpstreamRejection(text)
+        ) {
           return {
             kind: "rejected",
             status: response.status,
