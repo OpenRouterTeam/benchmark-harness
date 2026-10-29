@@ -4,8 +4,8 @@ import { flatMap, provideService, runPromise, succeed } from "effect/Effect";
 
 import {
   recordGenerationId,
-  resetGenerationIds,
   withAuxiliaryUsage,
+  withFreshGenerationIds,
 } from "./generation-ids";
 import type {
   GenerationResolverService,
@@ -54,10 +54,11 @@ const SOURCE_USAGE: ReplayedUsage = {
 describe("resolveCollectedGenerations", () => {
   it("returns collected ids unchanged when no resolver is provided", async () => {
     const resolved = await runPromise(
-      resetGenerationIds.pipe(
-        flatMap(() => recordGenerationId("gen-real")),
-        flatMap(() => recordGenerationId("gen-dummy", true)),
-        flatMap(() => resolveCollectedGenerations)
+      withFreshGenerationIds(
+        recordGenerationId("gen-real").pipe(
+          flatMap(() => recordGenerationId("gen-dummy", true)),
+          flatMap(() => resolveCollectedGenerations)
+        )
       )
     );
     expect([...resolved.ids].toSorted()).toEqual(["gen-dummy", "gen-real"]);
@@ -75,12 +76,13 @@ describe("resolveCollectedGenerations", () => {
       },
     };
     const resolved = await runPromise(
-      resetGenerationIds.pipe(
-        flatMap(() => recordGenerationId("gen-real")),
-        flatMap(() => recordGenerationId("gen-dummy", true)),
-        flatMap(() => recordGenerationId("gen-dummy-2", true)),
-        flatMap(() => resolveCollectedGenerations),
-        provideService(GenerationResolver, resolver)
+      withFreshGenerationIds(
+        recordGenerationId("gen-real").pipe(
+          flatMap(() => recordGenerationId("gen-dummy", true)),
+          flatMap(() => recordGenerationId("gen-dummy-2", true)),
+          flatMap(() => resolveCollectedGenerations),
+          provideService(GenerationResolver, resolver)
+        )
       )
     );
     expect([...requested].toSorted()).toEqual(["gen-dummy", "gen-dummy-2"]);
@@ -113,13 +115,14 @@ describe("resolveCollectedGenerations", () => {
       },
     };
     const resolved = await runPromise(
-      resetGenerationIds.pipe(
-        flatMap(() => recordGenerationId("gen-solver", true)),
-        flatMap(() =>
-          withAuxiliaryUsage(recordGenerationId("gen-judge", true))
-        ),
-        flatMap(() => resolveCollectedGenerations),
-        provideService(GenerationResolver, resolver)
+      withFreshGenerationIds(
+        recordGenerationId("gen-solver", true).pipe(
+          flatMap(() =>
+            withAuxiliaryUsage(recordGenerationId("gen-judge", true))
+          ),
+          flatMap(() => resolveCollectedGenerations),
+          provideService(GenerationResolver, resolver)
+        )
       )
     );
     expect([...requested].toSorted((a, b) => a.id.localeCompare(b.id))).toEqual(
@@ -139,10 +142,11 @@ describe("resolveCollectedGenerations", () => {
       resolveSourceGeneration: () => succeed(undefined),
     };
     const resolved = await runPromise(
-      resetGenerationIds.pipe(
-        flatMap(() => recordGenerationId("gen-dummy", true)),
-        flatMap(() => resolveCollectedGenerations),
-        provideService(GenerationResolver, resolver)
+      withFreshGenerationIds(
+        recordGenerationId("gen-dummy", true).pipe(
+          flatMap(() => resolveCollectedGenerations),
+          provideService(GenerationResolver, resolver)
+        )
       )
     );
     expect(resolved.ids).toEqual(["gen-dummy"]);
@@ -160,13 +164,16 @@ describe("resolveCollectedGenerations", () => {
       },
     };
     const resolved = await runPromise(
-      resetGenerationIds.pipe(
-        flatMap(() => recordGenerationId("gen-solver-source", true, true)),
-        flatMap(() =>
-          withAuxiliaryUsage(recordGenerationId("gen-judge-source", true, true))
-        ),
-        flatMap(() => resolveCollectedGenerations),
-        provideService(GenerationResolver, resolver)
+      withFreshGenerationIds(
+        recordGenerationId("gen-solver-source", true, true).pipe(
+          flatMap(() =>
+            withAuxiliaryUsage(
+              recordGenerationId("gen-judge-source", true, true)
+            )
+          ),
+          flatMap(() => resolveCollectedGenerations),
+          provideService(GenerationResolver, resolver)
+        )
       )
     );
     expect(requested).toEqual(["gen-solver-source"]);
@@ -182,10 +189,11 @@ describe("resolveCollectedGenerations", () => {
         succeed({ sourceId: `source-of-${generationId}` }),
     };
     const resolved = await runPromise(
-      resetGenerationIds.pipe(
-        flatMap(() => recordGenerationId("gen-dummy", true)),
-        flatMap(() => resolveCollectedGenerations),
-        provideService(GenerationResolver, resolver)
+      withFreshGenerationIds(
+        recordGenerationId("gen-dummy", true).pipe(
+          flatMap(() => resolveCollectedGenerations),
+          provideService(GenerationResolver, resolver)
+        )
       )
     );
     expect(resolved.ids).toEqual(["source-of-gen-dummy"]);

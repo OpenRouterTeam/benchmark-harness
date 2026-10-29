@@ -5,7 +5,6 @@ import { join } from "node:path";
 
 import type { ResponsesRequest } from "@openrouter/sdk/models";
 import {
-  flatMap,
   gen,
   provide,
   runPromise,
@@ -35,7 +34,7 @@ import type { GenerationIdEntry } from "../../runtime/generation-ids";
 import {
   getCollectedGenerationIdEntries,
   recordGenerationId,
-  resetGenerationIds,
+  withFreshGenerationIds,
 } from "../../runtime/generation-ids";
 import {
   ArtifactStoreService,
@@ -131,18 +130,13 @@ async function runSolver(
     })
   );
   const { state, generationIdEntries } = await runPromise(
-    resetGenerationIds
-      .pipe(
-        flatMap(() =>
-          gen(function* () {
-            const solver = yield* Solver;
-            const solvedState = yield* solver(sample());
-            const entries = yield* getCollectedGenerationIdEntries;
-            return { state: solvedState, generationIdEntries: entries };
-          })
-        )
-      )
-      .pipe(
+    withFreshGenerationIds(
+      gen(function* () {
+        const solver = yield* Solver;
+        const solvedState = yield* solver(sample());
+        const entries = yield* getCollectedGenerationIdEntries;
+        return { state: solvedState, generationIdEntries: entries };
+      }).pipe(
         provide(
           mergeAll(
             solverLayer.pipe(layerProvide(infraLayer)),
@@ -151,6 +145,7 @@ async function runSolver(
           )
         )
       )
+    )
   );
   return { calls, state, generationIdEntries };
 }

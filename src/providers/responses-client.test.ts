@@ -22,7 +22,7 @@ import { parseSchema, z } from "../internal/zod";
 import {
   getCollectedGenerationIdEntries,
   getCollectedGenerationIds,
-  resetGenerationIds,
+  withFreshGenerationIds,
 } from "../runtime/generation-ids";
 import { withCurrentSampleId } from "../runtime/request-session-id";
 import { withCurrentEpoch, withRunAttempt } from "../runtime/response-cache";
@@ -760,31 +760,30 @@ describe("makeResponsesLayer", () => {
     };
     try {
       const ids = await runPromise(
-        resetGenerationIds.pipe(
-          flatMap(() =>
-            gen(function* run() {
-              const responses = yield* Responses;
-              yield* responses.send(
-                { model: "m", input: [] },
-                { timeoutMs: 1000 }
-              );
-              yield* responses.send(
-                { model: "m", input: [] },
-                {
-                  timeoutMs: 1000,
-                  extraBody: {
-                    cache_control: { type: "ephemeral", ttl: "1h" },
-                  },
-                }
-              );
-            })
-          ),
-          flatMap(() => getCollectedGenerationIds),
-          provide(
-            makeResponsesLayer({
-              apiKey: "sk-test",
-              baseUrl: "https://example.test",
-            })
+        withFreshGenerationIds(
+          gen(function* run() {
+            const responses = yield* Responses;
+            yield* responses.send(
+              { model: "m", input: [] },
+              { timeoutMs: 1000 }
+            );
+            yield* responses.send(
+              { model: "m", input: [] },
+              {
+                timeoutMs: 1000,
+                extraBody: {
+                  cache_control: { type: "ephemeral", ttl: "1h" },
+                },
+              }
+            );
+          }).pipe(
+            flatMap(() => getCollectedGenerationIds),
+            provide(
+              makeResponsesLayer({
+                apiKey: "sk-test",
+                baseUrl: "https://example.test",
+              })
+            )
           )
         )
       );
@@ -889,22 +888,21 @@ describe("makeResponsesLayer", () => {
       });
     try {
       const entries = await runPromise(
-        resetGenerationIds.pipe(
-          flatMap(() =>
-            gen(function* run() {
-              const responses = yield* Responses;
-              yield* responses.send(
-                { model: "m", input: [] },
-                { timeoutMs: 1000 }
-              );
-            })
-          ),
-          flatMap(() => getCollectedGenerationIdEntries),
-          provide(
-            makeResponsesLayer({
-              apiKey: "sk-test",
-              baseUrl: "https://example.test",
-            })
+        withFreshGenerationIds(
+          gen(function* run() {
+            const responses = yield* Responses;
+            yield* responses.send(
+              { model: "m", input: [] },
+              { timeoutMs: 1000 }
+            );
+          }).pipe(
+            flatMap(() => getCollectedGenerationIdEntries),
+            provide(
+              makeResponsesLayer({
+                apiKey: "sk-test",
+                baseUrl: "https://example.test",
+              })
+            )
           )
         )
       );

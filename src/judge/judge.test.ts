@@ -21,7 +21,7 @@ import { ResponsesError } from "../providers/responses-client";
 import {
   getCollectedGenerationIdEntries,
   recordGenerationId,
-  resetGenerationIds,
+  withFreshGenerationIds,
 } from "../runtime/generation-ids";
 import { judgeCall } from "./judge";
 
@@ -116,11 +116,12 @@ describe("judgeCall", () => {
         ),
     };
     const entries = await runPromise(
-      resetGenerationIds.pipe(
-        flatMap(() =>
-          judgeCall(service, { judgeModel: "j", reasoningEffort: "high" }, SPEC)
-        ),
-        flatMap(() => getCollectedGenerationIdEntries)
+      withFreshGenerationIds(
+        judgeCall(
+          service,
+          { judgeModel: "j", reasoningEffort: "high" },
+          SPEC
+        ).pipe(flatMap(() => getCollectedGenerationIdEntries))
       )
     );
     expect(entries).toEqual([
