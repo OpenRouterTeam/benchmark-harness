@@ -630,9 +630,11 @@ describe("WANDR solver", () => {
     });
   });
   it("rejects allowlist network mode because Modal only supports a boolean policy", () => {
-    expect(wandrNetworkModeToAllowInternet("allowlist")).toEqual({
-      left: 'WANDR network mode "allowlist" is unsupported by the Modal sandbox layer',
-    });
+    expect(wandrNetworkModeToAllowInternet("allowlist")).toEqual(
+      Result.fail(
+        'WANDR network mode "allowlist" is unsupported by the Modal sandbox layer'
+      )
+    );
   });
   it("adds an OpenRouter model overlay without changing the checked-out task data", () => {
     const testDir = join(TASKS_ROOT, "datasets/wandr/smoke/tests");
