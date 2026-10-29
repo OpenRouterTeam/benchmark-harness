@@ -1,10 +1,11 @@
+import * as Result from "effect/Result";
+
 import type {
   ModelMessage,
   ModelUsage,
   ResponseItem,
 } from "../../harness/core";
 import { MessageRole } from "../../harness/core";
-import { Either } from "../../internal/either";
 import { definedValues, isRecord } from "../../internal/guards";
 import type { OriAgent, OriChannel, OriReasoningEffort } from "./schema";
 import { assertValidAgentPackage, DEFAULT_CLAUDE_PACKAGE } from "./schema";
@@ -391,11 +392,11 @@ function parseClaudeStream(stdout: string): OriAgentRun {
     if (!trimmed.startsWith("{")) {
       continue;
     }
-    const parsed = Either.try(() => JSON.parse(trimmed));
-    if (Either.isLeft(parsed) || !isRecord(parsed.right)) {
+    const parsed = Result.try(() => JSON.parse(trimmed));
+    if (Result.isFailure(parsed) || !isRecord(parsed.success)) {
       continue;
     }
-    const event = parsed.right;
+    const event = parsed.success;
     responseItems.push(event);
     const eventType = event["type"];
     if (eventType === "assistant") {
@@ -715,11 +716,11 @@ function parseJsonAgentStream(stdout: string): OriAgentRun {
     if (!trimmed.startsWith("{")) {
       continue;
     }
-    const parsed = Either.try(() => JSON.parse(trimmed));
-    if (Either.isLeft(parsed) || !isRecord(parsed.right)) {
+    const parsed = Result.try(() => JSON.parse(trimmed));
+    if (Result.isFailure(parsed) || !isRecord(parsed.success)) {
       continue;
     }
-    const event = parsed.right;
+    const event = parsed.success;
     const eventType = event["type"];
     if (eventType === OPENROUTER_GENERATION_COST_EVENT) {
       recordReportedCost(reportedGenerationCosts, event);

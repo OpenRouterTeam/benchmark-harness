@@ -9,7 +9,7 @@ import type { Effect } from "effect/Effect";
 import { flatMap, provide, runPromise } from "effect/Effect";
 
 import { Dataset } from "../../../harness/dataset";
-import { assertLeft, assertRight } from "../../../internal/testing";
+import { assertFailure, assertSuccess } from "../../../internal/testing";
 import {
   makeWideSearchDatasetLayer,
   parseWideSearchGoldCsv,
@@ -65,8 +65,8 @@ describe("WideSearch dataset", () => {
     const text = `${JSON.stringify(SOURCE_ROW)}\n${JSON.stringify(SOURCE_ROW)}\n`;
     const sha256 = createHash("sha256").update(text, "utf8").digest("hex");
     const result = parseWideSearchSource(text, sha256, 2);
-    assertRight(result);
-    expect(result.right).toHaveLength(2);
+    assertSuccess(result);
+    expect(result.success).toHaveLength(2);
   });
   it("fails closed on source checksum drift", () => {
     const result = parseWideSearchSource(
@@ -74,8 +74,8 @@ describe("WideSearch dataset", () => {
       "wrong",
       1
     );
-    assertLeft(result);
-    expect(result.left).toContain("WideSearch checksum mismatch");
+    assertFailure(result);
+    expect(result.failure).toContain("WideSearch checksum mismatch");
   });
   it("loads normalized required columns from official gold CSVs", () => {
     const result = parseWideSearchGoldCsv(
@@ -83,12 +83,12 @@ describe("WideSearch dataset", () => {
       "ws_1",
       ["name", "packsize"]
     );
-    assertRight(result);
-    expect(result.right).toEqual([{ name: "A", packsize: "750ml" }]);
+    assertSuccess(result);
+    expect(result.success).toEqual([{ name: "A", packsize: "750ml" }]);
   });
   it("rejects empty or incomplete gold CSVs", () => {
-    assertLeft(parseWideSearchGoldCsv("Name\n", "ws_1", ["name"]));
-    assertLeft(parseWideSearchGoldCsv("Other\nx\n", "ws_1", ["name"]));
+    assertFailure(parseWideSearchGoldCsv("Name\n", "ws_1", ["name"]));
+    assertFailure(parseWideSearchGoldCsv("Other\nx\n", "ws_1", ["name"]));
   });
   it("sends the configured HF authorization header from the dataset layer", async () => {
     stubFetch();

@@ -12,7 +12,7 @@ import {
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 
-import { option, String as string } from "effect/Config";
+import { option, String as configString } from "effect/Config";
 import { runSync } from "effect/Effect";
 import { getOrNull } from "effect/Option";
 
@@ -27,7 +27,7 @@ export const STALE_STAGING_MAX_AGE_MS = 24 * 60 * 60 * 1e3;
 
 export function readEnvOptional(name: string): string | undefined {
   const value = getOrNull(
-    runSync(withLiveEnvConfig(string(name).pipe(option)))
+    runSync(withLiveEnvConfig(configString(name).pipe(option)))
   );
   return value !== null && value.length > 0 ? value : undefined;
 }

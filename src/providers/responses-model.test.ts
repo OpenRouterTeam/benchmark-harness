@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from "bun:test";
 import { readFile } from "node:fs/promises";
 
 import type { ResponsesRequest } from "@openrouter/sdk/models";
-import { findErrorOption as failureOption } from "effect/Cause";
+import { findErrorOption } from "effect/Cause";
 import { flatMap, gen, provide, runPromiseExit, succeed } from "effect/Effect";
 import { provide as layerProvide } from "effect/Layer";
 import { getOrThrow } from "effect/Option";
@@ -11,7 +11,7 @@ import { assertFailure, assertSuccess } from "../../test/helpers/exit-asserts";
 import { ProviderSort } from "../internal/enums";
 import { isRecord } from "../internal/guards";
 import { fetchHttpClientLayer } from "../internal/http-client";
-import { assertRight } from "../internal/testing";
+import { assertSuccess as assertResultSuccess } from "../internal/testing";
 import { parseSchema, z } from "../internal/zod";
 import {
   getCollectedGenerationIds,
@@ -90,8 +90,8 @@ async function readTerminalFixture(): Promise<
     "utf8"
   );
   const result = parseSchema(TerminalFixtureSchema, JSON.parse(raw));
-  assertRight(result);
-  return result.right;
+  assertResultSuccess(result);
+  return result.success;
 }
 
 function readStreamFixture(): Promise<string> {
@@ -777,7 +777,7 @@ describe("responses-model", () => {
     expect(events).toEqual([
       { type: "response.failed", response: { error: { message: "upstream" } } },
     ]);
-    const error = getOrThrow(failureOption(exit.cause));
+    const error = getOrThrow(findErrorOption(exit.cause));
     expect(error.status).toBe(500);
   });
   it("preserves response identifiers on a failed stream", async () => {
@@ -807,7 +807,7 @@ describe("responses-model", () => {
       }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertFailure(exit);
-    const error = getOrThrow(failureOption(exit.cause));
+    const error = getOrThrow(findErrorOption(exit.cause));
     expect(error.cfRay).toBe("ray-123");
     expect(error.xRequestId).toBe("req-456");
     expect(error.generationId).toBe("gen-789");
@@ -853,7 +853,7 @@ describe("responses-model", () => {
       }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertFailure(exit);
-    const error = getOrThrow(failureOption(exit.cause));
+    const error = getOrThrow(findErrorOption(exit.cause));
     expect(error.status).toBe(408);
     expect(error.cfRay).toBe("ray-timeout");
     expect(error.message).toContain("cf_ray=ray-timeout");
@@ -907,7 +907,7 @@ describe("responses-model", () => {
       }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertFailure(exit);
-    const error = getOrThrow(failureOption(exit.cause));
+    const error = getOrThrow(findErrorOption(exit.cause));
     expect(error._tag).toBe("ModelError");
     expect(error.status).toBe(400);
     expect(error.message).toBe("OpenRouter HTTP 400: bad request");

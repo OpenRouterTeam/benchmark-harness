@@ -1,11 +1,11 @@
 import { TaggedError } from "effect/Data";
 import type { Effect } from "effect/Effect";
-import { catch as catchAll, gen, map, mapError } from "effect/Effect";
+import { catch as catch_, gen, map, mapError } from "effect/Effect";
 import {
   fixed,
   passthrough,
   setInputType,
-  while as whileInput,
+  while as while_,
 } from "effect/Schedule";
 
 import type { ModelMessage } from "../../harness/core";
@@ -32,7 +32,7 @@ const USER_SIM_MAX_RETRIES = 2;
 const USER_SIM_RESPONSE_RETRY_SCHEDULE = withRetryAttemptLogging(
   fixed("100 millis").pipe(
     setInputType<SimError>(),
-    whileInput(
+    while_(
       ({ input }) => input instanceof UserSimError && input.retryable === true
     ),
     passthrough
@@ -86,7 +86,7 @@ export class UserSimulator {
     return gen(function* () {
       const result = yield* response(config.model).pipe(
         withAuxiliaryUsage,
-        catchAll(() => withAuxiliaryUsage(response(USER_FALLBACK_MODEL)))
+        catch_(() => withAuxiliaryUsage(response(USER_FALLBACK_MODEL)))
       );
       messages.push(
         definedValues({

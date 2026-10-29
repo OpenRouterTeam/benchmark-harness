@@ -9,10 +9,10 @@ import {
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 
-import { hasInterrupts as isInterrupted } from "effect/Cause";
+import { hasInterrupts } from "effect/Cause";
 import type { Effect } from "effect/Effect";
 import {
-  catch as catchAll,
+  catch as catch_,
   catchTag,
   gen,
   ensuring,
@@ -24,12 +24,12 @@ import {
   void as effectVoid,
 } from "effect/Effect";
 import { isFailure } from "effect/Exit";
+import * as Result from "effect/Result";
 
 import type { SolverError as SolverErrorType } from "../../harness/core";
 import { MessageRole, SolverError } from "../../harness/core";
 import { CheckpointStore, ProgressReporter } from "../../harness/progress";
 import type { SolverService } from "../../harness/solver";
-import { Either } from "../../internal/either";
 import { unknownErrorToString } from "../../internal/errors";
 import { definedValues, isMember } from "../../internal/guards";
 import { wLog } from "../../internal/log";
@@ -107,16 +107,16 @@ export interface WandrSolverOptions {
 
 export function wandrNetworkModeToAllowInternet(
   mode: WandrNetworkMode
-): Either.Either<boolean, string> {
+): Result.Result<boolean, string> {
   switch (mode) {
     case "public": {
-      return Either.right(true);
+      return Result.succeed(true);
     }
     case "no-network": {
-      return Either.right(false);
+      return Result.succeed(false);
     }
     case "allowlist": {
-      return Either.left(
+      return Result.fail(
         'WANDR network mode "allowlist" is unsupported by the Modal sandbox layer'
       );
     }
@@ -150,14 +150,16 @@ export function makeWandrSolver(
       const agentAllowInternet = wandrNetworkModeToAllowInternet(
         task.taskToml.agent.network_mode
       );
-      if (Either.isLeft(agentAllowInternet)) {
-        return yield* new SolverError({ message: agentAllowInternet.left });
+      if (Result.isFailure(agentAllowInternet)) {
+        return yield* new SolverError({ message: agentAllowInternet.failure });
       }
       const verifierAllowInternet = wandrNetworkModeToAllowInternet(
         task.taskToml.verifier.network_mode
       );
-      if (Either.isLeft(verifierAllowInternet)) {
-        return yield* new SolverError({ message: verifierAllowInternet.left });
+      if (Result.isFailure(verifierAllowInternet)) {
+        return yield* new SolverError({
+          message: verifierAllowInternet.failure,
+        });
       }
       if (options.apiKey.length === 0) {
         return yield* new SolverError({
@@ -188,7 +190,7 @@ export function makeWandrSolver(
           timeoutSec: meta.maxAgentTimeoutSec + SANDBOX_TIMEOUT_MARGIN_SEC,
           cpus: meta.cpus,
           memoryMb: meta.memoryMb,
-          allowInternet: agentAllowInternet.right,
+          allowInternet: agentAllowInternet.success,
           workdir: WANDR_WORKDIR,
           keepAliveCommand: WANDR_KEEP_ALIVE_COMMAND,
           uploads: [],
@@ -198,7 +200,7 @@ export function makeWandrSolver(
         checkpoint === null
           ? yield* createAgentSession()
           : yield* sessionFactory.attach(checkpoint.sandboxId).pipe(
-              catchAll(() => {
+              catch_(() => {
                 didAttach = false;
                 return createAgentSession();
               })
@@ -274,15 +276,15 @@ export function makeWandrSolver(
           }),
         });
         const verifier = yield* gen(function* () {
-          const preparedTestDir = Either.try(() =>
+          const preparedTestDir = Result.try(() =>
             prepareWandrVerifierTestDir(task.testDir)
           );
-          if (Either.isLeft(preparedTestDir)) {
+          if (Result.isFailure(preparedTestDir)) {
             return yield* new SolverError({
-              message: `Failed to prepare WANDR verifier test data at ${join(task.testDir, "wandr_task", "config.py")}: ${unknownErrorToString(preparedTestDir.left)}`,
+              message: `Failed to prepare WANDR verifier test data at ${join(task.testDir, "wandr_task", "config.py")}: ${unknownErrorToString(preparedTestDir.failure)}`,
             });
           }
-          const verifierTestDir = preparedTestDir.right;
+          const verifierTestDir = preparedTestDir.success;
           const localOutputDir = mkdtempSync(join(tmpdir(), "wandr-output-"));
           return yield* verifySubmission({
             sessionFactory,
@@ -293,10 +295,10 @@ export function makeWandrSolver(
             maxTestTimeoutSec: meta.maxTestTimeoutSec,
             cpus: meta.cpus,
             memoryMb: meta.memoryMb,
-            allowInternet: verifierAllowInternet.right,
+            allowInternet: verifierAllowInternet.success,
             localOutputDir,
           }).pipe(
-            catchAll((error) => new SolverError({ message: error.message })),
+            catch_((error) => new SolverError({ message: error.message })),
             ensuring(
               sync(() => {
                 rmSync(verifierTestDir, { recursive: true, force: true });
@@ -309,7 +311,7 @@ export function makeWandrSolver(
           yield* tryPromise({
             try: () => checkpointStore.remove(checkpointKey),
             catch: () => undefined,
-          }).pipe(catchAll(() => effectVoid));
+          }).pipe(catch_(() => effectVoid));
         }
         return {
           sample: {
@@ -457,16 +459,16 @@ function verifySubmission(
           message: `WANDR verifier did not write reward.json`,
         });
       }
-      const decoded = Either.try((): unknown => JSON.parse(reward.stdout));
-      if (Either.isLeft(decoded)) {
+      const decoded = Result.try((): unknown => JSON.parse(reward.stdout));
+      if (Result.isFailure(decoded)) {
         return yield* new SolverError({
-          message: `Invalid WANDR reward.json: ${String(decoded.left)}`,
+          message: `Invalid WANDR reward.json: ${String(decoded.failure)}`,
         });
       }
-      const parsed = parseSchema(WandrRewardFileSchema, decoded.right);
-      if (Either.isLeft(parsed)) {
+      const parsed = parseSchema(WandrRewardFileSchema, decoded.success);
+      if (Result.isFailure(parsed)) {
         return yield* new SolverError({
-          message: `Invalid WANDR reward.json: ${parsed.left.message}`,
+          message: `Invalid WANDR reward.json: ${parsed.failure.message}`,
         });
       }
       const report = yield* verifierSession.exec(
@@ -474,7 +476,7 @@ function verifySubmission(
         AGENT_ENV,
         30000
       );
-      const { grade: _grade, reward: _reward, ...rewards } = parsed.right;
+      const { grade: _grade, reward: _reward, ...rewards } = parsed.success;
       return {
         rewards,
         output:
@@ -561,11 +563,11 @@ function ensureDestroy(
         if (
           (options?.skipOnInterrupt ?? false) &&
           isFailure(exit) &&
-          isInterrupted(exit.cause)
+          hasInterrupts(exit.cause)
         ) {
           return effectVoid;
         }
-        return session.destroy().pipe(catchAll(() => effectVoid));
+        return session.destroy().pipe(catch_(() => effectVoid));
       })
     );
 }

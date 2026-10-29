@@ -9,7 +9,7 @@ import type { Effect } from "effect/Effect";
 import { flatMap, provide, runPromise } from "effect/Effect";
 
 import { Dataset } from "../../../harness/dataset";
-import { assertLeft, assertRight } from "../../../internal/testing";
+import { assertFailure, assertSuccess } from "../../../internal/testing";
 import {
   dsqaRecordToSample,
   makeDsqaDatasetLayer,
@@ -86,20 +86,20 @@ describe("DSQA dataset", () => {
     const text = csv([RECORD, RECORD]);
     const sha256 = createHash("sha256").update(text, "utf8").digest("hex");
     const result = parseDsqaDataset(text, sha256, 2);
-    assertRight(result);
-    expect(result.right).toHaveLength(2);
+    assertSuccess(result);
+    expect(result.success).toHaveLength(2);
   });
   it("fails closed on checksum drift", () => {
     const result = parseDsqaDataset(csv([RECORD]), "wrong", 1);
-    assertLeft(result);
-    expect(result.left).toContain("DSQA checksum mismatch");
+    assertFailure(result);
+    expect(result.failure).toContain("DSQA checksum mismatch");
   });
   it("rejects malformed official rows", () => {
     const text = csv([{ ...RECORD, answer_type: "Unknown" }]);
     const sha256 = createHash("sha256").update(text, "utf8").digest("hex");
     const result = parseDsqaDataset(text, sha256, 1);
-    assertLeft(result);
-    expect(result.left).toContain("failed validation");
+    assertFailure(result);
+    expect(result.failure).toContain("failed validation");
   });
   it("sends the configured HF authorization header from the dataset layer", async () => {
     stubFetch();

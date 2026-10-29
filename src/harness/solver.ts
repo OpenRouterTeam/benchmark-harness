@@ -1,4 +1,4 @@
-import { Service as Tag } from "effect/Context";
+import { Service } from "effect/Context";
 import type { Effect } from "effect/Effect";
 import { gen, reduce, succeed } from "effect/Effect";
 
@@ -16,7 +16,7 @@ export type SolverService = (
   ProgressReporter | CheckpointStore
 >;
 
-export class Solver extends Tag<Solver, SolverService>()(
+export class Solver extends Service<Solver, SolverService>()(
   "@openrouter/bench-harness/solver"
 ) {}
 

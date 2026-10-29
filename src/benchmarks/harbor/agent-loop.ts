@@ -7,6 +7,7 @@ import {
   retry,
   succeed,
 } from "effect/Effect";
+import * as Result from "effect/Result";
 
 import type {
   ModelMessage,
@@ -17,7 +18,6 @@ import type {
 import { MessageRole } from "../../harness/core";
 import type { AgentStepEvent } from "../../harness/progress";
 import { runHarnessSync } from "../../internal/effect-logger";
-import { Either } from "../../internal/either";
 import { definedValues, isRecord } from "../../internal/guards";
 import type {
   ResponsesGenerateConfig,
@@ -218,11 +218,11 @@ const INVALID_ARGS_OBSERVATION = JSON.stringify({
 });
 
 function parseBashCommand(argumentsJson: string): string | undefined {
-  const parsed = Either.try((): unknown => JSON.parse(argumentsJson));
-  if (Either.isLeft(parsed) || !isRecord(parsed.right)) {
+  const parsed = Result.try((): unknown => JSON.parse(argumentsJson));
+  if (Result.isFailure(parsed) || !isRecord(parsed.success)) {
     return undefined;
   }
-  const { command } = parsed.right;
+  const { command } = parsed.success;
   return typeof command === "string" ? command : undefined;
 }
 

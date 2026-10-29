@@ -14,7 +14,8 @@ import {
 import { HttpClient } from "effect/http";
 import type { Layer } from "effect/Layer";
 import { effect, provide } from "effect/Layer";
-import { fromArray as fromChunk, unwrap } from "effect/Stream";
+import * as Result from "effect/Result";
+import { fromArray, unwrap } from "effect/Stream";
 
 import {
   hfFetchRetrySchedule,
@@ -24,7 +25,6 @@ import type { Sample } from "../../../harness/core";
 import { DatasetError } from "../../../harness/core";
 import type { Dataset } from "../../../harness/dataset";
 import { Dataset as DatasetTag } from "../../../harness/dataset";
-import { Either } from "../../../internal/either";
 import { definedValues, isRecord } from "../../../internal/guards";
 import { fetchHttpClientLayer } from "../../../internal/http-client";
 import { parseSchema, z } from "../../../internal/zod";
@@ -52,37 +52,37 @@ export function parseDsqaDataset(
   text: string,
   expectedSha256 = DSQA_DATASET_SHA256,
   expectedRows = DSQA_DATASET_ROWS
-): Either.Either<readonly DsqaRecord[], string> {
+): Result.Result<readonly DsqaRecord[], string> {
   const digest = createHash("sha256").update(text, "utf8").digest("hex");
   if (digest !== expectedSha256) {
-    return Either.left(
+    return Result.fail(
       `DSQA checksum mismatch: expected ${expectedSha256}, got ${digest}`
     );
   }
-  const parsedCsv = Either.try((): unknown =>
+  const parsedCsv = Result.try((): unknown =>
     parse(text, { columns: true, skip_empty_lines: true })
   );
-  if (Either.isLeft(parsedCsv) || !Array.isArray(parsedCsv.right)) {
-    return Either.left("DSQA CSV failed to parse");
+  if (Result.isFailure(parsedCsv) || !Array.isArray(parsedCsv.success)) {
+    return Result.fail("DSQA CSV failed to parse");
   }
-  const records = parsedCsv.right
+  const records = parsedCsv.success
     .filter((record): record is Record<string, unknown> => isRecord(record))
-    .map((record, index): Either.Either<DsqaRecord, string> => {
+    .map((record, index): Result.Result<DsqaRecord, string> => {
       const parsedRecord = parseSchema(DsqaRecordSchema, record);
-      return Either.isLeft(parsedRecord)
-        ? Either.left(
-            `DSQA row ${index} failed validation: ${parsedRecord.left.message}`
+      return Result.isFailure(parsedRecord)
+        ? Result.fail(
+            `DSQA row ${index} failed validation: ${parsedRecord.failure.message}`
           )
-        : Either.right(parsedRecord.right);
+        : Result.succeed(parsedRecord.success);
     });
-  const firstError = records.find(Either.isLeft);
-  if (firstError !== undefined && Either.isLeft(firstError)) {
-    return Either.left(firstError.left);
+  const firstError = records.find(Result.isFailure);
+  if (firstError !== undefined && Result.isFailure(firstError)) {
+    return Result.fail(firstError.failure);
   }
-  const data = records.filter(Either.isRight).map((record) => record.right);
+  const data = records.filter(Result.isSuccess).map((record) => record.success);
   return data.length === expectedRows
-    ? Either.right(data)
-    : Either.left(
+    ? Result.succeed(data)
+    : Result.fail(
         `DSQA row count drifted: expected ${expectedRows}, got ${data.length}`
       );
 }
@@ -130,9 +130,9 @@ export function makeDsqaDatasetLayer(
             ),
             flatMap((text) => {
               const parsed = parseDsqaDataset(text);
-              return Either.isLeft(parsed)
-                ? fail(new DatasetError({ message: parsed.left }))
-                : succeed(parsed.right);
+              return Result.isFailure(parsed)
+                ? fail(new DatasetError({ message: parsed.failure }))
+                : succeed(parsed.success);
             })
           )
       );
@@ -144,7 +144,7 @@ export function makeDsqaDatasetLayer(
               map((rows) => {
                 const start = opts?.start ?? 0;
                 const end = Math.min(opts?.end ?? rows.length, rows.length);
-                return fromChunk(
+                return fromArray(
                   rows
                     .slice(start, end)
                     .map((record, offset) =>

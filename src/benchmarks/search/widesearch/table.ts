@@ -1,7 +1,7 @@
 import { casual } from "chrono-node";
 import { parse } from "csv-parse/sync";
+import * as Result from "effect/Result";
 
-import { Either } from "../../../internal/either";
 import { parseSchema, z } from "../../../internal/zod";
 
 export interface WideSearchTable {
@@ -51,27 +51,27 @@ export function normalizeWideSearchColumn(value: string): string {
 
 export function parseWideSearchExpected(
   answer: string
-): Either.Either<WideSearchEvaluation, string> {
-  const json = Either.try(() => JSON.parse(answer));
-  if (Either.isLeft(json)) {
-    return Either.left(`invalid expected JSON: ${String(json.left)}`);
+): Result.Result<WideSearchEvaluation, string> {
+  const json = Result.try(() => JSON.parse(answer));
+  if (Result.isFailure(json)) {
+    return Result.fail(`invalid expected JSON: ${String(json.failure)}`);
   }
-  const parsed = parseSchema(ExpectedSchema, json.right);
-  if (Either.isLeft(parsed)) {
-    return Either.left(parsed.left.message);
+  const parsed = parseSchema(ExpectedSchema, json.success);
+  if (Result.isFailure(parsed)) {
+    return Result.fail(parsed.failure.message);
   }
   const pipeline = Object.fromEntries(
-    Object.entries(parsed.right.evaluation.eval_pipeline).map(
+    Object.entries(parsed.success.evaluation.eval_pipeline).map(
       ([column, item]) => [normalizeWideSearchColumn(column), item]
     )
   );
-  return Either.right({
-    required: parsed.right.evaluation.required.map(normalizeWideSearchColumn),
-    unique: parsed.right.evaluation.unique_columns.map(
+  return Result.succeed({
+    required: parsed.success.evaluation.required.map(normalizeWideSearchColumn),
+    unique: parsed.success.evaluation.unique_columns.map(
       normalizeWideSearchColumn
     ),
     pipeline,
-    groundTruth: parsed.right.ground_truth.map((row) =>
+    groundTruth: parsed.success.ground_truth.map((row) =>
       Object.fromEntries(
         Object.entries(row).map(([key, value]) => [
           normalizeWideSearchColumn(key),
@@ -113,13 +113,13 @@ export function parseWideSearchMarkdownTable(
   if (tableLines.length < 2) {
     return null;
   }
-  const raw = Either.try((): unknown =>
+  const raw = Result.try((): unknown =>
     parse(tableLines.join("\n"), { delimiter: "|", relax_column_count: true })
   );
-  if (Either.isLeft(raw) || !Array.isArray(raw.right)) {
+  if (Result.isFailure(raw) || !Array.isArray(raw.success)) {
     return null;
   }
-  const matrix = raw.right.filter((row): row is unknown[] =>
+  const matrix = raw.success.filter((row): row is unknown[] =>
     Array.isArray(row)
   );
   const header = matrix[0]?.map(String);

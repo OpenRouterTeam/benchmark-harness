@@ -1,7 +1,7 @@
 import { succeed as effectSucceed } from "effect/Effect";
 import type { Layer } from "effect/Layer";
 import { succeed as layerSucceed } from "effect/Layer";
-import { fromArray as fromChunk } from "effect/Stream";
+import { fromArray } from "effect/Stream";
 
 import type { Sample } from "../../harness/core";
 import { Dataset } from "../../harness/dataset";
@@ -29,7 +29,7 @@ export function makeToolCallSchemaFuzzDatasetLayer(
   return layerSucceed(
     Dataset,
     Dataset.of({
-      stream: (opts) => fromChunk(samples.slice(opts?.start, opts?.end)),
+      stream: (opts) => fromArray(samples.slice(opts?.start, opts?.end)),
       size: effectSucceed(samples.length),
     })
   );

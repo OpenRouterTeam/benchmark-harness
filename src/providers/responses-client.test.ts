@@ -5,7 +5,7 @@ import { readFile } from "node:fs/promises";
 import type { StreamEvents } from "@openrouter/sdk/models";
 import { OpenRouterError } from "@openrouter/sdk/models/errors/openroutererror";
 import { streamEventsFromJSON } from "@openrouter/sdk/models/streamevents";
-import { findErrorOption as failureOption } from "effect/Cause";
+import { findErrorOption } from "effect/Cause";
 import {
   flatMap,
   gen,
@@ -17,7 +17,7 @@ import { getOrThrow } from "effect/Option";
 
 import { assertFailure } from "../../test/helpers/exit-asserts";
 import { isSystemicModelError } from "../harness/core";
-import { assertRight } from "../internal/testing";
+import { assertSuccess as assertResultSuccess } from "../internal/testing";
 import { parseSchema, z } from "../internal/zod";
 import {
   getCollectedGenerationIdEntries,
@@ -56,8 +56,8 @@ async function readTerminalFixture(): Promise<
     "utf8"
   );
   const result = parseSchema(TerminalFixtureSchema, JSON.parse(raw));
-  assertRight(result);
-  return result.right;
+  assertResultSuccess(result);
+  return result.success;
 }
 
 async function readStreamFixture(): Promise<string> {
@@ -949,7 +949,7 @@ describe("makeResponsesLayer", () => {
         )
       );
       assertFailure(exit);
-      const error = getOrThrow(failureOption(exit.cause));
+      const error = getOrThrow(findErrorOption(exit.cause));
       expect(error.cfRay).toBe("ray-123");
       expect(error.xRequestId).toBe("req-456");
       expect(error.message).toContain("cf_ray=ray-123");
@@ -983,7 +983,7 @@ describe("makeResponsesLayer", () => {
         )
       );
       assertFailure(exit);
-      const error = getOrThrow(failureOption(exit.cause));
+      const error = getOrThrow(findErrorOption(exit.cause));
       expect(error.status).toBe(500);
       expect(error.retryable).toBe(true);
     } finally {

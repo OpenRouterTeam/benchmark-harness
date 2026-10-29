@@ -1,9 +1,9 @@
 import type { ResponsesRequest } from "@openrouter/sdk/models";
 import { currentTimeMillis } from "effect/Clock";
-import { formatIso, nowUnsafe as unsafeNow } from "effect/DateTime";
+import { formatIso, nowUnsafe } from "effect/DateTime";
 import type { Effect } from "effect/Effect";
 import {
-  catch as catchAll,
+  catch as catch_,
   fail,
   flatMap,
   forEach,
@@ -14,6 +14,7 @@ import {
   provideService,
   succeed,
 } from "effect/Effect";
+import * as Result from "effect/Result";
 
 import type {
   ModelMessage,
@@ -24,7 +25,6 @@ import type {
 } from "../../harness/core";
 import { MessageRole, SolverError } from "../../harness/core";
 import type { SolverService } from "../../harness/solver";
-import { Either } from "../../internal/either";
 import { definedValues, isDefinedAndNotNull } from "../../internal/guards";
 import { parseSchema, z } from "../../internal/zod";
 import type { JudgeConfig } from "../../judge/judge";
@@ -87,10 +87,12 @@ export function dracoSolver(
       const sample = state.sample;
       const problem = sample.input;
       const criteriaResult = readCriteria(sample.metadata?.["criteria"]);
-      if (Either.isLeft(criteriaResult)) {
-        return yield* fail(new SolverError({ message: criteriaResult.left }));
+      if (Result.isFailure(criteriaResult)) {
+        return yield* fail(
+          new SolverError({ message: criteriaResult.failure })
+        );
       }
-      const criteria = criteriaResult.right;
+      const criteria = criteriaResult.success;
       const { generation, generationKey } = yield* runGeneration({
         config,
         taskId: sample.id,
@@ -178,8 +180,8 @@ function cachedSend(opts: {
       mapError((e) => new SolverError({ message: e }))
     );
     if (cached !== undefined) {
-      const jsonResult = Either.try(() => JSON.parse(cached));
-      if (Either.isLeft(jsonResult)) {
+      const jsonResult = Result.try(() => JSON.parse(cached));
+      if (Result.isFailure(jsonResult)) {
         yield* logWarning(
           "draco corrupted generation cache entry (invalid JSON); treating as miss",
           {
@@ -188,8 +190,8 @@ function cachedSend(opts: {
           }
         );
       } else {
-        const parsed = parseSchema(ResponsesResultSchema, jsonResult.right);
-        if (Either.isLeft(parsed)) {
+        const parsed = parseSchema(ResponsesResultSchema, jsonResult.success);
+        if (Result.isFailure(parsed)) {
           yield* logWarning(
             "draco corrupted generation cache entry (schema mismatch); treating as miss",
             {
@@ -198,7 +200,7 @@ function cachedSend(opts: {
             }
           );
         } else {
-          return { result: parsed.right, latencyMs: 0 };
+          return { result: parsed.success, latencyMs: 0 };
         }
       }
     }
@@ -210,7 +212,7 @@ function cachedSend(opts: {
     const latencyMs = (yield* currentTimeMillis) - startedAt;
     if (result.status === "completed") {
       yield* stagePut(stageKey, JSON.stringify(result)).pipe(
-        catchAll((e) => {
+        catch_((e) => {
           return logWarning(
             "draco stagePut failed for generation; proceeding without caching",
             {
@@ -323,7 +325,7 @@ function runJudge(opts: {
         judgeModel: config.judgeModel,
         cost: bucket.cost > 0 ? bucket.cost : null,
         latencyMs: null,
-        timestamp: formatIso(unsafeNow()),
+        timestamp: formatIso(nowUnsafe()),
       });
     }
     return runs;
@@ -380,8 +382,8 @@ function gradeOneCriterion(opts: {
     });
     const cached = yield* stageGet(key);
     if (cached !== undefined) {
-      const jsonResult = Either.try(() => JSON.parse(cached));
-      if (Either.isLeft(jsonResult)) {
+      const jsonResult = Result.try(() => JSON.parse(cached));
+      if (Result.isFailure(jsonResult)) {
         yield* logWarning(
           "draco corrupted verdict cache entry (invalid JSON); treating as miss",
           {
@@ -390,8 +392,8 @@ function gradeOneCriterion(opts: {
           }
         );
       } else {
-        const parsed = parseSchema(GradeOneResultSchema, jsonResult.right);
-        if (Either.isLeft(parsed)) {
+        const parsed = parseSchema(GradeOneResultSchema, jsonResult.success);
+        if (Result.isFailure(parsed)) {
           yield* logWarning(
             "draco corrupted verdict cache entry (schema mismatch); treating as miss",
             {
@@ -400,7 +402,7 @@ function gradeOneCriterion(opts: {
             }
           );
         } else {
-          return parsed.right;
+          return parsed.success;
         }
       }
     }
@@ -414,7 +416,7 @@ function gradeOneCriterion(opts: {
           schemaName: "draco_verdict",
           jsonSchema: DRACO_VERDICT_JSON_SCHEMA,
           parseVerdict: (text) =>
-            Either.right(
+            Result.succeed(
               text.trim().length === 0 ? null : parseSingleVerdict(text)
             ),
         })
@@ -438,7 +440,7 @@ function gradeOneCriterion(opts: {
       };
     }
     yield* stagePut(key, JSON.stringify(gradeResult)).pipe(
-      catchAll((e) => {
+      catch_((e) => {
         return logWarning(
           "draco stagePut failed for judge verdict; proceeding without caching",
           {
@@ -451,7 +453,7 @@ function gradeOneCriterion(opts: {
     return gradeResult;
   });
   return grade.pipe(
-    catchAll((e) => {
+    catch_((e) => {
       return logWarning(
         "draco grade_one_criterion failed; omitting criterion",
         {
@@ -528,15 +530,15 @@ function dracoUsageToModelUsage(
   };
 }
 
-function readCriteria(raw: unknown): Either.Either<Criterion[], string> {
+function readCriteria(raw: unknown): Result.Result<Criterion[], string> {
   if (raw === undefined) {
-    return Either.right([]);
+    return Result.succeed([]);
   }
   const parsed = parseSchema(CriterionSchema.array(), raw);
-  if (Either.isLeft(parsed)) {
-    return Either.left(
-      `Invalid criteria in sample metadata: ${parsed.left.message}`
+  if (Result.isFailure(parsed)) {
+    return Result.fail(
+      `Invalid criteria in sample metadata: ${parsed.failure.message}`
     );
   }
-  return Either.right(parsed.right);
+  return Result.succeed(parsed.success);
 }

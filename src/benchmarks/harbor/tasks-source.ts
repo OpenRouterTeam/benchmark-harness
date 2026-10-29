@@ -3,16 +3,10 @@ import { mkdtempSync, readdirSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { option, String as string } from "effect/Config";
+import { option, String as configString } from "effect/Config";
 import { TaggedError } from "effect/Data";
 import type { Effect } from "effect/Effect";
-import {
-  callback as async,
-  fail,
-  runSync,
-  succeed,
-  tryPromise,
-} from "effect/Effect";
+import { callback, fail, runSync, succeed, tryPromise } from "effect/Effect";
 import { getOrNull } from "effect/Option";
 
 import type { CacheStore } from "../../datasets/cache-store";
@@ -96,7 +90,7 @@ export function makeTasksSource(config: TasksSourceConfig): TasksSource {
   };
   const cloneTasks = async (): Promise<string> => {
     const override = getOrNull(
-      runSync(withLiveEnvConfig(string(config.envVar).pipe(option)))
+      runSync(withLiveEnvConfig(configString(config.envVar).pipe(option)))
     );
     if (
       override !== null &&
@@ -143,7 +137,7 @@ export function makeTasksSource(config: TasksSourceConfig): TasksSource {
       return Promise.resolve(cacheRoot);
     }
     const override = getOrNull(
-      runSync(withLiveEnvConfig(string(config.envVar).pipe(option)))
+      runSync(withLiveEnvConfig(configString(config.envVar).pipe(option)))
     );
     if (override && hasTasksDir(override) && isAtPinnedCommit(override)) {
       cacheRoot = override;
@@ -211,7 +205,7 @@ class GitError extends TaggedError("GitError")<{
 
 function runGit(args: string[]): Promise<void> {
   return runHarnessPromise(
-    async<void, GitError>((resolve) => {
+    callback<void, GitError>((resolve) => {
       const proc = execFile("git", args, { maxBuffer: 64 * 1024 * 1024 });
       let stderr = "";
       proc.stderr?.on("data", (d: Buffer) => (stderr += d.toString()));

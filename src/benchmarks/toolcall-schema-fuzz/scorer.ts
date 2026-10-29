@@ -1,9 +1,9 @@
 import { sync } from "effect/Effect";
+import * as Result from "effect/Result";
 
 import type { Score, TaskState, ToolCall } from "../../harness/core";
 import { ScoreValue } from "../../harness/core";
 import type { ScorerService } from "../../harness/scorer";
-import { Either } from "../../internal/either";
 import { isRecord } from "../../internal/guards";
 import type { CaseLookup } from "./cases";
 import { validateJsonSchema } from "./json-schema";
@@ -129,18 +129,21 @@ function callFailure(
       detail: `called ${JSON.stringify(call.function.name)}, expected ${JSON.stringify(expected.name)}`,
     };
   }
-  const parsed = Either.try((): unknown => JSON.parse(call.function.arguments));
+  const parsed = Result.try((): unknown => JSON.parse(call.function.arguments));
   if (
-    Either.isLeft(parsed) ||
-    !isRecord(parsed.right) ||
-    Array.isArray(parsed.right)
+    Result.isFailure(parsed) ||
+    !isRecord(parsed.success) ||
+    Array.isArray(parsed.success)
   ) {
     return {
       category: FuzzFailure.InvalidJson,
       detail: `arguments ${JSON.stringify(call.function.arguments)}`,
     };
   }
-  const violations = validateJsonSchema(parsed.right, tool.function.parameters);
+  const violations = validateJsonSchema(
+    parsed.success,
+    tool.function.parameters
+  );
   if (violations.length > 0) {
     return {
       category: FuzzFailure.SchemaViolation,
@@ -149,7 +152,7 @@ function callFailure(
         .join("; "),
     };
   }
-  const difference = firstDifference(parsed.right, expected.args);
+  const difference = firstDifference(parsed.success, expected.args);
   return difference === undefined
     ? undefined
     : { category: FuzzFailure.ValueMismatch, detail: difference };

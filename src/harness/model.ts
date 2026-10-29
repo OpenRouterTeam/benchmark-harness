@@ -1,4 +1,4 @@
-import { Service as Tag } from "effect/Context";
+import { Service } from "effect/Context";
 import type { Effect } from "effect/Effect";
 
 import type { ProviderSort } from "../internal/enums";
@@ -37,7 +37,7 @@ export interface GenerateConfig {
   readonly extraBody?: Readonly<Record<string, unknown>>;
 }
 
-export class Model extends Tag<Model, ModelService>()(
+export class Model extends Service<Model, ModelService>()(
   "@openrouter/bench-harness/model"
 ) {}
 

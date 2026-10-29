@@ -11,7 +11,7 @@ import type {
   WebSearchServerToolOpenRouter,
 } from "@openrouter/sdk/models";
 
-import { assertRight } from "../../internal/testing";
+import { assertSuccess } from "../../internal/testing";
 import { parseSchema, z } from "../../internal/zod";
 import {
   buildFusionBody,
@@ -139,9 +139,9 @@ describe("applyBlocklist", () => {
       type: "openrouter:shell",
       parameters: { sleepAfterSeconds: 3600 },
     });
-    assertRight(parsed);
+    assertSuccess(parsed);
 
-    const tools = experimentTools(config({ tools: [parsed.right] }));
+    const tools = experimentTools(config({ tools: [parsed.success] }));
 
     expect(tools).toEqual([{ type: "openrouter:shell" }]);
   });
@@ -230,8 +230,8 @@ describe("buildFusionBody", () => {
       ),
       params["tools"] ?? []
     );
-    assertRight(panelTools);
-    const panelTypes = panelTools.right.map((t) => t.type).toSorted();
+    assertSuccess(panelTools);
+    const panelTypes = panelTools.success.map((t) => t.type).toSorted();
     expect(panelTypes).toEqual(
       [
         "openrouter:shell",
@@ -239,7 +239,7 @@ describe("buildFusionBody", () => {
         "openrouter:web_search",
       ].toSorted()
     );
-    const webSearch = panelTools.right.find(
+    const webSearch = panelTools.success.find(
       (t) => t.type === "openrouter:web_search"
     )!;
     expect(webSearch.parameters?.["engine"]).toBe("exa");
@@ -247,7 +247,9 @@ describe("buildFusionBody", () => {
       "arxiv.org/abs/2602.11685",
     ]);
     expect(webSearch.parameters?.["excludedDomains"]).toBeUndefined();
-    const shell = panelTools.right.find((t) => t.type === "openrouter:shell")!;
+    const shell = panelTools.success.find(
+      (t) => t.type === "openrouter:shell"
+    )!;
     expect(shell.parameters?.["environment"]).toEqual({
       type: "container_auto",
     });

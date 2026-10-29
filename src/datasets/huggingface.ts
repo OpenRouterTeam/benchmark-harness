@@ -1,7 +1,11 @@
 import { createHash } from "node:crypto";
 import { join } from "node:path";
 
-import { map as configMap, option, String as string } from "effect/Config";
+import {
+  map as configMap,
+  option,
+  String as configString,
+} from "effect/Config";
 import { millis } from "effect/Duration";
 import type { Effect } from "effect/Effect";
 import {
@@ -20,6 +24,7 @@ import type { Layer } from "effect/Layer";
 import { effect, provide } from "effect/Layer";
 import type { Option } from "effect/Option";
 import { getOrNull, none, some } from "effect/Option";
+import * as Result from "effect/Result";
 import type { Schedule } from "effect/Schedule";
 import {
   exponential,
@@ -27,16 +32,15 @@ import {
   modifyDelay,
   passthrough,
   setInputType,
-  while as whileInput,
+  while as while_,
 } from "effect/Schedule";
 import type { Stream } from "effect/Stream";
-import { paginate as paginateChunkEffect } from "effect/Stream";
+import { paginate } from "effect/Stream";
 
 import type { Sample } from "../harness/core";
 import { DatasetError } from "../harness/core";
 import type { DatasetStreamOptions } from "../harness/dataset";
 import { Dataset } from "../harness/dataset";
-import { Either } from "../internal/either";
 import { withLiveEnvConfig } from "../internal/env-config";
 import { definedValues } from "../internal/guards";
 import { fetchHttpClientLayer } from "../internal/http-client";
@@ -114,7 +118,7 @@ export function hfFetchRetrySchedule<E = unknown>(
   return withRetryAttemptLogging(
     scheduled.pipe(
       setInputType<E>(),
-      whileInput(({ input }) => isRetryable(input)),
+      while_(({ input }) => isRetryable(input)),
       passthrough,
       modifyDelay(({ input, duration }) => {
         const explicit = retryAfterMs(input);
@@ -127,7 +131,7 @@ export function hfFetchRetrySchedule<E = unknown>(
 
 export function resolveHfToken(): Effect<string, never> {
   return withLiveEnvConfig(
-    string("HF_TOKEN").pipe(
+    configString("HF_TOKEN").pipe(
       option,
       configMap((value) => getOrNull(value) ?? ""),
       orElseSucceed(() => "")
@@ -193,7 +197,7 @@ export function makeHfPageFetcher(
         hfTokenOverride !== undefined
           ? hfTokenOverride
           : yield* withLiveEnvConfig(
-              string("HF_TOKEN").pipe(
+              configString("HF_TOKEN").pipe(
                 option,
                 configMap((opt) => getOrNull(opt) ?? ""),
                 mapError(
@@ -218,8 +222,8 @@ export function makeHfPageFetcher(
         );
         if (cached !== undefined) {
           const cachedParsed = parseSchema(HfRowsResponseSchema, cached);
-          if (Either.isRight(cachedParsed)) {
-            return cachedParsed.right;
+          if (Result.isSuccess(cachedParsed)) {
+            return cachedParsed.success;
           }
         }
       }
@@ -251,17 +255,17 @@ export function makeHfPageFetcher(
           )
         );
       const parsed = parseSchema(HfRowsResponseSchema, body);
-      if (Either.isLeft(parsed)) {
+      if (Result.isFailure(parsed)) {
         return yield* fail(
           new DatasetError({
-            message: `HF /rows response failed validation (offset=${offset}): ${parsed.left.message}`,
+            message: `HF /rows response failed validation (offset=${offset}): ${parsed.failure.message}`,
           })
         );
       }
       if (cacheKey !== undefined) {
         yield* promise(() => store.writeJson(cacheKey, body));
       }
-      return parsed.right;
+      return parsed.success;
     });
 }
 
@@ -279,7 +283,7 @@ export function paginateHfRows<T>(opts: {
     offset: start - (start % opts.pageSize),
     limit: opts.pageSize,
   };
-  return paginateChunkEffect(initialState, (state: PageState) =>
+  return paginate(initialState, (state: PageState) =>
     opts.fetchPage(state.offset, state.limit).pipe(
       flatMap((page) => {
         const end =
@@ -289,13 +293,13 @@ export function paginateHfRows<T>(opts: {
         const inRange = page.rows.filter(
           (r) => r.row_idx >= start && r.row_idx < end
         );
-        const mapped = Either.try(() =>
+        const mapped = Result.try(() =>
           inRange.map((r) => opts.mapRow(r, r.row_idx))
         );
-        if (Either.isLeft(mapped)) {
+        if (Result.isFailure(mapped)) {
           return fail(
             new DatasetError({
-              message: `Failed to map ${opts.dataset ?? "HF"} record(s) at offset ${state.offset}: ${String(mapped.left)}`,
+              message: `Failed to map ${opts.dataset ?? "HF"} record(s) at offset ${state.offset}: ${String(mapped.failure)}`,
             })
           );
         }
@@ -304,7 +308,7 @@ export function paginateHfRows<T>(opts: {
         const next: Option<PageState> = hasMore
           ? some({ offset: nextOffset, limit: opts.pageSize })
           : none();
-        return succeed([mapped.right, next] as const);
+        return succeed([mapped.success, next] as const);
       })
     )
   );

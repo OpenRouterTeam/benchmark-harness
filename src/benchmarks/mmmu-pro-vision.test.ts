@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from "bun:test";
 
 import { blockNetwork } from "../../test/helpers/block-network";
 import { NOOP_PROGRESS_REPORTER } from "../harness/progress";
-import { assertLeft } from "../internal/testing";
+import { assertFailure } from "../internal/testing";
 import { runBenchmarkById } from "../runner/run-by-id";
 import { mmmuProVisionRecordToSample } from "./mmmu-pro-vision";
 import { getBenchmark } from "./registry";
@@ -119,6 +119,6 @@ describe("MMMU Pro Vision benchmark registry", () => {
       sessionId: "test",
       progressReporter: NOOP_PROGRESS_REPORTER,
     });
-    assertLeft(result);
+    assertFailure(result);
   });
 });

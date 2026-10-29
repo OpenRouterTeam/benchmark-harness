@@ -12,7 +12,7 @@ import { initialTaskState, ScoreValue } from "../../../harness/core";
 import type { SampleScore } from "../../../harness/metric";
 import { aggregateScores } from "../../../harness/metric";
 import type { RunResult } from "../../../harness/run";
-import { assertRight } from "../../../internal/testing";
+import { assertSuccess } from "../../../internal/testing";
 import { parseSchema } from "../../../internal/zod";
 import type {
   ResponsesResult,
@@ -53,8 +53,8 @@ function rawVerdict(verdict = VERDICT): string {
 
 function makeLane(): SearchLaneConfig {
   const result = parseSchema(SearchLaneConfigSchema, { engine: "exa" });
-  assertRight(result);
-  return result.right;
+  assertSuccess(result);
+  return result.success;
 }
 
 function fixtureResult(text: string, isJudge = false): ResponsesResult {

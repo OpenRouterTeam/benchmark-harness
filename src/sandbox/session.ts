@@ -1,7 +1,7 @@
-import { Service as Tag } from "effect/Context";
+import { Service } from "effect/Context";
 import type { Effect } from "effect/Effect";
 import {
-  catch as catchAll,
+  catch as catch_,
   succeed,
   sync,
   tryPromise,
@@ -58,7 +58,7 @@ export interface CreateSessionInput {
   readonly uploads: readonly UploadSpec[];
 }
 
-export class SandboxSession extends Tag<
+export class SandboxSession extends Service<
   SandboxSession,
   {
     readonly create: (
@@ -130,7 +130,7 @@ export function makeSessionInstance(
         try: input.terminate,
         catch: (e) =>
           toSolverError(`Failed to terminate ${input.sandboxId}`, e),
-      }).pipe(catchAll(() => effectVoid)),
+      }).pipe(catch_(() => effectVoid)),
   };
 }
 

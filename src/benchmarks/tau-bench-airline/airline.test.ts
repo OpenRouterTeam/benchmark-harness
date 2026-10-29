@@ -6,7 +6,7 @@ import { make as makeSemaphore } from "effect/Semaphore";
 import { MessageRole, ScoreValue } from "../../harness/core";
 import { isRecord } from "../../internal/guards";
 import { fetchHttpClientLayer } from "../../internal/http-client";
-import { assertRight } from "../../internal/testing";
+import { assertSuccess } from "../../internal/testing";
 import { parseSchema } from "../../internal/zod";
 import { TauBenchAirlineConfigSchema } from "../benchmark-config";
 import { benchmarkIds, getBenchmark } from "../registry";
@@ -115,9 +115,9 @@ describe("tau_bench_verified_airline config", () => {
       model: "openai/gpt-4o-mini",
       reasoningEffort: "low",
     });
-    assertRight(result);
-    expect(result.right.reasoningEffort).toBe("low");
-    expect(result.right.userReasoningEffort).toBe("medium");
+    assertSuccess(result);
+    expect(result.success.reasoningEffort).toBe("low");
+    expect(result.success.userReasoningEffort).toBe("medium");
   });
   it("allows overriding the user simulator reasoning effort", () => {
     const result = parseSchema(TauBenchAirlineConfigSchema, {
@@ -126,9 +126,9 @@ describe("tau_bench_verified_airline config", () => {
       reasoningEffort: "low",
       userReasoningEffort: "high",
     });
-    assertRight(result);
-    expect(result.right.reasoningEffort).toBe("low");
-    expect(result.right.userReasoningEffort).toBe("high");
+    assertSuccess(result);
+    expect(result.success.reasoningEffort).toBe("low");
+    expect(result.success.userReasoningEffort).toBe("high");
   });
 });
 describe("airlineRecordToSample", () => {

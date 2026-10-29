@@ -1,7 +1,8 @@
 import { setTimeout as sleep } from "node:timers/promises";
 
+import * as Result from "effect/Result";
+
 import type { ToolCall } from "../../../harness/core";
-import { Either } from "../../../internal/either";
 import { parseSchema, z } from "../../../internal/zod";
 import { TOOLCALL_SCHEMA_FUZZ_META } from "../../benchmark-meta";
 import type { GridDraw } from "../grid";
@@ -94,13 +95,13 @@ export function openRouterChat({
         await sleep(2 ** attempt * 1000);
         continue;
       }
-      const json = Either.try((): unknown => JSON.parse(text));
-      const parsed = Either.isLeft(json)
+      const json = Result.try((): unknown => JSON.parse(text));
+      const parsed = Result.isFailure(json)
         ? json
-        : parseSchema(ChatResponseSchema, json.right);
-      const message = Either.isLeft(parsed)
+        : parseSchema(ChatResponseSchema, json.success);
+      const message = Result.isFailure(parsed)
         ? undefined
-        : parsed.right.choices[0]?.message;
+        : parsed.success.choices[0]?.message;
       return message ?? `HTTP ${response.status}`;
     }
     return "retries exhausted";
@@ -120,18 +121,18 @@ function caseBrief(key: string, drawn: GridDraw): string {
 }
 
 function parseDraft(content: string): Draft | string {
-  const json = Either.try((): unknown =>
+  const json = Result.try((): unknown =>
     JSON.parse(
       content.slice(content.indexOf("{"), content.lastIndexOf("}") + 1)
     )
   );
-  if (Either.isLeft(json)) {
+  if (Result.isFailure(json)) {
     return "reply is not valid JSON";
   }
-  const parsed = parseSchema(DraftSchema, json.right);
-  return Either.isLeft(parsed)
-    ? `not a JSON object of the requested form: ${parsed.left.message}`
-    : parsed.right;
+  const parsed = parseSchema(DraftSchema, json.success);
+  return Result.isFailure(parsed)
+    ? `not a JSON object of the requested form: ${parsed.failure.message}`
+    : parsed.success;
 }
 
 function checks(

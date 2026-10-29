@@ -12,7 +12,7 @@ import type {
   WebSearchServerToolOpenRouter,
 } from "@openrouter/sdk/models";
 import { snakeCase } from "change-case";
-import { option, String as string } from "effect/Config";
+import { option, String as configString } from "effect/Config";
 import { runSync } from "effect/Effect";
 import { getOrNull } from "effect/Option";
 
@@ -34,7 +34,9 @@ import { DracoToolType } from "./schemas";
 
 function resolveMaxToolCalls(): number {
   const v = getOrNull(
-    runSync(withLiveEnvConfig(string("BENCHMARK_MAX_TOOL_CALLS").pipe(option)))
+    runSync(
+      withLiveEnvConfig(configString("BENCHMARK_MAX_TOOL_CALLS").pipe(option))
+    )
   );
   return v === null ? 16 : Number(v);
 }

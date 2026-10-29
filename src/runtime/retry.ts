@@ -17,7 +17,7 @@ import {
   passthrough,
   setInputType,
   tap,
-  while as whileInput,
+  while as while_,
 } from "effect/Schedule";
 
 import type { ModelError } from "../harness/core";
@@ -91,7 +91,7 @@ export function withRetryAttemptLogging<Error>(
   Error
 > {
   return scheduled.pipe(
-    whileInput(({ attempt }) => attempt <= maxRetries),
+    while_(({ attempt }) => attempt <= maxRetries),
     map(({ input, attempt }) => ({ error: input, attempt })),
     tap(({ output, duration }) => logRetryDecision(output, duration))
   );
@@ -147,7 +147,7 @@ export function rateLimitRetrySchedule(config: RetryConfig = {}): Schedule<
     setInputType<EvalError>()
   );
   const scheduled = backoff.pipe(
-    whileInput(({ input }) => isRetryable(input)),
+    while_(({ input }) => isRetryable(input)),
     passthrough,
     modifyDelay(({ input, duration }) => {
       const retryAfterMs =
@@ -175,7 +175,7 @@ export function transientSolverRetrySchedule(
     jittered,
     setInputType<SolverError>(),
     passthrough,
-    whileInput(({ input }) => input instanceof SolverError)
+    while_(({ input }) => input instanceof SolverError)
   );
   return withRetryAttemptLogging(scheduled, maxRetries);
 }

@@ -3,9 +3,9 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { findErrorOption as failureOption } from "effect/Cause";
+import { findErrorOption } from "effect/Cause";
 import {
-  result as either,
+  result,
   gen,
   provide,
   runPromise,
@@ -719,7 +719,7 @@ describe("terminal-bench ori solver", () => {
       }
     );
     assertFailure(exit);
-    expect(getOrThrow(failureOption(exit.cause)).message).toBe(
+    expect(getOrThrow(findErrorOption(exit.cause)).message).toBe(
       "the claude agent does not forward OpenRouter request plugins (auto-router) from inside the sandbox"
     );
     expect(
@@ -739,7 +739,7 @@ describe("terminal-bench ori solver", () => {
       })
     );
     assertFailure(exit);
-    expect(getOrThrow(failureOption(exit.cause)).message).toContain(
+    expect(getOrThrow(findErrorOption(exit.cause)).message).toContain(
       "Failed to install ori"
     );
     expect(
@@ -1231,7 +1231,7 @@ describe("terminal-bench pi via ori", () => {
             noopCheckpointLayer
           )
         ),
-        either
+        result
       )
     );
     expect(outcome._tag).toBe("Failure");

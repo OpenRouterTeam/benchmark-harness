@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { createHash } from "node:crypto";
 
-import { assertLeft, assertRight } from "../../../internal/testing";
+import { assertFailure, assertSuccess } from "../../../internal/testing";
 import {
   DSQA_GRADER_PROMPT,
   DSQA_JUDGE_CONFIG,
@@ -39,8 +39,8 @@ describe("DSQA grader", () => {
         },
       })
     );
-    assertRight(result);
-    expect(result.right).toEqual({
+    assertSuccess(result);
+    expect(result.success).toEqual({
       explanation: "Belgium was found but France was not.",
       correctness_details: { Belgium: true, France: false },
       excessive_answers: ["Italy"],
@@ -50,8 +50,8 @@ describe("DSQA grader", () => {
     const result = parseDsqaVerdict(`prefix "\`\`\`json
 {"Answer Correctness":{"Explanation":"ok","Correctness Details":{"A":true},"Excessive Answers":[]}}
 \`\`\`" suffix`);
-    assertRight(result);
-    expect(result.right.excessive_answers).toEqual([]);
+    assertSuccess(result);
+    expect(result.success.excessive_answers).toEqual([]);
   });
   it("rejects malformed verdicts", () => {
     for (const text of [
@@ -60,7 +60,7 @@ describe("DSQA grader", () => {
       '{"Answer Correctness":{"Explanation":"x","Correctness Details":[]}}',
       '{"Answer Correctness":{"Explanation":"x","Correctness Details":{"A":true},"Excessive Answers":[1]}}',
     ]) {
-      assertLeft(parseDsqaVerdict(text));
+      assertFailure(parseDsqaVerdict(text));
     }
   });
   it("uses the official unstructured verdict contract", () => {

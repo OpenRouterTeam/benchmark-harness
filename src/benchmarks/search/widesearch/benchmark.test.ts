@@ -12,7 +12,7 @@ import type { Sample, ScorerTrajectory } from "../../../harness/core";
 import { initialTaskState, ScoreValue } from "../../../harness/core";
 import type { SampleScore } from "../../../harness/metric";
 import type { RunResult } from "../../../harness/run";
-import { assertRight } from "../../../internal/testing";
+import { assertSuccess } from "../../../internal/testing";
 import { parseSchema } from "../../../internal/zod";
 import type {
   ResponsesResult,
@@ -63,8 +63,8 @@ function fixtureResult(text: string, cost: number): ResponsesResult {
 
 function lane(): SearchLaneConfig {
   const parsed = parseSchema(SearchLaneConfigSchema, { engine: "exa" });
-  assertRight(parsed);
-  return parsed.right;
+  assertSuccess(parsed);
+  return parsed.success;
 }
 describe("makeWideSearchSolver", () => {
   it("runs grading after completed generation and accounts for grading usage", async () => {

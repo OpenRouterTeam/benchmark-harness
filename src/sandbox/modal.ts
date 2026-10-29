@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 import type { Effect } from "effect/Effect";
 import {
-  catch as catchAll,
+  catch as catch_,
   gen,
   tryPromise,
   void as effectVoid,
@@ -171,7 +171,7 @@ export function makeModalSandboxLayer(
           yield* tryPromise({
             try: () => sandbox.terminate(),
             catch: () => Promise.resolve(),
-          }).pipe(catchAll(() => effectVoid));
+          }).pipe(catch_(() => effectVoid));
         }
       }
     });

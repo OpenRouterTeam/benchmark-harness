@@ -4,7 +4,7 @@ import { gen, provide, runPromise } from "effect/Effect";
 import { runCollect } from "effect/Stream";
 
 import { Dataset } from "../../../harness/dataset";
-import { assertLeft, assertRight } from "../../../internal/testing";
+import { assertFailure, assertSuccess } from "../../../internal/testing";
 import {
   HLE_ACCESS_URL,
   HLE_REVISION,
@@ -74,8 +74,8 @@ describe("HLE dataset", () => {
   });
   it("preserves answer metadata from official rows", () => {
     const result = hleRecordToSample(RECORD);
-    assertRight(result);
-    expect(result.right).toEqual({
+    assertSuccess(result);
+    expect(result.success).toEqual({
       id: "upstream-id",
       input: "What is the answer?",
       target: { text: "42" },
@@ -88,8 +88,8 @@ describe("HLE dataset", () => {
   });
   it("rejects malformed official rows", () => {
     const result = hleRecordToSample({ ...RECORD, category: null });
-    assertLeft(result);
-    expect(result.left).toContain("invalid HLE record");
+    assertFailure(result);
+    expect(result.failure).toContain("invalid HLE record");
   });
   it("filters image questions before applying ranges", async () => {
     const source = Array.from(

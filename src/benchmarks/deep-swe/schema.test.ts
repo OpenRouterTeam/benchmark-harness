@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 
 import { parse as tomlParse } from "smol-toml";
 
-import { assertRight, assertLeft } from "../../internal/testing";
+import { assertSuccess, assertFailure } from "../../internal/testing";
 import { parseSchema } from "../../internal/zod";
 import { DeepSweTaskTomlSchema } from "./schema";
 
@@ -49,8 +49,8 @@ mcp_servers = []
 describe("DeepSweTaskTomlSchema", () => {
   it("parses a real-shaped task.toml and surfaces the fields the harness uses", () => {
     const result = parseSchema(DeepSweTaskTomlSchema, tomlParse(FULL_TOML));
-    assertRight(result);
-    const parsed = result.right;
+    assertSuccess(result);
+    const parsed = result.success;
     expect(parsed.metadata.task_id).toBe("abs-module-cache-flags");
     expect(parsed.metadata.category).toBe("enhancement");
     expect(parsed.metadata.language).toBe("go");
@@ -78,8 +78,8 @@ cpus = 1
 memory_mb = 1024
 `);
     const result = parseSchema(DeepSweTaskTomlSchema, minimal);
-    assertRight(result);
-    const parsed = result.right;
+    assertSuccess(result);
+    const parsed = result.success;
     expect(parsed.metadata.category).toBeUndefined();
     expect(parsed.environment.gpus).toBe(0);
     expect(parsed.environment.allow_internet).toBe(false);
@@ -96,6 +96,6 @@ timeout_sec = 100.0
 cpus = 1
 memory_mb = 1024
 `);
-    assertLeft(parseSchema(DeepSweTaskTomlSchema, bad));
+    assertFailure(parseSchema(DeepSweTaskTomlSchema, bad));
   });
 });

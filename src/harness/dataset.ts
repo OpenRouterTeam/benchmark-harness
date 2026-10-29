@@ -1,4 +1,4 @@
-import { Service as Tag } from "effect/Context";
+import { Service } from "effect/Context";
 import type { Effect } from "effect/Effect";
 import type { Stream } from "effect/Stream";
 
@@ -9,7 +9,7 @@ export interface DatasetStreamOptions {
   readonly end?: number;
 }
 
-export class Dataset extends Tag<
+export class Dataset extends Service<
   Dataset,
   {
     readonly stream: (

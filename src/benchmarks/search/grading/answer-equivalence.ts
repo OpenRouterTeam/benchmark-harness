@@ -1,4 +1,5 @@
-import { Either } from "../../../internal/either";
+import * as Result from "effect/Result";
+
 import { parseSchema, z } from "../../../internal/zod";
 import type { JudgeCallSpec, JudgeConfig } from "../../../judge/judge";
 
@@ -78,16 +79,16 @@ const VERDICT_JSON_SCHEMA = {
 
 export function parseAnswerEquivalenceVerdict(
   text: string
-): Either.Either<AnswerEquivalenceVerdict, string> {
-  const json = Either.try(() => JSON.parse(text));
-  if (Either.isLeft(json)) {
-    return Either.left(`not valid JSON: ${text.slice(0, 200)}`);
+): Result.Result<AnswerEquivalenceVerdict, string> {
+  const json = Result.try(() => JSON.parse(text));
+  if (Result.isFailure(json)) {
+    return Result.fail(`not valid JSON: ${text.slice(0, 200)}`);
   }
-  const parsed = parseSchema(AnswerEquivalenceVerdictSchema, json.right);
-  if (Either.isLeft(parsed)) {
-    return Either.left(parsed.left.message);
+  const parsed = parseSchema(AnswerEquivalenceVerdictSchema, json.success);
+  if (Result.isFailure(parsed)) {
+    return Result.fail(parsed.failure.message);
   }
-  return Either.right(parsed.right);
+  return Result.succeed(parsed.success);
 }
 
 export function answerEquivalenceJudgeSpec(fields: {

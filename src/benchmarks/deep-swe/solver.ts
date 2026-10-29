@@ -2,11 +2,11 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { isCause, hasInterrupts as isInterrupted } from "effect/Cause";
+import { isCause, hasInterrupts } from "effect/Cause";
 import type { Effect } from "effect/Effect";
 import {
   gen,
-  catch as catchAll,
+  catch as catch_,
   catchTag,
   logWarning,
   orElseSucceed,
@@ -181,7 +181,7 @@ export function makeDeepSweSolver(
       const agentSession: SandboxSessionInstance =
         checkpoint !== null && cliHarness === undefined
           ? yield* sessionFactory.attach(checkpoint.sandboxId).pipe(
-              catchAll(() => {
+              catch_(() => {
                 attachSucceeded = false;
                 return createAgentSession();
               })
@@ -342,7 +342,7 @@ export function makeDeepSweSolver(
           yield* tryPromise({
             try: () => checkpointStore.remove(checkpointKey),
             catch: () => undefined,
-          }).pipe(catchAll(() => effectVoid));
+          }).pipe(catch_(() => effectVoid));
         }
         const finalContent = loop.finalText;
         return {
@@ -388,7 +388,7 @@ function ensureDestroy(
         shouldDestroy = !(
           (opts?.skipOnInterrupt ?? false) &&
           isCause(cause) &&
-          isInterrupted(cause)
+          hasInterrupts(cause)
         );
         throw cause;
       } finally {

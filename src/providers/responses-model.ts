@@ -5,7 +5,7 @@ import type {
   StreamEvents,
 } from "@openrouter/sdk/models";
 import { camelCase, snakeCase } from "change-case";
-import { Service as Tag } from "effect/Context";
+import { Service } from "effect/Context";
 import { millis } from "effect/Duration";
 import type { Effect } from "effect/Effect";
 import {
@@ -101,7 +101,7 @@ export interface ResponsesModelService {
   ) => Effect<ResponsesTurn, ModelError>;
 }
 
-export class ResponsesModel extends Tag<
+export class ResponsesModel extends Service<
   ResponsesModel,
   ResponsesModelService
 >()("@openrouter/bench-harness/responses-model/ResponsesModel") {}

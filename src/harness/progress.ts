@@ -1,4 +1,4 @@
-import { Service as Tag } from "effect/Context";
+import { Service } from "effect/Context";
 import type { Effect } from "effect/Effect";
 import { sync } from "effect/Effect";
 
@@ -60,7 +60,7 @@ export interface ProgressReporterService {
   ) => Effect<void>;
 }
 
-export class ProgressReporter extends Tag<
+export class ProgressReporter extends Service<
   ProgressReporter,
   ProgressReporterService
 >()("@openrouter/bench-harness/progress-reporter") {}
@@ -143,7 +143,7 @@ export interface CheckpointStoreService {
   readonly remove: (key: string) => Promise<void>;
 }
 
-export class CheckpointStore extends Tag<
+export class CheckpointStore extends Service<
   CheckpointStore,
   CheckpointStoreService
 >()("@openrouter/bench-harness/checkpoint-store") {}

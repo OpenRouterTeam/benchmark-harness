@@ -3,16 +3,10 @@ import { mkdtempSync, readdirSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { option, String as string } from "effect/Config";
+import { option, String as configString } from "effect/Config";
 import { TaggedError } from "effect/Data";
 import type { Effect } from "effect/Effect";
-import {
-  callback as async,
-  fail,
-  runSync,
-  succeed,
-  tryPromise,
-} from "effect/Effect";
+import { callback, fail, runSync, succeed, tryPromise } from "effect/Effect";
 import { getOrNull } from "effect/Option";
 
 import { resolveCacheStore } from "../../datasets/cache-store";
@@ -49,7 +43,7 @@ export function ensureTasksCheckedOut(): Promise<string> {
     return Promise.resolve(cacheRoot);
   }
   const override = getOrNull(
-    runSync(withLiveEnvConfig(string("BENCH_TASKS_DIR").pipe(option)))
+    runSync(withLiveEnvConfig(configString("BENCH_TASKS_DIR").pipe(option)))
   );
   if (override) {
     const resolved = resolveTasksDir(override);
@@ -126,7 +120,7 @@ export function resetCheckoutCache(): void {
 
 async function cloneTasks(): Promise<string> {
   const override = getOrNull(
-    runSync(withLiveEnvConfig(string("BENCH_TASKS_DIR").pipe(option)))
+    runSync(withLiveEnvConfig(configString("BENCH_TASKS_DIR").pipe(option)))
   );
   if (override !== null && override.length > 0 && isEmptyOrMissing(override)) {
     await cloneInto(override);
@@ -199,7 +193,7 @@ class GitError extends TaggedError("GitError")<{
 
 function runGit(args: string[]): Promise<void> {
   return runHarnessPromise(
-    async<void, GitError>((resolve) => {
+    callback<void, GitError>((resolve) => {
       const proc = execFile("git", args, { maxBuffer: 64 * 1024 * 1024 });
       let stderr = "";
       proc.stderr?.on("data", (d: Buffer) => (stderr += d.toString()));

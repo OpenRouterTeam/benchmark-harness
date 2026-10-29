@@ -4,7 +4,7 @@ import { runPromise, scoped } from "effect/Effect";
 import { build, provide } from "effect/Layer";
 
 import { fetchHttpClientLayer } from "../../internal/http-client";
-import { assertLeft, assertRight } from "../../internal/testing";
+import { assertFailure, assertSuccess } from "../../internal/testing";
 import { parseSchema } from "../../internal/zod";
 import { Tau3BenchBankingConfigSchema } from "../benchmark-config";
 import { getBenchmarkMeta } from "../benchmark-meta";
@@ -30,10 +30,10 @@ describe("tau3_bench_banking registration", () => {
       model: "openai/gpt-4o-mini",
       reasoningEffort: "high",
     });
-    assertRight(result);
-    expect(result.right.userModel).toBe("openai/gpt-5.4-mini");
-    expect(result.right.retrievalConfig).toBe("bm25_grep");
-    expect(result.right.userReasoningEffort).toBe("medium");
+    assertSuccess(result);
+    expect(result.success.userModel).toBe("openai/gpt-5.4-mini");
+    expect(result.success.retrievalConfig).toBe("bm25_grep");
+    expect(result.success.userReasoningEffort).toBe("medium");
   });
   it("treats an empty user model as unset", () => {
     const result = parseSchema(Tau3BenchBankingConfigSchema, {
@@ -42,8 +42,8 @@ describe("tau3_bench_banking registration", () => {
       reasoningEffort: "high",
       userModel: "",
     });
-    assertRight(result);
-    expect(result.right.userModel).toBe("openai/gpt-5.4-mini");
+    assertSuccess(result);
+    expect(result.success.userModel).toBe("openai/gpt-5.4-mini");
   });
   it("treats a whitespace-only user model as unset", () => {
     const result = parseSchema(Tau3BenchBankingConfigSchema, {
@@ -52,8 +52,8 @@ describe("tau3_bench_banking registration", () => {
       reasoningEffort: "high",
       userModel: "  \t",
     });
-    assertRight(result);
-    expect(result.right.userModel).toBe("openai/gpt-5.4-mini");
+    assertSuccess(result);
+    expect(result.success.userModel).toBe("openai/gpt-5.4-mini");
   });
   it("allows overriding the user simulator reasoning effort", () => {
     const result = parseSchema(Tau3BenchBankingConfigSchema, {
@@ -62,8 +62,8 @@ describe("tau3_bench_banking registration", () => {
       reasoningEffort: "high",
       userReasoningEffort: "high",
     });
-    assertRight(result);
-    expect(result.right.userReasoningEffort).toBe("high");
+    assertSuccess(result);
+    expect(result.success.userReasoningEffort).toBe("high");
   });
   it("parses a valid config", () => {
     const result = parseSchema(Tau3BenchBankingConfigSchema, {
@@ -73,9 +73,9 @@ describe("tau3_bench_banking registration", () => {
       userModel: "google/gemini-2.5-flash",
       retrievalConfig: "required_docs",
     });
-    assertRight(result);
-    expect(result.right.model).toBe("openai/gpt-4o-mini");
-    expect(result.right.retrievalConfig).toBe("required_docs");
+    assertSuccess(result);
+    expect(result.success.model).toBe("openai/gpt-4o-mini");
+    expect(result.success.retrievalConfig).toBe("required_docs");
   });
   it("parses the bm25_grep retrieval config", () => {
     const result = parseSchema(Tau3BenchBankingConfigSchema, {
@@ -84,15 +84,15 @@ describe("tau3_bench_banking registration", () => {
       reasoningEffort: "high",
       retrievalConfig: "bm25_grep",
     });
-    assertRight(result);
-    expect(result.right.retrievalConfig).toBe("bm25_grep");
+    assertSuccess(result);
+    expect(result.success.retrievalConfig).toBe("bm25_grep");
   });
   it("rejects a mismatched benchmarkId", () => {
     const result = parseSchema(Tau3BenchBankingConfigSchema, {
       benchmarkId: "tau_bench_verified_airline",
       model: "openai/gpt-4o-mini",
     });
-    assertLeft(result);
+    assertFailure(result);
   });
   it("rejects an unknown retrievalConfig", () => {
     const result = parseSchema(Tau3BenchBankingConfigSchema, {
@@ -100,7 +100,7 @@ describe("tau3_bench_banking registration", () => {
       model: "openai/gpt-4o-mini",
       retrievalConfig: "bm25",
     });
-    assertLeft(result);
+    assertFailure(result);
   });
   it("makeLayer rejects a mismatched config", async () => {
     const layer = TAU3_BENCH_BANKING_BENCHMARK.makeLayer({

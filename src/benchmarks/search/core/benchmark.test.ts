@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 import { readFile } from "node:fs/promises";
 
 import {
-  result as either,
+  result,
   gen,
   provide,
   runPromise,
@@ -196,7 +196,7 @@ describe("makeSearchBenchmarkLayer", () => {
           }),
         makeSolver: (responses) => (state) =>
           gen(function* () {
-            yield* either(
+            yield* result(
               responses.send({ model: "m", input: [] }, { timeoutMs: 1000 })
             );
             return { ...state, completed: true };

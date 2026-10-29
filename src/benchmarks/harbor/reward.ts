@@ -1,20 +1,20 @@
 import { succeed } from "effect/Effect";
+import * as Result from "effect/Result";
 
 import type { Score, Target, TaskState } from "../../harness/core";
 import { ScoreValue } from "../../harness/core";
 import type { ScorerService } from "../../harness/scorer";
-import { Either } from "../../internal/either";
 import { definedValues, isRecord } from "../../internal/guards";
 
 export function parseReward(raw: string): number {
   const trimmed = raw.trim();
-  const parsed = Either.try((): unknown => JSON.parse(trimmed));
+  const parsed = Result.try((): unknown => JSON.parse(trimmed));
   if (
-    Either.isRight(parsed) &&
-    isRecord(parsed.right) &&
-    typeof parsed.right["reward"] === "number"
+    Result.isSuccess(parsed) &&
+    isRecord(parsed.success) &&
+    typeof parsed.success["reward"] === "number"
   ) {
-    return parsed.right["reward"] >= 1 ? 1 : 0;
+    return parsed.success["reward"] >= 1 ? 1 : 0;
   }
   const value = Number.parseFloat(trimmed);
   return Number.isFinite(value) && value >= 1 ? 1 : 0;

@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import type { Effect } from "effect/Effect";
 import { gen } from "effect/Effect";
 import type { HttpClient, HttpClientError } from "effect/http";
+import * as Result from "effect/Result";
 import type { Semaphore } from "effect/Semaphore";
 
 import type { CachedFileError } from "../../datasets/cached-file";
@@ -10,7 +11,6 @@ import {
   fetchCachedTextFile,
   jsonTextValidator,
 } from "../../datasets/cached-file";
-import { Either } from "../../internal/either";
 import {
   definedValues,
   isDefinedAndNotNull,
@@ -132,11 +132,11 @@ export function loadBankingData(): BankingData {
   if (!raw) {
     throw new Error("Banking data not loaded — call ensureBankingData() first");
   }
-  const result = Either.try((): Record<string, unknown> => JSON.parse(raw));
-  if (Either.isLeft(result)) {
+  const result = Result.try((): Record<string, unknown> => JSON.parse(raw));
+  if (Result.isFailure(result)) {
     throw new Error("Invalid cached banking JSON");
   }
-  const parsed = result.right;
+  const parsed = result.success;
   const normalized = makeEmptyBankingData();
   if (!isRecord(parsed)) {
     return normalized;
@@ -163,11 +163,11 @@ export function loadBankingTasks(): Tau3Task[] {
       "Banking tasks not loaded — call ensureBankingTasks() first"
     );
   }
-  const result = Either.try((): unknown => JSON.parse(raw));
-  if (Either.isLeft(result)) {
+  const result = Result.try((): unknown => JSON.parse(raw));
+  if (Result.isFailure(result)) {
     throw new Error("Invalid cached banking tasks JSON");
   }
-  const tasksArray = result.right;
+  const tasksArray = result.success;
   if (!Array.isArray(tasksArray)) {
     throw new TypeError("Banking tasks is not an array");
   }
@@ -175,12 +175,12 @@ export function loadBankingTasks(): Tau3Task[] {
   for (let i = 0; i < tasksArray.length; i++) {
     const task = tasksArray[i];
     const parseResult = parseSchema(Tau3TaskSchema, task);
-    if (Either.isLeft(parseResult)) {
+    if (Result.isFailure(parseResult)) {
       throw new Error(
-        `Invalid banking task at index ${i}: ${String(parseResult.left)}`
+        `Invalid banking task at index ${i}: ${String(parseResult.failure)}`
       );
     }
-    validated.push(parseResult.right);
+    validated.push(parseResult.success);
   }
   return validated;
 }

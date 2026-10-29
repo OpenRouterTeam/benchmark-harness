@@ -1,4 +1,5 @@
-import { Either } from "../../internal/either";
+import * as Result from "effect/Result";
+
 import { parseSchema, z } from "../../internal/zod";
 import { constructsOf } from "./constructs";
 import { CaseWordingSchema } from "./realistic/wordings";
@@ -92,7 +93,7 @@ export function regressionCases(
 }
 
 export const TOOLCALL_SCHEMA_FUZZ_REGRESSIONS: RegressionFile =
-  Either.getOrThrow(parseSchema(RegressionFileSchema, data));
+  Result.getOrThrow(parseSchema(RegressionFileSchema, data));
 
 export const TOOLCALL_SCHEMA_FUZZ_REGRESSION_CASES: readonly ToolCallSchemaFuzzCase[] =
   regressionCases(TOOLCALL_SCHEMA_FUZZ_REGRESSIONS);

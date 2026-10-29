@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { assertRight } from "../../internal/testing";
+import { assertSuccess } from "../../internal/testing";
 import { parseSchema } from "../../internal/zod";
 import { WandrConfigSchema } from "../benchmark-config";
 import { wandrInferenceOverride } from "./benchmark";
@@ -12,8 +12,8 @@ describe("WANDR benchmark configuration", () => {
       reasoningEffort: "high",
       costTier: "high",
     });
-    assertRight(parsed);
-    expect(wandrInferenceOverride(parsed.right).costTier).toBe("high");
+    assertSuccess(parsed);
+    expect(wandrInferenceOverride(parsed.success).costTier).toBe("high");
   });
   it("forwards switchyardAlgorithm into the solver inference override", () => {
     const parsed = parseSchema(WandrConfigSchema, {
@@ -22,8 +22,8 @@ describe("WANDR benchmark configuration", () => {
       reasoningEffort: "high",
       switchyardAlgorithm: "stage",
     });
-    assertRight(parsed);
-    expect(wandrInferenceOverride(parsed.right).switchyardAlgorithm).toBe(
+    assertSuccess(parsed);
+    expect(wandrInferenceOverride(parsed.success).switchyardAlgorithm).toBe(
       "stage"
     );
   });

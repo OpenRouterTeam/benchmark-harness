@@ -3,8 +3,8 @@ import type { Effect } from "effect/Effect";
 import { fail, gen, ignore, promise, retry, tryPromise } from "effect/Effect";
 import type { HttpClientError } from "effect/http";
 import { HttpClient } from "effect/http";
+import * as Result from "effect/Result";
 
-import { Either } from "../internal/either";
 import { definedValues, isRecord } from "../internal/guards";
 import { parseSchema, z } from "../internal/zod";
 import type { RetryConfig } from "../runtime/retry";
@@ -36,11 +36,11 @@ const CachedTextSchema = z.object({ text: z.string() });
 const HF_HOST = "huggingface.co";
 
 export function isHuggingFaceUrl(url: string): boolean {
-  const parsed = Either.try(() => new URL(url));
-  if (Either.isLeft(parsed)) {
+  const parsed = Result.try(() => new URL(url));
+  if (Result.isFailure(parsed)) {
     return false;
   }
-  const { hostname } = parsed.right;
+  const { hostname } = parsed.success;
   return hostname === HF_HOST || hostname.endsWith(`.${HF_HOST}`);
 }
 
@@ -73,11 +73,11 @@ export function jsonTextValidator(
   expected: "object" | "array"
 ): CachedTextValidator {
   return (text) => {
-    const parsed = Either.try((): unknown => JSON.parse(text));
-    if (Either.isLeft(parsed)) {
+    const parsed = Result.try((): unknown => JSON.parse(text));
+    if (Result.isFailure(parsed)) {
       return "body is not valid JSON";
     }
-    const value = parsed.right;
+    const value = parsed.success;
     if (expected === "array") {
       return Array.isArray(value) ? undefined : "body is not a JSON array";
     }
@@ -139,10 +139,10 @@ export function fetchCachedTextFile(
         yield* promise(() => store.readJson(key))
       );
       if (
-        Either.isRight(cached) &&
-        request.validate?.(cached.right.text) === undefined
+        Result.isSuccess(cached) &&
+        request.validate?.(cached.success.text) === undefined
       ) {
-        return cached.right.text;
+        return cached.success.text;
       }
     }
     const hfToken = request.hfToken ?? (yield* resolveHfToken());

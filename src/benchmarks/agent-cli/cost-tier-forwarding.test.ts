@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { findErrorOption as failureOption } from "effect/Cause";
+import { findErrorOption } from "effect/Cause";
 import { provide, runPromiseExit, scoped } from "effect/Effect";
 import { build } from "effect/Layer";
 import { getOrThrow } from "effect/Option";
@@ -52,7 +52,7 @@ describe.each([
         ).pipe(provide(fetchHttpClientLayer))
       );
       assertFailure(exit);
-      expect(getOrThrow(failureOption(exit.cause)).message).toBe(
+      expect(getOrThrow(findErrorOption(exit.cause)).message).toBe(
         `${id} cannot use costTier: the claude agent calls the model from inside the sandbox and does not forward the ${pluginId} plugin (supported agents: pi)`
       );
     }

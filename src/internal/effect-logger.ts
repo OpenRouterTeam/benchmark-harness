@@ -3,11 +3,7 @@ import { pretty as prettyCause } from "effect/Cause";
 import type { Effect } from "effect/Effect";
 import { sync } from "effect/Effect";
 import type { Layer } from "effect/Layer";
-import {
-  mergeAll,
-  succeed as layerSucceed,
-  unwrap as unwrapEffect,
-} from "effect/Layer";
+import { mergeAll, succeed as layerSucceed, unwrap } from "effect/Layer";
 import { layer as loggerLayer, make } from "effect/Logger";
 import type { LogLevel } from "effect/LogLevel";
 import type { ManagedRuntime } from "effect/ManagedRuntime";
@@ -71,7 +67,7 @@ export function makeHarnessLoggerLayer(
   );
 }
 
-export const harnessLoggerLayer: Layer<never> = unwrapEffect(
+export const harnessLoggerLayer: Layer<never> = unwrap(
   sync(() => makeHarnessLoggerLayer(process.env.LOG_LEVEL))
 );
 

@@ -2,6 +2,7 @@ import { fail, flatMap, gen, map, succeed } from "effect/Effect";
 import { HttpClient } from "effect/http";
 import type { Layer } from "effect/Layer";
 import { effect, provide } from "effect/Layer";
+import * as Result from "effect/Result";
 import type { Stream } from "effect/Stream";
 import { unwrap } from "effect/Stream";
 
@@ -12,7 +13,6 @@ import type { Sample } from "../harness/core";
 import { DatasetError } from "../harness/core";
 import type { DatasetStreamOptions } from "../harness/dataset";
 import { Dataset } from "../harness/dataset";
-import { Either } from "../internal/either";
 import { definedValues } from "../internal/guards";
 import { fetchHttpClientLayer } from "../internal/http-client";
 import type { RetryConfig } from "../runtime/retry";
@@ -138,17 +138,17 @@ export function makeMmluProFewShotDatasetLayer(
       unwrap(
         fetchValidationPage(0, MMLU_PRO_VALIDATION_ROWS).pipe(
           flatMap((validationPage) => {
-            const examplesResult = Either.try(() =>
+            const examplesResult = Result.try(() =>
               collectCotExamples(validationPage.rows)
             );
-            if (Either.isLeft(examplesResult)) {
+            if (Result.isFailure(examplesResult)) {
               return fail(
                 new DatasetError({
-                  message: `Failed to map MMLU-Pro validation records: ${String(examplesResult.left)}`,
+                  message: `Failed to map MMLU-Pro validation records: ${String(examplesResult.failure)}`,
                 })
               );
             }
-            return succeed(examplesResult.right);
+            return succeed(examplesResult.success);
           }),
           map((examplesByCategory) =>
             paginateHfRows({

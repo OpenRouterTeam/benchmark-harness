@@ -6,12 +6,9 @@ import { fail, flatMap, mapError, succeed } from "effect/Effect";
 import type { Layer } from "effect/Layer";
 import { effect } from "effect/Layer";
 import { none, some } from "effect/Option";
+import * as Result from "effect/Result";
 import type { Stream } from "effect/Stream";
-import {
-  flatMap as flatMapStream,
-  fromEffect,
-  paginate as paginateChunkEffect,
-} from "effect/Stream";
+import { flatMap as flatMapStream, fromEffect, paginate } from "effect/Stream";
 import { parse as tomlParse } from "smol-toml";
 
 import type { Sample } from "../../harness/core";
@@ -21,7 +18,6 @@ import type {
   DatasetStreamOptions,
 } from "../../harness/dataset";
 import { Dataset } from "../../harness/dataset";
-import { Either } from "../../internal/either";
 import { definedValues } from "../../internal/guards";
 import { parseSchema } from "../../internal/zod";
 import type { WandrTask } from "./schema";
@@ -180,9 +176,9 @@ function buildDatasetService(
           options?.start ?? 0,
           Math.min(options?.end ?? allIds.length, allIds.length)
         );
-        return paginateChunkEffect(0, (offset) => {
+        return paginate(0, (offset) => {
           const page = selected.slice(offset, offset + config.pageSize);
-          const samples = Either.try(() =>
+          const samples = Result.try(() =>
             page.map((id) =>
               wandrTaskToSample(
                 loadWandrTask(id, root),
@@ -190,16 +186,16 @@ function buildDatasetService(
               )
             )
           );
-          if (Either.isLeft(samples)) {
+          if (Result.isFailure(samples)) {
             return fail(
               new DatasetError({
-                message: `Failed to load WANDR tasks at offset ${offset}: ${String(samples.left)}`,
+                message: `Failed to load WANDR tasks at offset ${offset}: ${String(samples.failure)}`,
               })
             );
           }
           const next = offset + config.pageSize;
           return succeed([
-            samples.right,
+            samples.success,
             next < selected.length ? some(next) : none(),
           ] as const);
         });
@@ -209,17 +205,17 @@ function buildDatasetService(
 }
 
 function parseTaskToml(taskId: string, raw: string): WandrTask["taskToml"] {
-  const decoded = Either.try(() => tomlParse(raw));
-  if (Either.isLeft(decoded)) {
+  const decoded = Result.try(() => tomlParse(raw));
+  if (Result.isFailure(decoded)) {
     throw new Error(
-      `WANDR task "${taskId}" task.toml failed to parse: ${String(decoded.left)}`
+      `WANDR task "${taskId}" task.toml failed to parse: ${String(decoded.failure)}`
     );
   }
-  const parsed = parseSchema(WandrTaskTomlSchema, decoded.right);
-  if (Either.isLeft(parsed)) {
+  const parsed = parseSchema(WandrTaskTomlSchema, decoded.success);
+  if (Result.isFailure(parsed)) {
     throw new Error(
-      `WANDR task "${taskId}" task.toml failed validation: ${parsed.left.message}`
+      `WANDR task "${taskId}" task.toml failed validation: ${parsed.failure.message}`
     );
   }
-  return parsed.right;
+  return parsed.success;
 }

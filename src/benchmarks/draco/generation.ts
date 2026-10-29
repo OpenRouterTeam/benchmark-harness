@@ -1,4 +1,4 @@
-import { formatIso, nowUnsafe as unsafeNow } from "effect/DateTime";
+import { formatIso, nowUnsafe } from "effect/DateTime";
 
 import type { Citation } from "../../harness/core";
 import { wLog } from "../../internal/log";
@@ -140,7 +140,7 @@ function generation(
     toolInvocations: input.toolInvocations ?? [],
     contaminationSignals,
     citations: [...(input.citations ?? [])],
-    timestamp: formatIso(unsafeNow()),
+    timestamp: formatIso(nowUnsafe()),
   };
 }
 

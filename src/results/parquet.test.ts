@@ -8,7 +8,7 @@ import { ByteWriter } from "hyparquet-writer";
 import type { ModelMessage, ResponseItem } from "../harness/core";
 import { MessageRole, ScoreValue } from "../harness/core";
 import type { SampleScore } from "../harness/metric";
-import { assertRight, assertLeft } from "../internal/testing";
+import { assertSuccess, assertFailure } from "../internal/testing";
 import { parseSchema } from "../internal/zod";
 import { responsesTurnToModelOutput } from "../providers/messages-to-responses";
 import { AtifTrajectorySchema } from "./atif-schema";
@@ -230,8 +230,8 @@ describe("runResultToParquet", () => {
       ScorerTrajectorySchema,
       JSON.parse(trajectoryRows[0]!.scorer_trajectory!)
     );
-    assertRight(parsed);
-    expect(parsed.right).toEqual(trajectory);
+    assertSuccess(parsed);
+    expect(parsed.success).toEqual(trajectory);
   });
   it("round-trips a judge_runs scorer trajectory through ScorerTrajectorySchema", async () => {
     const trajectory = {
@@ -270,8 +270,8 @@ describe("runResultToParquet", () => {
       ScorerTrajectorySchema,
       JSON.parse(judgeRows[0]!.scorer_trajectory!)
     );
-    assertRight(parsed);
-    expect(parsed.right).toEqual(trajectory);
+    assertSuccess(parsed);
+    expect(parsed.success).toEqual(trajectory);
   });
   it("writes null scorer_trajectory when the scorer recorded none", () => {
     for (const row of rows) {
@@ -310,8 +310,8 @@ describe("runResultToParquet", () => {
       AtifTrajectorySchema,
       JSON.parse(rows[0]!.trajectory!)
     );
-    assertRight(parsed);
-    expect(parsed.right.steps.map((step) => step.message)).toEqual([
+    assertSuccess(parsed);
+    expect(parsed.success.steps.map((step) => step.message)).toEqual([
       "Be helpful.",
       "What is 2+2?",
       "4",
@@ -1297,7 +1297,7 @@ describe("BenchmarkResultRowSchema", () => {
       messages: null,
       metadata: null,
     });
-    assertRight(parsed);
+    assertSuccess(parsed);
   });
   it("parses a v1 row missing the benchmark_config column (back-compat)", () => {
     const parsed = parseSchema(BenchmarkResultRowSchema, {
@@ -1327,12 +1327,12 @@ describe("BenchmarkResultRowSchema", () => {
       messages: null,
       metadata: null,
     });
-    assertRight(parsed);
-    expect(parsed.right.benchmark_config).toBeUndefined();
-    expect(parsed.right.scorer_trajectory).toBeUndefined();
-    expect(parsed.right.response_items).toBeUndefined();
-    expect(parsed.right.request_body).toBeUndefined();
-    expect(parsed.right.generation_ids).toBeUndefined();
+    assertSuccess(parsed);
+    expect(parsed.success.benchmark_config).toBeUndefined();
+    expect(parsed.success.scorer_trajectory).toBeUndefined();
+    expect(parsed.success.response_items).toBeUndefined();
+    expect(parsed.success.request_body).toBeUndefined();
+    expect(parsed.success.generation_ids).toBeUndefined();
   });
   it("parses a row with response_items present", () => {
     const parsed = parseSchema(BenchmarkResultRowSchema, {
@@ -1365,15 +1365,15 @@ describe("BenchmarkResultRowSchema", () => {
       messages: null,
       metadata: null,
     });
-    assertRight(parsed);
-    expect(parsed.right.response_items).toBe(
+    assertSuccess(parsed);
+    expect(parsed.success.response_items).toBe(
       '[{"type":"openrouter:advisor","advice":"hi"}]'
     );
-    expect(parsed.right.generation_ids).toBe('["gen-1"]');
+    expect(parsed.success.generation_ids).toBe('["gen-1"]');
   });
   it("rejects a row missing required typed columns", () => {
     const parsed = parseSchema(BenchmarkResultRowSchema, { sample_id: "s0" });
-    assertLeft(parsed);
+    assertFailure(parsed);
   });
 });
 describe("summarizeChunkRows", () => {

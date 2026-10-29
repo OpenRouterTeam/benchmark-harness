@@ -7,6 +7,7 @@ import {
   mergeAll as layerMergeAll,
   succeed as layerSucceed,
 } from "effect/Layer";
+import * as Result from "effect/Result";
 import { make as makeSemaphore } from "effect/Semaphore";
 
 import type { HfDatasetConfig } from "../../datasets/huggingface";
@@ -16,7 +17,6 @@ import type { Dataset } from "../../harness/dataset";
 import { Model } from "../../harness/model";
 import { Scorer } from "../../harness/scorer";
 import { Solver } from "../../harness/solver";
-import { Either } from "../../internal/either";
 import { definedValues } from "../../internal/guards";
 import { layerFail } from "../../internal/layer";
 import { parseSchema } from "../../internal/zod";
@@ -51,19 +51,19 @@ export function airlineRecordToSample(
       `tau-bench-verified-airline row ${index} missing string 'task_json' column`
     );
   }
-  const json = Either.try((): unknown => JSON.parse(rawTaskJson));
-  if (Either.isLeft(json)) {
+  const json = Result.try((): unknown => JSON.parse(rawTaskJson));
+  if (Result.isFailure(json)) {
     throw new Error(
-      `Failed to JSON.parse task_json at index ${index}: ${String(json.left)}`
+      `Failed to JSON.parse task_json at index ${index}: ${String(json.failure)}`
     );
   }
-  const parsed = parseSchema(Tau2TaskSchema, json.right);
-  if (Either.isLeft(parsed)) {
+  const parsed = parseSchema(Tau2TaskSchema, json.success);
+  if (Result.isFailure(parsed)) {
     throw new Error(
-      `Failed to parse tau-bench-verified-airline task at index ${index}: ${parsed.left.message}`
+      `Failed to parse tau-bench-verified-airline task at index ${index}: ${parsed.failure.message}`
     );
   }
-  const task: Tau2Task = parsed.right;
+  const task: Tau2Task = parsed.success;
   return {
     id: `${TAU_BENCH_AIRLINE_ID}-${task.id}`,
     input: renderUserInstructions(task.user_scenario.instructions),

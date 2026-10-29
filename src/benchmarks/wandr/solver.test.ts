@@ -20,6 +20,7 @@ import {
   provide as layerProvide,
   succeed as layerSucceed,
 } from "effect/Layer";
+import * as Result from "effect/Result";
 
 import {
   noopCheckpointLayer,

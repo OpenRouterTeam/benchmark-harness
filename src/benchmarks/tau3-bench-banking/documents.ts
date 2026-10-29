@@ -3,9 +3,9 @@ import type { Effect } from "effect/Effect";
 import { fail, forEach, gen, succeed } from "effect/Effect";
 import type { HttpClientError } from "effect/http";
 import { HttpClient } from "effect/http";
+import * as Result from "effect/Result";
 import type { Semaphore } from "effect/Semaphore";
 
-import { Either } from "../../internal/either";
 import { parseSchema, z } from "../../internal/zod";
 import {
   BANKING_SOURCE_BASE_URL,
@@ -112,14 +112,14 @@ export function ensureAllBankingDocuments(
       }
       const listingJson: unknown = yield* response.json;
       const listingResult = parseSchema(DocumentListingSchema, listingJson);
-      if (Either.isLeft(listingResult)) {
+      if (Result.isFailure(listingResult)) {
         return yield* fail(
           new DocumentFetchError({
-            message: `Invalid banking document listing: ${listingResult.left.message}`,
+            message: `Invalid banking document listing: ${listingResult.failure.message}`,
           })
         );
       }
-      const missingEntries = listingResult.right.filter((entry) => {
+      const missingEntries = listingResult.success.filter((entry) => {
         const id = entry.name.replace(/\.json$/u, "");
         return entry.name.endsWith(".json") && !BANKING_DOCUMENTS_CACHE.has(id);
       });
@@ -135,7 +135,7 @@ export function ensureAllBankingDocuments(
         BANKING_DOCUMENTS_CACHE.set(document.id, document);
       }
       const orderedDocuments: BankingDocument[] = [];
-      for (const entry of listingResult.right) {
+      for (const entry of listingResult.success) {
         if (!entry.name.endsWith(".json")) {
           continue;
         }
@@ -211,13 +211,13 @@ function fetchBankingDocument({
     }
     const json: unknown = yield* response.json;
     const parseResult = parseSchema(BankingDocumentSchema, json);
-    if (Either.isLeft(parseResult)) {
+    if (Result.isFailure(parseResult)) {
       return yield* fail(
         new DocumentFetchError({
-          message: `Invalid document schema for ${id}: ${parseResult.left.message}`,
+          message: `Invalid document schema for ${id}: ${parseResult.failure.message}`,
         })
       );
     }
-    return parseResult.right;
+    return parseResult.success;
   });
 }

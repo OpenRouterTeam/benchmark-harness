@@ -1,7 +1,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { Service as Tag } from "effect/Context";
+import { Service } from "effect/Context";
 import type { Effect } from "effect/Effect";
 import { succeed } from "effect/Effect";
 
@@ -22,7 +22,7 @@ export interface ResultStoreService {
   }) => Effect<string | null>;
 }
 
-export class ResultStore extends Tag<ResultStore, ResultStoreService>()(
+export class ResultStore extends Service<ResultStore, ResultStoreService>()(
   "@openrouter/bench-harness/result-store"
 ) {}
 

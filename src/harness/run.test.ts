@@ -10,7 +10,7 @@ import {
 } from "effect/Effect";
 import type { Layer } from "effect/Layer";
 import { mergeAll, succeed as layerSucceed } from "effect/Layer";
-import { fromArray as fromChunk } from "effect/Stream";
+import { fromArray } from "effect/Stream";
 
 import {
   noopProgressLayer,
@@ -46,7 +46,7 @@ function fakeDatasetLayer(samples: readonly Sample[]): Layer<Dataset> {
       stream: (opts) => {
         const start = opts?.start ?? 0;
         const end = opts?.end ?? samples.length;
-        return fromChunk(samples.slice(start, end));
+        return fromArray(samples.slice(start, end));
       },
       size: effectSucceed(samples.length),
     })

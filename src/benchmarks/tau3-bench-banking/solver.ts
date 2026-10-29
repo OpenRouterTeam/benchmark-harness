@@ -1,5 +1,6 @@
 import { gen, mapError, provideService } from "effect/Effect";
 import { HttpClient } from "effect/http";
+import * as Result from "effect/Result";
 import type { Semaphore } from "effect/Semaphore";
 
 import type {
@@ -11,7 +12,6 @@ import type {
 import { MessageRole, SolverError } from "../../harness/core";
 import type { GenerateConfig, ModelService } from "../../harness/model";
 import type { SolverService } from "../../harness/solver";
-import { Either } from "../../internal/either";
 import { definedValues } from "../../internal/guards";
 import { parseSchema } from "../../internal/zod";
 import type { ResponsesModelService } from "../../providers/responses-model";
@@ -158,12 +158,12 @@ export function bankingSolver({
       );
       const taskMeta = state.sample.metadata?.["task"];
       const parseTaskResult = parseSchema(Tau3TaskSchema, taskMeta);
-      if (Either.isLeft(parseTaskResult)) {
+      if (Result.isFailure(parseTaskResult)) {
         return yield* new SolverError({
-          message: `Invalid task in metadata: ${String(parseTaskResult.left)}`,
+          message: `Invalid task in metadata: ${String(parseTaskResult.failure)}`,
         });
       }
-      const task = parseTaskResult.right;
+      const task = parseTaskResult.success;
       const retrievalConfig =
         opts?.retrievalConfig ?? DEFAULT_BANKING_RETRIEVAL_CONFIG;
       const requiredDocIds = task.required_documents ?? [];
