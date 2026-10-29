@@ -18,6 +18,11 @@ describe("optionalEnv", () => {
     expect(isNone(runSync(optionalEnv(ENV_NAME)))).toBe(true);
   });
 
+  it('keeps an empty string as Some("") like Effect 3 did', () => {
+    process.env[ENV_NAME] = "";
+    expect(getOrNull(runSync(optionalEnv(ENV_NAME)))).toBe("");
+  });
+
   it("reads process.env live on every evaluation", () => {
     const read = optionalEnv(ENV_NAME);
     expect(isNone(runSync(read))).toBe(true);

@@ -11,7 +11,11 @@ export function withLiveEnvConfig<A, E, R>(
 ): Effect<A, E, R> {
   return withFiber((fiber) =>
     getOrUndefined(fiber.context, ConfigProvider) === undefined
-      ? provideService(effect, ConfigProvider, fromEnv())
+      ? provideService(
+          effect,
+          ConfigProvider,
+          fromEnv({ preserveEmptyStrings: true })
+        )
       : effect
   );
 }
