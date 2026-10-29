@@ -1,8 +1,6 @@
 import { createHash } from "node:crypto";
 
-import { FetchHttpClient, HttpClient } from "@effect/platform";
 import { parse } from "csv-parse/sync";
-import { fromIterable } from "effect/Chunk";
 import {
   cached,
   fail,
@@ -13,9 +11,10 @@ import {
   retry,
   succeed,
 } from "effect/Effect";
+import { HttpClient } from "effect/http";
 import type { Layer } from "effect/Layer";
 import { effect, provide } from "effect/Layer";
-import { fromChunk, unwrap } from "effect/Stream";
+import { fromArray as fromChunk, unwrap } from "effect/Stream";
 
 import {
   hfFetchRetrySchedule,
@@ -27,6 +26,7 @@ import type { Dataset } from "../../../harness/dataset";
 import { Dataset as DatasetTag } from "../../../harness/dataset";
 import { Either } from "../../../internal/either";
 import { definedValues, isRecord } from "../../../internal/guards";
+import { fetchHttpClientLayer } from "../../../internal/http-client";
 import { parseSchema, z } from "../../../internal/zod";
 import type { RetryConfig } from "../../../runtime/retry";
 
@@ -145,18 +145,16 @@ export function makeDsqaDatasetLayer(
                 const start = opts?.start ?? 0;
                 const end = Math.min(opts?.end ?? rows.length, rows.length);
                 return fromChunk(
-                  fromIterable(
-                    rows
-                      .slice(start, end)
-                      .map((record, offset) =>
-                        dsqaRecordToSample(record, start + offset)
-                      )
-                  )
+                  rows
+                    .slice(start, end)
+                    .map((record, offset) =>
+                      dsqaRecordToSample(record, start + offset)
+                    )
                 );
               })
             )
           ),
       });
     })
-  ).pipe(provide(FetchHttpClient.layer));
+  ).pipe(provide(fetchHttpClientLayer));
 }

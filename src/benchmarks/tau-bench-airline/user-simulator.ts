@@ -1,7 +1,12 @@
 import { TaggedError } from "effect/Data";
 import type { Effect } from "effect/Effect";
-import { catchAll, gen, map, mapError } from "effect/Effect";
-import { fixed, passthrough, whileInput } from "effect/Schedule";
+import { catch as catchAll, gen, map, mapError } from "effect/Effect";
+import {
+  fixed,
+  passthrough,
+  setInputType,
+  while as whileInput,
+} from "effect/Schedule";
 
 import type { ModelMessage } from "../../harness/core";
 import { MessageRole } from "../../harness/core";
@@ -26,9 +31,9 @@ const USER_SIM_MAX_RETRIES = 2;
 
 const USER_SIM_RESPONSE_RETRY_SCHEDULE = withRetryAttemptLogging(
   fixed("100 millis").pipe(
+    setInputType<SimError>(),
     whileInput(
-      (error: SimError) =>
-        error instanceof UserSimError && error.retryable === true
+      ({ input }) => input instanceof UserSimError && input.retryable === true
     ),
     passthrough
   ),
@@ -77,12 +82,13 @@ export class UserSimulator {
   private callModel(): Effect<string, SimError> {
     const response = (model: string) =>
       retrySalted(this.callModelOnce(model), USER_SIM_RESPONSE_RETRY_SCHEDULE);
-    return gen(this, function* (this: UserSimulator) {
-      const result = yield* response(this.config.model).pipe(
+    const { config, messages } = this;
+    return gen(function* () {
+      const result = yield* response(config.model).pipe(
         withAuxiliaryUsage,
         catchAll(() => withAuxiliaryUsage(response(USER_FALLBACK_MODEL)))
       );
-      this.messages.push(
+      messages.push(
         definedValues({
           role: MessageRole.Assistant,
           content: result.content,

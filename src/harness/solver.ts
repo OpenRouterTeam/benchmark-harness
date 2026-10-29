@@ -1,4 +1,4 @@
-import { Tag } from "effect/Context";
+import { Service as Tag } from "effect/Context";
 import type { Effect } from "effect/Effect";
 import { gen, reduce, succeed } from "effect/Effect";
 
@@ -16,15 +16,16 @@ export type SolverService = (
   ProgressReporter | CheckpointStore
 >;
 
-export class Solver extends Tag("@openrouter/bench-harness/solver")<
-  Solver,
-  SolverService
->() {}
+export class Solver extends Tag<Solver, SolverService>()(
+  "@openrouter/bench-harness/solver"
+) {}
 
 export function chain(...solvers: readonly SolverService[]): SolverService {
   return (initial) =>
-    reduce(solvers, initial, (state, solver) =>
-      state.completed ? succeed(state) : solver(state)
+    reduce(
+      solvers,
+      () => initial,
+      (state, solver) => (state.completed ? succeed(state) : solver(state))
     );
 }
 

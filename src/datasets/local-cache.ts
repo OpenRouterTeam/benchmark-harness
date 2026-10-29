@@ -12,10 +12,11 @@ import {
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 
-import { option, string } from "effect/Config";
+import { option, String as string } from "effect/Config";
 import { runSync } from "effect/Effect";
 import { getOrNull } from "effect/Option";
 
+import { withLiveEnvConfig } from "../internal/env-config";
 import { wLog } from "../internal/log";
 
 export const DATASET_CACHE_DIR_ENV = "BENCH_DATASET_CACHE_DIR";
@@ -25,7 +26,9 @@ export const CHECKOUT_COMPLETE_MARKER = ".bench-checkout-complete";
 export const STALE_STAGING_MAX_AGE_MS = 24 * 60 * 60 * 1e3;
 
 export function readEnvOptional(name: string): string | undefined {
-  const value = getOrNull(runSync(string(name).pipe(option)));
+  const value = getOrNull(
+    runSync(withLiveEnvConfig(string(name).pipe(option)))
+  );
   return value !== null && value.length > 0 ? value : undefined;
 }
 

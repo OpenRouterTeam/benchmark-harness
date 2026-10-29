@@ -1,8 +1,8 @@
 import { currentTimeMillis } from "effect/Clock";
 import type { Effect } from "effect/Effect";
 import {
-  catchAll,
-  catchAllDefect,
+  catch as catchAll,
+  catchDefect as catchAllDefect,
   forEach,
   gen,
   map,

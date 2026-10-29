@@ -1,4 +1,4 @@
-import { Tag } from "effect/Context";
+import { Service as Tag } from "effect/Context";
 import type { Effect } from "effect/Effect";
 import type { Stream } from "effect/Stream";
 
@@ -9,7 +9,7 @@ export interface DatasetStreamOptions {
   readonly end?: number;
 }
 
-export class Dataset extends Tag("@openrouter/bench-harness/dataset")<
+export class Dataset extends Tag<
   Dataset,
   {
     readonly stream: (
@@ -17,7 +17,7 @@ export class Dataset extends Tag("@openrouter/bench-harness/dataset")<
     ) => Stream<Sample, DatasetError>;
     readonly size: Effect<number, DatasetError>;
   }
->() {}
+>()("@openrouter/bench-harness/dataset") {}
 
 export type DatasetService = {
   readonly stream: (

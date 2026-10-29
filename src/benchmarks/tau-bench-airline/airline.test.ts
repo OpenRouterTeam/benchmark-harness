@@ -1,10 +1,11 @@
 import { afterEach, beforeAll, describe, expect, it } from "bun:test";
 
-import { FetchHttpClient } from "@effect/platform";
-import { makeSemaphore, provide, runPromise, runSync } from "effect/Effect";
+import { provide, runPromise, runSync } from "effect/Effect";
+import { make as makeSemaphore } from "effect/Semaphore";
 
 import { MessageRole, ScoreValue } from "../../harness/core";
 import { isRecord } from "../../internal/guards";
+import { fetchHttpClientLayer } from "../../internal/http-client";
 import { assertRight } from "../../internal/testing";
 import { parseSchema } from "../../internal/zod";
 import { TauBenchAirlineConfigSchema } from "../benchmark-config";
@@ -470,7 +471,7 @@ describe("ensureAirlineData", () => {
 
     await runPromise(
       ensureAirlineData(runSync(makeSemaphore(1))).pipe(
-        provide(FetchHttpClient.layer)
+        provide(fetchHttpClientLayer)
       )
     );
 

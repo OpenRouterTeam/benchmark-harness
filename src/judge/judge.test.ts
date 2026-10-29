@@ -7,7 +7,7 @@ import {
   runPromiseExit,
   succeed,
   suspend,
-  zipRight,
+  andThen as zipRight,
 } from "effect/Effect";
 import { isFailure } from "effect/Exit";
 

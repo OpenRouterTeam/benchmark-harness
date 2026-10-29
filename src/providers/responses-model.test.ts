@@ -1,9 +1,8 @@
 import { afterEach, describe, expect, it } from "bun:test";
 import { readFile } from "node:fs/promises";
 
-import { FetchHttpClient } from "@effect/platform";
 import type { ResponsesRequest } from "@openrouter/sdk/models";
-import { failureOption } from "effect/Cause";
+import { findErrorOption as failureOption } from "effect/Cause";
 import { flatMap, gen, provide, runPromiseExit, succeed } from "effect/Effect";
 import { provide as layerProvide } from "effect/Layer";
 import { getOrThrow } from "effect/Option";
@@ -11,6 +10,7 @@ import { getOrThrow } from "effect/Option";
 import { assertFailure, assertSuccess } from "../../test/helpers/exit-asserts";
 import { ProviderSort } from "../internal/enums";
 import { isRecord } from "../internal/guards";
+import { fetchHttpClientLayer } from "../internal/http-client";
 import { assertRight } from "../internal/testing";
 import { parseSchema, z } from "../internal/zod";
 import {
@@ -197,7 +197,7 @@ describe("responses-model", () => {
             return { turn, generationIds };
           })
         ),
-        provide(layer.pipe(layerProvide(FetchHttpClient.layer)))
+        provide(layer.pipe(layerProvide(fetchHttpClientLayer)))
       )
     );
     assertSuccess(exit);
@@ -358,7 +358,7 @@ describe("responses-model", () => {
           endpointId: "endpoint-1",
           reasoningEffort: "high",
         });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["provider"]).toBeUndefined();
@@ -378,7 +378,7 @@ describe("responses-model", () => {
       gen(function* run() {
         const model = yield* ResponsesModel;
         return yield* model.generate([], { reasoningEffort: "auto" });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value).toBeDefined();
@@ -403,7 +403,7 @@ describe("responses-model", () => {
           allowFallbacks: false,
           reasoningEffort: "high",
         });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["provider"]).toEqual({
@@ -429,7 +429,7 @@ describe("responses-model", () => {
           providerOrder: ["together", "digitalocean"],
           reasoningEffort: "high",
         });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["provider"]).toEqual({
@@ -455,7 +455,7 @@ describe("responses-model", () => {
             costTier: "high",
             reasoningEffort: "high",
           });
-        }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+        }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
       );
       assertSuccess(exit);
       expect(captured.value?.body["plugins"]).toEqual([
@@ -499,7 +499,7 @@ describe("responses-model", () => {
               [responsesMessage("user", "continue")],
               config
             );
-          }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+          }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
         );
         assertSuccess(exit);
         expect(captured.value?.body["plugins"]).toEqual([
@@ -534,7 +534,7 @@ describe("responses-model", () => {
             reasoningEffort: "auto",
             extraBody: { plugins },
           });
-        }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+        }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
       );
       assertSuccess(exit);
       expect(captured.value?.body["plugins"]).toEqual(plugins);
@@ -558,7 +558,7 @@ describe("responses-model", () => {
           costQualityTradeoff: 8,
           pinModel: true,
         });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["plugins"]).toBeUndefined();
@@ -581,7 +581,7 @@ describe("responses-model", () => {
           costQualityTradeoff: 8,
           reasoningEffort: "high",
         });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["plugins"]).toEqual([
@@ -602,7 +602,7 @@ describe("responses-model", () => {
       gen(function* run() {
         const modelService = yield* ResponsesModel;
         return yield* modelService.generate([], { reasoningEffort: "high" });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["model"]).toBe("openrouter/switchyard");
@@ -624,7 +624,7 @@ describe("responses-model", () => {
       gen(function* run() {
         const modelService = yield* ResponsesModel;
         return yield* modelService.generate([], { reasoningEffort: "high" });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["models"]).toBeUndefined();
@@ -642,7 +642,7 @@ describe("responses-model", () => {
       gen(function* run() {
         const modelService = yield* ResponsesModel;
         return yield* modelService.generate([], { reasoningEffort: "high" });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["plugins"]).toBeUndefined();
@@ -664,7 +664,7 @@ describe("responses-model", () => {
           reasoningEffort: "high",
           switchyardAlgorithm: "stage",
         });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["model"]).toBe("nvidia/switchyard");
@@ -690,7 +690,7 @@ describe("responses-model", () => {
       gen(function* run() {
         const modelService = yield* ResponsesModel;
         return yield* modelService.generate([], { reasoningEffort: "high" });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["plugins"]).toBeUndefined();
@@ -716,7 +716,7 @@ describe("responses-model", () => {
             cache_control: { type: "ephemeral" },
           },
         });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["plugins"]).toEqual([
@@ -743,7 +743,7 @@ describe("responses-model", () => {
           reasoningEffort: "high",
           switchyardAlgorithm: "stage",
         });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["plugins"]).toBeUndefined();
@@ -771,7 +771,7 @@ describe("responses-model", () => {
           {},
           { onStreamEvent: (event) => events.push(event) }
         );
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertFailure(exit);
     expect(events).toEqual([
@@ -804,7 +804,7 @@ describe("responses-model", () => {
       gen(function* run() {
         const model = yield* ResponsesModel;
         return yield* model.generate([], { reasoningEffort: "high" });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertFailure(exit);
     const error = getOrThrow(failureOption(exit.cause));
@@ -850,7 +850,7 @@ describe("responses-model", () => {
           timeoutMs: 50,
           reasoningEffort: "high",
         });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertFailure(exit);
     const error = getOrThrow(failureOption(exit.cause));
@@ -879,7 +879,7 @@ describe("responses-model", () => {
           { reasoningEffort: "high" },
           { onStreamEvent: (event) => events.push(event) }
         );
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(exit.value.outputItems).toEqual(terminal.output);
@@ -904,7 +904,7 @@ describe("responses-model", () => {
       gen(function* run() {
         const model = yield* ResponsesModel;
         return yield* model.generate([], { reasoningEffort: "high" });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertFailure(exit);
     const error = getOrThrow(failureOption(exit.cause));

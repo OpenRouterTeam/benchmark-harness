@@ -2,11 +2,11 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { isCause, isInterrupted } from "effect/Cause";
+import { isCause, hasInterrupts as isInterrupted } from "effect/Cause";
 import type { Effect } from "effect/Effect";
 import {
   gen,
-  catchAll,
+  catch as catchAll,
   catchTag,
   logWarning,
   orElseSucceed,

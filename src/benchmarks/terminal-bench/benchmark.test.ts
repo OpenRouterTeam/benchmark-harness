@@ -1,12 +1,12 @@
 import { describe, expect, it } from "bun:test";
 
-import { FetchHttpClient } from "@effect/platform";
-import { failureOption } from "effect/Cause";
+import { findErrorOption as failureOption } from "effect/Cause";
 import { provide, runPromiseExit, scoped } from "effect/Effect";
 import { build } from "effect/Layer";
 import { getOrThrow } from "effect/Option";
 
 import { assertFailure } from "../../../test/helpers/exit-asserts";
+import { fetchHttpClientLayer } from "../../internal/http-client";
 import { TerminalBenchConfigSchema } from "../benchmark-config";
 import { TERMINAL_BENCH_BENCHMARK } from "./benchmark";
 
@@ -26,7 +26,7 @@ function buildLayer(config: Record<string, unknown>) {
           }),
         })
       )
-    ).pipe(provide(FetchHttpClient.layer))
+    ).pipe(provide(fetchHttpClientLayer))
   );
 }
 

@@ -1,9 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import assert from "node:assert/strict";
 
-import { FetchHttpClient } from "@effect/platform";
-import { makeSemaphore, provide, runPromise } from "effect/Effect";
+import { provide, runPromise } from "effect/Effect";
+import { make as makeSemaphore } from "effect/Semaphore";
 
+import { fetchHttpClientLayer } from "../../internal/http-client";
 import {
   ensureAllBankingDocuments,
   getAllBankingDocuments,
@@ -115,7 +116,7 @@ describe("Banking Documents", () => {
       };
       const semaphore = await runPromise(makeSemaphore(1));
       const load = ensureAllBankingDocuments(semaphore).pipe(
-        provide(FetchHttpClient.layer)
+        provide(fetchHttpClientLayer)
       );
       await runPromise(load);
       await runPromise(load);
@@ -158,9 +159,7 @@ describe("Banking Documents", () => {
       };
       const semaphore = await runPromise(makeSemaphore(1));
       await runPromise(
-        ensureAllBankingDocuments(semaphore).pipe(
-          provide(FetchHttpClient.layer)
-        )
+        ensureAllBankingDocuments(semaphore).pipe(provide(fetchHttpClientLayer))
       );
       expect(getAllBankingDocuments().map((document) => document.id)).toEqual([
         "doc_test_001",

@@ -1,5 +1,5 @@
-import { FetchHttpClient, HttpClient } from "@effect/platform";
 import { fail, flatMap, gen, map, succeed } from "effect/Effect";
+import { HttpClient } from "effect/http";
 import type { Layer } from "effect/Layer";
 import { effect, provide } from "effect/Layer";
 import type { Stream } from "effect/Stream";
@@ -14,6 +14,7 @@ import type { DatasetStreamOptions } from "../harness/dataset";
 import { Dataset } from "../harness/dataset";
 import { Either } from "../internal/either";
 import { definedValues } from "../internal/guards";
+import { fetchHttpClientLayer } from "../internal/http-client";
 import type { RetryConfig } from "../runtime/retry";
 import type {
   MmluProCotExample,
@@ -164,5 +165,5 @@ export function makeMmluProFewShotDatasetLayer(
       );
     return Dataset.of({ stream, size });
   });
-  return effect(Dataset, makeService).pipe(provide(FetchHttpClient.layer));
+  return effect(Dataset, makeService).pipe(provide(fetchHttpClientLayer));
 }

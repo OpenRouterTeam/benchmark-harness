@@ -1,4 +1,4 @@
-import { Tag } from "effect/Context";
+import { Service as Tag } from "effect/Context";
 import type { Effect } from "effect/Effect";
 
 import type { Score, Target, TaskState } from "./core";
@@ -8,7 +8,6 @@ export type ScorerService = (
   target: Target
 ) => Effect<Score, never>;
 
-export class Scorer extends Tag("@openrouter/bench-harness/scorer")<
-  Scorer,
-  ScorerService
->() {}
+export class Scorer extends Tag<Scorer, ScorerService>()(
+  "@openrouter/bench-harness/scorer"
+) {}

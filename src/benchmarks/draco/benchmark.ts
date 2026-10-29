@@ -1,7 +1,7 @@
-import type { HttpClient } from "@effect/platform";
 import { gen } from "effect/Effect";
+import type { HttpClient } from "effect/http";
 import type { Layer } from "effect/Layer";
-import { fail, effect, provide, mergeAll, succeed } from "effect/Layer";
+import { effect, provide, mergeAll, succeed } from "effect/Layer";
 
 import type { Dataset } from "../../harness/dataset";
 import type { RunResult } from "../../harness/run";
@@ -9,6 +9,7 @@ import { Scorer } from "../../harness/scorer";
 import { Solver } from "../../harness/solver";
 import { Either } from "../../internal/either";
 import { definedValues, isRecord } from "../../internal/guards";
+import { layerFail as fail } from "../../internal/layer";
 import {
   Responses,
   makeResponsesLayer,

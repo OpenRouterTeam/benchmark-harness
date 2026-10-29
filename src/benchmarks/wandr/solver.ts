@@ -9,10 +9,10 @@ import {
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 
-import { isInterrupted } from "effect/Cause";
+import { hasInterrupts as isInterrupted } from "effect/Cause";
 import type { Effect } from "effect/Effect";
 import {
-  catchAll,
+  catch as catchAll,
   catchTag,
   gen,
   ensuring,

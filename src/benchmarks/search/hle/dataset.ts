@@ -1,5 +1,4 @@
-import { fromIterable } from "effect/Chunk";
-import { map as configMap, option, string } from "effect/Config";
+import { map as configMap, option, String as string } from "effect/Config";
 import type { Effect } from "effect/Effect";
 import {
   cached,
@@ -16,7 +15,7 @@ import type { Layer } from "effect/Layer";
 import { effect } from "effect/Layer";
 import type { Option } from "effect/Option";
 import { getOrNull, none, some } from "effect/Option";
-import { paginateChunkEffect } from "effect/Stream";
+import { paginate as paginateChunkEffect } from "effect/Stream";
 
 import type { HfRowsResponse } from "../../../datasets/huggingface";
 import {
@@ -28,6 +27,7 @@ import { DatasetError } from "../../../harness/core";
 import type { Dataset } from "../../../harness/dataset";
 import { Dataset as DatasetTag } from "../../../harness/dataset";
 import { Either } from "../../../internal/either";
+import { withLiveEnvConfig } from "../../../internal/env-config";
 import { definedValues } from "../../../internal/guards";
 import { parseSchema, z } from "../../../internal/zod";
 import type { RetryConfig } from "../../../runtime/retry";
@@ -86,14 +86,16 @@ export function makeHleDatasetLayer(
       const token = yield* cached(
         hfToken !== undefined
           ? succeed(hfToken)
-          : string("HF_TOKEN").pipe(
-              option,
-              configMap((value) => getOrNull(value) ?? ""),
-              mapError(
-                () =>
-                  new DatasetError({
-                    message: "Failed to read HF_TOKEN config",
-                  })
+          : withLiveEnvConfig(
+              string("HF_TOKEN").pipe(
+                option,
+                configMap((value) => getOrNull(value) ?? ""),
+                mapError(
+                  () =>
+                    new DatasetError({
+                      message: "Failed to read HF_TOKEN config",
+                    })
+                )
               )
             )
       );
@@ -133,11 +135,7 @@ export function makeHleDatasetLayer(
                       ? some({ offset: nextOffset, limit: state.limit })
                       : none();
                   return succeed([
-                    fromIterable(
-                      mapped
-                        .filter(Either.isRight)
-                        .map((sample) => sample.right)
-                    ),
+                    mapped.filter(Either.isRight).map((sample) => sample.right),
                     next,
                   ] as const);
                 })

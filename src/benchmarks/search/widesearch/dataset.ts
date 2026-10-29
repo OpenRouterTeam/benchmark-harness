@@ -1,11 +1,7 @@
 import { createHash } from "node:crypto";
 
-import type { HttpClient } from "@effect/platform";
-import { FetchHttpClient, HttpClient as HttpClientTag } from "@effect/platform";
-import type { HttpClientResponse } from "@effect/platform/HttpClientResponse";
 import { parse } from "csv-parse/sync";
-import { fromIterable } from "effect/Chunk";
-import { map as configMap, option, string } from "effect/Config";
+import { map as configMap, option, String as string } from "effect/Config";
 import type { Effect } from "effect/Effect";
 import {
   all,
@@ -18,10 +14,13 @@ import {
   retry,
   succeed,
 } from "effect/Effect";
+import type { HttpClient } from "effect/http";
+import { HttpClient as HttpClientTag } from "effect/http";
+import type { HttpClientResponse } from "effect/http/HttpClientResponse";
 import type { Layer } from "effect/Layer";
 import { effect, provide } from "effect/Layer";
 import { getOrNull } from "effect/Option";
-import { fromChunk, unwrap } from "effect/Stream";
+import { fromArray as fromChunk, unwrap } from "effect/Stream";
 
 import {
   hfFetchRetrySchedule,
@@ -32,7 +31,9 @@ import { DatasetError } from "../../../harness/core";
 import type { Dataset } from "../../../harness/dataset";
 import { Dataset as DatasetTag } from "../../../harness/dataset";
 import { Either } from "../../../internal/either";
+import { withLiveEnvConfig } from "../../../internal/env-config";
 import { definedValues, isRecord } from "../../../internal/guards";
+import { fetchHttpClientLayer } from "../../../internal/http-client";
 import { parseSchema, z } from "../../../internal/zod";
 import type { RetryConfig } from "../../../runtime/retry";
 
@@ -268,13 +269,13 @@ export function makeWideSearchDatasetLayer(
                       wideSearchRecordToSample({ record, client, retryConfig })
                     ),
                   { concurrency: GOLD_FETCH_CONCURRENCY }
-                ).pipe(map((samples) => fromChunk(fromIterable(samples))));
+                ).pipe(map((samples) => fromChunk(samples)));
               })
             )
           ),
       });
     })
-  ).pipe(provide(FetchHttpClient.layer));
+  ).pipe(provide(fetchHttpClientLayer));
 }
 
 function fetchWideSearchGoldCsv(
@@ -345,12 +346,14 @@ function goldResponseBody(
 }
 
 function resolveGoldHfToken(): Effect<string, GoldFetchFailure> {
-  return string("HF_TOKEN").pipe(
-    option,
-    configMap((value) => getOrNull(value) ?? ""),
-    mapError((): GoldFetchFailure => ({
-      message: "failed to read HF_TOKEN config",
-      retryable: false,
-    }))
+  return withLiveEnvConfig(
+    string("HF_TOKEN").pipe(
+      option,
+      configMap((value) => getOrNull(value) ?? ""),
+      mapError((): GoldFetchFailure => ({
+        message: "failed to read HF_TOKEN config",
+        retryable: false,
+      }))
+    )
   );
 }

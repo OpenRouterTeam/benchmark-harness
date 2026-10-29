@@ -1,8 +1,6 @@
 import { createHash } from "node:crypto";
 
-import { FetchHttpClient, HttpClient } from "@effect/platform";
 import { parse } from "csv-parse/sync";
-import { fromIterable as chunkFromIterable } from "effect/Chunk";
 import {
   cached,
   gen,
@@ -13,9 +11,10 @@ import {
   retry,
   succeed,
 } from "effect/Effect";
+import { HttpClient } from "effect/http";
 import type { Layer } from "effect/Layer";
 import { effect as layerEffect, provide as layerProvide } from "effect/Layer";
-import { fromChunk, unwrap } from "effect/Stream";
+import { fromArray as fromChunk, unwrap } from "effect/Stream";
 
 import { hfFetchRetrySchedule } from "../../../datasets/huggingface";
 import type { Sample } from "../../../harness/core";
@@ -24,6 +23,7 @@ import type { Dataset } from "../../../harness/dataset";
 import { Dataset as DatasetTag } from "../../../harness/dataset";
 import { Either } from "../../../internal/either";
 import { isRecord } from "../../../internal/guards";
+import { fetchHttpClientLayer } from "../../../internal/http-client";
 
 export const BROWSECOMP_URL =
   "https://openaipublic.blob.core.windows.net/simple-evals/browse_comp_test_set.csv";
@@ -163,12 +163,12 @@ export function makeBrowseCompDatasetLayer(retryConfig?: {
                 const samples = mapped
                   .filter(Either.isRight)
                   .map((r) => r.right);
-                return succeed(fromChunk(chunkFromIterable(samples)));
+                return succeed(fromChunk(samples));
               })
             )
           ),
       });
     })
   );
-  return layer.pipe(layerProvide(FetchHttpClient.layer));
+  return layer.pipe(layerProvide(fetchHttpClientLayer));
 }

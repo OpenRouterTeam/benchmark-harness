@@ -1,7 +1,6 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
-import { fromIterable } from "effect/Chunk";
 import type { Effect } from "effect/Effect";
 import { fail, flatMap, mapError, succeed } from "effect/Effect";
 import type { Layer } from "effect/Layer";
@@ -11,7 +10,7 @@ import type { Stream } from "effect/Stream";
 import {
   flatMap as flatMapStream,
   fromEffect,
-  paginateChunkEffect,
+  paginate as paginateChunkEffect,
 } from "effect/Stream";
 import { parse as tomlParse } from "smol-toml";
 
@@ -200,7 +199,7 @@ function buildDatasetService(
           }
           const next = offset + config.pageSize;
           return succeed([
-            fromIterable(samples.right),
+            samples.right,
             next < selected.length ? some(next) : none(),
           ] as const);
         });

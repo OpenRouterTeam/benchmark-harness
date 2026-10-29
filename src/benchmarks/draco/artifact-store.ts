@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-import { Tag } from "effect/Context";
+import { Service as Tag } from "effect/Context";
 import type { Effect } from "effect/Effect";
 import { fail, gen, tryPromise } from "effect/Effect";
 import type { Layer } from "effect/Layer";
@@ -32,9 +32,12 @@ export const STAGE_DIRS = [
 
 export type StageDir = ValueOf<typeof STAGE_DIRS>;
 
-export class ArtifactStoreService extends Tag(
+export class ArtifactStoreService extends Tag<
+  ArtifactStoreService,
+  ArtifactStore
+>()(
   "@openrouter/bench-harness/benchmarks/draco/artifact-store/ArtifactStoreService"
-)<ArtifactStoreService, ArtifactStore>() {}
+) {}
 
 export function makeArtifactStoreLayer(
   store: ArtifactStore

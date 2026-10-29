@@ -19,11 +19,11 @@ import {
 } from "effect/Stream";
 
 import { definedValues } from "../internal/guards";
-import { resetGenerationIds } from "../runtime/generation-ids";
+import { withFreshGenerationIds } from "../runtime/generation-ids";
 import type { ReplayedUsage } from "../runtime/generation-resolver";
 import { resolveCollectedGenerations } from "../runtime/generation-resolver";
-import { setCurrentSampleId } from "../runtime/request-session-id";
-import { setCurrentEpoch } from "../runtime/response-cache";
+import { withCurrentSampleId } from "../runtime/request-session-id";
+import { withCurrentEpoch } from "../runtime/response-cache";
 import type {
   DatasetError,
   ModelError,
@@ -259,32 +259,26 @@ function evaluateOne(
           : effectFail(solverErr),
     })
   );
-  return resetGenerationIds.pipe(
-    effectFlatMap(() => setCurrentEpoch(epoch)),
-    effectFlatMap(() => setCurrentSampleId(sample.id)),
-    effectFlatMap(() =>
-      evaluation.pipe(
-        effectFlatMap((outcome) =>
-          resolveCollectedGenerations.pipe(
-            effectMap((resolved) => {
-              const withUsage = applyReplayedUsage(
-                outcome,
-                resolved.replayedUsage
-              );
-              return resolved.ids.length > 0
-                ? {
-                    ...withUsage,
-                    sampleScore: {
-                      ...withUsage.sampleScore,
-                      generationIds: [...new Set(resolved.ids)],
-                    },
-                  }
-                : withUsage;
-            })
-          )
-        )
+  return evaluation.pipe(
+    effectFlatMap((outcome) =>
+      resolveCollectedGenerations.pipe(
+        effectMap((resolved) => {
+          const withUsage = applyReplayedUsage(outcome, resolved.replayedUsage);
+          return resolved.ids.length > 0
+            ? {
+                ...withUsage,
+                sampleScore: {
+                  ...withUsage.sampleScore,
+                  generationIds: [...new Set(resolved.ids)],
+                },
+              }
+            : withUsage;
+        })
       )
-    )
+    ),
+    withCurrentSampleId(sample.id),
+    withCurrentEpoch(epoch),
+    withFreshGenerationIds
   );
 }
 
@@ -362,13 +356,15 @@ export function runBenchmark(
             ),
           { concurrency: config.maxConcurrency }
         ),
-        streamRunFoldEffect(initialAcc, (acc, item) =>
-          effectGen(function* () {
-            const updated = accumulateOutcome(acc, item);
-            const reporter = yield* ProgressReporter;
-            yield* reporter.onSampleComplete(updated.scores.length);
-            return updated;
-          })
+        streamRunFoldEffect(
+          () => initialAcc,
+          (acc, item) =>
+            effectGen(function* () {
+              const updated = accumulateOutcome(acc, item);
+              const reporter = yield* ProgressReporter;
+              yield* reporter.onSampleComplete(updated.scores.length);
+              return updated;
+            })
         ),
         effectMap(finalizeRun)
       );

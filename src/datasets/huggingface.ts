@@ -1,10 +1,8 @@
 import { createHash } from "node:crypto";
 import { join } from "node:path";
 
-import { FetchHttpClient, HttpClient } from "@effect/platform";
-import { fromIterable } from "effect/Chunk";
-import { map as configMap, option, string } from "effect/Config";
-import type { DurationInput } from "effect/Duration";
+import { map as configMap, option, String as string } from "effect/Config";
+import { millis } from "effect/Duration";
 import type { Effect } from "effect/Effect";
 import {
   fail,
@@ -17,6 +15,7 @@ import {
   retry,
   succeed,
 } from "effect/Effect";
+import { HttpClient } from "effect/http";
 import type { Layer } from "effect/Layer";
 import { effect, provide } from "effect/Layer";
 import type { Option } from "effect/Option";
@@ -27,17 +26,20 @@ import {
   jittered,
   modifyDelay,
   passthrough,
-  whileInput,
+  setInputType,
+  while as whileInput,
 } from "effect/Schedule";
 import type { Stream } from "effect/Stream";
-import { paginateChunkEffect } from "effect/Stream";
+import { paginate as paginateChunkEffect } from "effect/Stream";
 
 import type { Sample } from "../harness/core";
 import { DatasetError } from "../harness/core";
 import type { DatasetStreamOptions } from "../harness/dataset";
 import { Dataset } from "../harness/dataset";
 import { Either } from "../internal/either";
+import { withLiveEnvConfig } from "../internal/env-config";
 import { definedValues } from "../internal/guards";
+import { fetchHttpClientLayer } from "../internal/http-client";
 import { parseSchema, z } from "../internal/zod";
 import type { RetryConfig } from "../runtime/retry";
 import { withRetryAttemptLogging } from "../runtime/retry";
@@ -110,11 +112,13 @@ export function hfFetchRetrySchedule<E = unknown>(
     passthrough
   );
   return withRetryAttemptLogging(
-    whileInput(scheduled, isRetryable).pipe(
+    scheduled.pipe(
+      setInputType<E>(),
+      whileInput(({ input }) => isRetryable(input)),
       passthrough,
-      modifyDelay((error, computed): DurationInput => {
-        const explicit = retryAfterMs(error);
-        return explicit !== undefined ? `${explicit} millis` : computed;
+      modifyDelay(({ input, duration }) => {
+        const explicit = retryAfterMs(input);
+        return succeed(explicit !== undefined ? millis(explicit) : duration);
       })
     ),
     maxRetries
@@ -122,10 +126,12 @@ export function hfFetchRetrySchedule<E = unknown>(
 }
 
 export function resolveHfToken(): Effect<string, never> {
-  return string("HF_TOKEN").pipe(
-    option,
-    configMap((value) => getOrNull(value) ?? ""),
-    orElseSucceed(() => "")
+  return withLiveEnvConfig(
+    string("HF_TOKEN").pipe(
+      option,
+      configMap((value) => getOrNull(value) ?? ""),
+      orElseSucceed(() => "")
+    )
   );
 }
 
@@ -186,14 +192,16 @@ export function makeHfPageFetcher(
       const hfToken =
         hfTokenOverride !== undefined
           ? hfTokenOverride
-          : yield* string("HF_TOKEN").pipe(
-              option,
-              configMap((opt) => getOrNull(opt) ?? ""),
-              mapError(
-                () =>
-                  new DatasetError({
-                    message: "Failed to read HF_TOKEN config",
-                  })
+          : yield* withLiveEnvConfig(
+              string("HF_TOKEN").pipe(
+                option,
+                configMap((opt) => getOrNull(opt) ?? ""),
+                mapError(
+                  () =>
+                    new DatasetError({
+                      message: "Failed to read HF_TOKEN config",
+                    })
+                )
               )
             );
       const cacheKey = hfPageCacheKey(config, offset, length, hfToken, store);
@@ -296,7 +304,7 @@ export function paginateHfRows<T>(opts: {
         const next: Option<PageState> = hasMore
           ? some({ offset: nextOffset, limit: opts.pageSize })
           : none();
-        return succeed([fromIterable(mapped.right), next] as const);
+        return succeed([mapped.right, next] as const);
       })
     )
   );
@@ -328,5 +336,5 @@ export function makeHfDatasetLayer(config: HfDatasetConfig): Layer<Dataset> {
     };
     return Dataset.of({ stream, size: sizeEffect });
   });
-  return effect(Dataset, makeService).pipe(provide(FetchHttpClient.layer));
+  return effect(Dataset, makeService).pipe(provide(fetchHttpClientLayer));
 }

@@ -3,9 +3,9 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { failureOption } from "effect/Cause";
+import { findErrorOption as failureOption } from "effect/Cause";
 import {
-  either,
+  result as either,
   gen,
   provide,
   runPromise,
@@ -46,8 +46,8 @@ import {
 } from "../../runtime/generation-ids";
 import type { GenerationResolverService } from "../../runtime/generation-resolver";
 import { GenerationResolver } from "../../runtime/generation-resolver";
-import { setCurrentSampleId } from "../../runtime/request-session-id";
-import { setCurrentEpoch } from "../../runtime/response-cache";
+import { withCurrentSampleId } from "../../runtime/request-session-id";
+import { withCurrentEpoch } from "../../runtime/response-cache";
 import {
   AGENT_CANDIDATE_MODELS_ENV,
   AGENT_REQUEST_PLUGINS_ENV,
@@ -1182,11 +1182,11 @@ describe("terminal-bench pi via ori", () => {
     );
     await runPromise(
       gen(function* () {
-        yield* setCurrentEpoch(1);
-        yield* setCurrentSampleId("terminal_bench-adaptive-rejection-sampler");
         const solver = yield* Solver;
         return yield* solver(sampleState());
       }).pipe(
+        withCurrentSampleId("terminal_bench-adaptive-rejection-sampler"),
+        withCurrentEpoch(1),
         provide(
           layerMergeAll(
             solverLayer.pipe(layerProvide(layer)),
@@ -1234,7 +1234,7 @@ describe("terminal-bench pi via ori", () => {
         either
       )
     );
-    expect(outcome._tag).toBe("Left");
+    expect(outcome._tag).toBe("Failure");
   });
 
   it("installs the verified agent runtime for pi", () => {

@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, it } from "bun:test";
 
-import { toReadonlyArray } from "effect/Chunk";
 import { gen, provide, runPromise } from "effect/Effect";
 import { runCollect } from "effect/Stream";
 
@@ -107,7 +106,7 @@ describe("HLE dataset", () => {
         const dataset = yield* Dataset;
         const size = yield* dataset.size;
         const samples = yield* runCollect(dataset.stream({ start: 0, end: 2 }));
-        return { size, samples: toReadonlyArray(samples) };
+        return { size, samples };
       }).pipe(provide(makeHleDatasetLayer({ baseDelayMs: 0 }, "hf_test")))
     );
     expect(result.size).toBe(HLE_TEXT_ONLY_ROWS);

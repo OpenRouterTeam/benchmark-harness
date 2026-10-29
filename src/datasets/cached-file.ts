@@ -1,8 +1,8 @@
-import type { HttpClientError } from "@effect/platform";
-import { HttpClient } from "@effect/platform";
 import { TaggedError } from "effect/Data";
 import type { Effect } from "effect/Effect";
 import { fail, gen, ignore, promise, retry, tryPromise } from "effect/Effect";
+import type { HttpClientError } from "effect/http";
+import { HttpClient } from "effect/http";
 
 import { Either } from "../internal/either";
 import { definedValues, isRecord } from "../internal/guards";

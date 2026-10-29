@@ -1,31 +1,53 @@
+import { Reference } from "effect/Context";
 import type { Effect } from "effect/Effect";
-import { all, flatMap, locally, map, succeed, zipRight } from "effect/Effect";
-import type { FiberRef } from "effect/FiberRef";
 import {
-  get,
-  set,
-  unsafeMake,
-  unsafeMakeHashSet,
-  update,
-} from "effect/FiberRef";
-import { add, empty, has } from "effect/HashSet";
+  flatMap,
+  map,
+  provideService,
+  succeed,
+  suspend,
+  sync,
+} from "effect/Effect";
 
-export const generationIdCollector = unsafeMakeHashSet<string>(empty());
+export interface GenerationIdCollectors {
+  readonly ids: Set<string>;
+  readonly cacheHitIds: Set<string>;
+  readonly auxiliaryUsageIds: Set<string>;
+  readonly resolvedSourceIds: Set<string>;
+}
 
-export const cacheHitGenerationIdCollector = unsafeMakeHashSet<string>(empty());
+function makeGenerationIdCollectors(): GenerationIdCollectors {
+  return {
+    ids: new Set(),
+    cacheHitIds: new Set(),
+    auxiliaryUsageIds: new Set(),
+    resolvedSourceIds: new Set(),
+  };
+}
 
-export const auxiliaryUsageGenerationIdCollector =
-  unsafeMakeHashSet<string>(empty());
+export const generationIdCollectors: Reference<GenerationIdCollectors> =
+  Reference<GenerationIdCollectors>(
+    "@openrouter/bench-harness/runtime/generationIdCollectors",
+    { defaultValue: makeGenerationIdCollectors }
+  );
 
-export const resolvedSourceGenerationIdCollector =
-  unsafeMakeHashSet<string>(empty());
-
-export const auxiliaryUsageRef: FiberRef<boolean> = unsafeMake(false);
+export const auxiliaryUsageRef: Reference<boolean> = Reference<boolean>(
+  "@openrouter/bench-harness/runtime/auxiliaryUsage",
+  { defaultValue: () => false }
+);
 
 export function withAuxiliaryUsage<A, E, R>(
   effect: Effect<A, E, R>
 ): Effect<A, E, R> {
-  return locally(effect, auxiliaryUsageRef, true);
+  return provideService(effect, auxiliaryUsageRef, true);
+}
+
+export function withFreshGenerationIds<A, E, R>(
+  effect: Effect<A, E, R>
+): Effect<A, E, R> {
+  return suspend(() =>
+    provideService(effect, generationIdCollectors, makeGenerationIdCollectors())
+  );
 }
 
 export function recordGenerationId(
@@ -37,42 +59,39 @@ export function recordGenerationId(
     return succeed(undefined);
   }
   const generationId = id;
-  let record = update(generationIdCollector, add(generationId));
-  if (isCacheHit) {
-    record = record.pipe(
-      zipRight(update(cacheHitGenerationIdCollector, add(generationId)))
-    );
-    if (isResolvedSource) {
-      record = record.pipe(
-        zipRight(update(resolvedSourceGenerationIdCollector, add(generationId)))
-      );
-    }
-  }
-  return get(auxiliaryUsageRef).pipe(
-    flatMap((isAuxiliary) =>
-      isAuxiliary
-        ? record.pipe(
-            zipRight(
-              update(auxiliaryUsageGenerationIdCollector, add(generationId))
-            )
-          )
-        : record
+  return flatMap(generationIdCollectors, (collectors) =>
+    flatMap(auxiliaryUsageRef, (isAuxiliary) =>
+      sync(() => {
+        collectors.ids.add(generationId);
+        if (isCacheHit) {
+          collectors.cacheHitIds.add(generationId);
+          if (isResolvedSource) {
+            collectors.resolvedSourceIds.add(generationId);
+          }
+        }
+        if (isAuxiliary) {
+          collectors.auxiliaryUsageIds.add(generationId);
+        }
+      })
     )
   );
 }
 
-export const resetGenerationIds: Effect<void> = set(
-  generationIdCollector,
-  empty<string>()
-).pipe(
-  zipRight(set(cacheHitGenerationIdCollector, empty<string>())),
-  zipRight(set(auxiliaryUsageGenerationIdCollector, empty<string>())),
-  zipRight(set(resolvedSourceGenerationIdCollector, empty<string>()))
+export const resetGenerationIds: Effect<void> = flatMap(
+  generationIdCollectors,
+  (collectors) =>
+    sync(() => {
+      collectors.ids.clear();
+      collectors.cacheHitIds.clear();
+      collectors.auxiliaryUsageIds.clear();
+      collectors.resolvedSourceIds.clear();
+    })
 );
 
-export const getCollectedGenerationIds: Effect<readonly string[]> = get(
-  generationIdCollector
-).pipe(map((ids) => [...ids]));
+export const getCollectedGenerationIds: Effect<readonly string[]> = map(
+  generationIdCollectors,
+  (collectors) => [...collectors.ids]
+);
 
 export interface GenerationIdEntry {
   readonly id: string;
@@ -83,18 +102,11 @@ export interface GenerationIdEntry {
 
 export const getCollectedGenerationIdEntries: Effect<
   readonly GenerationIdEntry[]
-> = all([
-  get(generationIdCollector),
-  get(cacheHitGenerationIdCollector),
-  get(auxiliaryUsageGenerationIdCollector),
-  get(resolvedSourceGenerationIdCollector),
-]).pipe(
-  map(([ids, cacheHitIds, auxiliaryIds, resolvedSourceIds]) =>
-    [...ids].map((id) => ({
-      id,
-      isCacheHit: has(cacheHitIds, id),
-      countsTowardUsage: !has(auxiliaryIds, id),
-      isResolvedSource: has(resolvedSourceIds, id),
-    }))
-  )
+> = map(generationIdCollectors, (collectors) =>
+  [...collectors.ids].map((id) => ({
+    id,
+    isCacheHit: collectors.cacheHitIds.has(id),
+    countsTowardUsage: !collectors.auxiliaryUsageIds.has(id),
+    isResolvedSource: collectors.resolvedSourceIds.has(id),
+  }))
 );

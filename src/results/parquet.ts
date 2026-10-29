@@ -1,4 +1,4 @@
-import { unsafeNow, formatIso } from "effect/DateTime";
+import { nowUnsafe as unsafeNow, formatIso } from "effect/DateTime";
 import type { AsyncBuffer } from "hyparquet";
 import { parquetReadObjects } from "hyparquet";
 import type { KeyValue, Writer } from "hyparquet-writer";

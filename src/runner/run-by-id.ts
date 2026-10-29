@@ -1,4 +1,3 @@
-import { FetchHttpClient } from "@effect/platform";
 import { flatMap, provide } from "effect/Effect";
 import {
   mergeAll as layerMergeAll,
@@ -39,6 +38,7 @@ import { runHarnessPromise } from "../internal/effect-logger";
 import type { AsyncEither } from "../internal/either";
 import { Either } from "../internal/either";
 import { definedValues } from "../internal/guards";
+import { fetchHttpClientLayer } from "../internal/http-client";
 import { wLog } from "../internal/log";
 import type { ResultStoreService } from "../results/result-store";
 import {
@@ -108,7 +108,7 @@ export function runBenchmarkById(
     }),
   });
   const fullBenchmarkLayer = benchmarkLayer.pipe(
-    layerProvide(FetchHttpClient.layer)
+    layerProvide(fetchHttpClientLayer)
   );
   const traceHeaders = filterTraceHeaders(input.traceHeaders);
   const resolverLayer = layerSucceed(

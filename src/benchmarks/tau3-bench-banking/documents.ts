@@ -1,8 +1,9 @@
-import type { HttpClientError } from "@effect/platform";
-import { HttpClient } from "@effect/platform";
 import { TaggedError } from "effect/Data";
-import type { Effect, Semaphore } from "effect/Effect";
+import type { Effect } from "effect/Effect";
 import { fail, forEach, gen, succeed } from "effect/Effect";
+import type { HttpClientError } from "effect/http";
+import { HttpClient } from "effect/http";
+import type { Semaphore } from "effect/Semaphore";
 
 import { Either } from "../../internal/either";
 import { parseSchema, z } from "../../internal/zod";

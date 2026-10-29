@@ -1,13 +1,8 @@
-import { FetchHttpClient, HttpClient } from "@effect/platform";
-import {
-  gen,
-  makeSemaphore,
-  map,
-  mapError,
-  provideService,
-} from "effect/Effect";
+import { gen, map, mapError, provideService } from "effect/Effect";
+import { HttpClient } from "effect/http";
 import type { Layer as LayerType } from "effect/Layer";
 import { effect as layerEffect, provide as layerProvide } from "effect/Layer";
+import { make as makeSemaphore } from "effect/Semaphore";
 import type { Stream as StreamType } from "effect/Stream";
 import {
   fail,
@@ -20,6 +15,7 @@ import type { Sample } from "../../harness/core";
 import { DatasetError } from "../../harness/core";
 import type { DatasetStreamOptions } from "../../harness/dataset";
 import { Dataset } from "../../harness/dataset";
+import { fetchHttpClientLayer } from "../../internal/http-client";
 import type { RetryConfig } from "../../runtime/retry";
 import { ensureBankingTasks, loadBankingTasks } from "./environment";
 import type { Tau3Task } from "./types";
@@ -75,6 +71,6 @@ export function makeBankingDatasetLayer(
     });
   });
   return layerEffect(Dataset, makeService).pipe(
-    layerProvide(FetchHttpClient.layer)
+    layerProvide(fetchHttpClientLayer)
   );
 }

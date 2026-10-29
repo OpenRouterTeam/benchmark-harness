@@ -1,9 +1,9 @@
 import { describe, expect, it } from "bun:test";
 
-import { FetchHttpClient } from "@effect/platform";
 import { runPromise, scoped } from "effect/Effect";
 import { build, provide } from "effect/Layer";
 
+import { fetchHttpClientLayer } from "../../internal/http-client";
 import { assertLeft, assertRight } from "../../internal/testing";
 import { parseSchema } from "../../internal/zod";
 import { Tau3BenchBankingConfigSchema } from "../benchmark-config";
@@ -112,7 +112,7 @@ describe("tau3_bench_banking registration", () => {
       },
       sessionId: "test-session",
     });
-    const buildLayer = build(layer.pipe(provide(FetchHttpClient.layer))).pipe(
+    const buildLayer = build(layer.pipe(provide(fetchHttpClientLayer))).pipe(
       scoped
     );
     await expect(runPromise(buildLayer)).rejects.toThrow(

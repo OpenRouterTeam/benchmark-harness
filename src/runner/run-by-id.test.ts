@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 import { PassThrough } from "node:stream";
 
 import { promise, succeed } from "effect/Effect";
-import { fail as layerFail, succeed as layerSucceed } from "effect/Layer";
+import { succeed as layerSucceed } from "effect/Layer";
 import { fromEffect, fromIterable } from "effect/Stream";
 
 import type { InjectedBenchmarkRunConfig } from "../benchmarks/benchmark-config";
@@ -11,6 +11,7 @@ import { gpqaScorer, gpqaSolver } from "../benchmarks/gpqa";
 import type { Benchmark } from "../benchmarks/types";
 import { makeGcsCacheStore } from "../datasets/cache-store";
 import { Dataset } from "../harness/dataset";
+import { layerFail } from "../internal/layer";
 import { assertLeft, assertRight } from "../internal/testing";
 import {
   datasetSizeById,

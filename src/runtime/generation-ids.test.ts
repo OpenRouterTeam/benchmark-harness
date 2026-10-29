@@ -105,9 +105,13 @@ describe("generation id collector", () => {
     const ids = await runPromise(
       resetGenerationIds.pipe(
         flatMap(() =>
-          forEach(["gen-a", "gen-b", "gen-c", "gen-d"], recordGenerationId, {
-            concurrency: 4,
-          })
+          forEach(
+            ["gen-a", "gen-b", "gen-c", "gen-d"],
+            (id) => recordGenerationId(id),
+            {
+              concurrency: 4,
+            }
+          )
         ),
         flatMap(() => getCollectedGenerationIds)
       )

@@ -1,6 +1,6 @@
-import { HttpClient } from "@effect/platform";
-import type { Semaphore } from "effect/Effect";
 import { gen, mapError, provideService } from "effect/Effect";
+import { HttpClient } from "effect/http";
+import type { Semaphore } from "effect/Semaphore";
 
 import type { ModelMessage, ModelUsage, ToolCall } from "../../harness/core";
 import { MessageRole, SolverError } from "../../harness/core";

@@ -1,4 +1,4 @@
-import { formatIso, unsafeNow } from "effect/DateTime";
+import { formatIso, nowUnsafe as unsafeNow } from "effect/DateTime";
 
 import type { Citation } from "../../harness/core";
 import { wLog } from "../../internal/log";

@@ -1,12 +1,12 @@
 import { describe, expect, it } from "bun:test";
 
-import { FetchHttpClient } from "@effect/platform";
-import { failureOption } from "effect/Cause";
+import { findErrorOption as failureOption } from "effect/Cause";
 import { provide, runPromiseExit, scoped } from "effect/Effect";
 import { build } from "effect/Layer";
 import { getOrThrow } from "effect/Option";
 
 import { assertFailure } from "../../../test/helpers/exit-asserts";
+import { fetchHttpClientLayer } from "../../internal/http-client";
 import {
   DeepSweConfigSchema,
   SweAtlasQaConfigSchema,
@@ -49,7 +49,7 @@ describe.each([
               }),
             })
           )
-        ).pipe(provide(FetchHttpClient.layer))
+        ).pipe(provide(fetchHttpClientLayer))
       );
       assertFailure(exit);
       expect(getOrThrow(failureOption(exit.cause)).message).toBe(

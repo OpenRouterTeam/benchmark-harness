@@ -1,9 +1,9 @@
 import type { ResponsesRequest } from "@openrouter/sdk/models";
 import { currentTimeMillis } from "effect/Clock";
-import { formatIso, unsafeNow } from "effect/DateTime";
+import { formatIso, nowUnsafe as unsafeNow } from "effect/DateTime";
 import type { Effect } from "effect/Effect";
 import {
-  catchAll,
+  catch as catchAll,
   fail,
   flatMap,
   forEach,

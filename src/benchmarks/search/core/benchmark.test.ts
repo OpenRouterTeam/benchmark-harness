@@ -1,9 +1,8 @@
 import { describe, expect, it } from "bun:test";
 import { readFile } from "node:fs/promises";
 
-import { FetchHttpClient } from "@effect/platform";
 import {
-  either,
+  result as either,
   gen,
   provide,
   runPromise,
@@ -27,6 +26,7 @@ import {
 } from "../../../harness/progress";
 import { Solver } from "../../../harness/solver";
 import { ProviderSort, WebSearchEngine } from "../../../internal/enums";
+import { fetchHttpClientLayer } from "../../../internal/http-client";
 import type { BenchmarkRunInput } from "../../types";
 import {
   makeSearchBenchmarkLayer,
@@ -219,7 +219,7 @@ describe("makeSearchBenchmarkLayer", () => {
         }).pipe(
           provide(
             layerMergeAll(
-              layer.pipe(layerProvide(FetchHttpClient.layer)),
+              layer.pipe(layerProvide(fetchHttpClientLayer)),
               succeed(ProgressReporter, NOOP_PROGRESS_REPORTER),
               succeed(CheckpointStore, NOOP_CHECKPOINT_STORE)
             )

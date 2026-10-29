@@ -2,7 +2,7 @@ import { Either } from "./either";
 
 export function assertRight<A, E>(
   e: Either.Either<A, E>
-): asserts e is Either.Right<E, A> {
+): asserts e is Either.Right<A> {
   if (Either.isLeft(e)) {
     throw new Error(`Expected Right, got Left: ${JSON.stringify(e.left)}`);
   }
@@ -10,7 +10,7 @@ export function assertRight<A, E>(
 
 export function assertLeft<A, E>(
   e: Either.Either<A, E>
-): asserts e is Either.Left<E, A> {
+): asserts e is Either.Left<E> {
   if (Either.isRight(e)) {
     throw new Error(`Expected Left, got Right: ${JSON.stringify(e.right)}`);
   }

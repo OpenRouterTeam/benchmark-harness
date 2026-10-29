@@ -1,7 +1,7 @@
-import { Tag } from "effect/Context";
+import { Service as Tag } from "effect/Context";
 import type { Effect } from "effect/Effect";
 import {
-  catchAll,
+  catch as catchAll,
   succeed,
   sync,
   tryPromise,
@@ -58,9 +58,7 @@ export interface CreateSessionInput {
   readonly uploads: readonly UploadSpec[];
 }
 
-export class SandboxSession extends Tag(
-  "@openrouter/bench-harness/sandbox/SandboxSession"
-)<
+export class SandboxSession extends Tag<
   SandboxSession,
   {
     readonly create: (
@@ -70,7 +68,7 @@ export class SandboxSession extends Tag(
       sandboxId: string
     ) => Effect<SandboxSessionInstance, SolverError>;
   }
->() {}
+>()("@openrouter/bench-harness/sandbox/SandboxSession") {}
 
 export type SandboxSessionFactory = {
   readonly create: (

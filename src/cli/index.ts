@@ -2,7 +2,7 @@
 import { join } from "node:path";
 
 import { Presets, SingleBar } from "cli-progress";
-import { option, string } from "effect/Config";
+import { option, String as string } from "effect/Config";
 import { gen, promise, runSync, sync } from "effect/Effect";
 import { getOrNull } from "effect/Option";
 
@@ -30,6 +30,7 @@ import {
 import { makeProgressReporter } from "../harness/progress";
 import { runHarnessPromise } from "../internal/effect-logger";
 import { Either } from "../internal/either";
+import { withLiveEnvConfig } from "../internal/env-config";
 import { definedValues, isMember } from "../internal/guards";
 import { parseSchema } from "../internal/zod";
 import { makeLocalResultStore } from "../results/result-store";
@@ -126,7 +127,9 @@ function resolveTotalEvaluations(
 }
 
 function resolveSessionId(): string {
-  const envOpt = runSync(string("BENCH_CHILD_WORKFLOW_ID").pipe(option));
+  const envOpt = runSync(
+    withLiveEnvConfig(string("BENCH_CHILD_WORKFLOW_ID").pipe(option))
+  );
   const raw = getOrNull(envOpt);
   const fromEnv = raw === null || raw.length === 0 ? null : raw;
   if (fromEnv !== null && !isSafeOriSessionId(fromEnv)) {
@@ -138,9 +141,11 @@ function resolveSessionId(): string {
 }
 
 function resolveApiKey(): string {
-  const primaryOpt = runSync(string("OPENROUTER_API_KEY").pipe(option));
+  const primaryOpt = runSync(
+    withLiveEnvConfig(string("OPENROUTER_API_KEY").pipe(option))
+  );
   const fallbackOpt = runSync(
-    string("BENCHMARKING_OPENROUTER_API_KEY").pipe(option)
+    withLiveEnvConfig(string("BENCHMARKING_OPENROUTER_API_KEY").pipe(option))
   );
   const keyValue = getOrNull(primaryOpt) ?? getOrNull(fallbackOpt);
   if (keyValue === null) {
@@ -161,7 +166,7 @@ function main(): Promise<void> {
   }
   const apiKey = resolveApiKey();
   const baseUrl = getOrNull(
-    runSync(string("OPENROUTER_BASE_URL").pipe(option))
+    runSync(withLiveEnvConfig(string("OPENROUTER_BASE_URL").pipe(option)))
   );
   const epochs = args.epochs ?? benchmark.defaultEpochs;
   const range = resolveRange(args);

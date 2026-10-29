@@ -16,7 +16,7 @@ import { OpenRouterError } from "@openrouter/sdk/models/errors/openroutererror";
 import { SDKValidationError } from "@openrouter/sdk/models/errors/sdkvalidationerror";
 import { streamEventsFromJSON } from "@openrouter/sdk/models/streamevents";
 import { Responses as ResponsesClient } from "@openrouter/sdk/sdk/responses";
-import { Tag } from "effect/Context";
+import { Service as Tag } from "effect/Context";
 import { TaggedError } from "effect/Data";
 import type { Effect } from "effect/Effect";
 import { all, fail, flatMap, map, sync, tap, tryPromise } from "effect/Effect";
@@ -169,9 +169,7 @@ export function toModelError(error: ResponsesError): ModelError {
   );
 }
 
-export class Responses extends Tag(
-  "@openrouter/bench-harness/responses-client/Responses"
-)<
+export class Responses extends Tag<
   Responses,
   {
     readonly send: (
@@ -179,7 +177,7 @@ export class Responses extends Tag(
       options: ResponsesSendOptions
     ) => Effect<ResponsesResult, ResponsesError>;
   }
->() {}
+>()("@openrouter/bench-harness/responses-client/Responses") {}
 
 export type ResponsesService = {
   readonly send: (

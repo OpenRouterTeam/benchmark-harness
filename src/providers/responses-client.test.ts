@@ -5,7 +5,7 @@ import { readFile } from "node:fs/promises";
 import type { StreamEvents } from "@openrouter/sdk/models";
 import { OpenRouterError } from "@openrouter/sdk/models/errors/openroutererror";
 import { streamEventsFromJSON } from "@openrouter/sdk/models/streamevents";
-import { failureOption } from "effect/Cause";
+import { findErrorOption as failureOption } from "effect/Cause";
 import {
   flatMap,
   gen,
@@ -24,8 +24,8 @@ import {
   getCollectedGenerationIds,
   resetGenerationIds,
 } from "../runtime/generation-ids";
-import { setCurrentSampleId } from "../runtime/request-session-id";
-import { setCurrentEpoch, withRunAttempt } from "../runtime/response-cache";
+import { withCurrentSampleId } from "../runtime/request-session-id";
+import { withCurrentEpoch, withRunAttempt } from "../runtime/response-cache";
 import type { ModelErrorIdentifiers } from "./request-identifiers";
 import {
   consumeStream,
@@ -1008,13 +1008,13 @@ describe("makeResponsesLayer", () => {
     try {
       await runPromise(
         gen(function* run() {
-          yield* setCurrentEpoch(2);
           const responses = yield* Responses;
           yield* responses.send(
             { model: "m", input: [] },
             { timeoutMs: 1000, extraBody: { top_k: 5 } }
           );
         }).pipe(
+          withCurrentEpoch(2),
           provide(
             makeResponsesLayer({
               apiKey: "sk-test",
@@ -1052,11 +1052,11 @@ describe("makeResponsesLayer", () => {
     try {
       await runPromise(
         gen(function* run() {
-          yield* setCurrentEpoch(2);
-          yield* setCurrentSampleId("q/17");
           const responses = yield* Responses;
           yield* responses.send({ model: "m", input: [] }, { timeoutMs: 1000 });
         }).pipe(
+          withCurrentSampleId("q/17"),
+          withCurrentEpoch(2),
           provide(
             makeResponsesLayer({
               apiKey: "sk-test",
@@ -1091,7 +1091,6 @@ describe("makeResponsesLayer", () => {
         withRunAttempt(
           2,
           gen(function* run() {
-            yield* setCurrentEpoch(2);
             const responses = yield* Responses;
             yield* responses.send(
               { model: "m", input: [] },
@@ -1099,6 +1098,7 @@ describe("makeResponsesLayer", () => {
             );
           })
         ).pipe(
+          withCurrentEpoch(2),
           provide(
             makeResponsesLayer({
               apiKey: "sk-test",

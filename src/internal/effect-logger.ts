@@ -1,16 +1,22 @@
 import type { Cause } from "effect/Cause";
-import { isEmpty as isCauseEmpty, pretty as prettyCause } from "effect/Cause";
+import { pretty as prettyCause } from "effect/Cause";
 import type { Effect } from "effect/Effect";
 import { sync } from "effect/Effect";
 import type { Layer } from "effect/Layer";
-import { mergeAll, unwrapEffect } from "effect/Layer";
-import { toArray } from "effect/List";
-import { defaultLogger, make, minimumLogLevel, replace } from "effect/Logger";
+import {
+  mergeAll,
+  succeed as layerSucceed,
+  unwrap as unwrapEffect,
+} from "effect/Layer";
+import { layer as loggerLayer, make } from "effect/Logger";
 import type { LogLevel } from "effect/LogLevel";
-import { Debug, Error as ErrorLevel, Info, None, Trace } from "effect/LogLevel";
-import type { LogSpan } from "effect/LogSpan";
 import type { ManagedRuntime } from "effect/ManagedRuntime";
 import { make as makeManagedRuntime } from "effect/ManagedRuntime";
+import {
+  CurrentLogAnnotations,
+  CurrentLogSpans,
+  MinimumLogLevel,
+} from "effect/References";
 
 import { definedValues } from "./guards";
 import {
@@ -20,26 +26,25 @@ import {
 } from "./log";
 
 const EMIT_LEVEL_BY_LOG_LEVEL = {
-  ALL: "all",
-  FATAL: "fatal",
-  ERROR: "error",
-  WARN: "warn",
-  INFO: "info",
-  DEBUG: "debug",
-  TRACE: "trace",
-  OFF: "none",
-} as const satisfies Record<
-  LogLevel["label"],
-  keyof typeof GCP_SEVERITY_BY_LEVEL
->;
+  All: "all",
+  Fatal: "fatal",
+  Error: "error",
+  Warn: "warn",
+  Info: "info",
+  Debug: "debug",
+  Trace: "trace",
+  None: "none",
+} as const satisfies Record<LogLevel, keyof typeof GCP_SEVERITY_BY_LEVEL>;
 
 export const harnessEffectLogger = make<unknown, void>(
-  ({ annotations, cause, logLevel, message, spans }) => {
+  ({ cause, fiber, logLevel, message }) => {
+    const annotations = fiber.getRef(CurrentLogAnnotations);
+    const spans = fiber.getRef(CurrentLogSpans);
     const normalizedMessage = normalizeMessage(message);
-    const renderedSpans = renderSpans(toArray(spans), Date.now());
+    const renderedSpans = renderSpans(spans, Date.now());
     const renderedCause = renderCause(cause);
     const context = {
-      ...Object.fromEntries(annotations),
+      ...annotations,
       ...normalizedMessage.context,
       ...definedValues({
         spans:
@@ -50,7 +55,7 @@ export const harnessEffectLogger = make<unknown, void>(
       }),
     };
     emitLog({
-      level: EMIT_LEVEL_BY_LOG_LEVEL[logLevel.label],
+      level: EMIT_LEVEL_BY_LOG_LEVEL[logLevel],
       message: normalizedMessage.message,
       context,
     });
@@ -61,8 +66,8 @@ export function makeHarnessLoggerLayer(
   rawLogLevel: string | undefined
 ): Layer<never> {
   return mergeAll(
-    replace(defaultLogger, harnessEffectLogger),
-    minimumLogLevel(resolveMinimumLogLevel(rawLogLevel))
+    loggerLayer([harnessEffectLogger]),
+    layerSucceed(MinimumLogLevel, resolveMinimumLogLevel(rawLogLevel))
   );
 }
 
@@ -96,19 +101,19 @@ function resolveMinimumLogLevel(raw: string | undefined): LogLevel {
   const level = resolveMinimumHarnessLogLevel(raw);
   switch (level) {
     case "none": {
-      return None;
+      return "None";
     }
     case "error": {
-      return ErrorLevel;
+      return "Error";
     }
     case "info": {
-      return Info;
+      return "Info";
     }
     case "debug": {
-      return Debug;
+      return "Debug";
     }
     case "trace": {
-      return Trace;
+      return "Trace";
     }
     default: {
       return level satisfies never;
@@ -117,16 +122,16 @@ function resolveMinimumLogLevel(raw: string | undefined): LogLevel {
 }
 
 function renderSpans(
-  spans: readonly LogSpan[],
+  spans: readonly (readonly [label: string, timestamp: number])[],
   now: number
 ): Record<string, number> {
   return Object.fromEntries(
-    spans.map((span) => [span.label, now - span.startTime])
+    spans.map(([label, startTime]) => [label, now - startTime])
   );
 }
 
 function renderCause(cause: Cause<unknown>): string | undefined {
-  return isCauseEmpty(cause) ? undefined : prettyCause(cause);
+  return cause.reasons.length === 0 ? undefined : prettyCause(cause);
 }
 
 function normalizeMessage(message: unknown): {

@@ -1,8 +1,8 @@
-import { Tag } from "effect/Context";
+import { Service as Tag } from "effect/Context";
 import { TaggedError } from "effect/Data";
 import type { Effect } from "effect/Effect";
 import {
-  catchAll,
+  catch as catchAll,
   fail,
   flatMap,
   forEach,
@@ -15,7 +15,13 @@ import {
   tryPromise,
 } from "effect/Effect";
 import { isNone } from "effect/Option";
-import { intersect, recurs, spaced, whileInput } from "effect/Schedule";
+import {
+  max,
+  recurs,
+  setInputType,
+  spaced,
+  while as whileInput,
+} from "effect/Schedule";
 
 import { Either } from "../internal/either";
 import { unknownErrorToString } from "../internal/errors";
@@ -47,9 +53,10 @@ export interface GenerationResolverService {
   ) => Effect<ResolvedSourceGeneration | undefined>;
 }
 
-export class GenerationResolver extends Tag(
-  "@openrouter/bench-harness/generation-resolver"
-)<GenerationResolver, GenerationResolverService>() {}
+export class GenerationResolver extends Tag<
+  GenerationResolver,
+  GenerationResolverService
+>()("@openrouter/bench-harness/generation-resolver") {}
 
 const GenerationLookupSchema = z.object({
   data: z.object({
@@ -123,10 +130,14 @@ export function makeOpenRouterGenerationResolver(
   const pollIntervalMs = config.pollIntervalMs ?? DEFAULT_POLL_INTERVAL_MS;
   const maxAttempts = config.maxAttempts ?? DEFAULT_MAX_ATTEMPTS;
   const pollSchedule = (attempts: number) =>
-    spaced(`${pollIntervalMs} millis`).pipe(
-      intersect(recurs(Math.max(attempts - 1, 0))),
-      whileInput((error: GenerationLookupError) => error.retryable)
-    );
+    max([
+      spaced(`${pollIntervalMs} millis`).pipe(
+        setInputType<GenerationLookupError>()
+      ),
+      recurs(Math.max(attempts - 1, 0)).pipe(
+        setInputType<GenerationLookupError>()
+      ),
+    ]).pipe(whileInput(({ input }) => input.retryable));
   const lookupOnce = (
     generationId: string
   ): Effect<GenerationLookupData, GenerationLookupError> =>

@@ -10,7 +10,7 @@ import {
   provide,
   runPromise,
   succeed as effectSucceed,
-  zipRight,
+  andThen as zipRight,
 } from "effect/Effect";
 import {
   effect,

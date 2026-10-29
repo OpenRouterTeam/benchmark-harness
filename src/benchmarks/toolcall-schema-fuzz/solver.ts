@@ -1,8 +1,8 @@
-import type { HttpClient, HttpClientError } from "@effect/platform";
-import { HttpClientRequest } from "@effect/platform";
 import { millis } from "effect/Duration";
 import type { Effect } from "effect/Effect";
 import { catchTag, fail, flatMap, gen, mapError, timeout } from "effect/Effect";
+import type { HttpClient, HttpClientError } from "effect/http";
+import { HttpClientRequest } from "effect/http";
 
 import type {
   CostTier,
@@ -161,7 +161,7 @@ function withTimeout<A, E>(
 ): Effect<A, E | ModelError> {
   return effect.pipe(
     timeout(millis(timeoutMs)),
-    catchTag("TimeoutException", () =>
+    catchTag("TimeoutError", () =>
       fail(
         new ModelError({
           status: 408,
@@ -192,7 +192,7 @@ function requestCompletion(
         "X-OpenRouter-Experiment-Ids": options.experimentIds?.join(","),
       }),
     }),
-    HttpClientRequest.bodyUnsafeJson(requestBody)
+    HttpClientRequest.bodyJsonUnsafe(requestBody)
   );
   const completion = client.execute(request).pipe(
     mapError(

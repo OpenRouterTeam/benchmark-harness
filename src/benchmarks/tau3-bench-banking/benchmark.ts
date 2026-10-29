@@ -1,13 +1,13 @@
-import { HttpClient } from "@effect/platform";
-import { gen, makeSemaphore } from "effect/Effect";
+import { gen } from "effect/Effect";
+import { HttpClient } from "effect/http";
 import type { Layer } from "effect/Layer";
 import {
-  fail as layerFail,
   effect as layerEffect,
   provide as layerProvide,
   mergeAll as layerMergeAll,
   succeed as layerSucceed,
 } from "effect/Layer";
+import { make as makeSemaphore } from "effect/Semaphore";
 
 import type { Dataset } from "../../harness/dataset";
 import { Model } from "../../harness/model";
@@ -15,6 +15,7 @@ import { Scorer } from "../../harness/scorer";
 import { Solver } from "../../harness/solver";
 import { Either } from "../../internal/either";
 import { definedValues } from "../../internal/guards";
+import { layerFail } from "../../internal/layer";
 import { parseSchema } from "../../internal/zod";
 import { makeOpenRouterModelLayer } from "../../providers/openrouter-model";
 import {

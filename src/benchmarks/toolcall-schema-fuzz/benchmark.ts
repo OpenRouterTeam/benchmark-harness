@@ -1,9 +1,8 @@
-import { HttpClient } from "@effect/platform";
 import { gen } from "effect/Effect";
+import { HttpClient } from "effect/http";
 import type { Layer } from "effect/Layer";
 import {
   effect as layerEffect,
-  fail as layerFail,
   mergeAll as layerMergeAll,
   succeed as layerSucceed,
 } from "effect/Layer";
@@ -12,6 +11,7 @@ import type { Dataset } from "../../harness/dataset";
 import { Scorer } from "../../harness/scorer";
 import { Solver } from "../../harness/solver";
 import { definedValues } from "../../internal/guards";
+import { layerFail } from "../../internal/layer";
 import type {
   BenchmarkRunConfig,
   ToolCallSchemaFuzzBenchmarkConfig,

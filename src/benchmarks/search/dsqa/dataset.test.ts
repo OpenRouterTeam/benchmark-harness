@@ -1,14 +1,12 @@
 import { afterEach, describe, expect, it } from "bun:test";
 import { createHash } from "node:crypto";
 
-import { fromMap } from "effect/ConfigProvider";
-import type { Effect } from "effect/Effect";
 import {
-  flatMap,
-  provide,
-  runPromise,
-  withConfigProvider,
-} from "effect/Effect";
+  fromUnknown,
+  layer as configProviderLayer,
+} from "effect/ConfigProvider";
+import type { Effect } from "effect/Effect";
+import { flatMap, provide, runPromise } from "effect/Effect";
 
 import { Dataset } from "../../../harness/dataset";
 import { assertLeft, assertRight } from "../../../internal/testing";
@@ -107,8 +105,9 @@ describe("DSQA dataset", () => {
     stubFetch();
     await expect(
       runPromise(
-        withConfigProvider(fromMap(new Map([["HF_TOKEN", "hf_test_token"]])))(
-          fetchDatasetSize()
+        provide(
+          fetchDatasetSize(),
+          configProviderLayer(fromUnknown({ HF_TOKEN: "hf_test_token" }))
         )
       )
     ).rejects.toThrow("checksum mismatch");
@@ -117,7 +116,9 @@ describe("DSQA dataset", () => {
   it("omits the HF authorization header when no token is configured", async () => {
     stubFetch();
     await expect(
-      runPromise(withConfigProvider(fromMap(new Map()))(fetchDatasetSize()))
+      runPromise(
+        provide(fetchDatasetSize(), configProviderLayer(fromUnknown({})))
+      )
     ).rejects.toThrow("checksum mismatch");
     expect(headersByRequest[0]?.["authorization"]).toBeUndefined();
   });
