@@ -1,11 +1,6 @@
 import { createHash } from "node:crypto";
 
 import { parse } from "csv-parse/sync";
-import {
-  map as configMap,
-  option,
-  String as configString,
-} from "effect/Config";
 import type { Effect } from "effect/Effect";
 import {
   all,
@@ -35,7 +30,7 @@ import type { Sample } from "../../../harness/core";
 import { DatasetError } from "../../../harness/core";
 import type { Dataset } from "../../../harness/dataset";
 import { Dataset as DatasetTag } from "../../../harness/dataset";
-import { withLiveEnvConfig } from "../../../internal/env-config";
+import { optionalEnv } from "../../../internal/env-config";
 import { definedValues, isRecord } from "../../../internal/guards";
 import { fetchHttpClientLayer } from "../../../internal/http-client";
 import { parseSchema, z } from "../../../internal/zod";
@@ -352,14 +347,11 @@ function goldResponseBody(
 }
 
 function resolveGoldHfToken(): Effect<string, GoldFetchFailure> {
-  return withLiveEnvConfig(
-    configString("HF_TOKEN").pipe(
-      option,
-      configMap((value) => getOrNull(value) ?? ""),
-      mapError((): GoldFetchFailure => ({
-        message: "failed to read HF_TOKEN config",
-        retryable: false,
-      }))
-    )
+  return optionalEnv("HF_TOKEN").pipe(
+    map((value) => getOrNull(value) ?? ""),
+    mapError((): GoldFetchFailure => ({
+      message: "failed to read HF_TOKEN config",
+      retryable: false,
+    }))
   );
 }

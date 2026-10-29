@@ -1,11 +1,6 @@
 import { createHash } from "node:crypto";
 import { join } from "node:path";
 
-import {
-  map as configMap,
-  option,
-  String as configString,
-} from "effect/Config";
 import { millis } from "effect/Duration";
 import type { Effect } from "effect/Effect";
 import {
@@ -41,7 +36,7 @@ import type { Sample } from "../harness/core";
 import { DatasetError } from "../harness/core";
 import type { DatasetStreamOptions } from "../harness/dataset";
 import { Dataset } from "../harness/dataset";
-import { withLiveEnvConfig } from "../internal/env-config";
+import { optionalEnv } from "../internal/env-config";
 import { definedValues } from "../internal/guards";
 import { fetchHttpClientLayer } from "../internal/http-client";
 import { parseSchema, z } from "../internal/zod";
@@ -130,12 +125,9 @@ export function hfFetchRetrySchedule<E = unknown>(
 }
 
 export function resolveHfToken(): Effect<string, never> {
-  return withLiveEnvConfig(
-    configString("HF_TOKEN").pipe(
-      option,
-      configMap((value) => getOrNull(value) ?? ""),
-      orElseSucceed(() => "")
-    )
+  return optionalEnv("HF_TOKEN").pipe(
+    map((value) => getOrNull(value) ?? ""),
+    orElseSucceed(() => "")
   );
 }
 
@@ -196,16 +188,13 @@ export function makeHfPageFetcher(
       const hfToken =
         hfTokenOverride !== undefined
           ? hfTokenOverride
-          : yield* withLiveEnvConfig(
-              configString("HF_TOKEN").pipe(
-                option,
-                configMap((opt) => getOrNull(opt) ?? ""),
-                mapError(
-                  () =>
-                    new DatasetError({
-                      message: "Failed to read HF_TOKEN config",
-                    })
-                )
+          : yield* optionalEnv("HF_TOKEN").pipe(
+              map((opt) => getOrNull(opt) ?? ""),
+              mapError(
+                () =>
+                  new DatasetError({
+                    message: "Failed to read HF_TOKEN config",
+                  })
               )
             );
       const cacheKey = hfPageCacheKey(config, offset, length, hfToken, store);

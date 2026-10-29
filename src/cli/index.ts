@@ -2,7 +2,6 @@
 import { join } from "node:path";
 
 import { Presets, SingleBar } from "cli-progress";
-import { option, String as configString } from "effect/Config";
 import { gen, promise, runSync, sync } from "effect/Effect";
 import { getOrNull } from "effect/Option";
 import * as Result from "effect/Result";
@@ -30,7 +29,7 @@ import {
 } from "../harness/constants";
 import { makeProgressReporter } from "../harness/progress";
 import { runHarnessPromise } from "../internal/effect-logger";
-import { withLiveEnvConfig } from "../internal/env-config";
+import { optionalEnv } from "../internal/env-config";
 import { definedValues, isMember } from "../internal/guards";
 import { parseSchema } from "../internal/zod";
 import { makeLocalResultStore } from "../results/result-store";
@@ -127,9 +126,7 @@ function resolveTotalEvaluations(
 }
 
 function resolveSessionId(): string {
-  const envOpt = runSync(
-    withLiveEnvConfig(configString("BENCH_CHILD_WORKFLOW_ID").pipe(option))
-  );
+  const envOpt = runSync(optionalEnv("BENCH_CHILD_WORKFLOW_ID"));
   const raw = getOrNull(envOpt);
   const fromEnv = raw === null || raw.length === 0 ? null : raw;
   if (fromEnv !== null && !isSafeOriSessionId(fromEnv)) {
@@ -141,14 +138,8 @@ function resolveSessionId(): string {
 }
 
 function resolveApiKey(): string {
-  const primaryOpt = runSync(
-    withLiveEnvConfig(configString("OPENROUTER_API_KEY").pipe(option))
-  );
-  const fallbackOpt = runSync(
-    withLiveEnvConfig(
-      configString("BENCHMARKING_OPENROUTER_API_KEY").pipe(option)
-    )
-  );
+  const primaryOpt = runSync(optionalEnv("OPENROUTER_API_KEY"));
+  const fallbackOpt = runSync(optionalEnv("BENCHMARKING_OPENROUTER_API_KEY"));
   const keyValue = getOrNull(primaryOpt) ?? getOrNull(fallbackOpt);
   if (keyValue === null) {
     throw new Error(
@@ -167,9 +158,7 @@ function main(): Promise<void> {
     );
   }
   const apiKey = resolveApiKey();
-  const baseUrl = getOrNull(
-    runSync(withLiveEnvConfig(configString("OPENROUTER_BASE_URL").pipe(option)))
-  );
+  const baseUrl = getOrNull(runSync(optionalEnv("OPENROUTER_BASE_URL")));
   const epochs = args.epochs ?? benchmark.defaultEpochs;
   const range = resolveRange(args);
   const sessionId = resolveSessionId();

@@ -3,7 +3,6 @@ import { mkdtempSync, readdirSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { option, String as configString } from "effect/Config";
 import { TaggedError } from "effect/Data";
 import type { Effect } from "effect/Effect";
 import { callback, fail, runSync, succeed, tryPromise } from "effect/Effect";
@@ -16,7 +15,7 @@ import {
   restrictPermissionsRecursive,
 } from "../../datasets/local-cache";
 import { runHarnessPromise } from "../../internal/effect-logger";
-import { withLiveEnvConfig } from "../../internal/env-config";
+import { optionalEnv } from "../../internal/env-config";
 import { wLog } from "../../internal/log";
 
 export interface TasksSourceConfig {
@@ -89,9 +88,7 @@ export function makeTasksSource(config: TasksSourceConfig): TasksSource {
     await runGit(["-C", root, "checkout", config.commit]);
   };
   const cloneTasks = async (): Promise<string> => {
-    const override = getOrNull(
-      runSync(withLiveEnvConfig(configString(config.envVar).pipe(option)))
-    );
+    const override = getOrNull(runSync(optionalEnv(config.envVar)));
     if (
       override !== null &&
       override.length > 0 &&
@@ -136,9 +133,7 @@ export function makeTasksSource(config: TasksSourceConfig): TasksSource {
     if (cacheRoot && hasTasksDir(cacheRoot)) {
       return Promise.resolve(cacheRoot);
     }
-    const override = getOrNull(
-      runSync(withLiveEnvConfig(configString(config.envVar).pipe(option)))
-    );
+    const override = getOrNull(runSync(optionalEnv(config.envVar)));
     if (override && hasTasksDir(override) && isAtPinnedCommit(override)) {
       cacheRoot = override;
       return Promise.resolve(override);

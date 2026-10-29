@@ -131,13 +131,12 @@ export function makeOpenRouterGenerationResolver(
   const maxAttempts = config.maxAttempts ?? DEFAULT_MAX_ATTEMPTS;
   const pollSchedule = (attempts: number) =>
     max([
-      spaced(`${pollIntervalMs} millis`).pipe(
-        setInputType<GenerationLookupError>()
-      ),
-      recurs(Math.max(attempts - 1, 0)).pipe(
-        setInputType<GenerationLookupError>()
-      ),
-    ]).pipe(while_(({ input }) => input.retryable));
+      spaced(`${pollIntervalMs} millis`),
+      recurs(Math.max(attempts - 1, 0)),
+    ]).pipe(
+      setInputType<GenerationLookupError>(),
+      while_(({ input }) => input.retryable)
+    );
   const lookupOnce = (
     generationId: string
   ): Effect<GenerationLookupData, GenerationLookupError> =>

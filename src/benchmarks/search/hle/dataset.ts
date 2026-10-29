@@ -1,8 +1,3 @@
-import {
-  map as configMap,
-  option,
-  String as configString,
-} from "effect/Config";
 import type { Effect } from "effect/Effect";
 import {
   cached,
@@ -31,7 +26,7 @@ import type { Sample } from "../../../harness/core";
 import { DatasetError } from "../../../harness/core";
 import type { Dataset } from "../../../harness/dataset";
 import { Dataset as DatasetTag } from "../../../harness/dataset";
-import { withLiveEnvConfig } from "../../../internal/env-config";
+import { optionalEnv } from "../../../internal/env-config";
 import { definedValues } from "../../../internal/guards";
 import { parseSchema, z } from "../../../internal/zod";
 import type { RetryConfig } from "../../../runtime/retry";
@@ -90,16 +85,13 @@ export function makeHleDatasetLayer(
       const token = yield* cached(
         hfToken !== undefined
           ? succeed(hfToken)
-          : withLiveEnvConfig(
-              configString("HF_TOKEN").pipe(
-                option,
-                configMap((value) => getOrNull(value) ?? ""),
-                mapError(
-                  () =>
-                    new DatasetError({
-                      message: "Failed to read HF_TOKEN config",
-                    })
-                )
+          : optionalEnv("HF_TOKEN").pipe(
+              map((value) => getOrNull(value) ?? ""),
+              mapError(
+                () =>
+                  new DatasetError({
+                    message: "Failed to read HF_TOKEN config",
+                  })
               )
             )
       );
