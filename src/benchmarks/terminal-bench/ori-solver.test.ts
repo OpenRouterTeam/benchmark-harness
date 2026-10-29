@@ -42,7 +42,7 @@ import { initialTaskState, ScoreValue } from "../../harness/core";
 import { Solver } from "../../harness/solver";
 import {
   getCollectedGenerationIds,
-  resetGenerationIds,
+  withFreshGenerationIds,
 } from "../../runtime/generation-ids";
 import type { GenerationResolverService } from "../../runtime/generation-resolver";
 import { GenerationResolver } from "../../runtime/generation-resolver";
@@ -202,17 +202,18 @@ async function runAndCollectGenerationIds(
     })
   );
   return runPromise(
-    gen(function* () {
-      yield* resetGenerationIds;
-      const solver = yield* Solver;
-      yield* solver(sampleState());
-      return yield* getCollectedGenerationIds;
-    }).pipe(
-      provide(
-        layerMergeAll(
-          solverLayer.pipe(layerProvide(sandboxLayer)),
-          noopProgressLayer,
-          noopCheckpointLayer
+    withFreshGenerationIds(
+      gen(function* () {
+        const solver = yield* Solver;
+        yield* solver(sampleState());
+        return yield* getCollectedGenerationIds;
+      }).pipe(
+        provide(
+          layerMergeAll(
+            solverLayer.pipe(layerProvide(sandboxLayer)),
+            noopProgressLayer,
+            noopCheckpointLayer
+          )
         )
       )
     )

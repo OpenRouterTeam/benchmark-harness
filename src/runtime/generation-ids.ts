@@ -25,11 +25,18 @@ function makeGenerationIdCollectors(): GenerationIdCollectors {
   };
 }
 
+const UNSCOPED_GENERATION_ID_COLLECTORS: GenerationIdCollectors =
+  makeGenerationIdCollectors();
+
 export const generationIdCollectors: Reference<GenerationIdCollectors> =
   Reference<GenerationIdCollectors>(
     "@openrouter/bench-harness/runtime/generationIdCollectors",
-    { defaultValue: makeGenerationIdCollectors }
+    { defaultValue: () => UNSCOPED_GENERATION_ID_COLLECTORS }
   );
+
+function isScoped(collectors: GenerationIdCollectors): boolean {
+  return collectors !== UNSCOPED_GENERATION_ID_COLLECTORS;
+}
 
 export const auxiliaryUsageRef: Reference<boolean> = Reference<boolean>(
   "@openrouter/bench-harness/runtime/auxiliaryUsage",
@@ -62,6 +69,9 @@ export function recordGenerationId(
   return flatMap(generationIdCollectors, (collectors) =>
     flatMap(auxiliaryUsageRef, (isAuxiliary) =>
       sync(() => {
+        if (!isScoped(collectors)) {
+          return;
+        }
         collectors.ids.add(generationId);
         if (isCacheHit) {
           collectors.cacheHitIds.add(generationId);
@@ -76,17 +86,6 @@ export function recordGenerationId(
     )
   );
 }
-
-export const resetGenerationIds: Effect<void> = flatMap(
-  generationIdCollectors,
-  (collectors) =>
-    sync(() => {
-      collectors.ids.clear();
-      collectors.cacheHitIds.clear();
-      collectors.auxiliaryUsageIds.clear();
-      collectors.resolvedSourceIds.clear();
-    })
-);
 
 export const getCollectedGenerationIds: Effect<readonly string[]> = map(
   generationIdCollectors,

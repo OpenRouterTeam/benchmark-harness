@@ -28,7 +28,7 @@ import {
 } from "../../results/parquet";
 import {
   getCollectedGenerationIds,
-  resetGenerationIds,
+  withFreshGenerationIds,
 } from "../../runtime/generation-ids";
 import { getOriHarness } from "../agent-cli/harness";
 import { oriSolver } from "./ori-solver";
@@ -108,19 +108,20 @@ async function runOriSampleToParquetRow() {
     })
   );
   const evaluated = await runPromise(
-    gen(function* () {
-      yield* resetGenerationIds;
-      const solver = yield* Solver;
-      const state = yield* solver(sampleState());
-      const score = yield* terminalBenchScorer(state, state.sample.target);
-      const generationIds = yield* getCollectedGenerationIds;
-      return { state, score, generationIds };
-    }).pipe(
-      provide(
-        layerMergeAll(
-          solverLayer.pipe(layerProvide(sandboxLayer)),
-          noopProgressLayer,
-          noopCheckpointLayer
+    withFreshGenerationIds(
+      gen(function* () {
+        const solver = yield* Solver;
+        const state = yield* solver(sampleState());
+        const score = yield* terminalBenchScorer(state, state.sample.target);
+        const generationIds = yield* getCollectedGenerationIds;
+        return { state, score, generationIds };
+      }).pipe(
+        provide(
+          layerMergeAll(
+            solverLayer.pipe(layerProvide(sandboxLayer)),
+            noopProgressLayer,
+            noopCheckpointLayer
+          )
         )
       )
     )

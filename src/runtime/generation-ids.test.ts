@@ -6,18 +6,18 @@ import {
   getCollectedGenerationIdEntries,
   getCollectedGenerationIds,
   recordGenerationId,
-  resetGenerationIds,
   withAuxiliaryUsage,
   withFreshGenerationIds,
 } from "./generation-ids";
 describe("generation id collector", () => {
   it("flags cache-hit ids in collected entries", async () => {
     const entries = await runPromise(
-      resetGenerationIds.pipe(
-        flatMap(() => recordGenerationId("gen-real")),
-        flatMap(() => recordGenerationId("gen-dummy", true)),
-        flatMap(() => recordGenerationId("gen-source", true, true)),
-        flatMap(() => getCollectedGenerationIdEntries)
+      withFreshGenerationIds(
+        recordGenerationId("gen-real").pipe(
+          flatMap(() => recordGenerationId("gen-dummy", true)),
+          flatMap(() => recordGenerationId("gen-source", true, true)),
+          flatMap(() => getCollectedGenerationIdEntries)
+        )
       )
     );
     const sorted = [...entries].toSorted((a, b) => a.id.localeCompare(b.id));
@@ -44,12 +44,13 @@ describe("generation id collector", () => {
   });
   it("marks ids recorded inside withAuxiliaryUsage as not counting toward usage", async () => {
     const entries = await runPromise(
-      resetGenerationIds.pipe(
-        flatMap(() => recordGenerationId("gen-solver", true)),
-        flatMap(() =>
-          withAuxiliaryUsage(recordGenerationId("gen-judge", true))
-        ),
-        flatMap(() => getCollectedGenerationIdEntries)
+      withFreshGenerationIds(
+        recordGenerationId("gen-solver", true).pipe(
+          flatMap(() =>
+            withAuxiliaryUsage(recordGenerationId("gen-judge", true))
+          ),
+          flatMap(() => getCollectedGenerationIdEntries)
+        )
       )
     );
     const sorted = [...entries].toSorted((a, b) => a.id.localeCompare(b.id));
@@ -70,18 +71,17 @@ describe("generation id collector", () => {
   });
   it("records, ignores empty ids, and resets", async () => {
     const ids = await runPromise(
-      resetGenerationIds.pipe(
-        flatMap(() => recordGenerationId("gen-1")),
-        flatMap(() => recordGenerationId("")),
-        flatMap(() => recordGenerationId(null)),
-        flatMap(() => getCollectedGenerationIds)
+      withFreshGenerationIds(
+        recordGenerationId("gen-1").pipe(
+          flatMap(() => recordGenerationId("")),
+          flatMap(() => recordGenerationId(null)),
+          flatMap(() => getCollectedGenerationIds)
+        )
       )
     );
     expect(ids).toEqual(["gen-1"]);
     expect(
-      await runPromise(
-        resetGenerationIds.pipe(flatMap(() => getCollectedGenerationIds))
-      )
+      await runPromise(withFreshGenerationIds(getCollectedGenerationIds))
     ).toEqual([]);
   });
   it("isolates ids recorded by concurrent fibers", async () => {
@@ -101,19 +101,44 @@ describe("generation id collector", () => {
   });
   it("merges ids recorded by concurrent child fibers back into the parent", async () => {
     const ids = await runPromise(
-      resetGenerationIds.pipe(
-        flatMap(() =>
-          forEach(
-            ["gen-a", "gen-b", "gen-c", "gen-d"],
-            (id) => recordGenerationId(id),
-            {
-              concurrency: 4,
-            }
-          )
-        ),
-        flatMap(() => getCollectedGenerationIds)
+      withFreshGenerationIds(
+        forEach(
+          ["gen-a", "gen-b", "gen-c", "gen-d"],
+          (id) => recordGenerationId(id),
+          {
+            concurrency: 4,
+          }
+        ).pipe(flatMap(() => getCollectedGenerationIds))
       )
     );
     expect([...ids].toSorted()).toEqual(["gen-a", "gen-b", "gen-c", "gen-d"]);
+  });
+
+  it("isolates two independent root programs that interleave records", async () => {
+    const root = (id: string) =>
+      runPromise(
+        withFreshGenerationIds(
+          recordGenerationId(id).pipe(
+            flatMap(() => yieldNow),
+            flatMap(() => getCollectedGenerationIds)
+          )
+        )
+      );
+    const [first, second] = await Promise.all([root("gen-a"), root("gen-b")]);
+    expect(first).toEqual(["gen-a"]);
+    expect(second).toEqual(["gen-b"]);
+  });
+
+  it("records nothing outside withFreshGenerationIds and leaks nothing into it", async () => {
+    const unscoped = await runPromise(
+      recordGenerationId("gen-unscoped").pipe(
+        flatMap(() => getCollectedGenerationIdEntries)
+      )
+    );
+    expect(unscoped).toEqual([]);
+    const scoped = await runPromise(
+      withFreshGenerationIds(getCollectedGenerationIds)
+    );
+    expect(scoped).toEqual([]);
   });
 });

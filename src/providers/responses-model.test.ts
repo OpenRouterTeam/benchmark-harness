@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 
 import type { ResponsesRequest } from "@openrouter/sdk/models";
 import { findErrorOption } from "effect/Cause";
-import { flatMap, gen, provide, runPromiseExit, succeed } from "effect/Effect";
+import { gen, provide, runPromiseExit, succeed } from "effect/Effect";
 import { provide as layerProvide } from "effect/Layer";
 import { getOrThrow } from "effect/Option";
 
@@ -15,7 +15,7 @@ import { assertSuccess as assertResultSuccess } from "../internal/testing";
 import { parseSchema, z } from "../internal/zod";
 import {
   getCollectedGenerationIds,
-  resetGenerationIds,
+  withFreshGenerationIds,
 } from "../runtime/generation-ids";
 import type {
   ResponsesSendOptions,
@@ -171,33 +171,30 @@ describe("responses-model", () => {
       sessionId: "session-1",
     });
     const exit = await runPromiseExit(
-      resetGenerationIds.pipe(
-        flatMap(() =>
-          gen(function* run() {
-            const model = yield* ResponsesModel;
-            const turn = yield* model.generate(input, {
-              instructions: "Use bash.",
-              tools: [
-                {
-                  type: "function",
-                  name: "bash",
-                  description: "Run bash.",
-                  parameters: { type: "object" },
-                },
-              ],
-              reasoningEffort: "high",
-              temperature: 0,
-              maxTokens: 256,
-              sort: ProviderSort.Price,
-              cloudflareVersion: "ver-1",
-              experimentIds: ["jev-finish-deesc", "control"],
-              extraBody: { custom_field: "value" },
-            });
-            const generationIds = yield* getCollectedGenerationIds;
-            return { turn, generationIds };
-          })
-        ),
-        provide(layer.pipe(layerProvide(fetchHttpClientLayer)))
+      withFreshGenerationIds(
+        gen(function* run() {
+          const model = yield* ResponsesModel;
+          const turn = yield* model.generate(input, {
+            instructions: "Use bash.",
+            tools: [
+              {
+                type: "function",
+                name: "bash",
+                description: "Run bash.",
+                parameters: { type: "object" },
+              },
+            ],
+            reasoningEffort: "high",
+            temperature: 0,
+            maxTokens: 256,
+            sort: ProviderSort.Price,
+            cloudflareVersion: "ver-1",
+            experimentIds: ["jev-finish-deesc", "control"],
+            extraBody: { custom_field: "value" },
+          });
+          const generationIds = yield* getCollectedGenerationIds;
+          return { turn, generationIds };
+        }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
       )
     );
     assertSuccess(exit);
