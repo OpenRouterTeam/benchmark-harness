@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { all, flatMap, forEach, runPromise } from "effect/Effect";
+import { all, flatMap, forEach, runPromise, yieldNow } from "effect/Effect";
 
 import {
   getCollectedGenerationIdEntries,
@@ -8,6 +8,7 @@ import {
   recordGenerationId,
   resetGenerationIds,
   withAuxiliaryUsage,
+  withFreshGenerationIds,
 } from "./generation-ids";
 describe("generation id collector", () => {
   it("flags cache-hit ids in collected entries", async () => {
@@ -84,20 +85,17 @@ describe("generation id collector", () => {
     ).toEqual([]);
   });
   it("isolates ids recorded by concurrent fibers", async () => {
+    const recordThenRead = (id: string) =>
+      withFreshGenerationIds(
+        recordGenerationId(id).pipe(
+          flatMap(() => yieldNow),
+          flatMap(() => getCollectedGenerationIds)
+        )
+      );
     const ids = await runPromise(
-      all(
-        [
-          resetGenerationIds.pipe(
-            flatMap(() => recordGenerationId("left")),
-            flatMap(() => getCollectedGenerationIds)
-          ),
-          resetGenerationIds.pipe(
-            flatMap(() => recordGenerationId("right")),
-            flatMap(() => getCollectedGenerationIds)
-          ),
-        ],
-        { concurrency: 2 }
-      )
+      all([recordThenRead("left"), recordThenRead("right")], {
+        concurrency: 2,
+      })
     );
     expect(ids).toEqual([["left"], ["right"]]);
   });

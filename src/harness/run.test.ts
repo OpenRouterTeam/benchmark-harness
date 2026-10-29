@@ -7,6 +7,7 @@ import {
   succeed as effectSucceed,
   fail as effectFail,
   provide,
+  yieldNow,
 } from "effect/Effect";
 import type { Layer } from "effect/Layer";
 import { mergeAll, succeed as layerSucceed } from "effect/Layer";
@@ -170,6 +171,47 @@ describe("runBenchmark", () => {
     expect(result.usage.outputTokens).toBe(30);
     expect(result.usage.generationTimeMs).toBe(600);
     expect(result.sampleScores[0]?.generationIds).toEqual(["fake-Q1 target B"]);
+  });
+  it("keeps generation ids per sample when samples run concurrently", async () => {
+    const service: ModelService = {
+      generate: (messages) => {
+        const userMsg =
+          messages.find((m) => m.role === MessageRole.User)?.content ?? "";
+        return yieldNow.pipe(
+          effectFlatMap(() => recordGenerationId(`fake-${userMsg}`)),
+          effectFlatMap(() =>
+            effectSucceed({
+              completion: "Answer: B",
+              message: { role: MessageRole.Assistant, content: "Answer: B" },
+              usage: {
+                inputTokens: 10,
+                outputTokens: 5,
+                totalTokens: 15,
+                totalCost: 0.001,
+              },
+              generationTimeMs: 100,
+            })
+          )
+        );
+      },
+    };
+    const model = { service, layer: layerSucceed(Model, Model.of(service)) };
+    const solver = chain(
+      systemMessage("You are a helpful assistant."),
+      generate(service, { temperature: 0.5, reasoningEffort: "high" })
+    );
+    const result = await runPromise(
+      runBenchmark({ epochs: 2, maxConcurrency: 4 }).pipe(
+        provide(makeLayers(model, solver))
+      )
+    );
+    expect(result.sampleScores.length).toBe(4);
+    for (const score of result.sampleScores) {
+      const input = SAMPLES.find(
+        (sample) => sample.id === score.sampleId
+      )?.input;
+      expect(score.generationIds).toEqual([`fake-${input}`]);
+    }
   });
   it("captures per-sample message trajectories", async () => {
     const model = fakeModel(() => "Answer: B");
