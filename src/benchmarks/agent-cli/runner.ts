@@ -1,8 +1,8 @@
 import { currentTimeMillis } from "effect/Clock";
 import type { Effect } from "effect/Effect";
 import {
-  catchAll,
-  catchAllDefect,
+  catch as catch_,
+  catchDefect,
   forEach,
   gen,
   map,
@@ -134,7 +134,7 @@ function recoverAgentLog(
 ): Effect<string, never> {
   return session.exec(["cat", logPath], {}, LOG_RECOVERY_TIMEOUT_MS).pipe(
     map((read) => read.stdout),
-    catchAll(() => succeed(""))
+    catch_(() => succeed(""))
   );
 }
 
@@ -330,10 +330,10 @@ export function runAgentCli(input: {
       .exec(["bash", "-c", script], env, timeoutMs)
       .pipe(
         map((run) => ({ stdout: run.stdout, exitCode: run.exitCode })),
-        catchAll((cause) =>
+        catch_((cause) =>
           recoverAfterExecFailure(session, harness, cause.message)
         ),
-        catchAllDefect((defect) =>
+        catchDefect((defect) =>
           recoverAfterExecFailure(session, harness, unknownToMessage(defect))
         )
       );

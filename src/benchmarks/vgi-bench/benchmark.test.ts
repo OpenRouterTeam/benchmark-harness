@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from "bun:test";
 
 import { blockNetwork } from "../../../test/helpers/block-network";
 import { NOOP_PROGRESS_REPORTER } from "../../harness/progress";
-import { assertLeft, assertRight } from "../../internal/testing";
+import { assertFailure, assertSuccess } from "../../internal/testing";
 import { parseSchema } from "../../internal/zod";
 import { runBenchmarkById } from "../../runner/run-by-id";
 import { BenchmarkRunConfigSchema } from "../benchmark-config";
@@ -282,9 +282,9 @@ describe("VGI-Bench registry", () => {
       model: "google/gemini-2.5-flash",
       reasoningEffort: "high",
     });
-    assertRight(result);
-    expect(result.right.benchmarkId).toBe("vgi_bench");
-    expect(result.right.downscaledVideos).toBe(false);
+    assertSuccess(result);
+    expect(result.success.benchmarkId).toBe("vgi_bench");
+    expect(result.success.downscaledVideos).toBe(false);
   });
 
   it("parses vgi_bench config with downscaled videos and a revision", () => {
@@ -295,9 +295,9 @@ describe("VGI-Bench registry", () => {
       downscaledVideos: true,
       datasetRevision: "v1.0.0",
     });
-    assertRight(result);
-    expect(result.right.downscaledVideos).toBe(true);
-    expect(result.right.datasetRevision).toBe("v1.0.0");
+    assertSuccess(result);
+    expect(result.success.downscaledVideos).toBe(true);
+    expect(result.success.datasetRevision).toBe("v1.0.0");
   });
 
   it("parses vgi_bench config with a videoProcessing mode", () => {
@@ -307,8 +307,8 @@ describe("VGI-Bench registry", () => {
       reasoningEffort: "high",
       videoProcessing: "agentic",
     });
-    assertRight(result);
-    expect(result.right.videoProcessing).toBe("agentic");
+    assertSuccess(result);
+    expect(result.success.videoProcessing).toBe("agentic");
   });
 
   it("parses vgi_bench config with youtubeVideos and defaults it to false", () => {
@@ -318,15 +318,15 @@ describe("VGI-Bench registry", () => {
       reasoningEffort: "high",
       youtubeVideos: true,
     });
-    assertRight(enabled);
-    expect(enabled.right.youtubeVideos).toBe(true);
+    assertSuccess(enabled);
+    expect(enabled.success.youtubeVideos).toBe(true);
     const defaulted = parseSchema(BenchmarkRunConfigSchema, {
       benchmarkId: "vgi_bench",
       model: "google/gemini-3.8-flash",
       reasoningEffort: "high",
     });
-    assertRight(defaulted);
-    expect(defaulted.right.youtubeVideos).toBe(false);
+    assertSuccess(defaulted);
+    expect(defaulted.success.youtubeVideos).toBe(false);
   });
 
   it("rejects an unknown videoProcessing mode", () => {
@@ -336,7 +336,7 @@ describe("VGI-Bench registry", () => {
       reasoningEffort: "high",
       videoProcessing: "fast",
     });
-    assertLeft(result);
+    assertFailure(result);
   });
 
   it("dispatches runBenchmarkById through the registry entry (network blocked)", async () => {
@@ -356,7 +356,7 @@ describe("VGI-Bench registry", () => {
       sessionId: "test",
       progressReporter: NOOP_PROGRESS_REPORTER,
     });
-    assertLeft(result);
+    assertFailure(result);
   });
 
   it("exposes the default dataset revision", () => {

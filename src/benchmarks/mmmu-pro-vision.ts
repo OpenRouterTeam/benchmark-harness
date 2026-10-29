@@ -1,6 +1,7 @@
 import { map } from "effect/Effect";
 import type { Layer } from "effect/Layer";
 import { effect, provide } from "effect/Layer";
+import * as Result from "effect/Result";
 import { filter } from "effect/Stream";
 
 import { HfImageSchema, makeHfDatasetLayer } from "../datasets/huggingface";
@@ -10,7 +11,6 @@ import { Dataset } from "../harness/dataset";
 import type { GenerateConfig, ModelService } from "../harness/model";
 import type { SolverService } from "../harness/solver";
 import { chain, generate, systemMessage } from "../harness/solver";
-import { Either } from "../internal/either";
 import { definedValues, isDefinedAndNotNull } from "../internal/guards";
 import { parseSchema } from "../internal/zod";
 import type { RetryConfig } from "../runtime/retry";
@@ -63,17 +63,17 @@ export function mmmuProVisionRecordToSample(
   const contentParts: ContentPart[] = [{ type: "text", text: input }];
   let numImages = 0;
   const parsedImage = parseSchema(HfImageSchema, record["image"]);
-  if (mediaManifest !== undefined && Either.isLeft(parsedImage)) {
+  if (mediaManifest !== undefined && Result.isFailure(parsedImage)) {
     throw new TypeError(`MMMU Pro image ${id} is missing or invalid`);
   }
-  if (Either.isRight(parsedImage)) {
+  if (Result.isSuccess(parsedImage)) {
     contentParts.push({
       type: "image_url",
       imageUrl: definedValues({
         url:
           mediaManifest === undefined || mediaManifest.excludedIds.has(id)
-            ? parsedImage.right.src
-            : mirroredMmmuProImage(mediaManifest, id, parsedImage.right.src),
+            ? parsedImage.success.src
+            : mirroredMmmuProImage(mediaManifest, id, parsedImage.success.src),
         detail: imageDetail,
       }),
     });
@@ -85,13 +85,13 @@ export function mmmuProVisionRecordToSample(
       continue;
     }
     const parsed = parseSchema(HfImageSchema, imgField);
-    if (Either.isLeft(parsed)) {
+    if (Result.isFailure(parsed)) {
       continue;
     }
     contentParts.push({
       type: "image_url",
       imageUrl: definedValues({
-        url: parsed.right.src,
+        url: parsed.success.src,
         detail: imageDetail,
       }),
     });

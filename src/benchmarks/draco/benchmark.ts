@@ -1,14 +1,15 @@
-import type { HttpClient } from "@effect/platform";
 import { gen } from "effect/Effect";
+import type { HttpClient } from "effect/http";
 import type { Layer } from "effect/Layer";
-import { fail, effect, provide, mergeAll, succeed } from "effect/Layer";
+import { effect, provide, mergeAll, succeed } from "effect/Layer";
+import * as Result from "effect/Result";
 
 import type { Dataset } from "../../harness/dataset";
 import type { RunResult } from "../../harness/run";
 import { Scorer } from "../../harness/scorer";
 import { Solver } from "../../harness/solver";
-import { Either } from "../../internal/either";
 import { definedValues, isRecord } from "../../internal/guards";
+import { layerFail as fail } from "../../internal/layer";
 import {
   Responses,
   makeResponsesLayer,
@@ -125,11 +126,11 @@ function dracoRunLevelScores(result: RunResult): readonly {
     if (expl === undefined) {
       continue;
     }
-    const parsed = Either.try(() => JSON.parse(expl));
-    if (Either.isLeft(parsed)) {
+    const parsed = Result.try(() => JSON.parse(expl));
+    if (Result.isFailure(parsed)) {
       continue;
     }
-    const v = parsed.right;
+    const v = parsed.success;
     if (isRecord(v)) {
       const n = v["normalized"];
       const p = v["passRate"];

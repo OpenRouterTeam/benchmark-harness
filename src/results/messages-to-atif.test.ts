@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { assertRight } from "../internal/testing";
+import { assertSuccess } from "../internal/testing";
 import { parseSchema } from "../internal/zod";
 import { AtifTrajectorySchema } from "./atif-schema";
 import { messagesToAtif } from "./messages-to-atif";
@@ -277,7 +277,7 @@ describe("messagesToAtif", () => {
       ],
     });
     const parsed = parseSchema(AtifTrajectorySchema, trajectory);
-    assertRight(parsed);
-    expect(parsed.right).toEqual(trajectory);
+    assertSuccess(parsed);
+    expect(parsed.success).toEqual(trajectory);
   });
 });

@@ -1,7 +1,8 @@
 import { setTimeout as sleep } from "node:timers/promises";
 
+import * as Result from "effect/Result";
+
 import type { ToolCall } from "../../../harness/core";
-import { Either } from "../../../internal/either";
 import { parseSchema, z } from "../../../internal/zod";
 import { TOOLCALL_SCHEMA_FUZZ_META } from "../../benchmark-meta";
 import { scoreFuzzToolCalls } from "../scorer";
@@ -55,13 +56,13 @@ async function send(
 }
 
 function toolCallsOf(text: string): readonly ToolCall[] | undefined {
-  const json = Either.try((): unknown => JSON.parse(text));
-  const parsed = Either.isLeft(json)
+  const json = Result.try((): unknown => JSON.parse(text));
+  const parsed = Result.isFailure(json)
     ? json
-    : parseSchema(ResponseSchema, json.right);
-  return Either.isLeft(parsed)
+    : parseSchema(ResponseSchema, json.success);
+  return Result.isFailure(parsed)
     ? undefined
-    : (parsed.right.choices[0]?.message.tool_calls ?? []);
+    : (parsed.success.choices[0]?.message.tool_calls ?? []);
 }
 
 export function openRouterProbe(config: OpenRouterProbeConfig): Probe {

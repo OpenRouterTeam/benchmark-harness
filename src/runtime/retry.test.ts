@@ -119,6 +119,32 @@ describe("rateLimitRetrySchedule", () => {
     expect(warn.mock.calls[0]?.[1]).not.toHaveProperty("x_request_id");
     expect(warn.mock.calls[0]?.[1]).not.toHaveProperty("generation_id");
   });
+  it("uses retryAfterMs instead of the backoff delay and logs it as delay_ms", async () => {
+    const warn = spyOn(console, "warn").mockImplementation(() => {});
+    warnSpies.push(warn);
+    let attempts = 0;
+    const flaky = suspend(() => {
+      attempts++;
+      return attempts < 2
+        ? fail(new ModelError({ status: 429, message: "429", retryAfterMs: 5 }))
+        : succeed(attempts);
+    });
+    const startedAt = performance.now();
+    const result = await runHarnessPromise(
+      flaky.pipe(
+        retry(rateLimitRetrySchedule({ maxRetries: 1, baseDelayMs: 60_000 }))
+      )
+    );
+    const elapsedMs = performance.now() - startedAt;
+    expect(result).toBe(2);
+    expect(elapsedMs).toBeLessThan(10_000);
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn.mock.calls[0]?.[1]).toMatchObject({
+      attempt: 1,
+      delay_ms: 5,
+      retry_after_ms: 5,
+    });
+  });
   it("retries transient 5xx errors", async () => {
     let attempts = 0;
     const flaky = suspend(() => {

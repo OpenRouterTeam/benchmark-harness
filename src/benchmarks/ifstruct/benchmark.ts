@@ -1,4 +1,5 @@
 import type { Layer } from "effect/Layer";
+import * as Result from "effect/Result";
 
 import type { HfDatasetConfig } from "../../datasets/huggingface";
 import { makeHfDatasetLayer } from "../../datasets/huggingface";
@@ -7,7 +8,6 @@ import type { Dataset } from "../../harness/dataset";
 import type { GenerateConfig, ModelService } from "../../harness/model";
 import type { SolverService } from "../../harness/solver";
 import { generate } from "../../harness/solver";
-import { Either } from "../../internal/either";
 import { definedValues } from "../../internal/guards";
 import { parseSchema, z } from "../../internal/zod";
 import type { RetryConfig } from "../../runtime/retry";
@@ -49,12 +49,12 @@ export function ifStructRecordToSample(
   record: Readonly<Record<string, unknown>>
 ): Sample {
   const parsed = parseSchema(IfStructRecordSchema, record);
-  if (Either.isLeft(parsed)) {
+  if (Result.isFailure(parsed)) {
     throw new TypeError(
-      `ifstruct record failed validation: ${parsed.left.message}`
+      `ifstruct record failed validation: ${parsed.failure.message}`
     );
   }
-  const row = parsed.right;
+  const row = parsed.success;
   const requirements: IfStructRequirements = {
     jsonSchema: parseJsonSchema(row.json_schema),
     topLevelCount: parseTopLevelCount(row.top_level_count),
@@ -77,19 +77,19 @@ export function ifStructRecordToSample(
 }
 
 function parseJsonSchema(raw: string): JsonSchemaNode {
-  const json = Either.try((): unknown => JSON.parse(raw));
-  if (Either.isLeft(json)) {
+  const json = Result.try((): unknown => JSON.parse(raw));
+  if (Result.isFailure(json)) {
     throw new TypeError(
-      `ifstruct json_schema is not valid JSON: ${String(json.left)}`
+      `ifstruct json_schema is not valid JSON: ${String(json.failure)}`
     );
   }
-  const parsed = parseSchema(JsonSchemaNodeSchema, json.right);
-  if (Either.isLeft(parsed)) {
+  const parsed = parseSchema(JsonSchemaNodeSchema, json.success);
+  if (Result.isFailure(parsed)) {
     throw new TypeError(
-      `ifstruct json_schema failed validation: ${parsed.left.message}`
+      `ifstruct json_schema failed validation: ${parsed.failure.message}`
     );
   }
-  return parsed.right;
+  return parsed.success;
 }
 
 function parseTopLevelCount(raw: string): TopLevelCount {
@@ -97,19 +97,19 @@ function parseTopLevelCount(raw: string): TopLevelCount {
   if (trimmed === "") {
     return null;
   }
-  const json = Either.try((): unknown => JSON.parse(trimmed));
-  if (Either.isLeft(json)) {
+  const json = Result.try((): unknown => JSON.parse(trimmed));
+  if (Result.isFailure(json)) {
     throw new TypeError(
       `ifstruct top_level_count is not valid JSON: ${trimmed}`
     );
   }
-  const parsed = parseSchema(TopLevelCountSchema, json.right);
-  if (Either.isLeft(parsed)) {
+  const parsed = parseSchema(TopLevelCountSchema, json.success);
+  if (Result.isFailure(parsed)) {
     throw new TypeError(
       `ifstruct top_level_count failed validation: ${trimmed}`
     );
   }
-  return parsed.right;
+  return parsed.success;
 }
 
 export const IFSTRUCT_DATASET = {

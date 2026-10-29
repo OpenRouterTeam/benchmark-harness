@@ -1,8 +1,7 @@
-import { HttpClient } from "@effect/platform";
 import { gen } from "effect/Effect";
+import { HttpClient } from "effect/http";
 import type { Layer } from "effect/Layer";
 import {
-  fail as layerFail,
   effect as layerEffect,
   provide as layerProvide,
   mergeAll as layerMergeAll,
@@ -17,6 +16,7 @@ import { Scorer } from "../harness/scorer";
 import type { SolverService } from "../harness/solver";
 import { Solver } from "../harness/solver";
 import { definedValues } from "../internal/guards";
+import { layerFail } from "../internal/layer";
 import { makeOpenRouterModelLayer } from "../providers/openrouter-model";
 import type { RetryConfig } from "../runtime/retry";
 import type { BenchmarkRunConfig } from "./benchmark-config";

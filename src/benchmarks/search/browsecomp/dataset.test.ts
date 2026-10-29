@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { createHash } from "node:crypto";
 
-import { assertLeft, assertRight } from "../../../internal/testing";
+import { assertFailure, assertSuccess } from "../../../internal/testing";
 import { browseCompRecordToSample, decryptField } from "./dataset";
 
 function encryptField(plaintext: string, canary: string): string {
@@ -44,8 +44,8 @@ describe("browseCompRecordToSample", () => {
   };
   it("decrypts problem and answer with row-stable id", () => {
     const result = browseCompRecordToSample(record, 7);
-    assertRight(result);
-    expect(result.right).toEqual({
+    assertSuccess(result);
+    expect(result.success).toEqual({
       id: "browsecomp-7",
       input: "What year did X happen?",
       target: { text: "1987" },
@@ -54,8 +54,8 @@ describe("browseCompRecordToSample", () => {
   });
   it("returns a clear error on a missing field", () => {
     const result = browseCompRecordToSample({ ...record, canary: "" }, 0);
-    assertLeft(result);
-    expect(result.left).toBe(
+    assertFailure(result);
+    expect(result.failure).toBe(
       "browsecomp row 0 missing required field 'canary'"
     );
   });

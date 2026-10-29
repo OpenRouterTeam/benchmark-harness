@@ -1,4 +1,5 @@
-import { unsafeNow, formatIso } from "effect/DateTime";
+import { nowUnsafe, formatIso } from "effect/DateTime";
+import * as Result from "effect/Result";
 import type { AsyncBuffer } from "hyparquet";
 import { parquetReadObjects } from "hyparquet";
 import type { KeyValue, Writer } from "hyparquet-writer";
@@ -15,7 +16,6 @@ import { ScoreValue } from "../harness/core";
 import type { AggregateMetrics, SampleScore } from "../harness/metric";
 import { aggregateScores } from "../harness/metric";
 import type { RunResult } from "../harness/run";
-import { Either } from "../internal/either";
 import { definedValues } from "../internal/guards";
 import { firstZodIssueMessage, parseSchema, z } from "../internal/zod";
 import {
@@ -120,7 +120,7 @@ type ColumnName = (typeof COLUMN_SPECS)[number]["name"];
 export function runResultToParquet(input: RunResultToParquetInput): Buffer {
   const { result, meta, extraScores, primaryScore } = input;
   const { metrics, usage, sampleScores } = result;
-  const createdAt = meta.createdAt ?? formatIso(unsafeNow());
+  const createdAt = meta.createdAt ?? formatIso(nowUnsafe());
   const extraScoresJson = extraScoresToJson(extraScores);
   const primaryScoreJson =
     primaryScore !== undefined ? JSON.stringify(primaryScore) : null;
@@ -216,7 +216,7 @@ export async function mergeResultFilesToParquet(
   input: MergeResultFilesInput
 ): Promise<MergedResultFiles> {
   const { files, meta, writer } = input;
-  const createdAt = meta.createdAt ?? formatIso(unsafeNow());
+  const createdAt = meta.createdAt ?? formatIso(nowUnsafe());
   const scan = await scanResultFiles(
     files,
     input.runLevelScores === undefined
@@ -435,7 +435,7 @@ function writeParquet(
   }[],
   meta: ResultRowsParquetMeta
 ): Buffer {
-  const createdAt = meta.createdAt ?? formatIso(unsafeNow());
+  const createdAt = meta.createdAt ?? formatIso(nowUnsafe());
   const arrayBuffer = parquetWriteBuffer({
     columnData,
     codec: "SNAPPY",
@@ -632,12 +632,12 @@ export function readResultRows(
 ): Promise<readonly BenchmarkResultRow[]> {
   return parquetReadObjects({ file }).then((decoded) => {
     const result = parseSchema(z.array(BenchmarkResultRowSchema), decoded);
-    if (Either.isLeft(result)) {
+    if (Result.isFailure(result)) {
       throw new Error(
-        `Invalid benchmark result row: ${firstZodIssueMessage(result.left)}`
+        `Invalid benchmark result row: ${firstZodIssueMessage(result.failure)}`
       );
     }
-    return result.right;
+    return result.success;
   });
 }
 
@@ -670,7 +670,7 @@ function parsePrimaryScore(
     z.object({ value: z.number(), weight: z.number() }),
     wrapJsonParse(raw)
   );
-  return Either.isLeft(parsed) ? undefined : parsed.right;
+  return Result.isFailure(parsed) ? undefined : parsed.success;
 }
 
 function wrapJsonParse(raw: string): unknown {
@@ -740,12 +740,12 @@ function parseJsonColumn<T>(
     return undefined;
   }
   const parsed = parseSchema(schema, JSON.parse(raw));
-  if (Either.isLeft(parsed)) {
+  if (Result.isFailure(parsed)) {
     throw new Error(
-      `Invalid result column: ${firstZodIssueMessage(parsed.left)}`
+      `Invalid result column: ${firstZodIssueMessage(parsed.failure)}`
     );
   }
-  return parsed.right;
+  return parsed.success;
 }
 
 function extraScoresToJson(

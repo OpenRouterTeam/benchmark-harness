@@ -10,7 +10,7 @@ import {
   mapError,
   succeed,
   suspend,
-  timeoutFail,
+  timeoutOrElse,
 } from "effect/Effect";
 
 import type {
@@ -205,13 +205,15 @@ function sendWithRetry({
   return retrySalted(
     suspend(() => responses.send(body, options())).pipe(
       mapError(toModelError),
-      timeoutFail({
+      timeoutOrElse({
         duration: `${timeoutMs} millis`,
-        onTimeout: () =>
-          new ModelError({
-            status: 504,
-            message: `search response exceeded the ${timeoutMs}ms wall-clock deadline`,
-          }),
+        orElse: () =>
+          fail(
+            new ModelError({
+              status: 504,
+              message: `search response exceeded the ${timeoutMs}ms wall-clock deadline`,
+            })
+          ),
       }),
       flatMap((result) => {
         if (result.status !== "completed") {

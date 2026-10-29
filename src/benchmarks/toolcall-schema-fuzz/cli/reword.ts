@@ -1,7 +1,8 @@
 import { writeFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
 
-import { Either } from "../../../internal/either";
+import * as Result from "effect/Result";
+
 import { parseSchema } from "../../../internal/zod";
 import { gridShapeDraws } from "../grid";
 import { openRouterChat, reword } from "../realistic/rewriter";
@@ -66,9 +67,9 @@ function save(): Promise<void> {
   };
   const parsed = parseSchema(WordingFileSchema, file);
   writeChain = writeChain.then(async () =>
-    Either.isLeft(parsed)
+    Result.isFailure(parsed)
       ? undefined
-      : writeFile(WORDINGS_PATH, `${JSON.stringify(parsed.right, null, 2)}\n`)
+      : writeFile(WORDINGS_PATH, `${JSON.stringify(parsed.success, null, 2)}\n`)
   );
   return writeChain;
 }

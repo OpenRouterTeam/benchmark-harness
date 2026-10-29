@@ -1,4 +1,5 @@
-import { Either } from "../../../internal/either";
+import * as Result from "effect/Result";
+
 import { parseSchema, z } from "../../../internal/zod";
 import { constructsOf } from "../constructs";
 import type { Slot } from "../grid";
@@ -92,7 +93,7 @@ export function unwordedShapes(
   return gridShapeDraws().filter(({ shape }) => !done.has(shape.key));
 }
 
-export const TOOLCALL_SCHEMA_FUZZ_WORDINGS: WordingFile = Either.getOrThrow(
+export const TOOLCALL_SCHEMA_FUZZ_WORDINGS: WordingFile = Result.getOrThrow(
   parseSchema(WordingFileSchema, data)
 );
 

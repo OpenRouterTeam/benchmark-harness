@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { assertLeft, assertRight } from "../internal/testing";
+import { assertFailure, assertSuccess } from "../internal/testing";
 import { parseSchema } from "../internal/zod";
 import { toSandboxCreateParams } from "./modal";
 import { ModalSandboxOptionsSchema } from "./modal-schema";
@@ -41,24 +41,24 @@ describe("toSandboxCreateParams", () => {
 describe("ModalSandboxOptionsSchema", () => {
   it("defaults to the main environment with no region override", () => {
     const parsed = parseSchema(ModalSandboxOptionsSchema, {});
-    assertRight(parsed);
-    expect(parsed.right).toEqual({ modalEnv: "main" });
+    assertSuccess(parsed);
+    expect(parsed.success).toEqual({ modalEnv: "main" });
   });
 
   it("accepts explicit regions", () => {
     const parsed = parseSchema(ModalSandboxOptionsSchema, {
       modalRegions: ["us"],
     });
-    assertRight(parsed);
-    expect(parsed.right.modalRegions).toEqual(["us"]);
+    assertSuccess(parsed);
+    expect(parsed.success.modalRegions).toEqual(["us"]);
   });
 
   it("accepts an empty region list to opt out of pinning", () => {
     const parsed = parseSchema(ModalSandboxOptionsSchema, {
       modalRegions: [],
     });
-    assertRight(parsed);
-    expect(parsed.right.modalRegions).toEqual([]);
+    assertSuccess(parsed);
+    expect(parsed.success.modalRegions).toEqual([]);
   });
 
   it("rejects blank region identifiers", () => {
@@ -66,7 +66,7 @@ describe("ModalSandboxOptionsSchema", () => {
       const parsed = parseSchema(ModalSandboxOptionsSchema, {
         modalRegions: [region],
       });
-      assertLeft(parsed);
+      assertFailure(parsed);
     }
   });
 });

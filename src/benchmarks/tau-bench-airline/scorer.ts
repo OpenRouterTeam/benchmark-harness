@@ -1,5 +1,6 @@
 import type { Effect } from "effect/Effect";
 import { succeed } from "effect/Effect";
+import * as Result from "effect/Result";
 
 import type {
   ModelMessage,
@@ -9,7 +10,6 @@ import type {
 } from "../../harness/core";
 import { MessageRole, ScoreValue } from "../../harness/core";
 import type { ScorerService } from "../../harness/scorer";
-import { Either } from "../../internal/either";
 import { isDefinedAndNotNull, isRecord } from "../../internal/guards";
 import type { PredictedToolCall } from "./evaluator";
 import { evaluateSimulation } from "./evaluator";
@@ -35,11 +35,13 @@ function collectToolCalls(
   const calls: PredictedToolCall[] = [];
   for (const m of messages) {
     for (const tc of m.toolCalls ?? []) {
-      const parsed = Either.try((): unknown =>
+      const parsed = Result.try((): unknown =>
         JSON.parse(tc.function.arguments)
       );
       const args =
-        Either.isRight(parsed) && isRecord(parsed.right) ? parsed.right : {};
+        Result.isSuccess(parsed) && isRecord(parsed.success)
+          ? parsed.success
+          : {};
       calls.push({ name: tc.function.name, arguments: args });
     }
   }

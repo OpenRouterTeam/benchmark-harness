@@ -1,12 +1,12 @@
 import { describe, expect, it } from "bun:test";
 
-import { FetchHttpClient } from "@effect/platform";
-import { failureOption } from "effect/Cause";
+import { findErrorOption } from "effect/Cause";
 import { provide, runPromiseExit, scoped } from "effect/Effect";
 import { build } from "effect/Layer";
 import { getOrThrow } from "effect/Option";
 
 import { assertFailure } from "../../../test/helpers/exit-asserts";
+import { fetchHttpClientLayer } from "../../internal/http-client";
 import { TerminalBenchConfigSchema } from "../benchmark-config";
 import { TERMINAL_BENCH_BENCHMARK } from "./benchmark";
 
@@ -26,7 +26,7 @@ function buildLayer(config: Record<string, unknown>) {
           }),
         })
       )
-    ).pipe(provide(FetchHttpClient.layer))
+    ).pipe(provide(fetchHttpClientLayer))
   );
 }
 
@@ -34,7 +34,7 @@ describe("terminal_bench layer", () => {
   it("rejects a cost tier for an agent that cannot forward the auto-router plugin", async () => {
     const exit = await buildLayer({ agent: "claude", costTier: "low" });
     assertFailure(exit);
-    expect(getOrThrow(failureOption(exit.cause)).message).toBe(
+    expect(getOrThrow(findErrorOption(exit.cause)).message).toBe(
       "terminal_bench cannot use costTier: the claude agent calls the model from inside the sandbox and does not forward the auto-router plugin (supported agents: pi)"
     );
   });
@@ -46,7 +46,7 @@ describe("terminal_bench layer", () => {
       switchyardAlgorithm: "stage",
     });
     assertFailure(exit);
-    expect(getOrThrow(failureOption(exit.cause)).message).toBe(
+    expect(getOrThrow(findErrorOption(exit.cause)).message).toBe(
       "terminal_bench cannot use switchyardAlgorithm: the claude agent calls the model from inside the sandbox and does not forward the switchyard-router plugin (supported agents: pi)"
     );
   });
@@ -58,7 +58,7 @@ describe("terminal_bench layer", () => {
       models: ["z-ai/glm-5.3-flash", "anthropic/claude-opus-5.5"],
     });
     assertFailure(exit);
-    expect(getOrThrow(failureOption(exit.cause)).message).toBe(
+    expect(getOrThrow(findErrorOption(exit.cause)).message).toBe(
       "terminal_bench cannot use candidate models: the claude agent calls the model from inside the sandbox and does not forward the models list (supported agents: pi)"
     );
   });

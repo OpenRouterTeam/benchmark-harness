@@ -16,12 +16,13 @@ import { OpenRouterError } from "@openrouter/sdk/models/errors/openroutererror";
 import { SDKValidationError } from "@openrouter/sdk/models/errors/sdkvalidationerror";
 import { streamEventsFromJSON } from "@openrouter/sdk/models/streamevents";
 import { Responses as ResponsesClient } from "@openrouter/sdk/sdk/responses";
-import { Tag } from "effect/Context";
+import { Service } from "effect/Context";
 import { TaggedError } from "effect/Data";
 import type { Effect } from "effect/Effect";
 import { all, fail, flatMap, map, sync, tap, tryPromise } from "effect/Effect";
 import type { Layer } from "effect/Layer";
 import { succeed as layerSucceed } from "effect/Layer";
+import * as Result from "effect/Result";
 import {
   encodeText,
   fromIterable,
@@ -34,7 +35,6 @@ import {
 import type { Citation, ModelUsage } from "../harness/core";
 import { ModelError } from "../harness/core";
 import type { ReasoningDetails } from "../harness/reasoning-details";
-import { Either } from "../internal/either";
 import { definedValues, isRecord } from "../internal/guards";
 import { parseSchema, z } from "../internal/zod";
 import { filterTraceHeaders } from "../runner/trace-headers";
@@ -169,9 +169,7 @@ export function toModelError(error: ResponsesError): ModelError {
   );
 }
 
-export class Responses extends Tag(
-  "@openrouter/bench-harness/responses-client/Responses"
-)<
+export class Responses extends Service<
   Responses,
   {
     readonly send: (
@@ -179,7 +177,7 @@ export class Responses extends Tag(
       options: ResponsesSendOptions
     ) => Effect<ResponsesResult, ResponsesError>;
   }
->() {}
+>()("@openrouter/bench-harness/responses-client/Responses") {}
 
 export type ResponsesService = {
   readonly send: (
@@ -536,11 +534,11 @@ export async function consumeStream(
             RawResponsesTerminalEventSchema,
             rawEvent
           );
-          if (Either.isLeft(parsedRawEvent)) {
+          if (Result.isFailure(parsedRawEvent)) {
             break;
           }
           const parsedTerminalEvent = streamEventsFromJSON(
-            JSON.stringify(normalizeRawTerminalEvent(parsedRawEvent.right))
+            JSON.stringify(normalizeRawTerminalEvent(parsedRawEvent.success))
           );
           if (!parsedTerminalEvent.ok) {
             break;

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { assertLeft, assertRight } from "../../../internal/testing";
+import { assertFailure, assertSuccess } from "../../../internal/testing";
 import {
   parseWideSearchExpected,
   parseWideSearchMarkdownTable,
@@ -94,8 +94,8 @@ describe("parseWideSearchExpected", () => {
         },
       })
     );
-    assertRight(parsed);
-    expect(parsed.right).toMatchObject({
+    assertSuccess(parsed);
+    expect(parsed.success).toMatchObject({
       required: ["packsize"],
       unique: ["packsize"],
       groundTruth: [{ packsize: "750" }],
@@ -104,10 +104,10 @@ describe("parseWideSearchExpected", () => {
   it("returns an error for malformed expected data", () => {
     const invalidJson = parseWideSearchExpected("{");
     const invalidShape = parseWideSearchExpected("{}");
-    assertLeft(invalidJson);
-    assertLeft(invalidShape);
-    expect(invalidJson.left).toContain("invalid expected JSON");
-    expect(invalidShape.left).not.toBe("");
+    assertFailure(invalidJson);
+    assertFailure(invalidShape);
+    expect(invalidJson.failure).toContain("invalid expected JSON");
+    expect(invalidShape.failure).not.toBe("");
   });
 });
 describe("WideSearch preprocessors", () => {

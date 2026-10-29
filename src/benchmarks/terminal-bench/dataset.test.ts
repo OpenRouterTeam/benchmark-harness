@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
-import { assertLeft } from "../../internal/testing";
+import { assertFailure } from "../../internal/testing";
 import { parseSchema } from "../../internal/zod";
 import {
   listTaskIds,
@@ -40,7 +40,7 @@ describe("terminal-bench task.toml schema (pure)", () => {
       schema_version: "1.1",
       task: { name: "x", description: "d", keywords: [] },
     });
-    assertLeft(result);
+    assertFailure(result);
   });
 });
 NETWORK("terminal-bench canary integrity (checked-out tree)", () => {

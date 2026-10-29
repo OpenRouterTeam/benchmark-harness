@@ -1,25 +1,20 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
-import { fromIterable } from "effect/Chunk";
 import type { Effect } from "effect/Effect";
 import { fail, flatMap, mapError, succeed } from "effect/Effect";
 import type { Layer } from "effect/Layer";
 import { effect } from "effect/Layer";
 import { none, some } from "effect/Option";
+import * as Result from "effect/Result";
 import type { Stream } from "effect/Stream";
-import {
-  flatMap as flatMapStream,
-  fromEffect,
-  paginateChunkEffect,
-} from "effect/Stream";
+import { flatMap as flatMapStream, fromEffect, paginate } from "effect/Stream";
 import { parse as tomlParse } from "smol-toml";
 
 import type { Sample } from "../../harness/core";
 import { DatasetError } from "../../harness/core";
 import type { DatasetStreamOptions } from "../../harness/dataset";
 import { Dataset } from "../../harness/dataset";
-import { Either } from "../../internal/either";
 import { definedValues } from "../../internal/guards";
 import { parseSchema } from "../../internal/zod";
 import type { SweAtlasTask, SweAtlasTrack } from "./schema";
@@ -53,26 +48,26 @@ export function loadTask(
   const taskDir = join(trackDir(tasksRoot, track), taskId);
   const tomlPath = join(taskDir, "task.toml");
   const raw = readFileSync(tomlPath, "utf8");
-  const tomlObj = Either.try(() => tomlParse(raw));
-  if (Either.isLeft(tomlObj)) {
+  const tomlObj = Result.try(() => tomlParse(raw));
+  if (Result.isFailure(tomlObj)) {
     throw new Error(
-      `swe-atlas task "${taskId}" task.toml failed to parse: ${String(tomlObj.left)}`
+      `swe-atlas task "${taskId}" task.toml failed to parse: ${String(tomlObj.failure)}`
     );
   }
-  const parsed = parseSchema(SweAtlasTaskTomlSchema, tomlObj.right);
-  if (Either.isLeft(parsed)) {
+  const parsed = parseSchema(SweAtlasTaskTomlSchema, tomlObj.success);
+  if (Result.isFailure(parsed)) {
     throw new Error(
-      `swe-atlas task "${taskId}" task.toml failed validation: ${parsed.left.message}`
+      `swe-atlas task "${taskId}" task.toml failed validation: ${parsed.failure.message}`
     );
   }
   return {
     id: taskId,
     track,
-    taskToml: parsed.right,
+    taskToml: parsed.success,
     taskDir,
     testDir: join(taskDir, "tests"),
     instructionPath: join(taskDir, "instruction.md"),
-    dockerImage: parsed.right.environment.docker_image,
+    dockerImage: parsed.success.environment.docker_image,
   };
 }
 
@@ -223,25 +218,25 @@ function buildDatasetService(opts: {
         const requestedEnd = opts2?.end ?? allIds.length;
         const end = Math.min(requestedEnd, allIds.length);
         const pageIds = allIds.slice(start, end);
-        return paginateChunkEffect(0, (offset: number) => {
+        return paginate(0, (offset: number) => {
           const pageSlice = pageIds.slice(offset, offset + pageSize);
-          const built = Either.try(() =>
+          const built = Result.try(() =>
             pageSlice.map((id) =>
               taskToSample(loadTask(id, track, root), maxAgentTimeoutSec)
             )
           );
-          if (Either.isLeft(built)) {
+          if (Result.isFailure(built)) {
             return fail(
               new DatasetError({
-                message: `Failed to load swe-atlas ${track} tasks at offset ${offset}: ${String(built.left)}`,
+                message: `Failed to load swe-atlas ${track} tasks at offset ${offset}: ${String(built.failure)}`,
               })
             );
           }
-          const samples = built.right;
+          const samples = built.success;
           const nextOffset = offset + pageSize;
           const hasMore = nextOffset < pageIds.length;
           return succeed([
-            fromIterable(samples),
+            samples,
             hasMore ? some(nextOffset) : none(),
           ] as const);
         });

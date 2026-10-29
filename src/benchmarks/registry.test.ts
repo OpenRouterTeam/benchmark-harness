@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from "bun:test";
 
 import { blockNetwork } from "../../test/helpers/block-network";
 import { NOOP_PROGRESS_REPORTER } from "../harness/progress";
-import { assertRight, assertLeft } from "../internal/testing";
+import { assertSuccess, assertFailure } from "../internal/testing";
 import { parseSchema } from "../internal/zod";
 import { runBenchmarkById } from "../runner/run-by-id";
 import {
@@ -45,7 +45,7 @@ describe("benchmark registry", () => {
       sessionId: "test",
       progressReporter: NOOP_PROGRESS_REPORTER,
     });
-    assertLeft(result);
+    assertFailure(result);
   });
 
   it("resolves all swe-atlas tracks as distinct benchmarks", () => {
@@ -70,8 +70,8 @@ describe("benchmark registry", () => {
       model: "openai/gpt-5.4-nano",
       reasoningEffort: "high",
     });
-    assertRight(config);
-    expect(config.right).toEqual({
+    assertSuccess(config);
+    expect(config.success).toEqual({
       benchmarkId: "search_hle",
       model: "openai/gpt-5.4-nano",
       reasoningEffort: "high",
@@ -90,8 +90,8 @@ describe("benchmark registry", () => {
       model: "openai/gpt-5.4-nano",
       reasoningEffort: "high",
     });
-    assertRight(config);
-    expect(config.right).toEqual({
+    assertSuccess(config);
+    expect(config.success).toEqual({
       benchmarkId: "search_dsqa",
       model: "openai/gpt-5.4-nano",
       reasoningEffort: "high",
@@ -123,8 +123,8 @@ describe("benchmark registry", () => {
       model: "openai/gpt-5.4-nano",
       reasoningEffort: "high",
     });
-    assertRight(result);
-    expect(result.right).toEqual({
+    assertSuccess(result);
+    expect(result.success).toEqual({
       benchmarkId: "search_widesearch",
       model: "openai/gpt-5.4-nano",
       reasoningEffort: "high",
@@ -139,10 +139,10 @@ describe("benchmark registry", () => {
       model: "openai/gpt-5.5",
       reasoningEffort: "high",
     });
-    assertRight(config);
+    assertSuccess(config);
     expect(benchmark?.defaultEpochs).toBe(1);
     expect(typeof benchmark?.primaryScore).toBe("function");
-    expect(config.right).toEqual({
+    expect(config.success).toEqual({
       benchmarkId: "wandr",
       model: "openai/gpt-5.5",
       reasoningEffort: "high",
@@ -162,14 +162,14 @@ describe("benchmark registry", () => {
       reasoningEffort: "high",
       agentReasoningEffort: "high",
     });
-    assertRight(result);
-    if (result.right.benchmarkId !== "swe_atlas_qa") {
+    assertSuccess(result);
+    if (result.success.benchmarkId !== "swe_atlas_qa") {
       throw new Error("expected swe_atlas_qa config");
     }
-    expect(result.right.judgeModel).toBe("anthropic/claude-opus-4.5");
-    expect(result.right.stepLimit).toBe(250);
-    expect(result.right.modalEnv).toBe("main");
-    expect(result.right.modalRegions).toBeUndefined();
+    expect(result.success.judgeModel).toBe("anthropic/claude-opus-4.5");
+    expect(result.success.stepLimit).toBe(250);
+    expect(result.success.modalEnv).toBe("main");
+    expect(result.success.modalRegions).toBeUndefined();
   });
 
   it("parses terminal-bench with the pi agent and the ori install url", () => {
@@ -179,15 +179,15 @@ describe("benchmark registry", () => {
       reasoningEffort: "high",
       agentReasoningEffort: "high",
     });
-    assertRight(result);
-    if (result.right.benchmarkId !== "terminal_bench") {
+    assertSuccess(result);
+    if (result.success.benchmarkId !== "terminal_bench") {
       throw new Error("expected terminal_bench config");
     }
-    expect(result.right.agent).toBe("pi");
-    expect(result.right.oriInstallUrl).toBe(
+    expect(result.success.agent).toBe("pi");
+    expect(result.success.oriInstallUrl).toBe(
       "https://openrouter.ai/labs/ori/install.sh"
     );
-    expect(result.right.oriChannel).toBe("stable");
+    expect(result.success.oriChannel).toBe("stable");
   });
 
   it("parses an ori agent selection for terminal-bench", () => {
@@ -198,11 +198,11 @@ describe("benchmark registry", () => {
       reasoningEffort: "high",
       agentReasoningEffort: "high",
     });
-    assertRight(result);
-    if (result.right.benchmarkId !== "terminal_bench") {
+    assertSuccess(result);
+    if (result.success.benchmarkId !== "terminal_bench") {
       throw new Error("expected terminal_bench config");
     }
-    expect(result.right.agent).toBe("claude");
+    expect(result.success.agent).toBe("claude");
   });
 
   it("accepts Prime Agent for terminal-bench and harbor benchmarks", () => {
@@ -214,8 +214,8 @@ describe("benchmark registry", () => {
         reasoningEffort: "high",
         agentReasoningEffort: "high",
       });
-      assertRight(result);
-      expect(result.right.agent).toBe("prime-agent");
+      assertSuccess(result);
+      expect(result.success.agent).toBe("prime-agent");
     }
   });
 
@@ -226,16 +226,16 @@ describe("benchmark registry", () => {
       reasoningEffort: "high",
       agentReasoningEffort: "high",
     });
-    assertRight(result);
-    if (result.right.benchmarkId !== "terminal_bench") {
+    assertSuccess(result);
+    if (result.success.benchmarkId !== "terminal_bench") {
       throw new Error("expected terminal_bench config");
     }
-    expect(result.right.agentReasoningEffort).toBe("high");
-    expect(result.right.oriChannel).toBe("stable");
-    expect(result.right.isolateAgentConfig).toBe(false);
-    expect(result.right.systemPrompt).toBeUndefined();
-    expect(result.right.allowedTools).toBeUndefined();
-    expect(result.right.disallowedTools).toBeUndefined();
+    expect(result.success.agentReasoningEffort).toBe("high");
+    expect(result.success.oriChannel).toBe("stable");
+    expect(result.success.isolateAgentConfig).toBe(false);
+    expect(result.success.systemPrompt).toBeUndefined();
+    expect(result.success.allowedTools).toBeUndefined();
+    expect(result.success.disallowedTools).toBeUndefined();
   });
 
   it("accepts the max reasoning level", () => {
@@ -245,11 +245,11 @@ describe("benchmark registry", () => {
       agentReasoningEffort: "max",
       reasoningEffort: "high",
     });
-    assertRight(parsed);
-    if (parsed.right.benchmarkId !== "terminal_bench") {
+    assertSuccess(parsed);
+    if (parsed.success.benchmarkId !== "terminal_bench") {
       throw new Error("expected terminal_bench config");
     }
-    expect(parsed.right.agentReasoningEffort).toBe("max");
+    expect(parsed.success.agentReasoningEffort).toBe("max");
   });
 
   it("accepts none as an agent reasoning effort, which ori maps per harness", () => {
@@ -259,11 +259,11 @@ describe("benchmark registry", () => {
       agentReasoningEffort: "none",
       reasoningEffort: "high",
     });
-    assertRight(parsed);
-    if (parsed.right.benchmarkId !== "terminal_bench") {
+    assertSuccess(parsed);
+    if (parsed.success.benchmarkId !== "terminal_bench") {
       throw new Error("expected terminal_bench config");
     }
-    expect(parsed.right.agentReasoningEffort).toBe("none");
+    expect(parsed.success.agentReasoningEffort).toBe("none");
   });
 
   it("rejects an unknown agent reasoning effort", () => {
@@ -273,7 +273,7 @@ describe("benchmark registry", () => {
       agentReasoningEffort: "off",
       reasoningEffort: "high",
     });
-    assertLeft(result);
+    assertFailure(result);
   });
 
   it("parses tool allow and deny lists", () => {
@@ -287,14 +287,14 @@ describe("benchmark registry", () => {
       isolateAgentConfig: true,
       systemPrompt: "terse",
     });
-    assertRight(result);
-    if (result.right.benchmarkId !== "terminal_bench") {
+    assertSuccess(result);
+    if (result.success.benchmarkId !== "terminal_bench") {
       throw new Error("expected terminal_bench config");
     }
-    expect(result.right.allowedTools).toEqual(["Bash", "Edit"]);
-    expect(result.right.disallowedTools).toEqual(["WebSearch"]);
-    expect(result.right.isolateAgentConfig).toBe(true);
-    expect(result.right.systemPrompt).toBe("terse");
+    expect(result.success.allowedTools).toEqual(["Bash", "Edit"]);
+    expect(result.success.disallowedTools).toEqual(["WebSearch"]);
+    expect(result.success.isolateAgentConfig).toBe(true);
+    expect(result.success.systemPrompt).toBe("terse");
   });
 
   it("rejects an agent that is not wired up", () => {
@@ -305,7 +305,7 @@ describe("benchmark registry", () => {
       reasoningEffort: "high",
       agentReasoningEffort: "high",
     });
-    assertLeft(result);
+    assertFailure(result);
   });
 
   it("defaults harbor benchmarks to the mini-swe agent loop", () => {
@@ -321,11 +321,11 @@ describe("benchmark registry", () => {
         reasoningEffort: "high",
         agentReasoningEffort: "high",
       });
-      assertRight(result);
-      if (!("agent" in result.right)) {
+      assertSuccess(result);
+      if (!("agent" in result.success)) {
         throw new Error(`${benchmarkId} config is missing an agent field`);
       }
-      expect(result.right.agent).toBe("mini_swe");
+      expect(result.success.agent).toBe("mini_swe");
     }
   });
 
@@ -338,13 +338,13 @@ describe("benchmark registry", () => {
       agentReasoningEffort: "high",
       isolateAgentConfig: true,
     });
-    assertRight(result);
-    if (result.right.benchmarkId !== "deep_swe") {
+    assertSuccess(result);
+    if (result.success.benchmarkId !== "deep_swe") {
       throw new Error("expected deep_swe config");
     }
-    expect(result.right.agent).toBe("claude");
-    expect(result.right.agentReasoningEffort).toBe("high");
-    expect(result.right.isolateAgentConfig).toBe(true);
+    expect(result.success.agent).toBe("claude");
+    expect(result.success.agentReasoningEffort).toBe("high");
+    expect(result.success.isolateAgentConfig).toBe(true);
   });
 
   it("accepts pi as a harbor agent now that ori launches it", () => {
@@ -355,11 +355,11 @@ describe("benchmark registry", () => {
       reasoningEffort: "high",
       agentReasoningEffort: "high",
     });
-    assertRight(result);
-    if (result.right.benchmarkId !== "deep_swe") {
+    assertSuccess(result);
+    if (result.success.benchmarkId !== "deep_swe") {
       throw new Error("expected deep_swe config");
     }
-    expect(result.right.agent).toBe("pi");
+    expect(result.success.agent).toBe("pi");
   });
 
   it("rejects an agent no harness implements", () => {
@@ -370,7 +370,7 @@ describe("benchmark registry", () => {
       reasoningEffort: "high",
       agentReasoningEffort: "high",
     });
-    assertLeft(result);
+    assertFailure(result);
   });
 
   it("leaves wandr without an agent selector", () => {
@@ -379,8 +379,8 @@ describe("benchmark registry", () => {
       model: "openai/gpt-5.5",
       reasoningEffort: "high",
     });
-    assertRight(result);
-    expect("agent" in result.right).toBe(false);
+    assertSuccess(result);
+    expect("agent" in result.success).toBe(false);
   });
 
   it("returns undefined for an unknown benchmark", () => {

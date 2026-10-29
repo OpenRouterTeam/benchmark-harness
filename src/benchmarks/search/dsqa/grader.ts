@@ -1,4 +1,5 @@
-import { Either } from "../../../internal/either";
+import * as Result from "effect/Result";
+
 import { parseSchema, z } from "../../../internal/zod";
 import type { JudgeCallSpec, JudgeConfig } from "../../../judge/judge";
 
@@ -115,19 +116,19 @@ export function renderDsqaGraderPrompt(fields: {
 
 export function parseDsqaVerdict(
   text: string
-): Either.Either<DsqaVerdict, string> {
+): Result.Result<DsqaVerdict, string> {
   const trimmed = text.trim();
   const fenced = trimmed.match(/```json\s*([\s\S]*?)\s*```/u);
-  const json = Either.try(() => JSON.parse(fenced?.[1] ?? trimmed));
-  if (Either.isLeft(json)) {
-    return Either.left(`not valid JSON: ${text.slice(0, 200)}`);
+  const json = Result.try(() => JSON.parse(fenced?.[1] ?? trimmed));
+  if (Result.isFailure(json)) {
+    return Result.fail(`not valid JSON: ${text.slice(0, 200)}`);
   }
-  const parsed = parseSchema(RawDsqaVerdictSchema, json.right);
-  if (Either.isLeft(parsed)) {
-    return Either.left(parsed.left.message);
+  const parsed = parseSchema(RawDsqaVerdictSchema, json.success);
+  if (Result.isFailure(parsed)) {
+    return Result.fail(parsed.failure.message);
   }
-  const answerCorrectness = parsed.right["Answer Correctness"];
-  return Either.right({
+  const answerCorrectness = parsed.success["Answer Correctness"];
+  return Result.succeed({
     explanation: answerCorrectness.Explanation,
     correctness_details: answerCorrectness["Correctness Details"],
     excessive_answers: answerCorrectness["Excessive Answers"],

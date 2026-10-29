@@ -1,7 +1,6 @@
+import { Reference } from "effect/Context";
 import type { Effect } from "effect/Effect";
-import { locally } from "effect/Effect";
-import type { FiberRef } from "effect/FiberRef";
-import { get, set, unsafeMake } from "effect/FiberRef";
+import { provideService } from "effect/Effect";
 
 import { definedValues } from "../internal/guards";
 import { wLog } from "../internal/log";
@@ -20,50 +19,59 @@ export const RESPONSE_CACHE_SOURCE_ID_HEADER = "x-openrouter-cache-source-id";
 
 export const RESPONSE_CACHE_SALT_HEADER = "x-openrouter-cache-salt";
 
-export const currentEpochRef: FiberRef<number | undefined> = unsafeMake<
+export const currentEpochRef: Reference<number | undefined> = Reference<
   number | undefined
->(undefined);
+>("@openrouter/bench-harness/runtime/currentEpoch", {
+  defaultValue: () => undefined,
+});
 
-export function setCurrentEpoch(epoch: number | undefined): Effect<void> {
-  return set(currentEpochRef, epoch);
+export function withCurrentEpoch(
+  epoch: number | undefined
+): <A, E, R>(effect: Effect<A, E, R>) => Effect<A, E, R> {
+  return (effect) => provideService(effect, currentEpochRef, epoch);
 }
 
-export const getCurrentEpoch: Effect<number | undefined> = get(currentEpochRef);
+export const getCurrentEpoch: Effect<number | undefined> = currentEpochRef;
 
-export const currentRetryAttemptRef: FiberRef<number | undefined> = unsafeMake<
+export const currentRetryAttemptRef: Reference<number | undefined> = Reference<
   number | undefined
->(undefined);
+>("@openrouter/bench-harness/runtime/currentRetryAttempt", {
+  defaultValue: () => undefined,
+});
 
-export const getCurrentRetryAttempt: Effect<number | undefined> = get(
-  currentRetryAttemptRef
-);
+export const getCurrentRetryAttempt: Effect<number | undefined> =
+  currentRetryAttemptRef;
 
-export const currentRunAttemptRef: FiberRef<number | undefined> = unsafeMake<
+export const currentRunAttemptRef: Reference<number | undefined> = Reference<
   number | undefined
->(undefined);
+>("@openrouter/bench-harness/runtime/currentRunAttempt", {
+  defaultValue: () => undefined,
+});
 
 export const getCurrentRunAttempt: Effect<number | undefined> =
-  get(currentRunAttemptRef);
+  currentRunAttemptRef;
 
 export function withRunAttempt<A, E, R>(
   runAttempt: number,
   effect: Effect<A, E, R>
 ): Effect<A, E, R> {
-  return locally(effect, currentRunAttemptRef, runAttempt);
+  return provideService(effect, currentRunAttemptRef, runAttempt);
 }
 
-export const currentCallSaltRef: FiberRef<string | undefined> = unsafeMake<
+export const currentCallSaltRef: Reference<string | undefined> = Reference<
   string | undefined
->(undefined);
+>("@openrouter/bench-harness/runtime/currentCallSalt", {
+  defaultValue: () => undefined,
+});
 
 export const getCurrentCallSalt: Effect<string | undefined> =
-  get(currentCallSaltRef);
+  currentCallSaltRef;
 
 export function withCallCacheSalt<A, E, R>(
   callSalt: string,
   effect: Effect<A, E, R>
 ): Effect<A, E, R> {
-  return locally(effect, currentCallSaltRef, callSalt);
+  return provideService(effect, currentCallSaltRef, callSalt);
 }
 
 export function buildResponseCacheSalt(

@@ -1,11 +1,11 @@
 import type { Effect } from "effect/Effect";
 import { flatMap as effectFlatMap, gen, succeed } from "effect/Effect";
+import * as Result from "effect/Result";
 
 import type { Score, Target, TaskState } from "../../../harness/core";
 import { ScoreValue } from "../../../harness/core";
 import type { RunResult } from "../../../harness/run";
 import type { SolverService } from "../../../harness/solver";
-import { Either } from "../../../internal/either";
 import { definedValues } from "../../../internal/guards";
 import { parseSchema, z } from "../../../internal/zod";
 import type { JudgeConfig } from "../../../judge/judge";
@@ -108,7 +108,7 @@ export function wideSearchScorer(
     WideSearchGradeSchema,
     state.sample.metadata?.[GRADE_METADATA_KEY]
   );
-  if (Either.isLeft(parsed)) {
+  if (Result.isFailure(parsed)) {
     return succeed({
       value: ScoreValue.Incorrect,
       answer: state.output?.completion ?? null,
@@ -117,16 +117,16 @@ export function wideSearchScorer(
   }
   return succeed({
     value:
-      parsed.right.metrics.success_rate === 1
+      parsed.success.metrics.success_rate === 1
         ? ScoreValue.Correct
         : ScoreValue.Incorrect,
     answer: state.output?.completion ?? null,
-    explanation: parsed.right.explanation,
+    explanation: parsed.success.explanation,
     trajectory: {
       kind: "judge_runs",
       runs: [
-        { kind: "widesearch_grade", metrics: parsed.right.metrics },
-        ...parsed.right.judgeRuns,
+        { kind: "widesearch_grade", metrics: parsed.success.metrics },
+        ...parsed.success.judgeRuns,
       ],
     },
   });
@@ -153,8 +153,8 @@ export function wideSearchRunLevelScores(result: RunResult): readonly {
         WideSearchTrajectoryGradeSchema,
         trajectory.runs[0]
       );
-      return Either.isRight(parsed)
-        ? parsed.right.metrics
+      return Result.isSuccess(parsed)
+        ? parsed.success.metrics
         : ZERO_WIDESEARCH_METRICS;
     });
   if (metrics.length === 0) {

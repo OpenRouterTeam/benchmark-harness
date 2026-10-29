@@ -1,20 +1,24 @@
-import type { DurationInput } from "effect/Duration";
+import type { Duration } from "effect/Duration";
+import { millis, toMillis } from "effect/Duration";
 import type { Effect } from "effect/Effect";
-import { locally, logWarning, retry, succeed, suspend } from "effect/Effect";
+import {
+  logWarning,
+  provideService,
+  retry,
+  succeed,
+  suspend,
+} from "effect/Effect";
 import type { Schedule } from "effect/Schedule";
 import {
   exponential,
   jittered,
+  map,
   modifyDelay,
-  onDecision,
   passthrough,
-  recurs,
-  whileInput,
-  zipWith,
+  setInputType,
+  tap,
+  while as while_,
 } from "effect/Schedule";
-import type { ScheduleDecision } from "effect/ScheduleDecision";
-import { isContinue } from "effect/ScheduleDecision";
-import { start } from "effect/ScheduleIntervals";
 
 import type { ModelError } from "../harness/core";
 import {
@@ -47,12 +51,9 @@ function logRetryDecision<ErrorType>(
     readonly error: ErrorType;
     readonly attempt: number;
   },
-  decision: ScheduleDecision
+  delay: Duration
 ): Effect<void> {
-  if (!isContinue(decision)) {
-    return succeed(undefined);
-  }
-  const delayMs = Math.max(0, start(decision.intervals) - Date.now());
+  const delayMs = Math.max(0, toMillis(delay));
   const error = output.error;
   const modelError = error instanceof ModelErrorClass ? error : undefined;
   const errorTag = errorTagFrom(error);
@@ -90,11 +91,9 @@ export function withRetryAttemptLogging<Error>(
   Error
 > {
   return scheduled.pipe(
-    zipWith(recurs(maxRetries), (error, attempt) => ({
-      error,
-      attempt: attempt + 1,
-    })),
-    onDecision(logRetryDecision)
+    while_(({ attempt }) => attempt <= maxRetries),
+    map(({ input, attempt }) => ({ error: input, attempt })),
+    tap(({ output, duration }) => logRetryDecision(output, duration))
   );
 }
 
@@ -104,7 +103,7 @@ function withRetryAttemptSalt<A, E, R>(
   let attempt = -1;
   return suspend(() => {
     attempt += 1;
-    return locally(effect, currentRetryAttemptRef, attempt);
+    return provideService(effect, currentRetryAttemptRef, attempt);
   });
 }
 
@@ -143,14 +142,19 @@ export function rateLimitRetrySchedule(config: RetryConfig = {}): Schedule<
 > {
   const maxRetries = config.maxRetries ?? 6;
   const baseDelayMs = config.baseDelayMs ?? 1e3;
-  const backoff = exponential(`${baseDelayMs} millis`).pipe(jittered);
+  const backoff = exponential(`${baseDelayMs} millis`).pipe(
+    jittered,
+    setInputType<EvalError>()
+  );
   const scheduled = backoff.pipe(
-    whileInput(isRetryable),
+    while_(({ input }) => isRetryable(input)),
     passthrough,
-    modifyDelay((error, computed): DurationInput => {
+    modifyDelay(({ input, duration }) => {
       const retryAfterMs =
-        error instanceof ModelErrorClass ? error.retryAfterMs : undefined;
-      return retryAfterMs !== undefined ? `${retryAfterMs} millis` : computed;
+        input instanceof ModelErrorClass ? input.retryAfterMs : undefined;
+      return succeed(
+        retryAfterMs !== undefined ? millis(retryAfterMs) : duration
+      );
     })
   );
   return withRetryAttemptLogging(scheduled, maxRetries);
@@ -167,9 +171,11 @@ export function transientSolverRetrySchedule(
 > {
   const maxRetries = config.maxRetries ?? 3;
   const baseDelayMs = config.baseDelayMs ?? 500;
-  const scheduled = whileInput(
-    exponential(`${baseDelayMs} millis`).pipe(jittered),
-    (error: SolverError): boolean => error instanceof SolverError
-  ).pipe(passthrough);
+  const scheduled = exponential(`${baseDelayMs} millis`).pipe(
+    jittered,
+    setInputType<SolverError>(),
+    passthrough,
+    while_(({ input }) => input instanceof SolverError)
+  );
   return withRetryAttemptLogging(scheduled, maxRetries);
 }

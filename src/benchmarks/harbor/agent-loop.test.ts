@@ -5,7 +5,7 @@ import type { Effect } from "effect/Effect";
 import { fail, runPromise, succeed, suspend } from "effect/Effect";
 
 import { SolverError } from "../../harness/core";
-import { assertRight } from "../../internal/testing";
+import { assertSuccess } from "../../internal/testing";
 import { parseSchema, z } from "../../internal/zod";
 import type { ResponsesModelService } from "../../providers/responses-model";
 import type { ExecResult, SandboxSessionInstance } from "../../sandbox/session";
@@ -112,8 +112,8 @@ async function readTerminalFixture(): Promise<
     "utf8"
   );
   const result = parseSchema(TerminalFixtureSchema, JSON.parse(raw));
-  assertRight(result);
-  return result.right;
+  assertSuccess(result);
+  return result.success;
 }
 describe("agent-loop retry resilience", () => {
   it("maps advisor items and accumulates server tool usage", async () => {

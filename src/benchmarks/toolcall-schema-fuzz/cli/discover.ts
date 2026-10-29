@@ -1,9 +1,9 @@
 import { writeFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
 
+import * as Result from "effect/Result";
 import { sample } from "fast-check";
 
-import { Either } from "../../../internal/either";
 import { parseSchema } from "../../../internal/zod";
 import { constructsOf } from "../constructs";
 import type { Candidate } from "../discovery/discover";
@@ -127,11 +127,14 @@ if (values.write && findings.length > 0) {
     version: TOOLCALL_SCHEMA_FUZZ_REGRESSIONS.version + 1,
     entries: [...TOOLCALL_SCHEMA_FUZZ_REGRESSIONS.entries, ...findings],
   });
-  if (Either.isLeft(next)) {
+  if (Result.isFailure(next)) {
     process.stderr.write(
-      `findings do not match the regression schema: ${next.left.message}\n`
+      `findings do not match the regression schema: ${next.failure.message}\n`
     );
     process.exit(1);
   }
-  await writeFile(REGRESSIONS_PATH, `${JSON.stringify(next.right, null, 2)}\n`);
+  await writeFile(
+    REGRESSIONS_PATH,
+    `${JSON.stringify(next.success, null, 2)}\n`
+  );
 }

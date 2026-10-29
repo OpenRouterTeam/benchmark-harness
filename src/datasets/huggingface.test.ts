@@ -1,16 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 
-import { toReadonlyArray } from "effect/Chunk";
-import { fromMap } from "effect/ConfigProvider";
 import {
-  fail,
-  flatMap,
-  provide,
-  retry,
-  succeed,
-  suspend,
-  withConfigProvider,
-} from "effect/Effect";
+  fromUnknown,
+  layer as configProviderLayer,
+} from "effect/ConfigProvider";
+import { fail, flatMap, provide, retry, succeed, suspend } from "effect/Effect";
 import { runCollect } from "effect/Stream";
 
 import { Dataset } from "../harness/dataset";
@@ -191,7 +185,7 @@ describe("paginateHfRows", () => {
     );
 
     expect(calls).toEqual([{ offset: 0, length: 100 }]);
-    expect(toReadonlyArray(result)).toEqual([15, 16, 17, 18, 19]);
+    expect(result).toEqual([15, 16, 17, 18, 19]);
   });
 
   it("aligns a later start to its page boundary", async () => {
@@ -218,7 +212,7 @@ describe("paginateHfRows", () => {
     );
 
     expect(calls).toEqual([{ offset: 200, length: 100 }]);
-    expect(toReadonlyArray(result)).toEqual([250, 251, 252, 253, 254]);
+    expect(result).toEqual([250, 251, 252, 253, 254]);
   });
 });
 
@@ -226,8 +220,9 @@ describe("resolveHfToken", () => {
   it("reads HF_TOKEN from Effect Config", async () => {
     await expect(
       runHarnessPromise(
-        withConfigProvider(fromMap(new Map([["HF_TOKEN", "hf_test_token"]])))(
-          resolveHfToken()
+        provide(
+          resolveHfToken(),
+          configProviderLayer(fromUnknown({ HF_TOKEN: "hf_test_token" }))
         )
       )
     ).resolves.toBe("hf_test_token");
@@ -235,7 +230,7 @@ describe("resolveHfToken", () => {
   it("defaults to an empty token when HF_TOKEN is unavailable", async () => {
     await expect(
       runHarnessPromise(
-        withConfigProvider(fromMap(new Map()))(resolveHfToken())
+        provide(resolveHfToken(), configProviderLayer(fromUnknown({})))
       )
     ).resolves.toBe("");
   });

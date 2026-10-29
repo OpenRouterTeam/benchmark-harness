@@ -1,8 +1,9 @@
-import type { HttpClient, HttpClientError } from "@effect/platform";
-import { HttpClientRequest } from "@effect/platform";
 import { millis } from "effect/Duration";
 import type { Effect } from "effect/Effect";
 import { catchTag, fail, flatMap, gen, mapError, timeout } from "effect/Effect";
+import type { HttpClient, HttpClientError } from "effect/http";
+import { HttpClientRequest } from "effect/http";
+import * as Result from "effect/Result";
 
 import type {
   CostTier,
@@ -12,7 +13,6 @@ import type {
 import type { ModelOutput, ModelUsage, TaskState } from "../../harness/core";
 import { ModelError, SolverError } from "../../harness/core";
 import type { SolverService } from "../../harness/solver";
-import { Either } from "../../internal/either";
 import type { ProviderSort } from "../../internal/enums";
 import { definedValues } from "../../internal/guards";
 import { parseSchema, z } from "../../internal/zod";
@@ -41,10 +41,10 @@ const UpstreamRejectionSchema = z.object({
 });
 
 function isUpstreamRejection(text: string): boolean {
-  const json = Either.try((): unknown => JSON.parse(text));
+  const json = Result.try((): unknown => JSON.parse(text));
   return (
-    Either.isRight(json) &&
-    Either.isRight(parseSchema(UpstreamRejectionSchema, json.right))
+    Result.isSuccess(json) &&
+    Result.isSuccess(parseSchema(UpstreamRejectionSchema, json.success))
   );
 }
 
@@ -161,7 +161,7 @@ function withTimeout<A, E>(
 ): Effect<A, E | ModelError> {
   return effect.pipe(
     timeout(millis(timeoutMs)),
-    catchTag("TimeoutException", () =>
+    catchTag("TimeoutError", () =>
       fail(
         new ModelError({
           status: 408,
@@ -192,7 +192,7 @@ function requestCompletion(
         "X-OpenRouter-Experiment-Ids": options.experimentIds?.join(","),
       }),
     }),
-    HttpClientRequest.bodyUnsafeJson(requestBody)
+    HttpClientRequest.bodyJsonUnsafe(requestBody)
   );
   const completion = client.execute(request).pipe(
     mapError(
@@ -272,18 +272,18 @@ export function toolCallSchemaFuzzSolver(
         return { ...state, requestBody, output, completed: true };
       }
       const parsed = parseSchema(CompletionResponseSchema, result.body);
-      if (Either.isLeft(parsed)) {
+      if (Result.isFailure(parsed)) {
         return yield* new SolverError({
-          message: `OpenRouter response parse error: ${parsed.left.message}`,
+          message: `OpenRouter response parse error: ${parsed.failure.message}`,
         });
       }
-      const choice = parsed.right.choices[0];
+      const choice = parsed.success.choices[0];
       if (choice === undefined) {
         return yield* new SolverError({
           message: "OpenRouter response did not include a choice",
         });
       }
-      const usage = parsed.right.usage ?? undefined;
+      const usage = parsed.success.usage ?? undefined;
       const completion = choice.message.content ?? "";
       const output: ModelOutput = {
         completion,

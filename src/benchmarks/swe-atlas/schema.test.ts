@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 
 import { parse as tomlParse } from "smol-toml";
 
-import { assertRight, assertLeft } from "../../internal/testing";
+import { assertSuccess, assertFailure } from "../../internal/testing";
 import { parseSchema } from "../../internal/zod";
 import { SweAtlasTaskTomlSchema } from "./schema";
 
@@ -73,34 +73,34 @@ storage_mb = 20480
 describe("SweAtlasTaskTomlSchema", () => {
   it("parses a QA task.toml with category and language", () => {
     const result = parseSchema(SweAtlasTaskTomlSchema, tomlParse(QA_TOML));
-    assertRight(result);
-    expect(result.right.metadata.category).toBe("Code Onboarding");
-    expect(result.right.metadata.language).toBe("ts");
-    expect(result.right.environment.docker_image).toContain("swe_atlas_QnA");
-    expect(result.right.agent.timeout_sec).toBe(10800);
-    expect(result.right.verifier.timeout_sec).toBe(900);
+    assertSuccess(result);
+    expect(result.success.metadata.category).toBe("Code Onboarding");
+    expect(result.success.metadata.language).toBe("ts");
+    expect(result.success.environment.docker_image).toContain("swe_atlas_QnA");
+    expect(result.success.agent.timeout_sec).toBe(10800);
+    expect(result.success.verifier.timeout_sec).toBe(900);
   });
   it("parses a TW task.toml without category or language", () => {
     const result = parseSchema(SweAtlasTaskTomlSchema, tomlParse(TW_TOML));
-    assertRight(result);
-    expect(result.right.metadata.category).toBeUndefined();
-    expect(result.right.metadata.language).toBeUndefined();
-    expect(result.right.environment.docker_image).toContain("swe_atlas_TW");
+    assertSuccess(result);
+    expect(result.success.metadata.category).toBeUndefined();
+    expect(result.success.metadata.language).toBeUndefined();
+    expect(result.success.environment.docker_image).toContain("swe_atlas_TW");
   });
   it("parses an RF task.toml (no schema_version/[task]/repository/base_commit)", () => {
     const result = parseSchema(SweAtlasTaskTomlSchema, tomlParse(RF_TOML));
-    assertRight(result);
-    expect(result.right.schema_version).toBeUndefined();
-    expect(result.right.task).toBeUndefined();
-    expect(result.right.metadata.repository).toBeUndefined();
-    expect(result.right.metadata.base_commit).toBeUndefined();
-    expect(result.right.metadata.difficulty).toBe("hard");
-    expect(result.right.metadata.category).toBe("refactoring");
-    expect(result.right.environment.docker_image).toContain("swe_atlas_RF");
+    assertSuccess(result);
+    expect(result.success.schema_version).toBeUndefined();
+    expect(result.success.task).toBeUndefined();
+    expect(result.success.metadata.repository).toBeUndefined();
+    expect(result.success.metadata.base_commit).toBeUndefined();
+    expect(result.success.metadata.difficulty).toBe("hard");
+    expect(result.success.metadata.category).toBe("refactoring");
+    expect(result.success.environment.docker_image).toContain("swe_atlas_RF");
   });
   it("rejects a task.toml missing docker_image", () => {
     const bad = tomlParse(QA_TOML.replace(/docker_image = ".*"/, ""));
     const result = parseSchema(SweAtlasTaskTomlSchema, bad);
-    assertLeft(result);
+    assertFailure(result);
   });
 });

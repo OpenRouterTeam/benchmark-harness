@@ -1,8 +1,8 @@
 import type { Effect } from "effect/Effect";
 import { gen, map, succeed } from "effect/Effect";
+import * as Result from "effect/Result";
 
 import type { ModelError, ModelUsage } from "../../../harness/core";
-import { Either } from "../../../internal/either";
 import type { ValueOf } from "../../../internal/guards";
 import { z } from "../../../internal/zod";
 import type { JudgeConfig, JudgeResult } from "../../../judge/judge";
@@ -136,10 +136,10 @@ export function gradeWideSearch({
 }: GradeWideSearchOptions): Effect<WideSearchGradingResult, ModelError> {
   return gen(function* gradeWideSearchEffect() {
     const expected = parseWideSearchExpected(expectedText);
-    if (Either.isLeft(expected)) {
-      return zeroResult(`failed to parse expected answer: ${expected.left}`);
+    if (Result.isFailure(expected)) {
+      return zeroResult(`failed to parse expected answer: ${expected.failure}`);
     }
-    const expectedError = validateExpected(expected.right);
+    const expectedError = validateExpected(expected.success);
     if (expectedError !== null) {
       return zeroResult(`failed to parse expected answer: ${expectedError}`);
     }
@@ -151,13 +151,15 @@ export function gradeWideSearch({
     const usages: ModelUsage[] = [];
     let responseColumns = [...table.columns];
     let responseRows = table.rows.map((row) => ({ ...row }));
-    const referenceRows = expected.right.groundTruth.map((row) => ({ ...row }));
-    if (!sameSet(responseColumns, expected.right.required)) {
+    const referenceRows = expected.success.groundTruth.map((row) => ({
+      ...row,
+    }));
+    if (!sameSet(responseColumns, expected.success.required)) {
       const judged = yield* align({
         responses,
         config: judgeConfig,
         observed: responseColumns,
-        reference: expected.right.required,
+        reference: expected.success.required,
       });
       judgeRuns.push(
         judged.parseError === undefined
@@ -173,23 +175,23 @@ export function gradeWideSearch({
       );
       responseRows = remapRows(responseRows, mapping);
     }
-    if (!sameSet(responseColumns, expected.right.required)) {
+    if (!sameSet(responseColumns, expected.success.required)) {
       return {
         grade: {
           metrics: ZERO_WIDESEARCH_METRICS,
-          explanation: `required columns ${JSON.stringify(expected.right.required)} != response columns ${JSON.stringify(responseColumns)}`,
+          explanation: `required columns ${JSON.stringify(expected.success.required)} != response columns ${JSON.stringify(responseColumns)}`,
           judgeRuns,
         },
         usage: mergeModelUsages(usages),
       };
     }
-    responseRows = dropDuplicates(responseRows, expected.right.unique);
+    responseRows = dropDuplicates(responseRows, expected.success.unique);
     const dedupedReference = dropDuplicates(
       referenceRows,
-      expected.right.unique
+      expected.success.unique
     );
-    for (const column of expected.right.unique) {
-      const metricNames = expected.right.pipeline[column]?.metric ?? [];
+    for (const column of expected.success.unique) {
+      const metricNames = expected.success.pipeline[column]?.metric ?? [];
       if (
         !metricNames.includes("llm_judge") &&
         !metricNames.includes("exact_match")
@@ -221,28 +223,30 @@ export function gradeWideSearch({
         [column]: mapping[row[column]!] ?? row[column]!,
       }));
     }
-    responseRows = dropDuplicates(responseRows, expected.right.unique);
-    responseRows = preprocessRows(responseRows, expected.right, referenceNow);
+    responseRows = dropDuplicates(responseRows, expected.success.unique);
+    responseRows = preprocessRows(responseRows, expected.success, referenceNow);
     const processedReference = preprocessRows(
       dedupedReference,
-      expected.right,
+      expected.success,
       referenceNow
     );
     const initialSuccess = Number(
-      JSON.stringify(sortedRows(responseRows, expected.right.required)) ===
-        JSON.stringify(sortedRows(processedReference, expected.right.required))
+      JSON.stringify(sortedRows(responseRows, expected.success.required)) ===
+        JSON.stringify(
+          sortedRows(processedReference, expected.success.required)
+        )
     );
     const joined = innerJoin(
       processedReference,
       responseRows,
-      expected.right.unique
+      expected.success.unique
     );
-    const itemScores = joined.map(() => expected.right.unique.map(() => 1));
-    for (const column of expected.right.required) {
-      if (expected.right.unique.includes(column)) {
+    const itemScores = joined.map(() => expected.success.unique.map(() => 1));
+    for (const column of expected.success.required) {
+      if (expected.success.unique.includes(column)) {
         continue;
       }
-      const item = expected.right.pipeline[column]!;
+      const item = expected.success.pipeline[column]!;
       for (const metric of item.metric) {
         const observed = joined.map((pair) => pair[1][column]!);
         const targets = joined.map((pair) => pair[0][column]!);
@@ -283,7 +287,7 @@ export function gradeWideSearch({
       itemScores,
       predictedRows: responseRows.length,
       groundTruthRows: dedupedReference.length,
-      requiredColumns: expected.right.required.length,
+      requiredColumns: expected.success.required.length,
       initialSuccess,
     });
     return {

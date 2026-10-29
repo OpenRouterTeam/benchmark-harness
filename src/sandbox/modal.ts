@@ -2,7 +2,12 @@ import { readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 import type { Effect } from "effect/Effect";
-import { catchAll, gen, tryPromise, void as effectVoid } from "effect/Effect";
+import {
+  catch as catch_,
+  gen,
+  tryPromise,
+  void as effectVoid,
+} from "effect/Effect";
 import type { Layer } from "effect/Layer";
 import { succeed } from "effect/Layer";
 import type { App, SandboxCreateParams } from "modal";
@@ -166,7 +171,7 @@ export function makeModalSandboxLayer(
           yield* tryPromise({
             try: () => sandbox.terminate(),
             catch: () => Promise.resolve(),
-          }).pipe(catchAll(() => effectVoid));
+          }).pipe(catch_(() => effectVoid));
         }
       }
     });

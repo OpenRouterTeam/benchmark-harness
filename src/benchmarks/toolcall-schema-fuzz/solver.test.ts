@@ -1,10 +1,10 @@
 import { describe, expect, it } from "bun:test";
 import assert from "node:assert";
 
-import { HttpClient, HttpClientResponse } from "@effect/platform";
 import { squash } from "effect/Cause";
 import { never, provide, runPromiseExit, succeed } from "effect/Effect";
 import { isFailure, isSuccess } from "effect/Exit";
+import { HttpClient, HttpClientResponse } from "effect/http";
 import { mergeAll, succeed as layerSucceed } from "effect/Layer";
 
 import { initialTaskState, ModelError } from "../../harness/core";

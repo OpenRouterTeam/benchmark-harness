@@ -2,9 +2,9 @@
 import { join } from "node:path";
 
 import { Presets, SingleBar } from "cli-progress";
-import { option, string } from "effect/Config";
 import { gen, promise, runSync, sync } from "effect/Effect";
 import { getOrNull } from "effect/Option";
+import * as Result from "effect/Result";
 
 import { isSafeOriSessionId } from "../benchmarks/agent-cli/runner";
 import type { BenchmarkRunConfig } from "../benchmarks/benchmark-config";
@@ -29,7 +29,7 @@ import {
 } from "../harness/constants";
 import { makeProgressReporter } from "../harness/progress";
 import { runHarnessPromise } from "../internal/effect-logger";
-import { Either } from "../internal/either";
+import { optionalEnv } from "../internal/env-config";
 import { definedValues, isMember } from "../internal/guards";
 import { parseSchema } from "../internal/zod";
 import { makeLocalResultStore } from "../results/result-store";
@@ -114,10 +114,10 @@ function resolveTotalEvaluations(
 ): Promise<number | undefined> {
   return datasetSizeById({ benchmarkId, benchmarkConfig }).then(
     (sizeResult) => {
-      if (Either.isLeft(sizeResult)) {
+      if (Result.isFailure(sizeResult)) {
         return undefined;
       }
-      const size = sizeResult.right;
+      const size = sizeResult.success;
       const start = Math.min(range?.start ?? 0, size);
       const end = Math.min(range?.end ?? size, size);
       return Math.max(0, end - start) * epochs;
@@ -126,7 +126,7 @@ function resolveTotalEvaluations(
 }
 
 function resolveSessionId(): string {
-  const envOpt = runSync(string("BENCH_CHILD_WORKFLOW_ID").pipe(option));
+  const envOpt = runSync(optionalEnv("BENCH_CHILD_WORKFLOW_ID"));
   const raw = getOrNull(envOpt);
   const fromEnv = raw === null || raw.length === 0 ? null : raw;
   if (fromEnv !== null && !isSafeOriSessionId(fromEnv)) {
@@ -138,10 +138,8 @@ function resolveSessionId(): string {
 }
 
 function resolveApiKey(): string {
-  const primaryOpt = runSync(string("OPENROUTER_API_KEY").pipe(option));
-  const fallbackOpt = runSync(
-    string("BENCHMARKING_OPENROUTER_API_KEY").pipe(option)
-  );
+  const primaryOpt = runSync(optionalEnv("OPENROUTER_API_KEY"));
+  const fallbackOpt = runSync(optionalEnv("BENCHMARKING_OPENROUTER_API_KEY"));
   const keyValue = getOrNull(primaryOpt) ?? getOrNull(fallbackOpt);
   if (keyValue === null) {
     throw new Error(
@@ -160,9 +158,7 @@ function main(): Promise<void> {
     );
   }
   const apiKey = resolveApiKey();
-  const baseUrl = getOrNull(
-    runSync(string("OPENROUTER_BASE_URL").pipe(option))
-  );
+  const baseUrl = getOrNull(runSync(optionalEnv("OPENROUTER_BASE_URL")));
   const epochs = args.epochs ?? benchmark.defaultEpochs;
   const range = resolveRange(args);
   const sessionId = resolveSessionId();
@@ -250,17 +246,17 @@ function main(): Promise<void> {
         )
       );
       bar.stop();
-      if (Either.isLeft(result)) {
-        process.stderr.write(`Benchmark failed: ${result.left}\n`);
+      if (Result.isFailure(result)) {
+        process.stderr.write(`Benchmark failed: ${result.failure}\n`);
         process.exitCode = 1;
         return;
       }
-      const { metrics, usage } = result.right.result;
+      const { metrics, usage } = result.success.result;
       const bench = getBenchmark(args.benchmark);
-      const runLevelScores = bench?.runLevelScores?.(result.right.result);
-      if (result.right.resultsPath !== null) {
+      const runLevelScores = bench?.runLevelScores?.(result.success.result);
+      if (result.success.resultsPath !== null) {
         process.stderr.write(
-          `Results written to ${result.right.resultsPath}\n`
+          `Results written to ${result.success.resultsPath}\n`
         );
       }
       process.stdout.write(
@@ -275,7 +271,7 @@ function main(): Promise<void> {
             correctAnswers: metrics.correctAnswers,
             usage,
             runLevelScores,
-            sampleScores: result.right.result.sampleScores.map((s) =>
+            sampleScores: result.success.result.sampleScores.map((s) =>
               definedValues({
                 sampleId: s.sampleId,
                 epoch: s.epoch,
@@ -408,22 +404,22 @@ function buildSchemaValidatedConfig(opts: {
     merged.agentReasoningEffort = reasoningEffort;
   }
   const parsed = parseSchema(BenchmarkRunConfigSchema, merged);
-  if (Either.isLeft(parsed)) {
-    throw new Error(`Invalid ${benchmarkId} config: ${parsed.left.message}`);
+  if (Result.isFailure(parsed)) {
+    throw new Error(`Invalid ${benchmarkId} config: ${parsed.failure.message}`);
   }
-  return parsed.right;
+  return parsed.success;
 }
 
 function parseSolverConfig(raw: string): unknown {
   const trimmed = raw.trim();
   if (trimmed.startsWith("{")) {
-    const result = Either.try(() => JSON.parse(trimmed));
-    if (Either.isLeft(result)) {
+    const result = Result.try(() => JSON.parse(trimmed));
+    if (Result.isFailure(result)) {
       throw new Error(
-        `--solver-config is not valid JSON: ${String(result.left)}`
+        `--solver-config is not valid JSON: ${String(result.failure)}`
       );
     }
-    return result.right;
+    return result.success;
   }
   return raw;
 }
@@ -480,12 +476,12 @@ export function buildBenchmarkConfig(opts: {
     }
     case "draco": {
       const panel = parseSchema(DracoPanelConfigSchema, panelConfig);
-      if (Either.isLeft(panel)) {
-        throw new Error(`Invalid DRACO panel config: ${panel.left.message}`);
+      if (Result.isFailure(panel)) {
+        throw new Error(`Invalid DRACO panel config: ${panel.failure.message}`);
       }
       return {
         benchmarkId: "draco",
-        panelConfig: panel.right,
+        panelConfig: panel.success,
         ...definedValues({
           artifactDir,
         }),

@@ -1,10 +1,10 @@
 import { succeed } from "effect/Effect";
+import * as Result from "effect/Result";
 
 import type { Score, Target, TaskState } from "../../harness/core";
 import { ScoreValue } from "../../harness/core";
 import type { RunResult } from "../../harness/run";
 import type { ScorerService } from "../../harness/scorer";
-import { Either } from "../../internal/either";
 import { definedValues, isRecord } from "../../internal/guards";
 import { parseSchema } from "../../internal/zod";
 import type { BenchmarkPrimaryScore } from "../types";
@@ -29,7 +29,7 @@ export function readWandrScoreMeta(
   const rewards = parseSchema(WandrRewardsSchema, metadata["rewards"]);
   const verifierOutput = metadata["verifierOutput"];
   return definedValues({
-    rewards: Either.isRight(rewards) ? rewards.right : undefined,
+    rewards: Result.isSuccess(rewards) ? rewards.success : undefined,
     verifierOutput:
       typeof verifierOutput === "string" ? verifierOutput : undefined,
   });
@@ -66,14 +66,19 @@ export function wandrRunLevelScores(result: RunResult): readonly {
   >;
 }[] {
   const rewards = result.sampleScores.flatMap((sample) => {
-    const parsed = Either.try((): unknown =>
+    const parsed = Result.try((): unknown =>
       JSON.parse(sample.score.explanation)
     );
-    if (Either.isLeft(parsed) || !isRecord(parsed.right)) {
+    if (Result.isFailure(parsed) || !isRecord(parsed.success)) {
       return [ZERO_WANDR_REWARDS];
     }
-    const validated = parseSchema(WandrRewardsSchema, parsed.right["rewards"]);
-    return Either.isRight(validated) ? [validated.right] : [ZERO_WANDR_REWARDS];
+    const validated = parseSchema(
+      WandrRewardsSchema,
+      parsed.success["rewards"]
+    );
+    return Result.isSuccess(validated)
+      ? [validated.success]
+      : [ZERO_WANDR_REWARDS];
   });
   if (rewards.length === 0) {
     return [];

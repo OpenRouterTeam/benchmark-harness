@@ -5,7 +5,7 @@ import { readFile } from "node:fs/promises";
 import type { StreamEvents } from "@openrouter/sdk/models";
 import { OpenRouterError } from "@openrouter/sdk/models/errors/openroutererror";
 import { streamEventsFromJSON } from "@openrouter/sdk/models/streamevents";
-import { failureOption } from "effect/Cause";
+import { findErrorOption } from "effect/Cause";
 import {
   flatMap,
   gen,
@@ -17,15 +17,15 @@ import { getOrThrow } from "effect/Option";
 
 import { assertFailure } from "../../test/helpers/exit-asserts";
 import { isSystemicModelError } from "../harness/core";
-import { assertRight } from "../internal/testing";
+import { assertSuccess as assertResultSuccess } from "../internal/testing";
 import { parseSchema, z } from "../internal/zod";
 import {
   getCollectedGenerationIdEntries,
   getCollectedGenerationIds,
   resetGenerationIds,
 } from "../runtime/generation-ids";
-import { setCurrentSampleId } from "../runtime/request-session-id";
-import { setCurrentEpoch, withRunAttempt } from "../runtime/response-cache";
+import { withCurrentSampleId } from "../runtime/request-session-id";
+import { withCurrentEpoch, withRunAttempt } from "../runtime/response-cache";
 import type { ModelErrorIdentifiers } from "./request-identifiers";
 import {
   consumeStream,
@@ -56,8 +56,8 @@ async function readTerminalFixture(): Promise<
     "utf8"
   );
   const result = parseSchema(TerminalFixtureSchema, JSON.parse(raw));
-  assertRight(result);
-  return result.right;
+  assertResultSuccess(result);
+  return result.success;
 }
 
 async function readStreamFixture(): Promise<string> {
@@ -949,7 +949,7 @@ describe("makeResponsesLayer", () => {
         )
       );
       assertFailure(exit);
-      const error = getOrThrow(failureOption(exit.cause));
+      const error = getOrThrow(findErrorOption(exit.cause));
       expect(error.cfRay).toBe("ray-123");
       expect(error.xRequestId).toBe("req-456");
       expect(error.message).toContain("cf_ray=ray-123");
@@ -983,7 +983,7 @@ describe("makeResponsesLayer", () => {
         )
       );
       assertFailure(exit);
-      const error = getOrThrow(failureOption(exit.cause));
+      const error = getOrThrow(findErrorOption(exit.cause));
       expect(error.status).toBe(500);
       expect(error.retryable).toBe(true);
     } finally {
@@ -1008,13 +1008,13 @@ describe("makeResponsesLayer", () => {
     try {
       await runPromise(
         gen(function* run() {
-          yield* setCurrentEpoch(2);
           const responses = yield* Responses;
           yield* responses.send(
             { model: "m", input: [] },
             { timeoutMs: 1000, extraBody: { top_k: 5 } }
           );
         }).pipe(
+          withCurrentEpoch(2),
           provide(
             makeResponsesLayer({
               apiKey: "sk-test",
@@ -1052,11 +1052,11 @@ describe("makeResponsesLayer", () => {
     try {
       await runPromise(
         gen(function* run() {
-          yield* setCurrentEpoch(2);
-          yield* setCurrentSampleId("q/17");
           const responses = yield* Responses;
           yield* responses.send({ model: "m", input: [] }, { timeoutMs: 1000 });
         }).pipe(
+          withCurrentSampleId("q/17"),
+          withCurrentEpoch(2),
           provide(
             makeResponsesLayer({
               apiKey: "sk-test",
@@ -1091,7 +1091,6 @@ describe("makeResponsesLayer", () => {
         withRunAttempt(
           2,
           gen(function* run() {
-            yield* setCurrentEpoch(2);
             const responses = yield* Responses;
             yield* responses.send(
               { model: "m", input: [] },
@@ -1099,6 +1098,7 @@ describe("makeResponsesLayer", () => {
             );
           })
         ).pipe(
+          withCurrentEpoch(2),
           provide(
             makeResponsesLayer({
               apiKey: "sk-test",

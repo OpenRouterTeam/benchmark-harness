@@ -18,7 +18,7 @@ import type { Sample, ScorerTrajectory } from "../../../harness/core";
 import { ScoreValue, initialTaskState } from "../../../harness/core";
 import type { SampleScore } from "../../../harness/metric";
 import type { RunResult } from "../../../harness/run";
-import { assertRight } from "../../../internal/testing";
+import { assertSuccess } from "../../../internal/testing";
 import { parseSchema } from "../../../internal/zod";
 import type {
   ResponsesResult,
@@ -131,8 +131,8 @@ describe("browseCompScorer", () => {
 describe("makeBrowseCompSolver", () => {
   function makeLane() {
     const result = parseSchema(SearchLaneConfigSchema, { engine: "exa" });
-    assertRight(result);
-    return result.right;
+    assertSuccess(result);
+    return result.success;
   }
   function fixtureResult(
     text: string,

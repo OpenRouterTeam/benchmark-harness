@@ -1,4 +1,5 @@
-import { Either } from "../internal/either";
+import * as Result from "effect/Result";
+
 import { parseSchema, z } from "../internal/zod";
 
 export const MMMU_SYSTEM_MESSAGE = "You are a helpful assistant.";
@@ -10,7 +11,7 @@ const OptionsSchema = z.array(z.string());
 export function parseOptions(optionsRaw: unknown): readonly string[] {
   if (Array.isArray(optionsRaw)) {
     const parsed = parseSchema(OptionsSchema, optionsRaw);
-    return Either.isLeft(parsed) ? [] : parsed.right;
+    return Result.isFailure(parsed) ? [] : parsed.success;
   }
   if (typeof optionsRaw !== "string") {
     return [];
@@ -19,21 +20,21 @@ export function parseOptions(optionsRaw: unknown): readonly string[] {
   if (!trimmed.startsWith("[") || !trimmed.endsWith("]")) {
     return [];
   }
-  const jsonResult = Either.try(() =>
+  const jsonResult = Result.try(() =>
     parseSchema(OptionsSchema, JSON.parse(trimmed))
   );
-  if (Either.isRight(jsonResult) && Either.isRight(jsonResult.right)) {
-    return jsonResult.right.right;
+  if (Result.isSuccess(jsonResult) && Result.isSuccess(jsonResult.success)) {
+    return jsonResult.success.success;
   }
   const jsonified = trimmed.replaceAll("'", '"');
-  const jsonifiedResult = Either.try(() =>
+  const jsonifiedResult = Result.try(() =>
     parseSchema(OptionsSchema, JSON.parse(jsonified))
   );
   if (
-    Either.isRight(jsonifiedResult) &&
-    Either.isRight(jsonifiedResult.right)
+    Result.isSuccess(jsonifiedResult) &&
+    Result.isSuccess(jsonifiedResult.success)
   ) {
-    return jsonifiedResult.right.right;
+    return jsonifiedResult.success.success;
   }
   return [];
 }

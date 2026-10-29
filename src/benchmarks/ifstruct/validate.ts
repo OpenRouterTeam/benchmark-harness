@@ -1,4 +1,5 @@
-import { Either } from "../../internal/either";
+import * as Result from "effect/Result";
+
 import { definedValues } from "../../internal/guards";
 import {
   checkForCommentary,
@@ -51,12 +52,12 @@ export function validateResponse(
     errors.push("Response must use a code block but none was found");
   }
   const extracted = isYaml ? extractYaml(response) : extractJson(response);
-  const extractValid = Either.isRight(extracted);
-  if (Either.isLeft(extracted)) {
+  const extractValid = Result.isSuccess(extracted);
+  if (Result.isFailure(extracted)) {
     return {
       passed: false,
       score: 0,
-      errors: [...errors, extracted.left],
+      errors: [...errors, extracted.failure],
       details: {
         outputFormat: requirements.outputFormat,
         usesCodeBlock,
@@ -77,7 +78,7 @@ export function validateResponse(
     errors.push(commentary.description);
   }
   const structure = checkTopLevelStructure(
-    extracted.right,
+    extracted.success,
     requirements.topLevelKey,
     requirements.requireWrapperKey
   );

@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 
 import { ScoreValue } from "../../harness/core";
 import type { RunResult } from "../../harness/run";
-import { assertRight } from "../../internal/testing";
+import { assertSuccess } from "../../internal/testing";
 import { parseSchema } from "../../internal/zod";
 import type { WandrRewards } from "./schema";
 import { WANDR_REWARD_NAMES, WandrRewardsSchema } from "./schema";
@@ -13,8 +13,8 @@ function rewards(value: number): WandrRewards {
     WandrRewardsSchema,
     Object.fromEntries(WANDR_REWARD_NAMES.map((name) => [name, value]))
   );
-  assertRight(parsed);
-  return parsed.right;
+  assertSuccess(parsed);
+  return parsed.success;
 }
 
 function resultWith(values: readonly number[]): RunResult {

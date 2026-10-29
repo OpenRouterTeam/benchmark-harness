@@ -1,4 +1,5 @@
-import { Either } from "../../internal/either";
+import * as Result from "effect/Result";
+
 import { firstZodIssueMessage, parseSchema, z } from "../../internal/zod";
 import manifestJson from "./vgi-bench-media-manifest.json";
 
@@ -21,12 +22,12 @@ export interface VgiBenchMediaManifest {
 
 export function buildMediaManifest(raw: unknown): VgiBenchMediaManifest {
   const parsed = parseSchema(ManifestSchema, raw);
-  if (Either.isLeft(parsed)) {
+  if (Result.isFailure(parsed)) {
     throw new TypeError(
-      `vgi-bench media manifest is invalid: ${firstZodIssueMessage(parsed.left)}`
+      `vgi-bench media manifest is invalid: ${firstZodIssueMessage(parsed.failure)}`
     );
   }
-  const { revision, manifestHash, videos } = parsed.right;
+  const { revision, manifestHash, videos } = parsed.success;
   const urlByVideoId = new Map<string, string>();
   for (const video of videos) {
     if (urlByVideoId.has(video.videoId)) {

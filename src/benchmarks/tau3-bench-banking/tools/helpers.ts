@@ -1,4 +1,5 @@
-import { Either } from "../../../internal/either";
+import * as Result from "effect/Result";
+
 import { isRecord } from "../../../internal/guards";
 import { getFieldCoalesced } from "./field-access";
 
@@ -28,6 +29,8 @@ export function getAccountBalance(account: Record<string, unknown>): number {
 export function parseToolArguments(
   argumentsJson: string
 ): Record<string, unknown> {
-  const parsed = Either.try((): unknown => JSON.parse(argumentsJson));
-  return Either.isRight(parsed) && isRecord(parsed.right) ? parsed.right : {};
+  const parsed = Result.try((): unknown => JSON.parse(argumentsJson));
+  return Result.isSuccess(parsed) && isRecord(parsed.success)
+    ? parsed.success
+    : {};
 }

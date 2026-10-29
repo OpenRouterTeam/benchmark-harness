@@ -30,7 +30,7 @@ import {
   makeProgressReporter,
   ProgressReporter as ProgressReporterTag,
 } from "../../../harness/progress";
-import { assertRight } from "../../../internal/testing";
+import { assertSuccess } from "../../../internal/testing";
 import { parseSchema, z } from "../../../internal/zod";
 import type {
   ResponsesResult,
@@ -68,8 +68,8 @@ function makeLane(overrides: Record<string, unknown> = {}): SearchLaneConfig {
     maxAgentTurns: 3,
     ...overrides,
   });
-  assertRight(result);
-  return result.right;
+  assertSuccess(result);
+  return result.success;
 }
 
 const LANE = makeLane();
@@ -110,8 +110,8 @@ const SolverMetadataSchema = z.object({
 
 function readMetadata(metadata: unknown): z.infer<typeof SolverMetadataSchema> {
   const parsed = parseSchema(SolverMetadataSchema, metadata);
-  assertRight(parsed);
-  return parsed.right;
+  assertSuccess(parsed);
+  return parsed.success;
 }
 describe("searchSolver", () => {
   it("completes the task with the cleaned answer and captured usage", async () => {

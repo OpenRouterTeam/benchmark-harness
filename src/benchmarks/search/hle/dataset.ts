@@ -1,5 +1,3 @@
-import { fromIterable } from "effect/Chunk";
-import { map as configMap, option, string } from "effect/Config";
 import type { Effect } from "effect/Effect";
 import {
   cached,
@@ -16,7 +14,8 @@ import type { Layer } from "effect/Layer";
 import { effect } from "effect/Layer";
 import type { Option } from "effect/Option";
 import { getOrNull, none, some } from "effect/Option";
-import { paginateChunkEffect } from "effect/Stream";
+import * as Result from "effect/Result";
+import { paginate } from "effect/Stream";
 
 import type { HfRowsResponse } from "../../../datasets/huggingface";
 import {
@@ -27,7 +26,7 @@ import type { Sample } from "../../../harness/core";
 import { DatasetError } from "../../../harness/core";
 import type { Dataset } from "../../../harness/dataset";
 import { Dataset as DatasetTag } from "../../../harness/dataset";
-import { Either } from "../../../internal/either";
+import { optionalEnv } from "../../../internal/env-config";
 import { definedValues } from "../../../internal/guards";
 import { parseSchema, z } from "../../../internal/zod";
 import type { RetryConfig } from "../../../runtime/retry";
@@ -59,19 +58,19 @@ interface PageState {
 
 export function hleRecordToSample(
   record: Readonly<Record<string, unknown>>
-): Either.Either<Sample, string> {
+): Result.Result<Sample, string> {
   const parsed = parseSchema(HleRecordSchema, record);
-  if (Either.isLeft(parsed)) {
-    return Either.left(`invalid HLE record: ${parsed.left.message}`);
+  if (Result.isFailure(parsed)) {
+    return Result.fail(`invalid HLE record: ${parsed.failure.message}`);
   }
-  return Either.right({
-    id: parsed.right.id,
-    input: parsed.right.question,
-    target: { text: parsed.right.answer },
+  return Result.succeed({
+    id: parsed.success.id,
+    input: parsed.success.question,
+    target: { text: parsed.success.answer },
     metadata: {
-      answer_type: parsed.right.answer_type,
-      raw_subject: parsed.right.raw_subject,
-      category: parsed.right.category,
+      answer_type: parsed.success.answer_type,
+      raw_subject: parsed.success.raw_subject,
+      category: parsed.success.category,
     },
   });
 }
@@ -86,9 +85,8 @@ export function makeHleDatasetLayer(
       const token = yield* cached(
         hfToken !== undefined
           ? succeed(hfToken)
-          : string("HF_TOKEN").pipe(
-              option,
-              configMap((value) => getOrNull(value) ?? ""),
+          : optionalEnv("HF_TOKEN").pipe(
+              map((value) => getOrNull(value) ?? ""),
               mapError(
                 () =>
                   new DatasetError({
@@ -111,37 +109,35 @@ export function makeHleDatasetLayer(
         size: fetchPage(0, 1).pipe(map((page) => page.num_rows_total)),
         stream: (opts) => {
           const start = opts?.start ?? 0;
-          return paginateChunkEffect(
-            { offset: start, limit: 100 },
-            (state: PageState) =>
-              fetchPage(state.offset, state.limit).pipe(
-                flatMap((page) => {
-                  const end = Math.min(
-                    opts?.end ?? page.num_rows_total,
-                    page.num_rows_total
+          return paginate({ offset: start, limit: 100 }, (state: PageState) =>
+            fetchPage(state.offset, state.limit).pipe(
+              flatMap((page) => {
+                const end = Math.min(
+                  opts?.end ?? page.num_rows_total,
+                  page.num_rows_total
+                );
+                const mapped = page.rows
+                  .slice(0, Math.max(0, end - state.offset))
+                  .map(({ row }) => hleRecordToSample(row));
+                const firstError = mapped.find(Result.isFailure);
+                if (firstError !== undefined && Result.isFailure(firstError)) {
+                  return fail(
+                    new DatasetError({ message: firstError.failure })
                   );
-                  const mapped = page.rows
-                    .slice(0, Math.max(0, end - state.offset))
-                    .map(({ row }) => hleRecordToSample(row));
-                  const firstError = mapped.find(Either.isLeft);
-                  if (firstError !== undefined && Either.isLeft(firstError)) {
-                    return fail(new DatasetError({ message: firstError.left }));
-                  }
-                  const nextOffset = state.offset + page.rows.length;
-                  const next: Option<PageState> =
-                    page.rows.length > 0 && nextOffset < end
-                      ? some({ offset: nextOffset, limit: state.limit })
-                      : none();
-                  return succeed([
-                    fromIterable(
-                      mapped
-                        .filter(Either.isRight)
-                        .map((sample) => sample.right)
-                    ),
-                    next,
-                  ] as const);
-                })
-              )
+                }
+                const nextOffset = state.offset + page.rows.length;
+                const next: Option<PageState> =
+                  page.rows.length > 0 && nextOffset < end
+                    ? some({ offset: nextOffset, limit: state.limit })
+                    : none();
+                return succeed([
+                  mapped
+                    .filter(Result.isSuccess)
+                    .map((sample) => sample.success),
+                  next,
+                ] as const);
+              })
+            )
           );
         },
       });
@@ -160,18 +156,18 @@ function fetchHleRevision(
   ).pipe(
     flatMap((body) => {
       const parsed = parseSchema(z.object({ sha: z.string() }), body);
-      if (Either.isLeft(parsed)) {
+      if (Result.isFailure(parsed)) {
         return fail(
           new DatasetError({
-            message: `HLE metadata failed validation: ${parsed.left.message}`,
+            message: `HLE metadata failed validation: ${parsed.failure.message}`,
           })
         );
       }
-      return parsed.right.sha === HLE_REVISION
+      return parsed.success.sha === HLE_REVISION
         ? succeed(undefined)
         : fail(
             new DatasetError({
-              message: `HLE revision mismatch: expected ${HLE_REVISION}, got ${parsed.right.sha}`,
+              message: `HLE revision mismatch: expected ${HLE_REVISION}, got ${parsed.success.sha}`,
             })
           );
     })
@@ -201,18 +197,18 @@ function fetchHlePage({
   return fetchJson(url.toString(), retryConfig, hfToken).pipe(
     flatMap((body) => {
       const parsed = parseSchema(HfRowsResponseSchema, body);
-      if (Either.isLeft(parsed)) {
+      if (Result.isFailure(parsed)) {
         return fail(
           new DatasetError({
-            message: `HLE rows failed validation: ${parsed.left.message}`,
+            message: `HLE rows failed validation: ${parsed.failure.message}`,
           })
         );
       }
-      return parsed.right.num_rows_total === HLE_TEXT_ONLY_ROWS
-        ? succeed(parsed.right)
+      return parsed.success.num_rows_total === HLE_TEXT_ONLY_ROWS
+        ? succeed(parsed.success)
         : fail(
             new DatasetError({
-              message: `HLE text-only row count drifted: expected ${HLE_TEXT_ONLY_ROWS}, got ${parsed.right.num_rows_total}`,
+              message: `HLE text-only row count drifted: expected ${HLE_TEXT_ONLY_ROWS}, got ${parsed.success.num_rows_total}`,
             })
           );
     })

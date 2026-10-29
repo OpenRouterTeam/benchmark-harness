@@ -1,8 +1,7 @@
-import type { HttpClient } from "@effect/platform";
 import { gen } from "effect/Effect";
+import type { HttpClient } from "effect/http";
 import type { Layer } from "effect/Layer";
 import {
-  fail as layerFail,
   effect as layerEffect,
   provide as layerProvide,
   mergeAll as layerMergeAll,
@@ -13,6 +12,7 @@ import type { Dataset } from "../../harness/dataset";
 import { Scorer } from "../../harness/scorer";
 import { Solver } from "../../harness/solver";
 import { definedValues } from "../../internal/guards";
+import { layerFail } from "../../internal/layer";
 import { makeModalSandboxLayer } from "../../sandbox/modal";
 import { resolveModalRegions } from "../../sandbox/modal-regions";
 import { SandboxSession } from "../../sandbox/session";

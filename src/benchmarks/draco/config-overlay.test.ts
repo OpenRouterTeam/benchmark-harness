@@ -3,7 +3,7 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { assertRight, assertLeft } from "../../internal/testing";
+import { assertSuccess, assertFailure } from "../../internal/testing";
 import {
   applyConfigOverlay,
   loadResumeConfig,
@@ -42,22 +42,22 @@ describe("applyConfigOverlay", () => {
         "anthropic/claude-opus-5",
       ],
     });
-    assertRight(merged);
-    expect(merged.right.analysisModels).toEqual([
+    assertSuccess(merged);
+    expect(merged.success.analysisModels).toEqual([
       "openai/gpt-4o-mini",
       "google/gemini-2.5-flash",
       "anthropic/claude-opus-5",
     ]);
-    expect(merged.right.synthesisModel).toBe("openai/gpt-4o-mini");
-    expect(merged.right.judgeModel).toBe("google/gemini-3.1-pro-preview");
+    expect(merged.success.synthesisModel).toBe("openai/gpt-4o-mini");
+    expect(merged.success.judgeModel).toBe("google/gemini-3.1-pro-preview");
   });
   it("swaps the fusion analysis/judge model parameter only", () => {
     const merged = applyConfigOverlay(baseConfig(), {
       synthesisModel: "anthropic/claude-opus-5",
     });
-    assertRight(merged);
-    expect(merged.right.synthesisModel).toBe("anthropic/claude-opus-5");
-    expect(merged.right.analysisModels).toEqual([
+    assertSuccess(merged);
+    expect(merged.success.synthesisModel).toBe("anthropic/claude-opus-5");
+    expect(merged.success.analysisModels).toEqual([
       "openai/gpt-4o-mini",
       "google/gemini-2.5-flash",
     ]);
@@ -66,44 +66,44 @@ describe("applyConfigOverlay", () => {
     const merged = applyConfigOverlay(baseConfig(), {
       judgeModel: "openai/gpt-5.5",
     });
-    assertRight(merged);
-    expect(merged.right.judgeModel).toBe("openai/gpt-5.5");
-    expect(merged.right.synthesisModel).toBe("openai/gpt-4o-mini");
+    assertSuccess(merged);
+    expect(merged.success.judgeModel).toBe("openai/gpt-5.5");
+    expect(merged.success.synthesisModel).toBe("openai/gpt-4o-mini");
   });
   it("re-validates and rejects an overlay exceeding the panel size cap", () => {
     const merged = applyConfigOverlay(baseConfig(), {
       panelModels: ["a", "b", "c", "d", "e"],
     });
-    assertLeft(merged);
+    assertFailure(merged);
   });
   it("sets the cache namespace (opt into stage reuse)", () => {
     const merged = applyConfigOverlay(baseConfig(), {
       cacheNamespace: "sweep-1",
     });
-    assertRight(merged);
-    expect(merged.right.cacheNamespace).toBe("sweep-1");
+    assertSuccess(merged);
+    expect(merged.success.cacheNamespace).toBe("sweep-1");
   });
 });
 describe("resolveDracoRunConfig", () => {
   it("errors when benchmarkConfig is not supplied", async () => {
     const resolved = await resolveDracoRunConfig({});
-    assertLeft(resolved);
-    expect(resolved.left).toContain("Invalid DRACO panel config");
+    assertFailure(resolved);
+    expect(resolved.failure).toContain("Invalid DRACO panel config");
   });
   it("applies an override on a fresh benchmarkConfig object", async () => {
     const resolved = await resolveDracoRunConfig({
       benchmarkConfig: baseConfig(),
       override: { judgeModel: "openai/gpt-5.5" },
     });
-    assertRight(resolved);
-    expect(resolved.right.config.type).toBe("fusion");
-    expect(resolved.right.config.judgeModel).toBe("openai/gpt-5.5");
+    assertSuccess(resolved);
+    expect(resolved.success.config.type).toBe("fusion");
+    expect(resolved.success.config.judgeModel).toBe("openai/gpt-5.5");
   });
   it("loads a resume config and applies the override on top", async () => {
     const dir = await mkdtemp(join(tmpdir(), "draco-resume-"));
     try {
       const base = baseConfig();
-      assertRight(await persistRunConfig(dir, base));
+      assertSuccess(await persistRunConfig(dir, base));
       const resolved = await resolveDracoRunConfig({
         resumeDir: dir,
         override: {
@@ -114,14 +114,14 @@ describe("resolveDracoRunConfig", () => {
           ],
         },
       });
-      assertRight(resolved);
-      expect(resolved.right.artifactDir).toBe(dir);
-      expect(resolved.right.config.analysisModels).toEqual([
+      assertSuccess(resolved);
+      expect(resolved.success.artifactDir).toBe(dir);
+      expect(resolved.success.config.analysisModels).toEqual([
         "openai/gpt-4o-mini",
         "google/gemini-2.5-flash",
         "x-ai/grok-4",
       ]);
-      expect(resolved.right.config.judgeModel).toBe(base.judgeModel);
+      expect(resolved.success.config.judgeModel).toBe(base.judgeModel);
     } finally {
       await rm(dir, { recursive: true, force: true });
     }
@@ -130,10 +130,10 @@ describe("resolveDracoRunConfig", () => {
     const dir = await mkdtemp(join(tmpdir(), "draco-resume-"));
     try {
       const base = baseConfig({ judgeModel: "openai/gpt-5.5" });
-      assertRight(await persistRunConfig(dir, base));
+      assertSuccess(await persistRunConfig(dir, base));
       const resolved = await resolveDracoRunConfig({ resumeDir: dir });
-      assertRight(resolved);
-      expect(resolved.right.config.judgeModel).toBe("openai/gpt-5.5");
+      assertSuccess(resolved);
+      expect(resolved.success.config.judgeModel).toBe("openai/gpt-5.5");
     } finally {
       await rm(dir, { recursive: true, force: true });
     }
@@ -146,8 +146,8 @@ describe("resolveDracoRunConfig", () => {
         JSON.stringify({ ...baseConfig(), fusionMode: "production" })
       );
       const resolved = await resolveDracoRunConfig({ resumeDir: dir });
-      assertRight(resolved);
-      expect(resolved.right.config).toEqual(baseConfig());
+      assertSuccess(resolved);
+      expect(resolved.success.config).toEqual(baseConfig());
     } finally {
       await rm(dir, { recursive: true, force: true });
     }
@@ -175,9 +175,9 @@ describe("resolveDracoRunConfig", () => {
 
       const resolved = await resolveDracoRunConfig({ resumeDir: directory });
 
-      assertRight(resolved);
-      expect(resolved.right.config.tools).toEqual(tools);
-      expect(experimentTools(resolved.right.config)).toEqual(tools);
+      assertSuccess(resolved);
+      expect(resolved.success.config.tools).toEqual(tools);
+      expect(experimentTools(resolved.success.config)).toEqual(tools);
     } finally {
       await rm(directory, { recursive: true, force: true });
     }
@@ -186,7 +186,7 @@ describe("resolveDracoRunConfig", () => {
     const resolved = await resolveDracoRunConfig({
       resumeDir: "/does/not/exist-draco",
     });
-    assertLeft(resolved);
+    assertFailure(resolved);
   });
   it("rejects resume configs that use the removed fusion-lib mode", async () => {
     const dir = await mkdtemp(join(tmpdir(), "draco-resume-"));
@@ -196,8 +196,8 @@ describe("resolveDracoRunConfig", () => {
         JSON.stringify({ ...baseConfig(), fusionMode: "fusion-lib" })
       );
       const resolved = await resolveDracoRunConfig({ resumeDir: dir });
-      assertLeft(resolved);
-      expect(resolved.left).toContain(
+      assertFailure(resolved);
+      expect(resolved.failure).toContain(
         'uses removed DRACO fusion mode "fusion-lib"'
       );
     } finally {
@@ -210,16 +210,16 @@ describe("persistRunConfig + loadResumeConfig round-trip", () => {
     const d = await mkdtemp(join(tmpdir(), "draco-rt-"));
     try {
       const base = baseConfig();
-      assertRight(await persistRunConfig(d, base));
+      assertSuccess(await persistRunConfig(d, base));
       const loaded = await loadResumeConfig(d);
-      assertRight(loaded);
-      expect(loaded.right).toEqual(base);
+      assertSuccess(loaded);
+      expect(loaded.success).toEqual(base);
     } finally {
       await rm(d, { recursive: true, force: true });
     }
   });
   it("persistRunConfig is a no-op (ok) when artifactDir is undefined", async () => {
     const r = await persistRunConfig(undefined, baseConfig());
-    assertRight(r);
+    assertSuccess(r);
   });
 });

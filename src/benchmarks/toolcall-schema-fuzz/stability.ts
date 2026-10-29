@@ -1,5 +1,6 @@
+import * as Result from "effect/Result";
+
 import { ScoreValue } from "../../harness/core";
-import { Either } from "../../internal/either";
 import type { ValueOf } from "../../internal/guards";
 import { isRecord } from "../../internal/guards";
 import type { BenchmarkResultRow } from "../../results/parquet-schema";
@@ -82,9 +83,9 @@ function stringField(
 }
 
 function metadataOf(row: StabilityRow): SampleMetadata {
-  const parsed = Either.try((): unknown => JSON.parse(row.metadata ?? "{}"));
+  const parsed = Result.try((): unknown => JSON.parse(row.metadata ?? "{}"));
   const record =
-    Either.isRight(parsed) && isRecord(parsed.right) ? parsed.right : {};
+    Result.isSuccess(parsed) && isRecord(parsed.success) ? parsed.success : {};
   const constructs = record["constructs"];
   return {
     scenario: stringField(record, "scenario"),

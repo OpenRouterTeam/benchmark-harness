@@ -1,8 +1,8 @@
-import { Tag } from "effect/Context";
+import { Service } from "effect/Context";
 import { TaggedError } from "effect/Data";
 import type { Effect } from "effect/Effect";
 import {
-  catchAll,
+  catch as catch_,
   fail,
   flatMap,
   forEach,
@@ -15,9 +15,15 @@ import {
   tryPromise,
 } from "effect/Effect";
 import { isNone } from "effect/Option";
-import { intersect, recurs, spaced, whileInput } from "effect/Schedule";
+import * as Result from "effect/Result";
+import {
+  max,
+  recurs,
+  setInputType,
+  spaced,
+  while as while_,
+} from "effect/Schedule";
 
-import { Either } from "../internal/either";
 import { unknownErrorToString } from "../internal/errors";
 import { definedValues, isDefinedAndNotNull } from "../internal/guards";
 import { wLog } from "../internal/log";
@@ -47,9 +53,10 @@ export interface GenerationResolverService {
   ) => Effect<ResolvedSourceGeneration | undefined>;
 }
 
-export class GenerationResolver extends Tag(
-  "@openrouter/bench-harness/generation-resolver"
-)<GenerationResolver, GenerationResolverService>() {}
+export class GenerationResolver extends Service<
+  GenerationResolver,
+  GenerationResolverService
+>()("@openrouter/bench-harness/generation-resolver") {}
 
 const GenerationLookupSchema = z.object({
   data: z.object({
@@ -123,9 +130,12 @@ export function makeOpenRouterGenerationResolver(
   const pollIntervalMs = config.pollIntervalMs ?? DEFAULT_POLL_INTERVAL_MS;
   const maxAttempts = config.maxAttempts ?? DEFAULT_MAX_ATTEMPTS;
   const pollSchedule = (attempts: number) =>
-    spaced(`${pollIntervalMs} millis`).pipe(
-      intersect(recurs(Math.max(attempts - 1, 0))),
-      whileInput((error: GenerationLookupError) => error.retryable)
+    max([
+      spaced(`${pollIntervalMs} millis`),
+      recurs(Math.max(attempts - 1, 0)),
+    ]).pipe(
+      setInputType<GenerationLookupError>(),
+      while_(({ input }) => input.retryable)
     );
   const lookupOnce = (
     generationId: string
@@ -166,14 +176,14 @@ export function makeOpenRouterGenerationResolver(
           );
         }
         const parsed = parseSchema(GenerationLookupSchema, result.json);
-        return Either.isLeft(parsed)
+        return Result.isFailure(parsed)
           ? fail(
               new GenerationLookupError({
-                message: unknownErrorToString(parsed.left),
+                message: unknownErrorToString(parsed.failure),
                 retryable: false,
               })
             )
-          : succeed(parsed.right.data);
+          : succeed(parsed.success.data);
       })
     );
   const lookupGeneration = (
@@ -185,7 +195,7 @@ export function makeOpenRouterGenerationResolver(
   ): Effect<ReplayedUsage | undefined> =>
     lookupGeneration(sourceId).pipe(
       map((data): ReplayedUsage | undefined => usageFromLookup(data, sourceId)),
-      catchAll((error) =>
+      catch_((error) =>
         sync(() => {
           wLog("Failed to fetch source generation usage", {
             generation_id: sourceId,
@@ -224,7 +234,7 @@ export function makeOpenRouterGenerationResolver(
             )
           );
         }),
-        catchAll((error) =>
+        catch_((error) =>
           sync(() => {
             wLog("Failed to resolve cache-hit source generation", {
               generation_id: generationId,

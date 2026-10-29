@@ -1,21 +1,22 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-import { Tag } from "effect/Context";
+import { Service } from "effect/Context";
 import type { Effect } from "effect/Effect";
 import { fail, gen, tryPromise } from "effect/Effect";
 import type { Layer } from "effect/Layer";
 import { succeed } from "effect/Layer";
+import * as Result from "effect/Result";
 
-import type { AsyncEither } from "../../internal/either";
-import { Either, tryPromiseEither } from "../../internal/either";
 import { downloadFromGcs, uploadToGcs } from "../../internal/gcs";
 import type { ValueOf } from "../../internal/guards";
 import { wLog } from "../../internal/log";
+import type { AsyncResult } from "../../internal/result";
+import { tryPromiseResult } from "../../internal/result";
 
 export interface ArtifactStore {
-  readonly get: (key: StageKey) => AsyncEither<string | undefined, string>;
-  readonly put: (key: StageKey, json: string) => AsyncEither<void, string>;
+  readonly get: (key: StageKey) => AsyncResult<string | undefined, string>;
+  readonly put: (key: StageKey, json: string) => AsyncResult<void, string>;
 }
 
 export interface StageKey {
@@ -32,9 +33,12 @@ export const STAGE_DIRS = [
 
 export type StageDir = ValueOf<typeof STAGE_DIRS>;
 
-export class ArtifactStoreService extends Tag(
+export class ArtifactStoreService extends Service<
+  ArtifactStoreService,
+  ArtifactStore
+>()(
   "@openrouter/bench-harness/benchmarks/draco/artifact-store/ArtifactStoreService"
-)<ArtifactStoreService, ArtifactStore>() {}
+) {}
 
 export function makeArtifactStoreLayer(
   store: ArtifactStore
@@ -49,10 +53,10 @@ export function makeFsArtifactStoreLayer(
 }
 
 export class NoopArtifactStore implements ArtifactStore {
-  readonly get = (_key: StageKey): AsyncEither<string | undefined, string> =>
-    Promise.resolve(Either.right(undefined));
-  readonly put = (_key: StageKey, _json: string): AsyncEither<void, string> =>
-    Promise.resolve(Either.right(undefined));
+  readonly get = (_key: StageKey): AsyncResult<string | undefined, string> =>
+    Promise.resolve(Result.succeed(undefined));
+  readonly put = (_key: StageKey, _json: string): AsyncResult<void, string> =>
+    Promise.resolve(Result.succeed(undefined));
 }
 
 export function makeNoopArtifactStoreLayer(): Layer<ArtifactStoreService> {
@@ -68,7 +72,9 @@ export function stageGet(
       try: () => store.get(key),
       catch: (e) => `ArtifactStore get failed: ${String(e)}`,
     });
-    return Either.isLeft(result) ? yield* fail(result.left) : result.right;
+    return Result.isFailure(result)
+      ? yield* fail(result.failure)
+      : result.success;
   });
 }
 
@@ -82,8 +88,8 @@ export function stagePut(
       try: () => store.put(key, json),
       catch: (e) => `ArtifactStore put failed: ${String(e)}`,
     });
-    if (Either.isLeft(result)) {
-      yield* fail(result.left);
+    if (Result.isFailure(result)) {
+      yield* fail(result.failure);
     }
   });
 }
@@ -95,30 +101,30 @@ export class FsArtifactStore implements ArtifactStore {
   }
   readonly get = async (
     key: StageKey
-  ): AsyncEither<string | undefined, string> => {
-    const r = await tryPromiseEither(() => readFile(this.path(key), "utf8"));
-    if (Either.isLeft(r)) {
-      const msg = String(r.left);
+  ): AsyncResult<string | undefined, string> => {
+    const r = await tryPromiseResult(() => readFile(this.path(key), "utf8"));
+    if (Result.isFailure(r)) {
+      const msg = String(r.failure);
       return msg.includes("ENOENT")
-        ? Either.right(undefined)
-        : Either.left(`Failed to read ${key.stage}/${key.key}: ${msg}`);
+        ? Result.succeed(undefined)
+        : Result.fail(`Failed to read ${key.stage}/${key.key}: ${msg}`);
     }
-    return Either.right(r.right);
+    return Result.succeed(r.success);
   };
   readonly put = async (
     key: StageKey,
     json: string
-  ): AsyncEither<void, string> => {
-    const r = await tryPromiseEither(async () => {
+  ): AsyncResult<void, string> => {
+    const r = await tryPromiseResult(async () => {
       const path = this.path(key);
       await mkdir(dirname(path), { recursive: true });
       await writeFile(path, json, "utf8");
     });
-    return Either.isLeft(r)
-      ? Either.left(
-          `Failed to write ${key.stage}/${key.key}: ${String(r.left)}`
+    return Result.isFailure(r)
+      ? Result.fail(
+          `Failed to write ${key.stage}/${key.key}: ${String(r.failure)}`
         )
-      : Either.right(undefined);
+      : Result.succeed(undefined);
   };
   private path(key: StageKey): string {
     return join(this.runDir, key.stage, `${key.key}.json`);
@@ -134,30 +140,30 @@ export class GcsArtifactStore implements ArtifactStore {
   }
   readonly get = async (
     key: StageKey
-  ): AsyncEither<string | undefined, string> => {
+  ): AsyncResult<string | undefined, string> => {
     const objectPath = this.objectPath(key);
     const result = await downloadFromGcs({
       bucketName: this.bucketName,
       objectPath,
     });
-    if (Either.isLeft(result)) {
-      const msg = result.left.message ?? "unknown";
+    if (Result.isFailure(result)) {
+      const msg = result.failure.message ?? "unknown";
       if (msg.includes("No such object") || msg.includes("404")) {
-        return Either.right(undefined);
+        return Result.succeed(undefined);
       }
       wLog("GcsArtifactStore get degraded to miss", {
         bucket: this.bucketName,
         object_path: objectPath,
         error: msg,
       });
-      return Either.right(undefined);
+      return Result.succeed(undefined);
     }
-    return Either.right(result.right.content.toString("utf8"));
+    return Result.succeed(result.success.content.toString("utf8"));
   };
   readonly put = async (
     key: StageKey,
     json: string
-  ): AsyncEither<void, string> => {
+  ): AsyncResult<void, string> => {
     const objectPath = this.objectPath(key);
     const result = await uploadToGcs({
       bucketName: this.bucketName,
@@ -165,12 +171,12 @@ export class GcsArtifactStore implements ArtifactStore {
       content: json,
       contentType: "application/json",
     });
-    if (Either.isLeft(result)) {
-      return Either.left(
-        `Failed to write ${key.stage}/${key.key} to GCS: ${result.left.message ?? "unknown"}`
+    if (Result.isFailure(result)) {
+      return Result.fail(
+        `Failed to write ${key.stage}/${key.key} to GCS: ${result.failure.message ?? "unknown"}`
       );
     }
-    return Either.right(undefined);
+    return Result.succeed(undefined);
   };
   objectPath(key: StageKey): string {
     return `${this.prefix}/${key.stage}/${key.key}.json`;

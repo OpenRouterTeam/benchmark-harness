@@ -10,7 +10,7 @@ import {
   provide,
   runPromise,
   succeed as effectSucceed,
-  zipRight,
+  andThen,
 } from "effect/Effect";
 import {
   effect,
@@ -85,7 +85,7 @@ function fixtureResponsesLayer(
       generationTimeMs: 0,
     };
     return recordGenerationId(`gen-${model}`).pipe(
-      zipRight(effectSucceed(result))
+      andThen(effectSucceed(result))
     );
   };
   return layerSucceed(Responses, Responses.of({ send }));

@@ -1,20 +1,21 @@
-import { HttpClient } from "@effect/platform";
-import { gen, makeSemaphore } from "effect/Effect";
+import { gen } from "effect/Effect";
+import { HttpClient } from "effect/http";
 import type { Layer } from "effect/Layer";
 import {
-  fail as layerFail,
   effect as layerEffect,
   provide as layerProvide,
   mergeAll as layerMergeAll,
   succeed as layerSucceed,
 } from "effect/Layer";
+import * as Result from "effect/Result";
+import { make as makeSemaphore } from "effect/Semaphore";
 
 import type { Dataset } from "../../harness/dataset";
 import { Model } from "../../harness/model";
 import { Scorer } from "../../harness/scorer";
 import { Solver } from "../../harness/solver";
-import { Either } from "../../internal/either";
 import { definedValues } from "../../internal/guards";
+import { layerFail } from "../../internal/layer";
 import { parseSchema } from "../../internal/zod";
 import { makeOpenRouterModelLayer } from "../../providers/openrouter-model";
 import {
@@ -41,14 +42,14 @@ function makeBankingLayer(
     Tau3BenchBankingConfigSchema,
     benchmarkConfig
   );
-  if (Either.isLeft(configParsed)) {
+  if (Result.isFailure(configParsed)) {
     return layerFail(
       new Error(
-        `tau3_bench_banking received invalid benchmarkConfig: ${configParsed.left.message}`
+        `tau3_bench_banking received invalid benchmarkConfig: ${configParsed.failure.message}`
       )
     );
   }
-  const config = configParsed.right;
+  const config = configParsed.success;
   const solverOpts: SolverOpts = definedValues({
     endpointId: config.endpointId,
     userModelConfig: definedValues({

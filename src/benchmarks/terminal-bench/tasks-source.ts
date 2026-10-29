@@ -3,10 +3,9 @@ import { mkdtempSync, readdirSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { option, string } from "effect/Config";
 import { TaggedError } from "effect/Data";
 import type { Effect } from "effect/Effect";
-import { async, fail, runSync, succeed, tryPromise } from "effect/Effect";
+import { callback, fail, runSync, succeed, tryPromise } from "effect/Effect";
 import { getOrNull } from "effect/Option";
 
 import { resolveCacheStore } from "../../datasets/cache-store";
@@ -15,6 +14,7 @@ import {
   restrictPermissionsRecursive,
 } from "../../datasets/local-cache";
 import { runHarnessPromise } from "../../internal/effect-logger";
+import { optionalEnv } from "../../internal/env-config";
 import { wLog } from "../../internal/log";
 
 export const TERMINAL_BENCH_SOURCE_REPO =
@@ -41,7 +41,7 @@ export function ensureTasksCheckedOut(): Promise<string> {
   if (cacheRoot && hasTasks(cacheRoot)) {
     return Promise.resolve(cacheRoot);
   }
-  const override = getOrNull(runSync(string("BENCH_TASKS_DIR").pipe(option)));
+  const override = getOrNull(runSync(optionalEnv("BENCH_TASKS_DIR")));
   if (override) {
     const resolved = resolveTasksDir(override);
     if (resolved !== undefined && isAtPinnedCommit(resolved)) {
@@ -116,7 +116,7 @@ export function resetCheckoutCache(): void {
 }
 
 async function cloneTasks(): Promise<string> {
-  const override = getOrNull(runSync(string("BENCH_TASKS_DIR").pipe(option)));
+  const override = getOrNull(runSync(optionalEnv("BENCH_TASKS_DIR")));
   if (override !== null && override.length > 0 && isEmptyOrMissing(override)) {
     await cloneInto(override);
     const tasksDir = join(override, TERMINAL_BENCH_TASKS_SUBDIR);
@@ -188,7 +188,7 @@ class GitError extends TaggedError("GitError")<{
 
 function runGit(args: string[]): Promise<void> {
   return runHarnessPromise(
-    async<void, GitError>((resolve) => {
+    callback<void, GitError>((resolve) => {
       const proc = execFile("git", args, { maxBuffer: 64 * 1024 * 1024 });
       let stderr = "";
       proc.stderr?.on("data", (d: Buffer) => (stderr += d.toString()));
