@@ -8,9 +8,8 @@ import { fetchHttpClientLayer } from "./http-client";
 const originalFetch = globalThis.fetch;
 
 function stubFetch(body: string): typeof fetch {
-  const stub = (() =>
+  return (() =>
     Promise.resolve(new Response(body, { status: 200 }))) as typeof fetch;
-  return stub;
 }
 
 async function getText(url: string): Promise<string> {
