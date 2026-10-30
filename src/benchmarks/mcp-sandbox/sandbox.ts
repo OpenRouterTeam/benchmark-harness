@@ -55,10 +55,51 @@ export function toToolDefinition(tool: McpTool): ToolDefinition {
     type: "function",
     function: {
       name: tool.name,
-      parameters: tool.inputSchema ?? EMPTY_OBJECT_SCHEMA,
+      parameters: tool.inputSchema
+        ? toDraft2020Schema(tool.inputSchema)
+        : EMPTY_OBJECT_SCHEMA,
       ...definedValues({ description: tool.description }),
     },
   };
+}
+
+export function toDraft2020Schema(
+  schema: Record<string, unknown>
+): Record<string, unknown> {
+  return rewriteDraft04ExclusiveBounds(schema) as Record<string, unknown>;
+}
+
+function rewriteDraft04ExclusiveBounds(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(rewriteDraft04ExclusiveBounds);
+  }
+  if (value === null || typeof value !== "object") {
+    return value;
+  }
+  const record = value as Record<string, unknown>;
+  const out: Record<string, unknown> = {};
+  for (const [key, entry] of Object.entries(record)) {
+    if (key === "exclusiveMinimum" && typeof entry === "boolean") {
+      if (entry && typeof record.minimum === "number") {
+        out.exclusiveMinimum = record.minimum;
+      }
+      continue;
+    }
+    if (key === "exclusiveMaximum" && typeof entry === "boolean") {
+      if (entry && typeof record.maximum === "number") {
+        out.exclusiveMaximum = record.maximum;
+      }
+      continue;
+    }
+    out[key] = rewriteDraft04ExclusiveBounds(entry);
+  }
+  if (typeof out.exclusiveMinimum === "number" && record.exclusiveMinimum === true) {
+    delete out.minimum;
+  }
+  if (typeof out.exclusiveMaximum === "number" && record.exclusiveMaximum === true) {
+    delete out.maximum;
+  }
+  return out;
 }
 
 export function contentBlocksToText(

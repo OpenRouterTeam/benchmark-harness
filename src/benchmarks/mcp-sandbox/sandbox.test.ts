@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { contentBlocksToText, toToolDefinition } from "./sandbox";
+import { contentBlocksToText, toDraft2020Schema, toToolDefinition } from "./sandbox";
 
 describe("toToolDefinition", () => {
   it("builds a function tool with an object schema fallback", () => {
@@ -22,6 +22,42 @@ describe("toToolDefinition", () => {
         inputSchema: schema,
       }).function
     ).toMatchObject({ description: "d", parameters: schema });
+  });
+});
+
+describe("toDraft2020Schema", () => {
+  it("rewrites draft-04 boolean exclusive bounds into the numeric form", () => {
+    expect(
+      toDraft2020Schema({
+        type: "object",
+        properties: {
+          pages: {
+            type: "array",
+            items: { type: "integer", exclusiveMinimum: true, minimum: 0 },
+          },
+          ratio: { type: "number", exclusiveMaximum: true, maximum: 1 },
+          count: { type: "integer", exclusiveMinimum: false, minimum: 1 },
+        },
+      })
+    ).toEqual({
+      type: "object",
+      properties: {
+        pages: { type: "array", items: { type: "integer", exclusiveMinimum: 0 } },
+        ratio: { type: "number", exclusiveMaximum: 1 },
+        count: { type: "integer", minimum: 1 },
+      },
+    });
+  });
+
+  it("applies when building a tool definition and leaves valid schemas alone", () => {
+    const valid = { type: "object", properties: { n: { type: "integer", exclusiveMinimum: 0 } } };
+    expect(toToolDefinition({ name: "t", inputSchema: valid }).function.parameters).toEqual(valid);
+    expect(
+      toToolDefinition({
+        name: "read_pdf",
+        inputSchema: { type: "object", properties: { n: { exclusiveMinimum: true, minimum: 0 } } },
+      }).function.parameters
+    ).toEqual({ type: "object", properties: { n: { exclusiveMinimum: 0 } } });
   });
 });
 
