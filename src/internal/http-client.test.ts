@@ -12,10 +12,13 @@ function stubFetch(body: string): typeof fetch {
     Promise.resolve(new Response(body, { status: 200 }))) as typeof fetch;
 }
 
-async function getText(url: string): Promise<string> {
+async function getText(
+  url: string,
+  headers: Record<string, string> = {}
+): Promise<string> {
   return runPromise(
     HttpClient.HttpClient.pipe(
-      flatMap((client) => client.get(url)),
+      flatMap((client) => client.get(url, { headers })),
       flatMap((response) => response.text),
       provide(fetchHttpClientLayer)
     )
@@ -27,7 +30,7 @@ describe("fetchHttpClientLayer", () => {
     globalThis.fetch = originalFetch;
   });
 
-  it("refuses to follow redirects so credentials never leave the origin", async () => {
+  it("refuses redirects only for credential-bearing requests", async () => {
     let redirect: RequestRedirect | undefined;
     globalThis.fetch = ((
       _input: string | URL | Request,
@@ -37,6 +40,10 @@ describe("fetchHttpClientLayer", () => {
       return Promise.resolve(new Response("ok", { status: 200 }));
     }) as typeof fetch;
     await getText("https://example.invalid/a");
+    expect(redirect).toBeUndefined();
+    await getText("https://example.invalid/b", { Authorization: "Bearer k" });
+    expect(redirect).toBe("error");
+    await getText("https://example.invalid/c", { "CF-Access-Client-Id": "id" });
     expect(redirect).toBe("error");
   });
 
