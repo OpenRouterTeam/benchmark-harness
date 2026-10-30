@@ -102,6 +102,34 @@ async function loadRequestPluginsHandler(
 }
 
 describe("pi request plugins extension", () => {
+  it("keeps configured extraBody plugins next to the generated router plugin", async () => {
+    const handler = await loadRequestPluginsHandler(
+      [{ id: "auto-router" }],
+      undefined,
+      undefined,
+      { plugins: [{ id: "web" }] }
+    );
+    expect(handler({ payload: { model: "m" } })).toStrictEqual({
+      model: "m",
+      plugins: [{ id: "web" }, { id: "auto-router" }],
+    });
+  });
+
+  it("lets a configured plugin with the same id override the generated one", async () => {
+    const handler = await loadRequestPluginsHandler(
+      [{ id: "auto-router", pin_model: false }],
+      undefined,
+      undefined,
+      { plugins: [{ id: "auto-router", pin_model: true }] }
+    );
+    expect(
+      handler({ payload: { model: "m", plugins: [{ id: "web" }] } })
+    ).toStrictEqual({
+      model: "m",
+      plugins: [{ id: "auto-router", pin_model: true }],
+    });
+  });
+
   it("merges the configured extraBody into the provider payload after the other overrides", async () => {
     const handler = await loadRequestPluginsHandler(
       [],

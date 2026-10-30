@@ -195,6 +195,10 @@ export function normalizeAgentModel(model: string): string {
   return rest.includes("/") ? rest : model;
 }
 
+function hasExtraBody(opts: AgentCliOpts): boolean {
+  return opts.extraBody !== undefined && Object.keys(opts.extraBody).length > 0;
+}
+
 export function buildAgentCliEnv(opts: AgentCliOpts): Record<string, string> {
   const env: Record<string, string> = {
     OPENROUTER_API_KEY: opts.apiKey,
@@ -232,7 +236,7 @@ export function buildAgentCliEnv(opts: AgentCliOpts): Record<string, string> {
   if (providerOrder.length > 0) {
     env[AGENT_PROVIDER_ORDER_ENV] = JSON.stringify(providerOrder);
   }
-  if (opts.extraBody !== undefined) {
+  if (hasExtraBody(opts)) {
     env[AGENT_EXTRA_BODY_ENV] = JSON.stringify(opts.extraBody);
   }
   return env;
@@ -282,7 +286,7 @@ export function runAgentCli(input: {
   const requestPlugins = opts.requestPlugins ?? [];
   const models = opts.models ?? [];
   const providerOrder = opts.providerOrder ?? [];
-  const hasExtraBody = opts.extraBody !== undefined;
+  const forwardsExtraBody = hasExtraBody(opts);
   const script = harness.buildRunScript({
     instructionPath,
     logPath: harness.remoteLogPath,
@@ -296,7 +300,7 @@ export function runAgentCli(input: {
       requestPlugins.length > 0 ||
       models.length > 0 ||
       providerOrder.length > 0 ||
-      hasExtraBody,
+      forwardsExtraBody,
   });
   return gen(function* () {
     if (requestPlugins.length > 0 && !harness.forwardsRequestPlugins) {
@@ -314,7 +318,7 @@ export function runAgentCli(input: {
         message: `the ${harness.id} agent does not forward the OpenRouter provider order from inside the sandbox`,
       });
     }
-    if (hasExtraBody && !harness.forwardsRequestPlugins) {
+    if (forwardsExtraBody && !harness.forwardsRequestPlugins) {
       return yield* new SolverError({
         message: `the ${harness.id} agent does not forward extraBody from inside the sandbox`,
       });
