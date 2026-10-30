@@ -145,7 +145,7 @@ describe("pi request plugins extension", () => {
     });
   });
 
-  it("lets a configured plugin with the same id override the generated one", async () => {
+  it("lets a configured plugin with the same id override the generated one and keeps the payload's own plugins", async () => {
     const handler = await loadRequestPluginsHandler(
       [{ id: "auto-router", pin_model: false }],
       undefined,
@@ -156,7 +156,7 @@ describe("pi request plugins extension", () => {
       handler({ payload: { model: "m", plugins: [{ id: "web" }] } })
     ).toStrictEqual({
       model: "m",
-      plugins: [{ id: "auto-router", pin_model: true }],
+      plugins: [{ id: "web" }, { id: "auto-router", pin_model: true }],
     });
   });
 
@@ -186,6 +186,18 @@ describe("pi request plugins extension", () => {
     ).toStrictEqual({
       model: "m",
       provider: { sort: "price", order: ["Together", "DigitalOcean"] },
+    });
+  });
+
+  it("merges extraBody.plugins with the plugins already on the agent payload", async () => {
+    const handler = await loadRequestPluginsHandler([], undefined, undefined, {
+      plugins: [{ id: "file-parser" }],
+    });
+    expect(
+      handler({ payload: { model: "m", plugins: [{ id: "web" }] } })
+    ).toStrictEqual({
+      model: "m",
+      plugins: [{ id: "web" }, { id: "file-parser" }],
     });
   });
 

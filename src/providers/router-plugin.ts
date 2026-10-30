@@ -55,7 +55,7 @@ export function buildRouterPlugin(
   }
 }
 
-export function pluginId(plugin: unknown): string | undefined {
+function pluginId(plugin: unknown): string | undefined {
   return typeof plugin === "object" &&
     plugin !== null &&
     "id" in plugin &&

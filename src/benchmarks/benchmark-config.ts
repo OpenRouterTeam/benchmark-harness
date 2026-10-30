@@ -86,6 +86,9 @@ export const InferenceOverrideSchema = z.object({
         message: `extraBody may not set ${HARNESS_OWNED_REQUEST_FIELDS.join(", ")}: the harness owns those request fields (tool definitions, model and provider pins, prompt input) and a configured value would silently replace them`,
       }
     )
+    .describe(
+      `Extra JSON fields merged into every model request (for example plugins or deferred_tools). Reserved keys are rejected: ${HARNESS_OWNED_REQUEST_FIELDS.join(", ")}.`
+    )
     .optional(),
 });
 

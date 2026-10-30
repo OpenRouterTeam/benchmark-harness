@@ -1,5 +1,7 @@
 const SANDBOX_AGENT_ENDPOINT = "https://openrouter.ai/api/v1";
 
+const API_PATH = "/api/v1";
+
 const ACCESS_HEADER_PREFIX = "cf-access-";
 
 function normalizedEndpoint(baseUrl: string): string | undefined {
@@ -7,7 +9,11 @@ function normalizedEndpoint(baseUrl: string): string | undefined {
     return undefined;
   }
   const url = new URL(baseUrl);
-  return `${url.origin}${url.pathname.replace(/\/+$/u, "")}`;
+  if (url.search !== "" || url.hash !== "") {
+    return undefined;
+  }
+  const path = url.pathname.replace(/\/+$/u, "");
+  return `${url.origin}${path.endsWith(API_PATH) ? path : `${path}${API_PATH}`}`;
 }
 
 export function sandboxAgentTargetError(opts: {

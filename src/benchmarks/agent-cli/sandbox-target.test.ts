@@ -25,13 +25,23 @@ describe("sandboxAgentTargetError", () => {
   it("rejects a same-origin URL on a different path and a malformed URL", () => {
     for (const baseUrl of [
       "https://openrouter.ai/preview/api/v1",
-      "https://openrouter.ai/",
+      "https://openrouter.ai/api/v2",
+      "https://openrouter.ai?mode=test",
+      "https://openrouter.ai/api/v1#frag",
       "not-a-url",
     ]) {
       expect(
         sandboxAgentTargetError({ ...BASE, baseUrl, traceHeaders: undefined })
           ?.message
       ).toContain("cannot target a custom base URL");
+    }
+  });
+
+  it("accepts the bare production origin the responses client normalizes to /api/v1", () => {
+    for (const baseUrl of ["https://openrouter.ai", "https://openrouter.ai/"]) {
+      expect(
+        sandboxAgentTargetError({ ...BASE, baseUrl, traceHeaders: undefined })
+      ).toBeUndefined();
     }
   });
 
