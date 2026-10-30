@@ -57,7 +57,7 @@ function pluginsInWireShape(body: ResponsesRequest): readonly unknown[] {
   return isUnknownArray(wirePlugins) ? wirePlugins : [];
 }
 
-function routerExtraBody(
+export function routerExtraBody(
   body: ResponsesRequest,
   opts: Pick<
     SearchSolverOptions,
@@ -72,7 +72,23 @@ function routerExtraBody(
   if (plugin === undefined) {
     return opts.extraBody;
   }
-  return { ...opts.extraBody, plugins: [...pluginsInWireShape(body), plugin] };
+  const callerPlugins = opts.extraBody?.["plugins"];
+  const extraPlugins = Array.isArray(callerPlugins) ? callerPlugins : [];
+  const hasRouterOverride = extraPlugins.some(
+    (candidate) =>
+      typeof candidate === "object" &&
+      candidate !== null &&
+      "id" in candidate &&
+      candidate.id === plugin.id
+  );
+  return {
+    ...opts.extraBody,
+    plugins: [
+      ...pluginsInWireShape(body),
+      ...extraPlugins,
+      ...(hasRouterOverride ? [] : [plugin]),
+    ],
+  };
 }
 
 export interface SearchSolverOptions {
