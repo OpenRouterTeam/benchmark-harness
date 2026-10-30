@@ -189,6 +189,18 @@ describe("pi request plugins extension", () => {
     });
   });
 
+  it("merges extraBody.plugins with the plugins already on the agent payload", async () => {
+    const handler = await loadRequestPluginsHandler([], undefined, undefined, {
+      plugins: [{ id: "file-parser" }],
+    });
+    expect(
+      handler({ payload: { model: "m", plugins: [{ id: "web" }] } })
+    ).toStrictEqual({
+      model: "m",
+      plugins: [{ id: "web" }, { id: "file-parser" }],
+    });
+  });
+
   it("pins the provider to the configured only list without fallbacks", async () => {
     const handler = await loadRequestPluginsHandler(
       [],
