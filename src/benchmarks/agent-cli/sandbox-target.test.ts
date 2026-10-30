@@ -26,6 +26,8 @@ describe("sandboxAgentTargetError", () => {
     for (const baseUrl of [
       "https://openrouter.ai/preview/api/v1",
       "https://openrouter.ai/api/v2",
+      "https://openrouter.ai?mode=test",
+      "https://openrouter.ai/api/v1#frag",
       "not-a-url",
     ]) {
       expect(

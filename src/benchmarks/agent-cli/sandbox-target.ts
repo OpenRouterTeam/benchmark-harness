@@ -9,6 +9,9 @@ function normalizedEndpoint(baseUrl: string): string | undefined {
     return undefined;
   }
   const url = new URL(baseUrl);
+  if (url.search !== "" || url.hash !== "") {
+    return undefined;
+  }
   const path = url.pathname.replace(/\/+$/u, "");
   return `${url.origin}${path.endsWith(API_PATH) ? path : `${path}${API_PATH}`}`;
 }
