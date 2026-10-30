@@ -46,6 +46,7 @@ export function wandrInferenceOverride(config: WandrConfig): InferenceOverride {
     costTier: config.costTier,
     costQualityTradeoff: config.costQualityTradeoff,
     switchyardAlgorithm: config.switchyardAlgorithm,
+    extraBody: config.extraBody,
   };
 }
 
