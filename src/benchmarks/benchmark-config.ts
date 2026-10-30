@@ -45,6 +45,16 @@ export const GEMINI_MEDIA_RESOLUTIONS = [
 
 export type GeminiMediaResolution = ValueOf<typeof GEMINI_MEDIA_RESOLUTIONS>;
 
+const HARNESS_OWNED_REQUEST_FIELDS = [
+  "tools",
+  "model",
+  "models",
+  "provider",
+  "input",
+  "messages",
+  "stream",
+] as const;
+
 export const InferenceOverrideSchema = z.object({
   temperature: z.number().optional(),
   maxTokens: z.number().optional(),
@@ -67,10 +77,15 @@ export const InferenceOverrideSchema = z.object({
   switchyardAlgorithm: z.enum(SWITCHYARD_ALGORITHMS).optional(),
   extraBody: z
     .record(z.string(), z.unknown())
-    .refine((body) => body["tools"] === undefined, {
-      message:
-        "extraBody.tools is not allowed: each benchmark owns its tool definitions and a configured list would replace them",
-    })
+    .refine(
+      (body) =>
+        HARNESS_OWNED_REQUEST_FIELDS.every(
+          (field) => body[field] === undefined
+        ),
+      {
+        message: `extraBody may not set ${HARNESS_OWNED_REQUEST_FIELDS.join(", ")}: the harness owns those request fields (tool definitions, model and provider pins, prompt input) and a configured value would silently replace them`,
+      }
+    )
     .optional(),
 });
 

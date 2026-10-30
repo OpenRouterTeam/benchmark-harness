@@ -54,3 +54,35 @@ export function buildRouterPlugin(
     }
   }
 }
+
+export function pluginId(plugin: unknown): string | undefined {
+  return typeof plugin === "object" &&
+    plugin !== null &&
+    "id" in plugin &&
+    typeof plugin.id === "string"
+    ? plugin.id
+    : undefined;
+}
+
+export function mergePluginsById(
+  base: readonly unknown[],
+  configured: readonly unknown[]
+): readonly unknown[] {
+  const overriddenIds = new Set(
+    configured.map(pluginId).filter((id) => id !== undefined)
+  );
+  const kept = base.filter((plugin) => {
+    const id = pluginId(plugin);
+    return id === undefined || !overriddenIds.has(id);
+  });
+  return [...kept, ...configured];
+}
+
+export function withRouterPlugin(
+  configured: readonly unknown[],
+  plugin: RouterPluginConfig
+): readonly unknown[] {
+  return configured.some((candidate) => pluginId(candidate) === plugin.id)
+    ? configured
+    : [...configured, plugin];
+}

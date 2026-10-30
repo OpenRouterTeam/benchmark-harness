@@ -6,6 +6,8 @@ import { join } from "node:path";
 import {
   AGENT_CANDIDATE_MODELS_ENV,
   AGENT_EXTRA_BODY_ENV,
+  AGENT_ALLOW_FALLBACKS_ENV,
+  AGENT_PROVIDER_ONLY_ENV,
   AGENT_PROVIDER_ORDER_ENV,
   AGENT_REQUEST_PLUGINS_ENV,
   getOriHarness,
@@ -35,7 +37,11 @@ async function loadRequestPluginsHandler(
   plugins: readonly unknown[],
   models?: readonly string[],
   providerOrder?: readonly string[],
-  extraBody?: Readonly<Record<string, unknown>>
+  extraBody?: Readonly<Record<string, unknown>>,
+  pins?: {
+    readonly providerOnly?: readonly string[];
+    readonly allowFallbacks?: boolean;
+  }
 ): Promise<ProviderRequestHandler> {
   const dir = mkdtempSync(join(tmpdir(), "pi-request-plugins-"));
   const path = join(dir, "openrouter-request-plugins.ts");
@@ -53,6 +59,20 @@ async function loadRequestPluginsHandler(
     Reflect.deleteProperty(process.env, AGENT_PROVIDER_ORDER_ENV);
   } else {
     process.env[AGENT_PROVIDER_ORDER_ENV] = JSON.stringify(providerOrder);
+  }
+  const previousOnly = process.env[AGENT_PROVIDER_ONLY_ENV];
+  const previousAllowFallbacks = process.env[AGENT_ALLOW_FALLBACKS_ENV];
+  if (pins?.providerOnly === undefined) {
+    Reflect.deleteProperty(process.env, AGENT_PROVIDER_ONLY_ENV);
+  } else {
+    process.env[AGENT_PROVIDER_ONLY_ENV] = JSON.stringify(pins.providerOnly);
+  }
+  if (pins?.allowFallbacks === undefined) {
+    Reflect.deleteProperty(process.env, AGENT_ALLOW_FALLBACKS_ENV);
+  } else {
+    process.env[AGENT_ALLOW_FALLBACKS_ENV] = JSON.stringify(
+      pins.allowFallbacks
+    );
   }
   process.env[AGENT_REQUEST_PLUGINS_ENV] = JSON.stringify(plugins);
   if (models === undefined) {
@@ -92,6 +112,16 @@ async function loadRequestPluginsHandler(
       Reflect.deleteProperty(process.env, AGENT_PROVIDER_ORDER_ENV);
     } else {
       process.env[AGENT_PROVIDER_ORDER_ENV] = previousOrder;
+    }
+    if (previousOnly === undefined) {
+      Reflect.deleteProperty(process.env, AGENT_PROVIDER_ONLY_ENV);
+    } else {
+      process.env[AGENT_PROVIDER_ONLY_ENV] = previousOnly;
+    }
+    if (previousAllowFallbacks === undefined) {
+      Reflect.deleteProperty(process.env, AGENT_ALLOW_FALLBACKS_ENV);
+    } else {
+      process.env[AGENT_ALLOW_FALLBACKS_ENV] = previousAllowFallbacks;
     }
     if (previousExtraBody === undefined) {
       Reflect.deleteProperty(process.env, AGENT_EXTRA_BODY_ENV);
@@ -157,6 +187,34 @@ describe("pi request plugins extension", () => {
       model: "m",
       provider: { sort: "price", order: ["Together", "DigitalOcean"] },
     });
+  });
+
+  it("pins the provider to the configured only list without fallbacks", async () => {
+    const handler = await loadRequestPluginsHandler(
+      [],
+      undefined,
+      undefined,
+      undefined,
+      {
+        providerOnly: ["DigitalOcean"],
+        allowFallbacks: false,
+      }
+    );
+    expect(
+      handler({ payload: { model: "m", provider: { sort: "price" } } })
+    ).toStrictEqual({
+      model: "m",
+      provider: {
+        sort: "price",
+        only: ["DigitalOcean"],
+        allow_fallbacks: false,
+      },
+    });
+  });
+
+  it("leaves the provider payload alone when no provider pin is configured", async () => {
+    const handler = await loadRequestPluginsHandler([]);
+    expect(handler({ payload: { model: "m" } })).toStrictEqual({ model: "m" });
   });
 
   it("adds the configured plugins to the provider payload", async () => {

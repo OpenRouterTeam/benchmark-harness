@@ -23,6 +23,7 @@ import { SandboxSession } from "../../sandbox/session";
 import { sandboxAgentPluginError } from "../agent-cli/candidate-models";
 import { getOriHarness } from "../agent-cli/harness";
 import { sandboxAgentRequestPlugins } from "../agent-cli/request-plugins";
+import { sandboxAgentTargetError } from "../agent-cli/sandbox-target";
 import { isOriAgent } from "../agent-cli/schema";
 import { DEEP_SWE_META } from "../benchmark-meta";
 import type { Benchmark, BenchmarkRunInput } from "../types";
@@ -65,6 +66,17 @@ function makeDeepSweLayer(
     : [];
   if (requestPlugins instanceof Error) {
     return layerFail(requestPlugins);
+  }
+  const targetError = isOriAgent(benchmarkConfig.agent)
+    ? sandboxAgentTargetError({
+        benchmarkId: benchmarkConfig.benchmarkId,
+        agent: benchmarkConfig.agent,
+        baseUrl: input.baseUrl,
+        traceHeaders: input.traceHeaders,
+      })
+    : undefined;
+  if (targetError !== undefined) {
+    return layerFail(targetError);
   }
   const datasetLayer = makeDeepSweDatasetLayer(
     definedValues({

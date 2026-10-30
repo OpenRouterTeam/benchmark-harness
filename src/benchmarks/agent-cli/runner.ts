@@ -26,7 +26,9 @@ import type { SandboxSessionInstance } from "../../sandbox/session";
 import type { OriAgentRun, OriHarnessDef } from "./harness";
 import {
   AGENT_CANDIDATE_MODELS_ENV,
+  AGENT_ALLOW_FALLBACKS_ENV,
   AGENT_EXTRA_BODY_ENV,
+  AGENT_PROVIDER_ONLY_ENV,
   AGENT_PROVIDER_ORDER_ENV,
   AGENT_REQUEST_PLUGINS_ENV,
 } from "./harness";
@@ -177,6 +179,8 @@ export interface AgentCliOpts {
   readonly requestPlugins?: readonly AgentRequestPlugin[];
   readonly models?: readonly string[];
   readonly providerOrder?: readonly string[];
+  readonly providerOnly?: readonly string[];
+  readonly allowFallbacks?: boolean;
   readonly extraBody?: Readonly<Record<string, unknown>>;
 }
 
@@ -236,6 +240,13 @@ export function buildAgentCliEnv(opts: AgentCliOpts): Record<string, string> {
   if (providerOrder.length > 0) {
     env[AGENT_PROVIDER_ORDER_ENV] = JSON.stringify(providerOrder);
   }
+  const providerOnly = opts.providerOnly ?? [];
+  if (providerOnly.length > 0) {
+    env[AGENT_PROVIDER_ONLY_ENV] = JSON.stringify(providerOnly);
+  }
+  if (opts.allowFallbacks !== undefined) {
+    env[AGENT_ALLOW_FALLBACKS_ENV] = JSON.stringify(opts.allowFallbacks);
+  }
   if (hasExtraBody(opts)) {
     env[AGENT_EXTRA_BODY_ENV] = JSON.stringify(opts.extraBody);
   }
@@ -286,6 +297,10 @@ export function runAgentCli(input: {
   const requestPlugins = opts.requestPlugins ?? [];
   const models = opts.models ?? [];
   const providerOrder = opts.providerOrder ?? [];
+  const pinsProvider =
+    providerOrder.length > 0 ||
+    (opts.providerOnly ?? []).length > 0 ||
+    opts.allowFallbacks !== undefined;
   const forwardsExtraBody = hasExtraBody(opts);
   const script = harness.buildRunScript({
     instructionPath,
@@ -299,7 +314,7 @@ export function runAgentCli(input: {
     loadsRequestExtension:
       requestPlugins.length > 0 ||
       models.length > 0 ||
-      providerOrder.length > 0 ||
+      pinsProvider ||
       forwardsExtraBody,
   });
   return gen(function* () {
@@ -313,9 +328,9 @@ export function runAgentCli(input: {
         message: `the ${harness.id} agent does not forward the OpenRouter models list from inside the sandbox`,
       });
     }
-    if (providerOrder.length > 0 && !harness.forwardsRequestPlugins) {
+    if (pinsProvider && !harness.forwardsRequestPlugins) {
       return yield* new SolverError({
-        message: `the ${harness.id} agent does not forward the OpenRouter provider order from inside the sandbox`,
+        message: `the ${harness.id} agent does not forward the OpenRouter provider pins from inside the sandbox`,
       });
     }
     if (forwardsExtraBody && !harness.forwardsRequestPlugins) {

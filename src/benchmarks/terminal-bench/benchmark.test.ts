@@ -10,11 +10,15 @@ import { fetchHttpClientLayer } from "../../internal/http-client";
 import { TerminalBenchConfigSchema } from "../benchmark-config";
 import { TERMINAL_BENCH_BENCHMARK } from "./benchmark";
 
-function buildLayer(config: Record<string, unknown>) {
+function buildLayer(
+  config: Record<string, unknown>,
+  input: { readonly baseUrl?: string } = {}
+) {
   return runPromiseExit(
     scoped(
       build(
         TERMINAL_BENCH_BENCHMARK.makeLayer({
+          ...input,
           apiKey: "sk-test",
           sessionId: "run-1",
           benchmarkConfig: TerminalBenchConfigSchema.parse({
@@ -31,6 +35,17 @@ function buildLayer(config: Record<string, unknown>) {
 }
 
 describe("terminal_bench layer", () => {
+  it("rejects an api-perf Preview target because the sandboxed CLI cannot reach it", async () => {
+    const exit = await buildLayer(
+      { agent: "pi" },
+      { baseUrl: "https://abc123-api-perf.openrouter.workers.dev/api/v1" }
+    );
+    assertFailure(exit);
+    expect(getOrThrow(findErrorOption(exit.cause)).message).toContain(
+      "terminal_bench cannot target a custom base URL with the pi agent"
+    );
+  });
+
   it("rejects a cost tier for an agent that cannot forward the auto-router plugin", async () => {
     const exit = await buildLayer({ agent: "claude", costTier: "low" });
     assertFailure(exit);

@@ -52,6 +52,11 @@ export const AGENT_CANDIDATE_MODELS_ENV = "TB_OPENROUTER_MODELS" as const;
 
 export const AGENT_PROVIDER_ORDER_ENV = "TB_OPENROUTER_PROVIDER_ORDER" as const;
 
+export const AGENT_PROVIDER_ONLY_ENV = "TB_OPENROUTER_PROVIDER_ONLY" as const;
+
+export const AGENT_ALLOW_FALLBACKS_ENV =
+  "TB_OPENROUTER_ALLOW_FALLBACKS" as const;
+
 export const AGENT_EXTRA_BODY_ENV = "TB_OPENROUTER_EXTRA_BODY" as const;
 
 const PI_REQUEST_PLUGINS_EXTENSION_DIR = "/root/.bench-harness";
@@ -65,6 +70,13 @@ export const PI_REQUEST_PLUGINS_EXTENSION_SOURCE = [
   `const plugins = JSON.parse(process.env.${AGENT_REQUEST_PLUGINS_ENV} ?? "[]");`,
   `const models = JSON.parse(process.env.${AGENT_CANDIDATE_MODELS_ENV} ?? "[]");`,
   `const providerOrder = JSON.parse(process.env.${AGENT_PROVIDER_ORDER_ENV} ?? "[]");`,
+  `const providerOnly = JSON.parse(process.env.${AGENT_PROVIDER_ONLY_ENV} ?? "[]");`,
+  `const allowFallbacks = JSON.parse(process.env.${AGENT_ALLOW_FALLBACKS_ENV} ?? "null");`,
+  "const providerPins = {",
+  "  ...(providerOrder.length > 0 ? { order: providerOrder } : {}),",
+  "  ...(providerOnly.length > 0 ? { only: providerOnly } : {}),",
+  "  ...(allowFallbacks === null ? {} : { allow_fallbacks: allowFallbacks }),",
+  "};",
   `const extraBody = JSON.parse(process.env.${AGENT_EXTRA_BODY_ENV} ?? "{}");`,
   "export default function registerRequestPlugins(pi) {",
   '  pi.on("before_provider_request", (event) => {',
@@ -77,8 +89,8 @@ export const PI_REQUEST_PLUGINS_EXTENSION_SOURCE = [
   "    const callerProvider =",
   '      typeof payload.provider === "object" && payload.provider !== null ? payload.provider : {};',
   "    const withProvider =",
-  "      providerOrder.length > 0",
-  "        ? { ...withCandidates, provider: { ...callerProvider, order: providerOrder } }",
+  "      Object.keys(providerPins).length > 0",
+  "        ? { ...withCandidates, provider: { ...callerProvider, ...providerPins } }",
   "        : withCandidates;",
   "    const withModels = { ...withProvider, ...extraBody };",
   "    if (plugins.length === 0) {",

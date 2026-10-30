@@ -40,7 +40,11 @@ import {
   toModelError,
   usageFromResponses,
 } from "../../../providers/responses-client";
-import { buildRouterPlugin } from "../../../providers/router-plugin";
+import {
+  buildRouterPlugin,
+  mergePluginsById,
+  withRouterPlugin,
+} from "../../../providers/router-plugin";
 import type { RetryConfig } from "../../../runtime/retry";
 import { rateLimitRetrySchedule, retrySalted } from "../../../runtime/retry";
 import type { SearchLaneConfig } from "./config";
@@ -69,44 +73,23 @@ export function routerExtraBody(
   >
 ): Readonly<Record<string, unknown>> | undefined {
   const plugin = buildRouterPlugin(opts.model, opts);
-  if (plugin === undefined) {
-    return opts.extraBody;
-  }
   const callerPlugins = opts.extraBody?.["plugins"];
+  if (plugin === undefined) {
+    return Array.isArray(callerPlugins)
+      ? {
+          ...opts.extraBody,
+          plugins: mergePluginsById(pluginsInWireShape(body), callerPlugins),
+        }
+      : opts.extraBody;
+  }
   const configured = mergePluginsById(
     pluginsInWireShape(body),
     Array.isArray(callerPlugins) ? callerPlugins : []
   );
-  const hasRouterOverride = configured.some(
-    (candidate) => pluginId(candidate) === plugin.id
-  );
   return {
     ...opts.extraBody,
-    plugins: hasRouterOverride ? configured : [...configured, plugin],
+    plugins: withRouterPlugin(configured, plugin),
   };
-}
-
-function pluginId(plugin: unknown): string | undefined {
-  return typeof plugin === "object" &&
-    plugin !== null &&
-    "id" in plugin &&
-    typeof plugin.id === "string"
-    ? plugin.id
-    : undefined;
-}
-
-function mergePluginsById(
-  base: readonly unknown[],
-  configured: readonly unknown[]
-): readonly unknown[] {
-  const overriddenIds = new Set(
-    configured.map(pluginId).filter((id) => id !== undefined)
-  );
-  const kept = base.filter((plugin) => {
-    const id = pluginId(plugin);
-    return id === undefined || !overriddenIds.has(id);
-  });
-  return [...kept, ...configured];
 }
 
 export interface SearchSolverOptions {
