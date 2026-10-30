@@ -7,7 +7,11 @@ import type {
   ReplayedUsage,
 } from "../../runtime/generation-resolver";
 import { GenerationResolver } from "../../runtime/generation-resolver";
-import { AGENT_EXTRA_BODY_ENV } from "./harness";
+import {
+  AGENT_ALLOW_FALLBACKS_ENV,
+  AGENT_EXTRA_BODY_ENV,
+  AGENT_PROVIDER_ONLY_ENV,
+} from "./harness";
 import { buildAgentCliEnv, resolveBilledCost, withBilledCost } from "./runner";
 
 function usageWithCost(totalCost: number): ReplayedUsage {
@@ -144,5 +148,25 @@ describe("buildAgentCliEnv", () => {
         extraBody: { deferred_tools: { protocol: "v1" } },
       })[AGENT_EXTRA_BODY_ENV]
     ).toBe(JSON.stringify({ deferred_tools: { protocol: "v1" } }));
+  });
+
+  it("forwards the provider pins the Kepler run spec sets", () => {
+    const base = {
+      model: "m",
+      apiKey: "k",
+      agentReasoningEffort: "high",
+    } as const;
+    const unpinned = buildAgentCliEnv(base);
+    expect(unpinned).not.toHaveProperty(AGENT_PROVIDER_ONLY_ENV);
+    expect(unpinned).not.toHaveProperty(AGENT_ALLOW_FALLBACKS_ENV);
+    const pinned = buildAgentCliEnv({
+      ...base,
+      providerOnly: ["DigitalOcean"],
+      allowFallbacks: false,
+    });
+    expect(pinned[AGENT_PROVIDER_ONLY_ENV]).toBe(
+      JSON.stringify(["DigitalOcean"])
+    );
+    expect(pinned[AGENT_ALLOW_FALLBACKS_ENV]).toBe("false");
   });
 });

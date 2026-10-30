@@ -89,6 +89,8 @@ function makeTerminalBenchLayer(
     requestPlugins: requestPlugins.length > 0 ? requestPlugins : undefined,
     models: benchmarkConfig.models,
     providerOrder: benchmarkConfig.providerOrder,
+    providerOnly: benchmarkConfig.providerOnly,
+    allowFallbacks: benchmarkConfig.allowFallbacks,
     extraBody: benchmarkConfig.extraBody,
   });
   const datasetLayer = makeTerminalBenchDatasetLayer(
