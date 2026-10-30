@@ -3,3 +3,4 @@ bench-results/
 dist/
 node_modules/
 *.tsbuildinfo
+__pycache__/

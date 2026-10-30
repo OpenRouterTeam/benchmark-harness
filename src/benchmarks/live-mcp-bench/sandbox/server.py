@@ -34,6 +34,8 @@ CONFIG_PATH = os.environ.get(
 )
 PORT = int(os.environ.get("SANDBOX_PORT", "1985"))
 TOOL_TIMEOUT_S = int(os.environ.get("SANDBOX_TOOL_TIMEOUT", "180"))
+CONNECT_TIMEOUT_S = int(os.environ.get("SANDBOX_CONNECT_TIMEOUT", "120"))
+CONNECT_CONCURRENCY = int(os.environ.get("SANDBOX_CONNECT_CONCURRENCY", "8"))
 SEPARATOR = "__"
 
 logger = logging.getLogger("livemcpbench-sandbox")
@@ -85,23 +87,36 @@ class Sandbox:
 
     async def connect(self):
         servers = load_server_configs(CONFIG_PATH)
-        tools_by_server = {}
-        for server_id, config in servers.items():
-            try:
-                await self.client.config_connect({"mcpServers": {server_id: config}})
-                listed = await self.client.list_tools(server_id)
-                tools_by_server[server_id] = [
-                    {
-                        "name": tool.name,
-                        "description": tool.description or "",
-                        "inputSchema": tool.inputSchema or {},
-                    }
-                    for tool in listed.values()
-                ]
-            except Exception as error:  # noqa: BLE001 - one bad server must not sink the rest
-                logger.warning("server %s skipped: %s", server_id, error)
+        gate = asyncio.Semaphore(CONNECT_CONCURRENCY)
+        listed_by_server = await asyncio.gather(
+            *(self.connect_one(gate, server_id, config) for server_id, config in servers.items())
+        )
+        tools_by_server = {
+            server_id: tools for server_id, tools in listed_by_server if tools is not None
+        }
         self.index = build_tool_index(tools_by_server)
         logger.info("%d servers, %d tools", len(tools_by_server), len(self.index))
+
+    async def connect_one(self, gate, server_id, config):
+        async with gate:
+            try:
+                listed = await asyncio.wait_for(self.list_server_tools(server_id, config), CONNECT_TIMEOUT_S)
+            except Exception as error:  # noqa: BLE001 - one bad server must not sink the rest
+                logger.warning("server %s skipped: %r", server_id, error)
+                return server_id, None
+        return server_id, listed
+
+    async def list_server_tools(self, server_id, config):
+        await self.client.config_connect({"mcpServers": {server_id: config}})
+        listed = await self.client.list_tools(server_id)
+        return [
+            {
+                "name": tool.name,
+                "description": tool.description or "",
+                "inputSchema": tool.inputSchema or {},
+            }
+            for tool in listed.values()
+        ]
 
     def check_token(self, authorization):
         if authorization != f"Bearer {self.token}":
