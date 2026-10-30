@@ -37,15 +37,21 @@ describe("benchmark config", () => {
     });
   });
 
-  it("rejects extraBody.tools because benchmarks own their tool definitions", () => {
-    const result = parseSchema(BenchmarkRunConfigSchema, {
-      benchmarkId: "tau_bench_verified_airline",
-      model: "z-ai/glm-5.3",
-      reasoningEffort: "high",
-      extraBody: { tools: [] },
-    });
-
-    assertFailure(result);
+  it("rejects extraBody fields the harness owns", () => {
+    for (const extraBody of [
+      { tools: [] },
+      { model: "other/model" },
+      { provider: { order: ["Other"] } },
+      { messages: [] },
+    ]) {
+      const result = parseSchema(BenchmarkRunConfigSchema, {
+        benchmarkId: "tau_bench_verified_airline",
+        model: "z-ai/glm-5.3",
+        reasoningEffort: "high",
+        extraBody,
+      });
+      assertFailure(result);
+    }
   });
 
   it("keeps Kepler configs precise while parsing them through the Kepler schema", () => {
