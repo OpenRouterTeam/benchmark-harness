@@ -3,6 +3,8 @@ export const ALLOWED_TRACE_HEADER_NAMES = [
   "tracestate",
   "x-or-traceparent",
   "x-benchmark-trace",
+  "cf-access-client-id",
+  "cf-access-client-secret",
 ] as const;
 
 export type AllowedTraceHeaderName =

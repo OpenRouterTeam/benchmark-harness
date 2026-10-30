@@ -65,6 +65,7 @@ export const InferenceOverrideSchema = z.object({
   costQualityTradeoff: z.number().int().min(0).max(10).optional(),
   pinModel: z.boolean().optional(),
   switchyardAlgorithm: z.enum(SWITCHYARD_ALGORITHMS).optional(),
+  extraBody: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type InferenceOverride = z.infer<typeof InferenceOverrideSchema>;

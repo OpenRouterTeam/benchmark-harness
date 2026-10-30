@@ -23,6 +23,20 @@ describe("benchmark config", () => {
     expect(result.status).toBe(0);
   });
 
+  it("keeps extraBody on a model benchmark config", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "tau_bench_verified_airline",
+      model: "z-ai/glm-5.3",
+      reasoningEffort: "high",
+      extraBody: { deferred_tools: { protocol: "v1", profile: "universal" } },
+    });
+
+    assertSuccess(result);
+    expect(result.success.extraBody).toEqual({
+      deferred_tools: { protocol: "v1", profile: "universal" },
+    });
+  });
+
   it("keeps Kepler configs precise while parsing them through the Kepler schema", () => {
     const result = parseSchema(KeplerBenchmarkRunConfigSchema, {
       benchmarkId: "search_hle",

@@ -21,6 +21,18 @@ describe("filterTraceHeaders", () => {
     });
   });
 
+  it("keeps the Cloudflare Access service-token headers", () => {
+    expect(
+      filterTraceHeaders({
+        "CF-Access-Client-Id": "client-id",
+        "CF-Access-Client-Secret": "client-secret",
+      })
+    ).toEqual({
+      "cf-access-client-id": "client-id",
+      "cf-access-client-secret": "client-secret",
+    });
+  });
+
   it("normalizes header names to lowercase", () => {
     expect(filterTraceHeaders({ Traceparent: TRACEPARENT })).toEqual({
       traceparent: TRACEPARENT,

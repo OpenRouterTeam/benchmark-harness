@@ -74,6 +74,7 @@ function makeBankingLayer(
       costQualityTradeoff: config.costQualityTradeoff,
       pinModel: config.pinModel,
       switchyardAlgorithm: config.switchyardAlgorithm,
+      extraBody: config.extraBody,
     },
     retrievalConfig: config.retrievalConfig,
   });
