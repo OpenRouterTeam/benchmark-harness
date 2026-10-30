@@ -222,6 +222,7 @@ export function makeWandrSolver(
           endpointId: options.endpointId,
         }),
         extraBody: {
+          ...options.inference.extraBody,
           tools: [BASH_RESPONSES_TOOL_DEFINITION, ...options.serverTools],
         },
       };
