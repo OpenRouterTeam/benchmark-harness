@@ -5,12 +5,14 @@ import { assertFailure, assertSuccess } from "../internal/testing";
 import { parseSchema } from "../internal/zod";
 import {
   BenchmarkRunConfigSchema,
+  McpAtlasOptionsSchema,
   InjectedBenchmarkRunConfigSchema,
   isInjectedBenchmarkConfig,
   isModelBenchmarkConfig,
   isSearchBenchmarkConfig,
   KeplerBenchmarkRunConfigSchema,
 } from "./benchmark-config";
+import { MCP_ATLAS_NO_KEY_SERVERS } from "./mcp-atlas/schema";
 
 describe("benchmark config", () => {
   it("loads with frozen globals in a workflow sandbox", () => {
@@ -152,6 +154,24 @@ describe("benchmark config", () => {
 
     assertSuccess(result);
     expect(result.success.options).toEqual({});
+  });
+
+  it("defaults the MCP-Atlas server allowlist to the no-key servers", () => {
+    const result = parseSchema(McpAtlasOptionsSchema, {});
+
+    assertSuccess(result);
+    expect(result.success.serverAllowlist).toEqual([
+      ...MCP_ATLAS_NO_KEY_SERVERS,
+    ]);
+  });
+
+  it("keeps an explicit MCP-Atlas server allowlist", () => {
+    const result = parseSchema(McpAtlasOptionsSchema, {
+      serverAllowlist: ["wikipedia"],
+    });
+
+    assertSuccess(result);
+    expect(result.success.serverAllowlist).toEqual(["wikipedia"]);
   });
 
   it("rejects an injected config that reuses a Kepler benchmark id", () => {

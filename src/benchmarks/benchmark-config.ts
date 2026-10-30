@@ -33,6 +33,7 @@ import {
   MCP_ATLAS_DEFAULT_PASS_THRESHOLD,
   MCP_ATLAS_DEFAULT_SANDBOX_URL,
   MCP_ATLAS_ID,
+  MCP_ATLAS_NO_KEY_SERVERS,
   MCP_ATLAS_TOOL_SCOPES,
 } from "./mcp-atlas/schema";
 import { SearchLaneConfigSchema } from "./search/core/config";
@@ -151,7 +152,10 @@ export type Tau3BenchBankingConfig = z.infer<
 export const McpAtlasOptionsSchema = z.object({
   sandboxUrl: zDefaultedText(MCP_ATLAS_DEFAULT_SANDBOX_URL),
   toolScope: z.enum(MCP_ATLAS_TOOL_SCOPES).default("enabled"),
-  serverAllowlist: z.array(z.string().min(1)).min(1).optional(),
+  serverAllowlist: z
+    .array(z.string().min(1))
+    .min(1)
+    .default([...MCP_ATLAS_NO_KEY_SERVERS]),
   maxTurns: zInt().positive().default(MCP_ATLAS_DEFAULT_MAX_TURNS),
   maxToolCalls: zInt().positive().default(MCP_ATLAS_DEFAULT_MAX_TOOL_CALLS),
   toolOutputCap: zInt().positive().optional(),
