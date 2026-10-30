@@ -175,6 +175,32 @@ export function mmmuExtraBody(
   };
 }
 
+export function mmmuProVisionSolverOptions(
+  config: MmmuProVisionBenchmarkConfig
+): Parameters<typeof mmmuProVisionSolver>[1] {
+  return definedValues({
+    endpointId: config.endpointId,
+    mediaResolution: config.mediaResolution,
+    inference: {
+      temperature: config.temperature,
+      maxTokens: config.maxTokens,
+      reasoningEffort: config.reasoningEffort,
+      timeoutMs: config.timeoutMs,
+      sort: config.sort,
+      providerOnly: config.providerOnly,
+      providerOrder: config.providerOrder,
+      providerIgnore: config.providerIgnore,
+      allowFallbacks: config.allowFallbacks,
+      cloudflareVersion: config.cloudflareVersion,
+      experimentIds: config.experimentIds,
+      costTier: config.costTier,
+      costQualityTradeoff: config.costQualityTradeoff,
+      switchyardAlgorithm: config.switchyardAlgorithm,
+      extraBody: config.extraBody,
+    },
+  });
+}
+
 export function mmmuProVisionSolver(
   model: ModelService,
   opts: {
@@ -214,27 +240,5 @@ export const MMMU_PRO_VISION_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
     ),
   scorer: mcqScorer,
   makeSolver: (model, config) =>
-    mmmuProVisionSolver(
-      model,
-      definedValues({
-        endpointId: config.endpointId,
-        mediaResolution: config.mediaResolution,
-        inference: {
-          temperature: config.temperature,
-          maxTokens: config.maxTokens,
-          reasoningEffort: config.reasoningEffort,
-          timeoutMs: config.timeoutMs,
-          sort: config.sort,
-          providerOnly: config.providerOnly,
-          providerOrder: config.providerOrder,
-          providerIgnore: config.providerIgnore,
-          allowFallbacks: config.allowFallbacks,
-          cloudflareVersion: config.cloudflareVersion,
-          experimentIds: config.experimentIds,
-          costTier: config.costTier,
-          costQualityTradeoff: config.costQualityTradeoff,
-          switchyardAlgorithm: config.switchyardAlgorithm,
-        },
-      })
-    ),
+    mmmuProVisionSolver(model, mmmuProVisionSolverOptions(config)),
 });

@@ -34,7 +34,10 @@ import { ResponsesModel } from "../../providers/responses-model";
 import type { CreateSessionInput, ExecResult } from "../../sandbox/session";
 import { makeFakeSandboxLayer, SandboxSession } from "../../sandbox/session";
 import type { InferenceOverride } from "../benchmark-config";
-import { SUBMIT_SENTINEL } from "../harbor/prompts";
+import {
+  BASH_RESPONSES_TOOL_DEFINITION,
+  SUBMIT_SENTINEL,
+} from "../harbor/prompts";
 import {
   WANDR_BASE_IMAGE,
   WANDR_IMAGE_BUILD_STEPS,
@@ -498,6 +501,25 @@ describe("WANDR solver", () => {
     );
     expect(error.message).not.toContain("Verifier error:");
   });
+  it("merges the configured extraBody under the benchmark tools", async () => {
+    const configs: ResponsesGenerateConfig[] = [];
+    await runSolver({
+      modelLayer: scriptedModel(configs),
+      sandboxLayer: fakeSandbox({
+        log: { creates: [], destroyed: [], uploads: [], calls: [] },
+      }),
+      inference: {
+        extraBody: { deferred_tools: { protocol: "v1" }, tools: ["ignored"] },
+      },
+    });
+    expect(configs[0]?.extraBody?.["deferred_tools"]).toEqual({
+      protocol: "v1",
+    });
+    const tools = configs[0]?.extraBody?.["tools"];
+    expect(tools).toContainEqual(BASH_RESPONSES_TOOL_DEFINITION);
+    expect(tools).not.toContain("ignored");
+  });
+
   it("forwards an explicit temperature override", async () => {
     const configs: ResponsesGenerateConfig[] = [];
     await runSolver({
