@@ -26,6 +26,15 @@ import {
 } from "./benchmark-meta";
 import { DEFAULT_STEP_LIMIT as DEEP_SWE_DEFAULT_STEP_LIMIT } from "./deep-swe/schema";
 import { DracoPanelConfigSchema } from "./draco/schemas";
+import {
+  MCP_ATLAS_DEFAULT_JUDGE_MODEL,
+  MCP_ATLAS_DEFAULT_MAX_TOOL_CALLS,
+  MCP_ATLAS_DEFAULT_MAX_TURNS,
+  MCP_ATLAS_DEFAULT_PASS_THRESHOLD,
+  MCP_ATLAS_DEFAULT_SANDBOX_URL,
+  MCP_ATLAS_ID,
+  MCP_ATLAS_TOOL_SCOPES,
+} from "./mcp-atlas/schema";
 import { SearchLaneConfigSchema } from "./search/core/config";
 import { DEFAULT_JUDGE_MODEL, DEFAULT_STEP_LIMIT } from "./swe-atlas/schema";
 import { BankingRetrievalConfigSchema } from "./tau3-bench-banking/retrieval-config";
@@ -138,6 +147,30 @@ export const Tau3BenchBankingConfigSchema = z.object({
 export type Tau3BenchBankingConfig = z.infer<
   typeof Tau3BenchBankingConfigSchema
 >;
+
+export const McpAtlasOptionsSchema = z.object({
+  sandboxUrl: zDefaultedText(MCP_ATLAS_DEFAULT_SANDBOX_URL),
+  toolScope: z.enum(MCP_ATLAS_TOOL_SCOPES).default("enabled"),
+  serverAllowlist: z.array(z.string().min(1)).min(1).optional(),
+  maxTurns: zInt().positive().default(MCP_ATLAS_DEFAULT_MAX_TURNS),
+  maxToolCalls: zInt().positive().default(MCP_ATLAS_DEFAULT_MAX_TOOL_CALLS),
+  toolOutputCap: zInt().positive().optional(),
+  judgeModel: zDefaultedText(MCP_ATLAS_DEFAULT_JUDGE_MODEL),
+  judgeReasoningEffort: z.enum(REASONING_EFFORTS).default("medium"),
+  passThreshold: z
+    .number()
+    .min(0)
+    .max(1)
+    .default(MCP_ATLAS_DEFAULT_PASS_THRESHOLD),
+});
+
+export const McpAtlasConfigSchema = z.object({
+  benchmarkId: z.literal(MCP_ATLAS_ID),
+  ...FixedTemperatureBenchmarkBaseSchema.shape,
+  ...McpAtlasOptionsSchema.shape,
+});
+
+export type McpAtlasConfig = z.infer<typeof McpAtlasConfigSchema>;
 
 export const MmmuProVisionOptionsSchema = z.object({
   imageDetail: z.enum(IMAGE_DETAIL_VALUES).optional(),
@@ -372,6 +405,7 @@ export const KeplerBenchmarkRunConfigSchema = z.discriminatedUnion(
     MmluProBenchmarkConfigSchema,
     TauBenchAirlineConfigSchema,
     Tau3BenchBankingConfigSchema,
+    McpAtlasConfigSchema,
     MmmuProVisionBenchmarkConfigSchema,
     TerminalBenchConfigSchema,
     DracoBenchmarkConfigSchema,
@@ -409,6 +443,7 @@ export const BENCHMARK_OPTIONS_SCHEMAS = {
   mmlu_pro: MmluProOptionsSchema,
   tau_bench_verified_airline: TauBenchOptionsSchema,
   tau3_bench_banking: Tau3BenchBankingOptionsSchema,
+  mcp_atlas: McpAtlasOptionsSchema,
   mmmu_pro_vision: MmmuProVisionOptionsSchema,
   terminal_bench: TerminalBenchOptionsSchema,
   ifstruct: IfStructOptionsSchema,

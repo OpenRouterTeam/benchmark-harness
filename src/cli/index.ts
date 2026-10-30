@@ -464,6 +464,16 @@ export function buildBenchmarkConfig(opts: {
         reasoningEffort,
       });
     }
+    case "mcp_atlas": {
+      return buildSchemaValidatedConfig({
+        benchmarkId: "mcp_atlas",
+        model: requireModel("mcp_atlas", model),
+        endpointId,
+        panelConfig,
+        costTier,
+        reasoningEffort,
+      });
+    }
     case "terminal_bench": {
       return buildSchemaValidatedConfig({
         benchmarkId: "terminal_bench",

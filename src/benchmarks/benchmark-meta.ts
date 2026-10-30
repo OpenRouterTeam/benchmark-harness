@@ -34,6 +34,12 @@ export const TAU3_BENCH_BANKING_META = {
   userModel: "openai/gpt-5.4-mini",
 } as const satisfies BenchmarkMeta;
 
+export const MCP_ATLAS_META = {
+  id: "mcp_atlas",
+  defaultEpochs: 1,
+  temperature: 0,
+} as const satisfies BenchmarkMeta;
+
 export const TERMINAL_BENCH_META = {
   id: "terminal_bench",
   defaultEpochs: 1,
@@ -117,6 +123,7 @@ const BENCHMARK_META: Readonly<Record<string, BenchmarkMeta>> = {
   [MMMU_PRO_VISION_META.id]: MMMU_PRO_VISION_META,
   [TAU_BENCH_AIRLINE_META.id]: TAU_BENCH_AIRLINE_META,
   [TAU3_BENCH_BANKING_META.id]: TAU3_BENCH_BANKING_META,
+  [MCP_ATLAS_META.id]: MCP_ATLAS_META,
   [TERMINAL_BENCH_META.id]: TERMINAL_BENCH_META,
   [DRACO_META.id]: DRACO_META,
   [IFSTRUCT_META.id]: IFSTRUCT_META,

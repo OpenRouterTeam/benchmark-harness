@@ -2,6 +2,7 @@ import { DEEP_SWE_BENCHMARK } from "./deep-swe/benchmark";
 import { DRACO_BENCHMARK } from "./draco/benchmark";
 import { GPQA_BENCHMARK } from "./gpqa";
 import { IFSTRUCT_BENCHMARK } from "./ifstruct/benchmark";
+import { MCP_ATLAS_BENCHMARK } from "./mcp-atlas/benchmark";
 import { MMLU_PRO_BENCHMARK } from "./mmlu-pro";
 import { MMMU_PRO_VISION_BENCHMARK } from "./mmmu-pro-vision";
 import { BROWSECOMP_BENCHMARK } from "./search/browsecomp/benchmark";
@@ -27,6 +28,7 @@ const BENCHMARKS: Record<string, Benchmark> = {
   [MMLU_PRO_BENCHMARK.id]: MMLU_PRO_BENCHMARK,
   [TAU_BENCH_AIRLINE_BENCHMARK.id]: TAU_BENCH_AIRLINE_BENCHMARK,
   [TAU3_BENCH_BANKING_BENCHMARK.id]: TAU3_BENCH_BANKING_BENCHMARK,
+  [MCP_ATLAS_BENCHMARK.id]: MCP_ATLAS_BENCHMARK,
   [MMMU_PRO_VISION_BENCHMARK.id]: MMMU_PRO_VISION_BENCHMARK,
   [TERMINAL_BENCH_BENCHMARK.id]: TERMINAL_BENCH_BENCHMARK,
   [DRACO_BENCHMARK.id]: DRACO_BENCHMARK,
