@@ -162,6 +162,19 @@ export function makeMmmuProVisionDatasetLayer(
   ).pipe(provide(hfLayer));
 }
 
+export function mmmuExtraBody(
+  configured: Readonly<Record<string, unknown>> | undefined,
+  mediaResolution: GeminiMediaResolution | undefined
+): Record<string, unknown> | undefined {
+  if (configured === undefined && mediaResolution === undefined) {
+    return undefined;
+  }
+  return {
+    ...configured,
+    ...(mediaResolution !== undefined && { media_resolution: mediaResolution }),
+  };
+}
+
 export function mmmuProVisionSolver(
   model: ModelService,
   opts: {
@@ -175,10 +188,7 @@ export function mmmuProVisionSolver(
     ...definedValues(opts.inference),
     ...definedValues({
       endpointId: opts.endpointId,
-      extraBody:
-        opts.mediaResolution !== undefined
-          ? { media_resolution: opts.mediaResolution }
-          : undefined,
+      extraBody: mmmuExtraBody(opts.inference.extraBody, opts.mediaResolution),
     }),
   };
   return chain(systemMessage(MMMU_SYSTEM_MESSAGE), generate(model, config));

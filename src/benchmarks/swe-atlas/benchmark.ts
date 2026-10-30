@@ -151,6 +151,7 @@ function makeSweAtlasLayer(
               costTier: benchmarkConfig.costTier,
               costQualityTradeoff: benchmarkConfig.costQualityTradeoff,
               switchyardAlgorithm: benchmarkConfig.switchyardAlgorithm,
+              extraBody: benchmarkConfig.extraBody,
             },
           })
         )

@@ -4,7 +4,7 @@ import { blockNetwork } from "../../test/helpers/block-network";
 import { NOOP_PROGRESS_REPORTER } from "../harness/progress";
 import { assertFailure } from "../internal/testing";
 import { runBenchmarkById } from "../runner/run-by-id";
-import { mmmuProVisionRecordToSample } from "./mmmu-pro-vision";
+import { mmmuExtraBody, mmmuProVisionRecordToSample } from "./mmmu-pro-vision";
 import { getBenchmark } from "./registry";
 
 const VISION_RECORD: Readonly<Record<string, unknown>> = {
@@ -120,5 +120,34 @@ describe("MMMU Pro Vision benchmark registry", () => {
       progressReporter: NOOP_PROGRESS_REPORTER,
     });
     assertFailure(result);
+  });
+});
+
+describe("mmmuExtraBody", () => {
+  it("returns undefined when nothing is configured", () => {
+    expect(mmmuExtraBody(undefined, undefined)).toBeUndefined();
+  });
+
+  it("forwards the configured extraBody alongside media_resolution", () => {
+    expect(
+      mmmuExtraBody(
+        { deferred_tools: { protocol: "v1" } },
+        "media_resolution_high"
+      )
+    ).toEqual({
+      deferred_tools: { protocol: "v1" },
+      media_resolution: "media_resolution_high",
+    });
+  });
+
+  it("lets the benchmark's media_resolution win over a configured one", () => {
+    expect(
+      mmmuExtraBody(
+        { media_resolution: "media_resolution_low" },
+        "media_resolution_high"
+      )
+    ).toEqual({
+      media_resolution: "media_resolution_high",
+    });
   });
 });
