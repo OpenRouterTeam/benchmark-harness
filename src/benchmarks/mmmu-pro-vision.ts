@@ -162,7 +162,7 @@ export function makeMmmuProVisionDatasetLayer(
   ).pipe(provide(hfLayer));
 }
 
-export function mmmuExtraBody(
+function mmmuExtraBody(
   configured: Readonly<Record<string, unknown>> | undefined,
   mediaResolution: GeminiMediaResolution | undefined
 ): Record<string, unknown> | undefined {
@@ -175,7 +175,7 @@ export function mmmuExtraBody(
   };
 }
 
-export function mmmuProVisionSolverOptions(
+function mmmuProVisionSolverOptions(
   config: MmmuProVisionBenchmarkConfig
 ): Parameters<typeof mmmuProVisionSolver>[1] {
   return definedValues({
@@ -200,6 +200,10 @@ export function mmmuProVisionSolverOptions(
     },
   });
 }
+
+export const TEST_mmmuExtraBody = mmmuExtraBody;
+
+export const TEST_mmmuProVisionSolverOptions = mmmuProVisionSolverOptions;
 
 export function mmmuProVisionSolver(
   model: ModelService,

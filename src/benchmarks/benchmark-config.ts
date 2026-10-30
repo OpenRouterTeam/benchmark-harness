@@ -65,7 +65,13 @@ export const InferenceOverrideSchema = z.object({
   costQualityTradeoff: z.number().int().min(0).max(10).optional(),
   pinModel: z.boolean().optional(),
   switchyardAlgorithm: z.enum(SWITCHYARD_ALGORITHMS).optional(),
-  extraBody: z.record(z.string(), z.unknown()).optional(),
+  extraBody: z
+    .record(z.string(), z.unknown())
+    .refine((body) => body["tools"] === undefined, {
+      message:
+        "extraBody.tools is not allowed: each benchmark owns its tool definitions and a configured list would replace them",
+    })
+    .optional(),
 });
 
 export type InferenceOverride = z.infer<typeof InferenceOverrideSchema>;

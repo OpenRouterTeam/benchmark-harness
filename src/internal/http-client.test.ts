@@ -3,7 +3,10 @@ import { afterEach, describe, expect, it } from "bun:test";
 import { flatMap, provide, runPromise } from "effect/Effect";
 import { HttpClient } from "effect/http";
 
-import { carriesCredentials, fetchHttpClientLayer } from "./http-client";
+import {
+  fetchHttpClientLayer,
+  TEST_carriesRedirectSurvivingCredential,
+} from "./http-client";
 
 const originalFetch = globalThis.fetch;
 
@@ -30,7 +33,7 @@ describe("fetchHttpClientLayer", () => {
     globalThis.fetch = originalFetch;
   });
 
-  it("refuses redirects only for credential-bearing requests", async () => {
+  it("refuses redirects only for requests carrying an Access token", async () => {
     let redirect: RequestRedirect | undefined;
     globalThis.fetch = ((
       _input: string | URL | Request,
@@ -42,24 +45,32 @@ describe("fetchHttpClientLayer", () => {
     await getText("https://example.invalid/a");
     expect(redirect).toBeUndefined();
     await getText("https://example.invalid/b", { Authorization: "Bearer k" });
-    expect(redirect).toBe("error");
+    expect(redirect).toBeUndefined();
     await getText("https://example.invalid/c", { "CF-Access-Client-Id": "id" });
     expect(redirect).toBe("error");
   });
 
-  it("sees credentials on both the Request and the init overrides", () => {
+  it("sees the Access token on both the Request and the init overrides", () => {
     const plain = new Request("https://example.invalid/a");
-    expect(carriesCredentials(plain, undefined)).toBe(false);
+    expect(TEST_carriesRedirectSurvivingCredential(plain, undefined)).toBe(
+      false
+    );
     expect(
-      carriesCredentials(plain, { headers: { Authorization: "Bearer k" } })
+      TEST_carriesRedirectSurvivingCredential(plain, {
+        headers: { "CF-Access-Client-Id": "id" },
+      })
     ).toBe(true);
     const withToken = new Request("https://example.invalid/a", {
       headers: { "cf-access-client-secret": "s" },
     });
-    expect(carriesCredentials(withToken, { headers: {} })).toBe(true);
-    expect(carriesCredentials("https://example.invalid/a", undefined)).toBe(
-      false
-    );
+    expect(
+      TEST_carriesRedirectSurvivingCredential(withToken, { headers: {} })
+    ).toBe(true);
+    expect(
+      TEST_carriesRedirectSurvivingCredential(plain, {
+        headers: { Authorization: "Bearer k" },
+      })
+    ).toBe(false);
   });
 
   it("resolves globalThis.fetch per request instead of once per process", async () => {

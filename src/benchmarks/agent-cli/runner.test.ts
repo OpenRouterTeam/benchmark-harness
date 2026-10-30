@@ -7,7 +7,8 @@ import type {
   ReplayedUsage,
 } from "../../runtime/generation-resolver";
 import { GenerationResolver } from "../../runtime/generation-resolver";
-import { resolveBilledCost, withBilledCost } from "./runner";
+import { AGENT_EXTRA_BODY_ENV } from "./harness";
+import { buildAgentCliEnv, resolveBilledCost, withBilledCost } from "./runner";
 
 function usageWithCost(totalCost: number): ReplayedUsage {
   return {
@@ -124,5 +125,24 @@ describe("withBilledCost", () => {
       totalCost: 0,
     };
     expect(withBilledCost(usage, 0.5)).toEqual({ ...usage, totalCost: 0.5 });
+  });
+});
+
+describe("buildAgentCliEnv", () => {
+  it("forwards extraBody only when it has fields", () => {
+    const base = {
+      model: "m",
+      apiKey: "k",
+      agentReasoningEffort: "high",
+    } as const;
+    expect(buildAgentCliEnv({ ...base, extraBody: {} })).not.toHaveProperty(
+      AGENT_EXTRA_BODY_ENV
+    );
+    expect(
+      buildAgentCliEnv({
+        ...base,
+        extraBody: { deferred_tools: { protocol: "v1" } },
+      })[AGENT_EXTRA_BODY_ENV]
+    ).toBe(JSON.stringify({ deferred_tools: { protocol: "v1" } }));
   });
 });

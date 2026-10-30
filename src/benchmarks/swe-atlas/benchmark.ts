@@ -134,6 +134,7 @@ function makeSweAtlasLayer(
                 requestPlugins.length > 0 ? requestPlugins : undefined,
               models: benchmarkConfig.models,
               providerOrder: benchmarkConfig.providerOrder,
+              extraBody: benchmarkConfig.extraBody,
             }),
             endpointId: benchmarkConfig.endpointId,
             inference: {
