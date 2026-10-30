@@ -24,6 +24,17 @@ export const TerminationReason = {
 
 export type TerminationReason = ValueOf<typeof TerminationReason>;
 
+export const McpToolCallRecordSchema = z.object({
+  name: z.string(),
+  arguments: z.string(),
+  output: z.string(),
+  isError: z.boolean(),
+});
+
+export type McpToolCallRecord = z.infer<typeof McpToolCallRecordSchema>;
+
+export const DEFAULT_TRANSCRIPT_OUTPUT_CAP = 8_000;
+
 export const McpRunStatsSchema = z.object({
   terminationReason: z.enum([
     TerminationReason.Completed,
@@ -35,6 +46,7 @@ export const McpRunStatsSchema = z.object({
   toolErrorCount: z.number(),
   toolDefinitionCount: z.number(),
   toolCallNames: z.array(z.string()).readonly(),
+  transcript: z.array(McpToolCallRecordSchema).readonly().default([]),
 });
 
 export type McpRunStats = z.infer<typeof McpRunStatsSchema>;
@@ -43,6 +55,7 @@ export interface McpToolLoopOptions {
   readonly maxTurns: number;
   readonly maxToolCalls: number;
   readonly toolOutputCap?: number;
+  readonly transcriptOutputCap?: number;
 }
 
 export interface McpToolLoopInput {
@@ -118,6 +131,7 @@ export function runMcpToolLoop(
   return gen(function* () {
     const messages: ModelMessage[] = [...input.messages];
     const toolCallNames: string[] = [];
+    const transcript: McpToolCallRecord[] = [];
     const usage = {
       inputTokens: 0,
       outputTokens: 0,
@@ -168,6 +182,15 @@ export function runMcpToolLoop(
         if (result.isError) {
           toolErrorCount += 1;
         }
+        transcript.push({
+          name: call.function.name,
+          arguments: call.function.arguments,
+          output: capToolOutput(
+            result.text,
+            opts.transcriptOutputCap ?? DEFAULT_TRANSCRIPT_OUTPUT_CAP
+          ),
+          isError: result.isError,
+        });
         messages.push({
           role: MessageRole.Tool,
           content: capToolOutput(result.text, opts.toolOutputCap),
@@ -192,6 +215,7 @@ export function runMcpToolLoop(
         toolErrorCount,
         toolDefinitionCount: input.tools.length,
         toolCallNames,
+        transcript,
       },
     };
   });

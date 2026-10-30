@@ -31,3 +31,11 @@ export const LIVE_MCP_BENCH_DEFAULT_JUDGE_MODEL = "anthropic/claude-sonnet-4.5";
 
 export const LIVE_MCP_BENCH_SYSTEM_PROMPT =
   "You are an agent designed to assist users with daily tasks by using external tools. Use the available tools to complete the task.\n\nNote that you can only response to user once, so you should try to provide a complete answer in your response.\n";
+
+export const LIVE_MCP_BENCH_JUDGE_KINDS = ["model", "jev"] as const;
+
+export type LiveMcpBenchJudgeKind = ValueOf<typeof LIVE_MCP_BENCH_JUDGE_KINDS>;
+
+export const LIVE_MCP_BENCH_DEFAULT_JEV_MODEL = "jev-latest";
+
+export const LIVE_MCP_BENCH_JUDGE_OUTPUT_CAP = 4_000;

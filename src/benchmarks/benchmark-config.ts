@@ -28,7 +28,9 @@ import { DEFAULT_STEP_LIMIT as DEEP_SWE_DEFAULT_STEP_LIMIT } from "./deep-swe/sc
 import { DracoPanelConfigSchema } from "./draco/schemas";
 import {
   LIVE_MCP_BENCH_CATEGORIES,
+  LIVE_MCP_BENCH_DEFAULT_JEV_MODEL,
   LIVE_MCP_BENCH_DEFAULT_JUDGE_MODEL,
+  LIVE_MCP_BENCH_JUDGE_KINDS,
   LIVE_MCP_BENCH_DEFAULT_MAX_TOOL_CALLS,
   LIVE_MCP_BENCH_DEFAULT_MAX_TURNS,
   LIVE_MCP_BENCH_DEFAULT_SANDBOX_URL,
@@ -193,8 +195,10 @@ export const LiveMcpBenchOptionsSchema = z.object({
   toolOutputCap: zInt()
     .positive()
     .default(LIVE_MCP_BENCH_DEFAULT_TOOL_OUTPUT_CAP),
+  judgeKind: z.enum(LIVE_MCP_BENCH_JUDGE_KINDS).default("model"),
   judgeModel: zDefaultedText(LIVE_MCP_BENCH_DEFAULT_JUDGE_MODEL),
   judgeReasoningEffort: z.enum(REASONING_EFFORTS).default("medium"),
+  jevModel: zDefaultedText(LIVE_MCP_BENCH_DEFAULT_JEV_MODEL),
 });
 
 export const LiveMcpBenchConfigSchema = z.object({

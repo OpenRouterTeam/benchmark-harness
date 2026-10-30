@@ -6,10 +6,14 @@ import { MessageRole, ScoreValue } from "../../harness/core";
 import type { SampleScore } from "../../harness/metric";
 import {
   formatToolDescriptions,
+  jevQuestions,
+  jevState,
+  jevVerdict,
   judgePrompt,
   liveMcpBenchRunLevelScores,
   parseVerdict,
   toolCallHistory,
+  toolTranscript,
 } from "./scorer";
 
 describe("parseVerdict", () => {
@@ -40,7 +44,7 @@ describe("parseVerdict", () => {
 });
 
 describe("toolCallHistory", () => {
-  it("lists assistant tool calls as name(arguments) in order", () => {
+  it("pairs each assistant tool call with its tool output in order", () => {
     expect(
       toolCallHistory([
         { role: MessageRole.User, content: "task" },
@@ -68,7 +72,80 @@ describe("toolCallHistory", () => {
           ],
         },
       ])
-    ).toEqual(['search({"q":"a"})', "fetch({})"]);
+    ).toEqual(['search({"q":"a"})\n   -> result', "fetch({})\n   -> "]);
+  });
+});
+
+describe("toolTranscript", () => {
+  it("caps long tool outputs and tolerates a missing output", () => {
+    const entries = toolTranscript(
+      [
+        {
+          role: MessageRole.Assistant,
+          content: "",
+          toolCalls: [
+            {
+              id: "1",
+              type: "function",
+              function: { name: "a", arguments: "{}" },
+            },
+            {
+              id: "2",
+              type: "function",
+              function: { name: "b", arguments: "{}" },
+            },
+          ],
+        },
+        { role: MessageRole.Tool, content: "0123456789", toolCallId: "1" },
+      ],
+      4
+    );
+    expect(entries[0]?.output.startsWith("0123\n")).toBe(true);
+    expect(entries[1]?.output).toBe("");
+  });
+});
+
+describe("jev judge", () => {
+  it("asks one step question per key point plus pass, quality and fabricated", () => {
+    const questions = jevQuestions("1. look up\n\n2. write file\n");
+    expect(Object.keys(questions).sort()).toEqual([
+      "fabricated",
+      "pass",
+      "quality",
+      "step_1",
+      "step_2",
+    ]);
+    expect(questions.step_2?.instructions).toContain("2. write file");
+  });
+
+  it("puts tool outputs in the state the judge sees", () => {
+    const state = jevState({
+      today: "2026-10-30",
+      task: undefined,
+      question: "q",
+      response: "r",
+      transcript: [{ name: "whois", arguments: "{}", output: "registrar: x" }],
+    });
+    expect(JSON.stringify(state)).toContain("registrar: x");
+  });
+
+  it("passes above 0.5 and records typed fields", () => {
+    const verdict = jevVerdict(
+      "jev-1",
+      {
+        pass: { type: "noul", noul: 0.8 },
+        quality: { type: "score", score: 2.4 },
+        fabricated: { type: "noul", noul: 0.1 },
+        step_1: { type: "noul", noul: 0.9 },
+      },
+      2
+    );
+    expect(verdict.status).toBe("success");
+    expect(verdict.quality).toBe(2.4);
+    expect(verdict.stepProbabilities).toEqual([0.9, 0]);
+    expect(
+      jevVerdict("jev-1", { pass: { type: "noul", noul: 0.5 } }, 0).status
+    ).toBe("failure");
   });
 });
 

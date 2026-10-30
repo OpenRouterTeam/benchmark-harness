@@ -16,6 +16,7 @@ import { Solver } from "../../harness/solver";
 import { definedValues } from "../../internal/guards";
 import { layerFail } from "../../internal/layer";
 import { parseSchema } from "../../internal/zod";
+import { makeTypesafeJudge, TYPESAFE_API_KEY_ENV } from "../../judge/typesafe";
 import { makeOpenRouterModelLayer } from "../../providers/openrouter-model";
 import {
   makeResponsesLayer,
@@ -30,6 +31,7 @@ import type { Benchmark, BenchmarkRunInput } from "../types";
 import { makeLiveMcpBenchDatasetLayer } from "./dataset";
 import { LIVE_MCP_BENCH_SANDBOX_TOKEN_ENV } from "./schema";
 import {
+  liveMcpBenchJevJudgeStage,
   liveMcpBenchJudgeStage,
   liveMcpBenchRunLevelScores,
   makeLiveMcpBenchScorer,
@@ -39,9 +41,13 @@ import { LIVE_MCP_BENCH_TEMPERATURE, liveMcpBenchSolver } from "./solver";
 
 export const LIVE_MCP_BENCH_BENCHMARK_ID = LIVE_MCP_BENCH_META.id;
 
+function readEnv(name: string): string | undefined {
+  const value = process.env[name];
+  return value === undefined || value.trim() === "" ? undefined : value;
+}
+
 function readSandboxToken(): string | undefined {
-  const token = process.env[LIVE_MCP_BENCH_SANDBOX_TOKEN_ENV];
-  return token === undefined || token.trim() === "" ? undefined : token;
+  return readEnv(LIVE_MCP_BENCH_SANDBOX_TOKEN_ENV);
 }
 
 function makeLiveMcpBenchDatasetLayerForConfig(
@@ -82,6 +88,14 @@ function makeLiveMcpBenchLayer(
     return layerFail(
       new Error(
         `live_mcp_bench requires ${LIVE_MCP_BENCH_SANDBOX_TOKEN_ENV} to reach the LiveMCPBench sandbox at ${config.sandboxUrl}`
+      )
+    );
+  }
+  const typesafeApiKey = readEnv(TYPESAFE_API_KEY_ENV);
+  if (config.judgeKind === "jev" && typesafeApiKey === undefined) {
+    return layerFail(
+      new Error(
+        `live_mcp_bench with judgeKind "jev" requires ${TYPESAFE_API_KEY_ENV}`
       )
     );
   }
@@ -151,15 +165,23 @@ function makeLiveMcpBenchLayer(
         tools,
         opts: solverOpts,
       });
-      const judge = liveMcpBenchJudgeStage(
-        responses,
-        definedValues({
-          judgeModel: config.judgeModel,
-          reasoningEffort: config.judgeReasoningEffort,
-          temperature: 0,
-          retry: input.modelRetry,
-        })
-      );
+      const judge =
+        config.judgeKind === "jev" && typesafeApiKey !== undefined
+          ? liveMcpBenchJevJudgeStage(
+              makeTypesafeJudge(client, {
+                model: config.jevModel,
+                apiKey: typesafeApiKey,
+              })
+            )
+          : liveMcpBenchJudgeStage(
+              responses,
+              definedValues({
+                judgeModel: config.judgeModel,
+                reasoningEffort: config.judgeReasoningEffort,
+                temperature: 0,
+                retry: input.modelRetry,
+              })
+            );
       return Solver.of((state) => agent(state).pipe(flatMap(judge)));
     })
   );
