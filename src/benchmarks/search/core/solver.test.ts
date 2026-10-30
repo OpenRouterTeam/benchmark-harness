@@ -42,8 +42,11 @@ import { BENCHMARK_LEAK_EXCLUDED_DOMAINS } from "./blocklist";
 import type { SearchLaneConfig } from "./config";
 import { SearchLaneConfigSchema } from "./config";
 import { DEEP_RESEARCH_INSTRUCTIONS } from "./prompts";
-import { routerExtraBody } from "./solver";
-import { SEARCH_SOLVER_METADATA_KEY, searchSolver } from "./solver";
+import {
+  SEARCH_SOLVER_METADATA_KEY,
+  routerExtraBody,
+  searchSolver,
+} from "./solver";
 
 const noopLayers = mergeAll(noopProgressLayer, noopCheckpointLayer);
 
@@ -806,6 +809,27 @@ describe("routerExtraBody", () => {
     });
     expect(extra).toEqual({
       plugins: [{ id: "auto-router", cost_tier: "low" }],
+    });
+  });
+
+  it("lets a configured web plugin replace the lane's web plugin", () => {
+    const extra = routerExtraBody(
+      {
+        model: "openrouter/auto",
+        input: "q",
+        plugins: [{ id: "web", maxResults: 5 }],
+      },
+      {
+        model: "openrouter/auto",
+        costTier: "high",
+        extraBody: { plugins: [{ id: "web", max_results: 2 }] },
+      }
+    );
+    expect(extra).toEqual({
+      plugins: [
+        { id: "web", max_results: 2 },
+        { id: "auto-router", cost_tier: "high" },
+      ],
     });
   });
 

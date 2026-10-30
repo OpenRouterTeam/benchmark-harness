@@ -73,22 +73,39 @@ export function routerExtraBody(
     return opts.extraBody;
   }
   const callerPlugins = opts.extraBody?.["plugins"];
-  const extraPlugins = Array.isArray(callerPlugins) ? callerPlugins : [];
-  const hasRouterOverride = extraPlugins.some(
-    (candidate) =>
-      typeof candidate === "object" &&
-      candidate !== null &&
-      "id" in candidate &&
-      candidate.id === plugin.id
+  const configured = mergePluginsById(
+    pluginsInWireShape(body),
+    Array.isArray(callerPlugins) ? callerPlugins : []
+  );
+  const hasRouterOverride = configured.some(
+    (candidate) => pluginId(candidate) === plugin.id
   );
   return {
     ...opts.extraBody,
-    plugins: [
-      ...pluginsInWireShape(body),
-      ...extraPlugins,
-      ...(hasRouterOverride ? [] : [plugin]),
-    ],
+    plugins: hasRouterOverride ? configured : [...configured, plugin],
   };
+}
+
+function pluginId(plugin: unknown): string | undefined {
+  return typeof plugin === "object" &&
+    plugin !== null &&
+    "id" in plugin &&
+    typeof plugin.id === "string"
+    ? plugin.id
+    : undefined;
+}
+
+function mergePluginsById(
+  base: readonly unknown[],
+  configured: readonly unknown[]
+): readonly unknown[] {
+  const overriddenIds = new Set(
+    configured.map(pluginId).filter((id) => id !== undefined)
+  );
+  return [
+    ...base.filter((plugin) => !overriddenIds.has(pluginId(plugin))),
+    ...configured,
+  ];
 }
 
 export interface SearchSolverOptions {
