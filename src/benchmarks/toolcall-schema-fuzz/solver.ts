@@ -76,6 +76,7 @@ export interface ToolCallSchemaFuzzSolverOptions {
   readonly providerIgnore?: readonly string[];
   readonly allowFallbacks?: boolean;
   readonly switchyardAlgorithm?: SwitchyardAlgorithm;
+  readonly extraBody?: Readonly<Record<string, unknown>>;
   readonly models?: readonly string[];
   readonly traceHeaders?: Readonly<Record<string, string>>;
   readonly retry?: RetryConfig;
@@ -135,6 +136,7 @@ export function buildRequestBody(
     ...(Object.keys(provider).length > 0 && { provider }),
     ...(options.models !== undefined && { models: options.models }),
     ...(plugin !== undefined && { plugins: [plugin] }),
+    ...options.extraBody,
   };
 }
 

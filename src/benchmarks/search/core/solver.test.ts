@@ -42,7 +42,11 @@ import { BENCHMARK_LEAK_EXCLUDED_DOMAINS } from "./blocklist";
 import type { SearchLaneConfig } from "./config";
 import { SearchLaneConfigSchema } from "./config";
 import { DEEP_RESEARCH_INSTRUCTIONS } from "./prompts";
-import { SEARCH_SOLVER_METADATA_KEY, searchSolver } from "./solver";
+import {
+  SEARCH_SOLVER_METADATA_KEY,
+  routerExtraBody,
+  searchSolver,
+} from "./solver";
 
 const noopLayers = mergeAll(noopProgressLayer, noopCheckpointLayer);
 
@@ -776,5 +780,62 @@ describe("searchSolver", () => {
     );
     expect(isFailure(exit)).toBe(true);
     expect(attempts).toBe(2);
+  });
+});
+
+describe("routerExtraBody", () => {
+  const body = { model: "openrouter/auto", input: "q" } as const;
+
+  it("keeps configured plugins next to the router plugin", () => {
+    const extra = routerExtraBody(body, {
+      model: "openrouter/auto",
+      costTier: "high",
+      extraBody: {
+        deferred_tools: { profile: "universal" },
+        plugins: [{ id: "my-plugin" }],
+      },
+    });
+    expect(extra).toEqual({
+      deferred_tools: { profile: "universal" },
+      plugins: [{ id: "my-plugin" }, { id: "auto-router", cost_tier: "high" }],
+    });
+  });
+
+  it("lets a configured router plugin override the generated one", () => {
+    const extra = routerExtraBody(body, {
+      model: "openrouter/auto",
+      costTier: "high",
+      extraBody: { plugins: [{ id: "auto-router", cost_tier: "low" }] },
+    });
+    expect(extra).toEqual({
+      plugins: [{ id: "auto-router", cost_tier: "low" }],
+    });
+  });
+
+  it("lets a configured web plugin replace the lane's web plugin", () => {
+    const extra = routerExtraBody(
+      {
+        model: "openrouter/auto",
+        input: "q",
+        plugins: [{ id: "web", maxResults: 5 }],
+      },
+      {
+        model: "openrouter/auto",
+        costTier: "high",
+        extraBody: { plugins: [{ id: "web", max_results: 2 }] },
+      }
+    );
+    expect(extra).toEqual({
+      plugins: [
+        { id: "web", max_results: 2 },
+        { id: "auto-router", cost_tier: "high" },
+      ],
+    });
+  });
+
+  it("returns extraBody untouched without routing options", () => {
+    expect(
+      routerExtraBody(body, { model: "openai/gpt-4.1", extraBody: { a: 1 } })
+    ).toEqual({ a: 1 });
   });
 });

@@ -141,6 +141,22 @@ describe("toolCallSchemaFuzzSolver", () => {
 });
 
 describe("buildRequestBody", () => {
+  it("merges extraBody into the request", () => {
+    const body = buildRequestBody(
+      { messages: [] },
+      {
+        model: "openai/gpt-4.1",
+        apiKey: "test",
+        reasoningEffort: "none",
+        extraBody: { deferred_tools: { protocol: "v1", profile: "universal" } },
+      }
+    );
+    expect(body).toMatchObject({
+      model: "openai/gpt-4.1",
+      deferred_tools: { protocol: "v1", profile: "universal" },
+    });
+  });
+
   it("forwards shared inference overrides", () => {
     const body = buildRequestBody(
       { messages: [] },

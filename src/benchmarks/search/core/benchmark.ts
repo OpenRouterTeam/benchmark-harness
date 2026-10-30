@@ -75,6 +75,7 @@ export function searchSolverOptionsFromConfig({
     costQualityTradeoff: config.costQualityTradeoff,
     costTier: config.costTier,
     switchyardAlgorithm: config.switchyardAlgorithm,
+    extraBody: config.extraBody,
     retry,
   });
 }

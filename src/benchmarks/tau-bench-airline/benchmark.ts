@@ -126,6 +126,7 @@ function makeAirlineLayer(
       costQualityTradeoff: benchmarkConfig.costQualityTradeoff,
       pinModel: benchmarkConfig.pinModel,
       switchyardAlgorithm: benchmarkConfig.switchyardAlgorithm,
+      extraBody: benchmarkConfig.extraBody,
     },
   });
   const datasetLayer = makeAirlineDatasetLayer(input.datasetRetry);

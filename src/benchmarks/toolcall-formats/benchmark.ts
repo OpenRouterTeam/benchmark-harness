@@ -115,6 +115,7 @@ export const TOOLCALL_FORMATS_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
           costQualityTradeoff: config.costQualityTradeoff,
           pinModel: config.pinModel,
           switchyardAlgorithm: config.switchyardAlgorithm,
+          extraBody: config.extraBody,
         },
       })
     ),
