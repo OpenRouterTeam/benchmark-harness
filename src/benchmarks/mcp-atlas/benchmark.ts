@@ -25,9 +25,9 @@ import type { RetryConfig } from "../../runtime/retry";
 import type { BenchmarkRunConfig } from "../benchmark-config";
 import { McpAtlasConfigSchema } from "../benchmark-config";
 import { MCP_ATLAS_META } from "../benchmark-meta";
+import { makeMcpSandbox } from "../mcp-sandbox/sandbox";
 import type { Benchmark, BenchmarkRunInput } from "../types";
 import { makeMcpAtlasDatasetLayer } from "./dataset";
-import { makeMcpAtlasSandbox } from "./sandbox";
 import { MCP_ATLAS_SANDBOX_TOKEN_ENV } from "./schema";
 import {
   makeMcpAtlasScorer,
@@ -136,7 +136,8 @@ function makeMcpAtlasLayer(
       const model = yield* Model;
       const responses = yield* Responses;
       const client = yield* HttpClient.HttpClient;
-      const sandbox = makeMcpAtlasSandbox(client, {
+      const sandbox = makeMcpSandbox(client, {
+        label: "MCP-Atlas sandbox",
         url: config.sandboxUrl,
         token: sandboxToken,
       });

@@ -40,6 +40,12 @@ export const MCP_ATLAS_META = {
   temperature: 0,
 } as const satisfies BenchmarkMeta;
 
+export const LIVE_MCP_BENCH_META = {
+  id: "live_mcp_bench",
+  defaultEpochs: 1,
+  temperature: 0,
+} as const satisfies BenchmarkMeta;
+
 export const TERMINAL_BENCH_META = {
   id: "terminal_bench",
   defaultEpochs: 1,
@@ -124,6 +130,7 @@ const BENCHMARK_META: Readonly<Record<string, BenchmarkMeta>> = {
   [TAU_BENCH_AIRLINE_META.id]: TAU_BENCH_AIRLINE_META,
   [TAU3_BENCH_BANKING_META.id]: TAU3_BENCH_BANKING_META,
   [MCP_ATLAS_META.id]: MCP_ATLAS_META,
+  [LIVE_MCP_BENCH_META.id]: LIVE_MCP_BENCH_META,
   [TERMINAL_BENCH_META.id]: TERMINAL_BENCH_META,
   [DRACO_META.id]: DRACO_META,
   [IFSTRUCT_META.id]: IFSTRUCT_META,

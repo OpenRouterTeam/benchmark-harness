@@ -27,6 +27,18 @@ import {
 import { DEFAULT_STEP_LIMIT as DEEP_SWE_DEFAULT_STEP_LIMIT } from "./deep-swe/schema";
 import { DracoPanelConfigSchema } from "./draco/schemas";
 import {
+  LIVE_MCP_BENCH_CATEGORIES,
+  LIVE_MCP_BENCH_DEFAULT_JEV_MODEL,
+  LIVE_MCP_BENCH_DEFAULT_JUDGE_MODEL,
+  LIVE_MCP_BENCH_JUDGE_KINDS,
+  LIVE_MCP_BENCH_DEFAULT_MAX_TOOL_CALLS,
+  LIVE_MCP_BENCH_DEFAULT_MAX_TURNS,
+  LIVE_MCP_BENCH_DEFAULT_SANDBOX_URL,
+  LIVE_MCP_BENCH_DEFAULT_TOOL_OUTPUT_CAP,
+  LIVE_MCP_BENCH_ID,
+  LIVE_MCP_BENCH_TOOL_SCOPES,
+} from "./live-mcp-bench/schema";
+import {
   MCP_ATLAS_DEFAULT_JUDGE_MODEL,
   MCP_ATLAS_DEFAULT_MAX_TOOL_CALLS,
   MCP_ATLAS_DEFAULT_MAX_TURNS,
@@ -175,6 +187,31 @@ export const McpAtlasConfigSchema = z.object({
 });
 
 export type McpAtlasConfig = z.infer<typeof McpAtlasConfigSchema>;
+
+export const LiveMcpBenchOptionsSchema = z.object({
+  sandboxUrl: zDefaultedText(LIVE_MCP_BENCH_DEFAULT_SANDBOX_URL),
+  toolScope: z.enum(LIVE_MCP_BENCH_TOOL_SCOPES).default("all"),
+  categories: z.array(z.enum(LIVE_MCP_BENCH_CATEGORIES)).min(1).optional(),
+  maxTurns: zInt().positive().default(LIVE_MCP_BENCH_DEFAULT_MAX_TURNS),
+  maxToolCalls: zInt()
+    .positive()
+    .default(LIVE_MCP_BENCH_DEFAULT_MAX_TOOL_CALLS),
+  toolOutputCap: zInt()
+    .positive()
+    .default(LIVE_MCP_BENCH_DEFAULT_TOOL_OUTPUT_CAP),
+  judgeKind: z.enum(LIVE_MCP_BENCH_JUDGE_KINDS).default("model"),
+  judgeModel: zDefaultedText(LIVE_MCP_BENCH_DEFAULT_JUDGE_MODEL),
+  judgeReasoningEffort: z.enum(REASONING_EFFORTS).default("medium"),
+  jevModel: zDefaultedText(LIVE_MCP_BENCH_DEFAULT_JEV_MODEL),
+});
+
+export const LiveMcpBenchConfigSchema = z.object({
+  benchmarkId: z.literal(LIVE_MCP_BENCH_ID),
+  ...FixedTemperatureBenchmarkBaseSchema.shape,
+  ...LiveMcpBenchOptionsSchema.shape,
+});
+
+export type LiveMcpBenchConfig = z.infer<typeof LiveMcpBenchConfigSchema>;
 
 export const MmmuProVisionOptionsSchema = z.object({
   imageDetail: z.enum(IMAGE_DETAIL_VALUES).optional(),
@@ -410,6 +447,7 @@ export const KeplerBenchmarkRunConfigSchema = z.discriminatedUnion(
     TauBenchAirlineConfigSchema,
     Tau3BenchBankingConfigSchema,
     McpAtlasConfigSchema,
+    LiveMcpBenchConfigSchema,
     MmmuProVisionBenchmarkConfigSchema,
     TerminalBenchConfigSchema,
     DracoBenchmarkConfigSchema,
@@ -448,6 +486,7 @@ export const BENCHMARK_OPTIONS_SCHEMAS = {
   tau_bench_verified_airline: TauBenchOptionsSchema,
   tau3_bench_banking: Tau3BenchBankingOptionsSchema,
   mcp_atlas: McpAtlasOptionsSchema,
+  live_mcp_bench: LiveMcpBenchOptionsSchema,
   mmmu_pro_vision: MmmuProVisionOptionsSchema,
   terminal_bench: TerminalBenchOptionsSchema,
   ifstruct: IfStructOptionsSchema,

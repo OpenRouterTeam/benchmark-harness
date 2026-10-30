@@ -474,6 +474,16 @@ export function buildBenchmarkConfig(opts: {
         reasoningEffort,
       });
     }
+    case "live_mcp_bench": {
+      return buildSchemaValidatedConfig({
+        benchmarkId: "live_mcp_bench",
+        model: requireModel("live_mcp_bench", model),
+        endpointId,
+        panelConfig,
+        costTier,
+        reasoningEffort,
+      });
+    }
     case "terminal_bench": {
       return buildSchemaValidatedConfig({
         benchmarkId: "terminal_bench",
