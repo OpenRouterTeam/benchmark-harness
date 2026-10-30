@@ -93,10 +93,16 @@ function rewriteDraft04ExclusiveBounds(value: unknown): unknown {
     }
     out[key] = rewriteDraft04ExclusiveBounds(entry);
   }
-  if (typeof out.exclusiveMinimum === "number" && record.exclusiveMinimum === true) {
+  if (
+    typeof out.exclusiveMinimum === "number" &&
+    record.exclusiveMinimum === true
+  ) {
     delete out.minimum;
   }
-  if (typeof out.exclusiveMaximum === "number" && record.exclusiveMaximum === true) {
+  if (
+    typeof out.exclusiveMaximum === "number" &&
+    record.exclusiveMaximum === true
+  ) {
     delete out.maximum;
   }
   return out;

@@ -1,6 +1,10 @@
 import { describe, expect, it } from "bun:test";
 
-import { contentBlocksToText, toDraft2020Schema, toToolDefinition } from "./sandbox";
+import {
+  contentBlocksToText,
+  toDraft2020Schema,
+  toToolDefinition,
+} from "./sandbox";
 
 describe("toToolDefinition", () => {
   it("builds a function tool with an object schema fallback", () => {
@@ -42,7 +46,10 @@ describe("toDraft2020Schema", () => {
     ).toEqual({
       type: "object",
       properties: {
-        pages: { type: "array", items: { type: "integer", exclusiveMinimum: 0 } },
+        pages: {
+          type: "array",
+          items: { type: "integer", exclusiveMinimum: 0 },
+        },
         ratio: { type: "number", exclusiveMaximum: 1 },
         count: { type: "integer", minimum: 1 },
       },
@@ -50,12 +57,20 @@ describe("toDraft2020Schema", () => {
   });
 
   it("applies when building a tool definition and leaves valid schemas alone", () => {
-    const valid = { type: "object", properties: { n: { type: "integer", exclusiveMinimum: 0 } } };
-    expect(toToolDefinition({ name: "t", inputSchema: valid }).function.parameters).toEqual(valid);
+    const valid = {
+      type: "object",
+      properties: { n: { type: "integer", exclusiveMinimum: 0 } },
+    };
+    expect(
+      toToolDefinition({ name: "t", inputSchema: valid }).function.parameters
+    ).toEqual(valid);
     expect(
       toToolDefinition({
         name: "read_pdf",
-        inputSchema: { type: "object", properties: { n: { exclusiveMinimum: true, minimum: 0 } } },
+        inputSchema: {
+          type: "object",
+          properties: { n: { exclusiveMinimum: true, minimum: 0 } },
+        },
       }).function.parameters
     ).toEqual({ type: "object", properties: { n: { exclusiveMinimum: 0 } } });
   });
