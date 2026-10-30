@@ -102,10 +102,11 @@ function mergePluginsById(
   const overriddenIds = new Set(
     configured.map(pluginId).filter((id) => id !== undefined)
   );
-  return [
-    ...base.filter((plugin) => !overriddenIds.has(pluginId(plugin))),
-    ...configured,
-  ];
+  const kept = base.filter((plugin) => {
+    const id = pluginId(plugin);
+    return id === undefined || !overriddenIds.has(id);
+  });
+  return [...kept, ...configured];
 }
 
 export interface SearchSolverOptions {
