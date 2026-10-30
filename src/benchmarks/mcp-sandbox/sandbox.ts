@@ -32,7 +32,7 @@ export interface McpToolResult {
   readonly isError: boolean;
 }
 
-export interface McpAtlasSandbox {
+export interface McpSandbox {
   readonly listTools: Effect<readonly McpTool[], SolverError>;
   readonly callTool: (
     name: string,
@@ -40,7 +40,8 @@ export interface McpAtlasSandbox {
   ) => Effect<McpToolResult, SolverError>;
 }
 
-export interface McpAtlasSandboxConfig {
+export interface McpSandboxConfig {
+  readonly label: string;
   readonly url: string;
   readonly token: string;
 }
@@ -68,18 +69,17 @@ export function contentBlocksToText(
     .join("\n");
 }
 
-function readError(path: string): (error: { message: string }) => SolverError {
-  return (error) =>
-    new SolverError({
-      message: `MCP-Atlas sandbox ${path} response could not be read: ${error.message}`,
-    });
-}
-
-export function makeMcpAtlasSandbox(
+export function makeMcpSandbox(
   client: HttpClient.HttpClient,
-  config: McpAtlasSandboxConfig
-): McpAtlasSandbox {
+  config: McpSandboxConfig
+): McpSandbox {
   const baseUrl = config.url.replace(/\/+$/, "");
+  const readError =
+    (path: string) =>
+    (error: { message: string }): SolverError =>
+      new SolverError({
+        message: `${config.label} ${path} response could not be read: ${error.message}`,
+      });
   const post = (path: string, body: Readonly<Record<string, unknown>>) =>
     client
       .execute(
@@ -95,10 +95,11 @@ export function makeMcpAtlasSandbox(
         mapError(
           (error) =>
             new SolverError({
-              message: `MCP-Atlas sandbox ${path} request failed: ${error.message}`,
+              message: `${config.label} ${path} request failed: ${error.message}`,
             })
         )
       );
+
   const listTools = post("/list-tools", {}).pipe(
     flatMap((response) =>
       gen(function* () {
@@ -107,7 +108,7 @@ export function makeMcpAtlasSandbox(
             mapError(readError("/list-tools"))
           );
           return yield* new SolverError({
-            message: `MCP-Atlas sandbox /list-tools HTTP ${response.status}: ${text}`,
+            message: `${config.label} /list-tools HTTP ${response.status}: ${text}`,
           });
         }
         const body: unknown = yield* response.json.pipe(
@@ -116,13 +117,14 @@ export function makeMcpAtlasSandbox(
         const parsed = parseSchema(McpToolListSchema, body);
         if (Result.isFailure(parsed)) {
           return yield* new SolverError({
-            message: `MCP-Atlas sandbox /list-tools returned an unexpected body: ${parsed.failure.message}`,
+            message: `${config.label} /list-tools returned an unexpected body: ${parsed.failure.message}`,
           });
         }
         return parsed.success;
       })
     )
   );
+
   const callTool = (
     name: string,
     args: Readonly<Record<string, unknown>>
@@ -136,7 +138,7 @@ export function makeMcpAtlasSandbox(
             );
             if (AUTH_FAILURE_STATUSES.has(response.status)) {
               return yield* new SolverError({
-                message: `MCP-Atlas sandbox /call-tool HTTP ${response.status}: ${text}`,
+                message: `${config.label} /call-tool HTTP ${response.status}: ${text}`,
               });
             }
             const firstLine = text.split("\n")[0] ?? "";
@@ -151,12 +153,13 @@ export function makeMcpAtlasSandbox(
           const parsed = parseSchema(McpContentBlockListSchema, body);
           if (Result.isFailure(parsed)) {
             return yield* new SolverError({
-              message: `MCP-Atlas sandbox /call-tool returned an unexpected body: ${parsed.failure.message}`,
+              message: `${config.label} /call-tool returned an unexpected body: ${parsed.failure.message}`,
             });
           }
           return { text: contentBlocksToText(parsed.success), isError: false };
         })
       )
     );
+
   return { listTools, callTool };
 }
