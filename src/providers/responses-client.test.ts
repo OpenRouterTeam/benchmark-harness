@@ -614,6 +614,44 @@ describe("consumeStream", () => {
   });
 });
 describe("makeResponsesLayer", () => {
+  it("marks every request redirect: error, including streamed input", async () => {
+    const previousFetch = globalThis.fetch;
+    const redirects: RequestRedirect[] = [];
+    globalThis.fetch = async (request) => {
+      assert(request instanceof Request);
+      redirects.push(request.redirect);
+      await request.text();
+      return new Response(
+        JSON.stringify({ id: "r", output: [], usage: undefined }),
+        { status: 200, headers: { "content-type": "application/json" } }
+      );
+    };
+    try {
+      await runPromise(
+        gen(function* run() {
+          const responses = yield* Responses;
+          yield* responses.send(
+            {
+              model: "m",
+              input: [{ type: "message", role: "user", content: "hi" }],
+            },
+            { timeoutMs: 1000, extraBody: { transforms: ["t"] } }
+          );
+        }).pipe(
+          provide(
+            makeResponsesLayer({
+              apiKey: "sk-test",
+              baseUrl: "https://example.test",
+            })
+          )
+        )
+      ).catch(() => undefined);
+      expect(redirects).toEqual(["error"]);
+    } finally {
+      globalThis.fetch = previousFetch;
+    }
+  });
+
   it("streams input items as JSON identical to the SDK body", async () => {
     const originalFetch = globalThis.fetch;
     const stream = await readStreamFixture();

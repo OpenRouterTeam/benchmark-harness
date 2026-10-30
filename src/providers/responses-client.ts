@@ -398,6 +398,7 @@ export async function streamInputItems(
     method: request.method,
     headers: request.headers,
     signal: request.signal,
+    redirect: "error",
     body,
     duplex: "half",
   };
@@ -409,7 +410,7 @@ async function mergeExtraBody(
   init: RequestInit | undefined,
   extraBody: Readonly<Record<string, unknown>> | undefined
 ): Promise<Request> {
-  const request = input instanceof Request ? input : new Request(input, init);
+  const request = new Request(input, { ...init, redirect: "error" });
   if (extraBody === undefined) {
     return request;
   }

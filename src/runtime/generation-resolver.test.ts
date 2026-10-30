@@ -235,6 +235,26 @@ describe("makeOpenRouterGenerationResolver", () => {
       "https://example.com/api/v1/generation?id=gen-original",
     ]);
   });
+  it("refuses redirects on the generation lookup", async () => {
+    let request: Request | undefined;
+    globalThis.fetch = (input, init) => {
+      request = input instanceof Request ? input : new Request(input, init);
+      return Promise.resolve(
+        jsonResponse({ data: { response_cache_source_id: "gen-original" } })
+      );
+    };
+    const resolver = makeOpenRouterGenerationResolver({
+      apiKey: "test-key",
+      baseUrl: "https://example.com",
+      pollIntervalMs: 1,
+      maxAttempts: 1,
+    });
+    await runPromise(
+      resolver.resolveSourceGeneration("gen-dummy", { includeUsage: false })
+    );
+    expect(request?.redirect).toBe("error");
+  });
+
   it("sends filtered trace headers on the lookup without touching auth", async () => {
     let request: Request | undefined;
     globalThis.fetch = (input, init) => {
