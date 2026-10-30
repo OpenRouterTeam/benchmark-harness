@@ -393,6 +393,33 @@ describe("searchSolver", () => {
     );
   });
 
+  it("keeps the lane's web plugin next to configured extraBody plugins on a plain model", async () => {
+    let sentOptions: ResponsesSendOptions | undefined;
+    const solver = searchSolver(
+      {
+        send: (_body, options) => {
+          sentOptions = options;
+          return effectSucceed(fixtureResult({ text: "x" }));
+        },
+      },
+      {
+        model: "openai/gpt-4.1",
+        instructions: "i",
+        lane: makeLane({ webSearch: "plugin", maxResults: 4 }),
+        extraBody: { plugins: [{ id: "file-parser" }] },
+      }
+    );
+    await runSolver(
+      solver(initialTaskState({ id: "s", input: "q", target: { text: "t" } }))
+    );
+    expect(sentOptions?.extraBody).toEqual({
+      plugins: [
+        expect.objectContaining({ id: "web", max_results: 4 }),
+        { id: "file-parser" },
+      ],
+    });
+  });
+
   it("appends the switchyard-router plugin after the serialized web plugin", async () => {
     let sentOptions: ResponsesSendOptions | undefined;
     let sent: ResponsesRequest | undefined;

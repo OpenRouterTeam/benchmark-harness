@@ -20,7 +20,10 @@ import {
   BENCH_HARNESS_APP_REFERRER,
   BENCH_HARNESS_APP_TITLE,
 } from "../../providers/app-identity";
-import { buildRouterPlugin } from "../../providers/router-plugin";
+import {
+  buildRouterPlugin,
+  withRouterPlugin,
+} from "../../providers/router-plugin";
 import type { RetryConfig } from "../../runtime/retry";
 import { rateLimitRetrySchedule, retrySalted } from "../../runtime/retry";
 import { TOOLCALL_SCHEMA_FUZZ_META } from "../benchmark-meta";
@@ -128,6 +131,14 @@ export function buildRequestBody(
     allow_fallbacks: options.allowFallbacks,
   });
   const plugin = buildRouterPlugin(options.model, options);
+  const callerPlugins = options.extraBody?.["plugins"];
+  const plugins =
+    plugin === undefined
+      ? undefined
+      : withRouterPlugin(
+          Array.isArray(callerPlugins) ? callerPlugins : [],
+          plugin
+        );
   return {
     ...request,
     model: options.model,
@@ -135,8 +146,8 @@ export function buildRequestBody(
     ...(options.maxTokens !== undefined && { max_tokens: options.maxTokens }),
     ...(Object.keys(provider).length > 0 && { provider }),
     ...(options.models !== undefined && { models: options.models }),
-    ...(plugin !== undefined && { plugins: [plugin] }),
     ...options.extraBody,
+    ...(plugins !== undefined && { plugins }),
   };
 }
 

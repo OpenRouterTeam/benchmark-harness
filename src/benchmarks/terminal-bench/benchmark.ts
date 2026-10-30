@@ -19,6 +19,7 @@ import { SandboxSession } from "../../sandbox/session";
 import { sandboxAgentPluginError } from "../agent-cli/candidate-models";
 import { getOriHarness } from "../agent-cli/harness";
 import { sandboxAgentRequestPlugins } from "../agent-cli/request-plugins";
+import { sandboxAgentTargetError } from "../agent-cli/sandbox-target";
 import { TERMINAL_BENCH_META } from "../benchmark-meta";
 import type { Benchmark, BenchmarkRunInput } from "../types";
 import { makeTerminalBenchDatasetLayer } from "./dataset";
@@ -40,6 +41,15 @@ function makeTerminalBenchLayer(
     );
   }
   const { agent } = benchmarkConfig;
+  const targetError = sandboxAgentTargetError({
+    benchmarkId: benchmarkConfig.benchmarkId,
+    agent,
+    baseUrl: input.baseUrl,
+    traceHeaders: input.traceHeaders,
+  });
+  if (targetError !== undefined) {
+    return layerFail(targetError);
+  }
   const candidateModelsError = sandboxAgentPluginError({
     benchmarkId: benchmarkConfig.benchmarkId,
     agent,
@@ -79,6 +89,7 @@ function makeTerminalBenchLayer(
     requestPlugins: requestPlugins.length > 0 ? requestPlugins : undefined,
     models: benchmarkConfig.models,
     providerOrder: benchmarkConfig.providerOrder,
+    extraBody: benchmarkConfig.extraBody,
   });
   const datasetLayer = makeTerminalBenchDatasetLayer(
     definedValues({

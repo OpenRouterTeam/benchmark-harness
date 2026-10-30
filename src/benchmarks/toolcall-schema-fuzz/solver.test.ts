@@ -157,6 +157,37 @@ describe("buildRequestBody", () => {
     });
   });
 
+  it("keeps the generated router plugin next to configured extraBody plugins", () => {
+    const body = buildRequestBody(
+      { messages: [] },
+      {
+        model: "openrouter/auto",
+        apiKey: "test",
+        reasoningEffort: "none",
+        costTier: "low",
+        extraBody: { plugins: [{ id: "web" }] },
+      }
+    );
+    expect(body["plugins"]).toEqual([
+      { id: "web" },
+      { id: "auto-router", cost_tier: "low" },
+    ]);
+  });
+
+  it("lets a configured router plugin override the generated one", () => {
+    const body = buildRequestBody(
+      { messages: [] },
+      {
+        model: "openrouter/auto",
+        apiKey: "test",
+        reasoningEffort: "none",
+        costTier: "low",
+        extraBody: { plugins: [{ id: "auto-router", pin_model: true }] },
+      }
+    );
+    expect(body["plugins"]).toEqual([{ id: "auto-router", pin_model: true }]);
+  });
+
   it("forwards shared inference overrides", () => {
     const body = buildRequestBody(
       { messages: [] },
