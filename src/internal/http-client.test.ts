@@ -27,6 +27,19 @@ describe("fetchHttpClientLayer", () => {
     globalThis.fetch = originalFetch;
   });
 
+  it("refuses to follow redirects so credentials never leave the origin", async () => {
+    let redirect: RequestRedirect | undefined;
+    globalThis.fetch = ((
+      _input: string | URL | Request,
+      init?: RequestInit
+    ) => {
+      redirect = init?.redirect;
+      return Promise.resolve(new Response("ok", { status: 200 }));
+    }) as typeof fetch;
+    await getText("https://example.invalid/a");
+    expect(redirect).toBe("error");
+  });
+
   it("resolves globalThis.fetch per request instead of once per process", async () => {
     globalThis.fetch = stubFetch("first");
     expect(await getText("https://example.invalid/a")).toBe("first");

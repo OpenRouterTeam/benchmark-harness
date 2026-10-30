@@ -151,6 +151,7 @@ export function makeOpenRouterGenerationResolver(
               ...traceHeaders,
               Authorization: `Bearer ${config.apiKey}`,
             },
+            redirect: "error",
             signal,
           }
         );

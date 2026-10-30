@@ -6,7 +6,7 @@ import { provide, succeed } from "effect/Layer";
 const liveFetchLayer = succeed(
   FetchHttpClient.Fetch,
   (input: string | URL | Request, init?: RequestInit) =>
-    globalThis.fetch(input, init)
+    globalThis.fetch(input, { ...init, redirect: "error" })
 );
 
 export const fetchHttpClientLayer: Layer<HttpClient> =
