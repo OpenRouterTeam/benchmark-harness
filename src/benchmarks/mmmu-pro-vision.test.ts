@@ -163,6 +163,7 @@ describe("mmmuProVisionSolverOptions", () => {
     const parsed = parseSchema(MmmuProVisionBenchmarkConfigSchema, {
       benchmarkId: "mmmu_pro_vision",
       model: "test/model",
+      reasoningEffort: "high",
       mediaResolution: "MEDIA_RESOLUTION_HIGH",
       extraBody: { deferred_tools: { protocol: "v1" } },
     });
