@@ -26,6 +26,7 @@ import type { SandboxSessionInstance } from "../../sandbox/session";
 import type { OriAgentRun, OriHarnessDef } from "./harness";
 import {
   AGENT_CANDIDATE_MODELS_ENV,
+  AGENT_EXTRA_BODY_ENV,
   AGENT_PROVIDER_ORDER_ENV,
   AGENT_REQUEST_PLUGINS_ENV,
 } from "./harness";
@@ -176,6 +177,7 @@ export interface AgentCliOpts {
   readonly requestPlugins?: readonly AgentRequestPlugin[];
   readonly models?: readonly string[];
   readonly providerOrder?: readonly string[];
+  readonly extraBody?: Readonly<Record<string, unknown>>;
 }
 
 export interface AgentCliRunResult extends OriAgentRun {
@@ -230,6 +232,9 @@ export function buildAgentCliEnv(opts: AgentCliOpts): Record<string, string> {
   if (providerOrder.length > 0) {
     env[AGENT_PROVIDER_ORDER_ENV] = JSON.stringify(providerOrder);
   }
+  if (opts.extraBody !== undefined) {
+    env[AGENT_EXTRA_BODY_ENV] = JSON.stringify(opts.extraBody);
+  }
   return env;
 }
 
@@ -277,6 +282,7 @@ export function runAgentCli(input: {
   const requestPlugins = opts.requestPlugins ?? [];
   const models = opts.models ?? [];
   const providerOrder = opts.providerOrder ?? [];
+  const hasExtraBody = opts.extraBody !== undefined;
   const script = harness.buildRunScript({
     instructionPath,
     logPath: harness.remoteLogPath,
@@ -289,7 +295,8 @@ export function runAgentCli(input: {
     loadsRequestExtension:
       requestPlugins.length > 0 ||
       models.length > 0 ||
-      providerOrder.length > 0,
+      providerOrder.length > 0 ||
+      hasExtraBody,
   });
   return gen(function* () {
     if (requestPlugins.length > 0 && !harness.forwardsRequestPlugins) {
@@ -305,6 +312,11 @@ export function runAgentCli(input: {
     if (providerOrder.length > 0 && !harness.forwardsRequestPlugins) {
       return yield* new SolverError({
         message: `the ${harness.id} agent does not forward the OpenRouter provider order from inside the sandbox`,
+      });
+    }
+    if (hasExtraBody && !harness.forwardsRequestPlugins) {
+      return yield* new SolverError({
+        message: `the ${harness.id} agent does not forward extraBody from inside the sandbox`,
       });
     }
     if (

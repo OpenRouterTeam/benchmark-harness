@@ -5,6 +5,7 @@ import { join } from "node:path";
 
 import {
   AGENT_CANDIDATE_MODELS_ENV,
+  AGENT_EXTRA_BODY_ENV,
   AGENT_PROVIDER_ORDER_ENV,
   AGENT_REQUEST_PLUGINS_ENV,
   getOriHarness,
@@ -33,7 +34,8 @@ type ProviderRequestHandler = (event: { readonly payload: unknown }) => unknown;
 async function loadRequestPluginsHandler(
   plugins: readonly unknown[],
   models?: readonly string[],
-  providerOrder?: readonly string[]
+  providerOrder?: readonly string[],
+  extraBody?: Readonly<Record<string, unknown>>
 ): Promise<ProviderRequestHandler> {
   const dir = mkdtempSync(join(tmpdir(), "pi-request-plugins-"));
   const path = join(dir, "openrouter-request-plugins.ts");
@@ -41,6 +43,12 @@ async function loadRequestPluginsHandler(
   const previous = process.env[AGENT_REQUEST_PLUGINS_ENV];
   const previousModels = process.env[AGENT_CANDIDATE_MODELS_ENV];
   const previousOrder = process.env[AGENT_PROVIDER_ORDER_ENV];
+  const previousExtraBody = process.env[AGENT_EXTRA_BODY_ENV];
+  if (extraBody === undefined) {
+    Reflect.deleteProperty(process.env, AGENT_EXTRA_BODY_ENV);
+  } else {
+    process.env[AGENT_EXTRA_BODY_ENV] = JSON.stringify(extraBody);
+  }
   if (providerOrder === undefined) {
     Reflect.deleteProperty(process.env, AGENT_PROVIDER_ORDER_ENV);
   } else {
@@ -85,10 +93,31 @@ async function loadRequestPluginsHandler(
     } else {
       process.env[AGENT_PROVIDER_ORDER_ENV] = previousOrder;
     }
+    if (previousExtraBody === undefined) {
+      Reflect.deleteProperty(process.env, AGENT_EXTRA_BODY_ENV);
+    } else {
+      process.env[AGENT_EXTRA_BODY_ENV] = previousExtraBody;
+    }
   }
 }
 
 describe("pi request plugins extension", () => {
+  it("merges the configured extraBody into the provider payload after the other overrides", async () => {
+    const handler = await loadRequestPluginsHandler(
+      [],
+      undefined,
+      ["DigitalOcean"],
+      { deferred_tools: { protocol: "v1", profile: "universal" } }
+    );
+    expect(
+      handler({ payload: { model: "m", provider: { sort: "price" } } })
+    ).toStrictEqual({
+      model: "m",
+      provider: { sort: "price", order: ["DigitalOcean"] },
+      deferred_tools: { protocol: "v1", profile: "universal" },
+    });
+  });
+
   it("sets the configured provider order and keeps the caller's other provider preferences", async () => {
     const handler = await loadRequestPluginsHandler([], undefined, [
       "Together",

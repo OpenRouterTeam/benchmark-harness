@@ -124,6 +124,7 @@ function makeDeepSweLayer(
                 requestPlugins.length > 0 ? requestPlugins : undefined,
               models: benchmarkConfig.models,
               providerOrder: benchmarkConfig.providerOrder,
+              extraBody: benchmarkConfig.extraBody,
             }),
             endpointId: benchmarkConfig.endpointId,
             sessionId: input.sessionId,

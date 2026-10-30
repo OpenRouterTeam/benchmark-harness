@@ -7,9 +7,9 @@ import { parseSchema } from "../internal/zod";
 import { runBenchmarkById } from "../runner/run-by-id";
 import { MmmuProVisionBenchmarkConfigSchema } from "./benchmark-config";
 import {
-  mmmuExtraBody,
   mmmuProVisionRecordToSample,
-  mmmuProVisionSolverOptions,
+  TEST_mmmuExtraBody,
+  TEST_mmmuProVisionSolverOptions,
 } from "./mmmu-pro-vision";
 import { getBenchmark } from "./registry";
 
@@ -131,12 +131,12 @@ describe("MMMU Pro Vision benchmark registry", () => {
 
 describe("mmmuExtraBody", () => {
   it("returns undefined when nothing is configured", () => {
-    expect(mmmuExtraBody(undefined, undefined)).toBeUndefined();
+    expect(TEST_mmmuExtraBody(undefined, undefined)).toBeUndefined();
   });
 
   it("forwards the configured extraBody alongside media_resolution", () => {
     expect(
-      mmmuExtraBody(
+      TEST_mmmuExtraBody(
         { deferred_tools: { protocol: "v1" } },
         "MEDIA_RESOLUTION_HIGH"
       )
@@ -148,7 +148,7 @@ describe("mmmuExtraBody", () => {
 
   it("lets the benchmark's media_resolution win over a configured one", () => {
     expect(
-      mmmuExtraBody(
+      TEST_mmmuExtraBody(
         { media_resolution: "MEDIA_RESOLUTION_LOW" },
         "MEDIA_RESOLUTION_HIGH"
       )
@@ -168,7 +168,7 @@ describe("mmmuProVisionSolverOptions", () => {
       extraBody: { deferred_tools: { protocol: "v1" } },
     });
     assertSuccess(parsed);
-    const options = mmmuProVisionSolverOptions(parsed.success);
+    const options = TEST_mmmuProVisionSolverOptions(parsed.success);
     expect(options.mediaResolution).toBe("MEDIA_RESOLUTION_HIGH");
     expect(options.inference.extraBody).toEqual({
       deferred_tools: { protocol: "v1" },
