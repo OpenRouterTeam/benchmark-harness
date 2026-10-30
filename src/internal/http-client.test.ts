@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it } from "bun:test";
 import { flatMap, provide, runPromise } from "effect/Effect";
 import { HttpClient } from "effect/http";
 
-import { fetchHttpClientLayer } from "./http-client";
+import { carriesCredentials, fetchHttpClientLayer } from "./http-client";
 
 const originalFetch = globalThis.fetch;
 
@@ -45,6 +45,21 @@ describe("fetchHttpClientLayer", () => {
     expect(redirect).toBe("error");
     await getText("https://example.invalid/c", { "CF-Access-Client-Id": "id" });
     expect(redirect).toBe("error");
+  });
+
+  it("sees credentials on both the Request and the init overrides", () => {
+    const plain = new Request("https://example.invalid/a");
+    expect(carriesCredentials(plain, undefined)).toBe(false);
+    expect(
+      carriesCredentials(plain, { headers: { Authorization: "Bearer k" } })
+    ).toBe(true);
+    const withToken = new Request("https://example.invalid/a", {
+      headers: { "cf-access-client-secret": "s" },
+    });
+    expect(carriesCredentials(withToken, { headers: {} })).toBe(true);
+    expect(carriesCredentials("https://example.invalid/a", undefined)).toBe(
+      false
+    );
   });
 
   it("resolves globalThis.fetch per request instead of once per process", async () => {

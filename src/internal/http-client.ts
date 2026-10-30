@@ -9,10 +9,11 @@ export function carriesCredentials(
   input: string | URL | Request,
   init: RequestInit | undefined
 ): boolean {
-  const headers = new Headers(
-    input instanceof Request ? input.headers : init?.headers
-  );
-  return [...headers.keys()].some((name) =>
+  const names = [
+    ...(input instanceof Request ? input.headers.keys() : []),
+    ...new Headers(init?.headers).keys(),
+  ];
+  return names.some((name) =>
     CREDENTIAL_HEADER_PREFIXES.some((prefix) =>
       name.toLowerCase().startsWith(prefix)
     )
