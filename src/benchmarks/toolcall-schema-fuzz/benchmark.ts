@@ -87,6 +87,7 @@ function makeLayer(
               providerIgnore: config.providerIgnore,
               allowFallbacks: config.allowFallbacks,
               switchyardAlgorithm: config.switchyardAlgorithm,
+              extraBody: config.extraBody,
               models: config.models,
             }),
           },

@@ -61,14 +61,18 @@ function routerExtraBody(
   body: ResponsesRequest,
   opts: Pick<
     SearchSolverOptions,
-    "model" | "costTier" | "costQualityTradeoff" | "switchyardAlgorithm"
+    | "model"
+    | "costTier"
+    | "costQualityTradeoff"
+    | "switchyardAlgorithm"
+    | "extraBody"
   >
 ): Readonly<Record<string, unknown>> | undefined {
   const plugin = buildRouterPlugin(opts.model, opts);
   if (plugin === undefined) {
-    return undefined;
+    return opts.extraBody;
   }
-  return { plugins: [...pluginsInWireShape(body), plugin] };
+  return { ...opts.extraBody, plugins: [...pluginsInWireShape(body), plugin] };
 }
 
 export interface SearchSolverOptions {
@@ -91,6 +95,7 @@ export interface SearchSolverOptions {
   readonly costQualityTradeoff?: number;
   readonly costTier?: CostTier;
   readonly switchyardAlgorithm?: SwitchyardAlgorithm;
+  readonly extraBody?: Readonly<Record<string, unknown>>;
   readonly retry?: RetryConfig;
 }
 

@@ -40,6 +40,20 @@ describe("searchSolverOptionsFromConfig", () => {
     lane: { webSearch: "server-tool", engine: "auto" },
   } as const;
 
+  it("keeps extraBody for the request", () => {
+    const options = searchSolverOptionsFromConfig({
+      config: {
+        ...baseConfig,
+        extraBody: { deferred_tools: { protocol: "v1", profile: "universal" } },
+      },
+      instructions: "instructions",
+      temperature: 0,
+    });
+    expect(options.extraBody).toEqual({
+      deferred_tools: { protocol: "v1", profile: "universal" },
+    });
+  });
+
   it("projects every shared search inference option", () => {
     const config = {
       benchmarkId: "search_hle",

@@ -175,6 +175,7 @@ export const IFSTRUCT_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
           costTier: config.costTier,
           costQualityTradeoff: config.costQualityTradeoff,
           switchyardAlgorithm: config.switchyardAlgorithm,
+          extraBody: config.extraBody,
         },
       })
     ),
