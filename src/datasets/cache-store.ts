@@ -439,13 +439,14 @@ export function makeGcsCacheStore(opts: GcsCacheStoreOptions): CacheStore {
     },
     async snapshotCheckout(localDir, scope, commit) {
       const full = joinKey(prefix, checkoutSnapshotKey(scope, commit));
-      const opened = await tryPromiseResult(async () =>
-        client.openObjectWriteStream(full, "application/gzip")
-      );
+      const opened = Result.try({
+        try: () => client.openObjectWriteStream(full, "application/gzip"),
+        catch: unknownErrorToString,
+      });
       if (Result.isFailure(opened)) {
         wLog("GCS checkout snapshot failed", {
           key: full,
-          error: unknownErrorToString(opened.failure),
+          error: opened.failure,
         });
         return;
       }
