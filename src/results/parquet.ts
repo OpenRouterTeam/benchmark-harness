@@ -16,7 +16,10 @@ import { ScoreValue } from "../harness/core";
 import type { AggregateMetrics, SampleScore } from "../harness/metric";
 import { aggregateScores } from "../harness/metric";
 import type { RunResult } from "../harness/run";
+import { unknownErrorToString } from "../internal/errors";
 import { definedValues } from "../internal/guards";
+import type { AsyncResult } from "../internal/result";
+import { tryPromiseResult } from "../internal/result";
 import { firstZodIssueMessage, parseSchema, z } from "../internal/zod";
 import {
   citationToPojo,
@@ -166,6 +169,23 @@ export interface MergedResultFiles {
   readonly benchmarkConfig: string | null;
 }
 
+export type ParquetError =
+  | {
+      readonly kind: "result-file-read-failed";
+      readonly index: number;
+      readonly cause: unknown;
+    }
+  | { readonly kind: "result-file-changed"; readonly index: number }
+  | { readonly kind: "parquet-write-failed"; readonly cause: unknown }
+  | { readonly kind: "parquet-decode-failed"; readonly cause: unknown }
+  | { readonly kind: "invalid-result-row"; readonly issue: string }
+  | { readonly kind: "invalid-result-column-json"; readonly cause: unknown }
+  | { readonly kind: "invalid-result-column"; readonly issue: string };
+
+type SampleScoresOf = (
+  rows: readonly BenchmarkResultRow[]
+) => Result.Result<SampleScore[], ParquetError>;
+
 type MergedRunColumns = Pick<
   BenchmarkResultRow,
   | "format_version"
@@ -214,15 +234,19 @@ const RESULT_SCHEMA = schemaFromColumnData({
 
 export async function mergeResultFilesToParquet(
   input: MergeResultFilesInput
-): Promise<MergedResultFiles> {
+): AsyncResult<MergedResultFiles, ParquetError> {
   const { files, meta, writer } = input;
   const createdAt = meta.createdAt ?? formatIso(nowUnsafe());
-  const scan = await scanResultFiles(
+  const scanned = await scanResultFiles(
     files,
     input.runLevelScores === undefined
-      ? rowsToSampleScores
+      ? rowsToUnscoredSamples
       : rowsToScoredSamples
   );
+  if (Result.isFailure(scanned)) {
+    return Result.fail(scanned.failure);
+  }
+  const scan = scanned.success;
   const extraScores = input.runLevelScores?.({
     metrics: aggregateScores(scan.sampleScores),
     usage: scan.usage,
@@ -245,7 +269,11 @@ export async function mergeResultFilesToParquet(
     if (expectedRows === 0) {
       continue;
     }
-    const rows = await readFile();
+    const read = await readResultFile(readFile, index);
+    if (Result.isFailure(read)) {
+      return Result.fail(read.failure);
+    }
+    const rows = read.success;
     const unchanged =
       rows.length === expectedRows &&
       runFingerprint(rows[0]) === scan.runFingerprints[index] &&
@@ -253,20 +281,25 @@ export async function mergeResultFilesToParquet(
         sameSampleScore(row, scan.sampleScores[sampleOffset + rowIndex])
       );
     if (!unchanged) {
-      throw new Error(`Result file ${index} changed between merge passes`);
+      return Result.fail({ kind: "result-file-changed", index });
     }
     sampleOffset += expectedRows;
     const mergedRows = rows.map((row) => ({ ...row, ...runColumns }));
-    await parquetWriter.write({
-      columnData: COLUMN_SPECS.map((spec) => ({
-        name: spec.name,
-        data: mergedRows.map((row) => row[spec.name] ?? null),
-      })),
-      rowGroupSize: MERGE_ROW_GROUP_ROWS,
+    const written = await writeParquetRows(parquetWriter, mergedRows);
+    if (Result.isFailure(written)) {
+      return Result.fail(written.failure);
+    }
+  }
+  const finished = await tryPromiseResult(async () => {
+    await parquetWriter.finish();
+  });
+  if (Result.isFailure(finished)) {
+    return Result.fail({
+      kind: "parquet-write-failed",
+      cause: finished.failure,
     });
   }
-  await parquetWriter.finish();
-  return {
+  return Result.succeed({
     summary:
       scan.first === undefined
         ? null
@@ -276,13 +309,68 @@ export async function mergeResultFilesToParquet(
             ...definedValues({ primaryScore: scan.primaryScore }),
           }),
     benchmarkConfig: runColumns.benchmark_config ?? null,
-  };
+  });
+}
+
+export function parquetErrorMessage(error: ParquetError): string {
+  switch (error.kind) {
+    case "result-file-read-failed":
+    case "parquet-write-failed":
+    case "parquet-decode-failed":
+    case "invalid-result-column-json": {
+      return unknownErrorToString(error.cause);
+    }
+    case "result-file-changed": {
+      return `Result file ${error.index} changed between merge passes`;
+    }
+    case "invalid-result-row": {
+      return `Invalid benchmark result row: ${error.issue}`;
+    }
+    case "invalid-result-column": {
+      return `Invalid result column: ${error.issue}`;
+    }
+    default: {
+      return error satisfies never;
+    }
+  }
+}
+
+async function readResultFile(
+  readFile: ResultFileReader,
+  index: number
+): AsyncResult<readonly BenchmarkResultRow[], ParquetError> {
+  const rows = await tryPromiseResult(readFile);
+  return Result.isFailure(rows)
+    ? Result.fail({
+        kind: "result-file-read-failed",
+        index,
+        cause: rows.failure,
+      })
+    : Result.succeed(rows.success);
+}
+
+async function writeParquetRows(
+  parquetWriter: ParquetWriter,
+  mergedRows: readonly BenchmarkResultRow[]
+): AsyncResult<void, ParquetError> {
+  const written = await tryPromiseResult(async () => {
+    await parquetWriter.write({
+      columnData: COLUMN_SPECS.map((spec) => ({
+        name: spec.name,
+        data: mergedRows.map((row) => row[spec.name] ?? null),
+      })),
+      rowGroupSize: MERGE_ROW_GROUP_ROWS,
+    });
+  });
+  return Result.isFailure(written)
+    ? Result.fail({ kind: "parquet-write-failed", cause: written.failure })
+    : Result.succeed(undefined);
 }
 
 async function scanResultFiles(
   files: readonly ResultFileReader[],
-  toSampleScores: (rows: readonly BenchmarkResultRow[]) => SampleScore[]
-): Promise<ResultFilesScan> {
+  toSampleScores: SampleScoresOf
+): AsyncResult<ResultFilesScan, ParquetError> {
   const rowCounts: number[] = [];
   const runFingerprints: (string | undefined)[] = [];
   const sampleScores: SampleScore[] = [];
@@ -298,8 +386,12 @@ async function scanResultFiles(
   let primaryScoreValue = 0;
   let primaryScoreWeight = 0;
   let hasPrimaryScore = false;
-  for (const readFile of files) {
-    const rows = await readFile();
+  for (const [index, readFile] of files.entries()) {
+    const read = await readResultFile(readFile, index);
+    if (Result.isFailure(read)) {
+      return Result.fail(read.failure);
+    }
+    const rows = read.success;
     rowCounts.push(rows.length);
     runFingerprints.push(runFingerprint(rows[0]));
     const [row] = rows;
@@ -311,7 +403,11 @@ async function scanResultFiles(
       temperature: row.temperature,
       benchmark_config: row.benchmark_config,
     };
-    for (const sampleScore of toSampleScores(rows)) {
+    const fileSampleScores = toSampleScores(rows);
+    if (Result.isFailure(fileSampleScores)) {
+      return Result.fail(fileSampleScores.failure);
+    }
+    for (const sampleScore of fileSampleScores.success) {
       sampleScores.push(sampleScore);
     }
     const parsedPrimaryScore = parsePrimaryScore(row.primary_score);
@@ -329,7 +425,7 @@ async function scanResultFiles(
     usage.totalCost += row.total_cost;
     usage.generationTimeMs += row.generation_time_ms;
   }
-  return {
+  return Result.succeed({
     rowCounts,
     runFingerprints,
     sampleScores,
@@ -342,7 +438,7 @@ async function scanResultFiles(
             weight: primaryScoreWeight,
           }
         : undefined,
-  };
+  });
 }
 
 function runFingerprint(
@@ -574,8 +670,7 @@ function cellValue(name: ColumnName, ctx: RowContext, s: SampleScore): unknown {
       return s.metadata !== undefined ? JSON.stringify(s.metadata) : null;
     }
     default: {
-      name satisfies never;
-      throw new Error(`Unhandled column: ${name}`);
+      return name satisfies never;
     }
   }
 }
@@ -627,18 +722,24 @@ export function rowScoreToNumber(scoreValue: string): number {
   return scoreValue === ScoreValue.Correct ? 1 : 0;
 }
 
-export function readResultRows(
+export async function readResultRows(
   file: AsyncBuffer
-): Promise<readonly BenchmarkResultRow[]> {
-  return parquetReadObjects({ file }).then((decoded) => {
-    const result = parseSchema(z.array(BenchmarkResultRowSchema), decoded);
-    if (Result.isFailure(result)) {
-      throw new Error(
-        `Invalid benchmark result row: ${firstZodIssueMessage(result.failure)}`
-      );
-    }
-    return result.success;
-  });
+): AsyncResult<readonly BenchmarkResultRow[], ParquetError> {
+  const decoded = await tryPromiseResult(() => parquetReadObjects({ file }));
+  if (Result.isFailure(decoded)) {
+    return Result.fail({
+      kind: "parquet-decode-failed",
+      cause: decoded.failure,
+    });
+  }
+  const rows = parseSchema(z.array(BenchmarkResultRowSchema), decoded.success);
+  if (Result.isFailure(rows)) {
+    return Result.fail({
+      kind: "invalid-result-row",
+      issue: firstZodIssueMessage(rows.failure),
+    });
+  }
+  return Result.succeed(rows.success);
 }
 
 export function asyncBufferFromBytes(bytes: Uint8Array): AsyncBuffer {
@@ -708,10 +809,36 @@ function rowsToSampleScores(
   }));
 }
 
+function rowsToUnscoredSamples(
+  rows: readonly BenchmarkResultRow[]
+): Result.Result<SampleScore[], ParquetError> {
+  return Result.succeed(rowsToSampleScores(rows));
+}
+
 function rowsToScoredSamples(
   rows: readonly BenchmarkResultRow[]
-): SampleScore[] {
-  return rows.map((row) =>
+): Result.Result<SampleScore[], ParquetError> {
+  return Result.all(rows.map(rowToScoredSample));
+}
+
+function rowToScoredSample(
+  row: BenchmarkResultRow
+): Result.Result<SampleScore, ParquetError> {
+  const trajectory = parseJsonColumn(
+    ScorerTrajectorySchema,
+    row.scorer_trajectory
+  );
+  if (Result.isFailure(trajectory)) {
+    return Result.fail(trajectory.failure);
+  }
+  const metadata = parseJsonColumn(
+    z.record(z.string(), z.unknown()),
+    row.metadata
+  );
+  if (Result.isFailure(metadata)) {
+    return Result.fail(metadata.failure);
+  }
+  return Result.succeed(
     definedValues({
       sampleId: row.sample_id,
       epoch: row.epoch,
@@ -719,15 +846,9 @@ function rowsToScoredSamples(
         value: rowScoreValue(row.score_value),
         answer: row.answer,
         explanation: row.explanation ?? "",
-        trajectory: parseJsonColumn(
-          ScorerTrajectorySchema,
-          row.scorer_trajectory
-        ),
+        trajectory: trajectory.success,
       }),
-      metadata: parseJsonColumn(
-        z.record(z.string(), z.unknown()),
-        row.metadata
-      ),
+      metadata: metadata.success,
     })
   );
 }
@@ -735,17 +856,28 @@ function rowsToScoredSamples(
 function parseJsonColumn<T>(
   schema: z.ZodType<T>,
   raw: string | null | undefined
-): T | undefined {
+): Result.Result<T | undefined, ParquetError> {
   if (raw === null || raw === undefined) {
-    return undefined;
+    return Result.succeed(undefined);
   }
-  const parsed = parseSchema(schema, JSON.parse(raw));
+  const json = Result.try({
+    try: (): unknown => JSON.parse(raw),
+    catch: (cause): ParquetError => ({
+      kind: "invalid-result-column-json",
+      cause,
+    }),
+  });
+  if (Result.isFailure(json)) {
+    return Result.fail(json.failure);
+  }
+  const parsed = parseSchema(schema, json.success);
   if (Result.isFailure(parsed)) {
-    throw new Error(
-      `Invalid result column: ${firstZodIssueMessage(parsed.failure)}`
-    );
+    return Result.fail({
+      kind: "invalid-result-column",
+      issue: firstZodIssueMessage(parsed.failure),
+    });
   }
-  return parsed.success;
+  return Result.succeed(parsed.success);
 }
 
 function extraScoresToJson(
