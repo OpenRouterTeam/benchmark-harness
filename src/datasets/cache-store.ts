@@ -86,7 +86,7 @@ export type TarGzError =
       readonly message: string;
     };
 
-export function describeTarGzError(error: TarGzError): string {
+function describeTarGzError(error: TarGzError): string {
   switch (error.kind) {
     case "tar_exited": {
       return `tar ${error.operation} exited ${error.code}: ${error.stderr}`;

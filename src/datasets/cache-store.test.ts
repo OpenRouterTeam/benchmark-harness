@@ -83,7 +83,7 @@ describe("GcsCacheStore", () => {
   const savedLogLevel = process.env.LOG_LEVEL;
   const savedOrEnv = process.env.OR_ENV;
   const tmpDirs: string[] = [];
-  const infoSpies: { mockRestore: () => void }[] = [];
+  const consoleSpies: { mockRestore: () => void }[] = [];
   afterEach(() => {
     for (const name of [
       "BENCH_DATASET_CACHE_BACKEND",
@@ -107,8 +107,8 @@ describe("GcsCacheStore", () => {
     } else {
       process.env.OR_ENV = savedOrEnv;
     }
-    for (const info of infoSpies.splice(0)) {
-      info.mockRestore();
+    for (const spy of consoleSpies.splice(0)) {
+      spy.mockRestore();
     }
     while (tmpDirs.length > 0) {
       const dir = tmpDirs.pop();
@@ -124,20 +124,12 @@ describe("GcsCacheStore", () => {
     return dir;
   }
 
-  function captureInfo() {
+  function captureConsole(level: "info" | "warn") {
     process.env.OR_ENV = "development";
     process.env.LOG_LEVEL = "1";
-    const info = spyOn(console, "info").mockImplementation(() => {});
-    infoSpies.push(info);
-    return info;
-  }
-
-  function captureWarn() {
-    process.env.OR_ENV = "development";
-    process.env.LOG_LEVEL = "1";
-    const warn = spyOn(console, "warn").mockImplementation(() => {});
-    infoSpies.push(warn);
-    return warn;
+    const spy = spyOn(console, level).mockImplementation(() => {});
+    consoleSpies.push(spy);
+    return spy;
   }
 
   function withoutTarOnPath<T>(run: () => Promise<T>): Promise<T> {
@@ -152,7 +144,7 @@ describe("GcsCacheStore", () => {
     const client = makeMemoryGcsClient();
     const store = makeGcsCacheStore({ bucket: "b", client });
     await store.writeJson("hit.json", { ok: true });
-    const info = captureInfo();
+    const info = captureConsole("info");
 
     await expect(store.readJson("hit.json")).resolves.toEqual({ ok: true });
 
@@ -167,7 +159,7 @@ describe("GcsCacheStore", () => {
   it("logs a miss when a JSON object is absent", async () => {
     const client = makeMemoryGcsClient();
     const store = makeGcsCacheStore({ bucket: "b", client });
-    const info = captureInfo();
+    const info = captureConsole("info");
 
     await expect(store.readJson("missing.json")).resolves.toBeUndefined();
 
@@ -184,7 +176,7 @@ describe("GcsCacheStore", () => {
     const store = makeGcsCacheStore({ bucket: "b", client });
     await store.writeJson("stale.json", { ok: true });
     client.setUpdated("stale.json", 1_000);
-    const info = captureInfo();
+    const info = captureConsole("info");
 
     await expect(
       store.readJson("stale.json", { maxAgeMs: 1_000, now: 3_000 })
@@ -205,7 +197,7 @@ describe("GcsCacheStore", () => {
       updated: Date.now(),
     });
     const store = makeGcsCacheStore({ bucket: "b", client });
-    const info = captureInfo();
+    const info = captureConsole("info");
 
     await expect(store.readJson("invalid.json")).resolves.toBeUndefined();
 
@@ -324,7 +316,7 @@ describe("GcsCacheStore", () => {
     const src = makeTmpDir();
     writeFileSync(join(src, "task.toml"), "name = 'a'\n");
     await store.snapshotCheckout(src, "harbor", "deadbeefdeadbeef");
-    const info = captureInfo();
+    const info = captureConsole("info");
     const dest = makeTmpDir();
 
     await expect(
@@ -348,7 +340,7 @@ describe("GcsCacheStore", () => {
     const client = makeMemoryGcsClient();
     const store = makeGcsCacheStore({ bucket: "b", client });
     const dir = makeTmpDir();
-    const info = captureInfo();
+    const info = captureConsole("info");
 
     await expect(
       store.tryHydrateCheckout(dir, "harbor", "abc123")
@@ -372,7 +364,7 @@ describe("GcsCacheStore", () => {
     const store = makeGcsCacheStore({ bucket: "b", client });
     const src = makeTmpDir();
     writeFileSync(join(src, "task.toml"), "name = 'a'\n");
-    const info = captureInfo();
+    const info = captureConsole("info");
 
     await store.snapshotCheckout(src, "harbor", "deadbeefdeadbeef");
 
@@ -447,7 +439,9 @@ describe("GcsCacheStore", () => {
     assertFailure(result);
     expect(result.failure.kind).toBe("spawn_failed");
     expect(result.failure.operation).toBe("create");
-    expect(result.failure).toHaveProperty("message");
+    if (result.failure.kind === "spawn_failed") {
+      expect(result.failure.message).toContain("tar");
+    }
   });
 
   it("extractTarGzFrom reports tar_exited for a corrupt archive", async () => {
@@ -503,7 +497,7 @@ describe("GcsCacheStore", () => {
     );
     const store = makeGcsCacheStore({ bucket: "b", client });
     const dir = makeTmpDir();
-    const warn = captureWarn();
+    const warn = captureConsole("warn");
 
     await expect(
       store.tryHydrateCheckout(dir, "harbor", "abc123")
@@ -527,7 +521,7 @@ describe("GcsCacheStore", () => {
     };
     const store = makeGcsCacheStore({ bucket: "b", client });
     const dir = makeTmpDir();
-    const warn = captureWarn();
+    const warn = captureConsole("warn");
 
     await expect(
       store.tryHydrateCheckout(dir, "harbor", "abc123")
@@ -545,7 +539,7 @@ describe("GcsCacheStore", () => {
     const client = makeMemoryGcsClient();
     const store = makeGcsCacheStore({ bucket: "b", client });
     const dir = makeTmpDir();
-    const warn = captureWarn();
+    const warn = captureConsole("warn");
 
     await store.snapshotCheckout(join(dir, "missing"), "harbor", "abc123");
 
@@ -569,7 +563,7 @@ describe("GcsCacheStore", () => {
     const store = makeGcsCacheStore({ bucket: "b", client });
     const dir = makeTmpDir();
     writeFileSync(join(dir, "task.toml"), "name = 'a'\n");
-    const warn = captureWarn();
+    const warn = captureConsole("warn");
 
     await store.snapshotCheckout(dir, "harbor", "abc123");
 
