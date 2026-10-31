@@ -17,6 +17,7 @@ import {
 } from "../benchmarks/benchmark-config";
 import { DracoPanelConfigSchema } from "../benchmarks/draco/schemas";
 import { benchmarkIds, getBenchmark } from "../benchmarks/registry";
+import type { Benchmark } from "../benchmarks/types";
 import type { CostTier, ReasoningEffort } from "../harness/constants";
 import {
   ADAPTIVE_REASONING_EFFORT,
@@ -74,9 +75,9 @@ export type CliError =
   | {
       readonly kind: "invalid_benchmark_config";
       readonly benchmarkId: string;
-      readonly error: ZodError;
+      readonly cause: ZodError;
     }
-  | { readonly kind: "invalid_draco_panel_config"; readonly error: ZodError }
+  | { readonly kind: "invalid_draco_panel_config"; readonly cause: ZodError }
   | { readonly kind: "unsupported_benchmark"; readonly benchmarkId: string };
 
 export function formatCliError(error: CliError): string {
@@ -112,10 +113,10 @@ export function formatCliError(error: CliError): string {
       return `Unknown ${error.benchmarkId} solver-config option(s): ${error.options.join(", ")}`;
     }
     case "invalid_benchmark_config": {
-      return `Invalid ${error.benchmarkId} config: ${error.error.message}`;
+      return `Invalid ${error.benchmarkId} config: ${error.cause.message}`;
     }
     case "invalid_draco_panel_config": {
-      return `Invalid DRACO panel config: ${error.error.message}`;
+      return `Invalid DRACO panel config: ${error.cause.message}`;
     }
     case "unsupported_benchmark": {
       return `Unsupported benchmark: ${error.benchmarkId}`;
@@ -137,36 +138,27 @@ export function parseArgs(
     const raw = get(flag);
     return raw !== undefined ? Number(raw) : undefined;
   };
-  const imageDetail = validateImageDetail(get("--image-detail"));
-  if (Result.isFailure(imageDetail)) {
-    return Result.fail(imageDetail.failure);
-  }
-  const costTier = validateCostTier(get("--cost-tier"));
-  if (Result.isFailure(costTier)) {
-    return Result.fail(costTier.failure);
-  }
-  const reasoningEffort = validateReasoningEffort(
-    get("--reasoning-effort"),
-    get("--model")
-  );
-  if (Result.isFailure(reasoningEffort)) {
-    return Result.fail(reasoningEffort.failure);
-  }
-  return Result.succeed({
-    benchmark: get("--benchmark") ?? "gpqa_diamond",
-    model: get("--model"),
-    limit: num("--limit"),
-    start: num("--start"),
-    end: num("--end"),
-    epochs: num("--epochs"),
-    concurrency: num("--concurrency") ?? 8,
-    endpointId: get("--endpoint-id"),
-    solverConfig: get("--solver-config"),
-    artifactDir: get("--artifact-dir"),
-    resumeId: get("--resume-id"),
-    imageDetail: imageDetail.success,
-    costTier: costTier.success,
-    reasoningEffort: reasoningEffort.success,
+  return Result.gen(function* () {
+    const model = get("--model");
+    return {
+      benchmark: get("--benchmark") ?? "gpqa_diamond",
+      model,
+      limit: num("--limit"),
+      start: num("--start"),
+      end: num("--end"),
+      epochs: num("--epochs"),
+      concurrency: num("--concurrency") ?? 8,
+      endpointId: get("--endpoint-id"),
+      solverConfig: get("--solver-config"),
+      artifactDir: get("--artifact-dir"),
+      resumeId: get("--resume-id"),
+      imageDetail: yield* validateImageDetail(get("--image-detail")),
+      costTier: yield* validateCostTier(get("--cost-tier")),
+      reasoningEffort: yield* validateReasoningEffort(
+        get("--reasoning-effort"),
+        model
+      ),
+    };
   });
 }
 
@@ -235,7 +227,7 @@ function resolveApiKey(): Result.Result<string, CliError> {
 
 interface RunSetup {
   readonly args: CliArgs;
-  readonly benchmark: NonNullable<ReturnType<typeof getBenchmark>>;
+  readonly benchmark: Benchmark;
   readonly apiKey: string;
   readonly sessionId: string;
   readonly benchmarkConfig: unknown;
@@ -244,57 +236,41 @@ interface RunSetup {
 function prepareRun(
   argv: readonly string[]
 ): Result.Result<RunSetup, CliError> {
-  const args = parseArgs(argv);
-  if (Result.isFailure(args)) {
-    return Result.fail(args.failure);
-  }
-  const benchmark = getBenchmark(args.success.benchmark);
-  if (benchmark === undefined) {
-    return Result.fail({
-      kind: "unknown_benchmark",
-      benchmarkId: args.success.benchmark,
-    });
-  }
-  const apiKey = resolveApiKey();
-  if (Result.isFailure(apiKey)) {
-    return Result.fail(apiKey.failure);
-  }
-  const sessionId = resolveSessionId();
-  if (Result.isFailure(sessionId)) {
-    return Result.fail(sessionId.failure);
-  }
-  const benchmarkConfig =
-    args.success.solverConfig !== undefined
-      ? parseSolverConfig(args.success.solverConfig)
-      : Result.succeed(undefined);
-  if (Result.isFailure(benchmarkConfig)) {
-    return Result.fail(benchmarkConfig.failure);
-  }
-  return Result.succeed({
-    args: args.success,
-    benchmark,
-    apiKey: apiKey.success,
-    sessionId: sessionId.success,
-    benchmarkConfig: benchmarkConfig.success,
+  return Result.gen(function* () {
+    const args = yield* parseArgs(argv);
+    const benchmark = getBenchmark(args.benchmark);
+    if (benchmark === undefined) {
+      return yield* Result.fail<CliError>({
+        kind: "unknown_benchmark",
+        benchmarkId: args.benchmark,
+      });
+    }
+    const apiKey = yield* resolveApiKey();
+    const sessionId = yield* resolveSessionId();
+    const benchmarkConfig =
+      args.solverConfig !== undefined
+        ? yield* parseSolverConfig(args.solverConfig)
+        : undefined;
+    return { args, benchmark, apiKey, sessionId, benchmarkConfig };
   });
 }
 
-function failCli(error: CliError): void {
+function reportCliError(error: CliError): void {
   process.stderr.write(`error: ${formatCliError(error)}\n`);
   process.exitCode = 1;
 }
 
-function main(): Promise<void> {
+async function main(): Promise<void> {
   const setup = prepareRun(process.argv.slice(2));
   if (Result.isFailure(setup)) {
-    failCli(setup.failure);
-    return Promise.resolve();
+    reportCliError(setup.failure);
+    return;
   }
   const { args, benchmark, apiKey, sessionId, benchmarkConfig } = setup.success;
   const baseUrl = getOrNull(runSync(optionalEnv("OPENROUTER_BASE_URL")));
   const epochs = args.epochs ?? benchmark.defaultEpochs;
   const range = resolveRange(args);
-  return runHarnessPromise(
+  await runHarnessPromise(
     gen(function* () {
       let effectivePanelConfig: unknown = benchmarkConfig;
       let artifactDir: string | undefined = args.artifactDir ?? args.resumeId;
@@ -323,7 +299,7 @@ function main(): Promise<void> {
         reasoningEffort: args.reasoningEffort,
       });
       if (Result.isFailure(built)) {
-        failCli(built.failure);
+        reportCliError(built.failure);
         return;
       }
       const benchmarkRunConfig = built.success;
@@ -496,62 +472,61 @@ function buildSchemaValidatedConfig(opts: {
     costTier,
     reasoningEffort,
   } = opts;
-  const model = requireModel(benchmarkId, opts.model);
-  if (Result.isFailure(model)) {
-    return Result.fail(model.failure);
-  }
-  const merged: Record<string, unknown> = definedValues({
-    benchmarkId,
-    model: model.success,
-    endpointId,
-    imageDetail,
-    costTier,
-    reasoningEffort,
-  });
-  if (typeof panelConfig === "object" && panelConfig !== null) {
-    const known = isModelBenchmarkId(benchmarkId)
-      ? knownBenchmarkOptionKeys(benchmarkId)
-      : undefined;
-    const unknown = known
-      ? Object.keys(panelConfig).filter((k) => !known.has(k))
-      : [];
-    if (unknown.length > 0) {
-      return Result.fail({
-        kind: "unknown_solver_config_options",
-        benchmarkId,
-        options: unknown.sort(),
-      });
-    }
-    for (const [k, v] of Object.entries(panelConfig)) {
-      if (k !== "benchmarkId" && k !== "model") {
-        merged[k] = v;
+  return Result.gen(function* () {
+    const model = yield* requireModel(benchmarkId, opts.model);
+    const merged: Record<string, unknown> = definedValues({
+      benchmarkId,
+      model,
+      endpointId,
+      imageDetail,
+      costTier,
+      reasoningEffort,
+    });
+    if (typeof panelConfig === "object" && panelConfig !== null) {
+      const known = isModelBenchmarkId(benchmarkId)
+        ? knownBenchmarkOptionKeys(benchmarkId)
+        : undefined;
+      const unknown = known
+        ? Object.keys(panelConfig).filter((k) => !known.has(k))
+        : [];
+      if (unknown.length > 0) {
+        return yield* Result.fail<CliError>({
+          kind: "unknown_solver_config_options",
+          benchmarkId,
+          options: unknown.sort(),
+        });
+      }
+      for (const [k, v] of Object.entries(panelConfig)) {
+        if (k !== "benchmarkId" && k !== "model") {
+          merged[k] = v;
+        }
       }
     }
-  }
-  const optionsSchema = isModelBenchmarkId(benchmarkId)
-    ? BENCHMARK_OPTIONS_SCHEMAS[benchmarkId]
-    : undefined;
-  if (
-    optionsSchema !== undefined &&
-    reasoningEffort !== ADAPTIVE_REASONING_EFFORT &&
-    Object.hasOwn(optionsSchema.shape, "agentReasoningEffort") &&
-    !(
-      typeof panelConfig === "object" &&
-      panelConfig !== null &&
-      Object.hasOwn(panelConfig, "agentReasoningEffort")
-    )
-  ) {
-    merged.agentReasoningEffort = reasoningEffort;
-  }
-  const parsed = parseSchema(BenchmarkRunConfigSchema, merged);
-  if (Result.isFailure(parsed)) {
-    return Result.fail({
-      kind: "invalid_benchmark_config",
-      benchmarkId,
-      error: parsed.failure,
-    });
-  }
-  return Result.succeed(parsed.success);
+    const optionsSchema = isModelBenchmarkId(benchmarkId)
+      ? BENCHMARK_OPTIONS_SCHEMAS[benchmarkId]
+      : undefined;
+    if (
+      optionsSchema !== undefined &&
+      reasoningEffort !== ADAPTIVE_REASONING_EFFORT &&
+      Object.hasOwn(optionsSchema.shape, "agentReasoningEffort") &&
+      !(
+        typeof panelConfig === "object" &&
+        panelConfig !== null &&
+        Object.hasOwn(panelConfig, "agentReasoningEffort")
+      )
+    ) {
+      merged.agentReasoningEffort = reasoningEffort;
+    }
+    const parsed = parseSchema(BenchmarkRunConfigSchema, merged);
+    if (Result.isFailure(parsed)) {
+      return yield* Result.fail<CliError>({
+        kind: "invalid_benchmark_config",
+        benchmarkId,
+        cause: parsed.failure,
+      });
+    }
+    return parsed.success;
+  });
 }
 
 function parseSolverConfig(raw: string): Result.Result<unknown, CliError> {
@@ -624,7 +599,7 @@ export function buildBenchmarkConfig(opts: {
       if (Result.isFailure(panel)) {
         return Result.fail({
           kind: "invalid_draco_panel_config",
-          error: panel.failure,
+          cause: panel.failure,
         });
       }
       return Result.succeed({

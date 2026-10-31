@@ -2,17 +2,16 @@ import { describe, expect, it } from "bun:test";
 
 import * as Result from "effect/Result";
 
-import type { CliError } from ".";
+import type { CliArgs, CliError } from ".";
 import {
   buildBenchmarkConfig as buildBenchmarkConfigResult,
   formatCliError,
   parseArgs as parseArgsResult,
 } from ".";
+import type { BenchmarkRunConfig } from "../benchmarks/benchmark-config";
 import { assertFailure, assertSuccess } from "../internal/testing";
 
-function parseArgs(
-  argv: readonly string[]
-): ReturnType<typeof parseArgsResult>["success"] {
+function parseArgs(argv: readonly string[]): CliArgs {
   const parsed = parseArgsResult(argv);
   assertSuccess(parsed);
   return parsed.success;
@@ -20,7 +19,7 @@ function parseArgs(
 
 function buildBenchmarkConfig(
   opts: Parameters<typeof buildBenchmarkConfigResult>[0]
-): ReturnType<typeof buildBenchmarkConfigResult>["success"] {
+): BenchmarkRunConfig {
   const built = buildBenchmarkConfigResult(opts);
   assertSuccess(built);
   return built.success;
