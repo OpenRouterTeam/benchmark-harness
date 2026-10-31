@@ -182,10 +182,6 @@ export type ParquetError =
   | { readonly kind: "invalid-result-column-json"; readonly cause: unknown }
   | { readonly kind: "invalid-result-column"; readonly issue: string };
 
-type SampleScoresOf = (
-  rows: readonly BenchmarkResultRow[]
-) => Result.Result<SampleScore[], ParquetError>;
-
 type MergedRunColumns = Pick<
   BenchmarkResultRow,
   | "format_version"
@@ -240,7 +236,7 @@ export async function mergeResultFilesToParquet(
   const scanned = await scanResultFiles(
     files,
     input.runLevelScores === undefined
-      ? rowsToUnscoredSamples
+      ? (rows) => Result.succeed(rowsToSampleScores(rows))
       : rowsToScoredSamples
   );
   if (Result.isFailure(scanned)) {
@@ -290,14 +286,9 @@ export async function mergeResultFilesToParquet(
       return Result.fail(written.failure);
     }
   }
-  const finished = await tryPromiseResult(async () => {
-    await parquetWriter.finish();
-  });
+  const finished = await tryParquetWrite(() => parquetWriter.finish());
   if (Result.isFailure(finished)) {
-    return Result.fail({
-      kind: "parquet-write-failed",
-      cause: finished.failure,
-    });
+    return Result.fail(finished.failure);
   }
   return Result.succeed({
     summary:
@@ -339,37 +330,44 @@ async function readResultFile(
   readFile: ResultFileReader,
   index: number
 ): AsyncResult<readonly BenchmarkResultRow[], ParquetError> {
-  const rows = await tryPromiseResult(readFile);
-  return Result.isFailure(rows)
-    ? Result.fail({
-        kind: "result-file-read-failed",
-        index,
-        cause: rows.failure,
-      })
-    : Result.succeed(rows.success);
+  return Result.mapError(await tryPromiseResult(readFile), (cause) => ({
+    kind: "result-file-read-failed",
+    index,
+    cause,
+  }));
 }
 
-async function writeParquetRows(
+function writeParquetRows(
   parquetWriter: ParquetWriter,
   mergedRows: readonly BenchmarkResultRow[]
 ): AsyncResult<void, ParquetError> {
-  const written = await tryPromiseResult(async () => {
-    await parquetWriter.write({
+  return tryParquetWrite(() =>
+    parquetWriter.write({
       columnData: COLUMN_SPECS.map((spec) => ({
         name: spec.name,
         data: mergedRows.map((row) => row[spec.name] ?? null),
       })),
       rowGroupSize: MERGE_ROW_GROUP_ROWS,
-    });
-  });
-  return Result.isFailure(written)
-    ? Result.fail({ kind: "parquet-write-failed", cause: written.failure })
-    : Result.succeed(undefined);
+    })
+  );
+}
+
+async function tryParquetWrite(
+  step: () => void | Promise<void>
+): AsyncResult<void, ParquetError> {
+  return Result.mapError(
+    await tryPromiseResult(async () => {
+      await step();
+    }),
+    (cause) => ({ kind: "parquet-write-failed", cause })
+  );
 }
 
 async function scanResultFiles(
   files: readonly ResultFileReader[],
-  toSampleScores: SampleScoresOf
+  toSampleScores: (
+    rows: readonly BenchmarkResultRow[]
+  ) => Result.Result<SampleScore[], ParquetError>
 ): AsyncResult<ResultFilesScan, ParquetError> {
   const rowCounts: number[] = [];
   const runFingerprints: (string | undefined)[] = [];
@@ -725,12 +723,12 @@ export function rowScoreToNumber(scoreValue: string): number {
 export async function readResultRows(
   file: AsyncBuffer
 ): AsyncResult<readonly BenchmarkResultRow[], ParquetError> {
-  const decoded = await tryPromiseResult(() => parquetReadObjects({ file }));
+  const decoded = Result.mapError(
+    await tryPromiseResult(() => parquetReadObjects({ file })),
+    (cause): ParquetError => ({ kind: "parquet-decode-failed", cause })
+  );
   if (Result.isFailure(decoded)) {
-    return Result.fail({
-      kind: "parquet-decode-failed",
-      cause: decoded.failure,
-    });
+    return Result.fail(decoded.failure);
   }
   const rows = parseSchema(z.array(BenchmarkResultRowSchema), decoded.success);
   if (Result.isFailure(rows)) {
@@ -807,12 +805,6 @@ function rowsToSampleScores(
       explanation: "",
     },
   }));
-}
-
-function rowsToUnscoredSamples(
-  rows: readonly BenchmarkResultRow[]
-): Result.Result<SampleScore[], ParquetError> {
-  return Result.succeed(rowsToSampleScores(rows));
 }
 
 function rowsToScoredSamples(
