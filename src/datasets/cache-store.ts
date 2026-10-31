@@ -84,6 +84,11 @@ export type TarGzError =
       readonly kind: "stream_failed";
       readonly operation: TarOperation;
       readonly message: string;
+    }
+  | {
+      readonly kind: "mkdir_failed";
+      readonly dir: string;
+      readonly message: string;
     };
 
 function describeTarGzError(error: TarGzError): string {
@@ -92,7 +97,8 @@ function describeTarGzError(error: TarGzError): string {
       return `tar ${error.operation} exited ${error.code}: ${error.stderr}`;
     }
     case "spawn_failed":
-    case "stream_failed": {
+    case "stream_failed":
+    case "mkdir_failed": {
       return error.message;
     }
     default: {
@@ -197,7 +203,17 @@ export async function extractTarGzFrom(
   src: Readable,
   dir: string
 ): AsyncResult<void, TarGzError> {
-  mkdirOwnerOnly(dir);
+  const created = Result.try({
+    try: () => mkdirOwnerOnly(dir),
+    catch: (error): TarGzError => ({
+      kind: "mkdir_failed",
+      dir,
+      message: unknownErrorToString(error),
+    }),
+  });
+  if (Result.isFailure(created)) {
+    return created;
+  }
   const proc = spawn("tar", ["-xzf", "-", "-C", dir], {
     stdio: ["pipe", "ignore", "pipe"],
   });

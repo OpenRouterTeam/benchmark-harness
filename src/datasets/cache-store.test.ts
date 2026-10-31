@@ -459,6 +459,46 @@ describe("GcsCacheStore", () => {
     }
   });
 
+  it("extractTarGzFrom reports mkdir_failed when the target cannot be created", async () => {
+    const dir = makeTmpDir();
+    writeFileSync(join(dir, "blocker"), "not a directory\n");
+    const result = await extractTarGzFrom(
+      Readable.from([Buffer.from("ignored")]),
+      join(dir, "blocker", "out")
+    );
+    assertFailure(result);
+    expect(result.failure.kind).toBe("mkdir_failed");
+    if (result.failure.kind === "mkdir_failed") {
+      expect(result.failure.dir).toBe(join(dir, "blocker", "out"));
+      expect(result.failure.message).toContain("ENOTDIR");
+    }
+  });
+
+  it("tryHydrateCheckout returns false and warns when the target directory cannot be created", async () => {
+    const client = makeMemoryGcsClient();
+    await client.uploadObject(
+      "repos/harbor-abc123.tar.gz",
+      Buffer.from("ignored"),
+      "application/gzip"
+    );
+    const store = makeGcsCacheStore({ bucket: "b", client });
+    const dir = makeTmpDir();
+    writeFileSync(join(dir, "blocker"), "not a directory\n");
+    const warn = captureConsole("warn");
+
+    await expect(
+      store.tryHydrateCheckout(join(dir, "blocker", "out"), "harbor", "abc123")
+    ).resolves.toBe(false);
+
+    expect(warn.mock.calls).toHaveLength(1);
+    const [message, context] = warn.mock.calls[0] ?? [];
+    expect(message).toBe("GCS checkout hydrate failed");
+    expect(context).toMatchObject({
+      key: "repos/harbor-abc123.tar.gz",
+      error: expect.stringContaining("ENOTDIR"),
+    });
+  });
+
   it("extractTarGzFrom reports a stream failure when the source errors", async () => {
     const dir = makeTmpDir();
     const src = new Readable({
