@@ -1,4 +1,5 @@
 import { S3Client } from "bun";
+import * as Result from "effect/Result";
 
 import {
   VGI_BENCH_CONFIG,
@@ -88,7 +89,13 @@ type MirrorOutcome =
   | { readonly kind: "mirrored"; readonly entry: ManifestEntry }
   | { readonly kind: "unresolved"; readonly reason: string };
 
-export function readOptions(argv: readonly string[]): MirrorOptions {
+export type ReadOptionsError =
+  | { readonly kind: "concurrency_not_positive_integer" }
+  | { readonly kind: "limit_not_positive_integer" };
+
+export function readOptions(
+  argv: readonly string[]
+): Result.Result<MirrorOptions, ReadOptionsError> {
   const flag = (name: string): string | undefined => {
     const prefixed = `--${name}=`;
     const match = argv.find((arg) => arg.startsWith(prefixed));
@@ -96,21 +103,35 @@ export function readOptions(argv: readonly string[]): MirrorOptions {
   };
   const concurrency = Number(flag("concurrency") ?? "8");
   if (!Number.isInteger(concurrency) || concurrency < 1) {
-    throw new Error("--concurrency must be a positive integer");
+    return Result.fail({ kind: "concurrency_not_positive_integer" });
   }
   const rawLimit = flag("limit");
   const limit = rawLimit === undefined ? undefined : Number(rawLimit);
   if (limit !== undefined && (!Number.isInteger(limit) || limit < 1)) {
-    throw new Error("--limit must be a positive integer");
+    return Result.fail({ kind: "limit_not_positive_integer" });
   }
-  return {
+  return Result.succeed({
     concurrency,
     out: flag("out") ?? "vgi-bench-media-manifest.json",
     force: argv.includes("--force"),
     dryRun: argv.includes("--dry-run"),
     revision: flag("revision") ?? VGI_BENCH_DEFAULT_REVISION,
     limit,
-  };
+  });
+}
+
+export function describeReadOptionsError(error: ReadOptionsError): string {
+  switch (error.kind) {
+    case "concurrency_not_positive_integer": {
+      return "--concurrency must be a positive integer";
+    }
+    case "limit_not_positive_integer": {
+      return "--limit must be a positive integer";
+    }
+    default: {
+      return error satisfies never;
+    }
+  }
 }
 
 export type { ManifestEntry };
@@ -238,7 +259,12 @@ export function hashManifest(entries: readonly ManifestEntry[]): string {
 
 async function main(): Promise<void> {
   const env = readMediaMirrorEnv();
-  const options = readOptions(process.argv.slice(2));
+  const parsed = readOptions(process.argv.slice(2));
+  if (Result.isFailure(parsed)) {
+    process.stderr.write(`${describeReadOptionsError(parsed.failure)}\n`);
+    process.exit(1);
+  }
+  const options = parsed.success;
   const s3 = new S3Client(env);
   const allVideos = await fetchSourceVideos(
     options.revision,

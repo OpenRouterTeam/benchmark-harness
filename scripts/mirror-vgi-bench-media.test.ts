@@ -1,9 +1,11 @@
 import { describe, expect, test } from "bun:test";
 
 import { VGI_BENCH_DEFAULT_REVISION } from "../src/benchmarks/vgi-bench/benchmark";
+import { assertFailure, assertSuccess } from "../src/internal/testing";
 import type { ManifestEntry } from "./mirror-vgi-bench-media";
 import {
   candidateSources,
+  describeReadOptionsError,
   extensionOf,
   hashManifest,
   readOptions,
@@ -42,7 +44,9 @@ describe("extensionOf", () => {
 
 describe("readOptions", () => {
   test("applies defaults", () => {
-    const options = readOptions([]);
+    const result = readOptions([]);
+    assertSuccess(result);
+    const options = result.success;
     expect(options.concurrency).toBe(8);
     expect(options.revision).toBe(VGI_BENCH_DEFAULT_REVISION);
     expect(options.limit).toBeUndefined();
@@ -51,7 +55,7 @@ describe("readOptions", () => {
   });
 
   test("parses provided flags", () => {
-    const options = readOptions([
+    const result = readOptions([
       "--concurrency=3",
       "--limit=5",
       "--out=manifest.json",
@@ -59,7 +63,8 @@ describe("readOptions", () => {
       "--force",
       "--dry-run",
     ]);
-    expect(options).toEqual({
+    assertSuccess(result);
+    expect(result.success).toEqual({
       concurrency: 3,
       limit: 5,
       out: "manifest.json",
@@ -69,9 +74,41 @@ describe("readOptions", () => {
     });
   });
 
-  test("rejects invalid numeric flags", () => {
-    expect(() => readOptions(["--concurrency=0"])).toThrow();
-    expect(() => readOptions(["--limit=abc"])).toThrow();
+  test("fails with concurrency_not_positive_integer for --concurrency=0", () => {
+    const result = readOptions(["--concurrency=0"]);
+    assertFailure(result);
+    expect(result.failure).toEqual({
+      kind: "concurrency_not_positive_integer",
+    });
+  });
+
+  test("fails with limit_not_positive_integer for --limit=abc", () => {
+    const result = readOptions(["--limit=abc"]);
+    assertFailure(result);
+    expect(result.failure).toEqual({ kind: "limit_not_positive_integer" });
+  });
+
+  test("reports the first failing flag when both are invalid", () => {
+    const result = readOptions(["--concurrency=1.5", "--limit=0"]);
+    assertFailure(result);
+    expect(result.failure).toEqual({
+      kind: "concurrency_not_positive_integer",
+    });
+  });
+});
+
+describe("describeReadOptionsError", () => {
+  test.each([
+    [
+      { kind: "concurrency_not_positive_integer" },
+      "--concurrency must be a positive integer",
+    ],
+    [
+      { kind: "limit_not_positive_integer" },
+      "--limit must be a positive integer",
+    ],
+  ] as const)("renders %p as the CLI message", (error, message) => {
+    expect(describeReadOptionsError(error)).toBe(message);
   });
 });
 
