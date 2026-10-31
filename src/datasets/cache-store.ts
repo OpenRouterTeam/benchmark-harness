@@ -1,10 +1,16 @@
+import type { ChildProcess } from "node:child_process";
 import { spawn } from "node:child_process";
 import { join } from "node:path";
 import type { Readable, Writable } from "node:stream";
 import { finished, pipeline } from "node:stream/promises";
 
+import * as Result from "effect/Result";
+
+import { unknownErrorToString } from "../internal/errors";
 import { getGcsStorage } from "../internal/gcs";
 import { iLog, wLog } from "../internal/log";
+import type { AsyncResult } from "../internal/result";
+import { tryPromiseResult } from "../internal/result";
 import {
   datasetCacheDisabled,
   datasetCacheRoot,
@@ -60,67 +66,147 @@ export interface CacheStore {
   ) => Promise<void>;
 }
 
-async function waitForTar(
-  proc: ReturnType<typeof spawn>,
-  operation: string
-): Promise<void> {
+type TarOperation = "create" | "extract";
+
+export type TarGzError =
+  | {
+      readonly kind: "tar_exited";
+      readonly operation: TarOperation;
+      readonly code: number | null;
+      readonly stderr: string;
+    }
+  | {
+      readonly kind: "spawn_failed";
+      readonly operation: TarOperation;
+      readonly message: string;
+    }
+  | {
+      readonly kind: "stream_failed";
+      readonly operation: TarOperation;
+      readonly message: string;
+    };
+
+export function describeTarGzError(error: TarGzError): string {
+  switch (error.kind) {
+    case "tar_exited": {
+      return `tar ${error.operation} exited ${error.code}: ${error.stderr}`;
+    }
+    case "spawn_failed":
+    case "stream_failed": {
+      return error.message;
+    }
+    default: {
+      return error satisfies never;
+    }
+  }
+}
+
+function waitForTar(
+  proc: ChildProcess,
+  operation: TarOperation
+): AsyncResult<void, TarGzError> {
   let stderr = "";
   proc.stderr?.on("data", (d: Buffer) => (stderr += d.toString()));
-  await new Promise<void>((resolve, reject) => {
-    proc.once("error", reject);
+  return new Promise((resolve) => {
+    proc.once("error", (error) =>
+      resolve(
+        Result.fail({
+          kind: "spawn_failed",
+          operation,
+          message: unknownErrorToString(error),
+        })
+      )
+    );
     proc.once("close", (code) =>
-      code === 0
-        ? resolve()
-        : reject(
-            new Error(`tar ${operation} exited ${code}: ${stderr.slice(-1000)}`)
-          )
+      resolve(
+        code === 0
+          ? Result.succeed(undefined)
+          : Result.fail({
+              kind: "tar_exited",
+              operation,
+              code,
+              stderr: stderr.slice(-1000),
+            })
+      )
     );
   });
 }
 
-export async function pipeTarGzTo(dir: string, dest: Writable): Promise<void> {
+async function streamStep(
+  operation: TarOperation,
+  step: () => Promise<void>
+): AsyncResult<void, TarGzError> {
+  const outcome = await tryPromiseResult(step);
+  return Result.mapError(outcome, (error) => ({
+    kind: "stream_failed",
+    operation,
+    message: unknownErrorToString(error),
+  }));
+}
+
+async function abortTar(
+  proc: ChildProcess,
+  exit: AsyncResult<void, TarGzError>,
+  streamFailure: Result.Failure<void, TarGzError>
+): AsyncResult<void, TarGzError> {
+  proc.kill();
+  const exited = await exit;
+  return Result.isFailure(exited) && exited.failure.kind === "spawn_failed"
+    ? exited
+    : streamFailure;
+}
+
+async function streamTarCreate(
+  stdout: Readable,
+  dest: Writable,
+  exit: AsyncResult<void, TarGzError>
+): AsyncResult<void, TarGzError> {
+  const piped = await streamStep("create", () =>
+    pipeline(stdout, dest, { end: false })
+  );
+  if (Result.isFailure(piped)) {
+    return piped;
+  }
+  const exited = await exit;
+  if (Result.isFailure(exited)) {
+    return exited;
+  }
+  return streamStep("create", async () => {
+    dest.end();
+    await finished(dest);
+  });
+}
+
+export async function pipeTarGzTo(
+  dir: string,
+  dest: Writable
+): AsyncResult<void, TarGzError> {
   const proc = spawn("tar", ["-czf", "-", "-C", dir, "."], {
     stdio: ["ignore", "pipe", "pipe"],
   });
-  if (proc.stdout === null) {
-    throw new Error("tar create did not provide stdout");
-  }
   const exit = waitForTar(proc, "create");
-  try {
-    await pipeline(proc.stdout, dest, { end: false });
-    await exit;
-    dest.end();
-    await finished(dest);
-  } catch (error) {
-    const destinationError =
-      error instanceof Error ? error : new Error(String(error));
-    dest.destroy(destinationError);
-    proc.kill();
-    await exit.catch(() => undefined);
-    throw error;
+  const streamed = await streamTarCreate(proc.stdout, dest, exit);
+  if (Result.isFailure(streamed)) {
+    dest.destroy(new Error(describeTarGzError(streamed.failure)));
+    return abortTar(proc, exit, streamed);
   }
+  return streamed;
 }
 
 export async function extractTarGzFrom(
   src: Readable,
   dir: string
-): Promise<void> {
+): AsyncResult<void, TarGzError> {
   mkdirOwnerOnly(dir);
   const proc = spawn("tar", ["-xzf", "-", "-C", dir], {
     stdio: ["pipe", "ignore", "pipe"],
   });
-  if (proc.stdin === null) {
-    throw new Error("tar extract did not provide stdin");
-  }
   const exit = waitForTar(proc, "extract");
-  try {
-    await pipeline(src, proc.stdin);
-  } catch (error) {
-    proc.kill();
-    await exit.catch(() => undefined);
-    throw error;
+  const piped = await streamStep("extract", () => pipeline(src, proc.stdin));
+  if (Result.isFailure(piped)) {
+    return abortTar(proc, exit, piped);
   }
-  await exit;
+  return exit;
 }
 
 export function makeDiskCacheStore(): CacheStore {
@@ -300,45 +386,62 @@ export function makeGcsCacheStore(opts: GcsCacheStoreOptions): CacheStore {
     },
     async tryHydrateCheckout(localDir, scope, commit) {
       const full = joinKey(prefix, checkoutSnapshotKey(scope, commit));
-      try {
-        const src = await client.openObjectReadStream(full);
-        if (src === undefined) {
-          iLog("checkout cache hydrate", {
-            key: full,
-            scope,
-            commit,
-            result: "miss",
-          });
-          return false;
-        }
-        await extractTarGzFrom(src, localDir);
+      const opened = await tryPromiseResult(() =>
+        client.openObjectReadStream(full)
+      );
+      if (Result.isFailure(opened)) {
+        wLog("GCS checkout hydrate failed", {
+          key: full,
+          error: unknownErrorToString(opened.failure),
+        });
+        return false;
+      }
+      if (opened.success === undefined) {
         iLog("checkout cache hydrate", {
           key: full,
           scope,
           commit,
-          result: "hit",
-        });
-        return true;
-      } catch (error) {
-        wLog("GCS checkout hydrate failed", {
-          key: full,
-          error: String(error),
+          result: "miss",
         });
         return false;
       }
+      const extracted = await extractTarGzFrom(opened.success, localDir);
+      if (Result.isFailure(extracted)) {
+        wLog("GCS checkout hydrate failed", {
+          key: full,
+          error: describeTarGzError(extracted.failure),
+        });
+        return false;
+      }
+      iLog("checkout cache hydrate", {
+        key: full,
+        scope,
+        commit,
+        result: "hit",
+      });
+      return true;
     },
     async snapshotCheckout(localDir, scope, commit) {
       const full = joinKey(prefix, checkoutSnapshotKey(scope, commit));
-      try {
-        const dest = client.openObjectWriteStream(full, "application/gzip");
-        await pipeTarGzTo(localDir, dest);
-        iLog("checkout cache snapshot written", { key: full, scope, commit });
-      } catch (error) {
+      const opened = await tryPromiseResult(async () =>
+        client.openObjectWriteStream(full, "application/gzip")
+      );
+      if (Result.isFailure(opened)) {
         wLog("GCS checkout snapshot failed", {
           key: full,
-          error: String(error),
+          error: unknownErrorToString(opened.failure),
         });
+        return;
       }
+      const written = await pipeTarGzTo(localDir, opened.success);
+      if (Result.isFailure(written)) {
+        wLog("GCS checkout snapshot failed", {
+          key: full,
+          error: describeTarGzError(written.failure),
+        });
+        return;
+      }
+      iLog("checkout cache snapshot written", { key: full, scope, commit });
     },
   };
 }
