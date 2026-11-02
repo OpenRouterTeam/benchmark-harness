@@ -136,6 +136,8 @@ function makeDeepSweLayer(
                 requestPlugins.length > 0 ? requestPlugins : undefined,
               models: benchmarkConfig.models,
               providerOrder: benchmarkConfig.providerOrder,
+              providerOnly: benchmarkConfig.providerOnly,
+              allowFallbacks: benchmarkConfig.allowFallbacks,
               extraBody: benchmarkConfig.extraBody,
             }),
             endpointId: benchmarkConfig.endpointId,
