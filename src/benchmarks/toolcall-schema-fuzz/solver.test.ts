@@ -42,12 +42,19 @@ function completion(finishReason: "stop" | "length"): Response {
   });
 }
 
-function solve(httpResponse: Response) {
+function solve(
+  httpResponse: Response,
+  {
+    baseUrl,
+    requestUrls = [],
+  }: { baseUrl?: string; requestUrls?: string[] } = {}
+) {
   const entry = ENTRY;
   assert(entry !== undefined);
-  const client = HttpClient.make((request) =>
-    succeed(HttpClientResponse.fromWeb(request, httpResponse.clone()))
-  );
+  const client = HttpClient.make((request) => {
+    requestUrls.push(request.url);
+    return succeed(HttpClientResponse.fromWeb(request, httpResponse.clone()));
+  });
   const solver = toolCallSchemaFuzzSolver(client, {
     options: {
       model: "test-model",
@@ -55,6 +62,7 @@ function solve(httpResponse: Response) {
       reasoningEffort: "none",
       sessionId: "session-1",
       retry: { maxRetries: 0 },
+      ...(baseUrl !== undefined && { baseUrl }),
     },
     cases: caseLookup([entry]),
   });
@@ -132,6 +140,18 @@ describe("toolCallSchemaFuzzSolver", () => {
   ])("fails the run on a 400 with %s", async (_label, body) => {
     const exit = await solve(new Response(body, { status: 400 }));
     expect(isFailure(exit)).toBe(true);
+  });
+
+  it.each([
+    "https://preview.example",
+    "https://preview.example/",
+    "https://preview.example/api/v1/",
+  ])("posts %s to the /api/v1 chat completions endpoint", async (baseUrl) => {
+    const requestUrls: string[] = [];
+    await solve(completion("stop"), { baseUrl, requestUrls });
+    expect(requestUrls).toStrictEqual([
+      "https://preview.example/api/v1/chat/completions",
+    ]);
   });
 
   it("fails the run on an auth error", async () => {
