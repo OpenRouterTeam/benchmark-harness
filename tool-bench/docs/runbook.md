@@ -1,26 +1,28 @@
 # Runbook: building, running and comparing tool-bench
 
-## 1. Build and publish images
+## 1. Images
+
+Tasks reference `us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-{world,tools}:<tag>`, where each
+tag is a hash of the files that image is built from (`crates/scenario/src/images.rs`). After changing
+scenarios, crates, servers, the catalog or an image Dockerfile, regenerate and commit `tasks/`:
 
 ```bash
-TAG=$(git rev-parse --short HEAD)
-REG=$REGISTRY  # any registry the trial's Docker daemon can pull from
-docker buildx build --platform linux/amd64 -f images/world/Dockerfile -t $REG/tool-bench-world:$TAG --push .
-docker buildx build --platform linux/amd64 -f images/tools/Dockerfile -t $REG/tool-bench-tools:$TAG --push .
+cargo run -p scenario --bin taskgen
 ```
 
-Regenerate the tasks against those references and commit `tasks/`:
+CI (`.github/workflows/tool-bench.yml`) runs `taskgen --check`, so a stale `tasks/` fails the PR.
+On merge to `main`, `.github/workflows/tool-bench-images.yml` builds and pushes any tag that isn't
+published yet, so the tasks on `main` always point at images built from the same sources.
+`taskgen --print-images` prints the two references. The trial pulls them with its Workload
+Identity; compose `image:` lines are not rewritten by the trial's mirror logic.
 
-```bash
-cargo run -p scenario --bin taskgen -- --world-image $REG/tool-bench-world:$TAG --tools-image $REG/tool-bench-tools:$TAG
-```
-
-Compose `image:` lines are not rewritten by the trial's mirror logic. The images must be in
-a registry the trial's Docker daemon can pull from.
+For local runs, pass local tags: `--world-image tool-bench-world:dev --tools-image tool-bench-tools:dev`
+(`deploy/oracle.sh` does this).
 
 ## 2. Register the benchmark
 
-Register `tool-bench` in the Harbor runner's benchmark registry with `tasks_path = tasks/`.
+`tool-bench` is registered in the Harbor runner (`services/gcp-harbor-trial/src/gcp_harbor_trial/benchmarks.py`
+in openrouter-web) as this repository's `main`, tasks path `tool-bench/tasks`.
 
 ## 3. Run
 
@@ -48,6 +50,11 @@ Run each arm as its own run, with everything else identical.
   - `api_calls`, `mcp_bypass`
 - The verifier also keeps `journal.json` (every API call) and `state.json` (final world
   state) next to `reward.json`.
+- The world's admin port (`world:9000`) answers only `/_bench/health` and `/_bench/ca.pem` without
+  `HARBOR_TRIAL_ADMIN_TOKEN`. The Argo trial runner generates a random token per trial and passes it
+  to compose (for `world`) and to the verifier, never to the agent, so the token is not in the task
+  repo. The agent shares the network with the world but cannot read the state or call the grader.
+  When the variable is unset (local compose, `deploy/oracle.sh`), the admin port stays open.
 - To compare arms, download both runs' artifacts
   (the run's artifact bucket) and run:
 

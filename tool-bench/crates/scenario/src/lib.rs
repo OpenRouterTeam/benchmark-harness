@@ -1,6 +1,7 @@
 //! Scenario sources (`scenarios/<group>/<service|multi>/<slug>/`) and their conversion into
 //! Harbor task directories.
 
+pub mod images;
 pub mod taskgen;
 
 use std::{
