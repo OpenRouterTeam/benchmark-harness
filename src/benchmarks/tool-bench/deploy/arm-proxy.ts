@@ -142,9 +142,11 @@ const server = createServer((request, response) => {
       );
     }
   })().catch((error: unknown) => {
-    if (!response.headersSent) {
-      response.writeHead(502);
+    if (response.headersSent) {
+      response.end();
+      return;
     }
+    response.writeHead(502, { 'content-type': 'text/plain; charset=utf-8' });
     response.end(`arm-proxy error: ${String(error)}`);
   });
 });
