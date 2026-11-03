@@ -5,7 +5,7 @@ services:
       tools:
         condition: service_healthy
   world:
-    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-world:b095d92ad5f52e96
+    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-world:51a1466819067b7b
     environment:
       SCENARIO_ID: "collab/google/mark-northwind-renewed"
       BENCH_ADMIN_TOKEN: "${HARBOR_TRIAL_ADMIN_TOKEN:-}"
@@ -29,7 +29,7 @@ services:
       timeout: 3s
       retries: 60
   tools:
-    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-tools:a614a09f47e48363
+    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-tools:cade41021766b4f5
     depends_on:
       world:
         condition: service_healthy
