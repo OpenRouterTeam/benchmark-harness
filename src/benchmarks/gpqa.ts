@@ -87,6 +87,7 @@ export const GPQA_DATASET = {
   dataset: "nmayorga7/gpqa_diamond",
   config: "default",
   split: "train",
+  revision: "c63e9ba02dc3da4c698e2a8485551b35041c3900",
   recordToSample: gpqaRecordToSample,
 } as const satisfies Omit<HfDatasetConfig, "pageSize">;
 
