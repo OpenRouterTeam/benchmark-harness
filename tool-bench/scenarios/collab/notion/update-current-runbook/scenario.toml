@@ -1,0 +1,55 @@
+[scenario]
+id = "collab/notion/update-current-runbook"
+title = "Update the escalation contact in the current on-call runbook only"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-notion-update-current-runbook"
+services = ["notion"]
+tags = ["write", "single-service", "notion", "disambiguation"]
+timeout_sec = 900
+
+# Three pages look alike: the live "On-call runbook" (Engineering wiki), a trashed copy with
+# the same title and text, and "On-call runbook (2024)" under Archive. Only the live
+# runbook's contact block changes; the block keeps its ID whether the agent edits the block
+# or the page Markdown.
+[[expect.state]]
+pointer = "/services/notion/blocks/d18edb31-c7d9-4fa2-9759-783c0b2d0b89/paragraph/rich_text/0/plain_text"
+contains = "Sam Ortiz, +1 555-0142"
+
+[[expect.state]]
+pointer = "/services/notion/blocks/d18edb31-c7d9-4fa2-9759-783c0b2d0b89/in_trash"
+equals = false
+
+[[expect.state]]
+pointer = "/services/notion/blocks/797571e3-b5c2-4333-9bcc-6ca755e33da8/paragraph/rich_text/0/plain_text"
+equals = "Escalation contact: Marcus Webb, +1 555-0100 (Head of Infrastructure)"
+
+[[expect.state]]
+pointer = "/services/notion/blocks/a9a99f03-de31-4aed-afe2-a35b8992a846/paragraph/rich_text/0/plain_text"
+equals = "Escalation contact: Dana Whitfield, +1 555-0100"
+
+[[expect.state]]
+pointer = "/services/notion/pages/d96308fa-d662-45d9-9cb1-2f6e47a717b7/in_trash"
+equals = true
+
+[[expect.required_calls]]
+service = "notion"
+method = "PATCH"
+
+[[expect.forbidden_calls]]
+service = "notion"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "notion"
+tool = "API-post-search"
+arguments = { query = "On-call runbook" }
+
+[[solution.call]]
+endpoint = "notion"
+tool = "API-get-block-children"
+arguments = { block_id = "7c41530e-e886-4046-9cb4-2f49e6957f99" }
+
+[[solution.call]]
+endpoint = "notion"
+tool = "API-update-a-block"
+arguments = { block_id = "d18edb31-c7d9-4fa2-9759-783c0b2d0b89", type = { paragraph = { rich_text = [{ type = "text", text = { content = "Escalation contact: Sam Ortiz, +1 555-0142 (Head of Infrastructure)" } }] } } }

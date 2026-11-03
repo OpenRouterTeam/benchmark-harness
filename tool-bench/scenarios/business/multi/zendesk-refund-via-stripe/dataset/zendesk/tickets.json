@@ -1,0 +1,6 @@
+[
+  {"id": 5088, "subject": "Need a copy of our February statement", "status": "solved", "priority": "low", "type": "question", "requester_id": 9020101, "assignee_id": 9020002, "created_at": "2026-03-02T15:20:00Z", "updated_at": "2026-03-03T10:05:00Z", "tags": ["billing", "statement"]},
+  {"id": 5102, "subject": "Charged twice for wholesale order #1077", "status": "open", "priority": "high", "type": "problem", "requester_id": 9020101, "assignee_id": 9020002, "created_at": "2026-03-11T08:42:00Z", "updated_at": "2026-03-11T09:30:00Z", "tags": ["billing", "duplicate_charge"]},
+  {"id": 5104, "subject": "Is the March equipment lease charge correct?", "status": "open", "priority": "normal", "type": "question", "requester_id": 9020102, "assignee_id": 9020002, "created_at": "2026-03-12T17:03:00Z", "updated_at": "2026-03-12T17:03:00Z", "tags": ["billing"]},
+  {"id": 5109, "subject": "Order #1080 delivery window", "status": "pending", "priority": "normal", "type": "question", "requester_id": 9020101, "assignee_id": 9020002, "created_at": "2026-03-15T07:55:00Z", "updated_at": "2026-03-15T12:10:00Z", "tags": ["delivery"]}
+]

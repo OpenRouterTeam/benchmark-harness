@@ -1,0 +1,107 @@
+[
+  {
+    "id": "pm_isdqLs5zMYVtSBUcegXBdCSd",
+    "object": "payment_method",
+    "billing_details": {
+      "address": {
+        "city": null,
+        "country": "US",
+        "line1": null,
+        "line2": null,
+        "postal_code": null,
+        "state": null
+      },
+      "email": "maya@brightline.studio",
+      "name": "Maya Chen",
+      "phone": null,
+      "tax_id": null
+    },
+    "card": {
+      "brand": "visa",
+      "checks": {
+        "address_line1_check": null,
+        "address_postal_code_check": "pass",
+        "cvc_check": "pass"
+      },
+      "country": "US",
+      "exp_month": 8,
+      "exp_year": 2028,
+      "fingerprint": "cUBStVYMz5sLqdsi",
+      "funding": "credit",
+      "last4": "6011"
+    },
+    "created": 1745338200,
+    "customer": "cus_pSUd3Vj4eF7gD2",
+    "type": "card"
+  },
+  {
+    "id": "pm_eGOpjLZ22c0ULs9YXQuqL0rL",
+    "object": "payment_method",
+    "billing_details": {
+      "address": {
+        "city": null,
+        "country": "US",
+        "line1": null,
+        "line2": null,
+        "postal_code": null,
+        "state": null
+      },
+      "email": "maya.chen@gmail.com",
+      "name": "Maya Chen",
+      "phone": null,
+      "tax_id": null
+    },
+    "card": {
+      "brand": "visa",
+      "checks": {
+        "address_line1_check": null,
+        "address_postal_code_check": "pass",
+        "cvc_check": "pass"
+      },
+      "country": "US",
+      "exp_month": 8,
+      "exp_year": 2028,
+      "fingerprint": "Y9sLU0c22ZLjpOGe",
+      "funding": "credit",
+      "last4": "9424"
+    },
+    "created": 1759891440,
+    "customer": "cus_SnEf69uU3Kw9LV",
+    "type": "card"
+  },
+  {
+    "id": "pm_K05ZFdg2H7DnEZPAXsv4L2xv",
+    "object": "payment_method",
+    "billing_details": {
+      "address": {
+        "city": null,
+        "country": "US",
+        "line1": null,
+        "line2": null,
+        "postal_code": null,
+        "state": null
+      },
+      "email": "owen@brightman.co",
+      "name": "Owen Brightman",
+      "phone": null,
+      "tax_id": null
+    },
+    "card": {
+      "brand": "mastercard",
+      "checks": {
+        "address_line1_check": null,
+        "address_postal_code_check": "pass",
+        "cvc_check": "pass"
+      },
+      "country": "US",
+      "exp_month": 8,
+      "exp_year": 2028,
+      "fingerprint": "APZEnD7H2gdFZ50K",
+      "funding": "credit",
+      "last4": "2223"
+    },
+    "created": 1755612000,
+    "customer": "cus_vwNihU3TIbkbWE",
+    "type": "card"
+  }
+]

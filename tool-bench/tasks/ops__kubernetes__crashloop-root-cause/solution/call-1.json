@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"pods_log","arguments":{"name":"ledger-worker-zx4mrndj8b-gdg8j","namespace":"payments","previous":true}}}

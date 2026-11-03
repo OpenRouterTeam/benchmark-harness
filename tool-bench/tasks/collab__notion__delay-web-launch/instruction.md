@@ -1,0 +1,1 @@
+The Web 4.12 launch slipped a week because of the payments SDK regression. Please update its row in our Product launches tracker in Notion: set the status to Delayed and move the launch date to November 10, 2026.

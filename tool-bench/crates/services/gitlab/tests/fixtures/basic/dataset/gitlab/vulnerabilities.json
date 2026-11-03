@@ -1,0 +1,30 @@
+[
+  {
+    "_key": "701",
+    "id": 701,
+    "project": "acme/platform/api",
+    "title": "SQL injection in search endpoint",
+    "description": "User input concatenated into SQL.",
+    "state": "detected",
+    "severity": "high",
+    "report_type": "sast",
+    "detected_at": "2026-03-02T00:00:00.000Z",
+    "scanner": {
+      "name": "Semgrep",
+      "external_id": "semgrep"
+    },
+    "identifiers": [
+      {
+        "external_type": "cwe",
+        "external_id": "89",
+        "name": "CWE-89",
+        "url": "https://cwe.mitre.org/data/definitions/89.html"
+      }
+    ],
+    "location": {
+      "file": "src/search.rs",
+      "start_line": 41,
+      "end_line": 44
+    }
+  }
+]

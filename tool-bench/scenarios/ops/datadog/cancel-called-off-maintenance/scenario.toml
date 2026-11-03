@@ -1,0 +1,55 @@
+[scenario]
+id = "ops/datadog/cancel-called-off-maintenance"
+title = "Cancel the downtime for a called-off production maintenance"
+now = "2026-10-30T10:00:00Z"
+seed = "ops-datadog-cancel-called-off-maintenance"
+services = ["datadog"]
+tags = ["write", "single-service", "datadog", "disambiguation"]
+timeout_sec = 900
+
+# Target: 2207731 (prod CHG-4410, Saturday night). Look-alikes: 2207690 (the original CHG-4410
+# date, already canceled), 2207752 (tonight's CHG-4410 staging rehearsal), 2207745 (CHG-4401
+# payments-db drill, same night), plus an unrelated recurring and an active downtime.
+[[expect.state]]
+pointer = "/services/datadog/downtimes/2207731/disabled"
+equals = true
+
+[[expect.state]]
+pointer = "/services/datadog/downtimes/2207752/disabled"
+equals = false
+
+[[expect.state]]
+pointer = "/services/datadog/downtimes/2207745/disabled"
+equals = false
+
+[[expect.state]]
+pointer = "/services/datadog/downtimes/2207702/disabled"
+equals = false
+
+[[expect.state]]
+pointer = "/services/datadog/downtimes/2207760/disabled"
+equals = false
+
+[[expect.state]]
+pointer = "/services/datadog/downtimes/2207761"
+exists = false
+
+[[expect.required_calls]]
+service = "datadog"
+method = "DELETE"
+path = "/api/v1/downtime/2207731"
+
+[[expect.forbidden_calls]]
+service = "datadog"
+method = "DELETE"
+path_regex = "^/api/v1/downtime/(2207690|2207702|2207745|2207752|2207760)$"
+
+[[solution.call]]
+endpoint = "datadog"
+tool = "list_downtimes"
+arguments = {}
+
+[[solution.call]]
+endpoint = "datadog"
+tool = "cancel_downtime"
+arguments = { downtimeId = 2207731 }

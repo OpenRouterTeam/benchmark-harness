@@ -1,0 +1,805 @@
+{
+  "name": "shopify",
+  "server_info": {
+    "name": "shopify",
+    "version": "1.0.0",
+    "description": "MCP Server for Shopify API, enabling interaction with store data through GraphQL API"
+  },
+  "protocol_version": "2025-06-18",
+  "tools": [
+    {
+      "name": "get-products",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "searchTitle": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number",
+            "default": 10
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get-product-by-id",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "productId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get-customers",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "searchQuery": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number",
+            "default": 10
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get-orders",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "any",
+              "open",
+              "closed",
+              "cancelled"
+            ],
+            "default": "any"
+          },
+          "limit": {
+            "type": "number",
+            "default": 10
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get-order-by-id",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "orderId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "update-order",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "note": {
+            "type": "string"
+          },
+          "customAttributes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "key",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "metafields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "namespace": {
+                  "type": "string"
+                },
+                "key": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "shippingAddress": {
+            "type": "object",
+            "properties": {
+              "address1": {
+                "type": "string"
+              },
+              "address2": {
+                "type": "string"
+              },
+              "city": {
+                "type": "string"
+              },
+              "company": {
+                "type": "string"
+              },
+              "country": {
+                "type": "string"
+              },
+              "firstName": {
+                "type": "string"
+              },
+              "lastName": {
+                "type": "string"
+              },
+              "phone": {
+                "type": "string"
+              },
+              "province": {
+                "type": "string"
+              },
+              "zip": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get-customer-orders",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "pattern": "^\\d+$",
+            "description": "Shopify customer ID, numeric excluding gid prefix"
+          },
+          "limit": {
+            "type": "number",
+            "default": 10
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "update-customer",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^\\d+$",
+            "description": "Shopify customer ID, numeric excluding gid prefix"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "note": {
+            "type": "string"
+          },
+          "taxExempt": {
+            "type": "boolean"
+          },
+          "metafields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "namespace": {
+                  "type": "string"
+                },
+                "key": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "create-product",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "descriptionHtml": {
+            "type": "string"
+          },
+          "handle": {
+            "type": "string",
+            "description": "URL slug. Auto-generated from title if omitted."
+          },
+          "vendor": {
+            "type": "string"
+          },
+          "productType": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "DRAFT",
+              "ARCHIVED"
+            ],
+            "default": "DRAFT"
+          },
+          "seo": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "description": "SEO title and description"
+          },
+          "metafields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "namespace": {
+                  "type": "string"
+                },
+                "key": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "e.g. 'single_line_text_field', 'json', 'number_integer'"
+                }
+              },
+              "required": [
+                "namespace",
+                "key",
+                "value",
+                "type"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "productOptions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Option name, e.g. 'Size'"
+                },
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Product options to create inline (max 3)"
+          },
+          "collectionsToJoin": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Collection GIDs to add product to"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "update-product",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Shopify product GID, e.g. gid://shopify/Product/123"
+          },
+          "title": {
+            "type": "string"
+          },
+          "descriptionHtml": {
+            "type": "string"
+          },
+          "handle": {
+            "type": "string",
+            "description": "URL slug for the product"
+          },
+          "vendor": {
+            "type": "string"
+          },
+          "productType": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "DRAFT",
+              "ARCHIVED"
+            ]
+          },
+          "seo": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "description": "SEO title and description"
+          },
+          "metafields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "namespace": {
+                  "type": "string"
+                },
+                "key": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "collectionsToJoin": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Collection GIDs to add product to"
+          },
+          "collectionsToLeave": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Collection GIDs to remove product from"
+          },
+          "redirectNewHandle": {
+            "type": "boolean",
+            "description": "If true, old handle redirects to new handle"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "manage-product-variants",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Shopify product GID"
+          },
+          "variants": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Variant GID for updates. Omit to create new."
+                },
+                "price": {
+                  "type": "string",
+                  "description": "Price as string, e.g. '49.00'"
+                },
+                "compareAtPrice": {
+                  "type": "string",
+                  "description": "Compare-at price for showing discounts"
+                },
+                "sku": {
+                  "type": "string",
+                  "description": "SKU (mapped to inventoryItem.sku)"
+                },
+                "tracked": {
+                  "type": "boolean",
+                  "description": "Whether inventory is tracked. Set false for print-on-demand."
+                },
+                "taxable": {
+                  "type": "boolean"
+                },
+                "barcode": {
+                  "type": "string"
+                },
+                "optionValues": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "optionName": {
+                        "type": "string",
+                        "description": "Option name, e.g. 'Size'"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Option value, e.g. '8x10'"
+                      }
+                    },
+                    "required": [
+                      "optionName",
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "description": "Variants to create or update"
+          },
+          "strategy": {
+            "type": "string",
+            "enum": [
+              "DEFAULT",
+              "REMOVE_STANDALONE_VARIANT",
+              "PRESERVE_STANDALONE_VARIANT"
+            ],
+            "description": "How to handle the Default Title variant when creating. DEFAULT removes it automatically."
+          }
+        },
+        "required": [
+          "productId",
+          "variants"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "manage-product-options",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Shopify product GID"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "create",
+              "update",
+              "delete"
+            ]
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Option name, e.g. 'Size'"
+                },
+                "position": {
+                  "type": "number"
+                },
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Option values, e.g. ['A4', 'A3']"
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Options to create (action=create)"
+          },
+          "optionId": {
+            "type": "string",
+            "description": "Option GID to update (action=update)"
+          },
+          "name": {
+            "type": "string",
+            "description": "New name for the option (action=update)"
+          },
+          "position": {
+            "type": "number",
+            "description": "New position (action=update)"
+          },
+          "valuesToAdd": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Values to add (action=update)"
+          },
+          "valuesToDelete": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Value GIDs to delete (action=update)"
+          },
+          "optionIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Option GIDs to delete (action=delete)"
+          }
+        },
+        "required": [
+          "productId",
+          "action"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "delete-product",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Shopify product GID, e.g. gid://shopify/Product/123"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "delete-product-variants",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Shopify product GID"
+          },
+          "variantIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "description": "Array of variant GIDs to delete"
+          }
+        },
+        "required": [
+          "productId",
+          "variantIds"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    }
+  ],
+  "sha256": "3411400dc4f8e1903a083891945667174e4fd96678cbaca50b3a1ab7492423b5",
+  "counts": {
+    "tools": 14,
+    "bytes": 10156,
+    "o200k": 2461
+  }
+}

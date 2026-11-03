@@ -1,0 +1,1 @@
+Since deploy 412 went out this morning, users hitting the login page of our web app get an HTTP 500. Please file a bug in the `octo-org/app` repository on our GitHub Enterprise instance titled exactly "Login page returns 500", and mention deploy 412 in the description. Don't change any existing issues.

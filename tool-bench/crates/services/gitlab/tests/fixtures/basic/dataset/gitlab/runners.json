@@ -1,0 +1,31 @@
+[
+  {
+    "_key": "31",
+    "id": 31,
+    "description": "shared-runner-1",
+    "name": "gitlab-runner",
+    "is_shared": true,
+    "runner_type": "instance_type",
+    "status": "online",
+    "tag_list": [
+      "docker",
+      "linux"
+    ]
+  },
+  {
+    "_key": "32",
+    "id": 32,
+    "description": "api-gpu-runner",
+    "name": "gitlab-runner",
+    "is_shared": false,
+    "runner_type": "project_type",
+    "status": "offline",
+    "paused": true,
+    "tag_list": [
+      "gpu"
+    ],
+    "projects": [
+      "acme/platform/api"
+    ]
+  }
+]

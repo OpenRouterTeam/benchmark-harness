@@ -1,0 +1,97 @@
+{
+  "state": [
+    {
+      "pointer": "/services/gitlab/merge_requests/northwind~1payments~1ledger!41/state",
+      "equals": "merged",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/gitlab/merge_requests/northwind~1payments~1ledger!41/approved_by",
+      "equals": null,
+      "exists": null,
+      "contains": "sam.okafor",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/gitlab/branches/northwind~1payments~1ledger:hotfix~1double-post-refunds",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/gitlab/merge_requests/northwind~1payments~1ledger!42/state",
+      "equals": "opened",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/gitlab/merge_requests/northwind~1payments~1ledger!42/approved_by",
+      "equals": [],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/gitlab/merge_requests/northwind~1payments~1ledger!39/state",
+      "equals": "opened",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "gitlab",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/api/v4/projects/[^/]+/merge_requests/41/approve$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "gitlab",
+      "method": "PUT",
+      "path": null,
+      "path_regex": "^/api/v4/projects/[^/]+/merge_requests/41/merge$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "gitlab",
+      "method": null,
+      "path": null,
+      "path_regex": "^/api/v4/projects/[^/]+/merge_requests/(37|39|42)/(merge|approve|rebase)$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "gitlab",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": "^/api/v4/projects/[^/]+/repository/branches/(main|fix%2Fpayout-export-dupes|refactor%2Fposting)$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

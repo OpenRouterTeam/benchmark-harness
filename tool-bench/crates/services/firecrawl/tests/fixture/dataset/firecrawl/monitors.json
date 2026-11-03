@@ -1,0 +1,48 @@
+[
+  {
+    "id": "m-1",
+    "name": "Acme pricing",
+    "status": "active",
+    "schedule": {
+      "text": "every 6 hours",
+      "timezone": "UTC",
+      "intervalMinutes": 360
+    },
+    "targets": [
+      {
+        "type": "scrape",
+        "urls": [
+          "https://acme.dev/pricing"
+        ]
+      }
+    ],
+    "createdAt": "2026-09-01T00:00:00Z",
+    "updatedAt": "2026-09-01T00:00:00Z",
+    "lastRunAt": null,
+    "nextRunAt": null,
+    "lastCheckId": "c-2"
+  },
+  {
+    "id": "m-2",
+    "name": "Acme blog",
+    "status": "paused",
+    "schedule": {
+      "text": "daily",
+      "timezone": "UTC",
+      "intervalMinutes": 1440
+    },
+    "targets": [
+      {
+        "type": "scrape",
+        "urls": [
+          "https://acme.dev/blog"
+        ]
+      }
+    ],
+    "createdAt": "2026-09-02T00:00:00Z",
+    "updatedAt": "2026-09-02T00:00:00Z",
+    "lastRunAt": null,
+    "nextRunAt": null,
+    "lastCheckId": null
+  }
+]

@@ -1,0 +1,30 @@
+
+        mutation customerUpdate($input: CustomerInput!) {
+          customerUpdate(input: $input) {
+            customer {
+              id
+              firstName
+              lastName
+              email
+              phone
+              tags
+              note
+              taxExempt
+              metafields(first: 10) {
+                edges {
+                  node {
+                    id
+                    namespace
+                    key
+                    value
+                  }
+                }
+              }
+            }
+            userErrors {
+              field
+              message
+            }
+          }
+        }
+      

@@ -1,0 +1,98 @@
+[scenario]
+id = "code/multi/sentry-spike-vercel-rollback"
+title = "Trace a new Sentry error to its Vercel release, roll production back and hand the issue over"
+now = "2026-10-28T15:00:00Z"
+seed = "code-multi-sentry-spike-vercel-rollback"
+services = ["sentry", "vercel"]
+tags = ["write", "multi-service", "sentry", "vercel", "disambiguation"]
+timeout_sec = 1200
+
+# STOREFRONT-5R (7201330418) first appeared in release e07a3c9 ("Switch to payments client v3
+# (#491)", production since 08:16). The build serving production before it is c3a9f12
+# (dpl_8o704…); the newer eslint build 2f6c8a1 failed and never served. Traps: the newer
+# preview-only error STOREFRONT-5T (release 4be1d07, a preview deployment), the older
+# ChunkLoadError STOREFRONT-4W, and the storefront-admin project.
+
+[[expect.state]]
+pointer = "/services/vercel/projects/prj_3dw2VoUa166qmaLV3P6dm828isAX/targets/production/meta/githubCommitSha"
+equals = "c3a9f12e8b47d05a6e21f9b3c7d84e50a1b6f2d9"
+
+[[expect.state]]
+pointer = "/services/vercel/projects/prj_3dw2VoUa166qmaLV3P6dm828isAX/targets/production/readyState"
+equals = "READY"
+
+[[expect.state]]
+pointer = "/services/vercel/projects/prj_3dw2VoUa166qmaLV3P6dm828isAX/targets/production/alias"
+contains = "acme-shop.com"
+
+[[expect.state]]
+pointer = "/services/sentry/issues/STOREFRONT-5R/assignedTo/type"
+equals = "team"
+
+[[expect.state]]
+pointer = "/services/sentry/issues/STOREFRONT-5R/assignedTo/name"
+equals = "payments-web"
+
+[[expect.state]]
+pointer = "/services/sentry/issues/STOREFRONT-5R/status"
+equals = "unresolved"
+
+[[expect.state]]
+pointer = "/services/sentry/issues/STOREFRONT-5T/assignedTo/type"
+exists = false
+
+[[expect.state]]
+pointer = "/services/sentry/issues/STOREFRONT-4W/assignedTo/type"
+exists = false
+
+[[expect.required_calls]]
+service = "vercel"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "vercel-create-deployment" }
+
+[[expect.required_calls]]
+service = "sentry"
+method = "PUT"
+path_regex = "(?i)^/api/0/organizations/acme-shop/issues/(STOREFRONT-5R|7201330418)/$"
+
+[[expect.forbidden_calls]]
+service = "sentry"
+method = "PUT"
+path_regex = "(?i)/issues/(STOREFRONT-5T|7201331102|STOREFRONT-4W|7201298877|STOREFRONT-ADMIN-1C|7201312240)/$"
+
+[[expect.forbidden_calls]]
+service = "sentry"
+method = "DELETE"
+
+[[expect.forbidden_calls]]
+service = "vercel"
+body = { name = "vercel-delete-project" }
+
+[[expect.forbidden_calls]]
+service = "vercel"
+body = { name = "vercel-remove-environment-variable" }
+
+[[expect.forbidden_calls]]
+service = "vercel"
+body = { name = "vercel-create-environment-variables" }
+
+[[solution.call]]
+endpoint = "sentry"
+tool = "search_issues"
+arguments = { organizationSlug = "acme-shop", projectSlugOrId = "storefront", query = "is:unresolved environment:production" }
+
+[[solution.call]]
+endpoint = "vercel"
+tool = "vercel-list-all-deployments"
+arguments = { app = "storefront" }
+
+[[solution.call]]
+endpoint = "vercel"
+tool = "vercel-create-deployment"
+arguments = { name = "storefront", deploymentId = "dpl_8o704GjcwumkLAaxPwjoxb4V6QDF", target = "production" }
+
+[[solution.call]]
+endpoint = "sentry"
+tool = "update_issue"
+arguments = { organizationSlug = "acme-shop", issueId = "STOREFRONT-5R", assignedTo = "team:payments-web" }

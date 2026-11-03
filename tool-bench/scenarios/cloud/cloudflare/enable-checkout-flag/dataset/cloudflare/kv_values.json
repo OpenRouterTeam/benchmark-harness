@@ -1,0 +1,45 @@
+[
+  {
+    "_key": "6f2a9c4e1b8d5f3a7c0e9b2d4f6a8c1e/checkout_v2",
+    "namespace_id": "6f2a9c4e1b8d5f3a7c0e9b2d4f6a8c1e",
+    "key": "checkout_v2",
+    "value": "{\"enabled\":true,\"rollout\":100,\"owner\":\"payments\",\"fallback\":\"checkout_v1\"}",
+    "value_json": { "enabled": true, "rollout": 100, "owner": "payments", "fallback": "checkout_v1" }
+  },
+  {
+    "_key": "6f2a9c4e1b8d5f3a7c0e9b2d4f6a8c1e/search_v3",
+    "namespace_id": "6f2a9c4e1b8d5f3a7c0e9b2d4f6a8c1e",
+    "key": "search_v3",
+    "value": "{\"enabled\":true,\"rollout\":100,\"owner\":\"discovery\"}",
+    "value_json": { "enabled": true, "rollout": 100, "owner": "discovery" }
+  },
+  {
+    "_key": "a3e7c1f5b9d2a6e0c4f8b2d6a0e4c8f2/checkout_v2",
+    "namespace_id": "a3e7c1f5b9d2a6e0c4f8b2d6a0e4c8f2",
+    "key": "checkout_v2",
+    "value": "{\"enabled\":true,\"rollout\":100,\"owner\":\"payments\",\"fallback\":\"checkout_v1\"}",
+    "value_json": { "enabled": true, "rollout": 100, "owner": "payments", "fallback": "checkout_v1" }
+  },
+  {
+    "_key": "c8f1b5e9a3d7c2f6b0e4a8d2c6f0b4e8/checkout_v2",
+    "namespace_id": "c8f1b5e9a3d7c2f6b0e4a8d2c6f0b4e8",
+    "key": "checkout_v2",
+    "value": "{\"enabled\":false,\"rollout\":0,\"owner\":\"payments\",\"fallback\":\"checkout_v1\"}",
+    "value_json": { "enabled": false, "rollout": 0, "owner": "payments", "fallback": "checkout_v1" },
+    "metadata": { "updated_by": "deploy-bot", "ticket": "PAY-2210" }
+  },
+  {
+    "_key": "c8f1b5e9a3d7c2f6b0e4a8d2c6f0b4e8/checkout_v2_copy",
+    "namespace_id": "c8f1b5e9a3d7c2f6b0e4a8d2c6f0b4e8",
+    "key": "checkout_v2_copy",
+    "value": "{\"headline\":\"Faster checkout is here\"}",
+    "value_json": { "headline": "Faster checkout is here" }
+  },
+  {
+    "_key": "c8f1b5e9a3d7c2f6b0e4a8d2c6f0b4e8/search_v3",
+    "namespace_id": "c8f1b5e9a3d7c2f6b0e4a8d2c6f0b4e8",
+    "key": "search_v3",
+    "value": "{\"enabled\":true,\"rollout\":50,\"owner\":\"discovery\"}",
+    "value_json": { "enabled": true, "rollout": 50, "owner": "discovery" }
+  }
+]

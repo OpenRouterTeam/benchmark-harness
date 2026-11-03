@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"add_note_to_incident","arguments":{"incident_id":"Q7CHKAP15PCT1D","note":"Tracking the fix in GitHub issue lumen-labs/checkout#214 (Sentry CHECKOUT-API-3F)."}}}

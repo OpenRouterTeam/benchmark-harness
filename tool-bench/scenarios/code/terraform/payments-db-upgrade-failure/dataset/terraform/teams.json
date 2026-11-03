@@ -1,0 +1,109 @@
+[
+ {
+  "id": "team-mUhKlulqRhUsmDw4",
+  "organization": "acme-platform",
+  "name": "owners",
+  "visibility": "organization",
+  "users": [
+   "user-sCLiMu3Hnw2KThIL",
+   "user-sIP8122NxE6G9g6M"
+  ],
+  "organization-memberships": [
+   "ou-UqlxZGAjbb7RdYDO",
+   "ou-37pW7zC0vdIOEOhc"
+  ],
+  "organization-access": {
+   "manage-policies": true,
+   "manage-policy-overrides": true,
+   "manage-workspaces": true,
+   "manage-vcs-settings": true,
+   "manage-providers": true,
+   "manage-modules": true,
+   "manage-run-tasks": true,
+   "manage-projects": true,
+   "read-workspaces": true,
+   "read-projects": true,
+   "manage-membership": true,
+   "manage-teams": true,
+   "manage-organization-access": true,
+   "access-secret-teams": true,
+   "manage-agent-pools": true
+  }
+ },
+ {
+  "id": "team-u7OrFuXEPzft5K2j",
+  "organization": "acme-platform",
+  "name": "platform-eng",
+  "visibility": "organization",
+  "users": [
+   "user-sCLiMu3Hnw2KThIL",
+   "user-sIP8122NxE6G9g6M",
+   "user-Vm0I7MiOQY9x5zBV"
+  ],
+  "organization-memberships": [
+   "ou-UqlxZGAjbb7RdYDO",
+   "ou-37pW7zC0vdIOEOhc",
+   "ou-uqoGm0pqgtHcvlIl"
+  ],
+  "organization-access": {
+   "manage-workspaces": true,
+   "manage-projects": true,
+   "read-workspaces": true,
+   "read-projects": true,
+   "manage-modules": true
+  }
+ },
+ {
+  "id": "team-110HsB6R1OTMZRGX",
+  "organization": "acme-platform",
+  "name": "payments-dev",
+  "visibility": "secret",
+  "users": [
+   "user-TSdKoSGwM7m5pCTl"
+  ],
+  "organization-memberships": [
+   "ou-YDuBwAQ1603gzx6m"
+  ]
+ },
+ {
+  "id": "team-FinCX2EJQ4XdcdZc",
+  "organization": "acme-platform",
+  "name": "readonly-auditors",
+  "visibility": "organization",
+  "users": [],
+  "organization-memberships": [],
+  "organization-access": {
+   "read-workspaces": true,
+   "read-projects": true
+  }
+ },
+ {
+  "id": "team-CgGMEKkIjsQdNKHq",
+  "organization": "acme-sandbox",
+  "name": "owners",
+  "visibility": "organization",
+  "users": [
+   "user-sCLiMu3Hnw2KThIL"
+  ],
+  "organization-memberships": [
+   "ou-8kPoBbdzkT66VlX5"
+  ],
+  "organization-access": {
+   "manage-policies": true,
+   "manage-policy-overrides": true,
+   "manage-workspaces": true,
+   "manage-vcs-settings": true,
+   "manage-providers": true,
+   "manage-modules": true,
+   "manage-run-tasks": true,
+   "manage-projects": true,
+   "read-workspaces": true,
+   "read-projects": true,
+   "manage-membership": true,
+   "manage-teams": true,
+   "manage-organization-access": true,
+   "access-secret-teams": true,
+   "manage-agent-pools": true
+  }
+ }
+]

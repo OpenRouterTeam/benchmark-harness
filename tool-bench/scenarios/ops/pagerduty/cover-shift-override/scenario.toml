@@ -1,0 +1,68 @@
+[scenario]
+id = "ops/pagerduty/cover-shift-override"
+title = "Create a schedule override so a teammate covers part of a shift"
+now = "2026-10-30T14:00:00Z"
+seed = "ops-pagerduty-cover-shift-override"
+services = ["pagerduty"]
+tags = ["write", "single-service", "pagerduty"]
+timeout_sec = 900
+
+# Alex Kim (the token owner) is on Platform Primary (PSPLTPR) this week. Jordan Lee is
+# PJ0RLEE; Jordan Alvarez (Payments) and the Platform Secondary / Data Platform Primary
+# schedules are look-alikes.
+[[expect.state]]
+pointer = "/services/pagerduty/overrides/PSPLTPR~11/user/id"
+equals = "PJ0RLEE"
+
+[[expect.state]]
+pointer = "/services/pagerduty/overrides/PSPLTPR~11/start"
+equals = "2026-10-31T09:00:00Z"
+
+[[expect.state]]
+pointer = "/services/pagerduty/overrides/PSPLTPR~11/end"
+equals = "2026-10-31T17:00:00Z"
+
+[[expect.state]]
+pointer = "/services/pagerduty/overrides/PSPLTPR~12"
+exists = false
+
+[[expect.state]]
+pointer = "/services/pagerduty/overrides/PSPLTSC~11"
+exists = false
+
+[[expect.state]]
+pointer = "/services/pagerduty/overrides/PSDPLPR~11"
+exists = false
+
+[[expect.required_calls]]
+service = "pagerduty"
+method = "POST"
+path = "/schedules/PSPLTPR/overrides"
+
+[[expect.forbidden_calls]]
+service = "pagerduty"
+method = "DELETE"
+
+[[expect.forbidden_calls]]
+service = "pagerduty"
+method = "PUT"
+
+[[solution.call]]
+endpoint = "pagerduty"
+tool = "get_user_data"
+arguments = {}
+
+[[solution.call]]
+endpoint = "pagerduty"
+tool = "list_schedules"
+arguments = { query_model = { query = "Platform" } }
+
+[[solution.call]]
+endpoint = "pagerduty"
+tool = "list_users"
+arguments = { query = "Jordan" }
+
+[[solution.call]]
+endpoint = "pagerduty"
+tool = "create_schedule_override"
+arguments = { schedule_id = "PSPLTPR", override_request = { overrides = [{ start = "2026-10-31T09:00:00Z", end = "2026-10-31T17:00:00Z", user_id = "PJ0RLEE" }] } }

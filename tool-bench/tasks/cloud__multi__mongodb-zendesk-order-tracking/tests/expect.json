@@ -1,0 +1,74 @@
+{
+  "state": [],
+  "required_calls": [],
+  "forbidden_calls": [
+    {
+      "service": "zendesk",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "create_ticket_comment"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "zendesk",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "update_ticket"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "mongodb",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "update-many"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "mongodb",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "delete-many"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "mongodb",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "insert-many"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": {
+    "contains": [
+      "10601",
+      "UPS",
+      "1Z4X97W80391827364"
+    ],
+    "regex": "(?i)shipped"
+  }
+}

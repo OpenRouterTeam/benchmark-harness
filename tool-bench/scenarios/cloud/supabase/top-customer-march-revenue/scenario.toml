@@ -1,0 +1,33 @@
+[scenario]
+id = "cloud/supabase/top-customer-march-revenue"
+title = "Find the top customer by March revenue in the production storefront database"
+now = "2026-04-02T09:00:00Z"
+seed = "cloud-supabase-top-customer-march-revenue"
+services = ["supabase"]
+tags = ["lookup", "single-service", "supabase"]
+timeout_sec = 900
+
+# Grace Kim: 412.50 + 389.00 + 433.00 (paid/shipped, March 2026, production).
+# Traps: Felix Wagner reaches 1,700 with his refunded order and 1,600 with the order placed
+# just after midnight on April 1; Ana Ruiz tops all-time revenue; Ben Okafor's large order is
+# still pending; staging holds a 9,999.99 load-test order.
+[expect.answer]
+contains = ["Grace Kim", "grace.kim@example.kr"]
+regex = '1,?234\.50?'
+
+[[expect.forbidden_calls]]
+service = "supabase"
+method = "POST"
+path_regex = '/(pause|restore|database/migrations|functions/deploy|branches)$'
+
+[[expect.forbidden_calls]]
+service = "supabase"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "supabase"
+tool = "execute_sql"
+arguments = { project_id = "qmvbxtzkplrnwdhyfaco", query = "select c.full_name, c.email, sum(o.total) as revenue from public.orders o join public.customers c on c.id = o.customer_id where o.status in ('paid', 'shipped') and o.created_at >= '2026-03-01T00:00:00Z' and o.created_at < '2026-04-01T00:00:00Z' group by c.id, c.full_name, c.email order by revenue desc limit 3" }
+
+[solution]
+answer = "Grace Kim (grace.kim@example.kr) brought in the most revenue in March 2026: $1,234.50 across three paid/shipped orders.\n"

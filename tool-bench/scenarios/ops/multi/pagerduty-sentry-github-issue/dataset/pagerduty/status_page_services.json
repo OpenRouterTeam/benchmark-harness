@@ -1,0 +1,26 @@
+[
+  {
+    "id": "PSPS001",
+    "name": "Checkout",
+    "status_page": {
+      "id": "PSTPG01",
+      "type": "status_page"
+    }
+  },
+  {
+    "id": "PSPS002",
+    "name": "Payments",
+    "status_page": {
+      "id": "PSTPG01",
+      "type": "status_page"
+    }
+  },
+  {
+    "id": "PSPS003",
+    "name": "Public API",
+    "status_page": {
+      "id": "PSTPG01",
+      "type": "status_page"
+    }
+  }
+]

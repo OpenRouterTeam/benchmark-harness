@@ -1,0 +1,92 @@
+[
+  {
+    "_key": "orders-db-replica-1-replica-lag#seed-1",
+    "AlarmName": "orders-db-replica-1-replica-lag",
+    "AlarmType": "MetricAlarm",
+    "Timestamp": "2026-10-23T02:09:00Z",
+    "HistoryItemType": "StateUpdate",
+    "HistorySummary": "Alarm updated from OK to ALARM",
+    "HistoryData": {
+      "version": "1.0",
+      "oldState": {
+        "stateValue": "OK"
+      },
+      "newState": {
+        "stateValue": "ALARM",
+        "stateReason": "Threshold Crossed: 3 datapoints [366.0, 341.0, 322.0] were greater than the threshold (300.0)."
+      }
+    }
+  },
+  {
+    "_key": "orders-db-replica-1-replica-lag#seed-2",
+    "AlarmName": "orders-db-replica-1-replica-lag",
+    "AlarmType": "MetricAlarm",
+    "Timestamp": "2026-10-23T03:31:00Z",
+    "HistoryItemType": "StateUpdate",
+    "HistorySummary": "Alarm updated from ALARM to OK",
+    "HistoryData": {
+      "version": "1.0",
+      "oldState": {
+        "stateValue": "ALARM"
+      },
+      "newState": {
+        "stateValue": "OK",
+        "stateReason": "Threshold Crossed: 3 datapoints [2.0, 1.0, 1.0] were not greater than the threshold (300.0)."
+      }
+    }
+  },
+  {
+    "_key": "orders-db-staging-replica-lag#seed-1",
+    "AlarmName": "orders-db-staging-replica-lag",
+    "AlarmType": "MetricAlarm",
+    "Timestamp": "2026-10-30T08:01:00Z",
+    "HistoryItemType": "StateUpdate",
+    "HistorySummary": "Alarm updated from OK to ALARM",
+    "HistoryData": {
+      "version": "1.0",
+      "oldState": {
+        "stateValue": "OK"
+      },
+      "newState": {
+        "stateValue": "ALARM",
+        "stateReason": "Threshold Crossed: 3 datapoints [902.0, 870.0, 845.0] were greater than the threshold (300.0)."
+      }
+    }
+  },
+  {
+    "_key": "orders-db-replica-2-replica-lag#seed-1",
+    "AlarmName": "orders-db-replica-2-replica-lag",
+    "AlarmType": "MetricAlarm",
+    "Timestamp": "2026-10-30T13:11:00Z",
+    "HistoryItemType": "StateUpdate",
+    "HistorySummary": "Alarm updated from OK to ALARM",
+    "HistoryData": {
+      "version": "1.0",
+      "oldState": {
+        "stateValue": "OK"
+      },
+      "newState": {
+        "stateValue": "ALARM",
+        "stateReason": "Threshold Crossed: 3 datapoints [351.0 (30/10/26 13:10:00), 388.0 (30/10/26 13:09:00), 412.0 (30/10/26 13:08:00)] were greater than the threshold (300.0)."
+      }
+    }
+  },
+  {
+    "_key": "inventory-db-replica-1-replica-lag#seed-1",
+    "AlarmName": "inventory-db-replica-1-replica-lag",
+    "AlarmType": "MetricAlarm",
+    "Timestamp": "2026-10-30T13:19:00Z",
+    "HistoryItemType": "StateUpdate",
+    "HistorySummary": "Alarm updated from OK to ALARM",
+    "HistoryData": {
+      "version": "1.0",
+      "oldState": {
+        "stateValue": "OK"
+      },
+      "newState": {
+        "stateValue": "ALARM",
+        "stateReason": "Threshold Crossed: 3 datapoints [330.0, 318.0, 305.0] were greater than the threshold (300.0)."
+      }
+    }
+  }
+]

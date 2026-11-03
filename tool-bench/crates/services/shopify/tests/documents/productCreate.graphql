@@ -1,0 +1,39 @@
+
+        mutation productCreate($product: ProductCreateInput!, $media: [CreateMediaInput!]) {
+          productCreate(product: $product, media: $media) {
+            product {
+              id
+              title
+              handle
+              descriptionHtml
+              vendor
+              productType
+              status
+              tags
+              seo {
+                title
+                description
+              }
+              options {
+                id
+                name
+                values
+              }
+              metafields(first: 10) {
+                edges {
+                  node {
+                    id
+                    namespace
+                    key
+                    value
+                  }
+                }
+              }
+            }
+            userErrors {
+              field
+              message
+            }
+          }
+        }
+      

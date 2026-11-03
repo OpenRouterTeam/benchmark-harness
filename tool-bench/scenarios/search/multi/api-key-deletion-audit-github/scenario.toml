@@ -1,0 +1,62 @@
+[scenario]
+id = "search/multi/api-key-deletion-audit-github"
+title = "Trace a deleted API key from the audit logs to the GitHub PR that rotates it"
+now = "2026-10-30T09:30:00Z"
+seed = "search-multi-api-key-deletion-audit-github"
+services = ["elasticsearch", "github"]
+tags = ["lookup", "multi-service", "elasticsearch", "github", "disambiguation"]
+timeout_sec = 900
+
+# Audit: m.okafor deleted ci-deploy-bot at 2026-10-29T16:42:57Z (j.doe's attempt was denied,
+# r.chen deleted ci-deploy-bot-staging, a.santos deleted a same-named key on the legacy
+# cluster in August). GitHub: m.okafor@octo-org.example is `mokafor` (Mira Okafor), not
+# `sam` (Sam Okafor). Her PR is octo-org/deploy-pipeline#58, still open (unmerged).
+# Look-alikes: #57 (rchen, staging key, merged) and #44 (asantos, legacy key, merged).
+[expect.answer]
+contains = ["m.okafor", "mokafor", "16:42"]
+regex = '#\s?58\b'
+
+[[expect.required_calls]]
+service = "elasticsearch"
+method = "POST"
+path_regex = "(_search|_query)$"
+
+[[expect.required_calls]]
+service = "github"
+method = "GET"
+
+[[expect.forbidden_calls]]
+service = "github"
+method = "PUT"
+
+[[expect.forbidden_calls]]
+service = "github"
+method = "PATCH"
+
+[[expect.forbidden_calls]]
+service = "github"
+method = "POST"
+path_regex = "^/api/v3/repos/"
+
+[solution]
+answer = "- Deleted by: m.okafor (Mira Okafor), on 2026-10-29 at 16:42:57 UTC, from 10.8.4.77. (j.doe's delete attempt at 14:05 was denied.) She created ci-deploy-bot-v2 at 16:44.\n- GitHub username: mokafor\n- Pull request: octo-org/deploy-pipeline #58 \"Switch CI deploys to the ci-deploy-bot-v2 key\", still open (not merged yet), review requested from sam.\n"
+
+[[solution.call]]
+endpoint = "elasticsearch"
+tool = "list_indices"
+arguments = { index_pattern = "audit-*" }
+
+[[solution.call]]
+endpoint = "elasticsearch"
+tool = "esql"
+arguments = { query = "FROM audit-security-2026.10 | WHERE target_name == \"ci-deploy-bot\" AND event_action == \"api_key.delete\" | SORT @timestamp | KEEP @timestamp, actor, event_outcome, details" }
+
+[[solution.call]]
+endpoint = "github"
+tool = "search_pull_requests"
+arguments = { query = "ci-deploy-bot-v2", owner = "octo-org" }
+
+[[solution.call]]
+endpoint = "github"
+tool = "pull_request_read"
+arguments = { method = "get", owner = "octo-org", repo = "deploy-pipeline", pullNumber = 58 }

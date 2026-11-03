@@ -1,0 +1,62 @@
+[scenario]
+id = "cloud/cloudflare/find-stale-origin"
+title = "Find the hostname still proxied to a retired origin"
+now = "2026-10-28T15:00:00Z"
+seed = "cloud-cloudflare-find-stale-origin"
+services = ["cloudflare"]
+tags = ["lookup", "single-service", "cloudflare", "disambiguation"]
+timeout_sec = 900
+
+# checkout.octo-shop.com is the only proxied record with content 203.0.113.40. Look-alikes:
+# legacy-reports.octo-corp.com (same IP, DNS only), cdn.octo-shop.com (203.0.113.41),
+# preview.octo-corp.dev (203.0.113.4) and a TXT record mentioning the address. The answer
+# must be that hostname alone, so listing look-alikes too fails.
+[expect.answer]
+regex = '(?i)^\W*checkout\.octo-shop\.com\W*$'
+
+[[expect.forbidden_calls]]
+service = "cloudflare"
+method = "POST"
+path_regex = "^/client/v4/"
+
+[[expect.forbidden_calls]]
+service = "cloudflare"
+method = "PUT"
+path_regex = "^/client/v4/"
+
+[[expect.forbidden_calls]]
+service = "cloudflare"
+method = "PATCH"
+path_regex = "^/client/v4/"
+
+[[expect.forbidden_calls]]
+service = "cloudflare"
+method = "DELETE"
+path_regex = "^/client/v4/"
+
+[[solution.call]]
+endpoint = "cloudflare"
+tool = "search"
+arguments = { code = "async () => Object.entries(spec.paths).filter(([p]) => p.includes('dns_records')).map(([p, item]) => ({ path: p, methods: Object.keys(item) }))" }
+
+[[solution.call]]
+endpoint = "cloudflare"
+tool = "execute"
+arguments = { code = """
+async () => {
+  const zones = (await cloudflare.request({ method: 'GET', path: '/zones', query: { per_page: 50 } })).result;
+  const hits = [];
+  for (const zone of zones) {
+    const records = await cloudflare.request({
+      method: 'GET',
+      path: `/zones/${zone.id}/dns_records`,
+      query: { content: '203.0.113.40', proxied: true },
+    });
+    for (const r of records.result) hits.push({ zone: zone.name, name: r.name, type: r.type, proxied: r.proxied });
+  }
+  return hits;
+}
+""" }
+
+[solution]
+answer = "checkout.octo-shop.com\n"

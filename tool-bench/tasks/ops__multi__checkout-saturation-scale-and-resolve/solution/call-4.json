@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"add_note_to_incident","arguments":{"incident_id":"Q7CHKAP15PCT1D","note":"Per RB-CHK-07: scaled the checkout Deployment in shop-prod from 3 to 9 replicas."}}}

@@ -1,0 +1,142 @@
+[
+  {
+    "id": "pm_Jl9fQ2vX7rTbN4kWc1aHs8Ue",
+    "object": "payment_method",
+    "billing_details": {
+      "address": {
+        "city": null,
+        "country": "US",
+        "line1": null,
+        "line2": null,
+        "postal_code": null,
+        "state": null
+      },
+      "email": "jordan.lee@example.com",
+      "name": "Jordan Lee",
+      "phone": null,
+      "tax_id": null
+    },
+    "card": {
+      "brand": "visa",
+      "checks": {
+        "address_line1_check": null,
+        "address_postal_code_check": "pass",
+        "cvc_check": "pass"
+      },
+      "country": "US",
+      "exp_month": 9,
+      "exp_year": 2029,
+      "fingerprint": "fpJl9fQ2vX7rTbN4",
+      "funding": "credit",
+      "last4": "4242"
+    },
+    "created": 1762077600,
+    "customer": "cus_Q7wLeeJr84Hk2D",
+    "type": "card"
+  },
+  {
+    "id": "pm_Jg3dW8nB5yLcK1pVr6tEo2Za",
+    "object": "payment_method",
+    "billing_details": {
+      "address": {
+        "city": null,
+        "country": "US",
+        "line1": null,
+        "line2": null,
+        "postal_code": null,
+        "state": null
+      },
+      "email": "jordan.leigh@example.com",
+      "name": "Jordan Leigh",
+      "phone": null,
+      "tax_id": null
+    },
+    "card": {
+      "brand": "mastercard",
+      "checks": {
+        "address_line1_check": null,
+        "address_postal_code_check": "pass",
+        "cvc_check": "pass"
+      },
+      "country": "US",
+      "exp_month": 9,
+      "exp_year": 2029,
+      "fingerprint": "fpJg3dW8nB5yLcK1",
+      "funding": "credit",
+      "last4": "5100"
+    },
+    "created": 1768039200,
+    "customer": "cus_Q8xLeighM2pR5s",
+    "type": "card"
+  },
+  {
+    "id": "pm_Jx2mR7cH4sNqT9wYb5kDf1Lg",
+    "object": "payment_method",
+    "billing_details": {
+      "address": {
+        "city": null,
+        "country": "US",
+        "line1": null,
+        "line2": null,
+        "postal_code": null,
+        "state": null
+      },
+      "email": "j.lee@example.com",
+      "name": "J. Lee",
+      "phone": null,
+      "tax_id": null
+    },
+    "card": {
+      "brand": "visa",
+      "checks": {
+        "address_line1_check": null,
+        "address_postal_code_check": "pass",
+        "cvc_check": "pass"
+      },
+      "country": "US",
+      "exp_month": 9,
+      "exp_year": 2029,
+      "fingerprint": "fpJx2mR7cH4sNqT9",
+      "funding": "credit",
+      "last4": "0077"
+    },
+    "created": 1772359200,
+    "customer": "cus_Q9yJLeeT6vA3fZ",
+    "type": "card"
+  },
+  {
+    "id": "pm_Pn6tY1gK8bVwQ3mXc9rLh4Js",
+    "object": "payment_method",
+    "billing_details": {
+      "address": {
+        "city": null,
+        "country": "US",
+        "line1": null,
+        "line2": null,
+        "postal_code": null,
+        "state": null
+      },
+      "email": "priya.n@example.com",
+      "name": "Priya N",
+      "phone": null,
+      "tax_id": null
+    },
+    "card": {
+      "brand": "amex",
+      "checks": {
+        "address_line1_check": null,
+        "address_postal_code_check": "pass",
+        "cvc_check": "pass"
+      },
+      "country": "US",
+      "exp_month": 9,
+      "exp_year": 2029,
+      "fingerprint": "fpPn6tY1gK8bVwQ3",
+      "funding": "credit",
+      "last4": "1005"
+    },
+    "created": 1772359200,
+    "customer": "cus_QAzPriyaN5gB8h",
+    "type": "card"
+  }
+]

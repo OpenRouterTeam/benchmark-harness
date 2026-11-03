@@ -1,0 +1,61 @@
+[scenario]
+id = "business/zendesk/create-ticket-for-caller"
+title = "Open a ticket on behalf of a customer who phoned in"
+now = "2026-10-30T10:15:00Z"
+seed = "business-zendesk-create-ticket-for-caller"
+services = ["zendesk"]
+tags = ["write", "single-service", "zendesk", "disambiguation"]
+timeout_sec = 900
+
+# Elena Petrova (user 9010301, Fjord Outfitters) must be the requester. Look-alikes:
+# Elena Park (9010302, Parkside Clinics) and Lars Holm (9010303, also Fjord Outfitters).
+# The highest ticket id in the dataset is 5108, so the new ticket is 5109.
+[[expect.state]]
+pointer = "/services/zendesk/tickets/5109/subject"
+equals = "Barcode scanners not syncing after update"
+
+[[expect.state]]
+pointer = "/services/zendesk/tickets/5109/requester_id"
+equals = 9010301
+
+[[expect.state]]
+pointer = "/services/zendesk/tickets/5109/priority"
+equals = "high"
+
+[[expect.state]]
+pointer = "/services/zendesk/tickets/5109/type"
+equals = "incident"
+
+[[expect.state]]
+pointer = "/services/zendesk/tickets/5109/description"
+contains = "Bergen"
+
+[[expect.state]]
+pointer = "/services/zendesk/tickets/5110"
+exists = false
+
+[[expect.required_calls]]
+service = "zendesk"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket", arguments = { requester_id = 9010301 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "update_ticket" }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket_comment" }
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "get_tickets"
+arguments = {}
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "create_ticket"
+arguments = { subject = "Barcode scanners not syncing after update", requester_id = 9010301, priority = "high", type = "incident", description = "Elena Petrova (Fjord Outfitters) called in: since this morning's app update, the barcode scanners in their Bergen warehouse have stopped syncing inventory counts." }

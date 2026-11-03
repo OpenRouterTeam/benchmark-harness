@@ -1,0 +1,18 @@
+[
+  {
+    "_key": "people",
+    "id": "people",
+    "priya.natarajan@octo-corp.example": [
+      {
+        "start": "2026-11-03T15:00:00Z",
+        "end": "2026-11-03T16:00:00Z"
+      }
+    ],
+    "marcus.webb@octo-corp.example": [
+      {
+        "start": "2026-11-03T21:00:00Z",
+        "end": "2026-11-03T22:00:00Z"
+      }
+    ]
+  }
+]

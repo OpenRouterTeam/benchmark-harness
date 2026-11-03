@@ -1,0 +1,107 @@
+{
+  "state": [
+    {
+      "pointer": "/services/okta/users/00u1alxkmct4St1Uv2x7/status",
+      "equals": "DEPROVISIONED",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/okta/group_members/00g2cntrsf6Op3Qr4x7~100u1alxkmct4St1Uv2x7",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/okta/users/00u1alxkmct4St1Uv2x7/profile/login",
+      "equals": "alex.kim@northwind-consulting.example",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/okta/users/00u1alxkmem2Op9Qr0x7/status",
+      "equals": "ACTIVE",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/okta/group_members/00g2sfusrs8St5Uv6x7~100u1alxkmem2Op9Qr0x7",
+      "equals": null,
+      "exists": true,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/okta/group_members/00g2engnrng7Qz4Kp0x7~100u1alxkmem2Op9Qr0x7",
+      "equals": null,
+      "exists": true,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "okta",
+      "method": "POST",
+      "path": "/api/v1/users/00u1alxkmct4St1Uv2x7/lifecycle/deactivate",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "okta",
+      "method": "DELETE",
+      "path": "/api/v1/groups/00g2cntrsf6Op3Qr4x7/users/00u1alxkmct4St1Uv2x7",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "okta",
+      "method": null,
+      "path": null,
+      "path_regex": "^/api/v1/users/(00u1alxkmem2Op9Qr0x7|alex\\.kim@octo-corp\\.example)/lifecycle/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "okta",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": "^/api/v1/users/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "okta",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": "^/api/v1/groups/[^/]+/users/00u1alxkmem2Op9Qr0x7$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

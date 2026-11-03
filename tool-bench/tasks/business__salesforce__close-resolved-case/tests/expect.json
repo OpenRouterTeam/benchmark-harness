@@ -1,0 +1,69 @@
+{
+  "state": [
+    {
+      "pointer": "/services/salesforce/Case/5005g00000spz8MAAQ/Status",
+      "equals": "Closed",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/salesforce/Case/5005g00000spz8MAAQ/Reason",
+      "equals": "Performance",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/salesforce/Case/5005g00000spz8MAAQ/IsClosed",
+      "equals": true,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/salesforce/Case/5005g00000DXqN3AAL/Status",
+      "equals": "Working",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/salesforce/Case/5005g000004FwGBAA0/Status",
+      "equals": "New",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "salesforce",
+      "method": "PATCH",
+      "path": null,
+      "path_regex": "^/services/data/v[0-9.]+/(composite/sobjects|sobjects/Case/5005g00000spz8M(AAQ)?)$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "salesforce",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

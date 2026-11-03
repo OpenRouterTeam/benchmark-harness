@@ -1,0 +1,2160 @@
+[
+  {
+    "_key": "f00419cc-5e98-59e0-8f9c-27d6e2749852",
+    "app": "argocd/search-indexer",
+    "group": "apps",
+    "version": "v1",
+    "kind": "Deployment",
+    "namespace": "search",
+    "name": "search-indexer-api",
+    "uid": "f00419cc-5e98-59e0-8f9c-27d6e2749852",
+    "resourceVersion": "42275",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:12"
+      }
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "search-indexer-api",
+        "namespace": "search",
+        "uid": "f00419cc-5e98-59e0-8f9c-27d6e2749852",
+        "resourceVersion": "42275",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "search-indexer-api",
+          "app.kubernetes.io/instance": "search-indexer",
+          "app.kubernetes.io/version": "4.6.0",
+          "app.kubernetes.io/part-of": "search"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "12",
+          "argocd.argoproj.io/tracking-id": "search-indexer:apps/Deployment:search/search-indexer-api"
+        }
+      },
+      "spec": {
+        "replicas": 2,
+        "revisionHistoryLimit": 5,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "search-indexer-api",
+            "app.kubernetes.io/instance": "search-indexer"
+          }
+        },
+        "strategy": {
+          "type": "RollingUpdate",
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "search-indexer-api",
+              "app.kubernetes.io/instance": "search-indexer",
+              "app.kubernetes.io/version": "4.6.0"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "search-indexer-api",
+            "containers": [
+              {
+                "name": "search-indexer-api",
+                "image": "ghcr.io/lumen-retail/search-indexer-api:4.6.0",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "observedGeneration": 14,
+        "replicas": 2,
+        "readyReplicas": 2,
+        "availableReplicas": 2,
+        "updatedReplicas": 2
+      }
+    }
+  },
+  {
+    "_key": "6dc0f28f-979e-5aef-a614-0187377239f8",
+    "app": "argocd/search-indexer",
+    "group": "apps",
+    "version": "v1",
+    "kind": "ReplicaSet",
+    "namespace": "search",
+    "name": "search-indexer-api-6d8f9b7c4",
+    "uid": "6dc0f28f-979e-5aef-a614-0187377239f8",
+    "resourceVersion": "42292",
+    "createdAt": "2026-10-21T09:10:20Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "Deployment",
+        "namespace": "search",
+        "name": "search-indexer-api",
+        "uid": "f00419cc-5e98-59e0-8f9c-27d6e2749852"
+      }
+    ],
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:12"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/search-indexer-api:4.6.0"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "search-indexer-api-6d8f9b7c4",
+        "namespace": "search",
+        "uid": "6dc0f28f-979e-5aef-a614-0187377239f8",
+        "resourceVersion": "42292",
+        "creationTimestamp": "2026-10-21T09:10:20Z",
+        "labels": {
+          "app.kubernetes.io/name": "search-indexer-api",
+          "app.kubernetes.io/instance": "search-indexer",
+          "pod-template-hash": "6d8f9b7c4"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "12"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "search-indexer-api",
+            "uid": "f00419cc-5e98-59e0-8f9c-27d6e2749852",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "replicas": 2,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "search-indexer-api",
+            "app.kubernetes.io/instance": "search-indexer",
+            "pod-template-hash": "6d8f9b7c4"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "search-indexer-api",
+              "app.kubernetes.io/instance": "search-indexer",
+              "app.kubernetes.io/version": "4.6.0"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "search-indexer-api",
+            "containers": [
+              {
+                "name": "search-indexer-api",
+                "image": "ghcr.io/lumen-retail/search-indexer-api:4.6.0",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "replicas": 2,
+        "readyReplicas": 2,
+        "availableReplicas": 2
+      }
+    }
+  },
+  {
+    "_key": "0e17552c-dd62-58e2-bd94-b3a596f41164",
+    "app": "argocd/search-indexer",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "search",
+    "name": "search-indexer-api-6d8f9b7c4-f3g4h",
+    "uid": "0e17552c-dd62-58e2-bd94-b3a596f41164",
+    "resourceVersion": "42309",
+    "createdAt": "2026-10-21T09:10:20Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "search",
+        "name": "search-indexer-api-6d8f9b7c4",
+        "uid": "6dc0f28f-979e-5aef-a614-0187377239f8"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-17-203.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/search-indexer-api:4.6.0"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "search-indexer-api-6d8f9b7c4-f3g4h",
+        "namespace": "search",
+        "uid": "0e17552c-dd62-58e2-bd94-b3a596f41164",
+        "resourceVersion": "42309",
+        "creationTimestamp": "2026-10-21T09:10:20Z",
+        "labels": {
+          "app.kubernetes.io/name": "search-indexer-api",
+          "app.kubernetes.io/instance": "search-indexer",
+          "pod-template-hash": "6d8f9b7c4"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "search-indexer-api-6d8f9b7c4",
+            "uid": "6dc0f28f-979e-5aef-a614-0187377239f8",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "search-indexer-api",
+        "containers": [
+          {
+            "name": "search-indexer-api",
+            "image": "ghcr.io/lumen-retail/search-indexer-api:4.6.0",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-17-203.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "search-indexer-api",
+            "image": "ghcr.io/lumen-retail/search-indexer-api:4.6.0",
+            "imageID": "ghcr.io/lumen-retail/search-indexer-api@sha256:7aaa7b291c75aef5537c865e58087b51883c64537aaa7b291c75aef5537c865e",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-28T09:00:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-21T09:10:20Z"
+      }
+    }
+  },
+  {
+    "_key": "a4d1bf7c-aef8-5b11-a068-5bbcd55fd7e5",
+    "app": "argocd/search-indexer",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "search",
+    "name": "search-indexer-api-6d8f9b7c4-j5k6l",
+    "uid": "a4d1bf7c-aef8-5b11-a068-5bbcd55fd7e5",
+    "resourceVersion": "42326",
+    "createdAt": "2026-10-21T09:10:20Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "search",
+        "name": "search-indexer-api-6d8f9b7c4",
+        "uid": "6dc0f28f-979e-5aef-a614-0187377239f8"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-18-44.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/search-indexer-api:4.6.0"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "search-indexer-api-6d8f9b7c4-j5k6l",
+        "namespace": "search",
+        "uid": "a4d1bf7c-aef8-5b11-a068-5bbcd55fd7e5",
+        "resourceVersion": "42326",
+        "creationTimestamp": "2026-10-21T09:10:20Z",
+        "labels": {
+          "app.kubernetes.io/name": "search-indexer-api",
+          "app.kubernetes.io/instance": "search-indexer",
+          "pod-template-hash": "6d8f9b7c4"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "search-indexer-api-6d8f9b7c4",
+            "uid": "6dc0f28f-979e-5aef-a614-0187377239f8",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "search-indexer-api",
+        "containers": [
+          {
+            "name": "search-indexer-api",
+            "image": "ghcr.io/lumen-retail/search-indexer-api:4.6.0",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-18-44.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "search-indexer-api",
+            "image": "ghcr.io/lumen-retail/search-indexer-api:4.6.0",
+            "imageID": "ghcr.io/lumen-retail/search-indexer-api@sha256:7aaa7b291c75aef5537c865e58087b51883c64537aaa7b291c75aef5537c865e",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-28T09:00:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-21T09:10:20Z"
+      }
+    }
+  },
+  {
+    "_key": "d39d8921-d825-549b-a290-0dcda1cafa6c",
+    "app": "argocd/search-indexer",
+    "group": "apps",
+    "version": "v1",
+    "kind": "Deployment",
+    "namespace": "search",
+    "name": "search-indexer-worker",
+    "uid": "d39d8921-d825-549b-a290-0dcda1cafa6c",
+    "resourceVersion": "42343",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:12"
+      }
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "search-indexer-worker",
+        "namespace": "search",
+        "uid": "d39d8921-d825-549b-a290-0dcda1cafa6c",
+        "resourceVersion": "42343",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "search-indexer-worker",
+          "app.kubernetes.io/instance": "search-indexer",
+          "app.kubernetes.io/version": "4.6.0",
+          "app.kubernetes.io/part-of": "search"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "12",
+          "argocd.argoproj.io/tracking-id": "search-indexer:apps/Deployment:search/search-indexer-worker"
+        }
+      },
+      "spec": {
+        "replicas": 3,
+        "revisionHistoryLimit": 5,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "search-indexer-worker",
+            "app.kubernetes.io/instance": "search-indexer"
+          }
+        },
+        "strategy": {
+          "type": "RollingUpdate",
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "search-indexer-worker",
+              "app.kubernetes.io/instance": "search-indexer",
+              "app.kubernetes.io/version": "4.6.0"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "search-indexer-worker",
+            "containers": [
+              {
+                "name": "search-indexer-worker",
+                "image": "ghcr.io/lumen-retail/search-indexer-worker:4.6.0",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                },
+                "env": [
+                  {
+                    "name": "ES_URL",
+                    "value": "https://search-es.lumen.internal:9200"
+                  },
+                  {
+                    "name": "ES_PASSWORD",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "name": "search-es-credentials",
+                        "key": "password"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "observedGeneration": 14,
+        "replicas": 3,
+        "readyReplicas": 3,
+        "availableReplicas": 3,
+        "updatedReplicas": 3
+      }
+    }
+  },
+  {
+    "_key": "ea610f33-4cf4-5fb8-abd4-f89c04b881ed",
+    "app": "argocd/search-indexer",
+    "group": "apps",
+    "version": "v1",
+    "kind": "ReplicaSet",
+    "namespace": "search",
+    "name": "search-indexer-worker-85c7b6d9f",
+    "uid": "ea610f33-4cf4-5fb8-abd4-f89c04b881ed",
+    "resourceVersion": "42360",
+    "createdAt": "2026-10-21T09:10:25Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "Deployment",
+        "namespace": "search",
+        "name": "search-indexer-worker",
+        "uid": "d39d8921-d825-549b-a290-0dcda1cafa6c"
+      }
+    ],
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:12"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/search-indexer-worker:4.6.0"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "search-indexer-worker-85c7b6d9f",
+        "namespace": "search",
+        "uid": "ea610f33-4cf4-5fb8-abd4-f89c04b881ed",
+        "resourceVersion": "42360",
+        "creationTimestamp": "2026-10-21T09:10:25Z",
+        "labels": {
+          "app.kubernetes.io/name": "search-indexer-worker",
+          "app.kubernetes.io/instance": "search-indexer",
+          "pod-template-hash": "85c7b6d9f"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "12"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "search-indexer-worker",
+            "uid": "d39d8921-d825-549b-a290-0dcda1cafa6c",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "replicas": 3,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "search-indexer-worker",
+            "app.kubernetes.io/instance": "search-indexer",
+            "pod-template-hash": "85c7b6d9f"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "search-indexer-worker",
+              "app.kubernetes.io/instance": "search-indexer",
+              "app.kubernetes.io/version": "4.6.0"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "search-indexer-worker",
+            "containers": [
+              {
+                "name": "search-indexer-worker",
+                "image": "ghcr.io/lumen-retail/search-indexer-worker:4.6.0",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                },
+                "env": [
+                  {
+                    "name": "ES_URL",
+                    "value": "https://search-es.lumen.internal:9200"
+                  },
+                  {
+                    "name": "ES_PASSWORD",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "name": "search-es-credentials",
+                        "key": "password"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "replicas": 3,
+        "readyReplicas": 3,
+        "availableReplicas": 3
+      }
+    }
+  },
+  {
+    "_key": "943768dd-b807-59b4-a46d-e8bbe8f0bf23",
+    "app": "argocd/search-indexer",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "search",
+    "name": "search-indexer-worker-85c7b6d9f-m7n8p",
+    "uid": "943768dd-b807-59b4-a46d-e8bbe8f0bf23",
+    "resourceVersion": "42377",
+    "createdAt": "2026-10-21T09:10:25Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "search",
+        "name": "search-indexer-worker-85c7b6d9f",
+        "uid": "ea610f33-4cf4-5fb8-abd4-f89c04b881ed"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-17-203.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/search-indexer-worker:4.6.0"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "search-indexer-worker-85c7b6d9f-m7n8p",
+        "namespace": "search",
+        "uid": "943768dd-b807-59b4-a46d-e8bbe8f0bf23",
+        "resourceVersion": "42377",
+        "creationTimestamp": "2026-10-21T09:10:25Z",
+        "labels": {
+          "app.kubernetes.io/name": "search-indexer-worker",
+          "app.kubernetes.io/instance": "search-indexer",
+          "pod-template-hash": "85c7b6d9f"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "search-indexer-worker-85c7b6d9f",
+            "uid": "ea610f33-4cf4-5fb8-abd4-f89c04b881ed",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "search-indexer-worker",
+        "containers": [
+          {
+            "name": "search-indexer-worker",
+            "image": "ghcr.io/lumen-retail/search-indexer-worker:4.6.0",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            },
+            "env": [
+              {
+                "name": "ES_URL",
+                "value": "https://search-es.lumen.internal:9200"
+              },
+              {
+                "name": "ES_PASSWORD",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "search-es-credentials",
+                    "key": "password"
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "nodeName": "ip-10-42-17-203.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "search-indexer-worker",
+            "image": "ghcr.io/lumen-retail/search-indexer-worker:4.6.0",
+            "imageID": "ghcr.io/lumen-retail/search-indexer-worker@sha256:f7c1fa1b57b3ac251246083fd097a7c17aff69fff7c1fa1b57b3ac251246083f",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-28T09:00:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-21T09:10:25Z"
+      }
+    }
+  },
+  {
+    "_key": "e2e1ca06-1acd-53a2-b3a3-221f34245bb2",
+    "app": "argocd/search-indexer",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "search",
+    "name": "search-indexer-worker-85c7b6d9f-q9r1s",
+    "uid": "e2e1ca06-1acd-53a2-b3a3-221f34245bb2",
+    "resourceVersion": "42394",
+    "createdAt": "2026-10-21T09:10:25Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "search",
+        "name": "search-indexer-worker-85c7b6d9f",
+        "uid": "ea610f33-4cf4-5fb8-abd4-f89c04b881ed"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-18-44.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/search-indexer-worker:4.6.0"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "search-indexer-worker-85c7b6d9f-q9r1s",
+        "namespace": "search",
+        "uid": "e2e1ca06-1acd-53a2-b3a3-221f34245bb2",
+        "resourceVersion": "42394",
+        "creationTimestamp": "2026-10-21T09:10:25Z",
+        "labels": {
+          "app.kubernetes.io/name": "search-indexer-worker",
+          "app.kubernetes.io/instance": "search-indexer",
+          "pod-template-hash": "85c7b6d9f"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "search-indexer-worker-85c7b6d9f",
+            "uid": "ea610f33-4cf4-5fb8-abd4-f89c04b881ed",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "search-indexer-worker",
+        "containers": [
+          {
+            "name": "search-indexer-worker",
+            "image": "ghcr.io/lumen-retail/search-indexer-worker:4.6.0",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            },
+            "env": [
+              {
+                "name": "ES_URL",
+                "value": "https://search-es.lumen.internal:9200"
+              },
+              {
+                "name": "ES_PASSWORD",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "search-es-credentials",
+                    "key": "password"
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "nodeName": "ip-10-42-18-44.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "search-indexer-worker",
+            "image": "ghcr.io/lumen-retail/search-indexer-worker:4.6.0",
+            "imageID": "ghcr.io/lumen-retail/search-indexer-worker@sha256:f7c1fa1b57b3ac251246083fd097a7c17aff69fff7c1fa1b57b3ac251246083f",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-28T09:00:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-21T09:10:25Z"
+      }
+    }
+  },
+  {
+    "_key": "87b74730-c413-57cb-bd94-949e75aaad8b",
+    "app": "argocd/search-indexer",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "search",
+    "name": "search-indexer-worker-85c7b6d9f-t2u3v",
+    "uid": "87b74730-c413-57cb-bd94-949e75aaad8b",
+    "resourceVersion": "42411",
+    "createdAt": "2026-10-21T09:10:25Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "search",
+        "name": "search-indexer-worker-85c7b6d9f",
+        "uid": "ea610f33-4cf4-5fb8-abd4-f89c04b881ed"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-19-12.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/search-indexer-worker:4.6.0"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "search-indexer-worker-85c7b6d9f-t2u3v",
+        "namespace": "search",
+        "uid": "87b74730-c413-57cb-bd94-949e75aaad8b",
+        "resourceVersion": "42411",
+        "creationTimestamp": "2026-10-21T09:10:25Z",
+        "labels": {
+          "app.kubernetes.io/name": "search-indexer-worker",
+          "app.kubernetes.io/instance": "search-indexer",
+          "pod-template-hash": "85c7b6d9f"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "search-indexer-worker-85c7b6d9f",
+            "uid": "ea610f33-4cf4-5fb8-abd4-f89c04b881ed",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "search-indexer-worker",
+        "containers": [
+          {
+            "name": "search-indexer-worker",
+            "image": "ghcr.io/lumen-retail/search-indexer-worker:4.6.0",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            },
+            "env": [
+              {
+                "name": "ES_URL",
+                "value": "https://search-es.lumen.internal:9200"
+              },
+              {
+                "name": "ES_PASSWORD",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "search-es-credentials",
+                    "key": "password"
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "nodeName": "ip-10-42-19-12.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "search-indexer-worker",
+            "image": "ghcr.io/lumen-retail/search-indexer-worker:4.6.0",
+            "imageID": "ghcr.io/lumen-retail/search-indexer-worker@sha256:f7c1fa1b57b3ac251246083fd097a7c17aff69fff7c1fa1b57b3ac251246083f",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-28T09:00:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-21T09:10:25Z"
+      }
+    }
+  },
+  {
+    "_key": "9f48581e-cb74-5f35-a816-490333400773",
+    "app": "argocd/search-indexer",
+    "group": "",
+    "version": "v1",
+    "kind": "Service",
+    "namespace": "search",
+    "name": "search-indexer-api",
+    "uid": "9f48581e-cb74-5f35-a816-490333400773",
+    "resourceVersion": "42428",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "networkingInfo": {
+      "targetLabels": {
+        "app.kubernetes.io/name": "search-indexer-api",
+        "app.kubernetes.io/instance": "search-indexer"
+      }
+    },
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "search-indexer-api",
+        "namespace": "search",
+        "uid": "9f48581e-cb74-5f35-a816-490333400773",
+        "resourceVersion": "42428",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "annotations": {
+          "argocd.argoproj.io/tracking-id": "search-indexer:/Service:search/search-indexer-api"
+        }
+      },
+      "spec": {
+        "type": "ClusterIP",
+        "selector": {
+          "app.kubernetes.io/name": "search-indexer-api",
+          "app.kubernetes.io/instance": "search-indexer"
+        },
+        "ports": [
+          {
+            "name": "http",
+            "port": 80,
+            "targetPort": 8080,
+            "protocol": "TCP"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "_key": "976cbe30-7af9-58a7-8ecd-e4662b0583b2",
+    "app": "argocd/search-indexer",
+    "group": "",
+    "version": "v1",
+    "kind": "ConfigMap",
+    "namespace": "search",
+    "name": "search-indexer-config",
+    "uid": "976cbe30-7af9-58a7-8ecd-e4662b0583b2",
+    "resourceVersion": "42445",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "managed": true,
+    "status": "OutOfSync",
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {
+        "name": "search-indexer-config",
+        "namespace": "search",
+        "uid": "976cbe30-7af9-58a7-8ecd-e4662b0583b2",
+        "resourceVersion": "42445",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/instance": "search-indexer"
+        },
+        "annotations": {
+          "argocd.argoproj.io/tracking-id": "search-indexer:/ConfigMap:search/search-indexer-config"
+        }
+      },
+      "data": {
+        "BULK_FLUSH_INTERVAL": "5s",
+        "INDEX_PREFIX": "products-v7"
+      }
+    },
+    "targetManifest": {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {
+        "name": "search-indexer-config",
+        "namespace": "search",
+        "uid": "976cbe30-7af9-58a7-8ecd-e4662b0583b2",
+        "resourceVersion": "42445",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/instance": "search-indexer"
+        },
+        "annotations": {
+          "argocd.argoproj.io/tracking-id": "search-indexer:/ConfigMap:search/search-indexer-config"
+        }
+      },
+      "data": {
+        "BULK_FLUSH_INTERVAL": "10s",
+        "INDEX_PREFIX": "products-v7"
+      }
+    }
+  },
+  {
+    "_key": "f4d66727-81c2-567f-a6d0-120ee92ad616",
+    "app": "argocd/search-indexer-staging",
+    "group": "apps",
+    "version": "v1",
+    "kind": "Deployment",
+    "namespace": "search",
+    "name": "search-indexer-api",
+    "uid": "f4d66727-81c2-567f-a6d0-120ee92ad616",
+    "resourceVersion": "42479",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:12"
+      }
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "search-indexer-api",
+        "namespace": "search",
+        "uid": "f4d66727-81c2-567f-a6d0-120ee92ad616",
+        "resourceVersion": "42479",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "search-indexer-api",
+          "app.kubernetes.io/instance": "search-indexer-staging",
+          "app.kubernetes.io/version": "4.6.0",
+          "app.kubernetes.io/part-of": "search"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "12",
+          "argocd.argoproj.io/tracking-id": "search-indexer-staging:apps/Deployment:search/search-indexer-api"
+        }
+      },
+      "spec": {
+        "replicas": 1,
+        "revisionHistoryLimit": 5,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "search-indexer-api",
+            "app.kubernetes.io/instance": "search-indexer-staging"
+          }
+        },
+        "strategy": {
+          "type": "RollingUpdate",
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "search-indexer-api",
+              "app.kubernetes.io/instance": "search-indexer-staging",
+              "app.kubernetes.io/version": "4.6.0"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "search-indexer-api",
+            "containers": [
+              {
+                "name": "search-indexer-api",
+                "image": "ghcr.io/lumen-retail/search-indexer-api:4.6.0",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "observedGeneration": 14,
+        "replicas": 1,
+        "readyReplicas": 1,
+        "availableReplicas": 1,
+        "updatedReplicas": 1
+      }
+    }
+  },
+  {
+    "_key": "602055b9-477a-5e9d-8feb-f3024f869000",
+    "app": "argocd/search-indexer-staging",
+    "group": "apps",
+    "version": "v1",
+    "kind": "ReplicaSet",
+    "namespace": "search",
+    "name": "search-indexer-api-6d8f9b7c4",
+    "uid": "602055b9-477a-5e9d-8feb-f3024f869000",
+    "resourceVersion": "42496",
+    "createdAt": "2026-10-21T09:10:20Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "Deployment",
+        "namespace": "search",
+        "name": "search-indexer-api",
+        "uid": "f4d66727-81c2-567f-a6d0-120ee92ad616"
+      }
+    ],
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:12"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/search-indexer-api:4.6.0"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "search-indexer-api-6d8f9b7c4",
+        "namespace": "search",
+        "uid": "602055b9-477a-5e9d-8feb-f3024f869000",
+        "resourceVersion": "42496",
+        "creationTimestamp": "2026-10-21T09:10:20Z",
+        "labels": {
+          "app.kubernetes.io/name": "search-indexer-api",
+          "app.kubernetes.io/instance": "search-indexer-staging",
+          "pod-template-hash": "6d8f9b7c4"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "12"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "search-indexer-api",
+            "uid": "f4d66727-81c2-567f-a6d0-120ee92ad616",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "replicas": 1,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "search-indexer-api",
+            "app.kubernetes.io/instance": "search-indexer-staging",
+            "pod-template-hash": "6d8f9b7c4"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "search-indexer-api",
+              "app.kubernetes.io/instance": "search-indexer-staging",
+              "app.kubernetes.io/version": "4.6.0"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "search-indexer-api",
+            "containers": [
+              {
+                "name": "search-indexer-api",
+                "image": "ghcr.io/lumen-retail/search-indexer-api:4.6.0",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "replicas": 1,
+        "readyReplicas": 1,
+        "availableReplicas": 1
+      }
+    }
+  },
+  {
+    "_key": "41b66f71-fc79-5752-927b-036dcf46390c",
+    "app": "argocd/search-indexer-staging",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "search",
+    "name": "search-indexer-api-6d8f9b7c4-w1x2y",
+    "uid": "41b66f71-fc79-5752-927b-036dcf46390c",
+    "resourceVersion": "42513",
+    "createdAt": "2026-10-21T09:10:20Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "search",
+        "name": "search-indexer-api-6d8f9b7c4",
+        "uid": "602055b9-477a-5e9d-8feb-f3024f869000"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-52-7.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/search-indexer-api:4.6.0"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "search-indexer-api-6d8f9b7c4-w1x2y",
+        "namespace": "search",
+        "uid": "41b66f71-fc79-5752-927b-036dcf46390c",
+        "resourceVersion": "42513",
+        "creationTimestamp": "2026-10-21T09:10:20Z",
+        "labels": {
+          "app.kubernetes.io/name": "search-indexer-api",
+          "app.kubernetes.io/instance": "search-indexer-staging",
+          "pod-template-hash": "6d8f9b7c4"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "search-indexer-api-6d8f9b7c4",
+            "uid": "602055b9-477a-5e9d-8feb-f3024f869000",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "search-indexer-api",
+        "containers": [
+          {
+            "name": "search-indexer-api",
+            "image": "ghcr.io/lumen-retail/search-indexer-api:4.6.0",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-52-7.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "search-indexer-api",
+            "image": "ghcr.io/lumen-retail/search-indexer-api:4.6.0",
+            "imageID": "ghcr.io/lumen-retail/search-indexer-api@sha256:7aaa7b291c75aef5537c865e58087b51883c64537aaa7b291c75aef5537c865e",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-28T09:00:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-21T09:10:20Z"
+      }
+    }
+  },
+  {
+    "_key": "44569b22-4bc0-5922-8e97-19c76bbefa4b",
+    "app": "argocd/search-indexer-staging",
+    "group": "apps",
+    "version": "v1",
+    "kind": "Deployment",
+    "namespace": "search",
+    "name": "search-indexer-worker",
+    "uid": "44569b22-4bc0-5922-8e97-19c76bbefa4b",
+    "resourceVersion": "42530",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:12"
+      }
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "search-indexer-worker",
+        "namespace": "search",
+        "uid": "44569b22-4bc0-5922-8e97-19c76bbefa4b",
+        "resourceVersion": "42530",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "search-indexer-worker",
+          "app.kubernetes.io/instance": "search-indexer-staging",
+          "app.kubernetes.io/version": "4.6.0",
+          "app.kubernetes.io/part-of": "search"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "12",
+          "argocd.argoproj.io/tracking-id": "search-indexer-staging:apps/Deployment:search/search-indexer-worker"
+        }
+      },
+      "spec": {
+        "replicas": 1,
+        "revisionHistoryLimit": 5,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "search-indexer-worker",
+            "app.kubernetes.io/instance": "search-indexer-staging"
+          }
+        },
+        "strategy": {
+          "type": "RollingUpdate",
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "search-indexer-worker",
+              "app.kubernetes.io/instance": "search-indexer-staging",
+              "app.kubernetes.io/version": "4.6.0"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "search-indexer-worker",
+            "containers": [
+              {
+                "name": "search-indexer-worker",
+                "image": "ghcr.io/lumen-retail/search-indexer-worker:4.6.0",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                },
+                "env": [
+                  {
+                    "name": "ES_URL",
+                    "value": "https://search-es.lumen.internal:9200"
+                  },
+                  {
+                    "name": "ES_PASSWORD",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "name": "search-es-credentials",
+                        "key": "password"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "observedGeneration": 14,
+        "replicas": 1,
+        "readyReplicas": 1,
+        "availableReplicas": 1,
+        "updatedReplicas": 1
+      }
+    }
+  },
+  {
+    "_key": "f1f7fcef-09fe-57de-8893-2689cdf25d81",
+    "app": "argocd/search-indexer-staging",
+    "group": "apps",
+    "version": "v1",
+    "kind": "ReplicaSet",
+    "namespace": "search",
+    "name": "search-indexer-worker-85c7b6d9f",
+    "uid": "f1f7fcef-09fe-57de-8893-2689cdf25d81",
+    "resourceVersion": "42547",
+    "createdAt": "2026-10-21T09:10:25Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "Deployment",
+        "namespace": "search",
+        "name": "search-indexer-worker",
+        "uid": "44569b22-4bc0-5922-8e97-19c76bbefa4b"
+      }
+    ],
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:12"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/search-indexer-worker:4.6.0"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "search-indexer-worker-85c7b6d9f",
+        "namespace": "search",
+        "uid": "f1f7fcef-09fe-57de-8893-2689cdf25d81",
+        "resourceVersion": "42547",
+        "creationTimestamp": "2026-10-21T09:10:25Z",
+        "labels": {
+          "app.kubernetes.io/name": "search-indexer-worker",
+          "app.kubernetes.io/instance": "search-indexer-staging",
+          "pod-template-hash": "85c7b6d9f"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "12"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "search-indexer-worker",
+            "uid": "44569b22-4bc0-5922-8e97-19c76bbefa4b",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "replicas": 1,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "search-indexer-worker",
+            "app.kubernetes.io/instance": "search-indexer-staging",
+            "pod-template-hash": "85c7b6d9f"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "search-indexer-worker",
+              "app.kubernetes.io/instance": "search-indexer-staging",
+              "app.kubernetes.io/version": "4.6.0"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "search-indexer-worker",
+            "containers": [
+              {
+                "name": "search-indexer-worker",
+                "image": "ghcr.io/lumen-retail/search-indexer-worker:4.6.0",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                },
+                "env": [
+                  {
+                    "name": "ES_URL",
+                    "value": "https://search-es.lumen.internal:9200"
+                  },
+                  {
+                    "name": "ES_PASSWORD",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "name": "search-es-credentials",
+                        "key": "password"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "replicas": 1,
+        "readyReplicas": 1,
+        "availableReplicas": 1
+      }
+    }
+  },
+  {
+    "_key": "ea1a9a30-aaa8-5bba-8f38-d35a1e12e2f1",
+    "app": "argocd/search-indexer-staging",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "search",
+    "name": "search-indexer-worker-85c7b6d9f-z4a5b",
+    "uid": "ea1a9a30-aaa8-5bba-8f38-d35a1e12e2f1",
+    "resourceVersion": "42564",
+    "createdAt": "2026-10-21T09:10:25Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "search",
+        "name": "search-indexer-worker-85c7b6d9f",
+        "uid": "f1f7fcef-09fe-57de-8893-2689cdf25d81"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-52-7.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/search-indexer-worker:4.6.0"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "search-indexer-worker-85c7b6d9f-z4a5b",
+        "namespace": "search",
+        "uid": "ea1a9a30-aaa8-5bba-8f38-d35a1e12e2f1",
+        "resourceVersion": "42564",
+        "creationTimestamp": "2026-10-21T09:10:25Z",
+        "labels": {
+          "app.kubernetes.io/name": "search-indexer-worker",
+          "app.kubernetes.io/instance": "search-indexer-staging",
+          "pod-template-hash": "85c7b6d9f"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "search-indexer-worker-85c7b6d9f",
+            "uid": "f1f7fcef-09fe-57de-8893-2689cdf25d81",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "search-indexer-worker",
+        "containers": [
+          {
+            "name": "search-indexer-worker",
+            "image": "ghcr.io/lumen-retail/search-indexer-worker:4.6.0",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            },
+            "env": [
+              {
+                "name": "ES_URL",
+                "value": "https://search-es.lumen.internal:9200"
+              },
+              {
+                "name": "ES_PASSWORD",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "search-es-credentials",
+                    "key": "password"
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "nodeName": "ip-10-42-52-7.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "search-indexer-worker",
+            "image": "ghcr.io/lumen-retail/search-indexer-worker:4.6.0",
+            "imageID": "ghcr.io/lumen-retail/search-indexer-worker@sha256:f7c1fa1b57b3ac251246083fd097a7c17aff69fff7c1fa1b57b3ac251246083f",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-28T09:00:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-21T09:10:25Z"
+      }
+    }
+  },
+  {
+    "_key": "5da528ef-f44c-53e3-9f70-7106be1f96f5",
+    "app": "argocd/search-indexer-staging",
+    "group": "",
+    "version": "v1",
+    "kind": "Service",
+    "namespace": "search",
+    "name": "search-indexer-api",
+    "uid": "5da528ef-f44c-53e3-9f70-7106be1f96f5",
+    "resourceVersion": "42581",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "networkingInfo": {
+      "targetLabels": {
+        "app.kubernetes.io/name": "search-indexer-api",
+        "app.kubernetes.io/instance": "search-indexer-staging"
+      }
+    },
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "search-indexer-api",
+        "namespace": "search",
+        "uid": "5da528ef-f44c-53e3-9f70-7106be1f96f5",
+        "resourceVersion": "42581",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "annotations": {
+          "argocd.argoproj.io/tracking-id": "search-indexer-staging:/Service:search/search-indexer-api"
+        }
+      },
+      "spec": {
+        "type": "ClusterIP",
+        "selector": {
+          "app.kubernetes.io/name": "search-indexer-api",
+          "app.kubernetes.io/instance": "search-indexer-staging"
+        },
+        "ports": [
+          {
+            "name": "http",
+            "port": 80,
+            "targetPort": 8080,
+            "protocol": "TCP"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "_key": "9918adbf-514a-5cd9-bd45-78bf7783e890",
+    "app": "argocd/search-indexer-staging",
+    "group": "",
+    "version": "v1",
+    "kind": "ConfigMap",
+    "namespace": "search",
+    "name": "search-indexer-config",
+    "uid": "9918adbf-514a-5cd9-bd45-78bf7783e890",
+    "resourceVersion": "42598",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "managed": true,
+    "status": "OutOfSync",
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {
+        "name": "search-indexer-config",
+        "namespace": "search",
+        "uid": "9918adbf-514a-5cd9-bd45-78bf7783e890",
+        "resourceVersion": "42598",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/instance": "search-indexer-staging"
+        },
+        "annotations": {
+          "argocd.argoproj.io/tracking-id": "search-indexer-staging:/ConfigMap:search/search-indexer-config"
+        }
+      },
+      "data": {
+        "BULK_FLUSH_INTERVAL": "5s",
+        "INDEX_PREFIX": "products-v7"
+      }
+    },
+    "targetManifest": {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {
+        "name": "search-indexer-config",
+        "namespace": "search",
+        "uid": "9918adbf-514a-5cd9-bd45-78bf7783e890",
+        "resourceVersion": "42598",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/instance": "search-indexer-staging"
+        },
+        "annotations": {
+          "argocd.argoproj.io/tracking-id": "search-indexer-staging:/ConfigMap:search/search-indexer-config"
+        }
+      },
+      "data": {
+        "BULK_FLUSH_INTERVAL": "10s",
+        "INDEX_PREFIX": "products-v7"
+      }
+    }
+  }
+]

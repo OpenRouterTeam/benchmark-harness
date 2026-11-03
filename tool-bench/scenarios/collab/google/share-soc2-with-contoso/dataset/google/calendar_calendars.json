@@ -1,0 +1,23 @@
+[
+  {
+    "id": "ops@octo-corp.example",
+    "summary": "ops@octo-corp.example",
+    "timeZone": "America/New_York",
+    "primary": true,
+    "accessRole": "owner",
+    "description": ""
+  },
+  {
+    "id": "c_ops_team@group.calendar.google.com",
+    "summary": "Ops team",
+    "timeZone": "America/New_York",
+    "accessRole": "writer",
+    "description": "Shared ops rota and maintenance windows"
+  },
+  {
+    "id": "en.usa#holiday@group.v.calendar.google.com",
+    "summary": "Holidays in United States",
+    "timeZone": "America/New_York",
+    "accessRole": "reader"
+  }
+]

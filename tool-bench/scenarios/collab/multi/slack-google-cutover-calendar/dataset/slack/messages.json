@@ -1,0 +1,163 @@
+[
+  {
+    "_key": "C01GENERAL0/1793019600.010203",
+    "channel": "C01GENERAL0",
+    "ts": "1793019600.010203",
+    "user": "U01DWHIT5FA",
+    "text": "Reminder: all-hands moves to Thursday 11:00 CT this week. Agenda in the doc pinned here.",
+    "reactions": [
+      {
+        "name": "+1",
+        "users": [
+          "U04ARIVERA9",
+          "U03PRIYAN4T",
+          "U05SORTIZ6M"
+        ],
+        "count": 3
+      }
+    ]
+  },
+  {
+    "_key": "C01GENERAL0/1793209269.662010",
+    "channel": "C01GENERAL0",
+    "ts": "1793209269.662010",
+    "user": "U05SORTIZ6M",
+    "text": "Heads up: I heard we chose Honeycomb for observability? Anyone know if that's final?"
+  },
+  {
+    "_key": "C01GENERAL0/1793210130.090112",
+    "channel": "C01GENERAL0",
+    "ts": "1793210130.090112",
+    "user": "U02MWEBB8XH",
+    "text": "Not final yet when I last checked - see the eval thread in #infra.",
+    "thread_ts": "1793209269.662010"
+  },
+  {
+    "_key": "C04INCID7NS/1792811520.551000",
+    "channel": "C04INCID7NS",
+    "ts": "1792811520.551000",
+    "user": "U08DEPLOYB0",
+    "text": "INC-2291 declared: elevated 5xx on checkout-api (sev2). Commander: <@U05SORTIZ6M>",
+    "bot_id": "B08DEPLOY"
+  },
+  {
+    "_key": "C04INCID7NS/1792816800.002200",
+    "channel": "C04INCID7NS",
+    "ts": "1792816800.002200",
+    "user": "U05SORTIZ6M",
+    "text": "INC-2291 resolved. Root cause: connection pool exhaustion after the 4.11.3 deploy. Postmortem Friday.",
+    "reactions": [
+      {
+        "name": "white_check_mark",
+        "users": [
+          "U02MWEBB8XH"
+        ],
+        "count": 1
+      }
+    ]
+  },
+  {
+    "_key": "C07DESIGN8Y/1792778400.000301",
+    "channel": "C07DESIGN8Y",
+    "ts": "1792778400.000301",
+    "user": "U06AKIM3D2Q",
+    "text": "Crit tomorrow: new checkout empty states + the 4.12 release notes screenshots."
+  },
+  {
+    "_key": "C05DBMIG2RT/1792422000.012010",
+    "channel": "C05DBMIG2RT",
+    "ts": "1792422000.012010",
+    "user": "U05SORTIZ6M",
+    "text": "Staging cutover done on 2026-10-19, replication lag stayed under 2s. Prod plan next.",
+    "reactions": [
+      {
+        "name": "postgres",
+        "users": [
+          "U03PRIYAN4T"
+        ],
+        "count": 1
+      }
+    ]
+  },
+  {
+    "_key": "C05DBMIG2RT/1792600205.318801",
+    "channel": "C05DBMIG2RT",
+    "ts": "1792600205.318801",
+    "user": "U05SORTIZ6M",
+    "text": "Proposal for the production cutover window of the payments cluster: Friday 2026-11-06, 20:00-23:00 CT. Objections?"
+  },
+  {
+    "_key": "C05DBMIG2RT/1792602120.041000",
+    "channel": "C05DBMIG2RT",
+    "ts": "1792602120.041000",
+    "user": "U07LFISCH2R",
+    "text": "Nov 6 collides with the payments change freeze for the partner launch (Nov 5-6). Can we do the next night?",
+    "thread_ts": "1792600205.318801"
+  },
+  {
+    "_key": "C05DBMIG2RT/1792678200.002001",
+    "channel": "C05DBMIG2RT",
+    "ts": "1792678200.002001",
+    "user": "U03PRIYAN4T",
+    "text": "Saturday works for payments. I'd want at least a 3h window for the reindex.",
+    "thread_ts": "1792600205.318801"
+  },
+  {
+    "_key": "C05DBMIG2RT/1792683000.000066",
+    "channel": "C05DBMIG2RT",
+    "ts": "1792683000.000066",
+    "user": "U02MWEBB8XH",
+    "text": "Agreed: final window is Saturday 2026-11-07, 22:00-01:00 CT. Sam is cutover lead, Priya on payments verification. Rollback deadline 00:30.",
+    "thread_ts": "1792600205.318801",
+    "reactions": [
+      {
+        "name": "+1",
+        "users": [
+          "U05SORTIZ6M",
+          "U03PRIYAN4T",
+          "U07LFISCH2R"
+        ],
+        "count": 3
+      }
+    ]
+  },
+  {
+    "_key": "C05DBMIG2RT/1792683660.000005",
+    "channel": "C05DBMIG2RT",
+    "ts": "1792683660.000005",
+    "user": "U05SORTIZ6M",
+    "text": "<@U0TOOLBNCH1> can you put the cutover on the Ops team calendar and invite me and Priya? Drop a note in this thread once it's in.",
+    "thread_ts": "1792600205.318801"
+  },
+  {
+    "_key": "C05DBMIG2RT/1793030400.000900",
+    "channel": "C05DBMIG2RT",
+    "ts": "1793030400.000900",
+    "user": "U03PRIYAN4T",
+    "text": "Reminder: the analytics replica cutover is separate and happens 2026-11-14."
+  },
+  {
+    "_key": "G07LEADS3PV/1786550400.000044",
+    "channel": "G07LEADS3PV",
+    "ts": "1786550400.000044",
+    "user": "U01DWHIT5FA",
+    "text": "Early read on observability renewal: tentatively leaning Datadog, but let's run a proper eval in Q4."
+  },
+  {
+    "_key": "C03INFRA9QX/1791990131.120442",
+    "channel": "C03INFRA9QX",
+    "ts": "1791990131.120442",
+    "user": "U02MWEBB8XH",
+    "text": "Observability vendor evaluation kicking off: Datadog vs Grafana Cloud vs Honeycomb. Scorecard in the canvas. Decision by Oct 27.",
+    "reactions": [
+      {
+        "name": "eyes",
+        "users": [
+          "U05SORTIZ6M",
+          "U04ARIVERA9"
+        ],
+        "count": 2
+      }
+    ]
+  }
+]

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"stripe_api_write","arguments":{"livemode":false,"parameters":{"discounts":[{"coupon":"RETAIN20-3M"}],"id":"sub_7fWxXdMb0rsO3dgqzvcplQuy"},"stripe_api_operation_id":"PostSubscriptionsSubscriptionExposedId","stripe_context":"acct_1FwY8bQk2LmN4pRs"}}}

@@ -1,0 +1,42 @@
+[
+  {
+    "_key": "3c1f2b7e-9a44-4c1e-8d0b-6f1a2e3b4c5d",
+    "id": "3c1f2b7e-9a44-4c1e-8d0b-6f1a2e3b4c5d",
+    "matchers": [
+      {
+        "name": "alertname",
+        "value": "NodeDiskFillingUp",
+        "isRegex": false,
+        "isEqual": true
+      },
+      {
+        "name": "instance",
+        "value": "ip-10-0-3-52",
+        "isRegex": false,
+        "isEqual": true
+      }
+    ],
+    "startsAt": "2026-11-09T15:30:00Z",
+    "endsAt": "2026-11-10T15:30:00Z",
+    "createdBy": "p.okafor",
+    "comment": "Volume resize CHG-7702",
+    "updatedAt": "2026-11-09T15:30:00Z"
+  },
+  {
+    "_key": "8d2e4f6a-1b3c-4d5e-9f0a-7b8c9d0e1f2a",
+    "id": "8d2e4f6a-1b3c-4d5e-9f0a-7b8c9d0e1f2a",
+    "matchers": [
+      {
+        "name": "alertname",
+        "value": "HighCheckoutErrorRate (staging)",
+        "isRegex": false,
+        "isEqual": true
+      }
+    ],
+    "startsAt": "2026-11-12T11:30:00Z",
+    "endsAt": "2026-11-13T11:30:00Z",
+    "createdBy": "j.alvarez",
+    "comment": "staging load test",
+    "updatedAt": "2026-11-12T11:30:00Z"
+  }
+]

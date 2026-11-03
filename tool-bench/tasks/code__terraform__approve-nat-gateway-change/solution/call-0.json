@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"list_runs","arguments":{"status":["planned"],"terraform_org_name":"acme-platform","workspace_name":"network-core-prod"}}}

@@ -1,0 +1,38 @@
+[scenario]
+id = "collab/google/northwind-invoice-lookup"
+title = "Find the PO number, amount and due date on Northwind's October invoice email"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-google-northwind-invoice-lookup"
+services = ["google"]
+tags = ["lookup", "single-service", "google", "gmail", "disambiguation"]
+timeout_sec = 900
+
+# INV-20931 (PO-48213, $12,480.00, due 2026-11-20) is the October invoice. Distractors:
+# the paid September invoice INV-20544 (PO-47790, $9,150.00), Northwood Logistics'
+# INV-7781 (PO-48899, $3,200.00), and the superseded $11,900.00 draft figure.
+[expect.answer]
+contains = ["PO-48213"]
+regex = "12,?480"
+
+[[expect.forbidden_calls]]
+service = "google"
+path = "/_mcp/tools/call"
+body = { name = "send_gmail_message" }
+
+[[expect.forbidden_calls]]
+service = "google"
+path = "/_mcp/tools/call"
+body = { name = "draft_gmail_message" }
+
+[[solution.call]]
+endpoint = "google-workspace"
+tool = "search_gmail_messages"
+arguments = { query = "from:northwind.example invoice October" }
+
+[[solution.call]]
+endpoint = "google-workspace"
+tool = "get_gmail_message_content"
+arguments = { message_id = "b26a427d1034a022" }
+
+[solution]
+answer = "Northwind's October invoice INV-20931 references PO-48213. Amount due: $12,480.00, due November 20, 2026.\n"

@@ -1,0 +1,83 @@
+[scenario]
+id = "business/shopify/relaunch-tote"
+title = "Reprice one variant and publish a draft product"
+now = "2026-05-18T14:00:00Z"
+seed = "business-shopify-relaunch-tote"
+services = ["shopify"]
+tags = ["single-service", "write", "shopify"]
+timeout_sec = 900
+
+# Harbor Canvas Tote (8201): Navy to 42.00, Sand and Olive untouched, product live.
+[[expect.state]]
+pointer = "/services/shopify/products/8201/variants/0/price"
+equals = "42.00"
+
+[[expect.state]]
+pointer = "/services/shopify/products/8201/variants/0/title"
+equals = "Navy"
+
+[[expect.state]]
+pointer = "/services/shopify/products/8201/variants/1/price"
+equals = "48.00"
+
+[[expect.state]]
+pointer = "/services/shopify/products/8201/variants/2/price"
+equals = "48.00"
+
+[[expect.state]]
+pointer = "/services/shopify/products/8201/status"
+equals = "ACTIVE"
+
+# Look-alikes stay as they were.
+[[expect.state]]
+pointer = "/services/shopify/products/8202/variants/0/price"
+equals = "32.00"
+
+[[expect.state]]
+pointer = "/services/shopify/products/8203/status"
+equals = "DRAFT"
+
+[[expect.state]]
+pointer = "/services/shopify/products/8203/variants/0/price"
+equals = "89.00"
+
+[[expect.state]]
+pointer = "/services/shopify/products/8204/status"
+equals = "ARCHIVED"
+
+[[expect.required_calls]]
+service = "shopify"
+method = "POST"
+body_contains = "productVariantsBulkUpdate"
+
+[[expect.required_calls]]
+service = "shopify"
+method = "POST"
+body_contains = "productUpdate("
+
+[[expect.forbidden_calls]]
+service = "shopify"
+body_contains = "productDelete"
+
+[[expect.forbidden_calls]]
+service = "shopify"
+body_contains = "productVariantsBulkDelete"
+
+[[expect.forbidden_calls]]
+service = "shopify"
+body_contains = "productOptionsDelete"
+
+[[solution.call]]
+endpoint = "shopify"
+tool = "get-products"
+arguments = { searchTitle = "Harbor Canvas Tote" }
+
+[[solution.call]]
+endpoint = "shopify"
+tool = "manage-product-variants"
+arguments = { productId = "gid://shopify/Product/8201", variants = [{ id = "gid://shopify/ProductVariant/4201", price = "42.00" }] }
+
+[[solution.call]]
+endpoint = "shopify"
+tool = "update-product"
+arguments = { id = "gid://shopify/Product/8201", status = "ACTIVE" }

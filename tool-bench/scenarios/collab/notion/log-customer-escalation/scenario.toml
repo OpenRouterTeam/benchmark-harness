@@ -1,0 +1,63 @@
+[scenario]
+id = "collab/notion/log-customer-escalation"
+title = "Log a new customer escalation as a database row"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-notion-log-customer-escalation"
+services = ["notion"]
+tags = ["write", "single-service", "notion"]
+timeout_sec = 900
+
+# The first page created in this world gets ID 2a312ccd-ad51-42dd-8f17-7f194d6b5db7 (IDs come from the scenario seed and
+# are only consumed by valid creates). It must be a row of Customer escalations with every
+# field set.
+[[expect.state]]
+pointer = "/services/notion/pages/2a312ccd-ad51-42dd-8f17-7f194d6b5db7/parent/data_source_id"
+equals = "f937b556-2452-4808-a340-f4c80ce63d68"
+
+[[expect.state]]
+pointer = "/services/notion/pages/2a312ccd-ad51-42dd-8f17-7f194d6b5db7/properties/Summary/title/0/plain_text"
+equals = "Checkout button unresponsive on Safari"
+
+[[expect.state]]
+pointer = "/services/notion/pages/2a312ccd-ad51-42dd-8f17-7f194d6b5db7/properties/Customer/rich_text/0/plain_text"
+contains = "Acme Retail"
+
+[[expect.state]]
+pointer = "/services/notion/pages/2a312ccd-ad51-42dd-8f17-7f194d6b5db7/properties/Severity/select/name"
+equals = "Sev 2"
+
+[[expect.state]]
+pointer = "/services/notion/pages/2a312ccd-ad51-42dd-8f17-7f194d6b5db7/properties/State/status/name"
+equals = "Open"
+
+[[expect.state]]
+pointer = "/services/notion/pages/2a312ccd-ad51-42dd-8f17-7f194d6b5db7/properties/Owner/people/0/id"
+equals = "6a5aa3fe-744c-41b8-ab6d-2e0cc2ef706a"
+
+[[expect.state]]
+pointer = "/services/notion/pages/2a312ccd-ad51-42dd-8f17-7f194d6b5db7/properties/Reported/date/start"
+equals = "2026-10-29"
+
+[[expect.required_calls]]
+service = "notion"
+method = "POST"
+path = "/v1/pages"
+
+[[expect.forbidden_calls]]
+service = "notion"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "notion"
+tool = "API-post-search"
+arguments = { query = "Customer escalations", filter = { property = "object", value = "data_source" } }
+
+[[solution.call]]
+endpoint = "notion"
+tool = "API-get-users"
+arguments = {}
+
+[[solution.call]]
+endpoint = "notion"
+tool = "API-post-page"
+arguments = { parent = { type = "database_id", database_id = "31142074-4482-4c70-9ca0-406aa0edd7ec" }, properties = { Summary = { title = [{ text = { content = "Checkout button unresponsive on Safari" } }] }, Customer = { rich_text = [{ text = { content = "Acme Retail" } }] }, Severity = { select = { name = "Sev 2" } }, State = { status = { name = "Open" } }, Owner = { people = [{ id = "6a5aa3fe-744c-41b8-ab6d-2e0cc2ef706a" }] }, Reported = { date = { start = "2026-10-29" } } } }

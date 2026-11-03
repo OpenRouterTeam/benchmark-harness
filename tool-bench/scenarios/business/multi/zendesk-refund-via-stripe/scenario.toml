@@ -1,0 +1,127 @@
+[scenario]
+id = "business/multi/zendesk-refund-via-stripe"
+title = "Refund a duplicate charge in Stripe from a help-desk ticket and close the loop with the customer"
+now = "2026-03-18T15:00:00Z"
+seed = "business-multi-zendesk-refund-via-stripe"
+services = ["zendesk", "stripe"]
+tags = ["write", "multi-service", "zendesk", "stripe", "disambiguation"]
+timeout_sec = 1200
+
+# Zendesk ticket 5102 (Hannah Okafor, owner@northwindbakery.com) reports order #1077 charged
+# twice on 2026-03-10. In Stripe, customer Northwind Bakery has two $480.00 charges for #1077:
+# ch_ITHH… (17:14 UTC, original) and ch_r1lx… (17:16 UTC, duplicate). Look-alikes: order #1080
+# ($480.00, same customer, four days later), Northwind Traders' $480.00 lease charge (whose
+# Zendesk ticket 5104 is also open), and Hannah's other tickets 5088 (solved) and 5109 (pending).
+# The first refund the mock mints under this seed is re_SwUQQGI4jAit1effr2iLjUEs.
+
+[[expect.state]]
+pointer = "/services/stripe/charges/ch_r1lxhPeTsZKQxIfuhPANytDa/amount_refunded"
+equals = 48000
+
+[[expect.state]]
+pointer = "/services/stripe/charges/ch_ITHHURD4dPMFtMW9vBBsbgLF/amount_refunded"
+equals = 0
+
+[[expect.state]]
+pointer = "/services/stripe/charges/ch_L2nRrQf84XcsM4hBtIVCqlBW/amount_refunded"
+equals = 0
+
+[[expect.state]]
+pointer = "/services/stripe/charges/ch_zoapAkuqpaPPo276IGPjweZf/amount_refunded"
+equals = 0
+
+[[expect.state]]
+pointer = "/services/zendesk/tickets/5102/status"
+equals = "solved"
+
+[[expect.state]]
+pointer = "/services/zendesk/comments"
+key_prefix = "5102/"
+any = { public = true, body = "re_SwUQQGI4jAit1effr2iLjUEs" }
+
+[[expect.state]]
+pointer = "/services/zendesk/tickets/5104/status"
+equals = "open"
+
+[[expect.state]]
+pointer = "/services/zendesk/tickets/5109/status"
+equals = "pending"
+
+[[expect.required_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { stripe_api_operation_id = "PostRefunds" } }
+
+[[expect.required_calls]]
+service = "zendesk"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket_comment", arguments = { ticket_id = 5102 } }
+
+[[expect.forbidden_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { stripe_api_operation_id = "PostRefunds", parameters = { charge = "ch_ITHHURD4dPMFtMW9vBBsbgLF" } } }
+
+[[expect.forbidden_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { stripe_api_operation_id = "PostRefunds", parameters = { payment_intent = "pi_JRJx84PEvR5ilrJt2xAz9c5n" } } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket_comment", arguments = { ticket_id = 5104 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "update_ticket", arguments = { ticket_id = 5104 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket_comment", arguments = { ticket_id = 5109 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "update_ticket", arguments = { ticket_id = 5109 } }
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "get_tickets"
+arguments = {}
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "get_ticket_comments"
+arguments = { ticket_id = 5102 }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_read"
+arguments = { stripe_api_operation_id = "GetCustomersSearch", parameters = { query = "email:\"owner@northwindbakery.com\"" }, stripe_context = "acct_1FwY8bQk2LmN4pRs", livemode = false }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_read"
+arguments = { stripe_api_operation_id = "GetCharges", parameters = { customer = "cus_DxFNB3AWMttAAW" }, stripe_context = "acct_1FwY8bQk2LmN4pRs", livemode = false }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_write"
+arguments = { stripe_api_operation_id = "PostRefunds", parameters = { charge = "ch_r1lxhPeTsZKQxIfuhPANytDa", reason = "duplicate" }, stripe_context = "acct_1FwY8bQk2LmN4pRs", livemode = false }
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "create_ticket_comment"
+arguments = { ticket_id = 5102, public = true, comment = "Hi Hannah,\n\nSorry about that! We found the second $480.00 charge for order #1077 on March 10 and refunded it in full. The refund ID is re_SwUQQGI4jAit1effr2iLjUEs; it should appear on your Visa ending 1881 within 5-10 business days. The original charge for the order stays in place.\n\nBest,\nFernway Support" }
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "update_ticket"
+arguments = { ticket_id = 5102, status = "solved" }

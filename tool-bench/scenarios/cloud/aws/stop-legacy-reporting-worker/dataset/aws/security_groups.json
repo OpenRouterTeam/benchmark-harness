@@ -1,0 +1,10 @@
+[
+  { "_key": "sg-0c4e6a8b1d3f57902", "ownerId": "481562039417", "groupId": "sg-0c4e6a8b1d3f57902", "groupName": "reporting", "groupDescription": "Reporting workers", "vpcId": "vpc-05d2e8a1c3f7b9046",
+    "ipPermissions": [{ "ipProtocol": "tcp", "fromPort": 22, "toPort": 22, "groups": [], "ipRanges": [{ "cidrIp": "10.20.0.0/16", "description": "VPN" }], "ipv6Ranges": [], "prefixListIds": [] }],
+    "ipPermissionsEgress": [{ "ipProtocol": "-1", "groups": [], "ipRanges": [{ "cidrIp": "0.0.0.0/0" }], "ipv6Ranges": [], "prefixListIds": [] }], "tagSet": [] },
+  { "_key": "sg-0f2a4c6e8b1d35790", "ownerId": "481562039417", "groupId": "sg-0f2a4c6e8b1d35790", "groupName": "reporting-staging", "groupDescription": "Reporting workers (staging)", "vpcId": "vpc-0a8c6e4f2d1b35790",
+    "ipPermissions": [], "ipPermissionsEgress": [{ "ipProtocol": "-1", "groups": [], "ipRanges": [{ "cidrIp": "0.0.0.0/0" }], "ipv6Ranges": [], "prefixListIds": [] }], "tagSet": [] },
+  { "_key": "sg-0b7e2d4f6a8c13579", "ownerId": "481562039417", "groupId": "sg-0b7e2d4f6a8c13579", "groupName": "orders-api", "groupDescription": "orders-api ALB targets", "vpcId": "vpc-05d2e8a1c3f7b9046",
+    "ipPermissions": [{ "ipProtocol": "tcp", "fromPort": 8080, "toPort": 8080, "groups": [], "ipRanges": [{ "cidrIp": "10.20.0.0/16" }], "ipv6Ranges": [], "prefixListIds": [] }],
+    "ipPermissionsEgress": [{ "ipProtocol": "-1", "groups": [], "ipRanges": [{ "cidrIp": "0.0.0.0/0" }], "ipv6Ranges": [], "prefixListIds": [] }], "tagSet": [] }
+]

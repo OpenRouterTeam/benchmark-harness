@@ -1,0 +1,31 @@
+[
+  {
+    "_key": "PSVCHKA",
+    "sets": [
+      {
+        "id": "start",
+        "rules": [
+          {
+            "id": "c0ffee01",
+            "label": "Suppress info events",
+            "conditions": [
+              {
+                "expression": "event.severity matches 'info'"
+              }
+            ],
+            "actions": {
+              "suppress": true
+            },
+            "disabled": false
+          }
+        ]
+      }
+    ],
+    "catch_all": {
+      "actions": {}
+    },
+    "created_at": "2025-07-01T09:00:00Z",
+    "updated_at": "2025-07-01T09:00:00Z",
+    "version": "1a2b3c4d"
+  }
+]

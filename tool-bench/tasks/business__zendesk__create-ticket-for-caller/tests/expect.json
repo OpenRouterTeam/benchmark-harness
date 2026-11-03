@@ -1,0 +1,96 @@
+{
+  "state": [
+    {
+      "pointer": "/services/zendesk/tickets/5109/subject",
+      "equals": "Barcode scanners not syncing after update",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/zendesk/tickets/5109/requester_id",
+      "equals": 9010301,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/zendesk/tickets/5109/priority",
+      "equals": "high",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/zendesk/tickets/5109/type",
+      "equals": "incident",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/zendesk/tickets/5109/description",
+      "equals": null,
+      "exists": null,
+      "contains": "Bergen",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/zendesk/tickets/5110",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "zendesk",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "requester_id": 9010301
+        },
+        "name": "create_ticket"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "zendesk",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "update_ticket"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "zendesk",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "create_ticket_comment"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

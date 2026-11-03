@@ -1,0 +1,14 @@
+[
+  {
+    "id": "dd40209f-7600-5237-a88c-d7e917a9704a",
+    "type": "issueAssignedToYou",
+    "title": "PAY-118 Refund webhook retries double-charge customers after 3DS timeout",
+    "subtitle": "Lena Fischer subscribed you",
+    "url": "https://linear.app/octo/issue/PAY-118",
+    "actorId": "3dbdd473-1a04-5dda-ad95-4c583313bccd",
+    "userId": "2dad689e-9ace-5467-9b02-0cc4e445cfa4",
+    "readAt": null,
+    "createdAt": "2026-10-28T12:00:00.000Z",
+    "updatedAt": "2026-10-28T12:00:00.000Z"
+  }
+]

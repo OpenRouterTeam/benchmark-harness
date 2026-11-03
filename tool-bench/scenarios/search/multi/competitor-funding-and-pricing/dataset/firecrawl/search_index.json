@@ -1,0 +1,36 @@
+[
+  {
+    "_key": "web:norvik-pricing",
+    "url": "https://www.norvikanalytics.com/pricing",
+    "title": "Pricing | Norvik Analytics",
+    "description": "Demand forecasting plans for retailers: Starter, Growth and Enterprise. Save with annual billing.",
+    "keywords": ["plans", "cost", "price", "growth plan", "annual", "monthly"]
+  },
+  {
+    "_key": "web:norvik-blog-2025",
+    "url": "https://www.norvikanalytics.com/blog/new-plans-2025",
+    "title": "Introducing our new plans | Norvik Analytics Blog",
+    "description": "From today, Norvik Analytics comes in Starter and Growth plans. Growth is $690/month billed annually.",
+    "keywords": ["pricing", "plans", "growth plan", "price"]
+  },
+  {
+    "_key": "web:capterra-norvik",
+    "url": "https://www.capterra.com/p/248811/norvik-analytics/pricing",
+    "title": "Norvik Analytics Pricing 2026 | Capterra",
+    "description": "Norvik Analytics pricing: Starter $240 per month, Growth $690 per month. Free trial available.",
+    "keywords": ["plans", "cost", "growth", "pricing"]
+  },
+  {
+    "_key": "web:norvik-home",
+    "url": "https://www.norvikanalytics.com",
+    "title": "Norvik Analytics | Demand forecasting for retailers",
+    "description": "Forecast demand per store and SKU, and cut stock-outs and overstock."
+  },
+  {
+    "_key": "web:norvik-labs-pricing",
+    "url": "https://www.norviklabs.se/pricing",
+    "title": "Robot fleet pricing | Norvik Labs",
+    "description": "Warehouse robot leasing from $1,900 per robot per month. Growth fleet packages available.",
+    "keywords": ["norvik", "pricing", "growth", "plans"]
+  }
+]

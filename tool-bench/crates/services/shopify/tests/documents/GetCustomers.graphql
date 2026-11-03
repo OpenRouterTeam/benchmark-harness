@@ -1,0 +1,41 @@
+
+        query GetCustomers($first: Int!, $query: String) {
+          customers(first: $first, query: $query) {
+            edges {
+              node {
+                id
+                firstName
+                lastName
+                email
+                phone
+                createdAt
+                updatedAt
+                tags
+                defaultAddress {
+                  address1
+                  address2
+                  city
+                  provinceCode
+                  zip
+                  country
+                  phone
+                }
+                addresses {
+                  address1
+                  address2
+                  city
+                  provinceCode
+                  zip
+                  country
+                  phone
+                }
+                amountSpent {
+                  amount
+                  currencyCode
+                }
+                numberOfOrders
+              }
+            }
+          }
+        }
+      

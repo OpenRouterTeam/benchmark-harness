@@ -1,0 +1,41 @@
+[
+  {
+    "_key": "w1",
+    "url": "https://acme.dev/pricing",
+    "title": "Pricing | Acme",
+    "description": "Acme plans and prices for teams",
+    "keywords": [
+      "cost"
+    ]
+  },
+  {
+    "_key": "w2",
+    "url": "https://reviews.example/acme",
+    "title": "Acme review",
+    "description": "Is Acme pricing worth it?",
+    "category": "research"
+  },
+  {
+    "_key": "w3",
+    "url": "https://other.org/about",
+    "title": "About Other",
+    "description": "Other org is unrelated"
+  },
+  {
+    "_key": "n1",
+    "kind": "news",
+    "url": "https://news.example/acme-raises",
+    "title": "Acme raises Series A",
+    "snippet": "Acme pricing to change",
+    "date": "2026-09-01"
+  },
+  {
+    "_key": "i1",
+    "kind": "images",
+    "url": "https://acme.dev/pricing",
+    "imageUrl": "https://acme.dev/pricing.png",
+    "title": "Acme pricing table",
+    "imageWidth": 800,
+    "imageHeight": 600
+  }
+]

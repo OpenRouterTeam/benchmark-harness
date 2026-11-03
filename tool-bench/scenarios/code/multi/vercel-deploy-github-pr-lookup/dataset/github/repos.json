@@ -1,0 +1,47 @@
+[
+  {
+    "_key": "acme-shop/storefront",
+    "id": 690113301,
+    "name": "storefront",
+    "full_name": "acme-shop/storefront",
+    "owner": "acme-shop",
+    "private": true,
+    "visibility": "private",
+    "description": "Acme Shop storefront (Next.js, deployed on Vercel)",
+    "language": "TypeScript",
+    "topics": [
+      "nextjs",
+      "storefront"
+    ],
+    "default_branch": "main",
+    "created_at": "2023-04-03T00:00:00Z",
+    "updated_at": "2026-10-28T09:30:00Z",
+    "pushed_at": "2026-10-28T09:30:00Z",
+    "stargazers_count": 4,
+    "forks_count": 0,
+    "has_issues": true,
+    "has_discussions": false,
+    "collaborators": [
+      {
+        "login": "riley-p",
+        "permission": "admin"
+      },
+      {
+        "login": "mateoalv",
+        "permission": "write"
+      },
+      {
+        "login": "junpark",
+        "permission": "write"
+      },
+      {
+        "login": "ines-d",
+        "permission": "maintain"
+      },
+      {
+        "login": "kofi-m",
+        "permission": "read"
+      }
+    ]
+  }
+]

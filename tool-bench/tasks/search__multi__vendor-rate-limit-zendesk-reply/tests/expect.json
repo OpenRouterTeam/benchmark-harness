@@ -1,0 +1,113 @@
+{
+  "state": [
+    {
+      "pointer": "/services/zendesk/comments",
+      "equals": null,
+      "exists": null,
+      "contains": null,
+      "any": {
+        "body": "750",
+        "public": true
+      },
+      "key_prefix": "5302/"
+    },
+    {
+      "pointer": "/services/zendesk/tickets/5302/status",
+      "equals": "pending",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/zendesk/tickets/5287/status",
+      "equals": "solved",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/zendesk/tickets/5298/status",
+      "equals": "open",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/zendesk/tickets/5301/status",
+      "equals": "open",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/zendesk/comments/5298~12",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/zendesk/comments/5287~13",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/zendesk/comments/5301~12",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "tavily",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/(search|extract|crawl|map|research)$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "zendesk",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "ticket_id": 5302
+        },
+        "name": "create_ticket_comment"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "zendesk",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "create_ticket"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

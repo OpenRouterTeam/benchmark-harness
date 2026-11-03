@@ -1,0 +1,135 @@
+[scenario]
+id = "cloud/multi/okta-offboard-linear-slack"
+title = "Offboard Lena Fischer across Okta, Linear and Slack (not Lena Fisher in Sales)"
+now = "2026-10-29T15:00:00Z"
+seed = "cloud-multi-okta-offboard-linear-slack"
+services = ["okta", "linear", "slack"]
+tags = ["write", "multi-service", "okta", "linear", "slack", "disambiguation"]
+timeout_sec = 1200
+
+# Okta has Lena Fischer (Product, 00u1lnfschr3Ab4Cd5x7) and the look-alike Lena Fisher
+# (Sales, 00u1lnfshr07Ef8Gh9x7). Fischer is deactivated, not deleted. In Linear she is in
+# Payments (c60777c7…) and Web App (b66a35a6…); both memberships go. The notice lands in
+# #it-ops (C0ITOPS5LF2), not the archived #it-requests-archive.
+[[expect.state]]
+pointer = "/services/okta/users/00u1lnfschr3Ab4Cd5x7/status"
+equals = "DEPROVISIONED"
+
+[[expect.state]]
+pointer = "/services/okta/users/00u1lnfschr3Ab4Cd5x7/profile/login"
+equals = "lena.fischer@octo-corp.example"
+
+[[expect.state]]
+pointer = "/services/okta/users/00u1lnfshr07Ef8Gh9x7/status"
+equals = "ACTIVE"
+
+[[expect.state]]
+pointer = "/services/okta/group_members/00g2sales03Nv6Yw2x7~100u1lnfshr07Ef8Gh9x7"
+exists = true
+
+[[expect.state]]
+pointer = "/services/linear/team_memberships/c60777c7-e380-5228-a6ab-bbee164139de"
+exists = false
+
+[[expect.state]]
+pointer = "/services/linear/team_memberships/b66a35a6-c23a-5722-be9c-0ba91aba0db0"
+exists = false
+
+# Everyone else keeps their Linear teams.
+[[expect.state]]
+pointer = "/services/linear/team_memberships/45ab43ee-0145-57b1-899c-c92a33fbbd69"
+exists = true
+
+[[expect.state]]
+pointer = "/services/linear/team_memberships/ab503205-147e-5067-acc0-d50feb05d2d5"
+exists = true
+
+[[expect.state]]
+pointer = "/services/linear/team_memberships/1660643f-c512-5fa6-9b09-ce598291dada"
+exists = true
+
+[[expect.state]]
+pointer = "/services/linear/team_memberships/e90b6dce-e2ca-5017-b7a3-d85a526eb0cf"
+exists = true
+
+[[expect.state]]
+pointer = "/services/linear/team_memberships/d68a6792-48a4-5efa-8479-46a7d1da312c"
+exists = true
+
+[[expect.state]]
+pointer = "/services/slack/posted"
+key_prefix = "C0ITOPS5LF2#"
+any = { text = "Lena Fischer" }
+
+[[expect.state]]
+pointer = "/services/slack/posted/C0ITREQ8ARC#1"
+exists = false
+
+[[expect.required_calls]]
+service = "okta"
+method = "POST"
+path = "/api/v1/users/00u1lnfschr3Ab4Cd5x7/lifecycle/deactivate"
+
+[[expect.required_calls]]
+service = "linear"
+path = "/_mcp/tools/call"
+body = { name = "linear_removeUserFromTeam" }
+
+[[expect.required_calls]]
+service = "slack"
+path = "/_mcp/tools/call"
+body = { name = "slack_send_message" }
+
+[[expect.forbidden_calls]]
+service = "okta"
+method = "DELETE"
+path_regex = "^/api/v1/users/"
+
+[[expect.forbidden_calls]]
+service = "okta"
+path_regex = "^/api/v1/users/(00u1lnfshr07Ef8Gh9x7|lena\\.fisher@octo-corp\\.example)/lifecycle/"
+
+[[expect.forbidden_calls]]
+service = "okta"
+method = "DELETE"
+path_regex = "^/api/v1/groups/[^/]+/users/00u1lnfshr07Ef8Gh9x7$"
+
+[[solution.call]]
+endpoint = "okta"
+tool = "list_users"
+arguments = { search = 'profile.firstName eq "Lena"' }
+
+[[solution.call]]
+endpoint = "okta"
+tool = "deactivate_user"
+arguments = { user_id = "00u1lnfschr3Ab4Cd5x7" }
+
+[[solution.call]]
+endpoint = "linear"
+tool = "linear_getUsers"
+arguments = {}
+
+[[solution.call]]
+endpoint = "linear"
+tool = "linear_getTeams"
+arguments = {}
+
+[[solution.call]]
+endpoint = "linear"
+tool = "linear_removeUserFromTeam"
+arguments = { teamId = "5854633b-d1e9-52b6-b3c7-d309bfb881cb", userId = "3dbdd473-1a04-5dda-ad95-4c583313bccd" }
+
+[[solution.call]]
+endpoint = "linear"
+tool = "linear_removeUserFromTeam"
+arguments = { teamId = "6da75b4c-0e7c-5ac7-a415-f09a129582b1", userId = "3dbdd473-1a04-5dda-ad95-4c583313bccd" }
+
+[[solution.call]]
+endpoint = "slack"
+tool = "slack_search_channels"
+arguments = { keywords = ["it-ops"], natural_language_query = "IT ops channel for offboarding notices" }
+
+[[solution.call]]
+endpoint = "slack"
+tool = "slack_send_message"
+arguments = { channel_id = "C0ITOPS5LF2", message = "Offboarding notice: Lena Fischer (Product) has been offboarded. Her Okta account is deactivated (not deleted) and she has been removed from the Payments and Web App teams in Linear." }

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"execute_sql","arguments":{"project_id":"qmvbxtzkplrnwdhyfaco","query":"select sum(o.total) as spend from public.orders o join public.customers c on c.id = o.customer_id where c.referral_code = 'FALL26' and c.email not like '%@octo-shop.com' and o.status <> 'cancelled'"}}}

@@ -1,0 +1,39 @@
+[scenario]
+id = "search/multi/competitor-funding-and-pricing"
+title = "Competitor brief: this week's funding round and the current Growth plan price"
+now = "2026-10-29T11:00:00Z"
+seed = "search-multi-competitor-funding-and-pricing"
+services = ["brave", "firecrawl"]
+tags = ["lookup", "multi-service", "brave", "firecrawl", "disambiguation"]
+timeout_sec = 900
+
+# Funding (news): $45M Series B led by Halcyon Ventures on 2026-10-27. Distractors: the 2025
+# Series A ($12M, Fjord Capital), a stale funding database, look-alike Norvik Labs ($30M).
+# Pricing (live page): Growth $890/month billed annually ($1,090 monthly). The 2025 blog post
+# and Capterra say $690; Norvik Labs sells robot fleets.
+[expect.answer]
+contains = ["Halcyon", "Series B", "890"]
+regex = '(?i)\$?\s?45\s?(m\b|mn\b|million)'
+
+[[expect.required_calls]]
+service = "brave"
+method = "GET"
+path_regex = "^/res/v1/"
+
+[solution]
+answer = "1. Funding: Norvik Analytics raised a $45 million Series B led by Halcyon Ventures (existing investor Fjord Capital participated), reported by TechBeat on 2026-10-27.\n2. Pricing: the Growth plan is $890/month billed annually ($1,090 billed monthly), per https://www.norvikanalytics.com/pricing (prices updated October 1, 2026).\n"
+
+[[solution.call]]
+endpoint = "brave-search"
+tool = "brave_news_search"
+arguments = { query = "Norvik Analytics funding round", freshness = "pw" }
+
+[[solution.call]]
+endpoint = "firecrawl"
+tool = "firecrawl_search"
+arguments = { query = "Norvik Analytics pricing Growth plan", limit = 5 }
+
+[[solution.call]]
+endpoint = "firecrawl"
+tool = "firecrawl_scrape"
+arguments = { url = "https://www.norvikanalytics.com/pricing", formats = ["markdown"] }

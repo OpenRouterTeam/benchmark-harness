@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"create_annotation","arguments":{"dashboardUid":"payments-db-prod","tags":["terraform","payments"],"text":"Terraform run-Gy4tBHGggKx49nbH (Upgrade payments DB to Postgres 16) failed on payments-api-prod: InvalidParameterCombination on aws_db_instance.payments","time":1793193129000}}}

@@ -1,0 +1,22 @@
+[
+  {
+    "id": "8e7d6c5b4a3928170f6e5d4c3b2a1908",
+    "account_id": "0123456789abcdef0123456789abcdef",
+    "user": {
+      "id": "7c5dae5552338874e5053f2534d2767a",
+      "first_name": "Riley",
+      "last_name": "Ops",
+      "email": "ops@octo-corp.example",
+      "two_factor_authentication_enabled": true
+    },
+    "status": "accepted",
+    "roles": [
+      {
+        "id": "33666b9c79b9a5273fc7344ff42f953d",
+        "name": "Super Administrator - All Privileges",
+        "description": "Can edit any Cloudflare setting, make purchases, update billing, and manage memberships. Super Administrators can revoke the access of other Super Administrators.",
+        "permissions": {}
+      }
+    ]
+  }
+]

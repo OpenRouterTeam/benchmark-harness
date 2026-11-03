@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"slack_read_thread","arguments":{"channel_id":"C03INFRA9QX","message_ts":"1791990131.120442"}}}

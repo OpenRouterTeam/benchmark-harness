@@ -1,0 +1,64 @@
+[
+  {
+    "id": "2841306",
+    "name": "Priya Raman",
+    "email": "priya@lumenlabs.dev",
+    "username": "priya.raman",
+    "role": "owner",
+    "teams": [
+      "platform",
+      "frontend-web"
+    ],
+    "dateJoined": "2023-02-06T09:12:44Z",
+    "lastLogin": "2026-10-20T08:41:02Z"
+  },
+  {
+    "id": "2841311",
+    "name": "Marcus Chen",
+    "email": "marcus@lumenlabs.dev",
+    "username": "marcus.chen",
+    "role": "admin",
+    "teams": [
+      "payments"
+    ],
+    "dateJoined": "2023-03-14T16:20:05Z",
+    "lastLogin": "2026-10-20T07:55:10Z"
+  },
+  {
+    "id": "2841317",
+    "name": "Sofia Alvarez",
+    "email": "sofia@lumenlabs.dev",
+    "username": "sofia.alvarez",
+    "role": "member",
+    "teams": [
+      "frontend-web"
+    ],
+    "dateJoined": "2023-06-01T11:03:51Z",
+    "lastLogin": "2026-10-19T17:22:40Z"
+  },
+  {
+    "id": "2841322",
+    "name": "Dmitri Volkov",
+    "email": "dmitri@lumenlabs.dev",
+    "username": "dmitri.volkov",
+    "role": "member",
+    "teams": [
+      "payments-infra",
+      "platform"
+    ],
+    "dateJoined": "2024-01-22T10:45:12Z",
+    "lastLogin": "2026-10-20T06:10:33Z"
+  },
+  {
+    "id": "2841330",
+    "name": "Hana Sato",
+    "email": "hana@lumenlabs.dev",
+    "username": "hana.sato",
+    "role": "member",
+    "teams": [
+      "mobile"
+    ],
+    "dateJoined": "2024-09-09T13:30:00Z",
+    "lastLogin": "2026-10-18T12:01:09Z"
+  }
+]

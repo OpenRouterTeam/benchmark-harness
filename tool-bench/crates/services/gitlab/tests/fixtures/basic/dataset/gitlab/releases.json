@@ -1,0 +1,23 @@
+[
+  {
+    "_key": "acme/platform/api@v2.3.0",
+    "tag_name": "v2.3.0",
+    "name": "API 2.3.0",
+    "description": "Pagination headers and limiter.",
+    "created_at": "2026-03-01T10:06:00.000Z",
+    "released_at": "2026-03-01T10:06:00.000Z",
+    "author": "dana",
+    "milestones": [
+      "v2.3"
+    ],
+    "links": [
+      {
+        "id": 901,
+        "name": "api-linux-amd64",
+        "url": "https://downloads.acme.dev/api/2.3.0/api-linux-amd64",
+        "direct_asset_path": "/binaries/api-linux-amd64",
+        "link_type": "package"
+      }
+    ]
+  }
+]

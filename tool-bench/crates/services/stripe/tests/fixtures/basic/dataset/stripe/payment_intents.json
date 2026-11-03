@@ -1,0 +1,28 @@
+[
+  {
+    "id": "pi_NorthwindFeb000000000001",
+    "amount": 12000,
+    "created": 1770714000,
+    "customer": "cus_Northwind00002",
+    "description": "Order #1041",
+    "latest_charge": "ch_NorthwindFeb000000000001",
+    "payment_method": "pm_NorthwindMc0000000000002"
+  },
+  {
+    "id": "pi_NorthwindMarA00000000002",
+    "amount": 48000,
+    "created": 1773134040,
+    "customer": "cus_Northwind00002",
+    "description": "Order #1077",
+    "latest_charge": "ch_NorthwindMarA00000000002",
+    "payment_method": "pm_NorthwindMc0000000000002"
+  },
+  {
+    "id": "pi_LumenPending000000000003",
+    "amount": 5000,
+    "created": 1773532800,
+    "customer": "cus_LumenData00003",
+    "status": "requires_payment_method",
+    "latest_charge": null
+  }
+]

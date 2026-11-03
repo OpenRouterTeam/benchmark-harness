@@ -1,0 +1,7 @@
+[
+  {"id": "price_ProMonthly00000000000001", "product": "prod_FernwayPro0001", "unit_amount": 24900, "recurring": {"interval": "month"}, "nickname": "Pro monthly", "lookup_key": "pro_monthly", "created": 1740787200},
+  {"id": "price_ProYearly000000000000001", "product": "prod_FernwayPro0001", "unit_amount": 249000, "recurring": {"interval": "year"}, "nickname": "Pro yearly", "lookup_key": "pro_yearly", "created": 1740787200},
+  {"id": "price_SeatMonthly0000000000001", "product": "prod_FernwaySeat001", "unit_amount": 1500, "recurring": {"interval": "month"}, "created": 1740787200},
+  {"id": "price_AnalyticsYear00000000001", "product": "prod_Analytics00001", "unit_amount": 120000, "recurring": {"interval": "year"}, "created": 1740787200},
+  {"id": "price_Onboarding00000000000001", "product": "prod_Onboarding0001", "unit_amount": 50000, "active": false, "created": 1740787200}
+]

@@ -1,0 +1,68 @@
+[
+  {
+    "_key": "northwind/billing/billing-service@e5a5473faad7005e5069d00a05c9dc967cad6409",
+    "id": "e5a5473faad7005e5069d00a05c9dc967cad6409",
+    "title": "Dunning: retry failed card charges after 3 days",
+    "message": "Dunning: retry failed card charges after 3 days\n",
+    "author_name": "Lena Fischer",
+    "author_email": "lena.fischer@northwind.io",
+    "authored_date": "2026-03-30T10:00:00.000Z",
+    "committed_date": "2026-03-30T10:00:00.000Z",
+    "parent_ids": [],
+    "branch": "main"
+  },
+  {
+    "_key": "northwind/billing/billing-service@24f172e5f801f520765fdc1dcfa16dc929323edf",
+    "id": "24f172e5f801f520765fdc1dcfa16dc929323edf",
+    "title": "Add CHANGELOG entry for payments-sdk 4.2",
+    "message": "Add CHANGELOG entry for payments-sdk 4.2\n",
+    "author_name": "Sam Okafor",
+    "author_email": "sam.okafor@northwind.io",
+    "authored_date": "2026-04-01T15:40:00.000Z",
+    "committed_date": "2026-04-01T15:40:00.000Z",
+    "parent_ids": [
+      "1d91daaa1e5fee421843a73b24092f99cab360cd"
+    ],
+    "branch": "deps/payments-sdk-4.2"
+  },
+  {
+    "_key": "northwind/billing/billing-service@1d91daaa1e5fee421843a73b24092f99cab360cd",
+    "id": "1d91daaa1e5fee421843a73b24092f99cab360cd",
+    "title": "Bump payments-sdk to 4.2.0",
+    "message": "Bump payments-sdk to 4.2.0\n",
+    "author_name": "Sam Okafor",
+    "author_email": "sam.okafor@northwind.io",
+    "authored_date": "2026-04-01T11:00:00.000Z",
+    "committed_date": "2026-04-01T11:00:00.000Z",
+    "parent_ids": [
+      "e5a5473faad7005e5069d00a05c9dc967cad6409"
+    ],
+    "branch": "deps/payments-sdk-4.2"
+  },
+  {
+    "_key": "northwind/mobile/checkout-ios@30f3d4f7c1ed4226b439bcd8088a9102845e9ecd",
+    "id": "30f3d4f7c1ed4226b439bcd8088a9102845e9ecd",
+    "title": "Checkout: show Apple Pay button",
+    "message": "Checkout: show Apple Pay button\n",
+    "author_name": "Mei Lin",
+    "author_email": "mei.lin@northwind.io",
+    "authored_date": "2026-04-01T07:55:00.000Z",
+    "committed_date": "2026-04-01T07:55:00.000Z",
+    "parent_ids": [],
+    "branch": "main"
+  },
+  {
+    "_key": "northwind/mobile/checkout-ios@5a495e0c21f0d992b6fceaf9aa742b374ba6cb70",
+    "id": "5a495e0c21f0d992b6fceaf9aa742b374ba6cb70",
+    "title": "Bump PaymentsSDK to 4.2.0",
+    "message": "Bump PaymentsSDK to 4.2.0\n",
+    "author_name": "Mei Lin",
+    "author_email": "mei.lin@northwind.io",
+    "authored_date": "2026-04-01T12:00:00.000Z",
+    "committed_date": "2026-04-01T12:00:00.000Z",
+    "parent_ids": [
+      "30f3d4f7c1ed4226b439bcd8088a9102845e9ecd"
+    ],
+    "branch": "deps/payments-sdk-4.2"
+  }
+]

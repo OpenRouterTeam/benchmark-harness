@@ -1,0 +1,69 @@
+[
+  {
+    "_key": "northwind",
+    "id": 10,
+    "name": "Northwind",
+    "full_path": "northwind",
+    "description": "Northwind Commerce",
+    "visibility": "private",
+    "created_at": "2021-01-04T09:00:00.000Z",
+    "members": [
+      {
+        "username": "dana.kowalski",
+        "access_level": 50
+      },
+      {
+        "username": "sam.okafor",
+        "access_level": 40
+      },
+      {
+        "username": "lena.fischer",
+        "access_level": 30
+      }
+    ]
+  },
+  {
+    "_key": "northwind/payments",
+    "id": 11,
+    "name": "Payments",
+    "full_path": "northwind/payments",
+    "description": "Checkout, ledger and payouts",
+    "visibility": "private",
+    "created_at": "2021-02-01T09:00:00.000Z",
+    "members": [
+      {
+        "username": "priya.raman",
+        "access_level": 40
+      },
+      {
+        "username": "mei.chen",
+        "access_level": 30
+      }
+    ]
+  },
+  {
+    "_key": "northwind/billing",
+    "id": 12,
+    "name": "Billing",
+    "full_path": "northwind/billing",
+    "description": "Invoicing and subscriptions",
+    "visibility": "private",
+    "created_at": "2021-02-02T09:00:00.000Z",
+    "members": []
+  },
+  {
+    "_key": "northwind/mobile",
+    "id": 13,
+    "name": "Mobile",
+    "full_path": "northwind/mobile",
+    "description": "iOS and Android apps",
+    "visibility": "private",
+    "created_at": "2021-02-03T09:00:00.000Z",
+    "members": [
+      {
+        "username": "mei.lin",
+        "access_level": 40
+      }
+    ]
+  }
+]

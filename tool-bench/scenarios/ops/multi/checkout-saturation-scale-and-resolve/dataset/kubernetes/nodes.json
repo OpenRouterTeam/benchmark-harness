@@ -1,0 +1,323 @@
+[
+  {
+    "_key": "ip-10-0-1-21.ec2.internal",
+    "metadata": {
+      "name": "ip-10-0-1-21.ec2.internal",
+      "uid": "4236b4c1-b688-4dc9-aa0d-1b85243804d8",
+      "resourceVersion": "41153",
+      "creationTimestamp": "2026-07-02T14:00:00Z",
+      "labels": {
+        "beta.kubernetes.io/arch": "amd64",
+        "beta.kubernetes.io/os": "linux",
+        "kubernetes.io/arch": "amd64",
+        "kubernetes.io/hostname": "ip-10-0-1-21.ec2.internal",
+        "kubernetes.io/os": "linux",
+        "node.kubernetes.io/instance-type": "m6i.2xlarge",
+        "topology.kubernetes.io/region": "us-east-1",
+        "topology.kubernetes.io/zone": "us-east-1a",
+        "node-role.kubernetes.io/worker": ""
+      },
+      "annotations": {
+        "node.alpha.kubernetes.io/ttl": "0",
+        "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+      }
+    },
+    "spec": {
+      "podCIDR": "10.244.10.0/24",
+      "providerID": "aws:///us-east-1a/i-0f39dcac1284241f3"
+    },
+    "status": {
+      "capacity": {
+        "cpu": "8",
+        "ephemeral-storage": "104845292Ki",
+        "hugepages-1Gi": "0",
+        "hugepages-2Mi": "0",
+        "memory": "32Gi",
+        "pods": "110"
+      },
+      "allocatable": {
+        "cpu": "7910m",
+        "ephemeral-storage": "96625420948",
+        "hugepages-1Gi": "0",
+        "hugepages-2Mi": "0",
+        "memory": "30532Mi",
+        "pods": "110"
+      },
+      "conditions": [
+        {
+          "type": "MemoryPressure",
+          "status": "False",
+          "lastHeartbeatTime": "2026-10-30T13:59:20Z",
+          "lastTransitionTime": "2026-07-02T14:00:00Z",
+          "reason": "KubeletHasSufficientMemory",
+          "message": "kubelet has sufficient memory available"
+        },
+        {
+          "type": "DiskPressure",
+          "status": "False",
+          "lastHeartbeatTime": "2026-10-30T13:59:20Z",
+          "lastTransitionTime": "2026-07-02T14:00:00Z",
+          "reason": "KubeletHasNoDiskPressure",
+          "message": "kubelet has no disk pressure"
+        },
+        {
+          "type": "PIDPressure",
+          "status": "False",
+          "lastHeartbeatTime": "2026-10-30T13:59:20Z",
+          "lastTransitionTime": "2026-07-02T14:00:00Z",
+          "reason": "KubeletHasSufficientPID",
+          "message": "kubelet has sufficient PID available"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastHeartbeatTime": "2026-10-30T13:59:20Z",
+          "lastTransitionTime": "2026-07-02T14:00:00Z",
+          "reason": "KubeletReady",
+          "message": "kubelet is posting ready status"
+        }
+      ],
+      "addresses": [
+        {
+          "type": "InternalIP",
+          "address": "10.0.1.21"
+        },
+        {
+          "type": "Hostname",
+          "address": "ip-10-0-1-21.ec2.internal"
+        }
+      ],
+      "daemonEndpoints": {
+        "kubeletEndpoint": {
+          "Port": 10250
+        }
+      },
+      "nodeInfo": {
+        "machineID": "a2a297cf05e21a5d4db9a482ba7f3576",
+        "systemUUID": "2bd7ceb5-656b-458a-ae72-71eac993839b",
+        "bootID": "d50f6aeb-840c-4a3b-a3a4-e98b09f8bd37",
+        "kernelVersion": "6.1.112-124.190.amzn2023.x86_64",
+        "osImage": "Amazon Linux 2023.6.20241010",
+        "containerRuntimeVersion": "containerd://1.7.22",
+        "kubeletVersion": "v1.33.4",
+        "kubeProxyVersion": "v1.33.4",
+        "operatingSystem": "linux",
+        "architecture": "amd64"
+      }
+    }
+  },
+  {
+    "_key": "ip-10-0-2-37.ec2.internal",
+    "metadata": {
+      "name": "ip-10-0-2-37.ec2.internal",
+      "uid": "c9cdd196-817a-4685-a5b0-994016a32214",
+      "resourceVersion": "41170",
+      "creationTimestamp": "2026-07-02T14:00:00Z",
+      "labels": {
+        "beta.kubernetes.io/arch": "amd64",
+        "beta.kubernetes.io/os": "linux",
+        "kubernetes.io/arch": "amd64",
+        "kubernetes.io/hostname": "ip-10-0-2-37.ec2.internal",
+        "kubernetes.io/os": "linux",
+        "node.kubernetes.io/instance-type": "m6i.2xlarge",
+        "topology.kubernetes.io/region": "us-east-1",
+        "topology.kubernetes.io/zone": "us-east-1b",
+        "node-role.kubernetes.io/worker": ""
+      },
+      "annotations": {
+        "node.alpha.kubernetes.io/ttl": "0",
+        "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+      }
+    },
+    "spec": {
+      "podCIDR": "10.244.11.0/24",
+      "providerID": "aws:///us-east-1b/i-0a2840d5a7929bcad"
+    },
+    "status": {
+      "capacity": {
+        "cpu": "8",
+        "ephemeral-storage": "104845292Ki",
+        "hugepages-1Gi": "0",
+        "hugepages-2Mi": "0",
+        "memory": "32Gi",
+        "pods": "110"
+      },
+      "allocatable": {
+        "cpu": "7910m",
+        "ephemeral-storage": "96625420948",
+        "hugepages-1Gi": "0",
+        "hugepages-2Mi": "0",
+        "memory": "30532Mi",
+        "pods": "110"
+      },
+      "conditions": [
+        {
+          "type": "MemoryPressure",
+          "status": "False",
+          "lastHeartbeatTime": "2026-10-30T13:59:20Z",
+          "lastTransitionTime": "2026-07-02T14:00:00Z",
+          "reason": "KubeletHasSufficientMemory",
+          "message": "kubelet has sufficient memory available"
+        },
+        {
+          "type": "DiskPressure",
+          "status": "False",
+          "lastHeartbeatTime": "2026-10-30T13:59:20Z",
+          "lastTransitionTime": "2026-07-02T14:00:00Z",
+          "reason": "KubeletHasNoDiskPressure",
+          "message": "kubelet has no disk pressure"
+        },
+        {
+          "type": "PIDPressure",
+          "status": "False",
+          "lastHeartbeatTime": "2026-10-30T13:59:20Z",
+          "lastTransitionTime": "2026-07-02T14:00:00Z",
+          "reason": "KubeletHasSufficientPID",
+          "message": "kubelet has sufficient PID available"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastHeartbeatTime": "2026-10-30T13:59:20Z",
+          "lastTransitionTime": "2026-07-02T14:00:00Z",
+          "reason": "KubeletReady",
+          "message": "kubelet is posting ready status"
+        }
+      ],
+      "addresses": [
+        {
+          "type": "InternalIP",
+          "address": "10.0.2.37"
+        },
+        {
+          "type": "Hostname",
+          "address": "ip-10-0-2-37.ec2.internal"
+        }
+      ],
+      "daemonEndpoints": {
+        "kubeletEndpoint": {
+          "Port": 10250
+        }
+      },
+      "nodeInfo": {
+        "machineID": "72ffcae216c46ac84a9c5eeec0db0737",
+        "systemUUID": "fe328758-b04d-4f2d-a948-c5d682b2a201",
+        "bootID": "7cd57888-2fc0-4fa8-ab41-c2669a08eff4",
+        "kernelVersion": "6.1.112-124.190.amzn2023.x86_64",
+        "osImage": "Amazon Linux 2023.6.20241010",
+        "containerRuntimeVersion": "containerd://1.7.22",
+        "kubeletVersion": "v1.33.4",
+        "kubeProxyVersion": "v1.33.4",
+        "operatingSystem": "linux",
+        "architecture": "amd64"
+      }
+    }
+  },
+  {
+    "_key": "ip-10-0-3-52.ec2.internal",
+    "metadata": {
+      "name": "ip-10-0-3-52.ec2.internal",
+      "uid": "f6913426-b2c7-4c85-ace3-fb36721cf544",
+      "resourceVersion": "41187",
+      "creationTimestamp": "2026-07-02T14:00:00Z",
+      "labels": {
+        "beta.kubernetes.io/arch": "amd64",
+        "beta.kubernetes.io/os": "linux",
+        "kubernetes.io/arch": "amd64",
+        "kubernetes.io/hostname": "ip-10-0-3-52.ec2.internal",
+        "kubernetes.io/os": "linux",
+        "node.kubernetes.io/instance-type": "m6i.2xlarge",
+        "topology.kubernetes.io/region": "us-east-1",
+        "topology.kubernetes.io/zone": "us-east-1c",
+        "node-role.kubernetes.io/worker": ""
+      },
+      "annotations": {
+        "node.alpha.kubernetes.io/ttl": "0",
+        "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+      }
+    },
+    "spec": {
+      "podCIDR": "10.244.12.0/24",
+      "providerID": "aws:///us-east-1c/i-01d6cb1846c620f71"
+    },
+    "status": {
+      "capacity": {
+        "cpu": "8",
+        "ephemeral-storage": "104845292Ki",
+        "hugepages-1Gi": "0",
+        "hugepages-2Mi": "0",
+        "memory": "32Gi",
+        "pods": "110"
+      },
+      "allocatable": {
+        "cpu": "7910m",
+        "ephemeral-storage": "96625420948",
+        "hugepages-1Gi": "0",
+        "hugepages-2Mi": "0",
+        "memory": "30532Mi",
+        "pods": "110"
+      },
+      "conditions": [
+        {
+          "type": "MemoryPressure",
+          "status": "False",
+          "lastHeartbeatTime": "2026-10-30T13:59:20Z",
+          "lastTransitionTime": "2026-07-02T14:00:00Z",
+          "reason": "KubeletHasSufficientMemory",
+          "message": "kubelet has sufficient memory available"
+        },
+        {
+          "type": "DiskPressure",
+          "status": "False",
+          "lastHeartbeatTime": "2026-10-30T13:59:20Z",
+          "lastTransitionTime": "2026-07-02T14:00:00Z",
+          "reason": "KubeletHasNoDiskPressure",
+          "message": "kubelet has no disk pressure"
+        },
+        {
+          "type": "PIDPressure",
+          "status": "False",
+          "lastHeartbeatTime": "2026-10-30T13:59:20Z",
+          "lastTransitionTime": "2026-07-02T14:00:00Z",
+          "reason": "KubeletHasSufficientPID",
+          "message": "kubelet has sufficient PID available"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastHeartbeatTime": "2026-10-30T13:59:20Z",
+          "lastTransitionTime": "2026-07-02T14:00:00Z",
+          "reason": "KubeletReady",
+          "message": "kubelet is posting ready status"
+        }
+      ],
+      "addresses": [
+        {
+          "type": "InternalIP",
+          "address": "10.0.3.52"
+        },
+        {
+          "type": "Hostname",
+          "address": "ip-10-0-3-52.ec2.internal"
+        }
+      ],
+      "daemonEndpoints": {
+        "kubeletEndpoint": {
+          "Port": 10250
+        }
+      },
+      "nodeInfo": {
+        "machineID": "afa66fca72c2b6b47a86f886bbf80be8",
+        "systemUUID": "458e78aa-2f2b-448e-a622-610156716170",
+        "bootID": "c22d3abb-fbf1-4799-a7b7-90d80b9bceda",
+        "kernelVersion": "6.1.112-124.190.amzn2023.x86_64",
+        "osImage": "Amazon Linux 2023.6.20241010",
+        "containerRuntimeVersion": "containerd://1.7.22",
+        "kubeletVersion": "v1.33.4",
+        "kubeProxyVersion": "v1.33.4",
+        "operatingSystem": "linux",
+        "architecture": "amd64"
+      }
+    }
+  }
+]

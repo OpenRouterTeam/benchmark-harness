@@ -1,0 +1,111 @@
+{
+  "state": [
+    {
+      "pointer": "/services/vercel/env_by_target/prj_9NauQLxYvOeIyWZWq6mqvavv9xuH/production/STRIPE_SECRET_KEY",
+      "equals": "sk_live_51NvCheckoutRot8Hq2",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/vercel/env_by_target/prj_9NauQLxYvOeIyWZWq6mqvavv9xuH/preview/STRIPE_SECRET_KEY",
+      "equals": "sk_test_51NvCheckoutNextTst2",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/vercel/env_by_target/prj_9NauQLxYvOeIyWZWq6mqvavv9xuH/development/STRIPE_SECRET_KEY",
+      "equals": "sk_test_51NvCheckoutNextTst2",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/vercel/env_by_target/prj_9NauQLxYvOeIyWZWq6mqvavv9xuH/production/STRIPE_WEBHOOK_SECRET",
+      "equals": "whsec_Next4f0c1e9b2a",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/vercel/env_by_target/prj_Tt5m7wZLjgqPCBUfmEh1nWJN9ZIW/production/STRIPE_SECRET_KEY",
+      "equals": "sk_live_51NvLegacyCheckout4r8Q",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/vercel/env_by_target/prj_Tt5m7wZLjgqPCBUfmEh1nWJN9ZIW/preview/STRIPE_SECRET_KEY",
+      "equals": "sk_test_51NvLegacyCheckoutT3st",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "vercel",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "vercel-create-environment-variables"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "vercel",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "idOrName": "checkout-api"
+        },
+        "name": "vercel-remove-environment-variable"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "vercel",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "idOrName": "prj_Tt5m7wZLjgqPCBUfmEh1nWJN9ZIW"
+        },
+        "name": "vercel-remove-environment-variable"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "vercel",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "vercel-delete-project"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

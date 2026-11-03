@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"brave_video_search","arguments":{"query":"Scaling Postgres to 1M writes/s keynote PGConf Nordic 2026"}}}

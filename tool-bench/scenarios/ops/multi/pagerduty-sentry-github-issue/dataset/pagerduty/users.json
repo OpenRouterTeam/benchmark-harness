@@ -1,0 +1,156 @@
+[
+  {
+    "id": "PA1EXKM",
+    "name": "Alex Kim",
+    "email": "alex.kim@lumenlabs.dev",
+    "role": "user",
+    "time_zone": "America/Los_Angeles",
+    "job_title": "Site Reliability Engineer",
+    "teams": [
+      {
+        "id": "PTPLATF",
+        "type": "team_reference"
+      }
+    ]
+  },
+  {
+    "id": "PJ0RLEE",
+    "name": "Jordan Lee",
+    "email": "jordan.lee@lumenlabs.dev",
+    "role": "user",
+    "time_zone": "America/Chicago",
+    "job_title": "Platform Engineer",
+    "teams": [
+      {
+        "id": "PTPLATF",
+        "type": "team_reference"
+      }
+    ]
+  },
+  {
+    "id": "PM3IWNG",
+    "name": "Mei Wong",
+    "email": "mei.wong@lumenlabs.dev",
+    "role": "user",
+    "time_zone": "Europe/London",
+    "job_title": "Platform Engineer",
+    "teams": [
+      {
+        "id": "PTPLATF",
+        "type": "team_reference"
+      }
+    ]
+  },
+  {
+    "id": "PJ0RALV",
+    "name": "Jordan Alvarez",
+    "email": "jordan.alvarez@lumenlabs.dev",
+    "role": "user",
+    "time_zone": "America/New_York",
+    "job_title": "Payments Engineer",
+    "teams": [
+      {
+        "id": "PTPAYMT",
+        "type": "team_reference"
+      }
+    ]
+  },
+  {
+    "id": "PPR1YAR",
+    "name": "Priya Raman",
+    "email": "priya.raman@lumenlabs.dev",
+    "role": "user",
+    "time_zone": "America/New_York",
+    "job_title": "Senior Payments Engineer",
+    "teams": [
+      {
+        "id": "PTPAYMT",
+        "type": "team_reference"
+      }
+    ]
+  },
+  {
+    "id": "PR1YPTL",
+    "name": "Riya Patel",
+    "email": "riya.patel@lumenlabs.dev",
+    "role": "user",
+    "time_zone": "America/New_York",
+    "job_title": "Payments Engineer",
+    "teams": [
+      {
+        "id": "PTPAYMT",
+        "type": "team_reference"
+      }
+    ]
+  },
+  {
+    "id": "PMCHEN7",
+    "name": "Marcus Chen",
+    "email": "marcus.chen@lumenlabs.dev",
+    "role": "admin",
+    "time_zone": "America/New_York",
+    "job_title": "Engineering Manager, Payments",
+    "teams": [
+      {
+        "id": "PTPAYMT",
+        "type": "team_reference"
+      }
+    ]
+  },
+  {
+    "id": "PS4MOKF",
+    "name": "Sam Okafor",
+    "email": "sam.okafor@lumenlabs.dev",
+    "role": "user",
+    "time_zone": "Europe/London",
+    "job_title": "Database Reliability Lead",
+    "teams": [
+      {
+        "id": "PTDBREL",
+        "type": "team_reference"
+      }
+    ]
+  },
+  {
+    "id": "PDNGYN2",
+    "name": "Dana Nguyen",
+    "email": "dana.nguyen@lumenlabs.dev",
+    "role": "user",
+    "time_zone": "America/Los_Angeles",
+    "job_title": "Database Reliability Engineer",
+    "teams": [
+      {
+        "id": "PTDBREL",
+        "type": "team_reference"
+      }
+    ]
+  },
+  {
+    "id": "PLWEBR5",
+    "name": "Lena Weber",
+    "email": "lena.weber@lumenlabs.dev",
+    "role": "user",
+    "time_zone": "Europe/Berlin",
+    "job_title": "Commerce Engineer",
+    "teams": [
+      {
+        "id": "PTCOMRC",
+        "type": "team_reference"
+      }
+    ]
+  },
+  {
+    "id": "PTBRWN8",
+    "name": "Theo Brown",
+    "email": "theo.brown@lumenlabs.dev",
+    "role": "user",
+    "time_zone": "America/New_York",
+    "job_title": "Commerce Engineer",
+    "teams": [
+      {
+        "id": "PTCOMRC",
+        "type": "team_reference"
+      }
+    ]
+  }
+]

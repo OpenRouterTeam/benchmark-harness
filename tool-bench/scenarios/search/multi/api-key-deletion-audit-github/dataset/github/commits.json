@@ -1,0 +1,138 @@
+[
+  {
+    "_key": "octo-org/deploy-pipeline@952bda0682f14974f8ba8c5bfb6271562075e511",
+    "sha": "952bda0682f14974f8ba8c5bfb6271562075e511",
+    "message": "Deploy workflows",
+    "author": {
+      "name": "Ana Santos",
+      "email": "a.santos@octo-org.example",
+      "date": "2026-08-12T11:10:00Z"
+    },
+    "committer": {
+      "name": "Ana Santos",
+      "email": "a.santos@octo-org.example",
+      "date": "2026-08-12T11:10:00Z"
+    },
+    "author_login": "asantos",
+    "committer_login": "asantos",
+    "parents": [],
+    "files": [
+      {
+        "filename": ".github/workflows/deploy.yml",
+        "status": "added",
+        "content": "name: deploy\non: push\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - run: ./deploy.sh\n        env:\n          DEPLOY_KEY_NAME: ci-deploy-bot\n          DEPLOY_KEY: ${{ secrets.CI_DEPLOY_BOT_KEY }}\n"
+      },
+      {
+        "filename": ".github/workflows/deploy-staging.yml",
+        "status": "added",
+        "content": "name: deploy-staging\non: push\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - run: ./deploy.sh staging\n        env:\n          DEPLOY_KEY_NAME: ci-deploy-bot-staging\n"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/deploy-pipeline@0ca221cb11e86d14527dbc7a7cc7a97394c0cbf1",
+    "sha": "0ca221cb11e86d14527dbc7a7cc7a97394c0cbf1",
+    "message": "Drop the ci-deploy-bot-staging key from the staging workflow (#57)",
+    "author": {
+      "name": "Rui Chen",
+      "email": "r.chen@octo-org.example",
+      "date": "2026-10-29T17:40:00Z"
+    },
+    "committer": {
+      "name": "Rui Chen",
+      "email": "r.chen@octo-org.example",
+      "date": "2026-10-29T17:40:00Z"
+    },
+    "author_login": "rchen",
+    "committer_login": "rchen",
+    "parents": [
+      "952bda0682f14974f8ba8c5bfb6271562075e511"
+    ],
+    "files": [
+      {
+        "filename": ".github/workflows/deploy-staging.yml",
+        "status": "modified",
+        "content": "name: deploy-staging\non: push\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - run: ./deploy.sh staging\n"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/deploy-pipeline@a5783b9e952dd944fce5be938599fda68abda16c",
+    "sha": "a5783b9e952dd944fce5be938599fda68abda16c",
+    "message": "Switch deploys to the ci-deploy-bot-v2 key",
+    "author": {
+      "name": "Mira Okafor",
+      "email": "m.okafor@octo-org.example",
+      "date": "2026-10-29T16:49:00Z"
+    },
+    "committer": {
+      "name": "Mira Okafor",
+      "email": "m.okafor@octo-org.example",
+      "date": "2026-10-29T16:49:00Z"
+    },
+    "author_login": "mokafor",
+    "committer_login": "mokafor",
+    "parents": [
+      "952bda0682f14974f8ba8c5bfb6271562075e511"
+    ],
+    "files": [
+      {
+        "filename": ".github/workflows/deploy.yml",
+        "status": "modified",
+        "content": "name: deploy\non: push\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - run: ./deploy.sh\n        env:\n          DEPLOY_KEY_NAME: ci-deploy-bot-v2\n          DEPLOY_KEY: ${{ secrets.CI_DEPLOY_BOT_V2_KEY }}\n"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/deploy-pipeline@ec8b97b2e744011860e1190bb0bad208b2aa3e8a",
+    "sha": "ec8b97b2e744011860e1190bb0bad208b2aa3e8a",
+    "message": "Bump deploy action runner image",
+    "author": {
+      "name": "Sam Okafor",
+      "email": "sam.okafor@octo-org.example",
+      "date": "2026-10-28T10:00:00Z"
+    },
+    "committer": {
+      "name": "Sam Okafor",
+      "email": "sam.okafor@octo-org.example",
+      "date": "2026-10-28T10:00:00Z"
+    },
+    "author_login": "sam",
+    "committer_login": "sam",
+    "parents": [
+      "952bda0682f14974f8ba8c5bfb6271562075e511"
+    ],
+    "files": [
+      {
+        "filename": "runner/Dockerfile",
+        "status": "modified",
+        "content": "FROM ubuntu:24.04\n"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/web@2ac411aee61f877572e1a16f610d076709f44af1",
+    "sha": "2ac411aee61f877572e1a16f610d076709f44af1",
+    "message": "Initial web app",
+    "author": {
+      "name": "Jane Doe",
+      "email": "j.doe@octo-org.example",
+      "date": "2026-01-05T10:00:00Z"
+    },
+    "committer": {
+      "name": "Jane Doe",
+      "email": "j.doe@octo-org.example",
+      "date": "2026-01-05T10:00:00Z"
+    },
+    "author_login": "jdoe",
+    "committer_login": "jdoe",
+    "parents": [],
+    "files": [
+      {
+        "filename": "README.md",
+        "status": "added",
+        "content": "# web\n"
+      }
+    ]
+  }
+]

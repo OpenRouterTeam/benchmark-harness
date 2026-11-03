@@ -1,0 +1,111 @@
+[scenario]
+id = "ops/multi/pagerduty-sentry-github-issue"
+title = "Turn a production checkout page into a GitHub issue with its Sentry error"
+now = "2026-10-20T16:00:00Z"
+seed = "ops-multi-pagerduty-sentry-github-issue"
+services = ["pagerduty", "sentry", "github"]
+tags = ["write", "multi-service", "pagerduty", "sentry", "github", "disambiguation"]
+timeout_sec = 900
+
+# PagerDuty: #4810 (Q7CHKAP15PCT1D, checkout-api, production) "Checkout error rate above 5%"
+# on POST /api/orders/; #4811 (Q8CHKSTG5PCT2F) is its staging twin. Sentry: the production
+# error on that endpoint is CHECKOUT-API-3F (OperationalError: could not obtain connection from
+# pool within 5.0s, culprit checkout.views.orders in create_order). Look-alikes:
+# PAYMENTS-WORKER-1K (same title, other project, more events; GitHub payments-worker#88 tracks
+# it) and CHECKOUT-API-3C (tracked in checkout#207). The new issue is lumen-labs/checkout#214.
+[[expect.state]]
+pointer = "/services/github/issues"
+key_prefix = "lumen-labs/checkout#"
+any = { title = "CHECKOUT-API-3F", body = "4810" }
+
+[[expect.state]]
+pointer = "/services/github/issues"
+key_prefix = "lumen-labs/checkout#"
+any = { title = "CHECKOUT-API-3F", body = "create_order" }
+
+[[expect.state]]
+pointer = "/services/github/issues"
+key_prefix = "lumen-labs/checkout#"
+any = { title = "CHECKOUT-API-3F", body = "could not obtain connection from pool" }
+
+[[expect.state]]
+pointer = "/services/github/issues/lumen-labs~1checkout#214/state"
+equals = "open"
+
+[[expect.state]]
+pointer = "/services/github/issues/lumen-labs~1checkout#215"
+exists = false
+
+[[expect.state]]
+pointer = "/services/pagerduty/notes"
+key_prefix = "Q7CHKAP15PCT1D/"
+any = { content = "214" }
+
+[[expect.state]]
+pointer = "/services/pagerduty/notes/Q8CHKSTG5PCT2F~11"
+exists = false
+
+[[expect.state]]
+pointer = "/services/pagerduty/incidents/Q7CHKAP15PCT1D/status"
+equals = "triggered"
+
+[[expect.state]]
+pointer = "/services/sentry/issues/CHECKOUT-API-3F/status"
+equals = "unresolved"
+
+[[expect.required_calls]]
+service = "github"
+method = "POST"
+path = "/api/v3/repos/lumen-labs/checkout/issues"
+
+[[expect.required_calls]]
+service = "pagerduty"
+method = "POST"
+path = "/incidents/Q7CHKAP15PCT1D/notes"
+
+[[expect.forbidden_calls]]
+service = "github"
+method = "POST"
+path_regex = "^/api/v3/repos/lumen-labs/(payments-worker|storefront)/issues"
+
+[[expect.forbidden_calls]]
+service = "github"
+method = "PATCH"
+
+[[expect.forbidden_calls]]
+service = "pagerduty"
+method = "PUT"
+
+[[expect.forbidden_calls]]
+service = "pagerduty"
+method = "POST"
+path = "/incidents/Q8CHKSTG5PCT2F/notes"
+
+[[expect.forbidden_calls]]
+service = "sentry"
+method = "PUT"
+
+[[solution.call]]
+endpoint = "pagerduty"
+tool = "list_incidents"
+arguments = { statuses = ["triggered", "acknowledged"] }
+
+[[solution.call]]
+endpoint = "pagerduty"
+tool = "get_incident"
+arguments = { incident_id = "Q7CHKAP15PCT1D" }
+
+[[solution.call]]
+endpoint = "sentry"
+tool = "search_issues"
+arguments = { organizationSlug = "lumen-labs", projectSlugOrId = "checkout-api", query = "is:unresolved", sort = "freq", limit = 5 }
+
+[[solution.call]]
+endpoint = "github"
+tool = "issue_write"
+arguments = { method = "create", owner = "lumen-labs", repo = "checkout", title = "CHECKOUT-API-3F: OperationalError: could not obtain connection from pool within 5.0s", body = "PagerDuty incident #4810 (Checkout error rate above 5%, production).\n\nSentry: CHECKOUT-API-3F\nCulprit: checkout.views.orders in create_order\nError: OperationalError: could not obtain connection from pool within 5.0s\nEndpoint: POST /api/orders/ (1,842 events, 611 users)" }
+
+[[solution.call]]
+endpoint = "pagerduty"
+tool = "add_note_to_incident"
+arguments = { incident_id = "Q7CHKAP15PCT1D", note = "Tracking the fix in GitHub issue lumen-labs/checkout#214 (Sentry CHECKOUT-API-3F)." }

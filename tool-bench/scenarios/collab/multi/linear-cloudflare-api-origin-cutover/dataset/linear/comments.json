@@ -1,0 +1,38 @@
+[
+  {
+    "_key": "WEB-51#1",
+    "id": "e3f19e66-8c63-5738-a16b-becc9b87561a",
+    "issueId": "d27f2e8f-39a2-58fa-be0d-a2b0f760cbb2",
+    "userId": "3dbdd473-1a04-5dda-ad95-4c583313bccd",
+    "body": "Support says this is blocking a few enterprise checkouts.",
+    "createdAt": "2026-10-19T10:00:00.000Z",
+    "updatedAt": "2026-10-19T10:00:00.000Z"
+  },
+  {
+    "_key": "PAY-118#1",
+    "id": "f4559b85-a971-52ce-975f-661de0794a89",
+    "issueId": "84a84625-cac3-563e-b772-a1075912f708",
+    "userId": "a4176131-9edb-57a6-9830-0638d2d2fa29",
+    "body": "Root cause found in the capture retry path; fix in review by Friday.",
+    "createdAt": "2026-10-28T16:00:00.000Z",
+    "updatedAt": "2026-10-28T16:00:00.000Z"
+  },
+  {
+    "_key": "PAY-121#1",
+    "id": "93c1a03e-b537-5362-b8eb-aae12460b550",
+    "issueId": "7e4438e4-5908-5977-84fd-cbf44bb6c977",
+    "userId": "3dbdd473-1a04-5dda-ad95-4c583313bccd",
+    "body": "Let's pull this into the current cycle once Priya has capacity.",
+    "createdAt": "2026-10-27T09:00:00.000Z",
+    "updatedAt": "2026-10-27T09:00:00.000Z"
+  },
+  {
+    "_key": "PLAT-241#1",
+    "id": "5d8e2f61-3b7a-5c9d-8e1f-4a6b2c0d9e73",
+    "issueId": "9e3a7b52-1c84-5d6f-b0e2-7f4c8a1d6b93",
+    "userId": "f265b518-6a58-54fe-88a3-4de6c02ca349",
+    "body": "Load test on origin-3 passed (p99 41 ms at 2x peak). Good to cut over any time this week.",
+    "createdAt": "2026-10-28T11:00:00.000Z",
+    "updatedAt": "2026-10-28T11:00:00.000Z"
+  }
+]

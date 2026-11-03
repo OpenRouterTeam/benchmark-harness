@@ -1,0 +1,125 @@
+{
+  "state": [
+    {
+      "pointer": "/services/google/calendar_events",
+      "equals": null,
+      "exists": null,
+      "contains": null,
+      "any": {
+        "attendees": [
+          {
+            "email": "sam.ortiz@octo-corp.example"
+          },
+          {
+            "email": "priya.natarajan@octo-corp.example"
+          }
+        ],
+        "calendarId": "c_ops_team@group.calendar.google.com",
+        "end": {
+          "dateTime": "2026-11-08T01:00:00-06:00"
+        },
+        "start": {
+          "dateTime": "2026-11-07T22:00:00-06:00"
+        },
+        "summary": "Payments cluster PG16 production cutover"
+      },
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/google/calendar_events/7c1e9a4f2b6d8e0a3c5f7b9d1e/start/dateTime",
+      "equals": "2026-10-19T20:00:00-05:00",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/google/calendar_events/7c1e9a4f2b6d8e0a3c5f7b9d1e/summary",
+      "equals": "Payments cluster PG16 staging cutover",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/slack/posted",
+      "equals": null,
+      "exists": null,
+      "contains": null,
+      "any": {
+        "thread_ts": "1792600205.318801"
+      },
+      "key_prefix": "C05DBMIG2RT#"
+    },
+    {
+      "pointer": "/services/slack/posted/C01GENERAL0#1",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "google",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "action": "create"
+        },
+        "name": "manage_event"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "slack",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "slack_send_message"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "google",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "action": "delete"
+        },
+        "name": "manage_event"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "google",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "event_id": "7c1e9a4f2b6d8e0a3c5f7b9d1e"
+        },
+        "name": "manage_event"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

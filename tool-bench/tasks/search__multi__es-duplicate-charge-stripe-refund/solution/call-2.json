@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"stripe_api_read","arguments":{"livemode":false,"parameters":{"charge":"ch_3Qb2MjLee109003aQs9uD"},"stripe_api_operation_id":"GetChargesCharge","stripe_context":"acct_1LkSpG8rT4vWq2Nx"}}}

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"hubspot-batch-update-objects","arguments":{"inputs":[{"id":"9100101","properties":{"closedate":"2026-11-20","dealstage":"contractsent"}}],"objectType":"deals"}}}

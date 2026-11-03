@@ -1,0 +1,16 @@
+[
+  {
+    "_key": "northwind/payments/ledger~bug",
+    "id": 1201,
+    "name": "bug",
+    "color": "#d9534f",
+    "description": "Something is broken"
+  },
+  {
+    "_key": "northwind/payments/ledger~hotfix",
+    "id": 1202,
+    "name": "hotfix",
+    "color": "#ed9121",
+    "description": "Needs to ship today"
+  }
+]

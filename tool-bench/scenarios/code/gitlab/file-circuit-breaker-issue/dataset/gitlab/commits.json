@@ -1,0 +1,14 @@
+[
+  {
+    "_key": "northwind/payments/checkout-api@4839457d894aebb4757dd55382b0d5cb5118cfc7",
+    "id": "4839457d894aebb4757dd55382b0d5cb5118cfc7",
+    "title": "Record refund reason on partial refunds",
+    "message": "Record refund reason on partial refunds\n",
+    "author_name": "Sam Okafor",
+    "author_email": "sam.okafor@northwind.io",
+    "authored_date": "2026-04-02T07:38:00.000Z",
+    "committed_date": "2026-04-02T07:38:00.000Z",
+    "parent_ids": [],
+    "branch": "main"
+  }
+]

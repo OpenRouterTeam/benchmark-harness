@@ -1,0 +1,47 @@
+[
+  {
+    "_key": "ip-10-0-1-21.ec2.internal",
+    "metadata": {
+      "name": "ip-10-0-1-21.ec2.internal",
+      "creationTimestamp": "2026-12-01T03:15:00Z",
+      "labels": {
+        "kubernetes.io/hostname": "ip-10-0-1-21.ec2.internal"
+      }
+    },
+    "window": "20.01s",
+    "usage": {
+      "cpu": "1873m",
+      "memory": "14322Mi"
+    }
+  },
+  {
+    "_key": "ip-10-0-2-37.ec2.internal",
+    "metadata": {
+      "name": "ip-10-0-2-37.ec2.internal",
+      "creationTimestamp": "2026-12-01T03:15:00Z",
+      "labels": {
+        "kubernetes.io/hostname": "ip-10-0-2-37.ec2.internal"
+      }
+    },
+    "window": "20.01s",
+    "usage": {
+      "cpu": "2411m",
+      "memory": "17830Mi"
+    }
+  },
+  {
+    "_key": "ip-10-0-3-52.ec2.internal",
+    "metadata": {
+      "name": "ip-10-0-3-52.ec2.internal",
+      "creationTimestamp": "2026-12-01T03:15:00Z",
+      "labels": {
+        "kubernetes.io/hostname": "ip-10-0-3-52.ec2.internal"
+      }
+    },
+    "window": "20.01s",
+    "usage": {
+      "cpu": "967m",
+      "memory": "9120Mi"
+    }
+  }
+]

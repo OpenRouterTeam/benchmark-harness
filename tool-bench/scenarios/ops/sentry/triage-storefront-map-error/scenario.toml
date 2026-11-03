@@ -1,0 +1,60 @@
+[scenario]
+id = "ops/sentry/triage-storefront-map-error"
+title = "Assign and resolve-in-next-release the right TypeError among look-alikes"
+now = "2026-10-20T16:00:00Z"
+seed = "ops-sentry-triage-storefront-map-error"
+services = ["sentry"]
+tags = ["write", "single-service", "sentry", "disambiguation"]
+timeout_sec = 900
+
+# Three unresolved issues share the title "TypeError: Cannot read properties of undefined
+# (reading 'map')": STOREFRONT-WEB-8D (6184421045, first seen in storefront@5.3.0, the
+# target), STOREFRONT-WEB-7Q (6184420122, same project, first seen in storefront@5.2.0) and
+# ADMIN-DASHBOARD-2M (6184421050, other project, first seen in admin@2.8.0 the same day).
+[[expect.state]]
+pointer = "/services/sentry/issues/STOREFRONT-WEB-8D/status"
+equals = "resolved"
+
+[[expect.state]]
+pointer = "/services/sentry/issues/STOREFRONT-WEB-8D/statusDetails/inNextRelease"
+equals = true
+
+[[expect.state]]
+pointer = "/services/sentry/issues/STOREFRONT-WEB-8D/assignedTo/type"
+equals = "team"
+
+[[expect.state]]
+pointer = "/services/sentry/issues/STOREFRONT-WEB-8D/assignedTo/name"
+equals = "frontend-web"
+
+[[expect.state]]
+pointer = "/services/sentry/issues/STOREFRONT-WEB-7Q/status"
+equals = "unresolved"
+
+[[expect.state]]
+pointer = "/services/sentry/issues/ADMIN-DASHBOARD-2M/status"
+equals = "unresolved"
+
+[[expect.required_calls]]
+service = "sentry"
+method = "PUT"
+path_regex = "(?i)^/api/0/organizations/lumen-labs/issues/(STOREFRONT-WEB-8D|6184421045)/$"
+
+[[expect.forbidden_calls]]
+service = "sentry"
+method = "PUT"
+path_regex = "(?i)/issues/(STOREFRONT-WEB-7Q|6184420122|ADMIN-DASHBOARD-2M|6184421050)/$"
+
+[[expect.forbidden_calls]]
+service = "sentry"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "sentry"
+tool = "search_issues"
+arguments = { organizationSlug = "lumen-labs", projectSlugOrId = "storefront-web", query = "is:unresolved firstRelease:storefront@5.3.0 TypeError" }
+
+[[solution.call]]
+endpoint = "sentry"
+tool = "update_issue"
+arguments = { organizationSlug = "lumen-labs", issueId = "STOREFRONT-WEB-8D", status = "resolvedInNextRelease", assignedTo = "team:frontend-web" }

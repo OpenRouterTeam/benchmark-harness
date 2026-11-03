@@ -1,0 +1,3 @@
+Lumenrail (the product analytics competitor) apparently took their Scale plan out of beta this week. Research it on the web: what does the Scale plan now cost per month when billed annually, and how many events per month does it include? Make sure you use the current general-availability numbers, not the old beta pricing.
+
+Then log it in our competitive intel tracker repo on GitHub Enterprise: open a new issue whose title mentions Lumenrail and the Scale plan, put the price and the included events in the description along with the source URL, and label it `pricing` and `lumenrail`. Don't edit or comment on existing issues.

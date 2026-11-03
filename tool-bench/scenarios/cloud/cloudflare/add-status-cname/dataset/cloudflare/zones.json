@@ -1,0 +1,32 @@
+[
+  {
+    "id": "023e105f4ecef8ad9ca31a8372d0c353",
+    "name": "octo-corp.com",
+    "status": "active",
+    "account": { "id": "4f8a2c1e9b7d6a5f3e2d1c0b9a8f7e6d", "name": "Octo Corp" },
+    "name_servers": ["ada.ns.cloudflare.com", "bob.ns.cloudflare.com"],
+    "created_on": "2021-06-01T12:30:00.000000Z",
+    "modified_on": "2026-09-30T08:00:00.000000Z",
+    "activated_on": "2021-06-01T13:00:00.000000Z"
+  },
+  {
+    "id": "3b7e1d9c5a2f8e4b6d0c3a7f1e9b5d2c",
+    "name": "octo-corp.co",
+    "status": "active",
+    "account": { "id": "4f8a2c1e9b7d6a5f3e2d1c0b9a8f7e6d", "name": "Octo Corp" },
+    "name_servers": ["ada.ns.cloudflare.com", "bob.ns.cloudflare.com"],
+    "created_on": "2024-07-19T14:00:00.000000Z",
+    "modified_on": "2024-07-19T14:30:00.000000Z",
+    "activated_on": "2024-07-19T14:30:00.000000Z"
+  },
+  {
+    "id": "e9a7c5b3d1f0e8c6a4b2d0f9e7c5a3b1",
+    "name": "octo-corp.dev",
+    "status": "active",
+    "account": { "id": "4f8a2c1e9b7d6a5f3e2d1c0b9a8f7e6d", "name": "Octo Corp" },
+    "name_servers": ["ada.ns.cloudflare.com", "bob.ns.cloudflare.com"],
+    "created_on": "2022-01-10T09:00:00.000000Z",
+    "modified_on": "2026-08-12T09:00:00.000000Z",
+    "activated_on": "2022-01-10T09:30:00.000000Z"
+  }
+]

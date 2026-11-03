@@ -1,0 +1,162 @@
+{
+  "state": [
+    {
+      "pointer": "/services/github/issues",
+      "equals": null,
+      "exists": null,
+      "contains": null,
+      "any": {
+        "body": "4810",
+        "title": "CHECKOUT-API-3F"
+      },
+      "key_prefix": "lumen-labs/checkout#"
+    },
+    {
+      "pointer": "/services/github/issues",
+      "equals": null,
+      "exists": null,
+      "contains": null,
+      "any": {
+        "body": "create_order",
+        "title": "CHECKOUT-API-3F"
+      },
+      "key_prefix": "lumen-labs/checkout#"
+    },
+    {
+      "pointer": "/services/github/issues",
+      "equals": null,
+      "exists": null,
+      "contains": null,
+      "any": {
+        "body": "could not obtain connection from pool",
+        "title": "CHECKOUT-API-3F"
+      },
+      "key_prefix": "lumen-labs/checkout#"
+    },
+    {
+      "pointer": "/services/github/issues/lumen-labs~1checkout#214/state",
+      "equals": "open",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/github/issues/lumen-labs~1checkout#215",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/pagerduty/notes",
+      "equals": null,
+      "exists": null,
+      "contains": null,
+      "any": {
+        "content": "214"
+      },
+      "key_prefix": "Q7CHKAP15PCT1D/"
+    },
+    {
+      "pointer": "/services/pagerduty/notes/Q8CHKSTG5PCT2F~11",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/pagerduty/incidents/Q7CHKAP15PCT1D/status",
+      "equals": "triggered",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/sentry/issues/CHECKOUT-API-3F/status",
+      "equals": "unresolved",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "github",
+      "method": "POST",
+      "path": "/api/v3/repos/lumen-labs/checkout/issues",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "pagerduty",
+      "method": "POST",
+      "path": "/incidents/Q7CHKAP15PCT1D/notes",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "github",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/api/v3/repos/lumen-labs/(payments-worker|storefront)/issues",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "github",
+      "method": "PATCH",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "pagerduty",
+      "method": "PUT",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "pagerduty",
+      "method": "POST",
+      "path": "/incidents/Q8CHKSTG5PCT2F/notes",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "sentry",
+      "method": "PUT",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

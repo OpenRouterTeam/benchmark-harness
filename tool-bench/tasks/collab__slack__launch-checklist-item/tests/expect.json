@@ -1,0 +1,68 @@
+{
+  "state": [
+    {
+      "pointer": "/services/slack/lists/F0PAYV2LST1/records",
+      "equals": null,
+      "exists": null,
+      "contains": {
+        "fields": {
+          "Col0DUED0004": "2026-11-05",
+          "Col0OWNR0002": [
+            "U03PRIYAN4T"
+          ],
+          "Col0STAT0003": [
+            "in_progress"
+          ],
+          "Col0TASK0001": "Rotate webhook signing secrets"
+        }
+      },
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/slack/lists/F0PAYV1LST9/records/2",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/slack/lists/F0PAYV2LST1/columns/4",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "slack",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "slack_add_list_record"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "slack",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "slack_update_list"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

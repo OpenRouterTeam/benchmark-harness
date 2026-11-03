@@ -1,0 +1,179 @@
+{
+  "state": [
+    {
+      "pointer": "/services/okta/users/00u1lnfschr3Ab4Cd5x7/status",
+      "equals": "DEPROVISIONED",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/okta/users/00u1lnfschr3Ab4Cd5x7/profile/login",
+      "equals": "lena.fischer@octo-corp.example",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/okta/users/00u1lnfshr07Ef8Gh9x7/status",
+      "equals": "ACTIVE",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/okta/group_members/00g2sales03Nv6Yw2x7~100u1lnfshr07Ef8Gh9x7",
+      "equals": null,
+      "exists": true,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/team_memberships/c60777c7-e380-5228-a6ab-bbee164139de",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/team_memberships/b66a35a6-c23a-5722-be9c-0ba91aba0db0",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/team_memberships/45ab43ee-0145-57b1-899c-c92a33fbbd69",
+      "equals": null,
+      "exists": true,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/team_memberships/ab503205-147e-5067-acc0-d50feb05d2d5",
+      "equals": null,
+      "exists": true,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/team_memberships/1660643f-c512-5fa6-9b09-ce598291dada",
+      "equals": null,
+      "exists": true,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/team_memberships/e90b6dce-e2ca-5017-b7a3-d85a526eb0cf",
+      "equals": null,
+      "exists": true,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/team_memberships/d68a6792-48a4-5efa-8479-46a7d1da312c",
+      "equals": null,
+      "exists": true,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/slack/posted",
+      "equals": null,
+      "exists": null,
+      "contains": null,
+      "any": {
+        "text": "Lena Fischer"
+      },
+      "key_prefix": "C0ITOPS5LF2#"
+    },
+    {
+      "pointer": "/services/slack/posted/C0ITREQ8ARC#1",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "okta",
+      "method": "POST",
+      "path": "/api/v1/users/00u1lnfschr3Ab4Cd5x7/lifecycle/deactivate",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "linear",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "linear_removeUserFromTeam"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "slack",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "slack_send_message"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "okta",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": "^/api/v1/users/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "okta",
+      "method": null,
+      "path": null,
+      "path_regex": "^/api/v1/users/(00u1lnfshr07Ef8Gh9x7|lena\\.fisher@octo-corp\\.example)/lifecycle/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "okta",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": "^/api/v1/groups/[^/]+/users/00u1lnfshr07Ef8Gh9x7$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

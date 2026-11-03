@@ -1,0 +1,66 @@
+[scenario]
+id = "collab/multi/slack-pagerduty-dbre-oncall"
+title = "Answer a Slack on-call question from PagerDuty: production DBRE, not staging"
+now = "2026-10-30T14:00:00Z"
+seed = "collab-multi-slack-pagerduty-dbre-oncall"
+services = ["slack", "pagerduty"]
+tags = ["lookup", "multi-service", "slack", "pagerduty", "disambiguation"]
+timeout_sec = 1200
+
+# The thread starts by guessing the staging DB alert (Database Reliability - Staging, Sam
+# Okafor only), then Sam Ortiz corrects it: production inventory-db, PD #4813, the production
+# DBRE rotation. Database Reliability (PEPDBRE): level 1 is the daily DBRE Primary schedule,
+# Dana Nguyen on 2026-10-30; level 2 is Sam Okafor.
+[expect.answer]
+contains = ["Dana Nguyen", "Sam Okafor"]
+
+[[expect.forbidden_calls]]
+service = "slack"
+path = "/_mcp/tools/call"
+body = { name = "slack_send_message" }
+
+[[expect.forbidden_calls]]
+service = "slack"
+path = "/_mcp/tools/call"
+body = { name = "slack_schedule_message" }
+
+[[expect.forbidden_calls]]
+service = "pagerduty"
+method = "POST"
+path_regex = "^/(incidents|schedules|v3|services|teams|users|webhook_subscriptions|alert_grouping_settings|incident_workflows|status_pages)"
+
+[[expect.forbidden_calls]]
+service = "pagerduty"
+method = "PUT"
+
+[[expect.forbidden_calls]]
+service = "pagerduty"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "slack"
+tool = "slack_search_public"
+arguments = { keywords = ["inventory", "sync"], natural_language_query = "inventory sync stalling who is on call" }
+
+[[solution.call]]
+endpoint = "slack"
+tool = "slack_read_thread"
+arguments = { channel_id = "C04INCID7NS", message_ts = "1793366520.004100" }
+
+[[solution.call]]
+endpoint = "pagerduty"
+tool = "list_escalation_policies"
+arguments = { query = "Database" }
+
+[[solution.call]]
+endpoint = "pagerduty"
+tool = "list_oncalls"
+arguments = { escalation_policy_ids = ["PEPDBRE"] }
+
+[solution]
+answer = """
+Production DBRE (PagerDuty escalation policy "Database Reliability", for PD #4813 on inventory-db-replica-1):
+
+- First on call: Dana Nguyen (DBRE Primary daily rotation, today 2026-10-30)
+- Backup (level 2): Sam Okafor
+"""

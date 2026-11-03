@@ -1,0 +1,20 @@
+[
+  {
+    "_key": "https://www.corvanerobotics.com/about",
+    "url": "https://www.corvanerobotics.com/about",
+    "title": "About Corvane Robotics",
+    "category": "company",
+    "publishedDate": "2026-03-01",
+    "text": "Corvane Robotics builds autonomous inspection robots for utilities. Founded in 2019 in Pittsburgh.",
+    "keywords": "corvane robotics company headquarters"
+  },
+  {
+    "_key": "https://www.corvane.io",
+    "url": "https://www.corvane.io",
+    "title": "Corvane | Payroll software for agencies",
+    "category": "company",
+    "publishedDate": "2025-11-10",
+    "text": "Corvane is a payroll platform for creative agencies, based in Lisbon with 45 employees.",
+    "keywords": "corvane company"
+  }
+]

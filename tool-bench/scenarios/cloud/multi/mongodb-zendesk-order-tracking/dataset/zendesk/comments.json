@@ -1,0 +1,122 @@
+[
+  {
+    "_key": "4201/1",
+    "id": 41000420101,
+    "author_id": 9010201,
+    "public": true,
+    "audit_id": 41000420100,
+    "created_at": "2026-09-18T10:02:00Z",
+    "body": "Hello,\n\nWe were charged twice for invoice INV-54012 ($1,240.00) on September 17. Please refund the duplicate.\n\nMarcus Chen\nOperations Manager, Brightpath Logistics",
+    "attachments": []
+  },
+  {
+    "_key": "4201/2",
+    "id": 41000420102,
+    "author_id": 9010003,
+    "public": true,
+    "audit_id": 41000420103,
+    "created_at": "2026-09-22T14:30:00Z",
+    "body": "Hi Marcus, the duplicate September charge has been refunded (reference RF-87002). Sorry about that!\n\nRita",
+    "attachments": []
+  },
+  {
+    "_key": "4215/1",
+    "id": 41000421501,
+    "author_id": 9010203,
+    "public": true,
+    "audit_id": 41000421500,
+    "created_at": "2026-10-24T08:15:00Z",
+    "body": "Is there a way to export all shipments from Q3 to a spreadsheet?\n\nOlivia Grant",
+    "attachments": []
+  },
+  {
+    "_key": "4215/2",
+    "id": 41000421502,
+    "author_id": 9010002,
+    "public": true,
+    "audit_id": 41000421503,
+    "created_at": "2026-10-24T11:00:00Z",
+    "body": "Hi Olivia, yes: Reports > Shipments, pick the date range and click Export CSV.",
+    "attachments": []
+  },
+  {
+    "_key": "4217/1",
+    "id": 41000421701,
+    "author_id": 9010201,
+    "public": true,
+    "audit_id": 41000421700,
+    "created_at": "2026-10-27T09:12:00Z",
+    "body": "Hi,\n\nIt happened again: invoice INV-55120 ($1,240.00) was charged twice on October 26. Can you refund the second charge?\n\nMarcus Chen\nOperations Manager, Brightpath Logistics",
+    "attachments": []
+  },
+  {
+    "_key": "4217/2",
+    "id": 41000421702,
+    "author_id": 9010003,
+    "public": false,
+    "audit_id": 41000421703,
+    "created_at": "2026-10-27T13:48:00Z",
+    "body": "Confirmed duplicate capture in Stripe. Sent to billing for refund; waiting on their confirmation before replying.",
+    "attachments": []
+  },
+  {
+    "_key": "4219/1",
+    "id": 41000421901,
+    "author_id": 9010201,
+    "public": true,
+    "audit_id": 41000421900,
+    "created_at": "2026-10-28T07:55:00Z",
+    "body": "We're onboarding two new dispatchers next week. Please add two seats to our plan.\n\nMarcus Chen\nOperations Manager, Brightpath Logistics",
+    "attachments": []
+  },
+  {
+    "_key": "4220/1",
+    "id": 41000422001,
+    "author_id": 9010202,
+    "public": true,
+    "audit_id": 41000422000,
+    "created_at": "2026-10-28T15:21:00Z",
+    "body": "Hi, I see two identical charges on our practice card this month. Could you check?\n\nDr. Marcus Cheng\nCheng Family Dental",
+    "attachments": []
+  },
+  {
+    "_key": "4220/2",
+    "id": 41000422002,
+    "author_id": 9010003,
+    "public": true,
+    "audit_id": 41000422003,
+    "created_at": "2026-10-28T16:02:00Z",
+    "body": "Hi Dr. Cheng, one of those is a pre-authorization that will drop off in a few days. We're double-checking with billing and will get back to you.",
+    "attachments": []
+  },
+  {
+    "_key": "4208/1",
+    "id": 41000420801,
+    "author_id": 9010204,
+    "public": true,
+    "audit_id": 41000420800,
+    "created_at": "2026-10-04T09:30:00Z",
+    "body": "Hi, I ordered a USB-C cable pack on October 2nd. Any idea when it ships?\n\nHana",
+    "attachments": []
+  },
+  {
+    "_key": "4208/2",
+    "id": 41000420802,
+    "author_id": 9010002,
+    "public": true,
+    "audit_id": 41000420803,
+    "created_at": "2026-10-06T16:10:00Z",
+    "body": "Hi Hana, your order was delivered today by USPS. Enjoy!\n\nSam",
+    "attachments": []
+  },
+  {
+    "_key": "4222/1",
+    "id": 41000422201,
+    "author_id": 9010204,
+    "public": true,
+    "audit_id": 41000422200,
+    "created_at": "2026-10-28T19:40:00Z",
+    "body": "Hello,\n\nI ordered the Studio X2 headphones a week ago (October 21) and they still haven't shown up. Could you tell me where they are and which carrier has them?\n\nThanks,\nHana Sato",
+    "attachments": []
+  }
+]

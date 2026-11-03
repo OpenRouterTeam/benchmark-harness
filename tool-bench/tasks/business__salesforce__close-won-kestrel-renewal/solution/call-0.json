@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"salesforce_query_records","arguments":{"fields":["Id","Name","StageName","CloseDate","Amount","Account.Name","Account.BillingCity"],"objectName":"Opportunity","whereClause":"Account.Name LIKE 'Kestrel%' AND IsClosed = false"}}}

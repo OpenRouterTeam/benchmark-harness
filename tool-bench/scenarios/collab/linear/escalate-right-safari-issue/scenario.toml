@@ -1,0 +1,63 @@
+[scenario]
+id = "collab/linear/escalate-right-safari-issue"
+title = "Escalate the open Safari checkout bug (not its duplicate or the fixed look-alike)"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-linear-escalate-right-safari-issue"
+services = ["linear"]
+tags = ["write", "single-service", "linear", "disambiguation"]
+timeout_sec = 900
+
+# WEB-51 is the open issue. PAY-97 has the same title but is a Duplicate; WEB-44
+# ("misaligned", Done) is a look-alike. Only WEB-51 changes, and gets a comment.
+[[expect.state]]
+pointer = "/services/linear/issues/WEB-51/priority"
+equals = 1
+
+[[expect.state]]
+pointer = "/services/linear/issues/WEB-51/assigneeId"
+equals = "0bfae6ae-01d0-58d1-a611-7d1973102c45"
+
+[[expect.state]]
+pointer = "/services/linear/comments/WEB-51#2/body"
+contains = "Acme"
+
+[[expect.state]]
+pointer = "/services/linear/issues/PAY-97/priority"
+equals = 2
+
+[[expect.state]]
+pointer = "/services/linear/issues/PAY-97/assigneeId"
+equals = "a4176131-9edb-57a6-9830-0638d2d2fa29"
+
+[[expect.state]]
+pointer = "/services/linear/issues/WEB-44/priority"
+equals = 3
+
+[[expect.state]]
+pointer = "/services/linear/comments/PAY-97#1"
+exists = false
+
+[[expect.required_calls]]
+service = "linear"
+path = "/_mcp/tools/call"
+body = { name = "linear_createComment" }
+
+[[expect.forbidden_calls]]
+service = "linear"
+path = "/_mcp/tools/call"
+body = { name = "linear_archiveIssue" }
+
+[[solution.call]]
+endpoint = "linear"
+tool = "linear_searchIssues"
+arguments = { query = "Safari" }
+
+[[solution.call]]
+endpoint = "linear"
+tool = "linear_updateIssue"
+arguments = { id = "WEB-51", priority = 1, assigneeId = "0bfae6ae-01d0-58d1-a611-7d1973102c45" }
+
+[[solution.call]]
+endpoint = "linear"
+tool = "linear_createComment"
+arguments = { issueId = "WEB-51", body = "Escalated to Urgent: Acme Retail raised this through support, it is blocking their enterprise checkouts. Assigned to Alex Kim." }

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_logs","arguments":{"filter":"outcome.result eq \"FAILURE\"","limit":100,"since":"2026-03-13T00:00:00.000Z","until":"2026-03-14T00:00:00.000Z"}}}

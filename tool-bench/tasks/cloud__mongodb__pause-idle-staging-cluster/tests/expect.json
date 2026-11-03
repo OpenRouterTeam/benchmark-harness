@@ -1,0 +1,93 @@
+{
+  "state": [
+    {
+      "pointer": "/services/mongodb/clusters/65c0ffee0000000000000002~1analytics-staging/paused",
+      "equals": true,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/mongodb/clusters/65c0ffee0000000000000003~1analytics-staging/paused",
+      "equals": false,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/mongodb/clusters/65c0ffee0000000000000002~1shop-staging/paused",
+      "equals": false,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/mongodb/clusters/65c0ffee0000000000000001~1analytics-prod/paused",
+      "equals": false,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/mongodb/clusters/65c0ffee0000000000000002~1analytics-staging/replicationSpecs/0/regionConfigs/0/electableSpecs/instanceSize",
+      "equals": "M10",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "mongodb",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "action": "PAUSE",
+          "clusterName": "analytics-staging",
+          "projectId": "65c0ffee0000000000000002"
+        },
+        "name": "atlas-pause-resume-cluster"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "mongodb",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "projectId": "65c0ffee0000000000000003"
+        },
+        "name": "atlas-pause-resume-cluster"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "mongodb",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "atlas-upgrade-cluster"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

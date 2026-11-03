@@ -1,0 +1,41 @@
+[
+  {
+    "id": "a7c70c10-090f-50bf-a8ce-b4cdee9d8572",
+    "name": "Platform",
+    "key": "PLAT",
+    "description": "Infrastructure, databases and developer tooling",
+    "color": null,
+    "icon": null,
+    "private": false,
+    "timezone": "America/Chicago",
+    "createdAt": "2024-01-08T09:00:00.000Z",
+    "updatedAt": "2026-06-01T09:00:00.000Z",
+    "defaultIssueStateId": "a963daa7-a208-522d-98a0-24992cb0e2ed"
+  },
+  {
+    "id": "5854633b-d1e9-52b6-b3c7-d309bfb881cb",
+    "name": "Payments",
+    "key": "PAY",
+    "description": "Checkout, billing and payment partners",
+    "color": null,
+    "icon": null,
+    "private": false,
+    "timezone": "America/Chicago",
+    "createdAt": "2024-01-08T09:00:00.000Z",
+    "updatedAt": "2026-06-01T09:00:00.000Z",
+    "defaultIssueStateId": "652554bb-d48e-5da9-b511-cca8605b5027"
+  },
+  {
+    "id": "6da75b4c-0e7c-5ac7-a415-f09a129582b1",
+    "name": "Web App",
+    "key": "WEB",
+    "description": "Customer-facing web application",
+    "color": null,
+    "icon": null,
+    "private": false,
+    "timezone": "America/Chicago",
+    "createdAt": "2024-01-08T09:00:00.000Z",
+    "updatedAt": "2026-06-01T09:00:00.000Z",
+    "defaultIssueStateId": "0964aa8b-46b3-5ca7-89ef-326f7c8ffadb"
+  }
+]

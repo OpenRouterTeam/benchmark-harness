@@ -1,0 +1,57 @@
+[
+  {
+    "_key": "9101",
+    "id": 9101,
+    "repo": "acme-shop/storefront",
+    "pull_number": 476,
+    "user": "ines-d",
+    "body": "LGTM",
+    "state": "APPROVED",
+    "commit_id": "a1e5c9d3b7f02468ace1357bdf9e8c7a6b5d4c3e",
+    "submitted_at": "2026-10-21T08:55:00Z"
+  },
+  {
+    "_key": "9102",
+    "id": 9102,
+    "repo": "acme-shop/storefront",
+    "pull_number": 478,
+    "user": "mateoalv",
+    "body": "Rounding the total still drifts for mixed-rate baskets; it needs to be per line.",
+    "state": "CHANGES_REQUESTED",
+    "commit_id": "e8c2a6f0d4b19753fdb8642eca0b1c2d3e4f5a6b",
+    "submitted_at": "2026-10-22T15:00:00Z"
+  },
+  {
+    "_key": "9103",
+    "id": 9103,
+    "repo": "acme-shop/storefront",
+    "pull_number": 482,
+    "user": "junpark",
+    "body": "Could we add a fixture for a mixed 19%/7% basket?",
+    "state": "COMMENTED",
+    "commit_id": "b2f6d0e4c8a13579bdf2468ace0f9e8d7c6b5a4f",
+    "submitted_at": "2026-10-23T17:10:00Z"
+  },
+  {
+    "_key": "9104",
+    "id": 9104,
+    "repo": "acme-shop/storefront",
+    "pull_number": 482,
+    "user": "ines-d",
+    "body": "Checked against the finance spreadsheet, numbers match. Approving.",
+    "state": "APPROVED",
+    "commit_id": "b2f6d0e4c8a13579bdf2468ace0f9e8d7c6b5a4f",
+    "submitted_at": "2026-10-24T09:20:00Z"
+  },
+  {
+    "_key": "9105",
+    "id": 9105,
+    "repo": "acme-shop/storefront",
+    "pull_number": 487,
+    "user": "mateoalv",
+    "body": "",
+    "state": "APPROVED",
+    "commit_id": "d4b8f2a6e0c35791bdf4680ace2f1e0d9c8b7a6d",
+    "submitted_at": "2026-10-26T13:00:00Z"
+  }
+]

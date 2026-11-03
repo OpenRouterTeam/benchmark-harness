@@ -1,0 +1,282 @@
+[
+  {
+    "id": "ch_3PqA1kLee104771aZxQ8mN",
+    "object": "charge",
+    "amount": 4200,
+    "amount_captured": 4200,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_3PqA1kLee104771cHj2",
+    "calculated_statement_descriptor": "LARKSPUR GOODS",
+    "captured": true,
+    "created": 1786698720,
+    "currency": "usd",
+    "customer": "cus_Q7wLeeJr84Hk2D",
+    "description": "Larkspur Goods order ORD-104771",
+    "disputed": false,
+    "metadata": {
+      "order_id": "ORD-104771"
+    },
+    "paid": true,
+    "payment_intent": "pi_3PqA1kLee104771bRt5vW",
+    "payment_method": "pm_Jl9fQ2vX7rTbN4kWc1aHs8Ue",
+    "payment_method_details": {
+      "card": {
+        "brand": "visa",
+        "exp_month": 9,
+        "exp_year": 2029,
+        "funding": "credit",
+        "last4": "4242",
+        "network": "visa"
+      },
+      "type": "card"
+    },
+    "receipt_email": "jordan.lee@example.com",
+    "refunded": false,
+    "status": "succeeded"
+  },
+  {
+    "id": "ch_3Qa7CgLgh108815aMw3pX",
+    "object": "charge",
+    "amount": 12999,
+    "amount_captured": 12999,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_3Qa7CgLgh108815cKd4",
+    "calculated_statement_descriptor": "LARKSPUR GOODS",
+    "captured": true,
+    "created": 1792692224,
+    "currency": "usd",
+    "customer": "cus_Q8xLeighM2pR5s",
+    "description": "Larkspur Goods order ORD-108815",
+    "disputed": false,
+    "metadata": {
+      "order_id": "ORD-108815"
+    },
+    "paid": true,
+    "payment_intent": "pi_3Qa7CgLgh108815bTy6qZ",
+    "payment_method": "pm_Jg3dW8nB5yLcK1pVr6tEo2Za",
+    "payment_method_details": {
+      "card": {
+        "brand": "mastercard",
+        "exp_month": 9,
+        "exp_year": 2029,
+        "funding": "credit",
+        "last4": "5100",
+        "network": "mastercard"
+      },
+      "type": "card"
+    },
+    "receipt_email": "jordan.leigh@example.com",
+    "refunded": false,
+    "status": "succeeded"
+  },
+  {
+    "id": "ch_3Qa7DgLgh108816aNe8rS",
+    "object": "charge",
+    "amount": 12999,
+    "amount_captured": 12999,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_3Qa7DgLgh108816cLf5",
+    "calculated_statement_descriptor": "LARKSPUR GOODS",
+    "captured": true,
+    "created": 1792692242,
+    "currency": "usd",
+    "customer": "cus_Q8xLeighM2pR5s",
+    "description": "Larkspur Goods order ORD-108816",
+    "disputed": false,
+    "metadata": {
+      "order_id": "ORD-108816"
+    },
+    "paid": true,
+    "payment_intent": "pi_3Qa7DgLgh108816bUv1wA",
+    "payment_method": "pm_Jg3dW8nB5yLcK1pVr6tEo2Za",
+    "payment_method_details": {
+      "card": {
+        "brand": "mastercard",
+        "exp_month": 9,
+        "exp_year": 2029,
+        "funding": "credit",
+        "last4": "5100",
+        "network": "mastercard"
+      },
+      "type": "card"
+    },
+    "receipt_email": "jordan.leigh@example.com",
+    "refunded": false,
+    "status": "succeeded"
+  },
+  {
+    "id": "ch_3Qb2KjLee109002aPo7tB",
+    "object": "charge",
+    "amount": 8640,
+    "amount_captured": 8640,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_3Qb2KjLee109002cMg6",
+    "calculated_statement_descriptor": "LARKSPUR GOODS",
+    "captured": true,
+    "created": 1792788069,
+    "currency": "usd",
+    "customer": "cus_Q7wLeeJr84Hk2D",
+    "description": "Larkspur Goods order ORD-109002",
+    "disputed": false,
+    "metadata": {
+      "order_id": "ORD-109002"
+    },
+    "paid": true,
+    "payment_intent": "pi_3Qb2KjLee109002bWx2yC",
+    "payment_method": "pm_Jl9fQ2vX7rTbN4kWc1aHs8Ue",
+    "payment_method_details": {
+      "card": {
+        "brand": "visa",
+        "exp_month": 9,
+        "exp_year": 2029,
+        "funding": "credit",
+        "last4": "4242",
+        "network": "visa"
+      },
+      "type": "card"
+    },
+    "receipt_email": "jordan.lee@example.com",
+    "refunded": false,
+    "status": "succeeded"
+  },
+  {
+    "id": "ch_3Qb2MjLee109003aQs9uD",
+    "object": "charge",
+    "amount": 8640,
+    "amount_captured": 8640,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_3Qb2MjLee109003cNh7",
+    "calculated_statement_descriptor": "LARKSPUR GOODS",
+    "captured": true,
+    "created": 1792788097,
+    "currency": "usd",
+    "customer": "cus_Q7wLeeJr84Hk2D",
+    "description": "Larkspur Goods order ORD-109003",
+    "disputed": false,
+    "metadata": {
+      "order_id": "ORD-109003"
+    },
+    "paid": true,
+    "payment_intent": "pi_3Qb2MjLee109003bXz4aE",
+    "payment_method": "pm_Jl9fQ2vX7rTbN4kWc1aHs8Ue",
+    "payment_method_details": {
+      "card": {
+        "brand": "visa",
+        "exp_month": 9,
+        "exp_year": 2029,
+        "funding": "credit",
+        "last4": "4242",
+        "network": "visa"
+      },
+      "type": "card"
+    },
+    "receipt_email": "jordan.lee@example.com",
+    "refunded": false,
+    "status": "succeeded"
+  },
+  {
+    "id": "ch_3Qb3AjLe2109010aRu1vF",
+    "object": "charge",
+    "amount": 8640,
+    "amount_captured": 8640,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_3Qb3AjLe2109010cOi8",
+    "calculated_statement_descriptor": "LARKSPUR GOODS",
+    "captured": true,
+    "created": 1792789320,
+    "currency": "usd",
+    "customer": "cus_Q9yJLeeT6vA3fZ",
+    "description": "Larkspur Goods order ORD-109010",
+    "disputed": false,
+    "metadata": {
+      "order_id": "ORD-109010"
+    },
+    "paid": true,
+    "payment_intent": "pi_3Qb3AjLe2109010bYa6bG",
+    "payment_method": "pm_Jx2mR7cH4sNqT9wYb5kDf1Lg",
+    "payment_method_details": {
+      "card": {
+        "brand": "visa",
+        "exp_month": 9,
+        "exp_year": 2029,
+        "funding": "credit",
+        "last4": "0077",
+        "network": "visa"
+      },
+      "type": "card"
+    },
+    "receipt_email": "j.lee@example.com",
+    "refunded": false,
+    "status": "succeeded"
+  },
+  {
+    "id": "ch_3Qc9XjLee109311aSv3wH",
+    "object": "charge",
+    "amount": 1999,
+    "amount_captured": 1999,
+    "amount_refunded": 1999,
+    "balance_transaction": "txn_3Qc9XjLee109311cPj9",
+    "calculated_statement_descriptor": "LARKSPUR GOODS",
+    "captured": true,
+    "created": 1792927200,
+    "currency": "usd",
+    "customer": "cus_Q7wLeeJr84Hk2D",
+    "description": "Larkspur Goods order ORD-109311",
+    "disputed": false,
+    "metadata": {
+      "order_id": "ORD-109311"
+    },
+    "paid": true,
+    "payment_intent": "pi_3Qc9XjLee109311bZb8cI",
+    "payment_method": "pm_Jl9fQ2vX7rTbN4kWc1aHs8Ue",
+    "payment_method_details": {
+      "card": {
+        "brand": "visa",
+        "exp_month": 9,
+        "exp_year": 2029,
+        "funding": "credit",
+        "last4": "4242",
+        "network": "visa"
+      },
+      "type": "card"
+    },
+    "receipt_email": "jordan.lee@example.com",
+    "refunded": true,
+    "status": "succeeded"
+  },
+  {
+    "id": "ch_3Qd1ZpNay109400aTw5xJ",
+    "object": "charge",
+    "amount": 5500,
+    "amount_captured": 5500,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_3Qd1ZpNay109400cQk1",
+    "calculated_statement_descriptor": "LARKSPUR GOODS",
+    "captured": true,
+    "created": 1792929600,
+    "currency": "usd",
+    "customer": "cus_QAzPriyaN5gB8h",
+    "description": "Larkspur Goods order ORD-109400",
+    "disputed": false,
+    "metadata": {
+      "order_id": "ORD-109400"
+    },
+    "paid": true,
+    "payment_intent": "pi_3Qd1ZpNay109400bAc1dK",
+    "payment_method": "pm_Pn6tY1gK8bVwQ3mXc9rLh4Js",
+    "payment_method_details": {
+      "card": {
+        "brand": "amex",
+        "exp_month": 9,
+        "exp_year": 2029,
+        "funding": "credit",
+        "last4": "1005",
+        "network": "amex"
+      },
+      "type": "card"
+    },
+    "receipt_email": "priya.n@example.com",
+    "refunded": false,
+    "status": "succeeded"
+  }
+]

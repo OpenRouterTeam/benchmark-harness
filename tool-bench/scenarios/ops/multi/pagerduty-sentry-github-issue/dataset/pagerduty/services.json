@@ -1,0 +1,266 @@
+[
+  {
+    "id": "PSVAPIG",
+    "name": "api-gateway",
+    "description": "Public API edge (Envoy) in front of all services.",
+    "status": "active",
+    "escalation_policy": {
+      "id": "PEPPLAT",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTPLATF",
+        "type": "team_reference"
+      }
+    ],
+    "auto_resolve_timeout": 14400,
+    "acknowledgement_timeout": 1800,
+    "incident_urgency_rule": {
+      "type": "constant",
+      "urgency": "high"
+    },
+    "created_at": "2025-02-01T17:20:00Z",
+    "updated_at": "2025-02-01T17:20:00Z"
+  },
+  {
+    "id": "PSVK8SC",
+    "name": "k8s-cluster-prod",
+    "description": "Production Kubernetes control plane and nodes.",
+    "status": "active",
+    "escalation_policy": {
+      "id": "PEPPLAT",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTPLATF",
+        "type": "team_reference"
+      }
+    ],
+    "auto_resolve_timeout": 14400,
+    "acknowledgement_timeout": 1800,
+    "incident_urgency_rule": {
+      "type": "constant",
+      "urgency": "high"
+    },
+    "created_at": "2025-02-01T17:20:00Z",
+    "updated_at": "2025-02-01T17:20:00Z"
+  },
+  {
+    "id": "PSVORDB",
+    "name": "orders-db",
+    "description": "Production orders PostgreSQL cluster (primary + 2 replicas).",
+    "status": "active",
+    "escalation_policy": {
+      "id": "PEPPLAT",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTPLATF",
+        "type": "team_reference"
+      }
+    ],
+    "auto_resolve_timeout": 14400,
+    "acknowledgement_timeout": 1800,
+    "incident_urgency_rule": {
+      "type": "constant",
+      "urgency": "high"
+    },
+    "created_at": "2025-02-01T17:20:00Z",
+    "updated_at": "2025-02-01T17:20:00Z"
+  },
+  {
+    "id": "PSVINVD",
+    "name": "inventory-db",
+    "description": "Production inventory PostgreSQL cluster.",
+    "status": "active",
+    "escalation_policy": {
+      "id": "PEPPLAT",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTPLATF",
+        "type": "team_reference"
+      }
+    ],
+    "auto_resolve_timeout": 14400,
+    "acknowledgement_timeout": 1800,
+    "incident_urgency_rule": {
+      "type": "constant",
+      "urgency": "high"
+    },
+    "created_at": "2025-02-01T17:20:00Z",
+    "updated_at": "2025-02-01T17:20:00Z"
+  },
+  {
+    "id": "PSVDBST",
+    "name": "orders-db-staging",
+    "description": "Staging copy of orders-db.",
+    "status": "active",
+    "escalation_policy": {
+      "id": "PEPDBST",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTDBREL",
+        "type": "team_reference"
+      }
+    ],
+    "auto_resolve_timeout": 14400,
+    "acknowledgement_timeout": 1800,
+    "incident_urgency_rule": {
+      "type": "constant",
+      "urgency": "low"
+    },
+    "created_at": "2025-02-01T17:20:00Z",
+    "updated_at": "2025-02-01T17:20:00Z"
+  },
+  {
+    "id": "PSVPAYA",
+    "name": "payments-api",
+    "description": "Card authorization and capture API.",
+    "status": "active",
+    "escalation_policy": {
+      "id": "PEPPAY1",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTPAYMT",
+        "type": "team_reference"
+      }
+    ],
+    "auto_resolve_timeout": 14400,
+    "acknowledgement_timeout": 1800,
+    "incident_urgency_rule": {
+      "type": "constant",
+      "urgency": "high"
+    },
+    "created_at": "2025-02-01T17:20:00Z",
+    "updated_at": "2025-02-01T17:20:00Z"
+  },
+  {
+    "id": "PSVPAYG",
+    "name": "payments-gateway-legacy",
+    "description": "Legacy card gateway (decommission planned).",
+    "status": "active",
+    "escalation_policy": {
+      "id": "PEPPAYL",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTPAYMT",
+        "type": "team_reference"
+      }
+    ],
+    "auto_resolve_timeout": 14400,
+    "acknowledgement_timeout": 1800,
+    "incident_urgency_rule": {
+      "type": "constant",
+      "urgency": "low"
+    },
+    "created_at": "2025-02-01T17:20:00Z",
+    "updated_at": "2025-02-01T17:20:00Z"
+  },
+  {
+    "id": "PSVPOUT",
+    "name": "payouts-worker",
+    "description": "Nightly merchant payout batches.",
+    "status": "active",
+    "escalation_policy": {
+      "id": "PEPPOUT",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTPAYMT",
+        "type": "team_reference"
+      }
+    ],
+    "auto_resolve_timeout": 14400,
+    "acknowledgement_timeout": 1800,
+    "incident_urgency_rule": {
+      "type": "constant",
+      "urgency": "low"
+    },
+    "created_at": "2025-02-01T17:20:00Z",
+    "updated_at": "2025-02-01T17:20:00Z"
+  },
+  {
+    "id": "PSVCHKA",
+    "name": "checkout-api",
+    "description": "Production checkout API (us-east-1, eu-west-1).",
+    "status": "active",
+    "escalation_policy": {
+      "id": "PEPCOMM",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTCOMRC",
+        "type": "team_reference"
+      }
+    ],
+    "auto_resolve_timeout": 14400,
+    "acknowledgement_timeout": 1800,
+    "incident_urgency_rule": {
+      "type": "constant",
+      "urgency": "high"
+    },
+    "created_at": "2025-02-01T17:20:00Z",
+    "updated_at": "2025-02-01T17:20:00Z"
+  },
+  {
+    "id": "PSVCHKS",
+    "name": "checkout-api-staging",
+    "description": "Staging environment for checkout-api.",
+    "status": "active",
+    "escalation_policy": {
+      "id": "PEPCOMM",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTCOMRC",
+        "type": "team_reference"
+      }
+    ],
+    "auto_resolve_timeout": 14400,
+    "acknowledgement_timeout": 1800,
+    "incident_urgency_rule": {
+      "type": "constant",
+      "urgency": "low"
+    },
+    "created_at": "2025-02-01T17:20:00Z",
+    "updated_at": "2025-02-01T17:20:00Z"
+  },
+  {
+    "id": "PSVCHKW",
+    "name": "checkout-web",
+    "description": "Production checkout frontend.",
+    "status": "active",
+    "escalation_policy": {
+      "id": "PEPCOMM",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTCOMRC",
+        "type": "team_reference"
+      }
+    ],
+    "auto_resolve_timeout": 14400,
+    "acknowledgement_timeout": 1800,
+    "incident_urgency_rule": {
+      "type": "constant",
+      "urgency": "high"
+    },
+    "created_at": "2025-02-01T17:20:00Z",
+    "updated_at": "2025-02-01T17:20:00Z"
+  }
+]

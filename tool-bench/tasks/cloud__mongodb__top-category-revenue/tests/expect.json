@@ -1,0 +1,36 @@
+{
+  "state": [],
+  "required_calls": [],
+  "forbidden_calls": [
+    {
+      "service": "mongodb",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "update-many"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "mongodb",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "delete-many"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": {
+    "contains": [
+      "outdoor"
+    ],
+    "regex": "1,?457\\.5"
+  }
+}

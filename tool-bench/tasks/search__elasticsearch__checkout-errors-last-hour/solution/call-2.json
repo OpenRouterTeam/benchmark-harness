@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"search","arguments":{"index":"logs-checkout-prod-*","query_body":{"aggs":{"top_messages":{"terms":{"field":"message.keyword","size":3}}},"query":{"bool":{"filter":[{"term":{"service":"payment-gateway"}},{"range":{"status_code":{"gte":500}}},{"range":{"@timestamp":{"gte":"now-1h"}}}]}},"size":0}}}}

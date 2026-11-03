@@ -1,0 +1,200 @@
+[
+  {
+    "_key": "C01GENERAL0/1793019600.010203",
+    "channel": "C01GENERAL0",
+    "ts": "1793019600.010203",
+    "user": "U01DWHIT5FA",
+    "text": "Reminder: all-hands moves to Thursday 11:00 CT this week. Agenda in the doc pinned here.",
+    "reactions": [
+      {
+        "name": "+1",
+        "users": [
+          "U04ARIVERA9",
+          "U03PRIYAN4T",
+          "U05SORTIZ6M"
+        ],
+        "count": 3
+      }
+    ]
+  },
+  {
+    "_key": "C01GENERAL0/1793209269.662010",
+    "channel": "C01GENERAL0",
+    "ts": "1793209269.662010",
+    "user": "U05SORTIZ6M",
+    "text": "Heads up: I heard we chose Honeycomb for observability? Anyone know if that's final?"
+  },
+  {
+    "_key": "C01GENERAL0/1793210130.090112",
+    "channel": "C01GENERAL0",
+    "ts": "1793210130.090112",
+    "user": "U02MWEBB8XH",
+    "text": "Not final yet when I last checked - see the eval thread in #infra.",
+    "thread_ts": "1793209269.662010"
+  },
+  {
+    "_key": "C04INCID7NS/1792811520.551000",
+    "channel": "C04INCID7NS",
+    "ts": "1792811520.551000",
+    "user": "U08DEPLOYB0",
+    "text": "INC-2291 declared: elevated 5xx on checkout-api (sev2). Commander: <@U05SORTIZ6M>",
+    "bot_id": "B08DEPLOY"
+  },
+  {
+    "_key": "C04INCID7NS/1792816800.002200",
+    "channel": "C04INCID7NS",
+    "ts": "1792816800.002200",
+    "user": "U05SORTIZ6M",
+    "text": "INC-2291 resolved. Root cause: connection pool exhaustion after the 4.11.3 deploy. Postmortem Friday.",
+    "reactions": [
+      {
+        "name": "white_check_mark",
+        "users": [
+          "U02MWEBB8XH"
+        ],
+        "count": 1
+      }
+    ]
+  },
+  {
+    "_key": "C07DESIGN8Y/1792778400.000301",
+    "channel": "C07DESIGN8Y",
+    "ts": "1792778400.000301",
+    "user": "U06AKIM3D2Q",
+    "text": "Crit tomorrow: new checkout empty states + the 4.12 release notes screenshots."
+  },
+  {
+    "_key": "G07LEADS3PV/1786550400.000044",
+    "channel": "G07LEADS3PV",
+    "ts": "1786550400.000044",
+    "user": "U01DWHIT5FA",
+    "text": "Early read on observability renewal: tentatively leaning Datadog, but let's run a proper eval in Q4."
+  },
+  {
+    "_key": "C03INFRA9QX/1791990131.120442",
+    "channel": "C03INFRA9QX",
+    "ts": "1791990131.120442",
+    "user": "U02MWEBB8XH",
+    "text": "Observability vendor evaluation kicking off: Datadog vs Grafana Cloud vs Honeycomb. Scorecard in the canvas. Decision by Oct 27.",
+    "reactions": [
+      {
+        "name": "eyes",
+        "users": [
+          "U05SORTIZ6M",
+          "U04ARIVERA9"
+        ],
+        "count": 2
+      }
+    ]
+  },
+  {
+    "_key": "C03INFRA9QX/1792074000.005511",
+    "channel": "C03INFRA9QX",
+    "ts": "1792074000.005511",
+    "user": "U05SORTIZ6M",
+    "text": "Honeycomb's tracing UX is the best of the three, but their metrics story is weak for us.",
+    "thread_ts": "1791990131.120442"
+  },
+  {
+    "_key": "C03INFRA9QX/1792177380.007720",
+    "channel": "C03INFRA9QX",
+    "ts": "1792177380.007720",
+    "user": "U04ARIVERA9",
+    "text": "Datadog quote came in at $412k/yr - roughly 40% over budget.",
+    "thread_ts": "1791990131.120442"
+  },
+  {
+    "_key": "C03INFRA9QX/1792511100.008100",
+    "channel": "C03INFRA9QX",
+    "ts": "1792511100.008100",
+    "user": "U02MWEBB8XH",
+    "text": "Grafana Cloud quote: $268k/yr, includes 18 months of retention for logs. Leaning Grafana Cloud.",
+    "thread_ts": "1791990131.120442"
+  },
+  {
+    "_key": "C03INFRA9QX/1793131800.099001",
+    "channel": "C03INFRA9QX",
+    "ts": "1793131800.099001",
+    "user": "U01DWHIT5FA",
+    "text": "Decision: we're going with Grafana Cloud. Contract signed today; it starts 2026-11-15 on a 3-year term. Datadog stays until the migration completes on 2027-01-31.",
+    "thread_ts": "1791990131.120442",
+    "reactions": [
+      {
+        "name": "tada",
+        "users": [
+          "U02MWEBB8XH",
+          "U05SORTIZ6M",
+          "U04ARIVERA9"
+        ],
+        "count": 3
+      }
+    ]
+  },
+  {
+    "_key": "C03INFRA9QX/1793132040.000003",
+    "channel": "C03INFRA9QX",
+    "ts": "1793132040.000003",
+    "user": "U05SORTIZ6M",
+    "text": "Great - I'll start the migration plan.",
+    "thread_ts": "1791990131.120442"
+  },
+  {
+    "_key": "C03INFRA9QX/1792929600.004512",
+    "channel": "C03INFRA9QX",
+    "ts": "1792929600.004512",
+    "user": "U05SORTIZ6M",
+    "text": "Unrelated: renewing the PagerDuty contract next month, no changes planned."
+  },
+  {
+    "_key": "G08EXECOFF1/1793134800.000001",
+    "channel": "G08EXECOFF1",
+    "ts": "1793134800.000001",
+    "user": "U02MWEBB8XH",
+    "text": "Offsite budget note: observability spend down after the switch."
+  },
+  {
+    "_key": "C05DBMIG2RT/1792422000.012010",
+    "channel": "C05DBMIG2RT",
+    "ts": "1792422000.012010",
+    "user": "U05SORTIZ6M",
+    "text": "Staging cutover done on 2026-10-19, replication lag stayed under 2s. Prod plan next.",
+    "reactions": [
+      {
+        "name": "postgres",
+        "users": [
+          "U03PRIYAN4T"
+        ],
+        "count": 1
+      }
+    ]
+  },
+  {
+    "_key": "C05DBMIG2RT/1792600205.318801",
+    "channel": "C05DBMIG2RT",
+    "ts": "1792600205.318801",
+    "user": "U05SORTIZ6M",
+    "text": "Proposal for the production cutover window of the payments cluster: Friday 2026-11-06, 20:00-23:00 CT. Objections?"
+  },
+  {
+    "_key": "C0GROWTH7LF/1792342800.000400",
+    "channel": "C0GROWTH7LF",
+    "ts": "1792342800.000400",
+    "user": "U07LFISCH2R",
+    "text": "The FALL26 referral code goes live tomorrow (Oct 19). Last year's FALL25 code is retired but still accepted at checkout."
+  },
+  {
+    "_key": "C0GROWTH7LF/1793283000.002100",
+    "channel": "C0GROWTH7LF",
+    "ts": "1793283000.002100",
+    "user": "U07LFISCH2R",
+    "text": "Ten days into the FALL26 referral campaign. Can someone pull how many new customers have signed up with the FALL26 code so far, and how much those customers have spent in total? Production numbers please, not staging."
+  },
+  {
+    "_key": "C0GROWTH7LF/1793283600.002400",
+    "channel": "C0GROWTH7LF",
+    "ts": "1793283600.002400",
+    "user": "U03PRIYAN4T",
+    "text": "When you pull it, leave out our QA test accounts (anything @octo-shop.com) and don't count cancelled orders in the spend.",
+    "thread_ts": "1793283000.002100"
+  }
+]

@@ -1,0 +1,28 @@
+[
+  {
+    "id": "6",
+    "boardId": "1",
+    "name": "PAY Sprint 22",
+    "state": "closed",
+    "startDate": "2026-09-23T15:00:00.000Z",
+    "endDate": "2026-10-07T15:00:00.000Z",
+    "completeDate": "2026-10-07T18:00:00.000Z",
+    "goal": "Refund retries"
+  },
+  {
+    "id": "7",
+    "boardId": "1",
+    "name": "PAY Sprint 23",
+    "state": "active",
+    "startDate": "2026-10-21T15:00:00.000Z",
+    "endDate": "2026-11-04T15:00:00.000Z",
+    "goal": "Payments v2 release candidate"
+  },
+  {
+    "id": "8",
+    "boardId": "1",
+    "name": "PAY Sprint 24",
+    "state": "future",
+    "goal": ""
+  }
+]

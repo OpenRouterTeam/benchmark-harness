@@ -1,0 +1,176 @@
+[
+  {
+    "id": "C01GENERAL0",
+    "name": "general",
+    "is_private": false,
+    "is_archived": false,
+    "topic": "",
+    "purpose": "Company-wide announcements and work-based matters",
+    "creator": "U01DWHIT5FA",
+    "created": 1706961600,
+    "members": [
+      "U0TOOLBNCH1",
+      "U04ARIVERA9",
+      "U06AKIM3D2Q",
+      "U03PRIYAN4T",
+      "U02MWEBB8XH",
+      "U01DWHIT5FA",
+      "U05SORTIZ6M",
+      "U07LFISCH2R",
+      "U08DEPLOYB0"
+    ]
+  },
+  {
+    "id": "C03INFRA9QX",
+    "name": "infra",
+    "is_private": false,
+    "is_archived": false,
+    "topic": "On-call: Sam this week",
+    "purpose": "Infrastructure team: tooling, vendors, capacity",
+    "creator": "U02MWEBB8XH",
+    "created": 1706961600,
+    "members": [
+      "U0TOOLBNCH1",
+      "U02MWEBB8XH",
+      "U05SORTIZ6M",
+      "U04ARIVERA9",
+      "U01DWHIT5FA",
+      "U03PRIYAN4T"
+    ]
+  },
+  {
+    "id": "C05DBMIG2RT",
+    "name": "db-migration",
+    "is_private": false,
+    "is_archived": false,
+    "topic": "",
+    "purpose": "Coordination for the Postgres 16 migration of the payments cluster",
+    "creator": "U05SORTIZ6M",
+    "created": 1788264000,
+    "members": [
+      "U0TOOLBNCH1",
+      "U02MWEBB8XH",
+      "U05SORTIZ6M",
+      "U03PRIYAN4T",
+      "U07LFISCH2R"
+    ]
+  },
+  {
+    "id": "C04INCID7NS",
+    "name": "incidents",
+    "is_private": false,
+    "is_archived": false,
+    "topic": "",
+    "purpose": "Active incident coordination. Use /incident to declare.",
+    "creator": "U02MWEBB8XH",
+    "created": 1706961600,
+    "members": [
+      "U0TOOLBNCH1",
+      "U04ARIVERA9",
+      "U06AKIM3D2Q",
+      "U03PRIYAN4T",
+      "U02MWEBB8XH",
+      "U01DWHIT5FA",
+      "U05SORTIZ6M",
+      "U07LFISCH2R",
+      "U08DEPLOYB0"
+    ]
+  },
+  {
+    "id": "C06RELEASE1",
+    "name": "release",
+    "is_private": false,
+    "is_archived": false,
+    "topic": "Next: web 4.12",
+    "purpose": "Release coordination for the web app",
+    "creator": "U04ARIVERA9",
+    "created": 1706961600,
+    "members": [
+      "U0TOOLBNCH1",
+      "U04ARIVERA9",
+      "U06AKIM3D2Q",
+      "U03PRIYAN4T",
+      "U07LFISCH2R",
+      "U08DEPLOYB0"
+    ]
+  },
+  {
+    "id": "C02RELARCH5",
+    "name": "releases-archive",
+    "is_private": false,
+    "is_archived": true,
+    "topic": "",
+    "purpose": "Old release coordination (read-only since 2025)",
+    "creator": "U04ARIVERA9",
+    "created": 1673352000,
+    "members": [
+      "U0TOOLBNCH1",
+      "U04ARIVERA9",
+      "U06AKIM3D2Q"
+    ]
+  },
+  {
+    "id": "C07DESIGN8Y",
+    "name": "design-crit",
+    "is_private": false,
+    "is_archived": false,
+    "topic": "",
+    "purpose": "Weekly design critique",
+    "creator": "U06AKIM3D2Q",
+    "created": 1706961600,
+    "members": [
+      "U06AKIM3D2Q",
+      "U07LFISCH2R"
+    ]
+  },
+  {
+    "id": "G07LEADS3PV",
+    "name": "eng-leads",
+    "is_private": true,
+    "is_archived": false,
+    "topic": "",
+    "purpose": "Engineering leadership (private)",
+    "creator": "U01DWHIT5FA",
+    "created": 1706961600,
+    "members": [
+      "U0TOOLBNCH1",
+      "U01DWHIT5FA",
+      "U02MWEBB8XH",
+      "U04ARIVERA9"
+    ]
+  },
+  {
+    "id": "G08EXECOFF1",
+    "name": "exec-offsite",
+    "is_private": true,
+    "is_archived": false,
+    "topic": "",
+    "purpose": "Exec offsite planning",
+    "creator": "U01DWHIT5FA",
+    "created": 1706961600,
+    "members": [
+      "U01DWHIT5FA",
+      "U02MWEBB8XH"
+    ]
+  },
+  {
+    "id": "D09KIMDM4X1",
+    "is_im": true,
+    "user": "U06AKIM3D2Q",
+    "created": 1777723200,
+    "members": [
+      "U0TOOLBNCH1",
+      "U06AKIM3D2Q"
+    ]
+  },
+  {
+    "id": "D0RIVDM2KQ8",
+    "is_im": true,
+    "user": "U04ARIVERA9",
+    "created": 1777723200,
+    "members": [
+      "U0TOOLBNCH1",
+      "U04ARIVERA9"
+    ]
+  }
+]

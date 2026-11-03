@@ -1,0 +1,24 @@
+[
+  {
+    "id": "3b3c4e1a-8d2f-11ef-9c1a-da7ad0900002",
+    "type": "users",
+    "attributes": {
+      "uuid": "3b3c4e1a-8d2f-11ef-9c1a-da7ad0900002",
+      "name": "Priya Raman",
+      "handle": "priya.raman@octo-corp.example",
+      "email": "priya.raman@octo-corp.example",
+      "icon": "https://secure.gravatar.com/avatar/1"
+    }
+  },
+  {
+    "id": "5f1d2c3b-8d2f-11ef-9c1a-da7ad0900003",
+    "type": "users",
+    "attributes": {
+      "uuid": "5f1d2c3b-8d2f-11ef-9c1a-da7ad0900003",
+      "name": "Marcus Lee",
+      "handle": "marcus.lee@octo-corp.example",
+      "email": "marcus.lee@octo-corp.example",
+      "icon": "https://secure.gravatar.com/avatar/2"
+    }
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "_key": "81",
+    "id": 81,
+    "group": "acme",
+    "title": "Two-week sprints",
+    "automatic": true,
+    "active": true,
+    "start_date": "2026-01-12",
+    "duration_in_weeks": 2,
+    "iterations_in_advance": 2,
+    "roll_over": false
+  }
+]

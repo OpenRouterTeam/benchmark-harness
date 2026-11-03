@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"modify_sheet_values","arguments":{"range_name":"Renewals!C2:D2","spreadsheet_id":"1p91PmGrfYlol_BkGN9Op8j9dWzibNwgg","values":[["2027-11-30","Renewed"]]}}}

@@ -1,0 +1,73 @@
+[
+  {
+    "id": "e1a0c6f2-1d55-4a8e-9a42-6f1c0e0b9a01",
+    "project": "qmvbxtzkplrnwdhyfaco",
+    "source": "edge_logs",
+    "timestamp": "2026-04-02T08:12:04.511Z",
+    "event_message": "GET | 200 | /rest/v1/orders?select=*",
+    "severity_text": "INFO",
+    "log_attributes": {
+      "identifier": "qmvbxtzkplrnwdhyfaco",
+      "request.method": "GET",
+      "request.path": "/rest/v1/orders",
+      "response.status_code": 200
+    }
+  },
+  {
+    "id": "e1a0c6f2-1d55-4a8e-9a42-6f1c0e0b9a02",
+    "project": "qmvbxtzkplrnwdhyfaco",
+    "source": "edge_logs",
+    "timestamp": "2026-04-02T08:40:51.090Z",
+    "event_message": "POST | 500 | /functions/v1/stripe-webhook",
+    "severity_text": "ERROR",
+    "log_attributes": {
+      "identifier": "qmvbxtzkplrnwdhyfaco",
+      "request.method": "POST",
+      "request.path": "/functions/v1/stripe-webhook",
+      "response.status_code": 500
+    }
+  },
+  {
+    "id": "e1a0c6f2-1d55-4a8e-9a42-6f1c0e0b9a03",
+    "project": "qmvbxtzkplrnwdhyfaco",
+    "source": "postgres_logs",
+    "timestamp": "2026-04-02T08:41:00.002Z",
+    "event_message": "duplicate key value violates unique constraint \"invoices_number_key\"",
+    "severity_text": "ERROR",
+    "log_attributes": {
+      "identifier": "qmvbxtzkplrnwdhyfaco",
+      "parsed.error_severity": "ERROR"
+    }
+  },
+  {
+    "id": "e1a0c6f2-1d55-4a8e-9a42-6f1c0e0b9a04",
+    "project": "qmvbxtzkplrnwdhyfaco",
+    "source": "function_edge_logs",
+    "timestamp": "2026-04-02T08:40:51.088Z",
+    "event_message": "POST | 500 | https://qmvbxtzkplrnwdhyfaco.supabase.co/functions/v1/stripe-webhook",
+    "severity_text": "ERROR",
+    "log_attributes": {
+      "response.status_code": 500,
+      "request.method": "POST",
+      "function_id": "4f1d2c3b-8a9e-4b7c-9d6e-1a2b3c4d5e6f",
+      "execution_time_ms": 412,
+      "deployment_id": "qmvbxtzkplrnwdhyfaco_4f1d2c3b-8a9e-4b7c-9d6e-1a2b3c4d5e6f_3",
+      "version": "3"
+    }
+  },
+  {
+    "id": "e1a0c6f2-1d55-4a8e-9a42-6f1c0e0b9a05",
+    "project": "qmvbxtzkplrnwdhyfaco",
+    "source": "auth_logs",
+    "timestamp": "2026-04-02T07:58:13.300Z",
+    "event_message": "{\"msg\":\"Login\",\"status\":200}",
+    "severity_text": "INFO",
+    "log_attributes": {
+      "level": "info",
+      "status": 200,
+      "path": "/token",
+      "msg": "Login",
+      "error": null
+    }
+  }
+]

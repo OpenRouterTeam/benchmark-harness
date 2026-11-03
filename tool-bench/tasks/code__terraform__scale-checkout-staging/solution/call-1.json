@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"update_workspace_variable","arguments":{"key":"desired_count","terraform_org_name":"acme-platform","value":"4","variable_id":"var-4eRpJG8P0JYsXLTJ","workspace_name":"checkout-service-staging"}}}

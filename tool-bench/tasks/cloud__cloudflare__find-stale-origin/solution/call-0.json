@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"search","arguments":{"code":"async () => Object.entries(spec.paths).filter(([p]) => p.includes('dns_records')).map(([p, item]) => ({ path: p, methods: Object.keys(item) }))"}}}

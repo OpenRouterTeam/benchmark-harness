@@ -1,0 +1,220 @@
+{
+  "state": [
+    {
+      "pointer": "/services/shopify/customers/7101/tags",
+      "equals": null,
+      "exists": null,
+      "contains": "VIP",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/shopify/customers/7101/tags",
+      "equals": null,
+      "exists": null,
+      "contains": "newsletter",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/shopify/customers/7104/tags",
+      "equals": [],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/shopify/customers/7102/tags",
+      "equals": [
+        "wholesale"
+      ],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/discounts/sub_PrRmOutlkMonthly0000001:VIP15/subscription",
+      "equals": "sub_PrRmOutlkMonthly0000001",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/subscriptions/sub_PrRmOutlkMonthly0000001/discounts/1",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/subscriptions/sub_PrRmOutlkMonthly0000001/status",
+      "equals": "active",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/subscriptions/sub_PrRmOutlkGift00000000001/discounts",
+      "equals": [],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/subscriptions/sub_PrRmDsgnMonthly00000001/discounts",
+      "equals": [],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/subscriptions/sub_TmAchbQuarterly00000001/discounts",
+      "equals": [],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/subscriptions/sub_MrcBllMonthly0000000001/discounts",
+      "equals": [],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "shopify",
+      "method": "POST",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "customerUpdate",
+      "min_count": 1
+    },
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "stripe_api_operation_id": "PostSubscriptionsSubscriptionExposedId"
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "stripe_api_operation_id": "PostCoupons"
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "stripe_api_operation_id": "DeleteSubscriptionsSubscriptionExposedId"
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "parameters": {
+            "id": "sub_PrRmDsgnMonthly00000001"
+          }
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "parameters": {
+            "subscription_exposed_id": "sub_PrRmDsgnMonthly00000001"
+          }
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "shopify",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "variables": {
+          "input": {
+            "id": "gid://shopify/Customer/7104"
+          }
+        }
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "shopify",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "variables": {
+          "input": {
+            "id": "gid://shopify/Customer/7102"
+          }
+        }
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

@@ -1,0 +1,1 @@
+Alex Kim's contract with us ended yesterday. Alex works for Northwind Consulting and helped us with Salesforce. Please deactivate Alex's Okta account (don't delete it, we need it for the audit trail) and remove it from the "Contractors - Salesforce" group. Be careful: we have more than one Alex Kim.

@@ -1,0 +1,1586 @@
+{
+ "Name": "logs",
+ "ServiceName": "CloudWatch Logs",
+ "Actions": [
+  {
+   "Name": "AssociateKmsKey",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "AssociateSourceToS3TableIntegration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CallWithBearerToken",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CancelExportTask",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CancelImportTask",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateDelivery",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateExportTask",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateImportTask",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateLogAnomalyDetector",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateLogDelivery",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateLogGroup",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateLogStream",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateLookupTable",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateScheduledQuery",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteAccountPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteDataProtectionPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteDelivery",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteDeliveryDestination",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteDeliveryDestinationPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteDeliverySource",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteDestination",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteIndexPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteIntegration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteLogAnomalyDetector",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteLogDelivery",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteLogGroup",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteLogStream",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteLookupTable",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteMetricFilter",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeletePipelineRule",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteQueryDefinition",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteResourcePolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteRetentionPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteScheduledQuery",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteSubscriptionFilter",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteSyslogConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteTransformer",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DescribeAccountPolicies",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeConfigurationTemplates",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeDeliveries",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeDeliveryDestinations",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeDeliverySources",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeDestinations",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeExportTasks",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeFieldIndexes",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeImportTaskBatches",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeImportTasks",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeIndexPolicies",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeLogGroups",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeLogStreams",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeLookupTables",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeMetricFilters",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeQueries",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeQueryDefinitions",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeResourcePolicies",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeSubscriptionFilters",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DisassociateKmsKey",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DisassociateSourceFromS3TableIntegration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "FilterLogEvents",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetDataProtectionPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetDelivery",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetDeliveryDestination",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetDeliveryDestinationPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetDeliverySource",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetIntegration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetLogAnomalyDetector",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetLogDelivery",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetLogEvents",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetLogFields",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetLogGroupFields",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetLogRecord",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetLookupTable",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetQueryResults",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetScheduledQuery",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetScheduledQueryHistory",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetStorageTierPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetTransformer",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "IntegrateWithDataset",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "IntegrateWithS3Table",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "Link",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "ListAggregateLogGroupSummaries",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListAnomalies",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListEntitiesForLogGroup",
+   "Annotations": {
+    "Properties": {
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListIntegrations",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListLogAnomalyDetectors",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListLogDeliveries",
+   "Annotations": {
+    "Properties": {
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListLogGroups",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListLogGroupsForEntity",
+   "Annotations": {
+    "Properties": {
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListLogGroupsForQuery",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListScheduledQueries",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListSourcesForS3TableIntegration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListSyslogConfigurations",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListTagsForResource",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListTagsLogGroup",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ProcessWithPipeline",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutAccountPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutBearerTokenAuthentication",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutDataProtectionPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutDeliveryDestination",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutDeliveryDestinationPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutDeliverySource",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutDestination",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutDestinationPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutIndexPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutIntegration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutLogEvents",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutLogGroupDeletionProtection",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutMetricFilter",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutPipelineRule",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutQueryDefinition",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutResourcePolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutRetentionPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutStorageTierPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutSubscriptionFilter",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutSyslogConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutTransformer",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "StartLiveTail",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "StartQuery",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "StopLiveTail",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "StopQuery",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "TagLogGroup",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "TagResource",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "TestMetricFilter",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "TestTransformer",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "Unmask",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "UntagLogGroup",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UntagResource",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateAnomaly",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateDeliveryConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateLogAnomalyDetector",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateLogDelivery",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateLookupTable",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateScheduledQuery",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  }
+ ],
+ "Version": "v1.5"
+}

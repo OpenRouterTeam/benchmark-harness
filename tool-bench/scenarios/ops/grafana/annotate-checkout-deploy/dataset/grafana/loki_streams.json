@@ -1,0 +1,214 @@
+[
+  {
+    "_key": "loki-prod/checkout-7b9d6c5f4-xk2lp",
+    "datasource": "loki-prod",
+    "labels": {
+      "namespace": "shop-prod",
+      "app": "checkout",
+      "pod": "checkout-7b9d6c5f4-xk2lp",
+      "container": "checkout"
+    },
+    "entries": [
+      [
+        "2026-11-12T14:35:00Z",
+        "level=error msg=\"charge failed\" order_id=ord_8812 upstream=payments-api status=502 trace_id=4bf92f3577b34da6a3ce929d0e0e4736"
+      ],
+      [
+        "2026-11-12T14:44:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7702 duration_ms=187"
+      ],
+      [
+        "2026-11-12T14:53:00Z",
+        "level=error msg=\"charge failed\" order_id=ord_8814 upstream=payments-api status=502 trace_id=4bf92f3577b34da6a3ce929d0e0e4738"
+      ],
+      [
+        "2026-11-12T15:02:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7704 duration_ms=201"
+      ],
+      [
+        "2026-11-12T15:11:00Z",
+        "level=error msg=\"charge failed\" order_id=ord_8816 upstream=payments-api status=502 trace_id=4bf92f3577b34da6a3ce929d0e0e4740"
+      ],
+      [
+        "2026-11-12T15:20:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7706 duration_ms=215"
+      ]
+    ]
+  },
+  {
+    "_key": "loki-prod/checkout-7b9d6c5f4-m8vqt",
+    "datasource": "loki-prod",
+    "labels": {
+      "namespace": "shop-prod",
+      "app": "checkout",
+      "pod": "checkout-7b9d6c5f4-m8vqt",
+      "container": "checkout"
+    },
+    "entries": [
+      [
+        "2026-11-12T14:35:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7701 duration_ms=180"
+      ],
+      [
+        "2026-11-12T14:44:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7702 duration_ms=187"
+      ],
+      [
+        "2026-11-12T14:53:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7703 duration_ms=194"
+      ],
+      [
+        "2026-11-12T15:02:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7704 duration_ms=201"
+      ],
+      [
+        "2026-11-12T15:11:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7705 duration_ms=208"
+      ],
+      [
+        "2026-11-12T15:20:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7706 duration_ms=215"
+      ]
+    ]
+  },
+  {
+    "_key": "loki-prod/checkout-7b9d6c5f4-r2hzn",
+    "datasource": "loki-prod",
+    "labels": {
+      "namespace": "shop-prod",
+      "app": "checkout",
+      "pod": "checkout-7b9d6c5f4-r2hzn",
+      "container": "checkout"
+    },
+    "entries": [
+      [
+        "2026-11-12T14:35:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7701 duration_ms=180"
+      ],
+      [
+        "2026-11-12T14:44:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7702 duration_ms=187"
+      ],
+      [
+        "2026-11-12T14:53:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7703 duration_ms=194"
+      ],
+      [
+        "2026-11-12T15:02:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7704 duration_ms=201"
+      ],
+      [
+        "2026-11-12T15:11:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7705 duration_ms=208"
+      ],
+      [
+        "2026-11-12T15:20:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7706 duration_ms=215"
+      ]
+    ]
+  },
+  {
+    "_key": "loki-staging/checkout-5f6d7c8b9-zq4wd",
+    "datasource": "loki-staging",
+    "labels": {
+      "namespace": "shop-staging",
+      "app": "checkout",
+      "pod": "checkout-5f6d7c8b9-zq4wd",
+      "container": "checkout"
+    },
+    "entries": [
+      [
+        "2026-11-12T14:35:00Z",
+        "level=error msg=\"charge failed\" order_id=ord_8812 upstream=payments-api status=502 trace_id=4bf92f3577b34da6a3ce929d0e0e4736"
+      ],
+      [
+        "2026-11-12T14:44:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7702 duration_ms=187"
+      ],
+      [
+        "2026-11-12T14:53:00Z",
+        "level=error msg=\"charge failed\" order_id=ord_8814 upstream=payments-api status=502 trace_id=4bf92f3577b34da6a3ce929d0e0e4738"
+      ],
+      [
+        "2026-11-12T15:02:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7704 duration_ms=201"
+      ],
+      [
+        "2026-11-12T15:11:00Z",
+        "level=error msg=\"charge failed\" order_id=ord_8816 upstream=payments-api status=502 trace_id=4bf92f3577b34da6a3ce929d0e0e4740"
+      ],
+      [
+        "2026-11-12T15:20:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7706 duration_ms=215"
+      ]
+    ]
+  },
+  {
+    "_key": "loki-staging/checkout-5f6d7c8b9-b7nkc",
+    "datasource": "loki-staging",
+    "labels": {
+      "namespace": "shop-staging",
+      "app": "checkout",
+      "pod": "checkout-5f6d7c8b9-b7nkc",
+      "container": "checkout"
+    },
+    "entries": [
+      [
+        "2026-11-12T14:35:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7701 duration_ms=180"
+      ],
+      [
+        "2026-11-12T14:44:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7702 duration_ms=187"
+      ],
+      [
+        "2026-11-12T14:53:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7703 duration_ms=194"
+      ],
+      [
+        "2026-11-12T15:02:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7704 duration_ms=201"
+      ],
+      [
+        "2026-11-12T15:11:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7705 duration_ms=208"
+      ],
+      [
+        "2026-11-12T15:20:00Z",
+        "level=info msg=\"checkout completed\" order_id=ord_7706 duration_ms=215"
+      ]
+    ]
+  },
+  {
+    "_key": "loki-prod/payments",
+    "datasource": "loki-prod",
+    "labels": {
+      "namespace": "payments",
+      "app": "payments-api",
+      "pod": "payments-api-6c7d8e9f0-a1b2c",
+      "container": "payments-api"
+    },
+    "entries": [
+      [
+        "2026-11-12T14:40:00Z",
+        "level=warn msg=\"provider timeout\" provider=adyen latency_ms=2900"
+      ],
+      [
+        "2026-11-12T14:50:00Z",
+        "level=warn msg=\"provider timeout\" provider=adyen latency_ms=2940"
+      ],
+      [
+        "2026-11-12T15:00:00Z",
+        "level=warn msg=\"provider timeout\" provider=adyen latency_ms=2980"
+      ],
+      [
+        "2026-11-12T15:10:00Z",
+        "level=warn msg=\"provider timeout\" provider=adyen latency_ms=3020"
+      ],
+      [
+        "2026-11-12T15:20:00Z",
+        "level=warn msg=\"provider timeout\" provider=adyen latency_ms=3060"
+      ]
+    ]
+  }
+]

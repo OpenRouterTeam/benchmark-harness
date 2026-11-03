@@ -1,0 +1,21 @@
+[
+  {
+    "_key": "acme-shop/storefront:main",
+    "name": "main",
+    "sha": "7d41c9e0b3a86f25d1e7c4b9a0f3e62d8c5b1a47",
+    "protected": true,
+    "required_approvals": 1
+  },
+  {
+    "_key": "acme-shop/storefront:fix/cart-badge",
+    "name": "fix/cart-badge",
+    "sha": "91b7e4c2d8a05f3e6b1c9d7a2e4f8b0c6d3a5e71",
+    "protected": false
+  },
+  {
+    "_key": "acme-shop/storefront:feat/gift-cards",
+    "name": "feat/gift-cards",
+    "sha": "4be1d07c9a3f58e2b6d0c1a7e9f4b3d25c8a6e10",
+    "protected": false
+  }
+]

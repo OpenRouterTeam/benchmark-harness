@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_alarm_history","arguments":{"alarm_name":"orders-db-replica-2-replica-lag","end_time":"2026-10-30T14:00:00Z","start_time":"2026-10-29T00:00:00Z"}}}

@@ -1,0 +1,19 @@
+[
+  {
+    "_key": "g1",
+    "url": "https://www.law.cornell.edu/uscode/text/15/6501",
+    "title": "15 U.S. Code 6501 - Definitions (COPPA)",
+    "description": "Children's online privacy protection definitions.",
+    "jurisdiction": "us",
+    "cites": [
+      "15 U.S.C. 6501"
+    ]
+  },
+  {
+    "_key": "g2",
+    "url": "https://leginfo.legislature.ca.gov/ccpa",
+    "title": "California Consumer Privacy Act",
+    "description": "Consumer privacy rights in California.",
+    "jurisdiction": "us-ca"
+  }
+]

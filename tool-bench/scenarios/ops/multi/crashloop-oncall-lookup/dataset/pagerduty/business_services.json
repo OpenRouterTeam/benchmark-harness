@@ -1,0 +1,22 @@
+[
+  {
+    "id": "PBSCHKO",
+    "name": "Online Checkout",
+    "description": "Customers can pay for their cart.",
+    "point_of_contact": "commerce-leads@tidewater.io",
+    "team": {
+      "id": "PTCOMRC",
+      "type": "team_reference"
+    }
+  },
+  {
+    "id": "PBSPAYM",
+    "name": "Payments Processing",
+    "description": "Card payments are authorized and captured.",
+    "point_of_contact": "payments-leads@tidewater.io",
+    "team": {
+      "id": "PTPAYMT",
+      "type": "team_reference"
+    }
+  }
+]

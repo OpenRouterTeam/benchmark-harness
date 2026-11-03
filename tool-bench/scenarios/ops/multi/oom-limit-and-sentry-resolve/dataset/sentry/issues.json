@@ -1,0 +1,707 @@
+[
+  {
+    "_key": "CHECKOUT-API-3F",
+    "id": "6184420311",
+    "shortId": "CHECKOUT-API-3F",
+    "title": "OperationalError: could not obtain connection from pool within 5.0s",
+    "culprit": "checkout.views.orders in create_order",
+    "level": "error",
+    "status": "unresolved",
+    "substatus": "ongoing",
+    "statusDetails": {},
+    "project": "checkout-api",
+    "platform": "python",
+    "type": "error",
+    "issueType": "error",
+    "issueCategory": "error",
+    "priority": "high",
+    "metadata": {
+      "type": "OperationalError",
+      "value": "could not obtain connection from pool within 5.0s",
+      "filename": "sqlalchemy/pool/base.py",
+      "function": "_do_get"
+    },
+    "count": "1842",
+    "userCount": 611,
+    "firstSeen": "2026-10-15T07:15:00Z",
+    "lastSeen": "2026-10-21T02:03:00Z",
+    "firstRelease": "checkout-api@2026.10.14",
+    "lastRelease": "checkout-api@2026.10.19",
+    "assignedTo": null,
+    "isUnhandled": true,
+    "tags": {
+      "environment": [
+        {
+          "value": "production",
+          "count": 1838
+        },
+        {
+          "value": "staging",
+          "count": 4
+        }
+      ],
+      "release": [
+        {
+          "value": "checkout-api@2026.10.14",
+          "count": 1211
+        },
+        {
+          "value": "checkout-api@2026.10.19",
+          "count": 631
+        }
+      ],
+      "transaction": [
+        {
+          "value": "POST /api/orders/",
+          "count": 1690
+        },
+        {
+          "value": "POST /api/cart/checkout/",
+          "count": 152
+        }
+      ]
+    }
+  },
+  {
+    "_key": "CHECKOUT-API-3C",
+    "id": "6184420297",
+    "shortId": "CHECKOUT-API-3C",
+    "title": "KeyError: 'shipping_address'",
+    "culprit": "checkout.serializers.address in validate",
+    "level": "error",
+    "status": "unresolved",
+    "substatus": "ongoing",
+    "statusDetails": {},
+    "project": "checkout-api",
+    "platform": "python",
+    "type": "error",
+    "issueType": "error",
+    "issueCategory": "error",
+    "priority": "medium",
+    "metadata": {
+      "type": "KeyError",
+      "value": "'shipping_address'",
+      "filename": "checkout/serializers/address.py",
+      "function": "validate"
+    },
+    "count": "977",
+    "userCount": 402,
+    "firstSeen": "2026-10-14T21:15:00Z",
+    "lastSeen": "2026-10-20T23:45:00Z",
+    "firstRelease": "checkout-api@2026.10.14",
+    "lastRelease": "checkout-api@2026.10.19",
+    "assignedTo": null,
+    "isUnhandled": true
+  },
+  {
+    "_key": "CHECKOUT-API-2Z",
+    "id": "6184419876",
+    "shortId": "CHECKOUT-API-2Z",
+    "title": "CardError: Your card was declined.",
+    "culprit": "checkout.payments.stripe in charge",
+    "level": "warning",
+    "status": "unresolved",
+    "substatus": "ongoing",
+    "statusDetails": {},
+    "project": "checkout-api",
+    "platform": "python",
+    "type": "error",
+    "issueType": "error",
+    "issueCategory": "error",
+    "priority": "low",
+    "metadata": {
+      "type": "CardError",
+      "value": "Your card was declined.",
+      "filename": "checkout/payments/stripe.py",
+      "function": "charge"
+    },
+    "count": "640",
+    "userCount": 588,
+    "firstSeen": "2026-09-13T15:15:00Z",
+    "lastSeen": "2026-10-21T02:39:00Z",
+    "firstRelease": "checkout-api@2026.09.30",
+    "lastRelease": "checkout-api@2026.10.19",
+    "assignedTo": null,
+    "isUnhandled": true
+  },
+  {
+    "_key": "CHECKOUT-API-31",
+    "id": "6184418802",
+    "shortId": "CHECKOUT-API-31",
+    "title": "TimeoutError: inventory-service did not respond within 3.0s",
+    "culprit": "checkout.clients.inventory in reserve",
+    "level": "error",
+    "status": "resolved",
+    "substatus": null,
+    "statusDetails": {},
+    "project": "checkout-api",
+    "platform": "python",
+    "type": "error",
+    "issueType": "error",
+    "issueCategory": "error",
+    "priority": "high",
+    "metadata": {
+      "type": "TimeoutError",
+      "value": "inventory-service did not respond within 3.0s",
+      "filename": "checkout/clients/inventory.py",
+      "function": "reserve"
+    },
+    "count": "2310",
+    "userCount": 744,
+    "firstSeen": "2026-10-04T11:15:00Z",
+    "lastSeen": "2026-10-19T21:15:00Z",
+    "firstRelease": "checkout-api@2026.09.30",
+    "lastRelease": "checkout-api@2026.10.14",
+    "assignedTo": null,
+    "isUnhandled": true
+  },
+  {
+    "_key": "CHECKOUT-API-2R",
+    "id": "6184419102",
+    "shortId": "CHECKOUT-API-2R",
+    "title": "DisallowedHost: Invalid HTTP_HOST header: '10.4.2.17:8000'",
+    "culprit": "django.http.request in get_host",
+    "level": "error",
+    "status": "ignored",
+    "substatus": "archived_forever",
+    "statusDetails": {},
+    "project": "checkout-api",
+    "platform": "python",
+    "type": "error",
+    "issueType": "error",
+    "issueCategory": "error",
+    "priority": "low",
+    "metadata": {
+      "type": "DisallowedHost",
+      "value": "Invalid HTTP_HOST header: '10.4.2.17:8000'",
+      "filename": "django/http/request.py",
+      "function": "get_host"
+    },
+    "count": "3104",
+    "userCount": 0,
+    "firstSeen": "2026-07-29T19:15:00Z",
+    "lastSeen": "2026-10-21T01:15:00Z",
+    "firstRelease": "checkout-api@2026.08.12",
+    "lastRelease": "checkout-api@2026.10.19",
+    "assignedTo": null,
+    "isUnhandled": true
+  },
+  {
+    "_key": "PAYMENTS-WORKER-1K",
+    "id": "6184417730",
+    "shortId": "PAYMENTS-WORKER-1K",
+    "title": "OperationalError: could not obtain connection from pool within 5.0s",
+    "culprit": "payments_worker.tasks.capture in capture_payment",
+    "level": "error",
+    "status": "unresolved",
+    "substatus": "ongoing",
+    "statusDetails": {},
+    "project": "payments-worker",
+    "platform": "python",
+    "type": "error",
+    "issueType": "error",
+    "issueCategory": "error",
+    "priority": "high",
+    "metadata": {
+      "type": "OperationalError",
+      "value": "could not obtain connection from pool within 5.0s",
+      "filename": "sqlalchemy/pool/impl.py",
+      "function": "_do_get"
+    },
+    "count": "5120",
+    "userCount": 0,
+    "firstSeen": "2026-10-11T13:15:00Z",
+    "lastSeen": "2026-10-20T19:45:00Z",
+    "firstRelease": "payments-worker@1.14.2",
+    "lastRelease": "payments-worker@1.14.2",
+    "assignedTo": {
+      "type": "team",
+      "id": "4507223",
+      "name": "payments-infra"
+    },
+    "isUnhandled": true
+  },
+  {
+    "_key": "PAYMENTS-WORKER-1H",
+    "id": "6184417704",
+    "shortId": "PAYMENTS-WORKER-1H",
+    "title": "OperationalError: server closed the connection unexpectedly",
+    "culprit": "payments_worker.tasks.refund in refund_payment",
+    "level": "error",
+    "status": "unresolved",
+    "substatus": "ongoing",
+    "statusDetails": {},
+    "project": "payments-worker",
+    "platform": "python",
+    "type": "error",
+    "issueType": "error",
+    "issueCategory": "error",
+    "priority": "medium",
+    "metadata": {
+      "type": "OperationalError",
+      "value": "server closed the connection unexpectedly",
+      "filename": "payments_worker/tasks/refund.py",
+      "function": "refund_payment"
+    },
+    "count": "211",
+    "userCount": 0,
+    "firstSeen": "2026-10-08T15:15:00Z",
+    "lastSeen": "2026-10-21T00:45:00Z",
+    "firstRelease": "payments-worker@1.14.2",
+    "lastRelease": "payments-worker@1.15.0",
+    "assignedTo": null,
+    "isUnhandled": true
+  },
+  {
+    "_key": "PAYMENTS-WORKER-19",
+    "id": "6184416950",
+    "shortId": "PAYMENTS-WORKER-19",
+    "title": "IdempotencyError: capture already in progress for pi_3Q",
+    "culprit": "payments_worker.tasks.capture in capture_payment",
+    "level": "error",
+    "status": "resolved",
+    "substatus": null,
+    "statusDetails": {},
+    "project": "payments-worker",
+    "platform": "python",
+    "type": "error",
+    "issueType": "error",
+    "issueCategory": "error",
+    "priority": "low",
+    "metadata": {
+      "type": "IdempotencyError",
+      "value": "capture already in progress for pi_3Q",
+      "filename": "payments_worker/tasks/capture.py",
+      "function": "capture_payment"
+    },
+    "count": "77",
+    "userCount": 0,
+    "firstSeen": "2026-09-21T23:15:00Z",
+    "lastSeen": "2026-10-10T09:15:00Z",
+    "firstRelease": "payments-worker@1.14.1",
+    "lastRelease": "payments-worker@1.14.1",
+    "assignedTo": null,
+    "isUnhandled": true
+  },
+  {
+    "_key": "STOREFRONT-WEB-8D",
+    "id": "6184421045",
+    "shortId": "STOREFRONT-WEB-8D",
+    "title": "TypeError: Cannot read properties of undefined (reading 'map')",
+    "culprit": "ProductGrid(app/components/ProductGrid)",
+    "level": "error",
+    "status": "unresolved",
+    "substatus": "new",
+    "statusDetails": {},
+    "project": "storefront-web",
+    "platform": "javascript",
+    "type": "error",
+    "issueType": "error",
+    "issueCategory": "error",
+    "priority": "high",
+    "metadata": {
+      "type": "TypeError",
+      "value": "Cannot read properties of undefined (reading 'map')",
+      "filename": "webpack:///./app/components/ProductGrid.tsx",
+      "function": "ProductGrid"
+    },
+    "count": "2172",
+    "userCount": 1318,
+    "firstSeen": "2026-10-16T04:45:00Z",
+    "lastSeen": "2026-10-21T02:27:00Z",
+    "firstRelease": "storefront@5.3.0",
+    "lastRelease": "storefront@5.3.1",
+    "assignedTo": null,
+    "isUnhandled": true,
+    "tags": {
+      "release": [
+        {
+          "value": "storefront@5.3.0",
+          "count": 1460,
+          "firstSeen": "2026-10-16T04:45:00Z",
+          "lastSeen": "2026-10-19T02:45:00Z"
+        },
+        {
+          "value": "storefront@5.3.1",
+          "count": 712,
+          "firstSeen": "2026-10-19T03:39:00Z",
+          "lastSeen": "2026-10-21T02:27:00Z"
+        }
+      ],
+      "environment": [
+        {
+          "value": "production",
+          "count": 2172
+        }
+      ],
+      "browser": [
+        {
+          "value": "Chrome 130.0",
+          "count": 1290
+        },
+        {
+          "value": "Safari 18.0",
+          "count": 604
+        },
+        {
+          "value": "Firefox 131.0",
+          "count": 278
+        }
+      ]
+    }
+  },
+  {
+    "_key": "STOREFRONT-WEB-7Q",
+    "id": "6184420122",
+    "shortId": "STOREFRONT-WEB-7Q",
+    "title": "TypeError: Cannot read properties of undefined (reading 'map')",
+    "culprit": "CartDrawer(app/components/CartDrawer)",
+    "level": "error",
+    "status": "unresolved",
+    "substatus": "ongoing",
+    "statusDetails": {},
+    "project": "storefront-web",
+    "platform": "javascript",
+    "type": "error",
+    "issueType": "error",
+    "issueCategory": "error",
+    "priority": "high",
+    "metadata": {
+      "type": "TypeError",
+      "value": "Cannot read properties of undefined (reading 'map')",
+      "filename": "webpack:///./app/components/CartDrawer.tsx",
+      "function": "CartDrawer"
+    },
+    "count": "2600",
+    "userCount": 1904,
+    "firstSeen": "2026-10-03T11:15:00Z",
+    "lastSeen": "2026-10-21T01:03:00Z",
+    "firstRelease": "storefront@5.2.0",
+    "lastRelease": "storefront@5.3.1",
+    "assignedTo": null,
+    "isUnhandled": true,
+    "tags": {
+      "release": [
+        {
+          "value": "storefront@5.2.0",
+          "count": 1210,
+          "firstSeen": "2026-10-03T11:15:00Z",
+          "lastSeen": "2026-10-16T03:03:00Z"
+        },
+        {
+          "value": "storefront@5.3.0",
+          "count": 880,
+          "firstSeen": "2026-10-16T03:27:00Z",
+          "lastSeen": "2026-10-19T02:51:00Z"
+        },
+        {
+          "value": "storefront@5.3.1",
+          "count": 510,
+          "firstSeen": "2026-10-19T03:33:00Z",
+          "lastSeen": "2026-10-21T01:03:00Z"
+        }
+      ],
+      "environment": [
+        {
+          "value": "production",
+          "count": 2581
+        },
+        {
+          "value": "staging",
+          "count": 19
+        }
+      ],
+      "browser": [
+        {
+          "value": "Chrome 130.0",
+          "count": 1404
+        },
+        {
+          "value": "Safari 18.0",
+          "count": 820
+        },
+        {
+          "value": "Chrome 129.0",
+          "count": 376
+        }
+      ]
+    }
+  },
+  {
+    "_key": "STOREFRONT-WEB-6X",
+    "id": "6184419530",
+    "shortId": "STOREFRONT-WEB-6X",
+    "title": "TypeError: Cannot read properties of null (reading 'addEventListener')",
+    "culprit": "initStickyHeader(app/layout/header)",
+    "level": "error",
+    "status": "resolved",
+    "substatus": null,
+    "statusDetails": {},
+    "project": "storefront-web",
+    "platform": "javascript",
+    "type": "error",
+    "issueType": "error",
+    "issueCategory": "error",
+    "priority": "medium",
+    "metadata": {
+      "type": "TypeError",
+      "value": "Cannot read properties of null (reading 'addEventListener')",
+      "filename": "webpack:///./app/layout/header.ts",
+      "function": "initStickyHeader"
+    },
+    "count": "310",
+    "userCount": 290,
+    "firstSeen": "2026-09-13T15:15:00Z",
+    "lastSeen": "2026-10-12T19:15:00Z",
+    "firstRelease": "storefront@5.1.4",
+    "lastRelease": "storefront@5.2.0",
+    "assignedTo": null,
+    "isUnhandled": true
+  },
+  {
+    "_key": "STOREFRONT-WEB-8A",
+    "id": "6184420987",
+    "shortId": "STOREFRONT-WEB-8A",
+    "title": "ChunkLoadError: Loading chunk 712 failed.",
+    "culprit": "app/checkout/page",
+    "level": "error",
+    "status": "unresolved",
+    "substatus": "ongoing",
+    "statusDetails": {},
+    "project": "storefront-web",
+    "platform": "javascript",
+    "type": "error",
+    "issueType": "error",
+    "issueCategory": "error",
+    "priority": "low",
+    "metadata": {
+      "type": "ChunkLoadError",
+      "value": "Loading chunk 712 failed.",
+      "filename": "webpack:///./webpack/runtime/jsonp chunk loading",
+      "function": "__webpack_require__.f.j"
+    },
+    "count": "133",
+    "userCount": 121,
+    "firstSeen": "2026-10-16T04:15:00Z",
+    "lastSeen": "2026-10-20T22:15:00Z",
+    "firstRelease": "storefront@5.3.0",
+    "lastRelease": "storefront@5.3.1",
+    "assignedTo": null,
+    "isUnhandled": true
+  },
+  {
+    "_key": "ADMIN-DASHBOARD-2M",
+    "id": "6184421050",
+    "shortId": "ADMIN-DASHBOARD-2M",
+    "title": "TypeError: Cannot read properties of undefined (reading 'map')",
+    "culprit": "RefundTable(src/orders/RefundTable)",
+    "level": "error",
+    "status": "unresolved",
+    "substatus": "ongoing",
+    "statusDetails": {},
+    "project": "admin-dashboard",
+    "platform": "javascript",
+    "type": "error",
+    "issueType": "error",
+    "issueCategory": "error",
+    "priority": "high",
+    "metadata": {
+      "type": "TypeError",
+      "value": "Cannot read properties of undefined (reading 'map')",
+      "filename": "webpack:///./src/orders/RefundTable.tsx",
+      "function": "RefundTable"
+    },
+    "count": "96",
+    "userCount": 14,
+    "firstSeen": "2026-10-16T05:15:00Z",
+    "lastSeen": "2026-10-20T21:15:00Z",
+    "firstRelease": "admin@2.8.0",
+    "lastRelease": "admin@2.8.0",
+    "assignedTo": null,
+    "isUnhandled": true
+  },
+  {
+    "_key": "IOS-APP-5B",
+    "id": "6184420400",
+    "shortId": "IOS-APP-5B",
+    "title": "EXC_BAD_ACCESS: Attempted to dereference garbage pointer 0x10",
+    "culprit": "ApplePaySheet.present(_:)",
+    "level": "error",
+    "status": "unresolved",
+    "substatus": "ongoing",
+    "statusDetails": {},
+    "project": "ios-app",
+    "platform": "cocoa",
+    "type": "error",
+    "issueType": "error",
+    "issueCategory": "error",
+    "priority": "high",
+    "metadata": {
+      "type": "EXC_BAD_ACCESS",
+      "value": "Attempted to dereference garbage pointer 0x10",
+      "filename": "ApplePaySheet.swift",
+      "function": "ApplePaySheet.present(_:)"
+    },
+    "count": "58",
+    "userCount": 51,
+    "firstSeen": "2026-10-13T15:15:00Z",
+    "lastSeen": "2026-10-20T15:15:00Z",
+    "firstRelease": "ios@3.21.0",
+    "lastRelease": "ios@3.21.0",
+    "assignedTo": null,
+    "isUnhandled": true
+  },
+  {
+    "_key": "REPORT-BUILDER-4T",
+    "id": "6184422318",
+    "shortId": "REPORT-BUILDER-4T",
+    "title": "WorkerLostError: Worker exited prematurely: signal 9 (SIGKILL) Job: 0.",
+    "culprit": "reports.tasks.build_quarterly_pdf",
+    "level": "error",
+    "status": "unresolved",
+    "substatus": "ongoing",
+    "statusDetails": {},
+    "project": "report-builder",
+    "platform": "python",
+    "type": "error",
+    "issueType": "error",
+    "issueCategory": "error",
+    "priority": "high",
+    "metadata": {
+      "type": "WorkerLostError",
+      "value": "Worker exited prematurely: signal 9 (SIGKILL) Job: 0.",
+      "filename": "billiard/pool.py",
+      "function": "on_job_process_lost"
+    },
+    "count": "41",
+    "userCount": 0,
+    "firstSeen": "2026-10-21T01:58:00Z",
+    "lastSeen": "2026-10-21T03:11:50Z",
+    "firstRelease": "report-builder@3.2.0",
+    "lastRelease": "report-builder@3.2.0",
+    "assignedTo": null,
+    "isUnhandled": true,
+    "tags": {
+      "environment": [
+        {
+          "value": "production",
+          "count": 41
+        }
+      ],
+      "release": [
+        {
+          "value": "report-builder@3.2.0",
+          "count": 41
+        }
+      ],
+      "transaction": [
+        {
+          "value": "reports.tasks.build_quarterly_pdf",
+          "count": 41
+        }
+      ]
+    }
+  },
+  {
+    "_key": "REPORT-BUILDER-4Q",
+    "id": "6184422290",
+    "shortId": "REPORT-BUILDER-4Q",
+    "title": "SoftTimeLimitExceeded: SoftTimeLimitExceeded()",
+    "culprit": "reports.tasks.refresh_dashboard_cache",
+    "level": "error",
+    "status": "unresolved",
+    "substatus": "ongoing",
+    "statusDetails": {},
+    "project": "report-builder",
+    "platform": "python",
+    "type": "error",
+    "issueType": "error",
+    "issueCategory": "error",
+    "priority": "high",
+    "metadata": {
+      "type": "SoftTimeLimitExceeded",
+      "value": "SoftTimeLimitExceeded()",
+      "filename": "billiard/pool.py",
+      "function": "on_job_process_lost"
+    },
+    "count": "12",
+    "userCount": 0,
+    "firstSeen": "2026-10-18T02:00:00Z",
+    "lastSeen": "2026-10-21T02:30:00Z",
+    "firstRelease": "report-builder@3.2.0",
+    "lastRelease": "report-builder@3.2.0",
+    "assignedTo": null,
+    "isUnhandled": true,
+    "tags": {
+      "environment": [
+        {
+          "value": "production",
+          "count": 12
+        }
+      ],
+      "release": [
+        {
+          "value": "report-builder@3.2.0",
+          "count": 12
+        }
+      ],
+      "transaction": [
+        {
+          "value": "reports.tasks.refresh_dashboard_cache",
+          "count": 12
+        }
+      ]
+    }
+  },
+  {
+    "_key": "BILLING-EXPORTER-2D",
+    "id": "6184421777",
+    "shortId": "BILLING-EXPORTER-2D",
+    "title": "WorkerLostError: Worker exited prematurely: signal 9 (SIGKILL) Job: 0.",
+    "culprit": "billing_exporter.tasks.export_invoices",
+    "level": "error",
+    "status": "unresolved",
+    "substatus": "ongoing",
+    "statusDetails": {},
+    "project": "billing-exporter",
+    "platform": "python",
+    "type": "error",
+    "issueType": "error",
+    "issueCategory": "error",
+    "priority": "high",
+    "metadata": {
+      "type": "WorkerLostError",
+      "value": "Worker exited prematurely: signal 9 (SIGKILL) Job: 0.",
+      "filename": "billiard/pool.py",
+      "function": "on_job_process_lost"
+    },
+    "count": "9",
+    "userCount": 0,
+    "firstSeen": "2026-10-19T23:10:00Z",
+    "lastSeen": "2026-10-20T23:12:00Z",
+    "firstRelease": "billing-exporter@0.9.4",
+    "lastRelease": "billing-exporter@0.9.4",
+    "assignedTo": null,
+    "isUnhandled": true,
+    "tags": {
+      "environment": [
+        {
+          "value": "production",
+          "count": 9
+        }
+      ],
+      "release": [
+        {
+          "value": "billing-exporter@0.9.4",
+          "count": 9
+        }
+      ],
+      "transaction": [
+        {
+          "value": "billing_exporter.tasks.export_invoices",
+          "count": 9
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "prod_SupMonthly01Ab",
+    "object": "product",
+    "active": true,
+    "created": 1748736000,
+    "description": "A curated box of everyday carry goods every month",
+    "name": "Supply Club Monthly Box",
+    "updated": 1748736000,
+    "default_price": "price_SupMonthly0000000000001"
+  },
+  {
+    "id": "prod_SupQuartr01Ab",
+    "object": "product",
+    "active": true,
+    "created": 1748736000,
+    "description": "The big seasonal box, four times a year",
+    "name": "Supply Club Quarterly Box",
+    "updated": 1748736000,
+    "default_price": "price_SupQuartly000000000001"
+  },
+  {
+    "id": "prod_GiftSubsc01Ab",
+    "object": "product",
+    "active": true,
+    "created": 1748736000,
+    "description": "A monthly box sent to someone else",
+    "name": "Supply Club Gift Subscription",
+    "updated": 1748736000,
+    "default_price": "price_GiftMonthly00000000001"
+  }
+]

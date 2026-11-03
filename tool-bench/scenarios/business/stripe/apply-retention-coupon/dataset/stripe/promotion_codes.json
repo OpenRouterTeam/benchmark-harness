@@ -1,0 +1,18 @@
+[
+  {
+    "id": "promo_sWyiPNzBqVVeRP0McIVk8VXD",
+    "object": "promotion_code",
+    "active": true,
+    "code": "SPRING2026",
+    "created": 1772323200,
+    "customer": null,
+    "expires_at": 1777593599,
+    "max_redemptions": null,
+    "metadata": {},
+    "promotion": {
+      "coupon": "SPRING20",
+      "type": "coupon"
+    },
+    "times_redeemed": 38
+  }
+]

@@ -1,0 +1,1 @@
+Dana Whitfield, our contact at Hooli, emailed to say she's left and joined Pied Piper, the compression startup (piedpiper.com). In HubSpot, please change her email address to dana.whitfield@piedpiper.com and associate her contact record with the Pied Piper company record.

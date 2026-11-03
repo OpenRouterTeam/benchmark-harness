@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"action_run","arguments":{"comment":"Approved per CHG-2291","run_action":"apply","run_id":"run-1q2oy8I2MqSd5oM4"}}}

@@ -1,0 +1,143 @@
+{
+  "state": [
+    {
+      "pointer": "/services/kubernetes/deployments.apps/analytics~1report-builder/spec/template/spec/containers/0/resources/limits/memory",
+      "equals": "1Gi",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/kubernetes/deployments.apps/analytics~1report-builder/spec/template/spec/containers/0/image",
+      "equals": "ghcr.io/lumen-labs/report-builder:3.2.0",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/kubernetes/deployments.apps/analytics~1report-builder/spec/replicas",
+      "equals": 2,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/kubernetes/deployments.apps/analytics~1report-api/spec/template/spec/containers/0/resources/limits/memory",
+      "equals": "512Mi",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/kubernetes/deployments.apps/analytics-staging~1report-builder/spec/template/spec/containers/0/resources/limits/memory",
+      "equals": "512Mi",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/sentry/issues/REPORT-BUILDER-4T/status",
+      "equals": "resolved",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/sentry/issues/BILLING-EXPORTER-2D/status",
+      "equals": "unresolved",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/sentry/issues/REPORT-BUILDER-4Q/status",
+      "equals": "unresolved",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "kubernetes",
+      "method": null,
+      "path": "/apis/apps/v1/namespaces/analytics/deployments/report-builder",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "1Gi",
+      "min_count": 1
+    },
+    {
+      "service": "sentry",
+      "method": "PUT",
+      "path": null,
+      "path_regex": "(?i)^/api/0/organizations/lumen-labs/issues/(REPORT-BUILDER-4T|6184422318)/$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "kubernetes",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "kubernetes",
+      "method": "PATCH",
+      "path": null,
+      "path_regex": "/namespaces/analytics-staging/|/deployments/report-(api|scheduler)",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "kubernetes",
+      "method": "PUT",
+      "path": null,
+      "path_regex": "/namespaces/analytics-staging/|/deployments/report-(api|scheduler)",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "sentry",
+      "method": "PUT",
+      "path": null,
+      "path_regex": "(?i)/issues/(BILLING-EXPORTER-2D|6184421777|REPORT-BUILDER-4Q|6184422290)/$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "sentry",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

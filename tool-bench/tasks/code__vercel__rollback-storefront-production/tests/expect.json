@@ -1,0 +1,81 @@
+{
+  "state": [
+    {
+      "pointer": "/services/vercel/projects/prj_3dw2VoUa166qmaLV3P6dm828isAX/targets/production/meta/githubCommitSha",
+      "equals": "c3a9f12e8b47d05a6e21f9b3c7d84e50a1b6f2d9",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/vercel/projects/prj_3dw2VoUa166qmaLV3P6dm828isAX/targets/production/readyState",
+      "equals": "READY",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/vercel/projects/prj_3dw2VoUa166qmaLV3P6dm828isAX/targets/production/alias",
+      "equals": null,
+      "exists": null,
+      "contains": "acme-shop.com",
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "vercel",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "vercel-create-deployment"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "vercel",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "vercel-delete-project"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "vercel",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "vercel-remove-environment-variable"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "vercel",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "vercel-create-environment-variables"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

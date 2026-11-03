@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_run_details","arguments":{"run_id":"run-Gy4tBHGggKx49nbH"}}}

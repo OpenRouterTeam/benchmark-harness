@@ -1,0 +1,52 @@
+[
+  {
+    "_key": "web:northwind-pricing",
+    "url": "https://www.northwind-analytics.com/pricing",
+    "title": "Pricing | Northwind Analytics",
+    "description": "Simple plans for product teams of every size: Starter, Team, Business and Enterprise. Save 20% with annual billing.",
+    "keywords": ["plans", "cost", "price", "seats", "annual", "monthly", "team plan"]
+  },
+  {
+    "_key": "web:northwind-blog-2025",
+    "url": "https://www.northwind-analytics.com/blog/2025-pricing-update",
+    "title": "Our 2025 pricing update | Northwind Analytics Blog",
+    "description": "Starting today we're simplifying our plans. The new Team plan is $69/month billed annually and includes 10 seats.",
+    "keywords": ["pricing", "plans", "team plan", "price"]
+  },
+  {
+    "_key": "web:g2-northwind",
+    "url": "https://www.g2.com/products/northwind-analytics/pricing",
+    "title": "Northwind Analytics Pricing 2026 | G2",
+    "description": "Northwind Analytics pricing: Starter $25, Team $69 per month (10 users), Business $199. Compare editions and reviews.",
+    "keywords": ["plans", "cost", "seats", "team"]
+  },
+  {
+    "_key": "web:northwind-home",
+    "url": "https://www.northwind-analytics.com",
+    "title": "Northwind Analytics | Product analytics for fast-moving teams",
+    "description": "Understand how customers use your product with funnels, retention and cohorts."
+  },
+  {
+    "_key": "web:northwind-changelog",
+    "url": "https://www.northwind-analytics.com/changelog",
+    "title": "Changelog | Northwind Analytics",
+    "description": "September 1, 2026 - Pricing: Team now includes more seats. Annual and monthly prices updated.",
+    "keywords": ["pricing", "team", "seats"]
+  },
+  {
+    "_key": "web:northwind-traders",
+    "url": "https://www.northwindtraders.com/pricing",
+    "title": "Wholesale Pricing | Northwind Traders",
+    "description": "Volume pricing for specialty foods and beverages. Team and Business accounts.",
+    "keywords": ["northwind", "pricing", "team"]
+  },
+  {
+    "_key": "news:northwind-series-b",
+    "kind": "news",
+    "url": "https://techcrunch.com/2026/05/14/northwind-analytics-series-b/",
+    "title": "Northwind Analytics raises $60M Series B to take on product analytics incumbents",
+    "snippet": "The company says it now serves more than 4,000 product teams and will expand its Team and Business plans.",
+    "date": "2026-05-14",
+    "keywords": ["northwind", "analytics", "pricing", "plans"]
+  }
+]

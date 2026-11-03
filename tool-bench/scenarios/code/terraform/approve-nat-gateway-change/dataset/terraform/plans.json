@@ -1,0 +1,609 @@
+[
+ {
+  "id": "plan-qu03Zm1Xp9K6epnr",
+  "run": "run-Sxnff6DCeHaF93uZ",
+  "status": "finished",
+  "has-changes": true,
+  "resource-additions": 0,
+  "resource-changes": 2,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-14T10:02:31Z",
+   "started-at": "2026-10-14T10:02:31Z",
+   "finished-at": "2026-10-14T10:02:31Z"
+  },
+  "resource-changes-detail": [
+   {
+    "address": "aws_kms_alias.payments",
+    "actions": [
+     "update"
+    ],
+    "before": {
+     "name": "alias/payments-2025"
+    },
+    "after": {
+     "name": "alias/payments-2026"
+    }
+   },
+   {
+    "address": "aws_ecs_task_definition.payments_api",
+    "actions": [
+     "update"
+    ],
+    "before": {
+     "revision": 88
+    },
+    "after": {
+     "revision": 89
+    }
+   }
+  ]
+ },
+ {
+  "id": "plan-543WNKfTBYXnhd1y",
+  "run": "run-V1kS7u01JzNGAFbo",
+  "status": "finished",
+  "has-changes": true,
+  "resource-additions": 0,
+  "resource-changes": 1,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-21T16:40:02Z",
+   "started-at": "2026-10-21T16:40:02Z",
+   "finished-at": "2026-10-21T16:40:02Z"
+  },
+  "resource-changes-detail": [
+   {
+    "address": "aws_db_instance.payments",
+    "actions": [
+     "update"
+    ],
+    "before": {
+     "allocated_storage": 120
+    },
+    "after": {
+     "allocated_storage": 200
+    }
+   }
+  ]
+ },
+ {
+  "id": "plan-JQErjDCPUQURv5JR",
+  "run": "run-nAAGvVVuIe2rfmNM",
+  "status": "errored",
+  "has-changes": false,
+  "resource-additions": 0,
+  "resource-changes": 0,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-24T08:15:44Z",
+   "started-at": "2026-10-24T08:15:44Z",
+   "errored-at": "2026-10-24T08:15:44Z"
+  },
+  "resource-changes-detail": [],
+  "log": "Terraform v1.9.5\non linux_amd64\nInitializing plugins and modules...\n\nError: Reference to undeclared resource\n\n  on replica.tf line 4, in resource \"aws_db_instance\" \"payments_replica\":\n   4:   replicate_source_db = aws_db_instance.payment.identifier\n\nA managed resource \"aws_db_instance\" \"payment\" has not been declared in the\nroot module.\n"
+ },
+ {
+  "id": "plan-W6mMDz8dMca2TBnD",
+  "run": "run-Gy4tBHGggKx49nbH",
+  "status": "finished",
+  "has-changes": true,
+  "resource-additions": 1,
+  "resource-changes": 1,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-28T13:12:09Z",
+   "started-at": "2026-10-28T13:12:09Z",
+   "finished-at": "2026-10-28T13:12:09Z"
+  },
+  "resource-changes-detail": [
+   {
+    "address": "aws_db_parameter_group.payments_pg16",
+    "actions": [
+     "create"
+    ],
+    "after": {
+     "family": "postgres16",
+     "name": "payments-pg16"
+    }
+   },
+   {
+    "address": "aws_db_instance.payments",
+    "actions": [
+     "update"
+    ],
+    "before": {
+     "engine_version": "14.12",
+     "parameter_group_name": "payments-pg14"
+    },
+    "after": {
+     "engine_version": "16.4",
+     "parameter_group_name": "payments-pg16"
+    }
+   }
+  ]
+ },
+ {
+  "id": "plan-nqCFk3gcA0o69PxS",
+  "run": "run-C10xz3XBQqFb67U5",
+  "status": "finished",
+  "has-changes": true,
+  "resource-additions": 1,
+  "resource-changes": 1,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-26T11:18:40Z",
+   "started-at": "2026-10-26T11:18:40Z",
+   "finished-at": "2026-10-26T11:18:40Z"
+  },
+  "resource-changes-detail": [
+   {
+    "address": "aws_db_parameter_group.payments_pg16",
+    "actions": [
+     "create"
+    ],
+    "after": {
+     "family": "postgres16"
+    }
+   },
+   {
+    "address": "aws_db_instance.payments",
+    "actions": [
+     "update"
+    ],
+    "before": {
+     "engine_version": "14.12",
+     "allow_major_version_upgrade": false
+    },
+    "after": {
+     "engine_version": "16.4",
+     "allow_major_version_upgrade": true
+    }
+   }
+  ]
+ },
+ {
+  "id": "plan-wBree6u3kra4nPhz",
+  "run": "run-YF4vEQXaSoBg49H3",
+  "status": "finished",
+  "has-changes": true,
+  "resource-additions": 0,
+  "resource-changes": 0,
+  "resource-destructions": 1,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-27T17:03:12Z",
+   "started-at": "2026-10-27T17:03:12Z",
+   "finished-at": "2026-10-27T17:03:12Z"
+  },
+  "resource-changes-detail": [
+   {
+    "address": "aws_db_parameter_group.payments_pg14",
+    "actions": [
+     "delete"
+    ],
+    "before": {
+     "name": "payments-pg14"
+    }
+   }
+  ]
+ },
+ {
+  "id": "plan-2ucPA0GJGFHpCJiQ",
+  "run": "run-0vzoy5tA8SJFq039",
+  "status": "finished",
+  "has-changes": true,
+  "resource-additions": 0,
+  "resource-changes": 1,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-23T09:10:31Z",
+   "started-at": "2026-10-23T09:10:31Z",
+   "finished-at": "2026-10-23T09:10:31Z"
+  },
+  "resource-changes-detail": [
+   {
+    "address": "aws_ecs_task_definition.checkout",
+    "actions": [
+     "update"
+    ],
+    "before": {
+     "image": "acme/checkout:2.13.2"
+    },
+    "after": {
+     "image": "acme/checkout:2.14.0"
+    }
+   }
+  ]
+ },
+ {
+  "id": "plan-kVzzkleEg5poFapw",
+  "run": "run-0AIole4acN2clBcU",
+  "status": "finished",
+  "has-changes": true,
+  "resource-additions": 0,
+  "resource-changes": 1,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-23T14:38:12Z",
+   "started-at": "2026-10-23T14:38:12Z",
+   "finished-at": "2026-10-23T14:38:12Z"
+  },
+  "resource-changes-detail": [
+   {
+    "address": "aws_ecs_task_definition.checkout",
+    "actions": [
+     "update"
+    ],
+    "before": {
+     "image": "acme/checkout:2.13.2"
+    },
+    "after": {
+     "image": "acme/checkout:2.14.0"
+    }
+   }
+  ]
+ },
+ {
+  "id": "plan-o2BDBKWbD72U9wyR",
+  "run": "run-BeAXHFF4UdtJc99V",
+  "status": "finished",
+  "has-changes": true,
+  "resource-additions": 0,
+  "resource-changes": 1,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-20T15:01:44Z",
+   "started-at": "2026-10-20T15:01:44Z",
+   "finished-at": "2026-10-20T15:01:44Z"
+  },
+  "resource-changes-detail": [
+   {
+    "address": "aws_ecs_task_definition.orders_api",
+    "actions": [
+     "update"
+    ],
+    "before": {
+     "image": "acme/orders-api:3.8.0"
+    },
+    "after": {
+     "image": "acme/orders-api:3.8.1"
+    }
+   }
+  ]
+ },
+ {
+  "id": "plan-kLIkVI5ipyak3MBL",
+  "run": "run-jCcDubzVP5ob0NM7",
+  "status": "finished",
+  "has-changes": true,
+  "resource-additions": 0,
+  "resource-changes": 2,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-27T23:38:52Z",
+   "started-at": "2026-10-27T23:38:52Z",
+   "finished-at": "2026-10-27T23:38:52Z"
+  },
+  "resource-changes-detail": [
+   {
+    "address": "aws_dynamodb_table.orders",
+    "actions": [
+     "update"
+    ],
+    "before": {
+     "point_in_time_recovery": false
+    },
+    "after": {
+     "point_in_time_recovery": true
+    }
+   },
+   {
+    "address": "aws_dynamodb_table.order_events",
+    "actions": [
+     "update"
+    ],
+    "before": {
+     "point_in_time_recovery": false
+    },
+    "after": {
+     "point_in_time_recovery": true
+    }
+   }
+  ]
+ },
+ {
+  "id": "plan-sz4psd4M65sqZaCU",
+  "run": "run-gSSY7IvhFL3jO8Ya",
+  "status": "finished",
+  "has-changes": true,
+  "resource-additions": 0,
+  "resource-changes": 1,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-26T09:58:20Z",
+   "started-at": "2026-10-26T09:58:20Z",
+   "finished-at": "2026-10-26T09:58:20Z"
+  },
+  "resource-changes-detail": [
+   {
+    "address": "aws_dynamodb_table.orders",
+    "actions": [
+     "update"
+    ],
+    "before": {
+     "point_in_time_recovery": false
+    },
+    "after": {
+     "point_in_time_recovery": true
+    }
+   }
+  ]
+ },
+ {
+  "id": "plan-ykxj5U1n0QzUY0El",
+  "run": "run-K3bTuSoe0tCTeKPW",
+  "status": "finished",
+  "has-changes": true,
+  "resource-additions": 0,
+  "resource-changes": 1,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-09-30T11:57:00Z",
+   "started-at": "2026-09-30T11:57:00Z",
+   "finished-at": "2026-09-30T11:57:00Z"
+  },
+  "resource-changes-detail": [
+   {
+    "address": "aws_rds_cluster.orders",
+    "actions": [
+     "update"
+    ],
+    "before": {
+     "engine_version": "8.0.mysql_aurora.3.04.1"
+    },
+    "after": {
+     "engine_version": "8.0.mysql_aurora.3.05.2"
+    }
+   }
+  ]
+ },
+ {
+  "id": "plan-Y7SE5unrtJqEdWNb",
+  "run": "run-hIykSRnRyJGBlLvl",
+  "status": "finished",
+  "has-changes": true,
+  "resource-additions": 0,
+  "resource-changes": 1,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-08-02T02:58:00Z",
+   "started-at": "2026-08-02T02:58:00Z",
+   "finished-at": "2026-08-02T02:58:00Z"
+  },
+  "resource-changes-detail": [
+   {
+    "address": "aws_glue_job.billing_rollup",
+    "actions": [
+     "update"
+    ],
+    "before": {
+     "glue_version": "3.0"
+    },
+    "after": {
+     "glue_version": "4.0"
+    }
+   }
+  ]
+ },
+ {
+  "id": "plan-qx1j723bHqfJdJdw",
+  "run": "run-vLlZhMPdaZ0ZRFyL",
+  "status": "finished",
+  "has-changes": true,
+  "resource-additions": 1,
+  "resource-changes": 0,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-02T13:28:00Z",
+   "started-at": "2026-10-02T13:28:00Z",
+   "finished-at": "2026-10-02T13:28:00Z"
+  },
+  "resource-changes-detail": [
+   {
+    "address": "aws_ec2_transit_gateway_vpc_attachment.core",
+    "actions": [
+     "create"
+    ],
+    "after": {
+     "transit_gateway_id": "tgw-04e9a7c1b2d3e4f56"
+    }
+   }
+  ]
+ },
+ {
+  "id": "plan-9JJS1XSf3NfVUZfQ",
+  "run": "run-Vckpoh9IvCZiQ160",
+  "status": "finished",
+  "has-changes": true,
+  "resource-additions": 1,
+  "resource-changes": 0,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-27T16:05:00Z",
+   "started-at": "2026-10-27T16:05:00Z",
+   "finished-at": "2026-10-27T16:05:00Z"
+  },
+  "resource-changes-detail": [
+   {
+    "address": "aws_nat_gateway.b",
+    "actions": [
+     "create"
+    ],
+    "after": {
+     "connectivity_type": "public",
+     "subnet_id": "subnet-0bb2"
+    }
+   }
+  ]
+ },
+ {
+  "id": "plan-vOqCAeqHb08EsDyk",
+  "run": "run-1q2oy8I2MqSd5oM4",
+  "status": "finished",
+  "has-changes": true,
+  "resource-additions": 2,
+  "resource-changes": 1,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-28T08:46:30Z",
+   "started-at": "2026-10-28T08:46:30Z",
+   "finished-at": "2026-10-28T08:46:30Z"
+  },
+  "resource-changes-detail": [
+   {
+    "address": "aws_eip.nat_b",
+    "actions": [
+     "create"
+    ],
+    "after": {
+     "domain": "vpc",
+     "tags": {
+      "Name": "core-prod-nat-b"
+     }
+    }
+   },
+   {
+    "address": "aws_nat_gateway.b",
+    "actions": [
+     "create"
+    ],
+    "after": {
+     "connectivity_type": "public",
+     "allocation_id": "(known after apply)",
+     "subnet_id": "subnet-0e1f2a3b4c5d6e7f8"
+    }
+   },
+   {
+    "address": "aws_route_table.private[1]",
+    "actions": [
+     "update"
+    ],
+    "before": {
+     "nat_gateway_id": "nat-0123456789abcdef0"
+    },
+    "after": {
+     "nat_gateway_id": "(known after apply)"
+    }
+   }
+  ]
+ },
+ {
+  "id": "plan-5xrXsm0hQGFbznCf",
+  "run": "run-blTtGlrNXHe62r7y",
+  "status": "finished",
+  "has-changes": true,
+  "resource-additions": 2,
+  "resource-changes": 1,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-28T08:30:55Z",
+   "started-at": "2026-10-28T08:30:55Z",
+   "finished-at": "2026-10-28T08:30:55Z"
+  },
+  "resource-changes-detail": [
+   {
+    "address": "aws_eip.nat_b",
+    "actions": [
+     "create"
+    ],
+    "after": {
+     "domain": "vpc",
+     "tags": {
+      "Name": "core-staging-nat-b"
+     }
+    }
+   },
+   {
+    "address": "aws_nat_gateway.b",
+    "actions": [
+     "create"
+    ],
+    "after": {
+     "connectivity_type": "public",
+     "subnet_id": "subnet-0d4c3b2a1f0e9d8c7"
+    }
+   },
+   {
+    "address": "aws_route_table.private[1]",
+    "actions": [
+     "update"
+    ],
+    "before": {
+     "nat_gateway_id": "nat-0fedcba9876543210"
+    },
+    "after": {
+     "nat_gateway_id": "(known after apply)"
+    }
+   }
+  ]
+ },
+ {
+  "id": "plan-rhLQZZlKHhf7FQVi",
+  "run": "run-aRQYuP1jUBhRyE09",
+  "status": "finished",
+  "has-changes": true,
+  "resource-additions": 1,
+  "resource-changes": 0,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-19T11:59:30Z",
+   "started-at": "2026-10-19T11:59:30Z",
+   "finished-at": "2026-10-19T11:59:30Z"
+  },
+  "resource-changes-detail": [
+   {
+    "address": "aws_route53_record.caa",
+    "actions": [
+     "create"
+    ],
+    "after": {
+     "type": "CAA"
+    }
+   }
+  ]
+ },
+ {
+  "id": "plan-kVOKEpArPXMPP3hU",
+  "run": "run-0b1Ax4B0hIqUDgw8",
+  "status": "finished",
+  "has-changes": false,
+  "resource-additions": 0,
+  "resource-changes": 0,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-15T12:00:00Z",
+   "started-at": "2026-10-15T12:00:00Z",
+   "finished-at": "2026-10-15T12:00:00Z"
+  },
+  "resource-changes-detail": []
+ }
+]

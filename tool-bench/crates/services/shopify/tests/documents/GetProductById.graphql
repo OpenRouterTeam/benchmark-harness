@@ -1,0 +1,60 @@
+
+        query GetProductById($id: ID!) {
+          product(id: $id) {
+            id
+            title
+            description
+            handle
+            status
+            createdAt
+            updatedAt
+            totalInventory
+            priceRangeV2 {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+              maxVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            images(first: 5) {
+              edges {
+                node {
+                  id
+                  url
+                  altText
+                  width
+                  height
+                }
+              }
+            }
+            variants(first: 20) {
+              edges {
+                node {
+                  id
+                  title
+                  price
+                  inventoryQuantity
+                  sku
+                  selectedOptions {
+                    name
+                    value
+                  }
+                }
+              }
+            }
+            collections(first: 5) {
+              edges {
+                node {
+                  id
+                  title
+                }
+              }
+            }
+            tags
+            vendor
+          }
+        }
+      

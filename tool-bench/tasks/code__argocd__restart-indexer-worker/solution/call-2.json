@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"run_resource_action","arguments":{"action":"restart","applicationName":"search-indexer","applicationNamespace":"argocd","resourceRef":{"group":"apps","kind":"Deployment","name":"search-indexer-worker","namespace":"search","uid":"d39d8921-d825-549b-a290-0dcda1cafa6c","version":"v1"}}}}

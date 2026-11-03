@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"query_metrics","arguments":{"from":1793253600,"query":"avg:billing.api.latency.p95{env:prod,service:billing-api}","to":1793282400}}}

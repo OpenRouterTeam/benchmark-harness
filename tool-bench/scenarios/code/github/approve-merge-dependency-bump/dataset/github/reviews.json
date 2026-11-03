@@ -1,0 +1,13 @@
+[
+  {
+    "_key": "601",
+    "id": 601,
+    "repo": "octo-org/web",
+    "pull_number": 55,
+    "user": "jdoe",
+    "body": "Looks good, but please add a test for the persisted preference.",
+    "state": "COMMENTED",
+    "commit_id": "7ac193ec2348ccbf0e604befe6f7b6d0c7ef0a4b",
+    "submitted_at": "2026-03-11T16:00:00Z"
+  }
+]

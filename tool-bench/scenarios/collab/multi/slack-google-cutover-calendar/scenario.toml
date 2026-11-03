@@ -1,0 +1,89 @@
+[scenario]
+id = "collab/multi/slack-google-cutover-calendar"
+title = "Put the cutover window agreed in a Slack thread on the shared Google Calendar, then reply"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-multi-slack-google-cutover-calendar"
+services = ["slack", "google"]
+tags = ["write", "multi-service", "slack", "google", "calendar", "disambiguation"]
+timeout_sec = 1200
+
+# The thread (C05DBMIG2RT, 1792600205.318801) first proposes Friday 2026-11-06 20:00-23:00 CT,
+# then agrees on Saturday 2026-11-07 22:00-01:00 CT (CST after the DST change: -06:00). The
+# event goes on the Ops team calendar (America/Chicago), not the primary ops@ calendar, with
+# Sam Ortiz and Priya Natarajan. The event ID comes from the agent's creates, so `any`.
+[[expect.state]]
+pointer = "/services/google/calendar_events"
+any = { calendarId = "c_ops_team@group.calendar.google.com", summary = "Payments cluster PG16 production cutover", start = { dateTime = "2026-11-07T22:00:00-06:00" }, end = { dateTime = "2026-11-08T01:00:00-06:00" }, attendees = [{ email = "sam.ortiz@octo-corp.example" }, { email = "priya.natarajan@octo-corp.example" }] }
+
+# The staging rehearsal event is left alone.
+[[expect.state]]
+pointer = "/services/google/calendar_events/7c1e9a4f2b6d8e0a3c5f7b9d1e/start/dateTime"
+equals = "2026-10-19T20:00:00-05:00"
+
+[[expect.state]]
+pointer = "/services/google/calendar_events/7c1e9a4f2b6d8e0a3c5f7b9d1e/summary"
+equals = "Payments cluster PG16 staging cutover"
+
+[[expect.state]]
+pointer = "/services/slack/posted"
+key_prefix = "C05DBMIG2RT#"
+any = { thread_ts = "1792600205.318801" }
+
+[[expect.state]]
+pointer = "/services/slack/posted/C01GENERAL0#1"
+exists = false
+
+[[expect.required_calls]]
+service = "google"
+path = "/_mcp/tools/call"
+body = { name = "manage_event", arguments = { action = "create" } }
+
+[[expect.required_calls]]
+service = "slack"
+path = "/_mcp/tools/call"
+body = { name = "slack_send_message" }
+
+[[expect.forbidden_calls]]
+service = "google"
+path = "/_mcp/tools/call"
+body = { name = "manage_event", arguments = { action = "delete" } }
+
+[[expect.forbidden_calls]]
+service = "google"
+path = "/_mcp/tools/call"
+body = { name = "manage_event", arguments = { event_id = "7c1e9a4f2b6d8e0a3c5f7b9d1e" } }
+
+[[solution.call]]
+endpoint = "slack"
+tool = "slack_search_channels"
+arguments = { keywords = ["migration"], natural_language_query = "postgres migration channel" }
+
+[[solution.call]]
+endpoint = "slack"
+tool = "slack_read_thread"
+arguments = { channel_id = "C05DBMIG2RT", message_ts = "1792600205.318801" }
+
+[[solution.call]]
+endpoint = "slack"
+tool = "slack_read_user_profile"
+arguments = { user_id = "U05SORTIZ6M" }
+
+[[solution.call]]
+endpoint = "slack"
+tool = "slack_read_user_profile"
+arguments = { user_id = "U03PRIYAN4T" }
+
+[[solution.call]]
+endpoint = "google-workspace"
+tool = "list_calendars"
+arguments = {}
+
+[[solution.call]]
+endpoint = "google-workspace"
+tool = "manage_event"
+arguments = { action = "create", calendar_id = "c_ops_team@group.calendar.google.com", summary = "Payments cluster PG16 production cutover", start_time = "2026-11-07T22:00:00", end_time = "2026-11-08T01:00:00", timezone = "America/Chicago", attendees = ["sam.ortiz@octo-corp.example", "priya.natarajan@octo-corp.example"], description = "Production PG16 cutover of the payments cluster. Lead: Sam. Payments verification: Priya. Rollback deadline 00:30 CT." }
+
+[[solution.call]]
+endpoint = "slack"
+tool = "slack_send_message"
+arguments = { channel_id = "C05DBMIG2RT", thread_ts = "1792600205.318801", message = "It's on the Ops team calendar: Payments cluster PG16 production cutover, Saturday 2026-11-07 22:00-01:00 CT. Sam and Priya are invited." }

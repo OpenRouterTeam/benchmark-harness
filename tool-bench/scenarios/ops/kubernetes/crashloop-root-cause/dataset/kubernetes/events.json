@@ -1,0 +1,95 @@
+[
+  {
+    "_key": "payments/ledger-worker-zx4mrndj8b-gdg8j.7d0daf312cd8344f",
+    "metadata": {
+      "name": "ledger-worker-zx4mrndj8b-gdg8j.7d0daf312cd8344f",
+      "namespace": "payments",
+      "uid": "df968adb-8212-4d8d-a187-d8c084f11ae4",
+      "resourceVersion": "41833",
+      "creationTimestamp": "2026-11-03T07:52:00Z"
+    },
+    "involvedObject": {
+      "kind": "Pod",
+      "namespace": "payments",
+      "name": "ledger-worker-zx4mrndj8b-gdg8j",
+      "uid": "8a8f27e6-3bfb-4a7a-a7ef-0af031be34f8",
+      "apiVersion": "v1",
+      "fieldPath": "spec.containers{ledger-worker}"
+    },
+    "reason": "BackOff",
+    "message": "Back-off restarting failed container ledger-worker in pod ledger-worker-zx4mrndj8b-gdg8j_payments(8a8f27e6-3bfb-4a7a-a7ef-0af031be34f8)",
+    "source": {
+      "component": "kubelet",
+      "host": "ip-10-0-3-52.ec2.internal"
+    },
+    "firstTimestamp": "2026-11-03T07:52:00Z",
+    "lastTimestamp": "2026-11-03T08:39:00Z",
+    "count": 61,
+    "type": "Warning",
+    "eventTime": null,
+    "reportingComponent": "kubelet",
+    "reportingInstance": "ip-10-0-3-52.ec2.internal"
+  },
+  {
+    "_key": "payments/ledger-worker-zx4mrndj8b-gdg8j.9d5ae72fb6f04858",
+    "metadata": {
+      "name": "ledger-worker-zx4mrndj8b-gdg8j.9d5ae72fb6f04858",
+      "namespace": "payments",
+      "uid": "2a7397f2-069a-4476-ac37-b2550f9354d3",
+      "resourceVersion": "41850",
+      "creationTimestamp": "2026-11-03T07:52:00Z"
+    },
+    "involvedObject": {
+      "kind": "Pod",
+      "namespace": "payments",
+      "name": "ledger-worker-zx4mrndj8b-gdg8j",
+      "uid": "8a8f27e6-3bfb-4a7a-a7ef-0af031be34f8",
+      "apiVersion": "v1",
+      "fieldPath": "spec.containers{ledger-worker}"
+    },
+    "reason": "Pulled",
+    "message": "Container image \"ghcr.io/octo-corp/ledger-worker:1.9.0\" already present on machine",
+    "source": {
+      "component": "kubelet",
+      "host": "ip-10-0-3-52.ec2.internal"
+    },
+    "firstTimestamp": "2026-11-03T07:52:00Z",
+    "lastTimestamp": "2026-11-03T08:33:00Z",
+    "count": 14,
+    "type": "Normal",
+    "eventTime": null,
+    "reportingComponent": "kubelet",
+    "reportingInstance": "ip-10-0-3-52.ec2.internal"
+  },
+  {
+    "_key": "payments-staging/ledger-worker-c64m9bbw8-v45ss.98788d6f89011250",
+    "metadata": {
+      "name": "ledger-worker-c64m9bbw8-v45ss.98788d6f89011250",
+      "namespace": "payments-staging",
+      "uid": "4f7b09b2-ba5d-4b60-a7ef-245e68efcfc4",
+      "resourceVersion": "41867",
+      "creationTimestamp": "2026-11-03T03:40:00Z"
+    },
+    "involvedObject": {
+      "kind": "Pod",
+      "namespace": "payments-staging",
+      "name": "ledger-worker-c64m9bbw8-v45ss",
+      "uid": "58647b2a-27e8-4402-a2fb-204dfa918293",
+      "apiVersion": "v1",
+      "fieldPath": "spec.containers{ledger-worker}"
+    },
+    "reason": "BackOff",
+    "message": "Back-off restarting failed container ledger-worker in pod ledger-worker-c64m9bbw8-v45ss_payments-staging(58647b2a-27e8-4402-a2fb-204dfa918293)",
+    "source": {
+      "component": "kubelet",
+      "host": "ip-10-0-1-21.ec2.internal"
+    },
+    "firstTimestamp": "2026-11-03T03:40:00Z",
+    "lastTimestamp": "2026-11-03T08:38:00Z",
+    "count": 140,
+    "type": "Warning",
+    "eventTime": null,
+    "reportingComponent": "kubelet",
+    "reportingInstance": "ip-10-0-1-21.ec2.internal"
+  }
+]

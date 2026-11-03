@@ -1,0 +1,236 @@
+[
+  {
+    "id": 7301,
+    "org_id": 321813,
+    "type": "metric alert",
+    "name": "Postgres replication lag",
+    "message": "Postgres replication lag on {{host.name}}. Runbook: https://wiki.octo-corp.example/runbooks/7301 @slack-ops-alerts",
+    "tags": [
+      "team:platform",
+      "env:prod",
+      "service:postgres"
+    ],
+    "query": "avg(last_10m):avg:postgresql.replication_delay{env:prod,role:replica} by {host} > 300",
+    "options": {
+      "thresholds": {
+        "critical": 300.0,
+        "warning": 120.0
+      },
+      "notify_no_data": false,
+      "notify_audit": false,
+      "include_tags": true,
+      "new_group_delay": 60,
+      "require_full_window": false,
+      "renotify_interval": 0,
+      "silenced": {}
+    },
+    "multi": true,
+    "created": "2026-03-02T10:11:12.000000+00:00",
+    "created_at": 1772446272000,
+    "modified": "2026-10-01T08:00:00.000000+00:00",
+    "deleted": null,
+    "restricted_roles": null,
+    "priority": 2,
+    "overall_state_modified": "2026-10-29T14:20:00+00:00",
+    "overall_state": "OK",
+    "creator": {
+      "name": "Priya Raman",
+      "handle": "priya.raman@octo-corp.example",
+      "email": "priya.raman@octo-corp.example",
+      "id": 1445400
+    },
+    "state": {
+      "groups": {
+        "host:pg-prod-replica-1": {
+          "name": "host:pg-prod-replica-1",
+          "status": "OK",
+          "last_triggered_ts": null,
+          "last_notified_ts": null,
+          "last_resolved_ts": 1793289600,
+          "last_nodata_ts": null
+        },
+        "host:pg-prod-replica-2": {
+          "name": "host:pg-prod-replica-2",
+          "status": "OK",
+          "last_triggered_ts": null,
+          "last_notified_ts": null,
+          "last_resolved_ts": 1793289600,
+          "last_nodata_ts": null
+        }
+      }
+    }
+  },
+  {
+    "id": 7302,
+    "org_id": 321813,
+    "type": "metric alert",
+    "name": "Postgres replication lag (staging)",
+    "message": "Postgres replication lag (staging) on {{host.name}}. Runbook: https://wiki.octo-corp.example/runbooks/7302 @slack-ops-alerts",
+    "tags": [
+      "team:platform",
+      "env:staging",
+      "service:postgres"
+    ],
+    "query": "avg(last_10m):avg:postgresql.replication_delay{env:staging,role:replica} by {host} > 600",
+    "options": {
+      "thresholds": {
+        "critical": 600.0
+      },
+      "notify_no_data": false,
+      "notify_audit": false,
+      "include_tags": true,
+      "new_group_delay": 60,
+      "require_full_window": false,
+      "renotify_interval": 0,
+      "silenced": {}
+    },
+    "multi": true,
+    "created": "2026-03-02T10:11:12.000000+00:00",
+    "created_at": 1772446272000,
+    "modified": "2026-10-01T08:00:00.000000+00:00",
+    "deleted": null,
+    "restricted_roles": null,
+    "priority": 2,
+    "overall_state_modified": "2026-10-29T14:20:00+00:00",
+    "overall_state": "OK",
+    "creator": {
+      "name": "Priya Raman",
+      "handle": "priya.raman@octo-corp.example",
+      "email": "priya.raman@octo-corp.example",
+      "id": 1445400
+    },
+    "state": {
+      "groups": {}
+    }
+  },
+  {
+    "id": 7303,
+    "org_id": 321813,
+    "type": "metric alert",
+    "name": "Postgres connections near max_connections",
+    "message": "Postgres connections near max_connections on {{host.name}}. Runbook: https://wiki.octo-corp.example/runbooks/7303 @slack-ops-alerts",
+    "tags": [
+      "team:platform",
+      "env:prod",
+      "service:postgres"
+    ],
+    "query": "avg(last_5m):avg:postgresql.percent_usage_connections{env:prod} by {host} > 0.9",
+    "options": {
+      "thresholds": {
+        "critical": 0.9,
+        "warning": 0.8
+      },
+      "notify_no_data": false,
+      "notify_audit": false,
+      "include_tags": true,
+      "new_group_delay": 60,
+      "require_full_window": false,
+      "renotify_interval": 0,
+      "silenced": {}
+    },
+    "multi": true,
+    "created": "2026-03-02T10:11:12.000000+00:00",
+    "created_at": 1772446272000,
+    "modified": "2026-10-01T08:00:00.000000+00:00",
+    "deleted": null,
+    "restricted_roles": null,
+    "priority": 2,
+    "overall_state_modified": "2026-10-29T14:20:00+00:00",
+    "overall_state": "Warn",
+    "creator": {
+      "name": "Priya Raman",
+      "handle": "priya.raman@octo-corp.example",
+      "email": "priya.raman@octo-corp.example",
+      "id": 1445400
+    },
+    "state": {
+      "groups": {}
+    }
+  },
+  {
+    "id": 7304,
+    "org_id": 321813,
+    "type": "metric alert",
+    "name": "MySQL replication lag",
+    "message": "MySQL replication lag on {{host.name}}. Runbook: https://wiki.octo-corp.example/runbooks/7304 @slack-ops-alerts",
+    "tags": [
+      "team:platform",
+      "env:prod",
+      "service:mysql"
+    ],
+    "query": "avg(last_10m):avg:mysql.replication.seconds_behind_master{env:prod} by {host} > 300",
+    "options": {
+      "thresholds": {
+        "critical": 300.0
+      },
+      "notify_no_data": false,
+      "notify_audit": false,
+      "include_tags": true,
+      "new_group_delay": 60,
+      "require_full_window": false,
+      "renotify_interval": 0,
+      "silenced": {}
+    },
+    "multi": true,
+    "created": "2026-03-02T10:11:12.000000+00:00",
+    "created_at": 1772446272000,
+    "modified": "2026-10-01T08:00:00.000000+00:00",
+    "deleted": null,
+    "restricted_roles": null,
+    "priority": 2,
+    "overall_state_modified": "2026-10-29T14:20:00+00:00",
+    "overall_state": "OK",
+    "creator": {
+      "name": "Priya Raman",
+      "handle": "priya.raman@octo-corp.example",
+      "email": "priya.raman@octo-corp.example",
+      "id": 1445400
+    },
+    "state": {
+      "groups": {}
+    }
+  },
+  {
+    "id": 7305,
+    "org_id": 321813,
+    "type": "metric alert",
+    "name": "Postgres replica disk usage",
+    "message": "Postgres replica disk usage on {{host.name}}. Runbook: https://wiki.octo-corp.example/runbooks/7305 @slack-ops-alerts",
+    "tags": [
+      "team:platform",
+      "env:prod",
+      "service:postgres"
+    ],
+    "query": "avg(last_15m):avg:system.disk.in_use{env:prod,role:replica} by {host} > 0.85",
+    "options": {
+      "thresholds": {
+        "critical": 0.85
+      },
+      "notify_no_data": false,
+      "notify_audit": false,
+      "include_tags": true,
+      "new_group_delay": 60,
+      "require_full_window": false,
+      "renotify_interval": 0,
+      "silenced": {}
+    },
+    "multi": true,
+    "created": "2026-03-02T10:11:12.000000+00:00",
+    "created_at": 1772446272000,
+    "modified": "2026-10-01T08:00:00.000000+00:00",
+    "deleted": null,
+    "restricted_roles": null,
+    "priority": 2,
+    "overall_state_modified": "2026-10-29T14:20:00+00:00",
+    "overall_state": "OK",
+    "creator": {
+      "name": "Priya Raman",
+      "handle": "priya.raman@octo-corp.example",
+      "email": "priya.raman@octo-corp.example",
+      "id": 1445400
+    },
+    "state": {
+      "groups": {}
+    }
+  }
+]

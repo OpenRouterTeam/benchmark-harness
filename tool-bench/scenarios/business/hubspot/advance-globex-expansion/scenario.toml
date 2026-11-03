@@ -1,0 +1,56 @@
+[scenario]
+id = "business/hubspot/advance-globex-expansion"
+title = "Move the Globex 2027 expansion deal to Contract Sent"
+now = "2026-10-29T14:00:00Z"
+seed = "business-hubspot-advance-globex-expansion"
+services = ["hubspot"]
+tags = ["single-service", "write", "hubspot"]
+timeout_sec = 900
+
+# Target: deal 9100101 "Globex – Platform Expansion 2027". Look-alikes on the same company:
+# 9100103 "Globex – Platform Expansion 2026" (closed lost) and 9100102 (support renewal).
+[[expect.state]]
+pointer = "/services/hubspot/deals/9100101/properties/dealstage"
+equals = "contractsent"
+
+[[expect.state]]
+pointer = "/services/hubspot/deals/9100101/properties/closedate"
+contains = "2026-11-20"
+
+[[expect.state]]
+pointer = "/services/hubspot/deals/9100101/properties/amount"
+equals = "96000"
+
+[[expect.state]]
+pointer = "/services/hubspot/deals/9100103/properties/dealstage"
+equals = "closedlost"
+
+[[expect.state]]
+pointer = "/services/hubspot/deals/9100103/properties/closedate"
+equals = "2025-11-28T17:00:00.000Z"
+
+[[expect.state]]
+pointer = "/services/hubspot/deals/9100102/properties/dealstage"
+equals = "closedwon"
+
+[[expect.required_calls]]
+service = "hubspot"
+method = "POST"
+path_regex = "^/crm/v3/objects/(deals|deal|0-3)/batch/update$"
+body = { inputs = [{ id = "9100101" }] }
+
+[[expect.forbidden_calls]]
+service = "hubspot"
+method = "POST"
+path_regex = "/batch/update$"
+body = { inputs = [{ id = "9100103" }] }
+
+[[expect.forbidden_calls]]
+service = "hubspot"
+method = "POST"
+path_regex = "^/crm/v3/objects/(deals|deal|0-3)/batch/create$"
+
+[[solution.call]]
+endpoint = "hubspot"
+tool = "hubspot-batch-update-objects"
+arguments = { objectType = "deals", inputs = [{ id = "9100101", properties = { dealstage = "contractsent", closedate = "2026-11-20" } }] }

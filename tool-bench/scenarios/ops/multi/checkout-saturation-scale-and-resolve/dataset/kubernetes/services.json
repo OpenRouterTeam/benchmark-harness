@@ -1,0 +1,282 @@
+[
+  {
+    "_key": "shop-prod/checkout",
+    "metadata": {
+      "name": "checkout",
+      "namespace": "shop-prod",
+      "uid": "3187957a-5b68-4d95-a6e4-a7cf4fae97a2",
+      "resourceVersion": "41510",
+      "creationTimestamp": "2026-08-31T14:00:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "checkout"
+      }
+    },
+    "spec": {
+      "type": "ClusterIP",
+      "clusterIP": "10.96.35.7",
+      "clusterIPs": [
+        "10.96.35.7"
+      ],
+      "ports": [
+        {
+          "name": "http",
+          "protocol": "TCP",
+          "port": 80,
+          "targetPort": 8080
+        }
+      ],
+      "selector": {
+        "app.kubernetes.io/name": "checkout"
+      },
+      "sessionAffinity": "None",
+      "ipFamilies": [
+        "IPv4"
+      ],
+      "ipFamilyPolicy": "SingleStack",
+      "internalTrafficPolicy": "Cluster"
+    },
+    "status": {
+      "loadBalancer": {}
+    }
+  },
+  {
+    "_key": "shop-prod/checkout-worker",
+    "metadata": {
+      "name": "checkout-worker",
+      "namespace": "shop-prod",
+      "uid": "4214ea25-89e9-4c09-ac01-ea98dccfbce1",
+      "resourceVersion": "41595",
+      "creationTimestamp": "2026-08-31T14:00:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "checkout-worker"
+      }
+    },
+    "spec": {
+      "type": "ClusterIP",
+      "clusterIP": "10.96.81.37",
+      "clusterIPs": [
+        "10.96.81.37"
+      ],
+      "ports": [
+        {
+          "name": "http",
+          "protocol": "TCP",
+          "port": 80,
+          "targetPort": 8080
+        }
+      ],
+      "selector": {
+        "app.kubernetes.io/name": "checkout-worker"
+      },
+      "sessionAffinity": "None",
+      "ipFamilies": [
+        "IPv4"
+      ],
+      "ipFamilyPolicy": "SingleStack",
+      "internalTrafficPolicy": "Cluster"
+    },
+    "status": {
+      "loadBalancer": {}
+    }
+  },
+  {
+    "_key": "shop-prod/cart",
+    "metadata": {
+      "name": "cart",
+      "namespace": "shop-prod",
+      "uid": "0d0505fe-9a84-4593-a0b6-84f7d53e0681",
+      "resourceVersion": "41697",
+      "creationTimestamp": "2026-08-31T14:00:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "cart"
+      }
+    },
+    "spec": {
+      "type": "ClusterIP",
+      "clusterIP": "10.96.84.172",
+      "clusterIPs": [
+        "10.96.84.172"
+      ],
+      "ports": [
+        {
+          "name": "http",
+          "protocol": "TCP",
+          "port": 80,
+          "targetPort": 8080
+        }
+      ],
+      "selector": {
+        "app.kubernetes.io/name": "cart"
+      },
+      "sessionAffinity": "None",
+      "ipFamilies": [
+        "IPv4"
+      ],
+      "ipFamilyPolicy": "SingleStack",
+      "internalTrafficPolicy": "Cluster"
+    },
+    "status": {
+      "loadBalancer": {}
+    }
+  },
+  {
+    "_key": "shop-prod/catalog",
+    "metadata": {
+      "name": "catalog",
+      "namespace": "shop-prod",
+      "uid": "2fbd6078-4ea8-4709-a43a-3225c28fa56c",
+      "resourceVersion": "41816",
+      "creationTimestamp": "2026-08-31T14:00:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "catalog"
+      }
+    },
+    "spec": {
+      "type": "ClusterIP",
+      "clusterIP": "10.96.227.211",
+      "clusterIPs": [
+        "10.96.227.211"
+      ],
+      "ports": [
+        {
+          "name": "http",
+          "protocol": "TCP",
+          "port": 80,
+          "targetPort": 8080
+        }
+      ],
+      "selector": {
+        "app.kubernetes.io/name": "catalog"
+      },
+      "sessionAffinity": "None",
+      "ipFamilies": [
+        "IPv4"
+      ],
+      "ipFamilyPolicy": "SingleStack",
+      "internalTrafficPolicy": "Cluster"
+    },
+    "status": {
+      "loadBalancer": {}
+    }
+  },
+  {
+    "_key": "shop-staging/checkout",
+    "metadata": {
+      "name": "checkout",
+      "namespace": "shop-staging",
+      "uid": "d516da08-9d6c-4f7b-a4f6-db15dcb1ad67",
+      "resourceVersion": "41884",
+      "creationTimestamp": "2026-08-31T14:00:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "checkout"
+      }
+    },
+    "spec": {
+      "type": "ClusterIP",
+      "clusterIP": "10.96.162.107",
+      "clusterIPs": [
+        "10.96.162.107"
+      ],
+      "ports": [
+        {
+          "name": "http",
+          "protocol": "TCP",
+          "port": 80,
+          "targetPort": 8080
+        }
+      ],
+      "selector": {
+        "app.kubernetes.io/name": "checkout"
+      },
+      "sessionAffinity": "None",
+      "ipFamilies": [
+        "IPv4"
+      ],
+      "ipFamilyPolicy": "SingleStack",
+      "internalTrafficPolicy": "Cluster"
+    },
+    "status": {
+      "loadBalancer": {}
+    }
+  },
+  {
+    "_key": "shop-staging/cart",
+    "metadata": {
+      "name": "cart",
+      "namespace": "shop-staging",
+      "uid": "08a2d642-aa3b-48e4-a237-e2e46bc1dc86",
+      "resourceVersion": "41952",
+      "creationTimestamp": "2026-08-31T14:00:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "cart"
+      }
+    },
+    "spec": {
+      "type": "ClusterIP",
+      "clusterIP": "10.96.142.14",
+      "clusterIPs": [
+        "10.96.142.14"
+      ],
+      "ports": [
+        {
+          "name": "http",
+          "protocol": "TCP",
+          "port": 80,
+          "targetPort": 8080
+        }
+      ],
+      "selector": {
+        "app.kubernetes.io/name": "cart"
+      },
+      "sessionAffinity": "None",
+      "ipFamilies": [
+        "IPv4"
+      ],
+      "ipFamilyPolicy": "SingleStack",
+      "internalTrafficPolicy": "Cluster"
+    },
+    "status": {
+      "loadBalancer": {}
+    }
+  },
+  {
+    "_key": "payments/payments-api",
+    "metadata": {
+      "name": "payments-api",
+      "namespace": "payments",
+      "uid": "bce40bbd-c83a-455f-a3ae-5e9a460c5008",
+      "resourceVersion": "42054",
+      "creationTimestamp": "2026-08-31T14:00:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "payments-api"
+      }
+    },
+    "spec": {
+      "type": "ClusterIP",
+      "clusterIP": "10.96.60.168",
+      "clusterIPs": [
+        "10.96.60.168"
+      ],
+      "ports": [
+        {
+          "name": "http",
+          "protocol": "TCP",
+          "port": 80,
+          "targetPort": 8080
+        }
+      ],
+      "selector": {
+        "app.kubernetes.io/name": "payments-api"
+      },
+      "sessionAffinity": "None",
+      "ipFamilies": [
+        "IPv4"
+      ],
+      "ipFamilyPolicy": "SingleStack",
+      "internalTrafficPolicy": "Cluster"
+    },
+    "status": {
+      "loadBalancer": {}
+    }
+  }
+]

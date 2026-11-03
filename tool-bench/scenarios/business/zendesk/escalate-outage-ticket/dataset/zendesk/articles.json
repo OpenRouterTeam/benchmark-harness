@@ -1,0 +1,6 @@
+[
+  {"id": 360030001, "section_id": 360010001, "author_id": 9010001, "title": "Escalating API outages to on-call engineering", "position": 1, "label_names": ["escalation", "api"], "created_at": "2025-01-12T10:00:00Z", "updated_at": "2026-06-03T15:20:00Z",
+   "body": "<p>When a customer reports 5xx errors from the API, set the ticket to <strong>urgent</strong>, add the <code>escalated</code> tag and leave an internal note with the incident number before paging on-call.</p>"},
+  {"id": 360030002, "section_id": 360010001, "author_id": 9010002, "title": "Understanding 502 Bad Gateway responses", "position": 2, "label_names": ["api", "errors"], "created_at": "2025-02-01T10:00:00Z", "updated_at": "2026-03-11T08:45:00Z",
+   "body": "<p>A 502 means a proxy between the client and our API could not get a valid response. Check whether the error comes from our edge or from the customer's own proxy.</p>"}
+]

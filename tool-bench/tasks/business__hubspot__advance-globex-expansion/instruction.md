@@ -1,0 +1,1 @@
+Good news: Globex signed off on next year's platform expansion and legal just sent them the paperwork. Please move that deal to the Contract Sent stage in HubSpot and pull its expected close date in to November 20, 2026. Leave the amount as it is.

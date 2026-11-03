@@ -1,0 +1,9 @@
+[
+  {
+    "_key": "web-prod-02",
+    "hostname": "web-prod-02",
+    "message": "Rolling kernel update",
+    "end": 1793379600,
+    "muted_at": "2026-10-30T14:50:00Z"
+  }
+]

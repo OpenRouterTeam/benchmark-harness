@@ -1,0 +1,22 @@
+[
+  {
+    "_key": "grafana-irm-app",
+    "id": "grafana-irm-app",
+    "name": "Grafana IRM",
+    "type": "app",
+    "enabled": true,
+    "pinned": true,
+    "version": "1.18.3",
+    "description": "Incident response and on-call management"
+  },
+  {
+    "_key": "grafana-lokiexplore-app",
+    "id": "grafana-lokiexplore-app",
+    "name": "Grafana Logs Drilldown",
+    "type": "app",
+    "enabled": true,
+    "pinned": false,
+    "version": "1.0.21",
+    "description": "Query-less exploration of log data stored in Loki"
+  }
+]

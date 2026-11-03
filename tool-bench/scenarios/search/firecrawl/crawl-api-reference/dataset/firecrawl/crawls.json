@@ -1,0 +1,15 @@
+[
+  {
+    "id": "6a0d8a3e-2b1c-4f5e-8d7c-9b0a1c2d3e01",
+    "url": "https://docs.contoso-pay.example/reference",
+    "status": "completed",
+    "total": 0,
+    "completed": 0,
+    "creditsUsed": 0,
+    "createdAt": "2026-09-30T09:00:00Z",
+    "expiresAt": "2026-10-01T09:00:00Z",
+    "options": { "limit": 50 },
+    "pages": [],
+    "scrapeIds": []
+  }
+]

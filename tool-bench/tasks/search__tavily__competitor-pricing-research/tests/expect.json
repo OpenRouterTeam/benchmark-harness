@@ -1,0 +1,91 @@
+{
+  "state": [
+    {
+      "pointer": "/services/tavily/research/1436e5ca-12ef-80ea-ba57-3df5b71cdf69/model",
+      "equals": "pro",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/tavily/research/1436e5ca-12ef-80ea-ba57-3df5b71cdf69/input",
+      "equals": null,
+      "exists": null,
+      "contains": "Tallybook",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/tavily/research/1436e5ca-12ef-80ea-ba57-3df5b71cdf69/input",
+      "equals": null,
+      "exists": null,
+      "contains": "Billfold",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/tavily/research/1436e5ca-12ef-80ea-ba57-3df5b71cdf69/input",
+      "equals": null,
+      "exists": null,
+      "contains": "Sumwise",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/tavily/research/4eb773c7-a30f-81be-90de-5bfae36feba5",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "tavily",
+      "method": "POST",
+      "path": "/research",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "model": "pro"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "tavily",
+      "method": null,
+      "path": "/research",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "InvoiceNinja",
+      "min_count": 1
+    },
+    {
+      "service": "tavily",
+      "method": null,
+      "path": "/research",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "Zervant",
+      "min_count": 1
+    },
+    {
+      "service": "tavily",
+      "method": null,
+      "path": "/research",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "FreshBooks",
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

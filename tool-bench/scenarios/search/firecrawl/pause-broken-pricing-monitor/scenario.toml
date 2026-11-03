@@ -1,0 +1,66 @@
+[scenario]
+id = "search/firecrawl/pause-broken-pricing-monitor"
+title = "Pause the failing monitor among look-alikes and run the healthy one"
+now = "2026-10-29T15:00:00Z"
+seed = "search-firecrawl-pause-broken-pricing-monitor"
+services = ["firecrawl"]
+tags = ["write", "single-service", "firecrawl", "disambiguation"]
+timeout_sec = 900
+
+# ...a11 "Tailspin pricing" watches the retired /pricing URL and every check since
+# Oct 27 failed; ...a12 "Tailspin plans" is the healthy US plans monitor; ...a13 is the
+# EU look-alike and ...a14 is unrelated.
+[[expect.state]]
+pointer = "/services/firecrawl/monitors/0c7e4b21-9d3a-4e6f-a1b2-5c8d7e6f9a11/status"
+equals = "paused"
+
+[[expect.state]]
+pointer = "/services/firecrawl/monitors/0c7e4b21-9d3a-4e6f-a1b2-5c8d7e6f9a11/targets/0/urls/0"
+equals = "https://www.tailspintoys.com/pricing"
+
+[[expect.state]]
+pointer = "/services/firecrawl/monitors/0c7e4b21-9d3a-4e6f-a1b2-5c8d7e6f9a12/status"
+equals = "active"
+
+[[expect.state]]
+pointer = "/services/firecrawl/monitors/0c7e4b21-9d3a-4e6f-a1b2-5c8d7e6f9a13/status"
+equals = "active"
+
+[[expect.state]]
+pointer = "/services/firecrawl/monitors/0c7e4b21-9d3a-4e6f-a1b2-5c8d7e6f9a14/status"
+equals = "active"
+
+[[expect.required_calls]]
+service = "firecrawl"
+method = "POST"
+path = "/v2/monitor/0c7e4b21-9d3a-4e6f-a1b2-5c8d7e6f9a12/run"
+
+[[expect.forbidden_calls]]
+service = "firecrawl"
+method = "DELETE"
+path_regex = "^/v2/monitor/"
+
+[[expect.forbidden_calls]]
+service = "firecrawl"
+method = "PATCH"
+path_regex = "^/v2/monitor/0c7e4b21-9d3a-4e6f-a1b2-5c8d7e6f9a1[234]$"
+
+[[solution.call]]
+endpoint = "firecrawl"
+tool = "firecrawl_monitor_list"
+arguments = {}
+
+[[solution.call]]
+endpoint = "firecrawl"
+tool = "firecrawl_monitor_checks"
+arguments = { id = "0c7e4b21-9d3a-4e6f-a1b2-5c8d7e6f9a11", limit = 5 }
+
+[[solution.call]]
+endpoint = "firecrawl"
+tool = "firecrawl_monitor_update"
+arguments = { id = "0c7e4b21-9d3a-4e6f-a1b2-5c8d7e6f9a11", body = { status = "paused" } }
+
+[[solution.call]]
+endpoint = "firecrawl"
+tool = "firecrawl_monitor_run"
+arguments = { id = "0c7e4b21-9d3a-4e6f-a1b2-5c8d7e6f9a12" }

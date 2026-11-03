@@ -1,0 +1,82 @@
+[
+  {
+    "_key": "octo-org/competitive-intel:pricing",
+    "id": 301,
+    "name": "pricing",
+    "color": "0e8a16",
+    "description": "Pricing and packaging changes",
+    "default": false
+  },
+  {
+    "_key": "octo-org/competitive-intel:launch",
+    "id": 302,
+    "name": "launch",
+    "color": "1d76db",
+    "description": "Product launches",
+    "default": false
+  },
+  {
+    "_key": "octo-org/competitive-intel:funding",
+    "id": 303,
+    "name": "funding",
+    "color": "fbca04",
+    "description": "Funding and M&A",
+    "default": false
+  },
+  {
+    "_key": "octo-org/competitive-intel:lumenrail",
+    "id": 304,
+    "name": "lumenrail",
+    "color": "5319e7",
+    "description": "Competitor: Lumenrail",
+    "default": false
+  },
+  {
+    "_key": "octo-org/competitive-intel:brightmetric",
+    "id": 305,
+    "name": "brightmetric",
+    "color": "c5def5",
+    "description": "Competitor: Brightmetric",
+    "default": false
+  },
+  {
+    "_key": "octo-org/competitive-intel-2024:pricing",
+    "id": 306,
+    "name": "pricing",
+    "color": "0e8a16",
+    "description": "Pricing and packaging changes",
+    "default": false
+  },
+  {
+    "_key": "octo-org/competitive-intel-2024:launch",
+    "id": 307,
+    "name": "launch",
+    "color": "1d76db",
+    "description": "Product launches",
+    "default": false
+  },
+  {
+    "_key": "octo-org/competitive-intel-2024:funding",
+    "id": 308,
+    "name": "funding",
+    "color": "fbca04",
+    "description": "Funding and M&A",
+    "default": false
+  },
+  {
+    "_key": "octo-org/competitive-intel-2024:lumenrail",
+    "id": 309,
+    "name": "lumenrail",
+    "color": "5319e7",
+    "description": "Competitor: Lumenrail",
+    "default": false
+  },
+  {
+    "_key": "octo-org/competitive-intel-2024:brightmetric",
+    "id": 310,
+    "name": "brightmetric",
+    "color": "c5def5",
+    "description": "Competitor: Brightmetric",
+    "default": false
+  }
+]

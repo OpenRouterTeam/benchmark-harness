@@ -1,0 +1,29 @@
+[
+ {
+  "id": "nocode-btbCK2bRQNj3W9oR",
+  "organization": "acme-platform",
+  "registry-module": "mod-nUZfGDqZmPoXZBiJ",
+  "version-pin": "3.2.0",
+  "enabled": true,
+  "variable-options": [
+   {
+    "variable-name": "environment",
+    "variable-type": "string",
+    "options": [
+     "dev",
+     "staging",
+     "prod"
+    ]
+   },
+   {
+    "variable-name": "cpu",
+    "variable-type": "number",
+    "options": [
+     "256",
+     "512",
+     "1024"
+    ]
+   }
+  ]
+ }
+]

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"update_issue","arguments":{"issueId":"REPORT-BUILDER-4T","organizationSlug":"lumen-labs","status":"resolved"}}}

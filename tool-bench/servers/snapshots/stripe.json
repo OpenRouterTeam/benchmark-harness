@@ -1,0 +1,345 @@
+{
+  "name": "stripe",
+  "server_info": {
+    "name": "mcp.stripe.com",
+    "version": "captured 2026-09-22",
+    "source": "Kiln-AI/stripe_world@e34b2c9 tests/surface/real_tool_schemas.json (MIT); get_stripe_account_info excluded (not on live server); inputSchema.type \"object\" restored (the capture stores function parameters without it; MCP requires it)"
+  },
+  "protocol_version": null,
+  "tools": [
+    {
+      "name": "stripe_api_read",
+      "description": "Read data from any Stripe API GET operation:\n1. Use stripe_api_search to find the operation ID.\n2. Use stripe_api_details to understand its parameters (required for operations with nested object fields like address, metadata, or restrictions).\n3. Call this tool with the stripe_api_operation_id and a parameters object containing path and query parameters. For mutations (POST/PATCH/PUT/DELETE), use stripe_api_write instead.\nMonetary values in responses are in the smallest currency unit (e.g. 1000 = $10.00 USD for most currencies).",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "stripe_api_operation_id",
+          "parameters",
+          "stripe_context",
+          "livemode"
+        ],
+        "properties": {
+          "stripe_api_operation_id": {
+            "type": "string",
+            "description": "The operation ID to execute",
+            "examples": [
+              "PostCustomers",
+              "GetPaymentIntents"
+            ]
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Parameters for the API call. Include path parameters (e.g. 'customer' for /v1/customers/{customer}), query parameters, and body parameters. Array fields (e.g. line_items) must be passed as a JSON array value, not as a plain string."
+          },
+          "stripe_context": {
+            "type": "string",
+            "description": "The account to target for this request. Use the `stripe_context` value returned by list_available_accounts_or_orgs."
+          },
+          "livemode": {
+            "type": "boolean",
+            "description": "Whether to operate in livemode (true) or test mode/ sandbox (false). Must match the livemode of the stripe_context account."
+          }
+        }
+      }
+    },
+    {
+      "name": "stripe_api_write",
+      "description": "Write data using any Stripe API POST, PATCH, PUT, or DELETE operation:\n1. Use stripe_api_search to find the operation ID.\n2. Use stripe_api_details to understand its parameters (required for operations with nested object fields like address, metadata, or restrictions).\n3. Call this tool with the stripe_api_operation_id and a parameters object containing path, query, and body parameters. For read operations (GET), use stripe_api_read instead.\nMonetary values in parameters should be in the smallest currency unit (e.g. 1000 = $10.00 USD for most currencies).",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "stripe_api_operation_id",
+          "parameters",
+          "stripe_context",
+          "livemode"
+        ],
+        "properties": {
+          "stripe_api_operation_id": {
+            "type": "string",
+            "description": "The operation ID to execute",
+            "examples": [
+              "PostCustomers",
+              "GetPaymentIntents"
+            ]
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Parameters for the API call. Include path parameters (e.g. 'customer' for /v1/customers/{customer}), query parameters, and body parameters. Array fields (e.g. line_items) must be passed as a JSON array value, not as a plain string."
+          },
+          "stripe_context": {
+            "type": "string",
+            "description": "The account to target for this request. Use the `stripe_context` value returned by list_available_accounts_or_orgs."
+          },
+          "livemode": {
+            "type": "boolean",
+            "description": "Whether to operate in livemode (true) or test mode/ sandbox (false). Must match the livemode of the stripe_context account."
+          },
+          "human_confirmation": {
+            "type": "object",
+            "description": "This tool might require human confirmation before execution. If the previous tool call returned needs_confirmation with a token, pass it here to confirm and execute.",
+            "properties": {
+              "approval_token": {
+                "type": "string",
+                "description": "The ID of the approval token for the request. Find it in the response from the previous tool call in the \"needs_confirmation\" field."
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "stripe_api_search",
+      "description": "Search for Stripe API operations by providing an intent and a resource to operate on.\n\nFor the resource, use a specific, descriptive phrase (e.g. \"issuing card transactions\", \"payout methods\", \"outbound payments\") rather than a single generic noun — Stripe has many similar resources, and the extra qualifiers help disambiguate between them rather than causing a miss. Only fall back to the bare core noun (e.g. \"transactions\") if a specific multi-word search returns no results.\n\nReturns matching operations with their HTTP method, path, summary, and top-level parameter names with types. Does not include parameter descriptions, enum values, or nested object fields — use stripe_api_details to get those before calling the relevant Stripe API execution tool.",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "intent",
+          "resource",
+          "stripe_context",
+          "livemode"
+        ],
+        "properties": {
+          "intent": {
+            "type": "string",
+            "description": "The intent of the operation",
+            "examples": [
+              "create",
+              "list",
+              "refund"
+            ]
+          },
+          "resource": {
+            "type": "string",
+            "description": "Target resource the operation is looking to manipulate",
+            "examples": [
+              "customer",
+              "payout methods",
+              "issuing card transactions"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "default": 5,
+            "minimum": 1,
+            "maximum": 20,
+            "description": "Maximum number of results to return"
+          },
+          "stripe_context": {
+            "type": "string",
+            "description": "The account to target for this request. Use the `stripe_context` value returned by list_available_accounts_or_orgs."
+          },
+          "livemode": {
+            "type": "boolean",
+            "description": "Whether to operate in livemode (true) or test mode/ sandbox (false). Must match the livemode of the stripe_context account."
+          }
+        }
+      }
+    },
+    {
+      "name": "stripe_api_details",
+      "description": "Get detailed parameter information for a specific Stripe API operation.\nProvide the stripe_api_operation_id from stripe_api_search results to see all path, query, and body parameters with their types, descriptions, and whether they are required.\n\nUse before calling the relevant Stripe API execution tool for operations with nested object fields.\n\nThe response may include an \"LLM Context\" section with usage guidance specific to the operation — follow any instructions there.",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "stripe_api_operation_id",
+          "stripe_context",
+          "livemode"
+        ],
+        "properties": {
+          "stripe_api_operation_id": {
+            "type": "string",
+            "description": "The operation ID to get details for (e.g. 'PostCustomers', 'GetPaymentIntents')"
+          },
+          "stripe_context": {
+            "type": "string",
+            "description": "The account to target for this request. Use the `stripe_context` value returned by list_available_accounts_or_orgs."
+          },
+          "livemode": {
+            "type": "boolean",
+            "description": "Whether to operate in livemode (true) or test mode/ sandbox (false). Must match the livemode of the stripe_context account."
+          }
+        }
+      }
+    },
+    {
+      "name": "list_available_accounts_or_orgs",
+      "description": "Lists all Stripe accounts in this session with their stripe_context and livemode values.\n- Call this first to get stripe_context and livemode before any account-specific operation.\n- After calling, ask the user which account to use unless already specified.\n- Warn the user before switching between testmode and livemode.",
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {}
+      }
+    },
+    {
+      "name": "manage_stripe_accounts",
+      "description": "Returns a URL to the Stripe Dashboard where users can add accounts, remove accounts, or change permissions for this session.\n- Use when the user wants to add, remove, or modify permissions for an account.\n- Call this directly — no need to call list_available_accounts_or_orgs first.\n- Present the URL to the user and wait for them to confirm they completed their changes.\n- After confirmation, call list_available_accounts_or_orgs to sync the updated account list.",
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {}
+      }
+    },
+    {
+      "name": "stripe_analytics",
+      "description": "This tool is for analyzing Stripe Sigma and Metrics data (e.g. about revenue, charges, products, invoices, subscriptions, disputes, transactions, tax tables, payments etc) and running SQL-based reporting queries. Use it for historical analytics, aggregations, and business intelligence questions.\n\nAvailable intents:\n- execute_query_run: Execute a new SQL query against Stripe Sigma tables (Trino 414 compatible). Results are returned as a data_table.\n- retrieve_query_run: Get the status and results of a previously-executed query.\n- search_query_tables: Search for available Sigma tables and their schemas.\n- retrieve_query_table: Get the detailed schema information (columns and types) for a specific Sigma table.\n- execute_query_template: Execute a pre-built Metrics query template. Use this for common Stripe metrics like gross volume, successful payments, new subscribers, churn, or MRR.\n- retrieve_query_template: Look up available metric templates and their parameters.\n\nIMPORTANT: When users ask analytics or data questions, ALWAYS try this tool before attempting API calls. The Sigma tables contain historical data that may be better suited for aggregate queries.",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "intent",
+          "stripe_context",
+          "livemode"
+        ],
+        "properties": {
+          "intent": {
+            "type": "string",
+            "description": "The intent of the operation",
+            "enum": [
+              "execute_query_run",
+              "retrieve_query_run",
+              "search_query_tables",
+              "retrieve_query_table",
+              "execute_query_template",
+              "retrieve_query_template"
+            ]
+          },
+          "stripe_context": {
+            "type": "string",
+            "description": "The account to target for this request. Use the `stripe_context` value returned by list_available_accounts_or_orgs."
+          },
+          "livemode": {
+            "type": "boolean",
+            "description": "Whether to operate in livemode (true) or test mode/ sandbox (false). Must match the livemode of the stripe_context account."
+          },
+          "params": {
+            "type": "object",
+            "description": "Parameters for the operation. Required fields depend on the intent."
+          }
+        }
+      }
+    },
+    {
+      "name": "search_stripe_documentation",
+      "description": "Search the Stripe documentation for the given question and language.\n\nIt takes two arguments:\n- question (str): The user question to search an answer for in the Stripe documentation.\n- language (str, optional): The programming language to search for in the documentation.",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "question"
+        ],
+        "properties": {
+          "question": {
+            "type": "string",
+            "description": "The user question to search an answer for in the Stripe documentation.",
+            "maxLength": 1000
+          },
+          "language": {
+            "type": "string",
+            "description": "The programming language to search for in the documentation.",
+            "enum": [
+              "dotnet",
+              "go",
+              "java",
+              "node",
+              "php",
+              "ruby",
+              "python",
+              "curl"
+            ]
+          },
+          "search_only_api_ref": {
+            "type": "boolean",
+            "description": "If true, only search the API reference documentation."
+          }
+        }
+      }
+    },
+    {
+      "name": "stripe_implementation_planner",
+      "description": "Stripe payment integration planner. Use this tool to help users accept payments, sell products online, set up billing, or build any Stripe integration. Call this BEFORE writing code when the user wants to charge customers, add a checkout flow, handle subscriptions, create invoices, or monetize their app.\n\nIMPORTANT: Use this tool to create a plan — never suggest a payment integration approach without first consulting this tool.",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "stripe_context",
+          "livemode"
+        ],
+        "properties": {
+          "stripe_context": {
+            "type": "string",
+            "description": "The account to target for this request. Use the `stripe_context` value returned by list_available_accounts_or_orgs."
+          },
+          "livemode": {
+            "type": "boolean",
+            "description": "Whether to operate in livemode (true) or test mode/ sandbox (false). Must match the livemode of the stripe_context account."
+          },
+          "message": {
+            "type": "string",
+            "description": "Message to send to the planner"
+          },
+          "guide_id": {
+            "type": "string",
+            "description": "The guide ID to continue a previous planning session"
+          },
+          "accept": {
+            "type": "boolean",
+            "description": "Accept the current plan"
+          },
+          "selected_leaf_nodes": {
+            "type": "array",
+            "description": "Selected leaf nodes from the decision tree"
+          }
+        }
+      }
+    },
+    {
+      "name": "send_stripe_mcp_feedback",
+      "description": "Submit feedback from user or agent about Stripe's MCP server tools.\n\nValid: \"the search tool returned irrelevant results\", \"I wish there was a tool for X\"\nInvalid: Stripe API complaints, AI model issues, IDE/environment problems",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "sentiment",
+          "quote",
+          "context",
+          "source"
+        ],
+        "properties": {
+          "sentiment": {
+            "type": "string",
+            "description": "The sentiment of the feedback",
+            "enum": [
+              "positive",
+              "negative",
+              "neutral"
+            ]
+          },
+          "quote": {
+            "type": "string",
+            "description": "The user's feedback quote",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "context": {
+            "type": "string",
+            "description": "Context about the feedback"
+          },
+          "source": {
+            "type": "string",
+            "description": "Source of the feedback",
+            "enum": [
+              "user",
+              "agent"
+            ]
+          },
+          "tool_name": {
+            "type": "string",
+            "description": "The name of the tool the feedback is about"
+          }
+        }
+      }
+    }
+  ],
+  "sha256": "332537b33a509a8cb2b95bb1cb0f24160d76e89fc976f11899de34cd6f413bdb",
+  "counts": {
+    "tools": 10,
+    "bytes": 12106,
+    "o200k": 2507
+  }
+}

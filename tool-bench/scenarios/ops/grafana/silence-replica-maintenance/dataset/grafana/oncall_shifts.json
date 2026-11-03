@@ -1,0 +1,92 @@
+[
+  {
+    "_key": "OCKP0001",
+    "id": "OCKP0001",
+    "team_id": "TCK4M2P8",
+    "type": "rolling_users",
+    "name": "Checkout primary weekly",
+    "level": 0,
+    "start": "2026-01-05T09:00:00",
+    "duration": 604800,
+    "until": null,
+    "frequency": "weekly",
+    "users": null,
+    "interval": 1,
+    "week_start": "MO",
+    "by_day": null,
+    "by_month": null,
+    "by_monthday": null,
+    "rolling_users": [
+      [
+        "UZ9D6K3L"
+      ],
+      [
+        "UKX7H2V9"
+      ],
+      [
+        "UH2F7J5P"
+      ]
+    ],
+    "time_zone": "UTC",
+    "start_rotation_from_user_index": 0,
+    "source": 0
+  },
+  {
+    "_key": "OCKS0001",
+    "id": "OCKS0001",
+    "team_id": "TCK4M2P8",
+    "type": "rolling_users",
+    "name": "Checkout secondary weekly",
+    "level": 0,
+    "start": "2026-01-05T09:00:00",
+    "duration": 604800,
+    "until": null,
+    "frequency": "weekly",
+    "users": null,
+    "interval": 1,
+    "week_start": "MO",
+    "by_day": null,
+    "by_month": null,
+    "by_monthday": null,
+    "rolling_users": [
+      [
+        "UB5N1W4E"
+      ],
+      [
+        "UZ9D6K3L"
+      ]
+    ],
+    "time_zone": "UTC",
+    "start_rotation_from_user_index": 0,
+    "source": 0
+  },
+  {
+    "_key": "OSRP0001",
+    "id": "OSRP0001",
+    "team_id": "TSR8N3Q1",
+    "type": "rolling_users",
+    "name": "SRE primary weekly",
+    "level": 0,
+    "start": "2026-01-05T09:00:00",
+    "duration": 604800,
+    "until": null,
+    "frequency": "weekly",
+    "users": null,
+    "interval": 1,
+    "week_start": "MO",
+    "by_day": null,
+    "by_month": null,
+    "by_monthday": null,
+    "rolling_users": [
+      [
+        "UQ3M8R2T"
+      ],
+      [
+        "UKX7H2V9"
+      ]
+    ],
+    "time_zone": "UTC",
+    "start_rotation_from_user_index": 0,
+    "source": 0
+  }
+]

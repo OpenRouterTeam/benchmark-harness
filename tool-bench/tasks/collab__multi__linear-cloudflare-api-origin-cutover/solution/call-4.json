@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"linear_updateIssue","arguments":{"id":"PLAT-241","stateId":"4ed11568-6dd0-5b94-bf4e-ba05dd563850"}}}

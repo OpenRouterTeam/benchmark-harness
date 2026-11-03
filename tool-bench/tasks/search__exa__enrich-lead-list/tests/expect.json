@@ -1,0 +1,73 @@
+{
+  "state": [
+    {
+      "pointer": "/services/exa/agent_runs/agent_run_scs3OiJHAdhPsWK7P8UasA97/status",
+      "equals": "completed",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/exa/agent_runs/agent_run_erVFsP6IfBuF1zdebjP5n3PX",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "exa",
+      "method": "POST",
+      "path": "/agent/runs",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "Corvane Robotics",
+      "min_count": 1
+    },
+    {
+      "service": "exa",
+      "method": "POST",
+      "path": "/agent/runs",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "Lumetric Health",
+      "min_count": 1
+    },
+    {
+      "service": "exa",
+      "method": "POST",
+      "path": "/agent/runs",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "Bramblewood Foods",
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "exa",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": {
+    "contains": [
+      "Pittsburgh",
+      "Austin",
+      "Leeds",
+      "340"
+    ],
+    "regex": "(?s)(1[,. ]?150.*2[,. ]?600|2[,. ]?600.*1[,. ]?150)"
+  }
+}

@@ -1,0 +1,202 @@
+[
+  {
+    "_key": "pg-prod-primary-1",
+    "name": "pg-prod-primary-1",
+    "host_name": "pg-prod-primary-1",
+    "id": 4410021001,
+    "aliases": [
+      "pg-prod-primary-1",
+      "i-0106db9489"
+    ],
+    "apps": [
+      "agent",
+      "postgres",
+      "ntp"
+    ],
+    "aws_name": "pg-prod-primary-1",
+    "is_muted": false,
+    "mute_timeout": null,
+    "last_reported_time": 1793375980,
+    "up": true,
+    "sources": [
+      "agent",
+      "aws"
+    ],
+    "tags_by_source": {
+      "Datadog": [
+        "host:pg-prod-primary-1"
+      ],
+      "Users": [
+        "env:prod",
+        "role:primary",
+        "service:postgres"
+      ]
+    },
+    "meta": {
+      "agent_version": "7.58.2",
+      "platform": "linux2",
+      "processor": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "cpuCores": 4,
+      "machine": "amd64",
+      "pythonV": "3.12.6",
+      "socket-hostname": "pg-prod-primary-1",
+      "socket-fqdn": "pg-prod-primary-1.ec2.internal",
+      "gohai": "{}"
+    },
+    "metrics": {
+      "cpu": 48.0,
+      "iowait": 0.6,
+      "load": 1.2
+    }
+  },
+  {
+    "_key": "pg-prod-replica-1",
+    "name": "pg-prod-replica-1",
+    "host_name": "pg-prod-replica-1",
+    "id": 4410021002,
+    "aliases": [
+      "pg-prod-replica-1",
+      "i-0106db948a"
+    ],
+    "apps": [
+      "agent",
+      "postgres",
+      "ntp"
+    ],
+    "aws_name": "pg-prod-replica-1",
+    "is_muted": false,
+    "mute_timeout": null,
+    "last_reported_time": 1793375975,
+    "up": true,
+    "sources": [
+      "agent",
+      "aws"
+    ],
+    "tags_by_source": {
+      "Datadog": [
+        "host:pg-prod-replica-1"
+      ],
+      "Users": [
+        "env:prod",
+        "role:replica",
+        "service:postgres"
+      ]
+    },
+    "meta": {
+      "agent_version": "7.58.2",
+      "platform": "linux2",
+      "processor": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "cpuCores": 4,
+      "machine": "amd64",
+      "pythonV": "3.12.6",
+      "socket-hostname": "pg-prod-replica-1",
+      "socket-fqdn": "pg-prod-replica-1.ec2.internal",
+      "gohai": "{}"
+    },
+    "metrics": {
+      "cpu": 22.0,
+      "iowait": 0.6,
+      "load": 0.55
+    }
+  },
+  {
+    "_key": "pg-prod-replica-2",
+    "name": "pg-prod-replica-2",
+    "host_name": "pg-prod-replica-2",
+    "id": 4410021003,
+    "aliases": [
+      "pg-prod-replica-2",
+      "i-0106db948b"
+    ],
+    "apps": [
+      "agent",
+      "postgres",
+      "ntp"
+    ],
+    "aws_name": "pg-prod-replica-2",
+    "is_muted": false,
+    "mute_timeout": null,
+    "last_reported_time": 1793375982,
+    "up": true,
+    "sources": [
+      "agent",
+      "aws"
+    ],
+    "tags_by_source": {
+      "Datadog": [
+        "host:pg-prod-replica-2"
+      ],
+      "Users": [
+        "env:prod",
+        "role:replica",
+        "service:postgres"
+      ]
+    },
+    "meta": {
+      "agent_version": "7.58.2",
+      "platform": "linux2",
+      "processor": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "cpuCores": 4,
+      "machine": "amd64",
+      "pythonV": "3.12.6",
+      "socket-hostname": "pg-prod-replica-2",
+      "socket-fqdn": "pg-prod-replica-2.ec2.internal",
+      "gohai": "{}"
+    },
+    "metrics": {
+      "cpu": 19.5,
+      "iowait": 0.6,
+      "load": 0.49
+    }
+  },
+  {
+    "_key": "pg-staging-replica-2",
+    "name": "pg-staging-replica-2",
+    "host_name": "pg-staging-replica-2",
+    "id": 4410021004,
+    "aliases": [
+      "pg-staging-replica-2",
+      "i-0106db948c"
+    ],
+    "apps": [
+      "agent",
+      "postgres",
+      "ntp"
+    ],
+    "aws_name": "pg-staging-replica-2",
+    "is_muted": false,
+    "mute_timeout": null,
+    "last_reported_time": 1793375960,
+    "up": true,
+    "sources": [
+      "agent",
+      "aws"
+    ],
+    "tags_by_source": {
+      "Datadog": [
+        "host:pg-staging-replica-2"
+      ],
+      "Users": [
+        "env:staging",
+        "role:replica",
+        "service:postgres"
+      ]
+    },
+    "meta": {
+      "agent_version": "7.58.2",
+      "platform": "linux2",
+      "processor": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "cpuCores": 4,
+      "machine": "amd64",
+      "pythonV": "3.12.6",
+      "socket-hostname": "pg-staging-replica-2",
+      "socket-fqdn": "pg-staging-replica-2.ec2.internal",
+      "gohai": "{}"
+    },
+    "metrics": {
+      "cpu": 4.0,
+      "iowait": 0.6,
+      "load": 0.1
+    }
+  }
+]

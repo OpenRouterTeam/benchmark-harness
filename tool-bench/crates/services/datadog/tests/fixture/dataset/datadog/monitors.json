@@ -1,0 +1,187 @@
+[
+  {
+    "id": 5001,
+    "org_id": 321813,
+    "type": "query alert",
+    "name": "Checkout API p95 latency high",
+    "message": "Checkout API p95 latency high. Notify @slack-ops-alerts",
+    "tags": [
+      "service:checkout-api",
+      "env:prod",
+      "team:payments"
+    ],
+    "query": "avg(last_5m):avg:checkout.api.latency.p95{env:prod,service:checkout-api} > 1000",
+    "options": {
+      "thresholds": {
+        "critical": 1000.0,
+        "warning": 800.0
+      },
+      "notify_no_data": false,
+      "notify_audit": false,
+      "include_tags": true,
+      "new_group_delay": 60,
+      "require_full_window": false,
+      "silenced": {}
+    },
+    "multi": false,
+    "created": "2026-03-02T10:11:12.000000+00:00",
+    "created_at": 1772446272000,
+    "modified": "2026-10-01T08:00:00.000000+00:00",
+    "deleted": null,
+    "restricted_roles": null,
+    "priority": 2,
+    "overall_state_modified": "2026-10-30T14:05:00+00:00",
+    "overall_state": "Alert",
+    "creator": {
+      "name": "Priya Raman",
+      "handle": "priya.raman@octo-corp.example",
+      "email": "priya.raman@octo-corp.example",
+      "id": 1445400
+    },
+    "state": {
+      "groups": {}
+    }
+  },
+  {
+    "id": 5002,
+    "org_id": 321813,
+    "type": "query alert",
+    "name": "Checkout API 5xx rate",
+    "message": "Checkout API 5xx rate. Notify @slack-ops-alerts",
+    "tags": [
+      "service:checkout-api",
+      "env:prod"
+    ],
+    "query": "sum(last_5m):sum:checkout.api.errors{env:prod,service:checkout-api} by {host}.as_count() > 50",
+    "options": {
+      "thresholds": {
+        "critical": 1000.0,
+        "warning": 800.0
+      },
+      "notify_no_data": false,
+      "notify_audit": false,
+      "include_tags": true,
+      "new_group_delay": 60,
+      "require_full_window": false,
+      "silenced": {}
+    },
+    "multi": true,
+    "created": "2026-03-02T10:11:12.000000+00:00",
+    "created_at": 1772446272000,
+    "modified": "2026-10-01T08:00:00.000000+00:00",
+    "deleted": null,
+    "restricted_roles": null,
+    "priority": 2,
+    "overall_state_modified": "2026-10-30T14:05:00+00:00",
+    "overall_state": "Warn",
+    "creator": {
+      "name": "Priya Raman",
+      "handle": "priya.raman@octo-corp.example",
+      "email": "priya.raman@octo-corp.example",
+      "id": 1445400
+    },
+    "state": {
+      "groups": {
+        "host:web-prod-01": {
+          "name": "host:web-prod-01",
+          "status": "Warn",
+          "last_triggered_ts": 1793371500,
+          "last_notified_ts": 1793371500,
+          "last_resolved_ts": null,
+          "last_nodata_ts": null
+        },
+        "host:web-prod-02": {
+          "name": "host:web-prod-02",
+          "status": "OK",
+          "last_triggered_ts": null,
+          "last_notified_ts": null,
+          "last_resolved_ts": 1793368800,
+          "last_nodata_ts": null
+        }
+      }
+    }
+  },
+  {
+    "id": 5003,
+    "org_id": 321813,
+    "type": "query alert",
+    "name": "Checkout API p95 latency high (staging)",
+    "message": "Checkout API p95 latency high (staging). Notify @slack-ops-alerts",
+    "tags": [
+      "service:checkout-api",
+      "env:staging"
+    ],
+    "query": "avg(last_5m):avg:checkout.api.latency.p95{env:staging,service:checkout-api} > 1000",
+    "options": {
+      "thresholds": {
+        "critical": 1000.0,
+        "warning": 800.0
+      },
+      "notify_no_data": false,
+      "notify_audit": false,
+      "include_tags": true,
+      "new_group_delay": 60,
+      "require_full_window": false,
+      "silenced": {}
+    },
+    "multi": false,
+    "created": "2026-03-02T10:11:12.000000+00:00",
+    "created_at": 1772446272000,
+    "modified": "2026-10-01T08:00:00.000000+00:00",
+    "deleted": null,
+    "restricted_roles": null,
+    "priority": 2,
+    "overall_state_modified": "2026-10-30T14:05:00+00:00",
+    "overall_state": "OK",
+    "creator": {
+      "name": "Priya Raman",
+      "handle": "priya.raman@octo-corp.example",
+      "email": "priya.raman@octo-corp.example",
+      "id": 1445400
+    },
+    "state": {
+      "groups": {}
+    }
+  },
+  {
+    "id": 5004,
+    "org_id": 321813,
+    "type": "metric alert",
+    "name": "Postgres disk usage",
+    "message": "Postgres disk usage. Notify @slack-ops-alerts",
+    "tags": [
+      "team:platform"
+    ],
+    "query": "avg(last_15m):avg:system.disk.in_use{role:postgres} by {host} > 0.9",
+    "options": {
+      "thresholds": {
+        "critical": 1000.0,
+        "warning": 800.0
+      },
+      "notify_no_data": false,
+      "notify_audit": false,
+      "include_tags": true,
+      "new_group_delay": 60,
+      "require_full_window": false,
+      "silenced": {}
+    },
+    "multi": false,
+    "created": "2026-03-02T10:11:12.000000+00:00",
+    "created_at": 1772446272000,
+    "modified": "2026-10-01T08:00:00.000000+00:00",
+    "deleted": null,
+    "restricted_roles": null,
+    "priority": 2,
+    "overall_state_modified": "2026-10-30T14:05:00+00:00",
+    "overall_state": "No Data",
+    "creator": {
+      "name": "Priya Raman",
+      "handle": "priya.raman@octo-corp.example",
+      "email": "priya.raman@octo-corp.example",
+      "id": 1445400
+    },
+    "state": {
+      "groups": {}
+    }
+  }
+]

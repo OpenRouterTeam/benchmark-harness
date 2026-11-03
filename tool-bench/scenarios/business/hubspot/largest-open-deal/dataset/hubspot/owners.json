@@ -1,0 +1,78 @@
+[
+  {
+    "id": "81234501",
+    "email": "priya.raman@northbeam.io",
+    "type": "PERSON",
+    "firstName": "Priya",
+    "lastName": "Raman",
+    "userId": 75000001,
+    "userIdIncludingInactive": 75000001,
+    "createdAt": "2024-02-12T15:04:11.482Z",
+    "updatedAt": "2026-06-03T10:11:52.019Z",
+    "archived": false,
+    "teams": [
+      {
+        "id": "4100021",
+        "name": "Mid-Market",
+        "primary": true
+      }
+    ]
+  },
+  {
+    "id": "81234502",
+    "email": "marcus.oyelaran@northbeam.io",
+    "type": "PERSON",
+    "firstName": "Marcus",
+    "lastName": "Oyelaran",
+    "userId": 75000002,
+    "userIdIncludingInactive": 75000002,
+    "createdAt": "2024-03-12T15:04:11.482Z",
+    "updatedAt": "2026-06-03T10:11:52.019Z",
+    "archived": false,
+    "teams": [
+      {
+        "id": "4100022",
+        "name": "Enterprise",
+        "primary": true
+      }
+    ]
+  },
+  {
+    "id": "81234503",
+    "email": "elena.sokolova@northbeam.io",
+    "type": "PERSON",
+    "firstName": "Elena",
+    "lastName": "Sokolova",
+    "userId": 75000003,
+    "userIdIncludingInactive": 75000003,
+    "createdAt": "2024-04-12T15:04:11.482Z",
+    "updatedAt": "2026-06-03T10:11:52.019Z",
+    "archived": false,
+    "teams": [
+      {
+        "id": "4100022",
+        "name": "Enterprise",
+        "primary": true
+      }
+    ]
+  },
+  {
+    "id": "81234504",
+    "email": "tom.brandt@northbeam.io",
+    "type": "PERSON",
+    "firstName": "Tom",
+    "lastName": "Brandt",
+    "userId": 75000004,
+    "userIdIncludingInactive": 75000004,
+    "createdAt": "2024-05-12T15:04:11.482Z",
+    "updatedAt": "2026-06-03T10:11:52.019Z",
+    "archived": false,
+    "teams": [
+      {
+        "id": "4100021",
+        "name": "Mid-Market",
+        "primary": true
+      }
+    ]
+  }
+]

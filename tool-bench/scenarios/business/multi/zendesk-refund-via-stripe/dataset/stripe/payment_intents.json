@@ -1,0 +1,96 @@
+[
+  {
+    "id": "pi_QtJvcvI4S4jrboWE3mxNG0P4",
+    "object": "payment_intent",
+    "amount": 12000,
+    "amount_received": 12000,
+    "created": 1770742920,
+    "currency": "usd",
+    "customer": "cus_DxFNB3AWMttAAW",
+    "description": "Wholesale flour order #1041",
+    "latest_charge": "ch_5eR3UZB7YiJHlOYKOIERXTw9",
+    "metadata": {
+      "order_id": "1041"
+    },
+    "payment_method": "pm_zeAyn20ZbKlnBpDjwE6fD9CS",
+    "status": "succeeded"
+  },
+  {
+    "id": "pi_YIlRWafPizuNZU8jcZLBPwL4",
+    "object": "payment_intent",
+    "amount": 48000,
+    "amount_received": 48000,
+    "created": 1773161880,
+    "currency": "usd",
+    "customer": "cus_SrLnvgXU7HZLPE",
+    "description": "Equipment lease March",
+    "latest_charge": "ch_zoapAkuqpaPPo276IGPjweZf",
+    "metadata": {
+      "order_id": "T-220"
+    },
+    "payment_method": "pm_MAn6J7Kap4iWj5z05Rx49yK7",
+    "status": "succeeded"
+  },
+  {
+    "id": "pi_JRJx84PEvR5ilrJt2xAz9c5n",
+    "object": "payment_intent",
+    "amount": 48000,
+    "amount_received": 48000,
+    "created": 1773162840,
+    "currency": "usd",
+    "customer": "cus_DxFNB3AWMttAAW",
+    "description": "Wholesale flour order #1077",
+    "latest_charge": "ch_ITHHURD4dPMFtMW9vBBsbgLF",
+    "metadata": {
+      "order_id": "1077"
+    },
+    "payment_method": "pm_zeAyn20ZbKlnBpDjwE6fD9CS",
+    "status": "succeeded"
+  },
+  {
+    "id": "pi_qZ8HsvmHI2loKwRfwA0eFYWI",
+    "object": "payment_intent",
+    "amount": 48000,
+    "amount_received": 48000,
+    "created": 1773162960,
+    "currency": "usd",
+    "customer": "cus_DxFNB3AWMttAAW",
+    "description": "Wholesale flour order #1077",
+    "latest_charge": "ch_r1lxhPeTsZKQxIfuhPANytDa",
+    "metadata": {
+      "order_id": "1077"
+    },
+    "payment_method": "pm_zeAyn20ZbKlnBpDjwE6fD9CS",
+    "status": "succeeded"
+  },
+  {
+    "id": "pi_TY7eauWotbNTlUPPRUEby5ur",
+    "object": "payment_intent",
+    "amount": 48000,
+    "amount_received": 48000,
+    "created": 1773504300,
+    "currency": "usd",
+    "customer": "cus_DxFNB3AWMttAAW",
+    "description": "Wholesale flour order #1080",
+    "latest_charge": "ch_L2nRrQf84XcsM4hBtIVCqlBW",
+    "metadata": {
+      "order_id": "1080"
+    },
+    "payment_method": "pm_zeAyn20ZbKlnBpDjwE6fD9CS",
+    "status": "succeeded"
+  },
+  {
+    "id": "pi_Fmhz50rKnOuDqv4X1607WcLz",
+    "object": "payment_intent",
+    "amount": 6500,
+    "amount_received": 6500,
+    "created": 1773344700,
+    "currency": "usd",
+    "customer": "cus_E0kbbr95wjjWWy",
+    "description": "Pastry case rental",
+    "latest_charge": "ch_m57Zbmqmv8rnLUdeBLUCaSii",
+    "metadata": {},
+    "payment_method": "pm_wMkRfKaZQETyDgWBFEhkDcVl",
+    "status": "succeeded"
+  }
+]

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"salesforce_query_records","arguments":{"fields":["Id","CaseNumber","Subject","Status","Account.Name"],"objectName":"Case","whereClause":"Account.Name = 'Bluefin Logistics' AND IsClosed = false"}}}

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"manage_event","arguments":{"action":"create","add_google_meet":true,"attendees":["priya.natarajan@octo-corp.example","marcus.webb@octo-corp.example"],"end_time":"2026-11-03T14:45:00","start_time":"2026-11-03T14:00:00","summary":"Q1 planning sync","timezone":"America/New_York"}}}

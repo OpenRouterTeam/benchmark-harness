@@ -1,0 +1,8 @@
+[
+  {
+    "_key": "acme",
+    "enabled": true,
+    "ttl_enabled": true,
+    "ttl": 90
+  }
+]

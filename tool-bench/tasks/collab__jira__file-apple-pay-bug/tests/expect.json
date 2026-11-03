@@ -1,0 +1,73 @@
+{
+  "state": [
+    {
+      "pointer": "/services/jira/issues/WEB-56/fields/issuetype",
+      "equals": "Bug",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/jira/issues/WEB-56/fields/summary",
+      "equals": null,
+      "exists": null,
+      "contains": "Apple Pay",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/jira/issues/WEB-56/fields/priority",
+      "equals": "High",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/jira/issues/WEB-56/fields/assignee",
+      "equals": "alex.kim",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/jira/issues/WEB-56/fields/components",
+      "equals": [
+        "Checkout"
+      ],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/jira/issues/WEB-56/fields/labels",
+      "equals": null,
+      "exists": null,
+      "contains": "ios",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/jira/issues/WEB-57",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/jira/issues/WEB-53/fields/status",
+      "equals": "Done",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [],
+  "forbidden_calls": [],
+  "answer": null
+}

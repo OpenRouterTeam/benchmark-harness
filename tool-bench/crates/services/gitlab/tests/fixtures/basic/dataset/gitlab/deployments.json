@@ -1,0 +1,33 @@
+[
+  {
+    "_key": "81",
+    "id": 81,
+    "iid": 12,
+    "project": "acme/platform/api",
+    "environment": "production",
+    "ref": "main",
+    "sha": "c0ffee0000000000000000000000000000000001",
+    "status": "success",
+    "user": "dana",
+    "created_at": "2026-03-01T09:00:00.000Z",
+    "updated_at": "2026-03-01T09:05:00.000Z",
+    "finished_at": "2026-03-01T09:05:00.000Z",
+    "merge_requests": [
+      "acme/platform/api!6"
+    ]
+  },
+  {
+    "_key": "82",
+    "id": 82,
+    "iid": 13,
+    "project": "acme/platform/api",
+    "environment": "production",
+    "ref": "main",
+    "sha": "c0ffee0000000000000000000000000000000001",
+    "status": "blocked",
+    "user": "raj",
+    "required_approvals": 1,
+    "created_at": "2026-03-13T09:00:00.000Z",
+    "updated_at": "2026-03-13T09:00:00.000Z"
+  }
+]

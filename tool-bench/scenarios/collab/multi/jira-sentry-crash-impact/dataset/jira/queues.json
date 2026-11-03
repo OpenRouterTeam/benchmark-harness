@@ -1,0 +1,8 @@
+[
+  {
+    "id": "1",
+    "serviceDeskId": "1",
+    "name": "All open",
+    "jql": "project = OPS AND resolution = EMPTY ORDER BY created DESC"
+  }
+]

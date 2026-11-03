@@ -1,0 +1,62 @@
+[scenario]
+id = "code/github/triage-duplicate-charge"
+title = "Triage the duplicate-charge bug to the right engineer"
+now = "2026-03-13T10:30:00Z"
+seed = "code-github-triage-duplicate-charge"
+services = ["github"]
+tags = ["single-service", "write", "github", "disambiguation"]
+timeout_sec = 900
+
+# The open issue is octo-org/payments-api#12. Look-alikes: #7 (same bug, closed in 2025),
+# #14 (duplicate idempotency keys in logs), billing-worker#3 (duplicate emails), web#88
+# (double-click). The last change to internal/charge/retry.go is sam's commit; the latest
+# commit on main overall is lin's dependency bump.
+[[expect.state]]
+pointer = "/services/github/issues/octo-org~1payments-api#12/labels"
+contains = "sev-1"
+
+[[expect.state]]
+pointer = "/services/github/issues/octo-org~1payments-api#12/labels"
+contains = "bug"
+
+[[expect.state]]
+pointer = "/services/github/issues/octo-org~1payments-api#12/labels"
+contains = "customer-reported"
+
+[[expect.state]]
+pointer = "/services/github/issues/octo-org~1payments-api#12/assignees"
+contains = "sam"
+
+[[expect.state]]
+pointer = "/services/github/issues/octo-org~1payments-api#12/state"
+equals = "open"
+
+[[expect.required_calls]]
+service = "github"
+method = "PATCH"
+path = "/api/v3/repos/octo-org/payments-api/issues/12"
+
+[[expect.forbidden_calls]]
+service = "github"
+method = "PATCH"
+path_regex = "^/api/v3/repos/octo-org/(payments-api/issues/(7|14)|billing-worker/issues/3|web/issues/88)$"
+
+[[expect.forbidden_calls]]
+service = "github"
+method = "POST"
+path_regex = "^/api/v3/repos/octo-org/[^/]+/issues$"
+
+[[solution.call]]
+endpoint = "github"
+tool = "search_issues"
+arguments = { query = "org:octo-org charged twice is:open" }
+
+[[solution.call]]
+endpoint = "github"
+tool = "list_commits"
+arguments = { owner = "octo-org", repo = "payments-api", path = "internal/charge/retry.go", perPage = 5 }
+
+[[solution.call]]
+endpoint = "github"
+tool = "issue_write"
+arguments = { method = "update", owner = "octo-org", repo = "payments-api", issue_number = 12, labels = ["bug", "customer-reported", "sev-1"], assignees = ["sam"] }

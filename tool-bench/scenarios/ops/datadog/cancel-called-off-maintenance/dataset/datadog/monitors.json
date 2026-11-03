@@ -1,0 +1,88 @@
+[
+  {
+    "id": 8801,
+    "org_id": 321813,
+    "type": "query alert",
+    "name": "Payments API error rate",
+    "message": "Payments API error rate on {{host.name}}. Runbook: https://wiki.octo-corp.example/runbooks/8801 @slack-ops-alerts",
+    "tags": [
+      "service:payments-api",
+      "env:prod",
+      "team:payments"
+    ],
+    "query": "sum(last_5m):sum:trace.http.request.errors{env:prod,service:payments-api}.as_count() > 50",
+    "options": {
+      "thresholds": {
+        "critical": 50.0
+      },
+      "notify_no_data": false,
+      "notify_audit": false,
+      "include_tags": true,
+      "new_group_delay": 60,
+      "require_full_window": false,
+      "renotify_interval": 0,
+      "silenced": {}
+    },
+    "multi": false,
+    "created": "2026-03-02T10:11:12.000000+00:00",
+    "created_at": 1772446272000,
+    "modified": "2026-10-01T08:00:00.000000+00:00",
+    "deleted": null,
+    "restricted_roles": null,
+    "priority": 2,
+    "overall_state_modified": "2026-10-29T14:20:00+00:00",
+    "overall_state": "OK",
+    "creator": {
+      "name": "Priya Raman",
+      "handle": "priya.raman@octo-corp.example",
+      "email": "priya.raman@octo-corp.example",
+      "id": 1445400
+    },
+    "state": {
+      "groups": {}
+    }
+  },
+  {
+    "id": 8802,
+    "org_id": 321813,
+    "type": "metric alert",
+    "name": "Payments DB replication lag",
+    "message": "Payments DB replication lag on {{host.name}}. Runbook: https://wiki.octo-corp.example/runbooks/8802 @slack-ops-alerts",
+    "tags": [
+      "service:payments-db",
+      "env:prod",
+      "team:payments"
+    ],
+    "query": "avg(last_10m):avg:postgresql.replication_delay{env:prod,service:payments-db} > 120",
+    "options": {
+      "thresholds": {
+        "critical": 120.0
+      },
+      "notify_no_data": false,
+      "notify_audit": false,
+      "include_tags": true,
+      "new_group_delay": 60,
+      "require_full_window": false,
+      "renotify_interval": 0,
+      "silenced": {}
+    },
+    "multi": false,
+    "created": "2026-03-02T10:11:12.000000+00:00",
+    "created_at": 1772446272000,
+    "modified": "2026-10-01T08:00:00.000000+00:00",
+    "deleted": null,
+    "restricted_roles": null,
+    "priority": 2,
+    "overall_state_modified": "2026-10-29T14:20:00+00:00",
+    "overall_state": "OK",
+    "creator": {
+      "name": "Priya Raman",
+      "handle": "priya.raman@octo-corp.example",
+      "email": "priya.raman@octo-corp.example",
+      "id": 1445400
+    },
+    "state": {
+      "groups": {}
+    }
+  }
+]

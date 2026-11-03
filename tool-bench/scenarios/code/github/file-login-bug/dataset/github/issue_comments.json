@@ -1,0 +1,22 @@
+[
+  {
+    "_key": "3001",
+    "id": 3001,
+    "repo": "octo-org/app",
+    "issue_number": 1,
+    "user": "jdoe",
+    "body": "Reproduced on Safari 17.3; Chrome is fine.",
+    "created_at": "2026-03-03T09:00:00Z",
+    "updated_at": "2026-03-03T09:00:00Z"
+  },
+  {
+    "_key": "3002",
+    "id": 3002,
+    "repo": "octo-org/app",
+    "issue_number": 1,
+    "user": "mona",
+    "body": "Looks like the date picker polyfill. Taking a look.",
+    "created_at": "2026-03-05T16:20:00Z",
+    "updated_at": "2026-03-05T16:20:00Z"
+  }
+]

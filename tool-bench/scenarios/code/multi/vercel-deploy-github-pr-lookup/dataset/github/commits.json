@@ -1,0 +1,275 @@
+[
+  {
+    "_key": "acme-shop/storefront@1b0e3c5a7d9f24680ace13579bdf02468ace1357",
+    "sha": "1b0e3c5a7d9f24680ace13579bdf02468ace1357",
+    "message": "Storefront baseline",
+    "author": {
+      "name": "Riley Park",
+      "email": "riley@acme-shop.com",
+      "date": "2026-09-30T09:00:00Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-09-30T09:00:00Z"
+    },
+    "author_login": "riley-p",
+    "committer_login": "riley-p",
+    "parents": [],
+    "files": [
+      {
+        "filename": "lib/tax.ts",
+        "status": "added",
+        "content": "export const roundTax = (cents: number) => Math.round(cents);\n"
+      },
+      {
+        "filename": "README.md",
+        "status": "added",
+        "content": "# storefront\n"
+      }
+    ]
+  },
+  {
+    "_key": "acme-shop/storefront@a1e5c9d3b7f02468ace1357bdf9e8c7a6b5d4c3e",
+    "sha": "a1e5c9d3b7f02468ace1357bdf9e8c7a6b5d4c3e",
+    "message": "Apple Pay button in checkout",
+    "author": {
+      "name": "Mateo Alvarez",
+      "email": "mateo@acme-shop.com",
+      "date": "2026-10-21T08:40:00Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-10-21T08:40:00Z"
+    },
+    "author_login": "mateoalv",
+    "committer_login": "mateoalv",
+    "parents": [
+      "1b0e3c5a7d9f24680ace13579bdf02468ace1357"
+    ],
+    "files": [
+      {
+        "filename": "app/checkout/ApplePay.tsx",
+        "status": "added",
+        "content": "export function ApplePay() { return null; }\n"
+      }
+    ]
+  },
+  {
+    "_key": "acme-shop/storefront@5e8d2b7a1c0f493e86b2d4a7c9e1f3b5d7a9c2e4",
+    "sha": "5e8d2b7a1c0f493e86b2d4a7c9e1f3b5d7a9c2e4",
+    "message": "Add Apple Pay to checkout (#476)",
+    "author": {
+      "name": "Mateo Alvarez",
+      "email": "mateo@acme-shop.com",
+      "date": "2026-10-21T09:05:00Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-10-21T09:05:00Z"
+    },
+    "author_login": "mateoalv",
+    "committer_login": "mateoalv",
+    "parents": [
+      "1b0e3c5a7d9f24680ace13579bdf02468ace1357"
+    ],
+    "files": [
+      {
+        "filename": "app/checkout/ApplePay.tsx",
+        "status": "added",
+        "content": "export function ApplePay() { return null; }\n"
+      }
+    ]
+  },
+  {
+    "_key": "acme-shop/storefront@e8c2a6f0d4b19753fdb8642eca0b1c2d3e4f5a6b",
+    "sha": "e8c2a6f0d4b19753fdb8642eca0b1c2d3e4f5a6b",
+    "message": "Round EU tax per order total",
+    "author": {
+      "name": "Jun Park",
+      "email": "jun@acme-shop.com",
+      "date": "2026-10-22T11:00:00Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-10-22T11:00:00Z"
+    },
+    "author_login": "junpark",
+    "committer_login": "junpark",
+    "parents": [
+      "5e8d2b7a1c0f493e86b2d4a7c9e1f3b5d7a9c2e4"
+    ],
+    "files": [
+      {
+        "filename": "lib/tax.ts",
+        "status": "modified",
+        "content": "export const roundTax = (cents: number) => Math.floor(cents);\n"
+      }
+    ]
+  },
+  {
+    "_key": "acme-shop/storefront@b2f6d0e4c8a13579bdf2468ace0f9e8d7c6b5a4f",
+    "sha": "b2f6d0e4c8a13579bdf2468ace0f9e8d7c6b5a4f",
+    "message": "Round EU VAT half-even per line item",
+    "author": {
+      "name": "Mateo Alvarez",
+      "email": "mateo@acme-shop.com",
+      "date": "2026-10-23T16:20:00Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-10-23T16:20:00Z"
+    },
+    "author_login": "mateoalv",
+    "committer_login": "mateoalv",
+    "parents": [
+      "5e8d2b7a1c0f493e86b2d4a7c9e1f3b5d7a9c2e4"
+    ],
+    "files": [
+      {
+        "filename": "lib/tax.ts",
+        "status": "modified",
+        "content": "// EU VAT: round half-even per line item, then sum.\nexport const roundTax = (cents: number) => bankersRound(cents);\n"
+      }
+    ]
+  },
+  {
+    "_key": "acme-shop/storefront@c3a9f12e8b47d05a6e21f9b3c7d84e50a1b6f2d9",
+    "sha": "c3a9f12e8b47d05a6e21f9b3c7d84e50a1b6f2d9",
+    "message": "Fix tax rounding for EU orders (#482)",
+    "author": {
+      "name": "Mateo Alvarez",
+      "email": "mateo@acme-shop.com",
+      "date": "2026-10-24T09:38:00Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-10-24T09:38:00Z"
+    },
+    "author_login": "mateoalv",
+    "committer_login": "mateoalv",
+    "parents": [
+      "5e8d2b7a1c0f493e86b2d4a7c9e1f3b5d7a9c2e4"
+    ],
+    "files": [
+      {
+        "filename": "lib/tax.ts",
+        "status": "modified",
+        "content": "// EU VAT: round half-even per line item, then sum.\nexport const roundTax = (cents: number) => bankersRound(cents);\n"
+      }
+    ]
+  },
+  {
+    "_key": "acme-shop/storefront@91b7e4c2d8a05f3e6b1c9d7a2e4f8b0c6d3a5e71",
+    "sha": "91b7e4c2d8a05f3e6b1c9d7a2e4f8b0c6d3a5e71",
+    "message": "Show item count on cart badge",
+    "author": {
+      "name": "Jun Park",
+      "email": "jun@acme-shop.com",
+      "date": "2026-10-25T14:55:00Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-10-25T14:55:00Z"
+    },
+    "author_login": "junpark",
+    "committer_login": "junpark",
+    "parents": [
+      "c3a9f12e8b47d05a6e21f9b3c7d84e50a1b6f2d9"
+    ],
+    "files": [
+      {
+        "filename": "app/cart/Badge.tsx",
+        "status": "added",
+        "content": "export const Badge = ({ n }: { n: number }) => n;\n"
+      }
+    ]
+  },
+  {
+    "_key": "acme-shop/storefront@d4b8f2a6e0c35791bdf4680ace2f1e0d9c8b7a6d",
+    "sha": "d4b8f2a6e0c35791bdf4680ace2f1e0d9c8b7a6d",
+    "message": "Bump next to 15.4.0",
+    "author": {
+      "name": "Jun Park",
+      "email": "jun@acme-shop.com",
+      "date": "2026-10-26T13:10:00Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-10-26T13:10:00Z"
+    },
+    "author_login": "junpark",
+    "committer_login": "junpark",
+    "parents": [
+      "c3a9f12e8b47d05a6e21f9b3c7d84e50a1b6f2d9"
+    ],
+    "files": [
+      {
+        "filename": "package.json",
+        "status": "added",
+        "content": "{\"dependencies\": {\"next\": \"15.4.0\"}}\n"
+      }
+    ]
+  },
+  {
+    "_key": "acme-shop/storefront@7d41c9e0b3a86f25d1e7c4b9a0f3e62d8c5b1a47",
+    "sha": "7d41c9e0b3a86f25d1e7c4b9a0f3e62d8c5b1a47",
+    "message": "Upgrade to Next.js 15.4 (#487)",
+    "author": {
+      "name": "Jun Park",
+      "email": "jun@acme-shop.com",
+      "date": "2026-10-26T13:20:00Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-10-26T13:20:00Z"
+    },
+    "author_login": "junpark",
+    "committer_login": "junpark",
+    "parents": [
+      "c3a9f12e8b47d05a6e21f9b3c7d84e50a1b6f2d9"
+    ],
+    "files": [
+      {
+        "filename": "package.json",
+        "status": "added",
+        "content": "{\"dependencies\": {\"next\": \"15.4.0\"}}\n"
+      }
+    ]
+  },
+  {
+    "_key": "acme-shop/storefront@4be1d07c9a3f58e2b6d0c1a7e9f4b3d25c8a6e10",
+    "sha": "4be1d07c9a3f58e2b6d0c1a7e9f4b3d25c8a6e10",
+    "message": "Gift card redemption at checkout",
+    "author": {
+      "name": "Mateo Alvarez",
+      "email": "mateo@acme-shop.com",
+      "date": "2026-10-28T09:28:00Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-10-28T09:28:00Z"
+    },
+    "author_login": "mateoalv",
+    "committer_login": "mateoalv",
+    "parents": [
+      "7d41c9e0b3a86f25d1e7c4b9a0f3e62d8c5b1a47"
+    ],
+    "files": [
+      {
+        "filename": "app/checkout/GiftCardField.tsx",
+        "status": "added",
+        "content": "export function GiftCardField() { return null; }\n"
+      }
+    ]
+  }
+]

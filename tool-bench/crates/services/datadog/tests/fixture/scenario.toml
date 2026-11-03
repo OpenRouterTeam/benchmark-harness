@@ -1,0 +1,7 @@
+# Test fixture for `cargo test -p mock-datadog` (not a benchmark scenario).
+[scenario]
+id = "fixture/datadog/all"
+title = "mock-datadog test fixture"
+now = "2026-10-30T15:00:00Z"
+seed = "fixture-datadog"
+services = ["datadog"]

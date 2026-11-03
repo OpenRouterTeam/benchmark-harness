@@ -1,0 +1,20 @@
+[
+  {
+    "id": "a1b2c3d4e5f60718293a4b5c6d7e8f90",
+    "name": "octo-corp.com",
+    "status": "active",
+    "account": { "id": "0123456789abcdef0123456789abcdef", "name": "Octo Corp" },
+    "created_on": "2021-06-01T12:30:00.000000Z",
+    "modified_on": "2025-02-11T08:00:00.000000Z",
+    "activated_on": "2021-06-01T13:00:00.000000Z"
+  },
+  {
+    "id": "b2c3d4e5f60718293a4b5c6d7e8f90a1",
+    "name": "octo-corp.dev",
+    "status": "active",
+    "account": { "id": "0123456789abcdef0123456789abcdef", "name": "Octo Corp" },
+    "created_on": "2022-01-10T09:00:00.000000Z",
+    "modified_on": "2025-01-05T08:00:00.000000Z",
+    "activated_on": "2022-01-10T09:30:00.000000Z"
+  }
+]

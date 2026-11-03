@@ -1,0 +1,20 @@
+[
+  {
+    "id": "6ed59e10-1d52-5b7e-b7ff-6aeb0f24787a",
+    "name": "Bug report",
+    "type": "issue",
+    "teamId": "6da75b4c-0e7c-5ac7-a415-f09a129582b1",
+    "description": "Standard bug template",
+    "templateData": {
+      "description": "## Steps to reproduce\n\n## Expected\n\n## Actual",
+      "labelIds": [
+        "75dbca3d-6368-502e-8e56-0c82837ea691"
+      ],
+      "priority": 3
+    },
+    "sortOrder": 0,
+    "createdAt": "2026-03-01T15:00:00.000Z",
+    "updatedAt": "2026-03-01T15:00:00.000Z",
+    "creatorId": "6fd304f8-c8c8-5e04-8b31-cd8e030b5cc9"
+  }
+]

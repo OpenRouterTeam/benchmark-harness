@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"esql","arguments":{"query":"FROM audit-security-2026.10 | WHERE target_name == \"ci-deploy-bot\" AND event_action == \"api_key.delete\" | SORT @timestamp | KEEP @timestamp, actor, event_outcome, details"}}}

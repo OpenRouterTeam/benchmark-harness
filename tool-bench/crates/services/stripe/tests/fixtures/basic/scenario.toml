@@ -1,0 +1,4 @@
+[scenario]
+id = "test/stripe/basic"
+now = "2026-03-18T15:00:00Z"
+seed = "test-stripe-basic"

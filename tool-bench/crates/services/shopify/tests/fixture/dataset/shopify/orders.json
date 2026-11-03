@@ -1,0 +1,52 @@
+[
+  {
+    "id": 5501,
+    "name": "#1001",
+    "email": "jordan.lee@example.com",
+    "customerId": 7001,
+    "createdAt": "2026-03-02T14:00:00Z",
+    "closedAt": "2026-03-06T10:00:00Z",
+    "financialStatus": "PAID",
+    "fulfillmentStatus": "FULFILLED",
+    "totalShipping": "8.00",
+    "totalTax": "6.08",
+    "shippingAddress": {"firstName": "Jordan", "lastName": "Lee", "address1": "12 Pine St", "city": "Portland", "province": "Oregon", "provinceCode": "OR", "zip": "97205", "country": "United States", "countryCode": "US"},
+    "lineItems": [
+      {"id": 6601, "title": "Harbor Canvas Tote", "variantTitle": "Navy", "quantity": 2, "price": "38.00", "variantId": 4101, "productId": 8101, "sku": "HCT-NVY", "vendor": "Octo Goods"}
+    ],
+    "tags": ["repeat"],
+    "note": null,
+    "metafields": [
+      {"id": 1002, "namespace": "custom", "key": "gift_message", "value": "Happy birthday!", "type": "single_line_text_field", "createdAt": "2026-03-02T14:00:00Z", "updatedAt": "2026-03-02T14:00:00Z"}
+    ]
+  },
+  {
+    "id": 5502,
+    "name": "#1002",
+    "email": "sam.ortiz@fastmail.com",
+    "customerId": 7002,
+    "createdAt": "2026-04-20T09:15:00Z",
+    "financialStatus": "PAID",
+    "fulfillmentStatus": "UNFULFILLED",
+    "lineItems": [
+      {"id": 6602, "title": "Linen Shirt", "variantTitle": "S", "quantity": 1, "price": "58.00", "variantId": 4104, "productId": 8103, "sku": "LS-S"}
+    ],
+    "tags": [],
+    "note": "Gift wrap please"
+  },
+  {
+    "id": 5503,
+    "name": "#1003",
+    "email": "jordan.lee@example.com",
+    "customerId": 7001,
+    "createdAt": "2026-04-25T11:00:00Z",
+    "cancelledAt": "2026-04-25T13:00:00Z",
+    "cancelReason": "CUSTOMER",
+    "financialStatus": "VOIDED",
+    "fulfillmentStatus": "UNFULFILLED",
+    "lineItems": [
+      {"id": 6603, "title": "Discontinued Mug", "quantity": 1, "price": "15.00", "variantId": 4999, "sku": "MUG-OLD"}
+    ],
+    "tags": []
+  }
+]

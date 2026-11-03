@@ -1,0 +1,204 @@
+[
+  {
+    "id": "ch_5eR3UZB7YiJHlOYKOIERXTw9",
+    "object": "charge",
+    "amount": 12000,
+    "amount_captured": 12000,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_oN1KFQxOQYLFpp3IW6tNkCEd",
+    "calculated_statement_descriptor": "FERNWAY",
+    "captured": true,
+    "created": 1770742920,
+    "currency": "usd",
+    "customer": "cus_DxFNB3AWMttAAW",
+    "description": "Wholesale flour order #1041",
+    "disputed": false,
+    "metadata": {
+      "order_id": "1041"
+    },
+    "paid": true,
+    "payment_intent": "pi_QtJvcvI4S4jrboWE3mxNG0P4",
+    "payment_method": "pm_zeAyn20ZbKlnBpDjwE6fD9CS",
+    "payment_method_details": {
+      "card": {
+        "brand": "visa",
+        "exp_month": 8,
+        "exp_year": 2028,
+        "funding": "credit",
+        "last4": "1881",
+        "network": "visa"
+      },
+      "type": "card"
+    },
+    "refunded": false,
+    "status": "succeeded"
+  },
+  {
+    "id": "ch_zoapAkuqpaPPo276IGPjweZf",
+    "object": "charge",
+    "amount": 48000,
+    "amount_captured": 48000,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_5bJgwTBDvveOtTnlzpuW5XyH",
+    "calculated_statement_descriptor": "FERNWAY",
+    "captured": true,
+    "created": 1773161880,
+    "currency": "usd",
+    "customer": "cus_SrLnvgXU7HZLPE",
+    "description": "Equipment lease March",
+    "disputed": false,
+    "metadata": {
+      "order_id": "T-220"
+    },
+    "paid": true,
+    "payment_intent": "pi_YIlRWafPizuNZU8jcZLBPwL4",
+    "payment_method": "pm_MAn6J7Kap4iWj5z05Rx49yK7",
+    "payment_method_details": {
+      "card": {
+        "brand": "amex",
+        "exp_month": 8,
+        "exp_year": 2028,
+        "funding": "credit",
+        "last4": "8431",
+        "network": "amex"
+      },
+      "type": "card"
+    },
+    "refunded": false,
+    "status": "succeeded"
+  },
+  {
+    "id": "ch_ITHHURD4dPMFtMW9vBBsbgLF",
+    "object": "charge",
+    "amount": 48000,
+    "amount_captured": 48000,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_WUuDAbYkHfjTf6PUmmZkC9Vd",
+    "calculated_statement_descriptor": "FERNWAY",
+    "captured": true,
+    "created": 1773162840,
+    "currency": "usd",
+    "customer": "cus_DxFNB3AWMttAAW",
+    "description": "Wholesale flour order #1077",
+    "disputed": false,
+    "metadata": {
+      "order_id": "1077"
+    },
+    "paid": true,
+    "payment_intent": "pi_JRJx84PEvR5ilrJt2xAz9c5n",
+    "payment_method": "pm_zeAyn20ZbKlnBpDjwE6fD9CS",
+    "payment_method_details": {
+      "card": {
+        "brand": "visa",
+        "exp_month": 8,
+        "exp_year": 2028,
+        "funding": "credit",
+        "last4": "1881",
+        "network": "visa"
+      },
+      "type": "card"
+    },
+    "refunded": false,
+    "status": "succeeded"
+  },
+  {
+    "id": "ch_r1lxhPeTsZKQxIfuhPANytDa",
+    "object": "charge",
+    "amount": 48000,
+    "amount_captured": 48000,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_MqAGz3KOFqP9RWK0pIZ7vlJw",
+    "calculated_statement_descriptor": "FERNWAY",
+    "captured": true,
+    "created": 1773162960,
+    "currency": "usd",
+    "customer": "cus_DxFNB3AWMttAAW",
+    "description": "Wholesale flour order #1077",
+    "disputed": false,
+    "metadata": {
+      "order_id": "1077"
+    },
+    "paid": true,
+    "payment_intent": "pi_qZ8HsvmHI2loKwRfwA0eFYWI",
+    "payment_method": "pm_zeAyn20ZbKlnBpDjwE6fD9CS",
+    "payment_method_details": {
+      "card": {
+        "brand": "visa",
+        "exp_month": 8,
+        "exp_year": 2028,
+        "funding": "credit",
+        "last4": "1881",
+        "network": "visa"
+      },
+      "type": "card"
+    },
+    "refunded": false,
+    "status": "succeeded"
+  },
+  {
+    "id": "ch_L2nRrQf84XcsM4hBtIVCqlBW",
+    "object": "charge",
+    "amount": 48000,
+    "amount_captured": 48000,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_z6XC5AHdvr5nzg6KLXXSvv64",
+    "calculated_statement_descriptor": "FERNWAY",
+    "captured": true,
+    "created": 1773504300,
+    "currency": "usd",
+    "customer": "cus_DxFNB3AWMttAAW",
+    "description": "Wholesale flour order #1080",
+    "disputed": false,
+    "metadata": {
+      "order_id": "1080"
+    },
+    "paid": true,
+    "payment_intent": "pi_TY7eauWotbNTlUPPRUEby5ur",
+    "payment_method": "pm_zeAyn20ZbKlnBpDjwE6fD9CS",
+    "payment_method_details": {
+      "card": {
+        "brand": "visa",
+        "exp_month": 8,
+        "exp_year": 2028,
+        "funding": "credit",
+        "last4": "1881",
+        "network": "visa"
+      },
+      "type": "card"
+    },
+    "refunded": false,
+    "status": "succeeded"
+  },
+  {
+    "id": "ch_m57Zbmqmv8rnLUdeBLUCaSii",
+    "object": "charge",
+    "amount": 6500,
+    "amount_captured": 6500,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_o2VkEJDfCYsRZ6YPYtCo6sPV",
+    "calculated_statement_descriptor": "FERNWAY",
+    "captured": true,
+    "created": 1773344700,
+    "currency": "usd",
+    "customer": "cus_E0kbbr95wjjWWy",
+    "description": "Pastry case rental",
+    "disputed": false,
+    "metadata": {},
+    "paid": true,
+    "payment_intent": "pi_Fmhz50rKnOuDqv4X1607WcLz",
+    "payment_method": "pm_wMkRfKaZQETyDgWBFEhkDcVl",
+    "payment_method_details": {
+      "card": {
+        "brand": "visa",
+        "exp_month": 8,
+        "exp_year": 2028,
+        "funding": "credit",
+        "last4": "4444",
+        "network": "visa"
+      },
+      "type": "card"
+    },
+    "refunded": false,
+    "status": "succeeded"
+  }
+]

@@ -1,0 +1,62 @@
+[scenario]
+id = "collab/jira/assign-go-no-go-review"
+title = "Assign the Payments v2 go/no-go review to the criteria owner from the Confluence launch plan"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-jira-assign-go-no-go-review"
+services = ["jira"]
+tags = ["write", "multi-step", "single-service", "jira", "confluence", "disambiguation"]
+timeout_sec = 900
+
+# The current launch plan (ENG space, page 100002) names Lena Fischer as the go/no-go
+# criteria owner; the archived 2025 draft (ARCH space) names Marcus Webb. PAY-124 gets
+# assigned to lena.fischer and moves to In Progress. The Confluence pages don't change.
+[[expect.state]]
+pointer = "/services/jira/issues/PAY-124/fields/assignee"
+equals = "lena.fischer"
+
+[[expect.state]]
+pointer = "/services/jira/issues/PAY-124/fields/status"
+equals = "In Progress"
+
+[[expect.state]]
+pointer = "/services/jira/pages/100002/version"
+equals = 4
+
+[[expect.state]]
+pointer = "/services/jira/pages/200002/version"
+equals = 1
+
+[[expect.required_calls]]
+service = "jira"
+method = "GET"
+path_regex = "^/wiki/rest/api/"
+
+[[expect.forbidden_calls]]
+service = "jira"
+method = "PUT"
+path_regex = "^/wiki/"
+
+[[solution.call]]
+endpoint = "atlassian"
+tool = "confluence_search"
+arguments = { query = "Payments v2 launch plan" }
+
+[[solution.call]]
+endpoint = "atlassian"
+tool = "confluence_get_page"
+arguments = { page_id = "100002" }
+
+[[solution.call]]
+endpoint = "atlassian"
+tool = "jira_search"
+arguments = { jql = "project = PAY AND summary ~ \"go/no-go\"", fields = "summary,status,assignee" }
+
+[[solution.call]]
+endpoint = "atlassian"
+tool = "jira_assign_issue"
+arguments = { issue_key = "PAY-124", assignee = "lena.fischer" }
+
+[[solution.call]]
+endpoint = "atlassian"
+tool = "jira_transition_issue"
+arguments = { issue_key = "PAY-124", transition_id = "11" }

@@ -1,0 +1,35 @@
+[scenario]
+id = "collab/notion/launch-date-owner"
+title = "Look up the Payments v2 GA launch date and owner in the launch tracker"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-notion-launch-date-owner"
+services = ["notion"]
+tags = ["lookup", "single-service", "notion", "disambiguation"]
+timeout_sec = 900
+
+# The live row says 2026-11-12 / Lena Fischer. Distractors: a trashed duplicate row with
+# the same title (2026-11-05, Priya), the partner beta row, and the v1 GA row.
+[expect.answer]
+contains = ["Lena Fischer"]
+regex = "(?i)(2026-11-12|nov(ember)?\\.?\\s+12)"
+
+[[expect.forbidden_calls]]
+service = "notion"
+method = "PATCH"
+
+[[expect.forbidden_calls]]
+service = "notion"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "notion"
+tool = "API-post-search"
+arguments = { query = "Product launches", filter = { property = "object", value = "data_source" } }
+
+[[solution.call]]
+endpoint = "notion"
+tool = "API-query-data-source"
+arguments = { data_source_id = "0b7747c0-5ed0-4c77-a8b1-867a05a3c300", filter = { property = "Launch", title = { contains = "Payments v2 GA" } } }
+
+[solution]
+answer = "Payments v2 GA is scheduled for 2026-11-12 (status: In progress). The owner is Lena Fischer.\n"

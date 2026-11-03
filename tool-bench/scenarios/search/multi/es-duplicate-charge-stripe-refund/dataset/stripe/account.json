@@ -1,0 +1,22 @@
+[
+  {
+    "id": "acct_1LkSpG8rT4vWq2Nx",
+    "business_profile": {
+      "mcc": "5945",
+      "name": "Larkspur Goods",
+      "support_email": "help@larkspurgoods.example",
+      "support_phone": null,
+      "support_address": null,
+      "url": "https://larkspurgoods.example"
+    },
+    "created": 1735689600,
+    "email": "ops@larkspurgoods.example",
+    "livemode": false,
+    "settings": {
+      "dashboard": {
+        "display_name": "Larkspur Goods",
+        "timezone": "America/New_York"
+      }
+    }
+  }
+]

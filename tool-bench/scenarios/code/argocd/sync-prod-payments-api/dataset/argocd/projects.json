@@ -1,0 +1,134 @@
+[
+  {
+    "_key": "default",
+    "metadata": {
+      "name": "default",
+      "namespace": "argocd",
+      "uid": "31c4f0fe-906e-571a-8028-a665ef57a368",
+      "resourceVersion": "43091",
+      "generation": 1,
+      "creationTimestamp": "2025-05-20T09:00:00Z"
+    },
+    "spec": {
+      "sourceRepos": [
+        "*"
+      ],
+      "destinations": [
+        {
+          "server": "*",
+          "namespace": "*"
+        }
+      ],
+      "clusterResourceWhitelist": [
+        {
+          "group": "*",
+          "kind": "*"
+        }
+      ]
+    },
+    "status": {}
+  },
+  {
+    "_key": "payments",
+    "metadata": {
+      "name": "payments",
+      "namespace": "argocd",
+      "uid": "9dd8150f-19da-50de-9368-fed2f80b0f98",
+      "resourceVersion": "43108",
+      "generation": 3,
+      "creationTimestamp": "2025-06-02T10:00:00Z"
+    },
+    "spec": {
+      "description": "Payments (production)",
+      "sourceRepos": [
+        "https://github.com/lumen-retail/*"
+      ],
+      "destinations": [
+        {
+          "server": "https://prod-use1.k8s.lumen.internal",
+          "namespace": "payments"
+        }
+      ],
+      "clusterResourceWhitelist": [
+        {
+          "group": "",
+          "kind": "Namespace"
+        }
+      ],
+      "namespaceResourceWhitelist": [
+        {
+          "group": "*",
+          "kind": "*"
+        }
+      ],
+      "roles": [
+        {
+          "name": "deployers",
+          "description": "CI deployers for payments",
+          "policies": [
+            "p, proj:payments:deployers, applications, sync, payments/*, allow"
+          ],
+          "groups": [
+            "lumen-retail:platform"
+          ]
+        }
+      ],
+      "sourceNamespaces": [
+        "payments",
+        "argocd"
+      ]
+    },
+    "status": {}
+  },
+  {
+    "_key": "payments-staging",
+    "metadata": {
+      "name": "payments-staging",
+      "namespace": "argocd",
+      "uid": "0f89bec7-ae5f-5268-b112-d9c3f8adb4f1",
+      "resourceVersion": "43125",
+      "generation": 3,
+      "creationTimestamp": "2025-06-02T10:00:00Z"
+    },
+    "spec": {
+      "description": "Payments (staging)",
+      "sourceRepos": [
+        "https://github.com/lumen-retail/*"
+      ],
+      "destinations": [
+        {
+          "server": "https://staging-use1.k8s.lumen.internal",
+          "namespace": "payments"
+        }
+      ],
+      "clusterResourceWhitelist": [
+        {
+          "group": "",
+          "kind": "Namespace"
+        }
+      ],
+      "namespaceResourceWhitelist": [
+        {
+          "group": "*",
+          "kind": "*"
+        }
+      ],
+      "roles": [
+        {
+          "name": "deployers",
+          "description": "CI deployers for payments-staging",
+          "policies": [
+            "p, proj:payments-staging:deployers, applications, sync, payments-staging/*, allow"
+          ],
+          "groups": [
+            "lumen-retail:platform"
+          ]
+        }
+      ],
+      "sourceNamespaces": [
+        "payments-staging"
+      ]
+    },
+    "status": {}
+  }
+]

@@ -1,0 +1,42 @@
+[scenario]
+id = "business/zendesk/find-invoice-attachment"
+title = "Find the ticket a customer attached her invoice to"
+now = "2026-10-29T15:00:00Z"
+seed = "business-zendesk-find-invoice-attachment"
+services = ["zendesk"]
+tags = ["lookup", "single-service", "zendesk", "disambiguation"]
+timeout_sec = 900
+
+# Ticket 3108 holds Priya Raman's invoice. Distractors: an invoice posted by an agent on her
+# colleague's ticket (3110), an invoice from Priya Ramesh at another company (3105), and
+# Priya Raman's other attachments (a screenshot, a HAR capture).
+[expect.answer]
+contains = ["3108", "Lumen-Invoice-INV-20931.pdf"]
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket_comment" }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "update_ticket" }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket" }
+
+[solution]
+answer = "Priya Raman attached her invoice to ticket #3108 (\"Question about our October bill\"). The file is Lumen-Invoice-INV-20931.pdf.\n"
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "get_tickets"
+arguments = {}
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "get_ticket_comments"
+arguments = { ticket_id = 3108 }

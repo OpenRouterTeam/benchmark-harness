@@ -1,0 +1,24 @@
+[
+  {
+    "_key": "storefront/Default",
+    "id": "6c2f0c9e81d34a7f9c6e0b1d2a3f4e5c",
+    "name": "Default",
+    "project": "storefront",
+    "public": "6c2f0c9e81d34a7f9c6e0b1d2a3f4e5c",
+    "secret": "1f1e2d3c4b5a69788796a5b4c3d2e1f0",
+    "isActive": true,
+    "rateLimit": null,
+    "dateCreated": "2023-04-03T10:05:13Z"
+  },
+  {
+    "_key": "storefront-admin/Default",
+    "id": "9d41d0e2f3a54b6c9d7e8f9a0b1c2d3e",
+    "name": "Default",
+    "project": "storefront-admin",
+    "public": "9d41d0e2f3a54b6c9d7e8f9a0b1c2d3e",
+    "secret": "2a2b3c4d5e6f708192a3b4c5d6e7f809",
+    "isActive": true,
+    "rateLimit": null,
+    "dateCreated": "2024-05-14T16:40:09Z"
+  }
+]

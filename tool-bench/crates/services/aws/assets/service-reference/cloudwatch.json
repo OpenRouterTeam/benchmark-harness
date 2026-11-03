@@ -1,0 +1,1868 @@
+{
+ "Name": "cloudwatch",
+ "ServiceName": "CloudWatch",
+ "Actions": [
+  {
+   "Name": "AssumeAccessProfile",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "BatchGetServiceLevelIndicatorReport",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "BatchGetServiceLevelObjectiveBudgetReport",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "CallWithBearerToken",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateAccessGrant",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateAccessProfile",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateAlert",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateDomain",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateDomainAccessGrantForOrganization",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateDomainForOrganization",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateIngestionEndpoint",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateIntegration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateOmniDashboard",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateOmniThread",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateOneTimeDeepLinkCode",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateResourceMetricsConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateServiceLevelObjective",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateSpace",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateView",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteAccessGrant",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteAccessProfile",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteAlarmMuteRule",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteAlarms",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteAlert",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteAnomalyDetector",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteDashboards",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteDomain",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteDomainAccessGrantForOrganization",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteDomainForOrganization",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteIngestionEndpoint",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteInsightRules",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteIntegration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteMetricStream",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteOmniDashboard",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteOmniThread",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeletePipelineRule",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteResourceMetricsConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteServiceLevelObjective",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteSpace",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteView",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DescribeAlarmHistory",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeAlarms",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeAlarmsForMetric",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeAnomalyDetectors",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeInsightRules",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DisableAlarmActions",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DisableInsightRules",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "EnableAlarmActions",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "EnableInsightRules",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "EnableTopologyDiscovery",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "GenerateQuery",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GenerateQueryResultsSummary",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetAccessGrant",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetAccessProfile",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetAgentGraph",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetAlarmMuteRule",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetAlert",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetContextGraph",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetDashboard",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetDataset",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetDomain",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetDomainAccessGrantForOrganization",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetDomainForOrganization",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetIngestionEndpoint",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetInsightRuleReport",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetIntegration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetIntelligenceConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetMetricData",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetMetricStatistics",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetMetricStream",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetMetricWidgetImage",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetOTelEnrichment",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetOmniDashboard",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetOmniThread",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetPreferences",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetProfileRecords",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetRecords",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetResourceMetricsConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetService",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetServiceData",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetServiceLevelObjective",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetSpace",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetSpaceCredentials",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetSpaceCredentialsForOrganization",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetTelemetryQueryResults",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetTopologyDiscoveryStatus",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetTopologyMap",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetView",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "InvokeIntegration",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "Link",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "ListAccessGrants",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListAccessProfiles",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListAlarmMuteRules",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListAlertContributors",
+   "Annotations": {
+    "Properties": {
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListAlerts",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListDashboards",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListDomainAccessGrantsForOrganization",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListDomains",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListEntitiesForMetric",
+   "Annotations": {
+    "Properties": {
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListIngestionEndpoints",
+   "Annotations": {
+    "Properties": {
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListIntegrations",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListManagedInsightRules",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListMetricStreams",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListMetrics",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListOmniDashboards",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListOmniThreads",
+   "Annotations": {
+    "Properties": {
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListServiceLevelObjectives",
+   "Annotations": {
+    "Properties": {
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListServices",
+   "Annotations": {
+    "Properties": {
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListSpaceAccess",
+   "Annotations": {
+    "Properties": {
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListSpaces",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListSpacesForOrganization",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListTagsForResource",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListTelemetryFields",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListTelemetryQuerySessions",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListViews",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "PutAlarmMuteRule",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutAnomalyDetector",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutCompositeAlarm",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutDashboard",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutInsightRule",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutIntelligenceConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutLogAlarm",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutManagedInsightRules",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutMetricAlarm",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutMetricData",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutMetricStream",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutPipelineRule",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutProfileRecords",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutRecords",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "QueryTraces",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "SearchPrincipals",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "SetAlarmState",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "StartMetricStreams",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "StartOTelEnrichment",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "StartOmniThreadSession",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "StartTelemetryQuery",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "StartTelemetryQuerySession",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "StopMetricStreams",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "StopOTelEnrichment",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "StopTelemetryQuery",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "StopTelemetryQuerySession",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "SubmitAlarmFeedback",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "SubmitFeedback",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "TagResource",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UntagResource",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateAccessProfile",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateAlert",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateDomain",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateDomainForOrganization",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateIngestionEndpoint",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateIntegration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateOTelEnrichment",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateOmniDashboard",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateOmniThread",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdatePreferences",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateResourceMetricsConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateServiceLevelObjective",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateSpace",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateView",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  }
+ ],
+ "Version": "v1.5"
+}

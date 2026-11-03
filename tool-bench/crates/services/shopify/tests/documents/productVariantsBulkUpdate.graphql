@@ -1,0 +1,26 @@
+
+          mutation productVariantsBulkUpdate(
+            $productId: ID!
+            $variants: [ProductVariantsBulkInput!]!
+          ) {
+            productVariantsBulkUpdate(
+              productId: $productId
+              variants: $variants
+            ) {
+              productVariants {
+                id
+                title
+                price
+                sku
+                selectedOptions {
+                  name
+                  value
+                }
+              }
+              userErrors {
+                field
+                message
+              }
+            }
+          }
+        

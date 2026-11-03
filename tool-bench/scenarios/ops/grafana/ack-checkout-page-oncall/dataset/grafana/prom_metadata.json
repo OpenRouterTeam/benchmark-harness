@@ -1,0 +1,82 @@
+[
+  {
+    "_key": "prom-prod/http_requests_total",
+    "datasource": "prom-prod",
+    "metric": "http_requests_total",
+    "type": "counter",
+    "help": "Total number of HTTP requests by status code.",
+    "unit": ""
+  },
+  {
+    "_key": "prom-prod/http_request_duration_seconds",
+    "datasource": "prom-prod",
+    "metric": "http_request_duration_seconds",
+    "type": "histogram",
+    "help": "HTTP request latency in seconds.",
+    "unit": "seconds"
+  },
+  {
+    "_key": "prom-prod/up",
+    "datasource": "prom-prod",
+    "metric": "up",
+    "type": "gauge",
+    "help": "1 if the target is up.",
+    "unit": ""
+  },
+  {
+    "_key": "prom-prod/container_memory_working_set_bytes",
+    "datasource": "prom-prod",
+    "metric": "container_memory_working_set_bytes",
+    "type": "gauge",
+    "help": "Current working set of the container in bytes.",
+    "unit": "bytes"
+  },
+  {
+    "_key": "prom-prod/pg_replication_lag_seconds",
+    "datasource": "prom-prod",
+    "metric": "pg_replication_lag_seconds",
+    "type": "gauge",
+    "help": "Replication lag behind the primary in seconds.",
+    "unit": "seconds"
+  },
+  {
+    "_key": "prom-staging/http_requests_total",
+    "datasource": "prom-staging",
+    "metric": "http_requests_total",
+    "type": "counter",
+    "help": "Total number of HTTP requests by status code.",
+    "unit": ""
+  },
+  {
+    "_key": "prom-staging/http_request_duration_seconds",
+    "datasource": "prom-staging",
+    "metric": "http_request_duration_seconds",
+    "type": "histogram",
+    "help": "HTTP request latency in seconds.",
+    "unit": "seconds"
+  },
+  {
+    "_key": "prom-staging/up",
+    "datasource": "prom-staging",
+    "metric": "up",
+    "type": "gauge",
+    "help": "1 if the target is up.",
+    "unit": ""
+  },
+  {
+    "_key": "prom-staging/container_memory_working_set_bytes",
+    "datasource": "prom-staging",
+    "metric": "container_memory_working_set_bytes",
+    "type": "gauge",
+    "help": "Current working set of the container in bytes.",
+    "unit": "bytes"
+  },
+  {
+    "_key": "prom-staging/pg_replication_lag_seconds",
+    "datasource": "prom-staging",
+    "metric": "pg_replication_lag_seconds",
+    "type": "gauge",
+    "help": "Replication lag behind the primary in seconds.",
+    "unit": "seconds"
+  }
+]

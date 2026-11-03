@@ -1,0 +1,51 @@
+[
+  {
+    "id": "PWHK001",
+    "type": "webhook_subscription",
+    "active": true,
+    "description": "Incident events to the chat-ops bridge",
+    "delivery_method": {
+      "id": "PDLV001",
+      "type": "http_delivery_method",
+      "url": "https://hooks.lumenlabs.dev/pagerduty",
+      "custom_headers": [],
+      "temporarily_disabled": false,
+      "secret": null
+    },
+    "events": [
+      "incident.triggered",
+      "incident.acknowledged",
+      "incident.resolved"
+    ],
+    "filter": {
+      "type": "account_reference"
+    }
+  },
+  {
+    "id": "PWHK002",
+    "type": "webhook_subscription",
+    "active": true,
+    "description": "Checkout incidents to the status-page automation",
+    "delivery_method": {
+      "id": "PDLV002",
+      "type": "http_delivery_method",
+      "url": "https://automation.lumenlabs.dev/hooks/checkout",
+      "custom_headers": [
+        {
+          "name": "X-Team",
+          "value": "commerce"
+        }
+      ],
+      "temporarily_disabled": false,
+      "secret": null
+    },
+    "events": [
+      "incident.triggered",
+      "incident.resolved"
+    ],
+    "filter": {
+      "id": "PSVCHKA",
+      "type": "service_reference"
+    }
+  }
+]

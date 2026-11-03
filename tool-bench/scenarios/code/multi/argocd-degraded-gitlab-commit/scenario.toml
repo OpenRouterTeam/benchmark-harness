@@ -1,0 +1,87 @@
+[scenario]
+id = "code/multi/argocd-degraded-gitlab-commit"
+title = "Trace a Degraded Argo CD app back to the failed GitLab pipeline that promoted it"
+now = "2026-10-29T14:05:00Z"
+seed = "code-multi-argocd-degraded-gitlab-commit"
+services = ["argocd", "gitlab"]
+tags = ["lookup", "multi-service", "argocd", "gitlab", "disambiguation"]
+timeout_sec = 1200
+
+# checkout-web (prod) runs storefront-deploy a23f2a7 ("promote 2.14.0-rc3") and cannot pull
+# ghcr.io/lumen-retail/checkout-web:2.14.0-rc3. The deploy commit names checkout-web pipeline
+# #7712 (tag v2.14.0-rc3), whose image-publish job failed (ghcr push denied, expired token)
+# while the always-run promote job still pushed the deploy commit. Distractors: the Degraded
+# staging twin (missing env var), the green rc2 pipeline 7698, and pipeline 7716 on main that
+# failed in lint.
+[expect.answer]
+contains = ["checkout-web", "2.14.0-rc3", "7712", "image-publish"]
+regex = "(?is)(denied|permission_denied|expired|scopes)"
+
+[[expect.required_calls]]
+service = "gitlab"
+method = "GET"
+path_regex = "/jobs/77123/trace$"
+
+[[expect.forbidden_calls]]
+service = "argocd"
+method = "POST"
+
+[[expect.forbidden_calls]]
+service = "argocd"
+method = "PUT"
+
+[[expect.forbidden_calls]]
+service = "argocd"
+method = "DELETE"
+
+[[expect.forbidden_calls]]
+service = "gitlab"
+method = "POST"
+path_regex = "^/api/v4/"
+
+[[expect.forbidden_calls]]
+service = "gitlab"
+method = "PUT"
+
+[[expect.forbidden_calls]]
+service = "gitlab"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "argocd"
+tool = "list_applications"
+arguments = {}
+
+[[solution.call]]
+endpoint = "argocd"
+tool = "get_application_resource_tree"
+arguments = { applicationName = "checkout-web" }
+
+[[solution.call]]
+endpoint = "gitlab"
+tool = "get_commit"
+arguments = { project_id = "lumen-retail/storefront/storefront-deploy", sha = "a23f2a7b21f788c07d95ceaeb529e54b7ae3dbcd" }
+
+[[solution.call]]
+endpoint = "gitlab"
+tool = "list_pipeline_jobs"
+arguments = { project_id = "lumen-retail/storefront/checkout-web", pipeline_id = "7712" }
+
+[[solution.call]]
+endpoint = "gitlab"
+tool = "get_pipeline_job_output"
+arguments = { project_id = "lumen-retail/storefront/checkout-web", job_id = "77123" }
+
+[solution]
+answer = """
+Degraded production app: checkout-web (cluster prod-us-east-1, namespace storefront). Its new ReplicaSet
+cannot pull ghcr.io/lumen-retail/checkout-web:2.14.0-rc3 (ErrImagePull / ImagePullBackOff, "not found").
+
+Argo CD is synced to storefront-deploy commit a23f2a7 "checkout-web(prod): promote 2.14.0-rc3", pushed by
+deploy-bot from lumen-retail/storefront/checkout-web pipeline 7712 (tag v2.14.0-rc3).
+
+In pipeline 7712 the image-publish job failed: `docker push` was rejected with
+"denied: permission_denied: The token provided does not match expected scopes (write:packages)" because the
+GHCR_TOKEN CI token expired, so the 2.14.0-rc3 image was never pushed. The promote job runs with
+`when: always`, so it promoted the tag to production anyway.
+"""

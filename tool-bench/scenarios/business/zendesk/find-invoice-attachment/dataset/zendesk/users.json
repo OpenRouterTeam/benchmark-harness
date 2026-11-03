@@ -1,0 +1,8 @@
+[
+  {"id": 9010001, "name": "Jordan Blake", "email": "jordan.blake@octo-corp.example", "role": "admin", "organization_id": null, "created_at": "2024-02-01T10:00:00Z", "time_zone": "Pacific Time (US & Canada)", "iana_time_zone": "America/Los_Angeles"},
+  {"id": 9010002, "name": "Sam Ortiz", "email": "sam.ortiz@octo-corp.example", "role": "agent", "organization_id": null, "created_at": "2024-05-13T16:20:00Z"},
+  {"id": 9010101, "name": "Priya Raman", "email": "priya.raman@lumenanalytics.example", "role": "end-user", "organization_id": 3600101, "created_at": "2025-03-04T09:12:00Z"},
+  {"id": 9010102, "name": "Priya Ramesh", "email": "priya@rameshbakery.example", "role": "end-user", "organization_id": 3600102, "created_at": "2025-07-19T14:41:00Z"},
+  {"id": 9010103, "name": "Tom Becker", "email": "tom.becker@lumenanalytics.example", "role": "end-user", "organization_id": 3600101, "created_at": "2025-03-04T09:15:00Z"},
+  {"id": 9010104, "name": "Grace Liu", "email": "grace.liu@harborfreight-co.example", "role": "end-user", "organization_id": 3600103, "created_at": "2025-11-02T11:00:00Z"}
+]

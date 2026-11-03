@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"hubspot-batch-create-associations","arguments":{"fromObjectType":"contacts","inputs":[{"from":{"id":"512001"},"to":{"id":"18234004"}}],"toObjectType":"companies","types":[{"associationCategory":"HUBSPOT_DEFINED","associationTypeId":1}]}}}

@@ -1,0 +1,32 @@
+[scenario]
+id = "search/exa/sdk-timeout-default"
+title = "Find an SDK's v4 timeout option and default among version look-alikes"
+now = "2026-10-28T10:00:00Z"
+seed = "search-exa-sdk-timeout-default"
+services = ["exa"]
+tags = ["lookup", "single-service", "exa"]
+timeout_sec = 900
+
+# v4: timeout_seconds, default 30. Distractors: v3 request_timeout (60), the Node SDK's
+# timeoutMs (120000), a README example using 10, and a 2024 Stack Overflow answer.
+[expect.answer]
+contains = ["timeout_seconds"]
+regex = '\b30\b'
+
+[[expect.required_calls]]
+service = "exa"
+method = "POST"
+path_regex = "^/(search|contents)$"
+
+[solution]
+answer = "In Driftwood Python SDK v4 the request timeout is set with `timeout_seconds` (passed to driftwood.Client); it defaults to 30 seconds. (v3's request_timeout was removed.) Source: https://docs.driftwood.dev/python/v4/configuration\n"
+
+[[solution.call]]
+endpoint = "exa"
+tool = "get_code_context_exa"
+arguments = { query = "Driftwood Python SDK v4 client configuration timeout option default" }
+
+[[solution.call]]
+endpoint = "exa"
+tool = "web_fetch_exa"
+arguments = { urls = ["https://docs.driftwood.dev/python/v4/configuration"] }

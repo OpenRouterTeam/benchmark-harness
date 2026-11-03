@@ -1,0 +1,109 @@
+{
+  "state": [
+    {
+      "pointer": "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5003/status",
+      "equals": "cancelled",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5011/status",
+      "equals": "cancelled",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5003/total",
+      "equals": 89.9,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5007/status",
+      "equals": "paid",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5020/status",
+      "equals": "pending",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5021/status",
+      "equals": "pending",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5009/status",
+      "equals": "pending",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/supabase/db.hzrkcwpxnqdlmvbtejsa.public.orders/3/status",
+      "equals": "pending",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/supabase/db.hzrkcwpxnqdlmvbtejsa.public.orders/4/status",
+      "equals": "pending",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.customers/1042/email",
+      "equals": "priya.shah@fastmail.com",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "supabase",
+      "method": "POST",
+      "path": "/v1/projects/qmvbxtzkplrnwdhyfaco/database/query",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "supabase",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

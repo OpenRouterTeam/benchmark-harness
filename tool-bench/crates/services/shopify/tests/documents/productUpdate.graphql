@@ -1,0 +1,48 @@
+
+        mutation productUpdate($input: ProductInput!) {
+          productUpdate(input: $input) {
+            product {
+              id
+              title
+              handle
+              descriptionHtml
+              vendor
+              productType
+              status
+              tags
+              seo {
+                title
+                description
+              }
+              metafields(first: 10) {
+                edges {
+                  node {
+                    id
+                    namespace
+                    key
+                    value
+                  }
+                }
+              }
+              variants(first: 20) {
+                edges {
+                  node {
+                    id
+                    title
+                    price
+                    sku
+                    selectedOptions {
+                      name
+                      value
+                    }
+                  }
+                }
+              }
+            }
+            userErrors {
+              field
+              message
+            }
+          }
+        }
+      

@@ -1,0 +1,30 @@
+[scenario]
+id = "ops/sentry/top-unresolved-checkout"
+title = "Find the noisiest unresolved error in the checkout API"
+now = "2026-10-20T16:00:00Z"
+seed = "ops-sentry-top-unresolved-checkout"
+services = ["sentry"]
+tags = ["lookup", "single-service", "sentry"]
+timeout_sec = 900
+
+# CHECKOUT-API-3F (1,842 events) is the most frequent *unresolved* issue in checkout-api.
+# Distractors: CHECKOUT-API-2R (ignored, 3,104), CHECKOUT-API-31 (resolved, 2,310), and
+# PAYMENTS-WORKER-1K (same title, other project, 5,120).
+[expect.answer]
+regex = "(?i)\\bCHECKOUT-API-3F\\b"
+
+[[expect.forbidden_calls]]
+service = "sentry"
+method = "PUT"
+
+[[expect.forbidden_calls]]
+service = "sentry"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "sentry"
+tool = "search_issues"
+arguments = { organizationSlug = "lumen-labs", projectSlugOrId = "checkout-api", query = "is:unresolved", sort = "freq", period = "7d", limit = 5 }
+
+[solution]
+answer = "CHECKOUT-API-3F: OperationalError: could not obtain connection from pool within 5.0s (1,842 events, 611 users)"

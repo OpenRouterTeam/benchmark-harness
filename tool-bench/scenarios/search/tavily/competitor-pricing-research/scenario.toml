@@ -1,0 +1,62 @@
+[scenario]
+id = "search/tavily/competitor-pricing-research"
+title = "Commission pro research on the competitors from our compare page"
+now = "2026-10-21T13:30:00Z"
+seed = "search-tavily-competitor-pricing-research"
+services = ["tavily"]
+tags = ["write", "single-service", "tavily", "disambiguation"]
+timeout_sec = 900
+
+# The first research task created in this world gets this ID (deterministic per seed).
+[[expect.state]]
+pointer = "/services/tavily/research/1436e5ca-12ef-80ea-ba57-3df5b71cdf69/model"
+equals = "pro"
+
+[[expect.state]]
+pointer = "/services/tavily/research/1436e5ca-12ef-80ea-ba57-3df5b71cdf69/input"
+contains = "Tallybook"
+
+[[expect.state]]
+pointer = "/services/tavily/research/1436e5ca-12ef-80ea-ba57-3df5b71cdf69/input"
+contains = "Billfold"
+
+[[expect.state]]
+pointer = "/services/tavily/research/1436e5ca-12ef-80ea-ba57-3df5b71cdf69/input"
+contains = "Sumwise"
+
+# Exactly one report.
+[[expect.state]]
+pointer = "/services/tavily/research/4eb773c7-a30f-81be-90de-5bfae36feba5"
+exists = false
+
+[[expect.required_calls]]
+service = "tavily"
+method = "POST"
+path = "/research"
+body = { model = "pro" }
+
+# Tools from third-party listings, not on the compare page.
+[[expect.forbidden_calls]]
+service = "tavily"
+path = "/research"
+body_contains = "InvoiceNinja"
+
+[[expect.forbidden_calls]]
+service = "tavily"
+path = "/research"
+body_contains = "Zervant"
+
+[[expect.forbidden_calls]]
+service = "tavily"
+path = "/research"
+body_contains = "FreshBooks"
+
+[[solution.call]]
+endpoint = "tavily"
+tool = "tavily_extract"
+arguments = { urls = ["https://www.ledgerlyhq.com/compare"] }
+
+[[solution.call]]
+endpoint = "tavily"
+tool = "tavily_research"
+arguments = { input = "Compare the current pricing plans (plan names, monthly prices and what each plan includes) of the invoicing tools Tallybook, Billfold and Sumwise.", model = "pro" }

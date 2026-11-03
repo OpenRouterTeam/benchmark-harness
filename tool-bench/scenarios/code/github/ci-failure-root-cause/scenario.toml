@@ -1,0 +1,27 @@
+[scenario]
+id = "code/github/ci-failure-root-cause"
+title = "Find why CI failed on a payments pull request"
+now = "2026-03-12T16:00:00Z"
+seed = "code-github-ci-failure-root-cause"
+services = ["github"]
+tags = ["single-service", "lookup", "github"]
+timeout_sec = 900
+
+# PR #42's latest CI run (9005) failed in unit-tests: TestRetryBackoffCapsAtMaxDelay,
+# "expected delay 30s, got 32s". Distractors: a flaky integration failure on main (run 9001),
+# a lint failure on PR #41 (run 9003), and an earlier green run on PR #42 (run 9004).
+[expect.answer]
+contains = ["TestRetryBackoffCapsAtMaxDelay", "32s"]
+
+[[solution.call]]
+endpoint = "github"
+tool = "actions_list"
+arguments = { method = "list_workflow_runs", owner = "octo-org", repo = "payments-api", workflow_runs_filter = { branch = "feat/webhook-backoff" } }
+
+[[solution.call]]
+endpoint = "github"
+tool = "get_job_logs"
+arguments = { owner = "octo-org", repo = "payments-api", run_id = 9005, failed_only = true, return_content = true, tail_lines = 50 }
+
+[solution]
+answer = "PR #42's latest CI run (CI #61, run 9005) failed in the `unit-tests` job. The failing test is `TestRetryBackoffCapsAtMaxDelay` in internal/webhook (backoff_test.go:17): \"expected delay 30s, got 32s\" - the new cap in Backoff() only applies above maxDelay+2s, so attempt 6 returns 32s instead of 30s. Lint and integration tests passed."

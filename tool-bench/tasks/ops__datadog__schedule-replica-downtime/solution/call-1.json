@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"schedule_downtime","arguments":{"end":1793419200,"message":"Rebuilding replica pg-prod-replica-2 (CHG-5012)","monitorId":7301,"scope":"host:pg-prod-replica-2","start":1793412000,"timezone":"UTC"}}}

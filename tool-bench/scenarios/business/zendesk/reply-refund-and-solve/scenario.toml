@@ -1,0 +1,103 @@
+[scenario]
+id = "business/zendesk/reply-refund-and-solve"
+title = "Tell a customer his duplicate-charge refund went out and solve the ticket"
+now = "2026-10-29T16:30:00Z"
+seed = "business-zendesk-reply-refund-and-solve"
+services = ["zendesk"]
+tags = ["write", "single-service", "zendesk", "disambiguation"]
+timeout_sec = 900
+
+# The right ticket is 4217 (Marcus Chen, October duplicate charge, open). Look-alikes:
+# 4201 (Marcus Chen, September duplicate charge, already solved), 4219 (Marcus Chen, seats),
+# 4220 (Marcus Cheng at another company, double charge), 4215 (unrelated).
+# 4217 has two comments in the dataset, so the reply is comments/4217/3.
+[[expect.state]]
+pointer = "/services/zendesk/tickets/4217/status"
+equals = "solved"
+
+# Any comment on the ticket (its position depends on what else the agent posts).
+[[expect.state]]
+pointer = "/services/zendesk/comments"
+key_prefix = "4217/"
+any = { public = true, body = "RF-88213" }
+
+[[expect.state]]
+pointer = "/services/zendesk/tickets/4201/status"
+equals = "solved"
+
+[[expect.required_calls]]
+service = "zendesk"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket_comment", arguments = { ticket_id = 4217 } }
+
+[[expect.required_calls]]
+service = "zendesk"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "update_ticket", arguments = { ticket_id = 4217 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket_comment", arguments = { ticket_id = 4201 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "update_ticket", arguments = { ticket_id = 4201 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket_comment", arguments = { ticket_id = 4219 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "update_ticket", arguments = { ticket_id = 4219 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket_comment", arguments = { ticket_id = 4220 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "update_ticket", arguments = { ticket_id = 4220 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket_comment", arguments = { ticket_id = 4215 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "update_ticket", arguments = { ticket_id = 4215 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket" }
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "get_tickets"
+arguments = {}
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "get_ticket_comments"
+arguments = { ticket_id = 4217 }
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "create_ticket_comment"
+arguments = { ticket_id = 4217, public = true, comment = "Hi Marcus,\n\nGood news: our billing team has refunded the duplicate October charge for invoice INV-55120. The refund reference is RF-88213, and it should appear on your card within 5-7 business days.\n\nSorry for the trouble, and thanks for your patience.\n\nJordan" }
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "update_ticket"
+arguments = { ticket_id = 4217, status = "solved" }

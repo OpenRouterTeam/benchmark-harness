@@ -1,0 +1,5 @@
+[
+  { "_key": "AKIAXB4NW7PLATOPS001", "AccessKeyId": "AKIAXB4NW7PLATOPS001", "UserName": "platform-ops", "Status": "Active", "CreateDate": "2025-10-01T08:00:00Z", "LastUsedDate": "2026-03-14T08:58:00Z", "LastUsedService": "iam" },
+  { "_key": "AKIAXB4NW7JCHEN00001", "AccessKeyId": "AKIAXB4NW7JCHEN00001", "UserName": "jchen", "Status": "Active", "CreateDate": "2024-03-18T12:00:00Z", "LastUsedDate": "2026-03-13T21:14:00Z", "LastUsedService": "ec2" },
+  { "_key": "AKIAXB4NW7SVCBKP0001", "AccessKeyId": "AKIAXB4NW7SVCBKP0001", "UserName": "svc-backup", "Status": "Active", "CreateDate": "2023-06-05T03:00:00Z", "LastUsedDate": "2026-03-14T03:00:12Z", "LastUsedService": "s3" }
+]

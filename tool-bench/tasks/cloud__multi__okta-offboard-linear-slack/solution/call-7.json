@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"slack_send_message","arguments":{"channel_id":"C0ITOPS5LF2","message":"Offboarding notice: Lena Fischer (Product) has been offboarded. Her Okta account is deactivated (not deleted) and she has been removed from the Payments and Web App teams in Linear."}}}

@@ -1,0 +1,10 @@
+[
+  {
+    "_key": "acme/platform/api:main",
+    "id": 21,
+    "name": "main",
+    "push_access_level": 40,
+    "merge_access_level": 30,
+    "allow_force_push": false
+  }
+]

@@ -1,0 +1,17 @@
+[package]
+name = "mock-stripe"
+edition.workspace = true
+version.workspace = true
+publish.workspace = true
+
+[dependencies]
+axum.workspace = true
+mock-core.workspace = true
+serde_json.workspace = true
+time.workspace = true
+
+[dev-dependencies]
+serde.workspace = true
+tokio.workspace = true
+toml.workspace = true
+tower.workspace = true

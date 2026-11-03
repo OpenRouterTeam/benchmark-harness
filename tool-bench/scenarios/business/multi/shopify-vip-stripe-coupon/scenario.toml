@@ -1,0 +1,134 @@
+[scenario]
+id = "business/multi/shopify-vip-stripe-coupon"
+title = "Make the store's top spender a VIP in Shopify and discount their Stripe subscription"
+now = "2026-05-18T14:00:00Z"
+seed = "business-multi-shopify-vip-stripe-coupon"
+services = ["shopify", "stripe"]
+tags = ["write", "multi-service", "shopify", "stripe", "disambiguation"]
+timeout_sec = 1200
+
+# Shopify: the top spender is Priya Raman (7101, priya.raman@outlook.com, 1,130.00 over three
+# orders). Distractors: Marcus Bell has the most orders, Elena Novak / Hannah Wright have big
+# refunded or voided orders, Tom Achebe is second at 1,050.00.
+# Stripe: two customers are named Priya Raman; the store customer is cus_PrRmOutlk01Ab (same
+# email), whose Supply Club box is sub_PrRmOutlkMonthly0000001. She also pays for a gift
+# subscription (sub_PrRmOutlkGift00000000001), which is not "her" box. The other Priya Raman
+# (Raman Design Studio) has her own Monthly Box. Coupons: VIP15 is the current VIP coupon;
+# VIP10-2025 is retired. Discounts are stored under "<subscription>:<coupon>".
+
+[[expect.state]]
+pointer = "/services/shopify/customers/7101/tags"
+contains = "VIP"
+
+[[expect.state]]
+pointer = "/services/shopify/customers/7101/tags"
+contains = "newsletter"
+
+[[expect.state]]
+pointer = "/services/shopify/customers/7104/tags"
+equals = []
+
+[[expect.state]]
+pointer = "/services/shopify/customers/7102/tags"
+equals = ["wholesale"]
+
+[[expect.state]]
+pointer = "/services/stripe/discounts/sub_PrRmOutlkMonthly0000001:VIP15/subscription"
+equals = "sub_PrRmOutlkMonthly0000001"
+
+[[expect.state]]
+pointer = "/services/stripe/subscriptions/sub_PrRmOutlkMonthly0000001/discounts/1"
+exists = false
+
+[[expect.state]]
+pointer = "/services/stripe/subscriptions/sub_PrRmOutlkMonthly0000001/status"
+equals = "active"
+
+[[expect.state]]
+pointer = "/services/stripe/subscriptions/sub_PrRmOutlkGift00000000001/discounts"
+equals = []
+
+[[expect.state]]
+pointer = "/services/stripe/subscriptions/sub_PrRmDsgnMonthly00000001/discounts"
+equals = []
+
+[[expect.state]]
+pointer = "/services/stripe/subscriptions/sub_TmAchbQuarterly00000001/discounts"
+equals = []
+
+[[expect.state]]
+pointer = "/services/stripe/subscriptions/sub_MrcBllMonthly0000000001/discounts"
+equals = []
+
+[[expect.required_calls]]
+service = "shopify"
+method = "POST"
+body_contains = "customerUpdate"
+
+[[expect.required_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { stripe_api_operation_id = "PostSubscriptionsSubscriptionExposedId" } }
+
+[[expect.forbidden_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { stripe_api_operation_id = "PostCoupons" } }
+
+[[expect.forbidden_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { stripe_api_operation_id = "DeleteSubscriptionsSubscriptionExposedId" } }
+
+[[expect.forbidden_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { parameters = { id = "sub_PrRmDsgnMonthly00000001" } } }
+
+[[expect.forbidden_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { parameters = { subscription_exposed_id = "sub_PrRmDsgnMonthly00000001" } } }
+
+[[expect.forbidden_calls]]
+service = "shopify"
+body = { variables = { input = { id = "gid://shopify/Customer/7104" } } }
+
+[[expect.forbidden_calls]]
+service = "shopify"
+body = { variables = { input = { id = "gid://shopify/Customer/7102" } } }
+
+[[solution.call]]
+endpoint = "shopify"
+tool = "get-customers"
+arguments = { limit = 50 }
+
+[[solution.call]]
+endpoint = "shopify"
+tool = "update-customer"
+arguments = { id = "7101", tags = ["newsletter", "VIP"] }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_read"
+arguments = { stripe_api_operation_id = "GetCustomersSearch", parameters = { query = "email:\"priya.raman@outlook.com\"" }, stripe_context = "acct_1OctoGd7Rq2LmN4p", livemode = false }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_read"
+arguments = { stripe_api_operation_id = "GetSubscriptions", parameters = { customer = "cus_PrRmOutlk01Ab" }, stripe_context = "acct_1OctoGd7Rq2LmN4p", livemode = false }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_read"
+arguments = { stripe_api_operation_id = "GetCoupons", parameters = { limit = 20 }, stripe_context = "acct_1OctoGd7Rq2LmN4p", livemode = false }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_write"
+arguments = { stripe_api_operation_id = "PostSubscriptionsSubscriptionExposedId", parameters = { id = "sub_PrRmOutlkMonthly0000001", discounts = [{ coupon = "VIP15" }] }, stripe_context = "acct_1OctoGd7Rq2LmN4p", livemode = false }

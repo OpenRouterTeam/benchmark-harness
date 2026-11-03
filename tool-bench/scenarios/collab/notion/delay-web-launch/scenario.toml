@@ -1,0 +1,47 @@
+[scenario]
+id = "collab/notion/delay-web-launch"
+title = "Mark the Web 4.12 launch as delayed with its new date"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-notion-delay-web-launch"
+services = ["notion"]
+tags = ["write", "single-service", "notion"]
+timeout_sec = 900
+
+[[expect.state]]
+pointer = "/services/notion/pages/afa8e804-d2ac-4ee2-80e2-e18ed4c05865/properties/Status/status/name"
+equals = "Delayed"
+
+[[expect.state]]
+pointer = "/services/notion/pages/afa8e804-d2ac-4ee2-80e2-e18ed4c05865/properties/Launch date/date/start"
+equals = "2026-11-10"
+
+[[expect.state]]
+pointer = "/services/notion/pages/e63c9184-7acf-45e0-881d-666e2972532e/properties/Status/status/name"
+equals = "Done"
+
+[[expect.state]]
+pointer = "/services/notion/pages/e63c9184-7acf-45e0-881d-666e2972532e/properties/Launch date/date/start"
+equals = "2026-10-06"
+
+[[expect.state]]
+pointer = "/services/notion/pages/afa8e804-d2ac-4ee2-80e2-e18ed4c05865/in_trash"
+equals = false
+
+[[expect.required_calls]]
+service = "notion"
+method = "PATCH"
+path_regex = "^/v1/pages/afa8e804-?d2ac-?4ee2-?80e2-?e18ed4c05865$"
+
+[[expect.forbidden_calls]]
+service = "notion"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "notion"
+tool = "API-query-data-source"
+arguments = { data_source_id = "0b7747c0-5ed0-4c77-a8b1-867a05a3c300", filter = { property = "Launch", title = { equals = "Web 4.12" } } }
+
+[[solution.call]]
+endpoint = "notion"
+tool = "API-patch-page"
+arguments = { page_id = "afa8e804-d2ac-4ee2-80e2-e18ed4c05865", properties = { Status = { status = { name = "Delayed" } }, "Launch date" = { date = { start = "2026-11-10" } } } }

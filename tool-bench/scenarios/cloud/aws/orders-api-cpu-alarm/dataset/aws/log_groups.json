@@ -1,0 +1,5 @@
+[
+  { "_key": "/ec2/orders-api/prod", "logGroupName": "/ec2/orders-api/prod", "creationTime": "2026-01-19T07:20:00Z", "retentionInDays": 30, "logGroupClass": "STANDARD", "tags": { "Team": "commerce" } },
+  { "_key": "/ec2/orders-api/staging", "logGroupName": "/ec2/orders-api/staging", "creationTime": "2026-02-02T13:45:00Z", "retentionInDays": 7, "logGroupClass": "STANDARD", "tags": { "Team": "commerce" } },
+  { "_key": "/ec2/orders-worker/prod", "logGroupName": "/ec2/orders-worker/prod", "creationTime": "2026-01-19T07:20:00Z", "retentionInDays": 30, "logGroupClass": "STANDARD" }
+]

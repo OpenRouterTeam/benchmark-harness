@@ -1,0 +1,24 @@
+[
+  {
+    "_key": "a1",
+    "keywords": [
+      "acme",
+      "competitors",
+      "pricing"
+    ],
+    "data": {
+      "competitors": [
+        {
+          "name": "Beta",
+          "price": 25
+        }
+      ]
+    },
+    "sources": [
+      {
+        "url": "https://beta.example/pricing"
+      }
+    ],
+    "creditsUsed": 180
+  }
+]

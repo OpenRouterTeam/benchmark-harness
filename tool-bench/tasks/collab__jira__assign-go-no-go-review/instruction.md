@@ -1,0 +1,1 @@
+The Jira ticket for the Payments v2 GA go/no-go review has no owner. Assign it to the go/no-go criteria owner named in our current Payments v2 launch plan in Confluence, then move the ticket to In Progress. Don't edit the Confluence pages.

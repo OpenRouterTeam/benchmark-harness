@@ -1,0 +1,275 @@
+[
+  {
+    "_key": "3f9a6c21d8e04b7aa1c5e2f7b9d04e11",
+    "eventID": "3f9a6c21d8e04b7aa1c5e2f7b9d04e11",
+    "groupID": "7201330418",
+    "project": "storefront",
+    "dateCreated": "2026-10-28T08:19:12Z",
+    "title": "TypeError: paymentsClient.confirmCardPayment is not a function",
+    "message": "",
+    "level": "error",
+    "culprit": "submitPayment(app/checkout/PaymentStep)",
+    "platform": "javascript",
+    "release": "e07a3c9d5b1f48e2a6c0d7b9f3e1a5c8d2b4f690",
+    "environment": "production",
+    "user": {
+      "id": "u_88120",
+      "email": "lena.fischer@example.com",
+      "ip_address": "203.0.113.61"
+    },
+    "exception": {
+      "type": "TypeError",
+      "value": "paymentsClient.confirmCardPayment is not a function",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "webpack:///./node_modules/react-dom/cjs/react-dom.production.min.js",
+          "function": "renderWithHooks",
+          "lineNo": 160,
+          "inApp": false,
+          "colNo": 137
+        },
+        {
+          "filename": "webpack:///./app/checkout/PaymentStep.tsx",
+          "function": "submitPayment",
+          "lineNo": 77,
+          "inApp": true,
+          "colNo": 31,
+          "context": [
+            [
+              76,
+              "  const client = await loadPaymentsClient({ version: 3 });"
+            ],
+            [
+              77,
+              "  const result = await client.confirmCardPayment(intent.clientSecret, card);"
+            ]
+          ]
+        }
+      ]
+    },
+    "tags": {
+      "browser": "Chrome 130.0",
+      "url": "https://acme-shop.com/checkout/payment"
+    }
+  },
+  {
+    "_key": "8b2d0e47c1f94a2db6e7a1c3f5d08a92",
+    "eventID": "8b2d0e47c1f94a2db6e7a1c3f5d08a92",
+    "groupID": "7201330418",
+    "project": "storefront",
+    "dateCreated": "2026-10-28T14:52:40Z",
+    "title": "TypeError: paymentsClient.confirmCardPayment is not a function",
+    "message": "",
+    "level": "error",
+    "culprit": "submitPayment(app/checkout/PaymentStep)",
+    "platform": "javascript",
+    "release": "e07a3c9d5b1f48e2a6c0d7b9f3e1a5c8d2b4f690",
+    "environment": "production",
+    "user": {
+      "id": "u_90412",
+      "email": "omar.haddad@example.com",
+      "ip_address": "198.51.100.23"
+    },
+    "exception": {
+      "type": "TypeError",
+      "value": "paymentsClient.confirmCardPayment is not a function",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "webpack:///./node_modules/react-dom/cjs/react-dom.production.min.js",
+          "function": "renderWithHooks",
+          "lineNo": 160,
+          "inApp": false,
+          "colNo": 137
+        },
+        {
+          "filename": "webpack:///./app/checkout/PaymentStep.tsx",
+          "function": "submitPayment",
+          "lineNo": 77,
+          "inApp": true,
+          "colNo": 31,
+          "context": [
+            [
+              76,
+              "  const client = await loadPaymentsClient({ version: 3 });"
+            ],
+            [
+              77,
+              "  const result = await client.confirmCardPayment(intent.clientSecret, card);"
+            ]
+          ]
+        }
+      ]
+    },
+    "tags": {
+      "browser": "Chrome 130.0",
+      "url": "https://acme-shop.com/checkout/payment"
+    }
+  },
+  {
+    "_key": "c41e9a7b2d6f48e0a3b5c7d9e1f20b34",
+    "eventID": "c41e9a7b2d6f48e0a3b5c7d9e1f20b34",
+    "groupID": "7201331102",
+    "project": "storefront",
+    "dateCreated": "2026-10-28T13:05:51Z",
+    "title": "TypeError: Cannot read properties of undefined (reading 'balance')",
+    "message": "",
+    "level": "error",
+    "culprit": "GiftCardField(app/checkout/GiftCardField)",
+    "platform": "javascript",
+    "release": "4be1d07c9a3f58e2b6d0c1a7e9f4b3d25c8a6e10",
+    "environment": "preview",
+    "user": {
+      "id": "u_qa_3",
+      "email": "qa@acme-shop.com",
+      "ip_address": "192.0.2.10"
+    },
+    "exception": {
+      "type": "TypeError",
+      "value": "Cannot read properties of undefined (reading 'balance')",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "webpack:///./node_modules/react-dom/cjs/react-dom.production.min.js",
+          "function": "renderWithHooks",
+          "lineNo": 160,
+          "inApp": false,
+          "colNo": 137
+        },
+        {
+          "filename": "webpack:///./app/checkout/GiftCardField.tsx",
+          "function": "GiftCardField",
+          "lineNo": 31,
+          "inApp": true,
+          "colNo": 31,
+          "context": [
+            [
+              31,
+              "  const remaining = card.balance - total;"
+            ]
+          ]
+        }
+      ]
+    },
+    "tags": {
+      "browser": "Chrome 130.0",
+      "url": "https://storefront-git-gift-cards-acme-shop.vercel.app/checkout"
+    }
+  },
+  {
+    "_key": "d7a35e1c9b0f4d62a8e4b1c6f3d29e75",
+    "eventID": "d7a35e1c9b0f4d62a8e4b1c6f3d29e75",
+    "groupID": "7201298877",
+    "project": "storefront",
+    "dateCreated": "2026-10-28T11:41:00Z",
+    "title": "ChunkLoadError: Loading chunk 418 failed.",
+    "message": "",
+    "level": "error",
+    "culprit": "app/cart/CartDrawer",
+    "platform": "javascript",
+    "release": "e07a3c9d5b1f48e2a6c0d7b9f3e1a5c8d2b4f690",
+    "environment": "production",
+    "user": {
+      "id": "u_77310",
+      "email": "sam.lee@example.com",
+      "ip_address": "203.0.113.90"
+    },
+    "exception": {
+      "type": "ChunkLoadError",
+      "value": "Loading chunk 418 failed.",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "webpack:///./node_modules/react-dom/cjs/react-dom.production.min.js",
+          "function": "renderWithHooks",
+          "lineNo": 160,
+          "inApp": false,
+          "colNo": 137
+        },
+        {
+          "filename": "webpack:///./app/cart/CartDrawer.tsx",
+          "function": "loadChunk",
+          "lineNo": 12,
+          "inApp": true,
+          "colNo": 31,
+          "context": [
+            [
+              12,
+              "const Upsell = dynamic(() => import('./Upsell'));"
+            ]
+          ]
+        }
+      ]
+    },
+    "tags": {
+      "browser": "Chrome 130.0",
+      "url": "https://acme-shop.com/cart"
+    }
+  },
+  {
+    "_key": "e5b8c2a94f1d4e37b0a6d8c1e3f57a29",
+    "eventID": "e5b8c2a94f1d4e37b0a6d8c1e3f57a29",
+    "groupID": "7201312240",
+    "project": "storefront-admin",
+    "dateCreated": "2026-10-28T12:10:00Z",
+    "title": "TypeError: refunds.map is not a function",
+    "message": "",
+    "level": "error",
+    "culprit": "BulkRefundTable(app/orders/BulkRefundTable)",
+    "platform": "javascript",
+    "release": "b4d8f2a6c0e19375d7b3f1a9e5c2d8b06a4f7e31",
+    "environment": "production",
+    "user": {
+      "id": "staff_12",
+      "email": "kofi@acme-shop.com",
+      "ip_address": "192.0.2.44"
+    },
+    "exception": {
+      "type": "TypeError",
+      "value": "refunds.map is not a function",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "webpack:///./node_modules/react-dom/cjs/react-dom.production.min.js",
+          "function": "renderWithHooks",
+          "lineNo": 160,
+          "inApp": false,
+          "colNo": 137
+        },
+        {
+          "filename": "webpack:///./app/orders/BulkRefundTable.tsx",
+          "function": "BulkRefundTable",
+          "lineNo": 54,
+          "inApp": true,
+          "colNo": 31,
+          "context": [
+            [
+              54,
+              "  return refunds.map((r) => <RefundRow key={r.id} refund={r} />);"
+            ]
+          ]
+        }
+      ]
+    },
+    "tags": {
+      "browser": "Chrome 130.0",
+      "url": "https://admin.acme-shop.com/orders/refunds"
+    }
+  }
+]

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_pipeline_job_output","arguments":{"job_id":"77123","project_id":"lumen-retail/storefront/checkout-web"}}}

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_logs","arguments":{"from":1793365200,"limit":100,"query":"service:checkout-api env:prod status:error \"connection reset by peer\"","to":1793370600}}}

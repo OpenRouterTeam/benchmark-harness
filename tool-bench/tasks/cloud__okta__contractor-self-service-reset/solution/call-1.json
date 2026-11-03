@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"list_policy_rules","arguments":{"policy_id":"00p4pwcntr2Uv9Wx0x7"}}}

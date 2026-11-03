@@ -1,0 +1,43 @@
+
+        mutation orderUpdate($input: OrderInput!) {
+          orderUpdate(input: $input) {
+            order {
+              id
+              name
+              email
+              note
+              tags
+              customAttributes {
+                key
+                value
+              }
+              metafields(first: 10) {
+                edges {
+                  node {
+                    id
+                    namespace
+                    key
+                    value
+                  }
+                }
+              }
+              shippingAddress {
+                address1
+                address2
+                city
+                company
+                country
+                firstName
+                lastName
+                phone
+                province
+                zip
+              }
+            }
+            userErrors {
+              field
+              message
+            }
+          }
+        }
+      

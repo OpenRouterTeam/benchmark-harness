@@ -1,0 +1,65 @@
+[
+  {
+    "id": "75dbca3d-6368-502e-8e56-0c82837ea691",
+    "name": "Bug",
+    "color": "#eb5757",
+    "teamId": null,
+    "description": "Something is broken",
+    "createdAt": "2024-02-01T09:00:00.000Z",
+    "updatedAt": "2024-02-01T09:00:00.000Z"
+  },
+  {
+    "id": "3185275b-9eb9-59e5-8752-cd0422561dd2",
+    "name": "Feature",
+    "color": "#bb87fc",
+    "teamId": null,
+    "description": null,
+    "createdAt": "2024-02-01T09:00:00.000Z",
+    "updatedAt": "2024-02-01T09:00:00.000Z"
+  },
+  {
+    "id": "cbd72cb4-2365-5ff6-a160-14394547f586",
+    "name": "Customer escalation",
+    "color": "#f2994a",
+    "teamId": null,
+    "description": "Raised by a customer through support",
+    "createdAt": "2024-02-01T09:00:00.000Z",
+    "updatedAt": "2024-02-01T09:00:00.000Z"
+  },
+  {
+    "id": "8ef64bae-979e-5f6d-a87b-f35ec8de2370",
+    "name": "Tech debt",
+    "color": "#4ea7fc",
+    "teamId": null,
+    "description": null,
+    "createdAt": "2024-02-01T09:00:00.000Z",
+    "updatedAt": "2024-02-01T09:00:00.000Z"
+  },
+  {
+    "id": "781241a9-6cc1-5553-911e-780ad51698ef",
+    "name": "Security",
+    "color": "#d64545",
+    "teamId": "a7c70c10-090f-50bf-a8ce-b4cdee9d8572",
+    "description": null,
+    "createdAt": "2024-02-01T09:00:00.000Z",
+    "updatedAt": "2024-02-01T09:00:00.000Z"
+  },
+  {
+    "id": "3730ccfa-38e2-55fb-a96f-36061d5ec70a",
+    "name": "3DS",
+    "color": "#26b5ce",
+    "teamId": "5854633b-d1e9-52b6-b3c7-d309bfb881cb",
+    "description": "Strong customer authentication flows",
+    "createdAt": "2024-02-01T09:00:00.000Z",
+    "updatedAt": "2024-02-01T09:00:00.000Z"
+  },
+  {
+    "id": "b528a42a-7d96-511c-ab34-1b8cb0bf0c8d",
+    "name": "Safari",
+    "color": "#95a2b3",
+    "teamId": "6da75b4c-0e7c-5ac7-a415-f09a129582b1",
+    "description": null,
+    "createdAt": "2024-02-01T09:00:00.000Z",
+    "updatedAt": "2024-02-01T09:00:00.000Z"
+  }
+]

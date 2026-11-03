@@ -1,0 +1,1569 @@
+[
+  {
+    "_key": "4277b63d-291e-513f-9f6c-5d185a2f7bb5",
+    "app": "argocd/billing-worker",
+    "group": "apps",
+    "version": "v1",
+    "kind": "Deployment",
+    "namespace": "billing",
+    "name": "billing-worker",
+    "uid": "4277b63d-291e-513f-9f6c-5d185a2f7bb5",
+    "resourceVersion": "41867",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:18"
+      }
+    ],
+    "health": {
+      "status": "Degraded",
+      "message": "Deployment \"billing-worker\" exceeded its progress deadline"
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "billing-worker",
+        "namespace": "billing",
+        "uid": "4277b63d-291e-513f-9f6c-5d185a2f7bb5",
+        "resourceVersion": "41867",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "billing-worker",
+          "app.kubernetes.io/instance": "billing-worker",
+          "app.kubernetes.io/version": "1.43.0",
+          "app.kubernetes.io/part-of": "billing"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "18",
+          "argocd.argoproj.io/tracking-id": "billing-worker:apps/Deployment:billing/billing-worker"
+        }
+      },
+      "spec": {
+        "replicas": 2,
+        "revisionHistoryLimit": 5,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "billing-worker",
+            "app.kubernetes.io/instance": "billing-worker"
+          }
+        },
+        "strategy": {
+          "type": "RollingUpdate",
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "billing-worker",
+              "app.kubernetes.io/instance": "billing-worker",
+              "app.kubernetes.io/version": "1.43.0"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "billing-worker",
+            "containers": [
+              {
+                "name": "billing-worker",
+                "image": "ghcr.io/lumen-retail/billing-worker:1.43.0",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "observedGeneration": 20,
+        "replicas": 2,
+        "readyReplicas": 0,
+        "availableReplicas": 0,
+        "updatedReplicas": 2
+      }
+    }
+  },
+  {
+    "_key": "8dc6dc62-0132-5431-bbd6-5a4a973e7b02",
+    "app": "argocd/billing-worker",
+    "group": "apps",
+    "version": "v1",
+    "kind": "ReplicaSet",
+    "namespace": "billing",
+    "name": "billing-worker-69f8d7c5b",
+    "uid": "8dc6dc62-0132-5431-bbd6-5a4a973e7b02",
+    "resourceVersion": "41884",
+    "createdAt": "2026-10-29T08:34:10Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "Deployment",
+        "namespace": "billing",
+        "name": "billing-worker",
+        "uid": "4277b63d-291e-513f-9f6c-5d185a2f7bb5"
+      }
+    ],
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:18"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/billing-worker:1.43.0"
+    ],
+    "health": {
+      "status": "Degraded",
+      "message": "Deployment \"billing-worker\" exceeded its progress deadline"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "billing-worker-69f8d7c5b",
+        "namespace": "billing",
+        "uid": "8dc6dc62-0132-5431-bbd6-5a4a973e7b02",
+        "resourceVersion": "41884",
+        "creationTimestamp": "2026-10-29T08:34:10Z",
+        "labels": {
+          "app.kubernetes.io/name": "billing-worker",
+          "app.kubernetes.io/instance": "billing-worker",
+          "pod-template-hash": "69f8d7c5b"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "18"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "billing-worker",
+            "uid": "4277b63d-291e-513f-9f6c-5d185a2f7bb5",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "replicas": 2,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "billing-worker",
+            "app.kubernetes.io/instance": "billing-worker",
+            "pod-template-hash": "69f8d7c5b"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "billing-worker",
+              "app.kubernetes.io/instance": "billing-worker",
+              "app.kubernetes.io/version": "1.43.0"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "billing-worker",
+            "containers": [
+              {
+                "name": "billing-worker",
+                "image": "ghcr.io/lumen-retail/billing-worker:1.43.0",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "replicas": 2,
+        "readyReplicas": 0,
+        "availableReplicas": 0
+      }
+    }
+  },
+  {
+    "_key": "87a2754d-a803-5e95-920b-79c741172bad",
+    "app": "argocd/billing-worker",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "billing",
+    "name": "billing-worker-69f8d7c5b-bq7wz",
+    "uid": "87a2754d-a803-5e95-920b-79c741172bad",
+    "resourceVersion": "41901",
+    "createdAt": "2026-10-29T08:34:10Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "billing",
+        "name": "billing-worker-69f8d7c5b",
+        "uid": "8dc6dc62-0132-5431-bbd6-5a4a973e7b02"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "CrashLoopBackOff"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-17-203.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "0/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "61"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/billing-worker:1.43.0"
+    ],
+    "health": {
+      "status": "Degraded",
+      "message": "back-off 5m0s restarting failed container=billing-worker pod=billing-worker-69f8d7c5b-bq7wz_billing"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "billing-worker-69f8d7c5b-bq7wz",
+        "namespace": "billing",
+        "uid": "87a2754d-a803-5e95-920b-79c741172bad",
+        "resourceVersion": "41901",
+        "creationTimestamp": "2026-10-29T08:34:10Z",
+        "labels": {
+          "app.kubernetes.io/name": "billing-worker",
+          "app.kubernetes.io/instance": "billing-worker",
+          "pod-template-hash": "69f8d7c5b"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "billing-worker-69f8d7c5b",
+            "uid": "8dc6dc62-0132-5431-bbd6-5a4a973e7b02",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "billing-worker",
+        "containers": [
+          {
+            "name": "billing-worker",
+            "image": "ghcr.io/lumen-retail/billing-worker:1.43.0",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-17-203.ec2.internal"
+      },
+      "status": {
+        "phase": "Pending",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "False"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "billing-worker",
+            "image": "ghcr.io/lumen-retail/billing-worker:1.43.0",
+            "ready": false,
+            "restartCount": 61,
+            "started": false,
+            "lastState": {
+              "terminated": {
+                "exitCode": 2,
+                "reason": "Error",
+                "finishedAt": "2026-10-29T13:58:00Z"
+              }
+            },
+            "state": {
+              "waiting": {
+                "reason": "CrashLoopBackOff"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-29T08:34:10Z"
+      }
+    }
+  },
+  {
+    "_key": "dd58a839-be0a-5b67-8d16-c7d7e4f4e143",
+    "app": "argocd/billing-worker",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "billing",
+    "name": "billing-worker-69f8d7c5b-c4n8x",
+    "uid": "dd58a839-be0a-5b67-8d16-c7d7e4f4e143",
+    "resourceVersion": "41918",
+    "createdAt": "2026-10-29T08:34:10Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "billing",
+        "name": "billing-worker-69f8d7c5b",
+        "uid": "8dc6dc62-0132-5431-bbd6-5a4a973e7b02"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "CrashLoopBackOff"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-18-44.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "0/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "61"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/billing-worker:1.43.0"
+    ],
+    "health": {
+      "status": "Degraded",
+      "message": "back-off 5m0s restarting failed container=billing-worker pod=billing-worker-69f8d7c5b-c4n8x_billing"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "billing-worker-69f8d7c5b-c4n8x",
+        "namespace": "billing",
+        "uid": "dd58a839-be0a-5b67-8d16-c7d7e4f4e143",
+        "resourceVersion": "41918",
+        "creationTimestamp": "2026-10-29T08:34:10Z",
+        "labels": {
+          "app.kubernetes.io/name": "billing-worker",
+          "app.kubernetes.io/instance": "billing-worker",
+          "pod-template-hash": "69f8d7c5b"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "billing-worker-69f8d7c5b",
+            "uid": "8dc6dc62-0132-5431-bbd6-5a4a973e7b02",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "billing-worker",
+        "containers": [
+          {
+            "name": "billing-worker",
+            "image": "ghcr.io/lumen-retail/billing-worker:1.43.0",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-18-44.ec2.internal"
+      },
+      "status": {
+        "phase": "Pending",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "False"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "billing-worker",
+            "image": "ghcr.io/lumen-retail/billing-worker:1.43.0",
+            "ready": false,
+            "restartCount": 61,
+            "started": false,
+            "lastState": {
+              "terminated": {
+                "exitCode": 2,
+                "reason": "Error",
+                "finishedAt": "2026-10-29T13:58:00Z"
+              }
+            },
+            "state": {
+              "waiting": {
+                "reason": "CrashLoopBackOff"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-29T08:34:10Z"
+      }
+    }
+  },
+  {
+    "_key": "94928ffb-7369-5e98-9c25-4958113f8f3b",
+    "app": "argocd/billing-worker",
+    "group": "",
+    "version": "v1",
+    "kind": "ConfigMap",
+    "namespace": "billing",
+    "name": "billing-worker-config",
+    "uid": "94928ffb-7369-5e98-9c25-4958113f8f3b",
+    "resourceVersion": "41935",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {
+        "name": "billing-worker-config",
+        "namespace": "billing",
+        "uid": "94928ffb-7369-5e98-9c25-4958113f8f3b",
+        "resourceVersion": "41935",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/instance": "billing-worker"
+        },
+        "annotations": {
+          "argocd.argoproj.io/tracking-id": "billing-worker:/ConfigMap:billing/billing-worker-config"
+        }
+      },
+      "data": {
+        "QUEUE_URL": "https://sqs.us-east-1.amazonaws.com/381492004121/invoice-jobs",
+        "BATCH_SIZE": "50"
+      }
+    }
+  },
+  {
+    "_key": "36d012a8-2d0c-5489-91a6-ab358783e78b",
+    "app": "argocd/billing-api",
+    "group": "apps",
+    "version": "v1",
+    "kind": "Deployment",
+    "namespace": "billing",
+    "name": "billing-api",
+    "uid": "36d012a8-2d0c-5489-91a6-ab358783e78b",
+    "resourceVersion": "42054",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:40"
+      }
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "billing-api",
+        "namespace": "billing",
+        "uid": "36d012a8-2d0c-5489-91a6-ab358783e78b",
+        "resourceVersion": "42054",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "billing-api",
+          "app.kubernetes.io/instance": "billing-api",
+          "app.kubernetes.io/version": "2.8.0",
+          "app.kubernetes.io/part-of": "billing"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "40",
+          "argocd.argoproj.io/tracking-id": "billing-api:apps/Deployment:billing/billing-api"
+        }
+      },
+      "spec": {
+        "replicas": 3,
+        "revisionHistoryLimit": 5,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "billing-api",
+            "app.kubernetes.io/instance": "billing-api"
+          }
+        },
+        "strategy": {
+          "type": "RollingUpdate",
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "billing-api",
+              "app.kubernetes.io/instance": "billing-api",
+              "app.kubernetes.io/version": "2.8.0"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "billing-api",
+            "containers": [
+              {
+                "name": "billing-api",
+                "image": "ghcr.io/lumen-retail/billing-api:2.8.0",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "observedGeneration": 42,
+        "replicas": 3,
+        "readyReplicas": 3,
+        "availableReplicas": 3,
+        "updatedReplicas": 3
+      }
+    }
+  },
+  {
+    "_key": "b997ee6f-2fc7-55e0-aa55-26f12177ca9f",
+    "app": "argocd/billing-api",
+    "group": "apps",
+    "version": "v1",
+    "kind": "ReplicaSet",
+    "namespace": "billing",
+    "name": "billing-api-7c9e5d4f6",
+    "uid": "b997ee6f-2fc7-55e0-aa55-26f12177ca9f",
+    "resourceVersion": "42071",
+    "createdAt": "2026-10-22T10:06:30Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "Deployment",
+        "namespace": "billing",
+        "name": "billing-api",
+        "uid": "36d012a8-2d0c-5489-91a6-ab358783e78b"
+      }
+    ],
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:40"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/billing-api:2.8.0"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "billing-api-7c9e5d4f6",
+        "namespace": "billing",
+        "uid": "b997ee6f-2fc7-55e0-aa55-26f12177ca9f",
+        "resourceVersion": "42071",
+        "creationTimestamp": "2026-10-22T10:06:30Z",
+        "labels": {
+          "app.kubernetes.io/name": "billing-api",
+          "app.kubernetes.io/instance": "billing-api",
+          "pod-template-hash": "7c9e5d4f6"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "40"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "billing-api",
+            "uid": "36d012a8-2d0c-5489-91a6-ab358783e78b",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "replicas": 3,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "billing-api",
+            "app.kubernetes.io/instance": "billing-api",
+            "pod-template-hash": "7c9e5d4f6"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "billing-api",
+              "app.kubernetes.io/instance": "billing-api",
+              "app.kubernetes.io/version": "2.8.0"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "billing-api",
+            "containers": [
+              {
+                "name": "billing-api",
+                "image": "ghcr.io/lumen-retail/billing-api:2.8.0",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "replicas": 3,
+        "readyReplicas": 3,
+        "availableReplicas": 3
+      }
+    }
+  },
+  {
+    "_key": "0bf11d93-e217-5167-b0c9-b370d8d672d8",
+    "app": "argocd/billing-api",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "billing",
+    "name": "billing-api-7c9e5d4f6-h2j4k",
+    "uid": "0bf11d93-e217-5167-b0c9-b370d8d672d8",
+    "resourceVersion": "42088",
+    "createdAt": "2026-10-22T10:06:30Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "billing",
+        "name": "billing-api-7c9e5d4f6",
+        "uid": "b997ee6f-2fc7-55e0-aa55-26f12177ca9f"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-17-203.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/billing-api:2.8.0"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "billing-api-7c9e5d4f6-h2j4k",
+        "namespace": "billing",
+        "uid": "0bf11d93-e217-5167-b0c9-b370d8d672d8",
+        "resourceVersion": "42088",
+        "creationTimestamp": "2026-10-22T10:06:30Z",
+        "labels": {
+          "app.kubernetes.io/name": "billing-api",
+          "app.kubernetes.io/instance": "billing-api",
+          "pod-template-hash": "7c9e5d4f6"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "billing-api-7c9e5d4f6",
+            "uid": "b997ee6f-2fc7-55e0-aa55-26f12177ca9f",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "billing-api",
+        "containers": [
+          {
+            "name": "billing-api",
+            "image": "ghcr.io/lumen-retail/billing-api:2.8.0",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-17-203.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "billing-api",
+            "image": "ghcr.io/lumen-retail/billing-api:2.8.0",
+            "imageID": "ghcr.io/lumen-retail/billing-api@sha256:fb05fa03d4b47957686cf2e00993ec1e7ac0545cfb05fa03d4b47957686cf2e0",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-28T09:00:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-22T10:06:30Z"
+      }
+    }
+  },
+  {
+    "_key": "9b6e2b4f-6c22-56e9-b1d8-f9f75b39f3df",
+    "app": "argocd/billing-api",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "billing",
+    "name": "billing-api-7c9e5d4f6-l6m8n",
+    "uid": "9b6e2b4f-6c22-56e9-b1d8-f9f75b39f3df",
+    "resourceVersion": "42105",
+    "createdAt": "2026-10-22T10:06:30Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "billing",
+        "name": "billing-api-7c9e5d4f6",
+        "uid": "b997ee6f-2fc7-55e0-aa55-26f12177ca9f"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-18-44.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/billing-api:2.8.0"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "billing-api-7c9e5d4f6-l6m8n",
+        "namespace": "billing",
+        "uid": "9b6e2b4f-6c22-56e9-b1d8-f9f75b39f3df",
+        "resourceVersion": "42105",
+        "creationTimestamp": "2026-10-22T10:06:30Z",
+        "labels": {
+          "app.kubernetes.io/name": "billing-api",
+          "app.kubernetes.io/instance": "billing-api",
+          "pod-template-hash": "7c9e5d4f6"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "billing-api-7c9e5d4f6",
+            "uid": "b997ee6f-2fc7-55e0-aa55-26f12177ca9f",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "billing-api",
+        "containers": [
+          {
+            "name": "billing-api",
+            "image": "ghcr.io/lumen-retail/billing-api:2.8.0",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-18-44.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "billing-api",
+            "image": "ghcr.io/lumen-retail/billing-api:2.8.0",
+            "imageID": "ghcr.io/lumen-retail/billing-api@sha256:fb05fa03d4b47957686cf2e00993ec1e7ac0545cfb05fa03d4b47957686cf2e0",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-28T09:00:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-22T10:06:30Z"
+      }
+    }
+  },
+  {
+    "_key": "687a224e-f680-5ff9-9591-daaf54f8ff40",
+    "app": "argocd/billing-api",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "billing",
+    "name": "billing-api-7c9e5d4f6-p1q3r",
+    "uid": "687a224e-f680-5ff9-9591-daaf54f8ff40",
+    "resourceVersion": "42122",
+    "createdAt": "2026-10-22T10:06:30Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "billing",
+        "name": "billing-api-7c9e5d4f6",
+        "uid": "b997ee6f-2fc7-55e0-aa55-26f12177ca9f"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-19-12.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/billing-api:2.8.0"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "billing-api-7c9e5d4f6-p1q3r",
+        "namespace": "billing",
+        "uid": "687a224e-f680-5ff9-9591-daaf54f8ff40",
+        "resourceVersion": "42122",
+        "creationTimestamp": "2026-10-22T10:06:30Z",
+        "labels": {
+          "app.kubernetes.io/name": "billing-api",
+          "app.kubernetes.io/instance": "billing-api",
+          "pod-template-hash": "7c9e5d4f6"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "billing-api-7c9e5d4f6",
+            "uid": "b997ee6f-2fc7-55e0-aa55-26f12177ca9f",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "billing-api",
+        "containers": [
+          {
+            "name": "billing-api",
+            "image": "ghcr.io/lumen-retail/billing-api:2.8.0",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-19-12.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "billing-api",
+            "image": "ghcr.io/lumen-retail/billing-api:2.8.0",
+            "imageID": "ghcr.io/lumen-retail/billing-api@sha256:fb05fa03d4b47957686cf2e00993ec1e7ac0545cfb05fa03d4b47957686cf2e0",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-28T09:00:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-22T10:06:30Z"
+      }
+    }
+  },
+  {
+    "_key": "9b825e7a-e192-55cd-ab4d-e46a220f0fd3",
+    "app": "argocd/billing-api",
+    "group": "",
+    "version": "v1",
+    "kind": "Service",
+    "namespace": "billing",
+    "name": "billing-api",
+    "uid": "9b825e7a-e192-55cd-ab4d-e46a220f0fd3",
+    "resourceVersion": "42139",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "networkingInfo": {
+      "targetLabels": {
+        "app.kubernetes.io/name": "billing-api",
+        "app.kubernetes.io/instance": "billing-api"
+      }
+    },
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "billing-api",
+        "namespace": "billing",
+        "uid": "9b825e7a-e192-55cd-ab4d-e46a220f0fd3",
+        "resourceVersion": "42139",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "annotations": {
+          "argocd.argoproj.io/tracking-id": "billing-api:/Service:billing/billing-api"
+        }
+      },
+      "spec": {
+        "type": "ClusterIP",
+        "selector": {
+          "app.kubernetes.io/name": "billing-api",
+          "app.kubernetes.io/instance": "billing-api"
+        },
+        "ports": [
+          {
+            "name": "http",
+            "port": 80,
+            "targetPort": 8080,
+            "protocol": "TCP"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "_key": "b2118eb3-a734-5dc4-8602-364f1bb74247",
+    "app": "argocd/billing-worker-staging",
+    "group": "apps",
+    "version": "v1",
+    "kind": "Deployment",
+    "namespace": "billing",
+    "name": "billing-worker",
+    "uid": "b2118eb3-a734-5dc4-8602-364f1bb74247",
+    "resourceVersion": "42173",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:25"
+      }
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "billing-worker",
+        "namespace": "billing",
+        "uid": "b2118eb3-a734-5dc4-8602-364f1bb74247",
+        "resourceVersion": "42173",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "billing-worker",
+          "app.kubernetes.io/instance": "billing-worker-staging",
+          "app.kubernetes.io/version": "1.43.0",
+          "app.kubernetes.io/part-of": "billing"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "25",
+          "argocd.argoproj.io/tracking-id": "billing-worker-staging:apps/Deployment:billing/billing-worker"
+        }
+      },
+      "spec": {
+        "replicas": 1,
+        "revisionHistoryLimit": 5,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "billing-worker",
+            "app.kubernetes.io/instance": "billing-worker-staging"
+          }
+        },
+        "strategy": {
+          "type": "RollingUpdate",
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "billing-worker",
+              "app.kubernetes.io/instance": "billing-worker-staging",
+              "app.kubernetes.io/version": "1.43.0"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "billing-worker",
+            "containers": [
+              {
+                "name": "billing-worker",
+                "image": "ghcr.io/lumen-retail/billing-worker:1.43.0",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "observedGeneration": 27,
+        "replicas": 1,
+        "readyReplicas": 1,
+        "availableReplicas": 1,
+        "updatedReplicas": 1
+      }
+    }
+  },
+  {
+    "_key": "c9a54e39-c6bd-5f22-91bb-913c73c1a3c4",
+    "app": "argocd/billing-worker-staging",
+    "group": "apps",
+    "version": "v1",
+    "kind": "ReplicaSet",
+    "namespace": "billing",
+    "name": "billing-worker-69f8d7c5b",
+    "uid": "c9a54e39-c6bd-5f22-91bb-913c73c1a3c4",
+    "resourceVersion": "42190",
+    "createdAt": "2026-10-29T08:31:10Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "Deployment",
+        "namespace": "billing",
+        "name": "billing-worker",
+        "uid": "b2118eb3-a734-5dc4-8602-364f1bb74247"
+      }
+    ],
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:25"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/billing-worker:1.43.0"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "billing-worker-69f8d7c5b",
+        "namespace": "billing",
+        "uid": "c9a54e39-c6bd-5f22-91bb-913c73c1a3c4",
+        "resourceVersion": "42190",
+        "creationTimestamp": "2026-10-29T08:31:10Z",
+        "labels": {
+          "app.kubernetes.io/name": "billing-worker",
+          "app.kubernetes.io/instance": "billing-worker-staging",
+          "pod-template-hash": "69f8d7c5b"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "25"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "billing-worker",
+            "uid": "b2118eb3-a734-5dc4-8602-364f1bb74247",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "replicas": 1,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "billing-worker",
+            "app.kubernetes.io/instance": "billing-worker-staging",
+            "pod-template-hash": "69f8d7c5b"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "billing-worker",
+              "app.kubernetes.io/instance": "billing-worker-staging",
+              "app.kubernetes.io/version": "1.43.0"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "billing-worker",
+            "containers": [
+              {
+                "name": "billing-worker",
+                "image": "ghcr.io/lumen-retail/billing-worker:1.43.0",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "replicas": 1,
+        "readyReplicas": 1,
+        "availableReplicas": 1
+      }
+    }
+  },
+  {
+    "_key": "900698c6-4b42-5764-bafb-7050ce03131f",
+    "app": "argocd/billing-worker-staging",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "billing",
+    "name": "billing-worker-69f8d7c5b-z9y8x",
+    "uid": "900698c6-4b42-5764-bafb-7050ce03131f",
+    "resourceVersion": "42207",
+    "createdAt": "2026-10-29T08:31:10Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "billing",
+        "name": "billing-worker-69f8d7c5b",
+        "uid": "c9a54e39-c6bd-5f22-91bb-913c73c1a3c4"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-52-7.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/billing-worker:1.43.0"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "billing-worker-69f8d7c5b-z9y8x",
+        "namespace": "billing",
+        "uid": "900698c6-4b42-5764-bafb-7050ce03131f",
+        "resourceVersion": "42207",
+        "creationTimestamp": "2026-10-29T08:31:10Z",
+        "labels": {
+          "app.kubernetes.io/name": "billing-worker",
+          "app.kubernetes.io/instance": "billing-worker-staging",
+          "pod-template-hash": "69f8d7c5b"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "billing-worker-69f8d7c5b",
+            "uid": "c9a54e39-c6bd-5f22-91bb-913c73c1a3c4",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "billing-worker",
+        "containers": [
+          {
+            "name": "billing-worker",
+            "image": "ghcr.io/lumen-retail/billing-worker:1.43.0",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-52-7.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "billing-worker",
+            "image": "ghcr.io/lumen-retail/billing-worker:1.43.0",
+            "imageID": "ghcr.io/lumen-retail/billing-worker@sha256:f275a034fc0dd033c7b414818a382fb6b9bc3d40f275a034fc0dd033c7b41481",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-28T09:00:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-29T08:31:10Z"
+      }
+    }
+  }
+]

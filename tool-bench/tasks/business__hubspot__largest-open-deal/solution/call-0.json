@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"hubspot-search-objects","arguments":{"filterGroups":[{"filters":[{"operator":"NOT_IN","propertyName":"dealstage","values":["closedwon","closedlost"]}]}],"limit":1,"objectType":"deals","properties":["dealname","amount","dealstage"],"sorts":[{"direction":"DESCENDING","propertyName":"amount"}]}}}

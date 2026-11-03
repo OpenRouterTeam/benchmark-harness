@@ -1,0 +1,98 @@
+[
+  {
+    "_key": "lumen-labs/checkout:bug",
+    "id": 301,
+    "name": "bug",
+    "color": "d73a4a",
+    "description": "Something isn't working",
+    "default": true
+  },
+  {
+    "_key": "lumen-labs/checkout:enhancement",
+    "id": 302,
+    "name": "enhancement",
+    "color": "a2eeef",
+    "description": "New feature or request",
+    "default": true
+  },
+  {
+    "_key": "lumen-labs/checkout:incident",
+    "id": 303,
+    "name": "incident",
+    "color": "b60205",
+    "description": "Follow-up from a production incident",
+    "default": false
+  },
+  {
+    "_key": "lumen-labs/checkout:sentry",
+    "id": 304,
+    "name": "sentry",
+    "color": "362d59",
+    "description": "Linked Sentry issue",
+    "default": false
+  },
+  {
+    "_key": "lumen-labs/payments-worker:bug",
+    "id": 305,
+    "name": "bug",
+    "color": "d73a4a",
+    "description": "Something isn't working",
+    "default": true
+  },
+  {
+    "_key": "lumen-labs/payments-worker:enhancement",
+    "id": 306,
+    "name": "enhancement",
+    "color": "a2eeef",
+    "description": "New feature or request",
+    "default": true
+  },
+  {
+    "_key": "lumen-labs/payments-worker:incident",
+    "id": 307,
+    "name": "incident",
+    "color": "b60205",
+    "description": "Follow-up from a production incident",
+    "default": false
+  },
+  {
+    "_key": "lumen-labs/payments-worker:sentry",
+    "id": 308,
+    "name": "sentry",
+    "color": "362d59",
+    "description": "Linked Sentry issue",
+    "default": false
+  },
+  {
+    "_key": "lumen-labs/storefront:bug",
+    "id": 309,
+    "name": "bug",
+    "color": "d73a4a",
+    "description": "Something isn't working",
+    "default": true
+  },
+  {
+    "_key": "lumen-labs/storefront:enhancement",
+    "id": 310,
+    "name": "enhancement",
+    "color": "a2eeef",
+    "description": "New feature or request",
+    "default": true
+  },
+  {
+    "_key": "lumen-labs/storefront:incident",
+    "id": 311,
+    "name": "incident",
+    "color": "b60205",
+    "description": "Follow-up from a production incident",
+    "default": false
+  },
+  {
+    "_key": "lumen-labs/storefront:sentry",
+    "id": 312,
+    "name": "sentry",
+    "color": "362d59",
+    "description": "Linked Sentry issue",
+    "default": false
+  }
+]

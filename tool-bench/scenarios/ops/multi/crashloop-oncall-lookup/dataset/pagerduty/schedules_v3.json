@@ -1,0 +1,55 @@
+[
+  {
+    "id": "PSV3SEC",
+    "type": "schedule",
+    "name": "Security Follow-the-Sun",
+    "description": "Shift-based coverage for security alerts.",
+    "time_zone": "Etc/UTC",
+    "teams": [
+      {
+        "id": "PTPLATF",
+        "type": "team_reference"
+      }
+    ],
+    "rotations": [
+      {
+        "id": "PROT001",
+        "type": "rotation",
+        "events": [
+          {
+            "id": "PEVT001",
+            "type": "rotation_event",
+            "name": "Weekday days",
+            "start_time": {
+              "date_time": "2026-10-05T08:00:00Z",
+              "time_zone": "Etc/UTC"
+            },
+            "end_time": {
+              "date_time": "2026-10-05T20:00:00Z",
+              "time_zone": "Etc/UTC"
+            },
+            "effective_since": "2026-10-05T00:00:00Z",
+            "effective_until": null,
+            "recurrence": [
+              "RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR"
+            ],
+            "assignment_strategy": {
+              "type": "rotating_member_assignment_strategy",
+              "shifts_per_member": 5,
+              "members": [
+                {
+                  "type": "user_member",
+                  "user_id": "PM3IWNG"
+                },
+                {
+                  "type": "user_member",
+                  "user_id": "PS4MOKF"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

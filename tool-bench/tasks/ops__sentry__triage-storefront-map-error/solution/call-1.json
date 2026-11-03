@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"update_issue","arguments":{"assignedTo":"team:frontend-web","issueId":"STOREFRONT-WEB-8D","organizationSlug":"lumen-labs","status":"resolvedInNextRelease"}}}

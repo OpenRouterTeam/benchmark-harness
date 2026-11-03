@@ -1,0 +1,223 @@
+[
+  {
+    "id": "b91cf49b69676d5c",
+    "threadId": "b91cf49b69676d5c",
+    "labelIds": [
+      "Label_2"
+    ],
+    "internalDate": 1790258400000,
+    "headers": {
+      "From": "Northwind Traders Billing <billing@northwind.example>",
+      "To": "ops@octo-corp.example",
+      "Subject": "Invoice INV-20544 for September services",
+      "Date": "Thu, 24 Sep 2026 10:00:00 -0400",
+      "Message-ID": "<135dd696495f30ac77ab70e4@mail.example>"
+    },
+    "body_text": "Hello Octo Corp team,\n\nPlease find invoice INV-20544 for September services attached.\n\nPO number: PO-47790\nAmount due: $9,150.00\nDue date: October 20, 2026\n\nThank you,\nNorthwind Traders Billing",
+    "attachments": []
+  },
+  {
+    "id": "9f644b3781f9ee51",
+    "threadId": "b91cf49b69676d5c",
+    "labelIds": [
+      "Label_2"
+    ],
+    "internalDate": 1792155600000,
+    "headers": {
+      "From": "Northwind Traders Billing <billing@northwind.example>",
+      "To": "ops@octo-corp.example",
+      "Subject": "Re: Invoice INV-20544 for September services",
+      "Date": "Fri, 16 Oct 2026 09:00:00 -0400",
+      "Message-ID": "<d238d1deb8b6db2f32a5e42e@mail.example>"
+    },
+    "body_text": "We have received your payment of $9,150.00 for INV-20544. This invoice is now closed.\n\nNorthwind Traders Billing",
+    "attachments": []
+  },
+  {
+    "id": "35d71d97b4230040",
+    "threadId": "35d71d97b4230040",
+    "labelIds": [
+      "INBOX",
+      "Label_2"
+    ],
+    "internalDate": 1793106000000,
+    "headers": {
+      "From": "Northwood Logistics AR <ar@northwood-logistics.example>",
+      "To": "ops@octo-corp.example",
+      "Subject": "Invoice INV-7781 - freight, October",
+      "Date": "Tue, 27 Oct 2026 09:00:00 -0400",
+      "Message-ID": "<da4280914008197283b79fab@mail.example>"
+    },
+    "body_text": "Hi,\n\nInvoice INV-7781 for October freight is attached.\n\nPO number: PO-48899\nAmount due: $3,200.00\nDue date: November 25, 2026\n\nNorthwood Logistics",
+    "attachments": []
+  },
+  {
+    "id": "b26a427d1034a022",
+    "threadId": "b26a427d1034a022",
+    "labelIds": [
+      "INBOX",
+      "UNREAD",
+      "Label_2"
+    ],
+    "internalDate": 1793116800000,
+    "headers": {
+      "From": "Northwind Traders Billing <billing@northwind.example>",
+      "To": "ops@octo-corp.example",
+      "Subject": "Invoice INV-20931 for October services",
+      "Date": "Tue, 27 Oct 2026 12:00:00 -0400",
+      "Message-ID": "<9d4bc654b5177004372887dc@mail.example>"
+    },
+    "body_text": "Hello Octo Corp team,\n\nPlease find invoice INV-20931 for October services attached.\n\nPO number: PO-48213\nAmount due: $12,480.00\nDue date: November 20, 2026\n\nNote: this replaces the draft figure of $11,900.00 we mentioned on our call.\n\nThank you,\nNorthwind Traders Billing",
+    "attachments": [
+      {
+        "attachmentId": "ANGjdJ_inv20931",
+        "filename": "INV-20931.pdf",
+        "mimeType": "application/pdf",
+        "size": 48211,
+        "data": ""
+      }
+    ]
+  },
+  {
+    "id": "355ad002b14a79a3",
+    "threadId": "355ad002b14a79a3",
+    "labelIds": [
+      "INBOX",
+      "UNREAD"
+    ],
+    "internalDate": 1793210400000,
+    "headers": {
+      "From": "Priya Natarajan <priya.natarajan@octo-corp.example>",
+      "To": "ops@octo-corp.example",
+      "Subject": "Q1 planning sync?",
+      "Date": "Wed, 28 Oct 2026 14:00:00 -0400",
+      "Message-ID": "<e5648bc264643bae1211be4a@mail.example>"
+    },
+    "body_text": "Hi Ops,\n\nCould you put a 45-minute meeting on the calendar for Tuesday, November 3 at 2:00 pm Eastern? Call it \"Q1 planning sync\" and invite me and Marcus (marcus.webb@octo-corp.example). A Google Meet link would be great.\n\nThanks!\nPriya",
+    "attachments": []
+  },
+  {
+    "id": "beee2215765d7fc2",
+    "threadId": "beee2215765d7fc2",
+    "labelIds": [
+      "INBOX"
+    ],
+    "internalDate": 1790953200000,
+    "headers": {
+      "From": "Priya Natarajan <priya.natarajan@octo-corp.example>",
+      "To": "ops@octo-corp.example",
+      "Subject": "Q4 planning sync",
+      "Date": "Fri, 2 Oct 2026 11:00:00 -0400",
+      "Message-ID": "<79a282e634366518c7aaf306@mail.example>"
+    },
+    "body_text": "Thanks for setting up the Q4 planning sync last quarter. Same format next time works for me.\n\nPriya",
+    "attachments": []
+  },
+  {
+    "id": "fd9cbd3c80017bc0",
+    "threadId": "fd9cbd3c80017bc0",
+    "labelIds": [
+      "INBOX",
+      "UNREAD",
+      "Label_3"
+    ],
+    "internalDate": 1793217600000,
+    "headers": {
+      "From": "Dana Whitfield <dana.whitfield@contoso.example>",
+      "To": "ops@octo-corp.example",
+      "Subject": "SOC 2 report for our vendor review",
+      "Date": "Wed, 28 Oct 2026 16:00:00 -0400",
+      "Message-ID": "<5e29a4dc3ea835fda997650d@mail.example>"
+    },
+    "body_text": "Hello,\n\nAs part of our annual vendor review, could you share your most recent SOC 2 Type II report with me? View-only access in Google Drive is fine; please do not make it public.\n\nBest,\nDana Whitfield\nVendor Risk, Contoso",
+    "attachments": []
+  },
+  {
+    "id": "a9de6f0a996bc25f",
+    "threadId": "a9de6f0a996bc25f",
+    "labelIds": [
+      "INBOX",
+      "UNREAD"
+    ],
+    "internalDate": 1793278800000,
+    "headers": {
+      "From": "Lena Fischer <lena.fischer@octo-corp.example>",
+      "To": "ops@octo-corp.example",
+      "Subject": "Northwind renewal signed",
+      "Date": "Thu, 29 Oct 2026 09:00:00 -0400",
+      "Message-ID": "<959f48e659111493e33ef364@mail.example>"
+    },
+    "body_text": "Hi,\n\nNorthwind Traders signed the renewal yesterday. The new contract end date is 2027-11-30. Please update the Vendor renewals tracker: set their status to Renewed and the contract end to the new date.\n\nNorthwood Logistics is still pending, no change there.\n\nLena",
+    "attachments": []
+  },
+  {
+    "id": "2ccdb9350c6dc3a7",
+    "threadId": "2ccdb9350c6dc3a7",
+    "labelIds": [
+      "INBOX",
+      "CATEGORY_PROMOTIONS"
+    ],
+    "internalDate": 1793185200000,
+    "headers": {
+      "From": "SaaS Weekly <news@saasweekly.example>",
+      "To": "ops@octo-corp.example",
+      "Subject": "This week: renewal season tips",
+      "Date": "Wed, 28 Oct 2026 07:00:00 -0400",
+      "Message-ID": "<1d47a03f5799c52a8af55185@mail.example>"
+    },
+    "body_text": "Five tips for renewal season. Read more on our site.",
+    "attachments": []
+  },
+  {
+    "id": "81f2edb6bca3faef",
+    "threadId": "81f2edb6bca3faef",
+    "labelIds": [
+      "SENT"
+    ],
+    "internalDate": 1792508400000,
+    "headers": {
+      "From": "Ops Team <ops@octo-corp.example>",
+      "To": "billing@northwind.example",
+      "Subject": "PO for October services",
+      "Date": "Tue, 20 Oct 2026 11:00:00 -0400",
+      "Message-ID": "<3e49fd67be8f5510e46afe7c@mail.example>"
+    },
+    "body_text": "Hi, the PO for October services is PO-48213. Thanks!",
+    "attachments": []
+  },
+  {
+    "id": "c41e7a2b9d03f615",
+    "threadId": "c41e7a2b9d03f615",
+    "labelIds": [
+      "INBOX",
+      "UNREAD"
+    ],
+    "internalDate": 1793107200000,
+    "headers": {
+      "From": "Priya Shah <priya.shah@acme.io>",
+      "To": "ops@octo-corp.example",
+      "Subject": "Desk lamp arrived broken - refund please",
+      "Date": "Tue, 27 Oct 2026 09:20:00 -0400",
+      "Message-ID": "<CAJ7pS2x9Lw4q@mail.acme.io>"
+    },
+    "body_text": "Hi Octo Shop team,\n\nThe desk lamp from my order on October 20 arrived with a cracked base (photos attached to my earlier chat). I don't want a replacement, please just refund that order in full.\n\nThanks,\nPriya Shah",
+    "attachments": []
+  },
+  {
+    "id": "d82f0c6e1a57b394",
+    "threadId": "d82f0c6e1a57b394",
+    "labelIds": [
+      "INBOX"
+    ],
+    "internalDate": 1793178300000,
+    "headers": {
+      "From": "Priya Shah <priya.shah@fastmail.com>",
+      "To": "ops@octo-corp.example",
+      "Subject": "Order from October 20",
+      "Date": "Wed, 28 Oct 2026 05:05:00 -0400",
+      "Message-ID": "<20261028090500.F3a1@fastmail.com>"
+    },
+    "body_text": "Hello,\n\nJust confirming my order from October 20 arrived safely, thanks! The lamp looks great.\n\nPriya",
+    "attachments": []
+  }
+]

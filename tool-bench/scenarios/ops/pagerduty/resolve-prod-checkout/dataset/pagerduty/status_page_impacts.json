@@ -1,0 +1,47 @@
+[
+  {
+    "id": "PIMP001",
+    "description": "operational",
+    "post_type": "incident",
+    "status_page": {
+      "id": "PSTPG01",
+      "type": "status_page"
+    }
+  },
+  {
+    "id": "PIMP002",
+    "description": "degraded performance",
+    "post_type": "incident",
+    "status_page": {
+      "id": "PSTPG01",
+      "type": "status_page"
+    }
+  },
+  {
+    "id": "PIMP003",
+    "description": "partial outage",
+    "post_type": "incident",
+    "status_page": {
+      "id": "PSTPG01",
+      "type": "status_page"
+    }
+  },
+  {
+    "id": "PIMP004",
+    "description": "major outage",
+    "post_type": "incident",
+    "status_page": {
+      "id": "PSTPG01",
+      "type": "status_page"
+    }
+  },
+  {
+    "id": "PIMP005",
+    "description": "under maintenance",
+    "post_type": "maintenance",
+    "status_page": {
+      "id": "PSTPG01",
+      "type": "status_page"
+    }
+  }
+]

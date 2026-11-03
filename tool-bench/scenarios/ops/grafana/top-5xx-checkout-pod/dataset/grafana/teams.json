@@ -1,0 +1,50 @@
+[
+  {
+    "_key": "1",
+    "id": 1,
+    "uid": "a035c6dd2656f6",
+    "orgId": 1,
+    "name": "SRE",
+    "email": "sre@octo-corp.com",
+    "avatarUrl": "/avatar/3fc242fba34d68923532e7da320e6677",
+    "memberCount": 4,
+    "permission": 0,
+    "accessControl": null
+  },
+  {
+    "_key": "2",
+    "id": 2,
+    "uid": "a0131a21d349ec",
+    "orgId": 1,
+    "name": "Checkout",
+    "email": "checkout-team@octo-corp.com",
+    "avatarUrl": "/avatar/c3664458aca7fd53a8521add1bf3135c",
+    "memberCount": 5,
+    "permission": 0,
+    "accessControl": null
+  },
+  {
+    "_key": "3",
+    "id": 3,
+    "uid": "aa4876001f1308",
+    "orgId": 1,
+    "name": "Payments",
+    "email": "payments@octo-corp.com",
+    "avatarUrl": "/avatar/8f0d5d4441dd35d70413612b650c80b1",
+    "memberCount": 6,
+    "permission": 0,
+    "accessControl": null
+  },
+  {
+    "_key": "4",
+    "id": 4,
+    "uid": "a8caceaaa89248",
+    "orgId": 1,
+    "name": "Data Platform",
+    "email": "data@octo-corp.com",
+    "avatarUrl": "/avatar/07b31addcf04ffc783654d69ee9fba5a",
+    "memberCount": 7,
+    "permission": 0,
+    "accessControl": null
+  }
+]

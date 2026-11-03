@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"resources_list","arguments":{"apiVersion":"apps/v1","kind":"Deployment","namespace":"shop-prod"}}}

@@ -1,0 +1,121 @@
+[
+  {
+    "id": 7201,
+    "firstName": "Dana",
+    "lastName": "Whitfield",
+    "email": "dana@whitfield.studio",
+    "phone": null,
+    "createdAt": "2025-06-12T10:00:00Z",
+    "updatedAt": "2025-06-12T10:00:00Z",
+    "tags": [
+      "VIP"
+    ],
+    "note": null,
+    "taxExempt": false,
+    "state": "ENABLED",
+    "addresses": [
+      {
+        "firstName": "Dana",
+        "lastName": "Whitfield",
+        "address1": "12 Water St",
+        "city": "Brooklyn",
+        "province": "New York",
+        "provinceCode": "NY",
+        "zip": "11201",
+        "country": "United States",
+        "countryCode": "US",
+        "phone": null
+      }
+    ],
+    "metafields": []
+  },
+  {
+    "id": 7202,
+    "firstName": "Marcus",
+    "lastName": "Bell",
+    "email": "marcus.bell@gmail.com",
+    "phone": "+13125550177",
+    "createdAt": "2025-07-02T09:05:00Z",
+    "updatedAt": "2025-07-02T09:05:00Z",
+    "tags": [
+      "newsletter",
+      "wholesale"
+    ],
+    "note": null,
+    "taxExempt": false,
+    "state": "ENABLED",
+    "addresses": [
+      {
+        "firstName": "Marcus",
+        "lastName": "Bell",
+        "address1": "410 Elm Ave",
+        "city": "Chicago",
+        "province": "Illinois",
+        "provinceCode": "IL",
+        "zip": "60614",
+        "country": "United States",
+        "countryCode": "US",
+        "phone": null
+      }
+    ],
+    "metafields": []
+  },
+  {
+    "id": 7203,
+    "firstName": "Marcia",
+    "lastName": "Bell",
+    "email": "marcia.bell@hotmail.com",
+    "phone": null,
+    "createdAt": "2025-10-12T09:05:00Z",
+    "updatedAt": "2025-10-12T09:05:00Z",
+    "tags": [
+      "newsletter"
+    ],
+    "note": null,
+    "taxExempt": false,
+    "state": "ENABLED",
+    "addresses": [
+      {
+        "firstName": "Marcia",
+        "lastName": "Bell",
+        "address1": "77 Lake Shore Dr",
+        "city": "Chicago",
+        "province": "Illinois",
+        "provinceCode": "IL",
+        "zip": "60611",
+        "country": "United States",
+        "countryCode": "US",
+        "phone": null
+      }
+    ],
+    "metafields": []
+  },
+  {
+    "id": 7204,
+    "firstName": "Kofi",
+    "lastName": "Mensah",
+    "email": "kofi.mensah@gmail.com",
+    "phone": null,
+    "createdAt": "2026-01-08T10:00:00Z",
+    "updatedAt": "2026-01-08T10:00:00Z",
+    "tags": [],
+    "note": null,
+    "taxExempt": false,
+    "state": "ENABLED",
+    "addresses": [
+      {
+        "firstName": "Kofi",
+        "lastName": "Mensah",
+        "address1": "500 Peachtree St",
+        "city": "Atlanta",
+        "province": "Georgia",
+        "provinceCode": "GA",
+        "zip": "30308",
+        "country": "United States",
+        "countryCode": "US",
+        "phone": null
+      }
+    ],
+    "metafields": []
+  }
+]

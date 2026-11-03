@@ -1,0 +1,22 @@
+[
+  {
+    "id": "10000",
+    "name": "Done",
+    "description": "Work has been completed on this issue."
+  },
+  {
+    "id": "10001",
+    "name": "Won't Do",
+    "description": "This issue won't be actioned."
+  },
+  {
+    "id": "10002",
+    "name": "Duplicate",
+    "description": "The problem is a duplicate of an existing issue."
+  },
+  {
+    "id": "10003",
+    "name": "Cannot Reproduce",
+    "description": "All attempts at reproducing this issue failed."
+  }
+]

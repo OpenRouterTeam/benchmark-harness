@@ -1,0 +1,40 @@
+[
+  {
+    "id": "c-1",
+    "monitorId": "m-1",
+    "status": "completed",
+    "trigger": "schedule",
+    "createdAt": "2026-09-30T00:00:00Z",
+    "summary": {
+      "same": 1
+    },
+    "pages": [
+      {
+        "url": "https://acme.dev/pricing",
+        "status": "same"
+      }
+    ]
+  },
+  {
+    "id": "c-2",
+    "monitorId": "m-1",
+    "status": "partial",
+    "trigger": "schedule",
+    "createdAt": "2026-09-30T06:00:00Z",
+    "summary": {
+      "changed": 1,
+      "error": 1
+    },
+    "pages": [
+      {
+        "url": "https://acme.dev/pricing",
+        "status": "changed",
+        "diff": "-$18\n+$20"
+      },
+      {
+        "url": "https://acme.dev/old",
+        "status": "error"
+      }
+    ]
+  }
+]

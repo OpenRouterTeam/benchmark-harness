@@ -1,0 +1,32 @@
+[scenario]
+id = "collab/linear/urgent-bug-owner"
+title = "Find the most urgent open bug in the Payments v2 project and its owner"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-linear-urgent-bug-owner"
+services = ["linear"]
+tags = ["lookup", "single-service", "linear"]
+timeout_sec = 900
+
+# PAY-118 is the only open Urgent bug in Payments v2. Distractors: PAY-104 (Urgent bug, Done),
+# PLAT-233 (open Urgent bug in another project), PAY-119 (open High bug).
+[expect.answer]
+contains = ["PAY-118", "Priya"]
+regex = "(?i)in[ -]progress"
+
+[[expect.forbidden_calls]]
+service = "linear"
+path = "/_mcp/tools/call"
+body_contains = "\"name\":\"linear_update"
+
+[[solution.call]]
+endpoint = "linear"
+tool = "linear_getProjects"
+arguments = {}
+
+[[solution.call]]
+endpoint = "linear"
+tool = "linear_getProjectIssues"
+arguments = { projectId = "e3c09e4d-1537-5f94-8bf9-aa46108fc659", includeCompleted = false }
+
+[solution]
+answer = "The most urgent open bug in Payments v2 is PAY-118 \"Refund webhook retries double-charge customers after 3DS timeout\" (priority Urgent). It is assigned to Priya Natarajan and is In Progress (in the current cycle, 42).\n"

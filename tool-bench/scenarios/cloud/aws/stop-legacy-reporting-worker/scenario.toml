@@ -1,0 +1,64 @@
+[scenario]
+id = "cloud/aws/stop-legacy-reporting-worker"
+title = "Stop and tag the production legacy reporting worker, not its staging twin"
+now = "2026-03-14T09:00:00Z"
+seed = "cloud-aws-stop-legacy-reporting-worker"
+services = ["aws"]
+tags = ["write", "single-service", "aws", "disambiguation"]
+timeout_sec = 900
+
+[[expect.state]]
+pointer = "/services/aws/instances/i-07b9d1f3a5c8e2046/instanceState/name"
+equals = "stopped"
+
+[[expect.state]]
+pointer = "/services/aws/instances/i-07b9d1f3a5c8e2046/tagSet"
+contains = { key = "DecommissionTicket", value = "OPS-4821" }
+
+# The staging twin and the other prod workers keep running, untagged.
+[[expect.state]]
+pointer = "/services/aws/instances/i-0e4a6c8b2d1f35790/instanceState/name"
+equals = "running"
+
+[[expect.state]]
+pointer = "/services/aws/instances/i-0e4a6c8b2d1f35790/tagSet"
+equals = [{ key = "Name", value = "reporting-worker-legacy" }, { key = "Environment", value = "staging" }, { key = "Team", value = "data-eng" }]
+
+[[expect.state]]
+pointer = "/services/aws/instances/i-0a3f5c7e9b1d24680/instanceState/name"
+equals = "running"
+
+[[expect.state]]
+pointer = "/services/aws/instances/i-04c1a7e2b9d35f018/instanceState/name"
+equals = "running"
+
+[[expect.state]]
+pointer = "/services/aws/instances/i-0c8e2a4f6b1d39057/instanceState/name"
+equals = "stopped"
+
+[[expect.required_calls]]
+service = "aws"
+method = "POST"
+body_contains = "Action=StopInstances"
+
+[[expect.required_calls]]
+service = "aws"
+method = "POST"
+body_contains = "Action=CreateTags"
+
+[[expect.forbidden_calls]]
+service = "aws"
+body_contains = "Action=TerminateInstances"
+
+[[solution.call]]
+endpoint = "aws-api"
+tool = "call_aws"
+arguments = { cli_command = "aws ec2 describe-instances --filters Name=tag:Name,Values=reporting-worker-legacy" }
+
+[[solution.call]]
+endpoint = "aws-api"
+tool = "call_aws"
+arguments = { cli_command = [
+  "aws ec2 stop-instances --instance-ids i-07b9d1f3a5c8e2046",
+  "aws ec2 create-tags --resources i-07b9d1f3a5c8e2046 --tags Key=DecommissionTicket,Value=OPS-4821",
+] }

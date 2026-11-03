@@ -1,0 +1,1 @@
+Ferrowave stops sending v1 webhook signatures (X-Ferrowave-Sig) on January 15, 2027 (2027-01-15). Verify the Ferrowave-Signature-V2 header (HMAC-SHA256 over timestamp and body) instead. Source: https://docs.ferrowave.dev/guides/webhooks/verify-signatures

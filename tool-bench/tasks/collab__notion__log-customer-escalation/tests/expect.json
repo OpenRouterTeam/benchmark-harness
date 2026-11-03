@@ -1,0 +1,85 @@
+{
+  "state": [
+    {
+      "pointer": "/services/notion/pages/2a312ccd-ad51-42dd-8f17-7f194d6b5db7/parent/data_source_id",
+      "equals": "f937b556-2452-4808-a340-f4c80ce63d68",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/notion/pages/2a312ccd-ad51-42dd-8f17-7f194d6b5db7/properties/Summary/title/0/plain_text",
+      "equals": "Checkout button unresponsive on Safari",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/notion/pages/2a312ccd-ad51-42dd-8f17-7f194d6b5db7/properties/Customer/rich_text/0/plain_text",
+      "equals": null,
+      "exists": null,
+      "contains": "Acme Retail",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/notion/pages/2a312ccd-ad51-42dd-8f17-7f194d6b5db7/properties/Severity/select/name",
+      "equals": "Sev 2",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/notion/pages/2a312ccd-ad51-42dd-8f17-7f194d6b5db7/properties/State/status/name",
+      "equals": "Open",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/notion/pages/2a312ccd-ad51-42dd-8f17-7f194d6b5db7/properties/Owner/people/0/id",
+      "equals": "6a5aa3fe-744c-41b8-ab6d-2e0cc2ef706a",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/notion/pages/2a312ccd-ad51-42dd-8f17-7f194d6b5db7/properties/Reported/date/start",
+      "equals": "2026-10-29",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "notion",
+      "method": "POST",
+      "path": "/v1/pages",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "notion",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

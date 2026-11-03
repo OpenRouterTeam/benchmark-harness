@@ -1,0 +1,54 @@
+[
+  {
+    "_key": "GHSA-w32m-9786-jp63",
+    "ghsa_id": "GHSA-w32m-9786-jp63",
+    "cve_id": "CVE-2024-45338",
+    "summary": "Non-linear parsing of case-insensitive content in golang.org/x/net/html",
+    "description": "An attacker can craft an input that is processed non-linearly.",
+    "type": "reviewed",
+    "severity": "medium",
+    "published_at": "2024-12-18T00:00:00Z",
+    "updated_at": "2025-01-10T00:00:00Z",
+    "vulnerabilities": [
+      {
+        "package": {
+          "ecosystem": "go",
+          "name": "golang.org/x/net"
+        },
+        "vulnerable_version_range": "< 0.33.0",
+        "first_patched_version": "0.33.0"
+      }
+    ],
+    "cwes": [
+      {
+        "cwe_id": "CWE-1333",
+        "name": "Inefficient Regular Expression Complexity"
+      }
+    ]
+  },
+  {
+    "_key": "GHSA-35jh-r3h4-6jhm",
+    "ghsa_id": "GHSA-35jh-r3h4-6jhm",
+    "cve_id": "CVE-2021-23337",
+    "summary": "Command Injection in lodash",
+    "type": "reviewed",
+    "severity": "high",
+    "published_at": "2021-02-15T00:00:00Z",
+    "vulnerabilities": [
+      {
+        "package": {
+          "ecosystem": "npm",
+          "name": "lodash"
+        },
+        "vulnerable_version_range": "< 4.17.21",
+        "first_patched_version": "4.17.21"
+      }
+    ],
+    "cwes": [
+      {
+        "cwe_id": "CWE-77",
+        "name": "Command Injection"
+      }
+    ]
+  }
+]

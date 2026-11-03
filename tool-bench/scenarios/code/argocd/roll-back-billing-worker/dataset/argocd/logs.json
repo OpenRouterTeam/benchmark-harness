@@ -1,0 +1,34 @@
+[
+  {
+    "_key": "billing-worker-69f8d7c5b-bq7wz/billing-worker",
+    "podName": "billing-worker-69f8d7c5b-bq7wz",
+    "namespace": "billing",
+    "container": "billing-worker",
+    "lines": [
+      {
+        "timeStamp": "2026-10-29T13:57:58Z",
+        "content": "{\"level\":\"info\",\"msg\":\"billing-worker 1.43.0 starting\",\"queue\":\"invoice-jobs\"}"
+      },
+      {
+        "timeStamp": "2026-10-29T13:58:00Z",
+        "content": "panic: pq: column \"retry_window\" of relation \"invoice_retry_batches\" does not exist"
+      }
+    ]
+  },
+  {
+    "_key": "billing-worker-69f8d7c5b-c4n8x/billing-worker",
+    "podName": "billing-worker-69f8d7c5b-c4n8x",
+    "namespace": "billing",
+    "container": "billing-worker",
+    "lines": [
+      {
+        "timeStamp": "2026-10-29T13:57:58Z",
+        "content": "{\"level\":\"info\",\"msg\":\"billing-worker 1.43.0 starting\",\"queue\":\"invoice-jobs\"}"
+      },
+      {
+        "timeStamp": "2026-10-29T13:58:00Z",
+        "content": "panic: pq: column \"retry_window\" of relation \"invoice_retry_batches\" does not exist"
+      }
+    ]
+  }
+]

@@ -1,0 +1,145 @@
+[
+  {
+    "_key": "octo-org/web@2c1e86bc5ea213cd7fb6a9fcaf94b9e0eeac9722",
+    "sha": "2c1e86bc5ea213cd7fb6a9fcaf94b9e0eeac9722",
+    "message": "Initial dashboard",
+    "author": {
+      "name": "Lin Chen",
+      "email": "lin.chen@octo-org.example",
+      "date": "2026-02-10T10:00:00Z"
+    },
+    "committer": {
+      "name": "Lin Chen",
+      "email": "lin.chen@octo-org.example",
+      "date": "2026-02-10T10:00:00Z"
+    },
+    "author_login": "lin",
+    "committer_login": "lin",
+    "parents": [],
+    "files": [
+      {
+        "filename": "package.json",
+        "status": "added",
+        "content": "{\n  \"name\": \"web\",\n  \"version\": \"3.2.0\",\n  \"dependencies\": {\n    \"axios\": \"1.6.0\",\n    \"lodash\": \"4.17.20\",\n    \"react\": \"18.3.1\"\n  }\n}\n"
+      },
+      {
+        "filename": "src/App.tsx",
+        "status": "added",
+        "content": "export default function App() {\n  return <Dashboard />;\n}\n"
+      },
+      {
+        "filename": "README.md",
+        "status": "added",
+        "content": "# web\n"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/web@ec9101404d2eae359a8f7a7bd61afcfc080f77b1",
+    "sha": "ec9101404d2eae359a8f7a7bd61afcfc080f77b1",
+    "message": "Add usage chart",
+    "author": {
+      "name": "Jane Doe",
+      "email": "jane.doe@octo-org.example",
+      "date": "2026-03-04T15:00:00Z"
+    },
+    "committer": {
+      "name": "Jane Doe",
+      "email": "jane.doe@octo-org.example",
+      "date": "2026-03-04T15:00:00Z"
+    },
+    "author_login": "jdoe",
+    "committer_login": "jdoe",
+    "parents": [
+      "2c1e86bc5ea213cd7fb6a9fcaf94b9e0eeac9722"
+    ],
+    "files": [
+      {
+        "filename": "src/UsageChart.tsx",
+        "status": "added",
+        "content": "import { groupBy } from 'lodash';\nexport function UsageChart({ rows }) {\n  return <Chart data={groupBy(rows, 'day')} />;\n}\n"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/web@6ea035e584d56c79cc252b6a34973828261a108b",
+    "sha": "6ea035e584d56c79cc252b6a34973828261a108b",
+    "message": "chore(deps): bump lodash from 4.17.20 to 4.17.21",
+    "author": {
+      "name": "renovate[bot]",
+      "email": "29139614+renovate[bot]@users.noreply.github.octo-corp.com",
+      "date": "2026-03-12T06:00:00Z"
+    },
+    "committer": {
+      "name": "renovate[bot]",
+      "email": "29139614+renovate[bot]@users.noreply.github.octo-corp.com",
+      "date": "2026-03-12T06:00:00Z"
+    },
+    "author_login": "renovate[bot]",
+    "committer_login": "renovate[bot]",
+    "parents": [
+      "ec9101404d2eae359a8f7a7bd61afcfc080f77b1"
+    ],
+    "files": [
+      {
+        "filename": "package.json",
+        "status": "modified",
+        "content": "{\n  \"name\": \"web\",\n  \"version\": \"3.2.0\",\n  \"dependencies\": {\n    \"axios\": \"1.6.0\",\n    \"lodash\": \"4.17.21\",\n    \"react\": \"18.3.1\"\n  }\n}\n"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/web@0d2f21da868f4125f15d529dc12b95fee09dd50a",
+    "sha": "0d2f21da868f4125f15d529dc12b95fee09dd50a",
+    "message": "chore(deps): bump axios from 1.6.0 to 1.7.4",
+    "author": {
+      "name": "renovate[bot]",
+      "email": "29139614+renovate[bot]@users.noreply.github.octo-corp.com",
+      "date": "2026-03-12T06:05:00Z"
+    },
+    "committer": {
+      "name": "renovate[bot]",
+      "email": "29139614+renovate[bot]@users.noreply.github.octo-corp.com",
+      "date": "2026-03-12T06:05:00Z"
+    },
+    "author_login": "renovate[bot]",
+    "committer_login": "renovate[bot]",
+    "parents": [
+      "ec9101404d2eae359a8f7a7bd61afcfc080f77b1"
+    ],
+    "files": [
+      {
+        "filename": "package.json",
+        "status": "modified",
+        "content": "{\n  \"name\": \"web\",\n  \"version\": \"3.2.0\",\n  \"dependencies\": {\n    \"axios\": \"1.7.4\",\n    \"lodash\": \"4.17.20\",\n    \"react\": \"18.3.1\"\n  }\n}\n"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/web@7ac193ec2348ccbf0e604befe6f7b6d0c7ef0a4b",
+    "sha": "7ac193ec2348ccbf0e604befe6f7b6d0c7ef0a4b",
+    "message": "feat: dark mode toggle",
+    "author": {
+      "name": "Lin Chen",
+      "email": "lin.chen@octo-org.example",
+      "date": "2026-03-11T13:00:00Z"
+    },
+    "committer": {
+      "name": "Lin Chen",
+      "email": "lin.chen@octo-org.example",
+      "date": "2026-03-11T13:00:00Z"
+    },
+    "author_login": "lin",
+    "committer_login": "lin",
+    "parents": [
+      "ec9101404d2eae359a8f7a7bd61afcfc080f77b1"
+    ],
+    "files": [
+      {
+        "filename": "src/ThemeToggle.tsx",
+        "status": "added",
+        "content": "export function ThemeToggle() {\n  return <button aria-label=\"Toggle dark mode\" />;\n}\n"
+      }
+    ]
+  }
+]

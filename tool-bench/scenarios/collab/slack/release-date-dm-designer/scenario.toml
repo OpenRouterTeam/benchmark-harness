@@ -1,0 +1,48 @@
+[scenario]
+id = "collab/slack/release-date-dm-designer"
+title = "Tell the designer Alex the moved web 4.12 release date by DM"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-slack-release-date-dm-designer"
+services = ["slack"]
+tags = ["write", "single-service", "slack", "disambiguation"]
+timeout_sec = 900
+
+# Two Alexes (Alex Kim, designer; Alex Rivera, engineering manager), an archived
+# #releases-archive channel with an older "release moved" message, and the original
+# 2026-11-03 plan. The DM must go to Alex Kim with the new date.
+[[expect.state]]
+pointer = "/services/slack/posted/D09KIMDM4X1#1/text"
+contains = "2026-11-10"
+
+[[expect.state]]
+pointer = "/services/slack/posted/D0RIVDM2KQ8#1"
+exists = false
+
+[[expect.state]]
+pointer = "/services/slack/posted/C06RELEASE1#1"
+exists = false
+
+[[expect.required_calls]]
+service = "slack"
+path = "/_mcp/tools/call"
+body = { name = "slack_send_message" }
+
+[[expect.forbidden_calls]]
+service = "slack"
+path = "/_mcp/tools/call"
+body = { name = "slack_send_message", arguments = { channel_id = "U04ARIVERA9" } }
+
+[[solution.call]]
+endpoint = "slack"
+tool = "slack_search_public"
+arguments = { keywords = ["4.12", "moved"], natural_language_query = "When is the web 4.12 release now?" }
+
+[[solution.call]]
+endpoint = "slack"
+tool = "slack_search_users"
+arguments = { keywords = ["Alex"], natural_language_query = "Alex on the design team" }
+
+[[solution.call]]
+endpoint = "slack"
+tool = "slack_send_message"
+arguments = { channel_id = "U06AKIM3D2Q", message = "Hi Alex! The web 4.12 release moved from 2026-11-03 to 2026-11-10 (Tuesday) because of the payments SDK regression. Code freeze is now 2026-11-06." }

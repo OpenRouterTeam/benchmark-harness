@@ -1,0 +1,27 @@
+# Local stack: world + tools. Aliases come from `catalog aliases`.
+# docker compose -f deploy/compose.dev.yaml up
+services:
+  world:
+    image: tool-bench-world:dev
+    environment:
+      SCENARIO_ID: example/github/basic
+    networks:
+      default:
+        aliases:
+          - api.datadoghq.com
+          - api.github.com
+          - api.search.brave.com
+          - api.tavily.com
+          - github.octo-corp.com
+          - octo-corp.myshopify.com
+          - octo-corp.okta.com
+          - registry.terraform.io
+    ports:
+      - "9000:9000"
+  tools:
+    image: tool-bench-tools:dev
+    depends_on:
+      world:
+        condition: service_healthy
+    ports:
+      - "7101-7132:7101-7132"

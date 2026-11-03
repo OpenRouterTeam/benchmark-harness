@@ -1,0 +1,23 @@
+[
+ {
+  "_key": "acme-platform",
+  "name": "acme-platform",
+  "external-id": "org-7Hq2LmZpXk4vRw9C",
+  "email": "platform-team@acme.io",
+  "created-at": "2023-03-01T12:00:00Z",
+  "default-project": "prj-Oc8bkFmEfGG81QGr",
+  "session-timeout": 20160,
+  "session-remember": 20160,
+  "plan-identifier": "plus"
+ },
+ {
+  "_key": "acme-sandbox",
+  "name": "acme-sandbox",
+  "external-id": "org-Fb8nS2dYq1JtW6xe",
+  "email": "platform-team@acme.io",
+  "created-at": "2024-06-01T10:00:00Z",
+  "default-project": "prj-rCO9267t206heGJO",
+  "plan-identifier": "free",
+  "cost-estimation-enabled": false
+ }
+]

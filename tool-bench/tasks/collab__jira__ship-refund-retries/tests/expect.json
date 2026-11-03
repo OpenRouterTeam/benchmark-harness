@@ -1,0 +1,77 @@
+{
+  "state": [
+    {
+      "pointer": "/services/jira/issues/PAY-121/fields/status",
+      "equals": "Done",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/jira/issues/PAY-121/fields/resolution",
+      "equals": "Done",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/jira/comments/10044/issue",
+      "equals": "PAY-121",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/jira/comments/10044/body",
+      "equals": null,
+      "exists": null,
+      "contains": "2026.11",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/jira/issues/PAY-122/fields/status",
+      "equals": "To Do",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/jira/issues/PAY-122/changelog",
+      "equals": [],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "jira",
+      "method": "POST",
+      "path": "/rest/api/2/issue/PAY-121/transitions",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "jira",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

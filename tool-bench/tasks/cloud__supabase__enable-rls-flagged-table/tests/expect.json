@@ -1,0 +1,77 @@
+{
+  "state": [
+    {
+      "pointer": "/services/supabase/tables/qmvbxtzkplrnwdhyfaco.public.invoices/rls_enabled",
+      "equals": true,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/supabase/tables/qmvbxtzkplrnwdhyfaco.public.invoices/policies",
+      "equals": [],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/supabase/tables/qmvbxtzkplrnwdhyfaco.public.customers/rls_enabled",
+      "equals": true,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/supabase/tables/qmvbxtzkplrnwdhyfaco.public.orders/rls_enabled",
+      "equals": true,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/supabase/tables/hzrkcwpxnqdlmvbtejsa.public.invoices/rls_enabled",
+      "equals": false,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.invoices/1/number",
+      "equals": "INV-2026-00001",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "supabase",
+      "method": "POST",
+      "path": "/v1/projects/qmvbxtzkplrnwdhyfaco/database/migrations",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "supabase",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/v1/projects/hzrkcwpxnqdlmvbtejsa/database/migrations$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

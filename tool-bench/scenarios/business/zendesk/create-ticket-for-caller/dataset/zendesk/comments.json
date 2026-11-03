@@ -1,0 +1,16 @@
+[
+  {"_key": "5101/1", "id": 41000510101, "author_id": 9010301, "public": true, "audit_id": 41000510100, "created_at": "2026-08-04T07:40:00Z",
+   "body": "Hi, we're buying new handheld scanners for the Bergen warehouse. Which firmware versions does your app support?\n\nElena Petrova\nWarehouse Systems, Fjord Outfitters", "attachments": []},
+  {"_key": "5101/2", "id": 41000510102, "author_id": 9010002, "public": true, "audit_id": 41000510103, "created_at": "2026-08-04T12:15:00Z",
+   "body": "Hi Elena, any Zebra or Honeywell scanner on firmware 8.2 or later works with the current app.", "attachments": []},
+  {"_key": "5104/1", "id": 41000510401, "author_id": 9010302, "public": true, "audit_id": 41000510400, "created_at": "2026-10-27T14:22:00Z",
+   "body": "Since Monday none of our patients are getting SMS appointment reminders.\n\nElena Park\nPractice Manager, Parkside Clinics", "attachments": []},
+  {"_key": "5106/1", "id": 41000510601, "author_id": 9010303, "public": true, "audit_id": 41000510600, "created_at": "2026-10-28T06:58:00Z",
+   "body": "Please add our new warehouse in Stavanger as a stock location.\n\nLars Holm\nLogistics, Fjord Outfitters", "attachments": []},
+  {"_key": "5106/2", "id": 41000510602, "author_id": 9010001, "public": true, "audit_id": 41000510603, "created_at": "2026-10-28T13:30:00Z",
+   "body": "Hi Lars, happy to. Could you send the street address and the opening date?", "attachments": []},
+  {"_key": "5108/1", "id": 41000510801, "author_id": 9010301, "public": true, "audit_id": 41000510800, "created_at": "2026-10-29T08:05:00Z",
+   "body": "Our billing address changed to Strandkaien 12, 5013 Bergen. Please update it for future invoices.\n\nElena Petrova\nWarehouse Systems, Fjord Outfitters", "attachments": []},
+  {"_key": "5108/2", "id": 41000510802, "author_id": 9010001, "public": true, "audit_id": 41000510803, "created_at": "2026-10-29T10:45:00Z",
+   "body": "Done, Elena. The next invoice will use the new address.", "attachments": []}
+]

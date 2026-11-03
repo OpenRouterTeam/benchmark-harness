@@ -1,0 +1,134 @@
+[
+  {
+    "id": "1590341",
+    "isEnabled": true,
+    "flowType": "WORKFLOW",
+    "revisionId": "7",
+    "name": "Deal stage: Contract Sent → notify legal",
+    "createdAt": "2025-04-02T18:21:09.311Z",
+    "updatedAt": "2026-08-14T12:02:44.906Z",
+    "objectTypeId": "0-3",
+    "startActionId": "1",
+    "nextAvailableActionId": "3",
+    "actions": [
+      {
+        "type": "SINGLE_CONNECTION",
+        "actionId": "1",
+        "actionTypeVersion": 0,
+        "actionTypeId": "0-4",
+        "connection": {
+          "edgeType": "STANDARD",
+          "nextActionId": "2"
+        },
+        "fields": {
+          "subject": "Contract sent: {{ deal.dealname }}",
+          "body": "Please prepare the MSA.",
+          "user_ids": [
+            "75000002"
+          ]
+        }
+      },
+      {
+        "type": "SINGLE_CONNECTION",
+        "actionId": "2",
+        "actionTypeVersion": 0,
+        "actionTypeId": "0-3",
+        "fields": {
+          "task_type": "TODO",
+          "subject": "Review contract",
+          "associations": [
+            {
+              "target": {
+                "associationCategory": "HUBSPOT_DEFINED",
+                "associationTypeId": 216
+              },
+              "value": {
+                "type": "ENROLLED_OBJECT"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "enrollmentCriteria": {
+      "shouldReEnroll": true,
+      "type": "EVENT_BASED",
+      "listMembershipFilterBranches": [],
+      "eventFilterBranches": [
+        {
+          "filterBranchType": "UNIFIED_EVENTS",
+          "eventTypeId": "4-655002",
+          "operator": "HAS_COMPLETED",
+          "filters": [
+            {
+              "property": "hs_value",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "values": [
+                  "contractsent"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranches": [],
+          "filterBranchOperator": "AND"
+        }
+      ]
+    },
+    "timeWindows": [],
+    "blockedDates": [],
+    "customProperties": {},
+    "dataSources": [],
+    "suppressionListIds": [],
+    "canEnrollFromSalesforce": false,
+    "type": "PLATFORM_FLOW"
+  },
+  {
+    "id": "1590388",
+    "isEnabled": false,
+    "flowType": "WORKFLOW",
+    "revisionId": "2",
+    "name": "New contact: assign owner round-robin",
+    "createdAt": "2025-09-10T09:00:31.002Z",
+    "updatedAt": "2025-09-10T09:14:57.420Z",
+    "objectTypeId": "0-1",
+    "startActionId": "1",
+    "nextAvailableActionId": "2",
+    "actions": [
+      {
+        "type": "SINGLE_CONNECTION",
+        "actionId": "1",
+        "actionTypeVersion": 0,
+        "actionTypeId": "0-11",
+        "fields": {
+          "target_property": "hubspot_owner_id",
+          "user_ids": [
+            "75000001",
+            "75000004"
+          ],
+          "overwrite_current_owner": false
+        }
+      }
+    ],
+    "enrollmentCriteria": {
+      "shouldReEnroll": false,
+      "type": "LIST_BASED",
+      "unEnrollObjectsNotMeetingCriteria": false,
+      "listFilterBranch": {
+        "filterBranchType": "OR",
+        "filterBranches": [],
+        "filters": [],
+        "filterBranchOperator": "OR"
+      }
+    },
+    "timeWindows": [],
+    "blockedDates": [],
+    "customProperties": {},
+    "dataSources": [],
+    "suppressionListIds": [],
+    "canEnrollFromSalesforce": false,
+    "type": "CONTACT_FLOW"
+  }
+]

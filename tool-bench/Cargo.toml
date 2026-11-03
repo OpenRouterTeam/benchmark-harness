@@ -1,0 +1,101 @@
+[workspace]
+resolver = "3"
+members = [
+    "crates/mock-core",
+    "crates/services/argocd",
+    "crates/services/aws",
+    "crates/services/brave",
+    "crates/services/cloudflare",
+    "crates/services/datadog",
+    "crates/services/elasticsearch",
+    "crates/services/exa",
+    "crates/services/firecrawl",
+    "crates/services/github",
+    "crates/services/gitlab",
+    "crates/services/google",
+    "crates/services/grafana",
+    "crates/services/hubspot",
+    "crates/services/jira",
+    "crates/services/kubernetes",
+    "crates/services/linear",
+    "crates/services/mongodb",
+    "crates/services/notion",
+    "crates/services/okta",
+    "crates/services/pagerduty",
+    "crates/services/salesforce",
+    "crates/services/sentry",
+    "crates/services/shopify",
+    "crates/services/slack",
+    "crates/services/stripe",
+    "crates/services/supabase",
+    "crates/services/tavily",
+    "crates/services/terraform",
+    "crates/services/vercel",
+    "crates/services/zendesk",
+    "crates/world",
+    "crates/mcp-tools",
+    "crates/catalog",
+    "crates/scenario",
+    "crates/report",
+]
+
+[workspace.package]
+edition = "2024"
+version = "0.1.0"
+publish = false
+
+[workspace.dependencies]
+anyhow = "1.0.104"
+axum = "0.8.9"
+axum-server = { version = "0.8.0", features = ["tls-rustls"] }
+indexmap = { version = "2.14.2", features = ["serde"] }
+regex = "1.13.1"
+reqwest = { version = "0.13.5", default-features = false, features = ["json", "rustls", "stream"] }
+rcgen = { version = "0.14.10", default-features = false, features = ["aws_lc_rs", "pem"] }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = { version = "1.0.154", features = ["preserve_order"] }
+sha2 = "0.11.1"
+tempfile = "3.27.0"
+thiserror = "2.0.21"
+tiktoken-rs = "0.12.1"
+time = { version = "0.3.55", features = ["formatting", "parsing"] }
+tokio-stream = "0.1.19"
+tokio = { version = "1.54.1", features = ["macros", "rt-multi-thread", "net", "sync", "process", "io-util", "time", "signal"] }
+toml = "1.1.8"
+tower = { version = "0.5.3", features = ["util"] }
+uuid = { version = "1.29.0", features = ["v8", "serde"] }
+mock-core = { path = "crates/mock-core" }
+mock-argocd = { path = "crates/services/argocd" }
+mock-aws = { path = "crates/services/aws" }
+mock-brave = { path = "crates/services/brave" }
+mock-cloudflare = { path = "crates/services/cloudflare" }
+mock-datadog = { path = "crates/services/datadog" }
+mock-elasticsearch = { path = "crates/services/elasticsearch" }
+mock-exa = { path = "crates/services/exa" }
+mock-firecrawl = { path = "crates/services/firecrawl" }
+mock-github = { path = "crates/services/github" }
+mock-gitlab = { path = "crates/services/gitlab" }
+mock-google = { path = "crates/services/google" }
+mock-grafana = { path = "crates/services/grafana" }
+mock-hubspot = { path = "crates/services/hubspot" }
+mock-jira = { path = "crates/services/jira" }
+mock-kubernetes = { path = "crates/services/kubernetes" }
+mock-linear = { path = "crates/services/linear" }
+mock-mongodb = { path = "crates/services/mongodb" }
+mock-notion = { path = "crates/services/notion" }
+mock-okta = { path = "crates/services/okta" }
+mock-pagerduty = { path = "crates/services/pagerduty" }
+mock-salesforce = { path = "crates/services/salesforce" }
+mock-sentry = { path = "crates/services/sentry" }
+mock-shopify = { path = "crates/services/shopify" }
+mock-slack = { path = "crates/services/slack" }
+mock-stripe = { path = "crates/services/stripe" }
+mock-supabase = { path = "crates/services/supabase" }
+mock-tavily = { path = "crates/services/tavily" }
+mock-terraform = { path = "crates/services/terraform" }
+mock-vercel = { path = "crates/services/vercel" }
+mock-zendesk = { path = "crates/services/zendesk" }
+mcp-tools = { path = "crates/mcp-tools" }
+catalog = { path = "crates/catalog" }
+rquickjs = "0.14.0"
+rusqlite = { version = "0.41.1", features = ["bundled", "functions"] }

@@ -1,0 +1,36 @@
+[
+  {
+    "_key": "6110",
+    "id": 6110,
+    "iid": 80,
+    "project": "northwind/payments/ledger",
+    "ref": "hotfix/double-post-refunds",
+    "sha": "fa48931e67e0f23ec1147679ea8fd4fe8aa7b18b",
+    "status": "success",
+    "source": "merge_request_event",
+    "merge_request": "northwind/payments/ledger!41",
+    "created_at": "2026-04-02T06:46:00.000Z",
+    "updated_at": "2026-04-02T06:58:00.000Z",
+    "started_at": "2026-04-02T06:46:10.000Z",
+    "finished_at": "2026-04-02T06:58:00.000Z",
+    "duration": 700,
+    "user": "priya.raman"
+  },
+  {
+    "_key": "6108",
+    "id": 6108,
+    "iid": 79,
+    "project": "northwind/payments/ledger",
+    "ref": "fix/payout-export-dupes",
+    "sha": "acce1b3f4d5baf31587c585a55e9754af8d8174b",
+    "status": "failed",
+    "source": "merge_request_event",
+    "merge_request": "northwind/payments/ledger!42",
+    "created_at": "2026-04-01T11:06:00.000Z",
+    "updated_at": "2026-04-01T11:15:00.000Z",
+    "started_at": "2026-04-01T11:06:10.000Z",
+    "finished_at": "2026-04-01T11:15:00.000Z",
+    "duration": 530,
+    "user": "lena.fischer"
+  }
+]

@@ -1,0 +1,41 @@
+[scenario]
+id = "collab/jira/blocked-sprint-item"
+title = "Find which active-sprint story is blocked, by what, and who owns the blocker"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-jira-blocked-sprint-item"
+services = ["jira"]
+tags = ["lookup", "single-service", "jira", "multi-step"]
+timeout_sec = 900
+
+# In PAY Sprint 23 (active), PAY-119 "Switch production traffic to the v2 gateway" is
+# blocked by PAY-117 "Rotate payment gateway API credentials", assigned to Sam Ortiz.
+# Distractor: PAY-116 blocks PAY-120 (the other direction), and the future sprint.
+[expect.answer]
+contains = ["PAY-119", "PAY-117", "Sam Ortiz"]
+
+[[expect.forbidden_calls]]
+service = "jira"
+method = "PUT"
+
+[[expect.forbidden_calls]]
+service = "jira"
+method = "POST"
+path_regex = "^/rest/api/2/(issue|issueLink)"
+
+[[solution.call]]
+endpoint = "atlassian"
+tool = "jira_search"
+arguments = { jql = "project = PAY AND sprint in openSprints() AND issueLinkType = \"is blocked by\"", fields = "summary,status,assignee,issuelinks", limit = 20 }
+
+[[solution.call]]
+endpoint = "atlassian"
+tool = "jira_get_issue"
+arguments = { issue_key = "PAY-119", fields = "summary,status,assignee,issuelinks" }
+
+[[solution.call]]
+endpoint = "atlassian"
+tool = "jira_get_issue"
+arguments = { issue_key = "PAY-117", fields = "summary,status,assignee" }
+
+[solution]
+answer = "PAY-119 (Switch production traffic to the v2 gateway) is blocked by PAY-117 (Rotate payment gateway API credentials), which is assigned to Sam Ortiz and In Progress.\n"

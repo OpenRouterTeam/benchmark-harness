@@ -1,0 +1,44 @@
+[
+ {
+  "id": "prj-Oc8bkFmEfGG81QGr",
+  "organization": "acme-platform",
+  "name": "Default Project",
+  "description": "",
+  "created-at": "2023-03-01T12:00:00Z"
+ },
+ {
+  "id": "prj-RGb4nwJ3c5kaUkvv",
+  "organization": "acme-platform",
+  "name": "Commerce",
+  "description": "Storefront, checkout and order management services",
+  "created-at": "2023-05-10T09:30:00Z"
+ },
+ {
+  "id": "prj-9d3t4avzjdAU9FdH",
+  "organization": "acme-platform",
+  "name": "Payments",
+  "description": "PCI-scoped payment processing infrastructure",
+  "created-at": "2023-05-10T09:31:00Z"
+ },
+ {
+  "id": "prj-ybX47sD3ublmAH34",
+  "organization": "acme-platform",
+  "name": "Networking",
+  "description": "Shared VPCs, transit gateway and DNS",
+  "created-at": "2023-04-02T14:00:00Z"
+ },
+ {
+  "id": "prj-WtYRcQLbjROqv4f8",
+  "organization": "acme-platform",
+  "name": "Legacy",
+  "description": "Pre-2025 stacks pending migration or decommission",
+  "created-at": "2024-11-18T16:20:00Z"
+ },
+ {
+  "id": "prj-rCO9267t206heGJO",
+  "organization": "acme-sandbox",
+  "name": "Default Project",
+  "description": "",
+  "created-at": "2024-06-01T10:00:00Z"
+ }
+]

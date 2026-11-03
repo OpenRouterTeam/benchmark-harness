@@ -1,0 +1,38 @@
+[scenario]
+id = "search/elasticsearch/checkout-errors-last-hour"
+title = "Find the service with the most production 5xx errors in the last hour"
+now = "2026-10-30T14:00:00Z"
+seed = "search-elasticsearch-checkout-errors-last-hour"
+services = ["elasticsearch"]
+tags = ["lookup", "single-service", "elasticsearch", "disambiguation"]
+timeout_sec = 900
+
+# Last hour in prod: payment-gateway 7 (6x "upstream timeout from acquirer", 1x tokenization),
+# cart-api 3, inventory 2. Distractors: cart-api's 9 errors between 12:00 and 13:00, staging's
+# 12 inventory errors, and yesterday's payment-gateway errors in the 2026.10.29 index.
+[expect.answer]
+contains = ["payment-gateway", "upstream timeout"]
+regex = '(?i)\b(7|seven)\b'
+
+[[expect.required_calls]]
+service = "elasticsearch"
+method = "POST"
+path_regex = "(_search|_query)$"
+
+[solution]
+answer = "payment-gateway had the most production 5xx errors in the last hour (7: 6x HTTP 502, 1x HTTP 500). Most frequent message: \"upstream timeout from acquirer after 30000ms\" (6 occurrences).\n"
+
+[[solution.call]]
+endpoint = "elasticsearch"
+tool = "list_indices"
+arguments = { index_pattern = "logs-checkout-*" }
+
+[[solution.call]]
+endpoint = "elasticsearch"
+tool = "esql"
+arguments = { query = "FROM logs-checkout-prod-* | WHERE @timestamp >= NOW() - 1 hour AND status_code >= 500 | STATS errors = COUNT(*) BY service | SORT errors DESC" }
+
+[[solution.call]]
+endpoint = "elasticsearch"
+tool = "search"
+arguments = { index = "logs-checkout-prod-*", query_body = { size = 0, query = { bool = { filter = [{ term = { service = "payment-gateway" } }, { range = { status_code = { gte = 500 } } }, { range = { "@timestamp" = { gte = "now-1h" } } }] } }, aggs = { top_messages = { terms = { field = "message.keyword", size = 3 } } } } }

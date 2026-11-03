@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"jira_search","arguments":{"fields":"summary,status,assignee","jql":"project = PAY AND text ~ \"refund webhooks\" AND statusCategory != Done"}}}

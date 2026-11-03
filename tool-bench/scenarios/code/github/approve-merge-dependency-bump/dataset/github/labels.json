@@ -1,0 +1,50 @@
+[
+  {
+    "_key": "octo-org/web:bug",
+    "id": 200,
+    "name": "bug",
+    "color": "d73a4a",
+    "description": "Something isn't working",
+    "default": true
+  },
+  {
+    "_key": "octo-org/web:enhancement",
+    "id": 201,
+    "name": "enhancement",
+    "color": "a2eeef",
+    "description": "New feature or request",
+    "default": true
+  },
+  {
+    "_key": "octo-org/web:documentation",
+    "id": 202,
+    "name": "documentation",
+    "color": "0075ca",
+    "description": "Improvements or additions to documentation",
+    "default": true
+  },
+  {
+    "_key": "octo-org/web:good first issue",
+    "id": 203,
+    "name": "good first issue",
+    "color": "7057ff",
+    "description": "Good for newcomers",
+    "default": false
+  },
+  {
+    "_key": "octo-org/web:dependencies",
+    "id": 210,
+    "name": "dependencies",
+    "color": "0366d6",
+    "description": "Pull requests that update a dependency file",
+    "default": false
+  },
+  {
+    "_key": "octo-org/web:security",
+    "id": 211,
+    "name": "security",
+    "color": "b60205",
+    "description": "Security fix",
+    "default": false
+  }
+]

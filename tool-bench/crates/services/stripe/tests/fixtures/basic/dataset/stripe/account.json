@@ -1,0 +1,10 @@
+[
+  {
+    "id": "acct_1FwY8bQk2LmN4pRs",
+    "business_profile": {"name": "Fernway Software", "support_email": "billing@fernway.io", "url": "https://fernway.io"},
+    "email": "ops@fernway.io",
+    "created": 1740787200,
+    "livemode": false,
+    "settings": {"dashboard": {"display_name": "Fernway Software", "timezone": "America/Los_Angeles"}}
+  }
+]

@@ -1,0 +1,97 @@
+[scenario]
+id = "cloud/okta/transfer-to-platform-team"
+title = "Move a support lead to the Platform Engineering team in Okta"
+now = "2026-03-14T09:00:00Z"
+seed = "cloud-okta-transfer-to-platform-team"
+services = ["okta"]
+tags = ["write", "single-service", "okta"]
+timeout_sec = 900
+
+# Maria Gonzalez = 00u1mrgnzlz6Wx3Yz4x7; Platform Engineering = 00g2pltfrm7Gh8Ij9x7;
+# Support Agents = 00g2spprt12Ac5Ef6x7; Everyone = 00g1evrybdy0000000x1.
+[[expect.state]]
+pointer = "/services/okta/users/00u1mrgnzlz6Wx3Yz4x7/profile/title"
+equals = "Site Reliability Engineer"
+
+[[expect.state]]
+pointer = "/services/okta/users/00u1mrgnzlz6Wx3Yz4x7/profile/department"
+equals = "Platform Engineering"
+
+# The rest of the profile and the account itself are untouched.
+[[expect.state]]
+pointer = "/services/okta/users/00u1mrgnzlz6Wx3Yz4x7/profile/login"
+equals = "maria.gonzalez@octo-corp.example"
+
+[[expect.state]]
+pointer = "/services/okta/users/00u1mrgnzlz6Wx3Yz4x7/profile/lastName"
+equals = "Gonzalez"
+
+[[expect.state]]
+pointer = "/services/okta/users/00u1mrgnzlz6Wx3Yz4x7/profile/employeeNumber"
+equals = "1120"
+
+[[expect.state]]
+pointer = "/services/okta/users/00u1mrgnzlz6Wx3Yz4x7/status"
+equals = "ACTIVE"
+
+[[expect.state]]
+pointer = "/services/okta/group_members/00g2pltfrm7Gh8Ij9x7~100u1mrgnzlz6Wx3Yz4x7"
+exists = true
+
+[[expect.state]]
+pointer = "/services/okta/group_members/00g2spprt12Ac5Ef6x7~100u1mrgnzlz6Wx3Yz4x7"
+exists = false
+
+[[expect.state]]
+pointer = "/services/okta/group_members/00g1evrybdy0000000x1~100u1mrgnzlz6Wx3Yz4x7"
+exists = true
+
+# Taylor Brooks (deprovisioned) stays in Support Agents.
+[[expect.state]]
+pointer = "/services/okta/group_members/00g2spprt12Ac5Ef6x7~100u1tylrbrk0Ef7Gh8x7"
+exists = true
+
+[[expect.required_calls]]
+service = "okta"
+method = "PUT"
+path = "/api/v1/groups/00g2pltfrm7Gh8Ij9x7/users/00u1mrgnzlz6Wx3Yz4x7"
+
+[[expect.required_calls]]
+service = "okta"
+method = "DELETE"
+path = "/api/v1/groups/00g2spprt12Ac5Ef6x7/users/00u1mrgnzlz6Wx3Yz4x7"
+
+[[expect.forbidden_calls]]
+service = "okta"
+method = "POST"
+path_regex = "^/api/v1/users/[^/]+/lifecycle/"
+
+[[expect.forbidden_calls]]
+service = "okta"
+method = "DELETE"
+path_regex = "^/api/v1/(users|groups/[^/]+$)"
+
+[[solution.call]]
+endpoint = "okta"
+tool = "list_users"
+arguments = { q = "Maria" }
+
+[[solution.call]]
+endpoint = "okta"
+tool = "update_user"
+arguments = { user_id = "00u1mrgnzlz6Wx3Yz4x7", profile = { title = "Site Reliability Engineer", department = "Platform Engineering" } }
+
+[[solution.call]]
+endpoint = "okta"
+tool = "list_groups"
+arguments = { q = "Platform" }
+
+[[solution.call]]
+endpoint = "okta"
+tool = "add_user_to_group"
+arguments = { group_id = "00g2pltfrm7Gh8Ij9x7", user_id = "00u1mrgnzlz6Wx3Yz4x7" }
+
+[[solution.call]]
+endpoint = "okta"
+tool = "remove_user_from_group"
+arguments = { group_id = "00g2spprt12Ac5Ef6x7", user_id = "00u1mrgnzlz6Wx3Yz4x7" }

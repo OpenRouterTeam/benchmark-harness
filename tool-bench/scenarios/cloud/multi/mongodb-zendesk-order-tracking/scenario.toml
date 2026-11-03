@@ -1,0 +1,59 @@
+[scenario]
+id = "cloud/multi/mongodb-zendesk-order-tracking"
+title = "Find the tracking details in MongoDB for the order a Zendesk ticket asks about"
+now = "2026-10-29T15:00:00Z"
+seed = "cloud-multi-mongodb-zendesk-order-tracking"
+services = ["mongodb", "zendesk"]
+tags = ["lookup", "multi-service", "mongodb", "zendesk", "disambiguation"]
+timeout_sec = 1200
+
+# Open ticket 4222: the Studio X2 headphones Hana ordered on October 21 = shop.orders 10601,
+# shipped, UPS 1Z4X97W80391827364. Look-alikes: her solved ticket 4208 (order 10598, USPS),
+# her other open order 10605 (processing), Diego Alvarez's headphones order 10603 the same day
+# (FedEx), and a shop_staging copy of 10601 marked delivered with a fake tracking number.
+[expect.answer]
+contains = ["10601", "UPS", "1Z4X97W80391827364"]
+regex = "(?i)shipped"
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket_comment" }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "update_ticket" }
+
+[[expect.forbidden_calls]]
+service = "mongodb"
+path = "/_mcp/tools/call"
+body = { name = "update-many" }
+
+[[expect.forbidden_calls]]
+service = "mongodb"
+path = "/_mcp/tools/call"
+body = { name = "delete-many" }
+
+[[expect.forbidden_calls]]
+service = "mongodb"
+path = "/_mcp/tools/call"
+body = { name = "insert-many" }
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "get_tickets"
+arguments = {}
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "get_ticket_comments"
+arguments = { ticket_id = 4222 }
+
+[[solution.call]]
+endpoint = "mongodb"
+tool = "find"
+arguments = { connectionId = "preconfigured", database = "shop", collection = "orders", filter = { "customer.email" = "hana.sato@example.org" } }
+
+[solution]
+answer = "Hana's ticket 4222 is about order 10601 (Studio X2 Headphones, ordered 2026-10-21). Status: shipped (on 2026-10-23). Carrier: UPS, tracking number 1Z4X97W80391827364, estimated delivery 2026-10-31.\n"

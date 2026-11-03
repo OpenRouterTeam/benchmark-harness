@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_commit","arguments":{"project_id":"lumen-retail/storefront/storefront-deploy","sha":"a23f2a7b21f788c07d95ceaeb529e54b7ae3dbcd"}}}

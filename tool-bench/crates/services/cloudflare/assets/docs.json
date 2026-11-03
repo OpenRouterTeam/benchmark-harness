@@ -1,0 +1,82 @@
+[
+  {
+    "id": "b3c1e7a0-0001-4d1e-9c11-2f0a6f1d0001",
+    "filename": "dns/manage-dns-records/how-to/create-dns-records/index.md",
+    "text": "Create DNS records\n\nTo create a DNS record with the API, send a POST request to /zones/{zone_id}/dns_records with the record type, name, content and optional ttl, proxied, comment and tags fields. The name can be the full hostname (www.example.com), a relative label (www), or @ for the zone apex; Cloudflare appends the zone name when it is missing. A ttl of 1 means automatic. Records of type A, AAAA and CNAME can be proxied; other types are always DNS only. Creating a record identical to an existing one fails with error 81058, and a CNAME cannot share its name with an A, AAAA or CNAME record (error 81053)."
+  },
+  {
+    "id": "b3c1e7a0-0002-4d1e-9c11-2f0a6f1d0002",
+    "filename": "dns/manage-dns-records/reference/proxied-dns-records/index.md",
+    "text": "Proxy status\n\nThe proxied field controls whether traffic for a hostname is routed through Cloudflare (orange cloud) or resolved directly to the origin address (grey cloud, DNS only). Proxied records hide the origin IP and receive caching, WAF and DDoS protection. When a record is proxied, DNS queries return Cloudflare anycast addresses instead of the record content. To find which hostnames still point at an origin, list the zone's records and compare the content field, filtering with proxied=true."
+  },
+  {
+    "id": "b3c1e7a0-0003-4d1e-9c11-2f0a6f1d0003",
+    "filename": "dns/manage-dns-records/how-to/edit-dns-records/index.md",
+    "text": "Edit and delete DNS records\n\nUse PATCH /zones/{zone_id}/dns_records/{dns_record_id} to change some fields of a record, PUT to overwrite the whole record, and DELETE to remove it. The record id stays the same when you edit it. List records with GET /zones/{zone_id}/dns_records; filter by type, name, content, proxied, comment or tag, and use name.contains or content.startswith style filters for partial matches. Results are paginated with page and per_page (default 100). Several changes can be applied atomically with POST /zones/{zone_id}/dns_records/batch using deletes, patches, puts and posts arrays."
+  },
+  {
+    "id": "b3c1e7a0-0004-4d1e-9c11-2f0a6f1d0004",
+    "filename": "dns/manage-dns-records/reference/ttl/index.md",
+    "text": "Time to Live (TTL)\n\nTTL sets how long resolvers cache a DNS record. For DNS only records it can be between 60 and 86400 seconds (30 on Enterprise plans), or 1 for Automatic, which is 300 seconds. Proxied records always use Automatic TTL."
+  },
+  {
+    "id": "b3c1e7a0-0005-4d1e-9c11-2f0a6f1d0005",
+    "filename": "fundamentals/manage-domains/add-site/index.md",
+    "text": "Add a site (zone)\n\nA zone is a domain you manage on Cloudflare. Create one with POST /zones and a body containing name and account.id. A new zone stays pending until the registrar's nameservers are changed to the two Cloudflare nameservers listed in name_servers. List zones with GET /zones, filtering by name, status, account.id or account.name. Each zone has an id used by every zone-level endpoint, such as /zones/{zone_id}/dns_records. A zone can be paused (PATCH with paused: true) so that Cloudflare only resolves DNS without proxying traffic."
+  },
+  {
+    "id": "b3c1e7a0-0006-4d1e-9c11-2f0a6f1d0006",
+    "filename": "workers/configuration/routing/routes/index.md",
+    "text": "Routes\n\nRoutes map URL patterns on a zone to a Worker. Create one with POST /zones/{zone_id}/workers/routes and a body with pattern (for example api.example.com/v2/*) and script (the Worker name). The pattern's hostname must belong to the zone. When several routes match a request, the most specific pattern wins. A route without a script disables Workers for matching requests. List routes with GET /zones/{zone_id}/workers/routes, update with PUT and remove with DELETE on /zones/{zone_id}/workers/routes/{route_id}."
+  },
+  {
+    "id": "b3c1e7a0-0007-4d1e-9c11-2f0a6f1d0007",
+    "filename": "workers/configuration/multipart-upload-metadata/index.md",
+    "text": "Upload a Worker with the API\n\nUpload Worker code with PUT /accounts/{account_id}/workers/scripts/{script_name} as multipart/form-data. The metadata part is JSON with main_module (the name of the module part that holds the entry point), compatibility_date, and bindings such as kv_namespace, r2_bucket, d1 and plain_text. Each module is its own part, with the content type application/javascript+module. List Workers with GET /accounts/{account_id}/workers/scripts and read a Worker's settings and bindings with GET .../scripts/{script_name}/settings."
+  },
+  {
+    "id": "b3c1e7a0-0008-4d1e-9c11-2f0a6f1d0008",
+    "filename": "workers/configuration/secrets/index.md",
+    "text": "Secrets\n\nSecrets are encrypted environment variables for a Worker. Add or replace one with PUT /accounts/{account_id}/workers/scripts/{script_name}/secrets and a JSON body with name, text and type secret_text. Secret values can never be read back; list returns only names and types. Delete a secret with DELETE .../secrets/{secret_name}. Secrets appear in the Worker's bindings with the type secret_text."
+  },
+  {
+    "id": "b3c1e7a0-0009-4d1e-9c11-2f0a6f1d0009",
+    "filename": "kv/api/write-key-value-pairs/index.md",
+    "text": "Write key-value pairs\n\nWrite a value with PUT /accounts/{account_id}/storage/kv/namespaces/{namespace_id}/values/{key_name}. The request body is the value itself. Add expiration (seconds since epoch) or expiration_ttl (seconds from now, at least 60) as query parameters to make the key expire. To attach metadata, send multipart/form-data with value and metadata parts. Write up to 10,000 pairs at once with PUT .../bulk and a JSON array of { key, value } objects. Key names in the path must be URL-encoded."
+  },
+  {
+    "id": "b3c1e7a0-0010-4d1e-9c11-2f0a6f1d0010",
+    "filename": "kv/api/read-key-value-pairs/index.md",
+    "text": "Read key-value pairs\n\nRead a value with GET /accounts/{account_id}/storage/kv/namespaces/{namespace_id}/values/{key_name}; the response body is the raw value, not a JSON envelope. A missing key returns 404 with error 10009. List keys with GET .../keys, optionally filtered by prefix; results are sorted by key name and paginated with a cursor returned in result_info.cursor. Find a namespace's id with GET /accounts/{account_id}/storage/kv/namespaces, which lists each namespace's id and title."
+  },
+  {
+    "id": "b3c1e7a0-0011-4d1e-9c11-2f0a6f1d0011",
+    "filename": "kv/concepts/kv-namespaces/index.md",
+    "text": "KV namespaces\n\nA KV namespace is a key-value database bound to Workers. Namespaces belong to an account and have a title that is unique within the account. Create one with POST /accounts/{account_id}/storage/kv/namespaces and a title, rename it with PUT, and delete it with DELETE, which removes all of its keys. Keep separate namespaces for production and staging so that tests never change live data."
+  },
+  {
+    "id": "b3c1e7a0-0012-4d1e-9c11-2f0a6f1d0012",
+    "filename": "r2/buckets/create-buckets/index.md",
+    "text": "Create R2 buckets\n\nCreate a bucket with POST /accounts/{account_id}/r2/buckets and a body with name and optionally locationHint (apac, eeur, enam, weur, wnam, oc) and storageClass (Standard or InfrequentAccess). Bucket names are 3 to 63 characters of lowercase letters, digits and hyphens. List buckets with GET /accounts/{account_id}/r2/buckets; the result is an object with a buckets array. A bucket must be empty before it can be deleted."
+  },
+  {
+    "id": "b3c1e7a0-0013-4d1e-9c11-2f0a6f1d0013",
+    "filename": "d1/platform/client-api/index.md",
+    "text": "Query D1 with the REST API\n\nRun SQL against a D1 database with POST /accounts/{account_id}/d1/database/{database_id}/query and a body with sql and optional params (bound to ? placeholders). The result has one entry per statement with results (rows as objects) and meta (changes, last_row_id, rows_read, rows_written). Use /raw to get rows as arrays with a separate columns list. D1 uses SQLite's SQL dialect. Find database ids with GET /accounts/{account_id}/d1/database."
+  },
+  {
+    "id": "b3c1e7a0-0014-4d1e-9c11-2f0a6f1d0014",
+    "filename": "cache/how-to/purge-cache/index.md",
+    "text": "Purge cache\n\nPurge cached content for a zone with POST /zones/{zone_id}/purge_cache. Send purge_everything: true to remove every cached file, or purge selectively with files (full URLs), tags, hosts or prefixes. Purging everything makes the origin serve every request again until the cache is warm, so prefer a selective purge when you know what changed."
+  },
+  {
+    "id": "b3c1e7a0-0015-4d1e-9c11-2f0a6f1d0015",
+    "filename": "fundamentals/api/get-started/create-token/index.md",
+    "text": "API tokens\n\nAPI tokens grant scoped access to the Cloudflare API. Check that a token is valid with GET /user/tokens/verify, or GET /accounts/{account_id}/tokens/verify for account-owned tokens. GET /user returns the user the token belongs to, GET /accounts lists the accounts it can access, and GET /memberships lists the user's account memberships and roles."
+  },
+  {
+    "id": "b3c1e7a0-0016-4d1e-9c11-2f0a6f1d0016",
+    "filename": "fundamentals/manage-members/manage/index.md",
+    "text": "Manage account members\n\nList an account's members with GET /accounts/{account_id}/members. Invite someone with POST and a body containing email and roles (role ids), change their roles with PUT /accounts/{account_id}/members/{member_id}, and remove them with DELETE. Removing a member revokes their access to every zone in the account immediately."
+  }
+]

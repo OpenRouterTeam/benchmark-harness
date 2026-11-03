@@ -1,0 +1,52 @@
+[scenario]
+id = "ops/sentry/create-notification-project"
+title = "Create a Sentry project and DSN for a new service"
+now = "2026-10-20T16:00:00Z"
+seed = "ops-sentry-create-notification-project"
+services = ["sentry"]
+tags = ["write", "single-service", "sentry"]
+timeout_sec = 900
+
+# The project must be created under the payments team (not payments-infra). Sentry gives
+# every new project a "Default" client key; the new project's id is 4508812006.
+[[expect.state]]
+pointer = "/services/sentry/projects/notification-service/teams"
+equals = ["payments"]
+
+[[expect.state]]
+pointer = "/services/sentry/projects/notification-service/name"
+equals = "notification-service"
+
+[[expect.state]]
+pointer = "/services/sentry/keys/notification-service~1Default/isActive"
+equals = true
+
+[[expect.required_calls]]
+service = "sentry"
+method = "POST"
+path = "/api/0/teams/lumen-labs/payments/projects/"
+
+[[expect.forbidden_calls]]
+service = "sentry"
+method = "DELETE"
+
+[[expect.forbidden_calls]]
+service = "sentry"
+method = "PUT"
+path_regex = "^/api/0/projects/lumen-labs/(storefront-web|admin-dashboard|checkout-api|payments-worker|ios-app)/"
+
+[expect.answer]
+regex = "[0-9a-f]{32}@world:8113/4508812006"
+
+[[solution.call]]
+endpoint = "sentry"
+tool = "execute_sentry_tool"
+arguments = { name = "find_teams", arguments = { organizationSlug = "lumen-labs" } }
+
+[[solution.call]]
+endpoint = "sentry"
+tool = "execute_sentry_tool"
+arguments = { name = "create_project", arguments = { organizationSlug = "lumen-labs", teamSlug = "payments", name = "notification-service", platform = "node" } }
+
+[solution]
+answer = "notification-service (Payments team) DSN: http://1a02670783595f20634015aa33b23103@world:8113/4508812006"

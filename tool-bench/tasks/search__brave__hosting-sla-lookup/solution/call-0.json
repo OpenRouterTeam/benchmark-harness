@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"brave_web_search","arguments":{"extra_snippets":true,"query":"Ironbark Hosting SLA Business plan uptime service credit"}}}

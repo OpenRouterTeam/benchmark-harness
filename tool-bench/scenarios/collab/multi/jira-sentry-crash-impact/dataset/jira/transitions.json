@@ -1,0 +1,51 @@
+[
+  {
+    "id": "11",
+    "name": "Start Progress",
+    "to": "In Progress",
+    "from": [
+      "To Do"
+    ]
+  },
+  {
+    "id": "21",
+    "name": "Send to Review",
+    "to": "In Review",
+    "from": [
+      "In Progress"
+    ]
+  },
+  {
+    "id": "31",
+    "name": "Done",
+    "to": "Done",
+    "from": [
+      "In Progress",
+      "In Review"
+    ],
+    "screen": true
+  },
+  {
+    "id": "41",
+    "name": "Reopen",
+    "to": "To Do",
+    "from": [
+      "Done",
+      "Won't Do"
+    ]
+  },
+  {
+    "id": "51",
+    "name": "Stop Progress",
+    "to": "To Do",
+    "from": [
+      "In Progress"
+    ]
+  },
+  {
+    "id": "61",
+    "name": "Won't Do",
+    "to": "Won't Do",
+    "from": []
+  }
+]

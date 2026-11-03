@@ -1,0 +1,367 @@
+[
+  {
+    "id": 8201,
+    "title": "Harbor Canvas Tote",
+    "handle": "harbor-canvas-tote",
+    "vendor": "Octo Goods",
+    "productType": "Bags",
+    "status": "DRAFT",
+    "tags": [
+      "bags",
+      "relaunch"
+    ],
+    "createdAt": "2026-04-20T12:00:00Z",
+    "updatedAt": "2026-05-11T16:00:00Z",
+    "publishedAt": null,
+    "descriptionHtml": "<p>Our waxed canvas tote, rebuilt with a wider base and leather handles.</p>",
+    "seo": {
+      "title": null,
+      "description": null
+    },
+    "options": [
+      {
+        "id": 31,
+        "name": "Color",
+        "position": 1,
+        "values": [
+          {
+            "id": 41,
+            "name": "Navy"
+          },
+          {
+            "id": 42,
+            "name": "Sand"
+          },
+          {
+            "id": 43,
+            "name": "Olive"
+          }
+        ]
+      }
+    ],
+    "variants": [
+      {
+        "id": 4201,
+        "title": "Navy",
+        "price": "48.00",
+        "compareAtPrice": null,
+        "sku": "HCT2-NVY",
+        "inventoryQuantity": 40,
+        "selectedOptions": [
+          {
+            "name": "Color",
+            "value": "Navy"
+          }
+        ]
+      },
+      {
+        "id": 4202,
+        "title": "Sand",
+        "price": "48.00",
+        "compareAtPrice": null,
+        "sku": "HCT2-SND",
+        "inventoryQuantity": 35,
+        "selectedOptions": [
+          {
+            "name": "Color",
+            "value": "Sand"
+          }
+        ]
+      },
+      {
+        "id": 4203,
+        "title": "Olive",
+        "price": "48.00",
+        "compareAtPrice": null,
+        "sku": "HCT2-OLV",
+        "inventoryQuantity": 25,
+        "selectedOptions": [
+          {
+            "name": "Color",
+            "value": "Olive"
+          }
+        ]
+      }
+    ],
+    "images": [
+      {
+        "id": 9201,
+        "url": "https://cdn.shopify.com/s/files/1/0712/products/harbor-tote-navy.jpg",
+        "altText": "Harbor Canvas Tote in navy",
+        "width": 2048,
+        "height": 2048
+      }
+    ],
+    "collections": [],
+    "metafields": []
+  },
+  {
+    "id": 8202,
+    "title": "Harbor Canvas Tote Mini",
+    "handle": "harbor-canvas-tote-mini",
+    "vendor": "Octo Goods",
+    "productType": "Bags",
+    "status": "ACTIVE",
+    "tags": [
+      "bags"
+    ],
+    "createdAt": "2025-08-02T12:00:00Z",
+    "updatedAt": "2026-02-01T10:00:00Z",
+    "publishedAt": "2025-08-02T12:00:00Z",
+    "descriptionHtml": "<p>The small one.</p>",
+    "seo": {
+      "title": null,
+      "description": null
+    },
+    "options": [
+      {
+        "id": 32,
+        "name": "Color",
+        "position": 1,
+        "values": [
+          {
+            "id": 44,
+            "name": "Navy"
+          },
+          {
+            "id": 45,
+            "name": "Sand"
+          }
+        ]
+      }
+    ],
+    "variants": [
+      {
+        "id": 4204,
+        "title": "Navy",
+        "price": "32.00",
+        "compareAtPrice": null,
+        "sku": "HCTM-NVY",
+        "inventoryQuantity": 18,
+        "selectedOptions": [
+          {
+            "name": "Color",
+            "value": "Navy"
+          }
+        ]
+      },
+      {
+        "id": 4205,
+        "title": "Sand",
+        "price": "32.00",
+        "compareAtPrice": null,
+        "sku": "HCTM-SND",
+        "inventoryQuantity": 7,
+        "selectedOptions": [
+          {
+            "name": "Color",
+            "value": "Sand"
+          }
+        ]
+      }
+    ],
+    "images": [],
+    "collections": [],
+    "metafields": []
+  },
+  {
+    "id": 8203,
+    "title": "Harbor Canvas Backpack",
+    "handle": "harbor-canvas-backpack",
+    "vendor": "Octo Goods",
+    "productType": "Bags",
+    "status": "DRAFT",
+    "tags": [
+      "bags",
+      "fall-2026"
+    ],
+    "createdAt": "2026-05-01T12:00:00Z",
+    "updatedAt": "2026-05-01T12:00:00Z",
+    "publishedAt": null,
+    "descriptionHtml": "<p>Coming this fall.</p>",
+    "seo": {
+      "title": null,
+      "description": null
+    },
+    "options": [
+      {
+        "id": 33,
+        "name": "Color",
+        "position": 1,
+        "values": [
+          {
+            "id": 46,
+            "name": "Navy"
+          }
+        ]
+      }
+    ],
+    "variants": [
+      {
+        "id": 4206,
+        "title": "Navy",
+        "price": "89.00",
+        "compareAtPrice": null,
+        "sku": "HCB-NVY",
+        "inventoryQuantity": 0,
+        "selectedOptions": [
+          {
+            "name": "Color",
+            "value": "Navy"
+          }
+        ]
+      }
+    ],
+    "images": [],
+    "collections": [],
+    "metafields": []
+  },
+  {
+    "id": 8204,
+    "title": "Harbor Canvas Tote (2024)",
+    "handle": "harbor-canvas-tote-2024",
+    "vendor": "Octo Goods",
+    "productType": "Bags",
+    "status": "ARCHIVED",
+    "tags": [
+      "bags",
+      "discontinued"
+    ],
+    "createdAt": "2024-03-01T12:00:00Z",
+    "updatedAt": "2026-04-20T12:00:00Z",
+    "publishedAt": null,
+    "descriptionHtml": "<p>Previous version.</p>",
+    "seo": {
+      "title": null,
+      "description": null
+    },
+    "options": [
+      {
+        "id": 34,
+        "name": "Color",
+        "position": 1,
+        "values": [
+          {
+            "id": 47,
+            "name": "Navy"
+          }
+        ]
+      }
+    ],
+    "variants": [
+      {
+        "id": 4207,
+        "title": "Navy",
+        "price": "44.00",
+        "compareAtPrice": null,
+        "sku": "HCT-NVY",
+        "inventoryQuantity": 0,
+        "selectedOptions": [
+          {
+            "name": "Color",
+            "value": "Navy"
+          }
+        ]
+      }
+    ],
+    "images": [],
+    "collections": [],
+    "metafields": []
+  },
+  {
+    "id": 8002,
+    "title": "Merino Crew Sweater",
+    "handle": "merino-crew-sweater",
+    "vendor": "Seaside Apparel",
+    "productType": "Sweaters",
+    "status": "ACTIVE",
+    "tags": [
+      "knitwear"
+    ],
+    "createdAt": "2025-09-10T12:00:00Z",
+    "publishedAt": "2025-09-10T12:00:00Z",
+    "descriptionHtml": "<p>Fine merino, relaxed fit.</p>",
+    "options": [
+      {
+        "id": 12,
+        "name": "Size",
+        "position": 1,
+        "values": [
+          {
+            "id": 23,
+            "name": "S"
+          },
+          {
+            "id": 24,
+            "name": "M"
+          },
+          {
+            "id": 25,
+            "name": "L"
+          }
+        ]
+      }
+    ],
+    "variants": [
+      {
+        "id": 4003,
+        "price": "128.00",
+        "sku": "MCS-S",
+        "inventoryQuantity": 6,
+        "selectedOptions": [
+          {
+            "name": "Size",
+            "value": "S"
+          }
+        ]
+      },
+      {
+        "id": 4004,
+        "price": "128.00",
+        "sku": "MCS-M",
+        "inventoryQuantity": 11,
+        "selectedOptions": [
+          {
+            "name": "Size",
+            "value": "M"
+          }
+        ]
+      },
+      {
+        "id": 4005,
+        "price": "128.00",
+        "sku": "MCS-L",
+        "inventoryQuantity": 4,
+        "selectedOptions": [
+          {
+            "name": "Size",
+            "value": "L"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 8003,
+    "title": "Stoneware Pour-Over Set",
+    "handle": "stoneware-pour-over-set",
+    "vendor": "Kiln & Co",
+    "productType": "Kitchen",
+    "status": "ACTIVE",
+    "tags": [
+      "coffee",
+      "gift"
+    ],
+    "createdAt": "2025-10-01T12:00:00Z",
+    "publishedAt": "2025-10-01T12:00:00Z",
+    "descriptionHtml": "<p>Hand-glazed dripper and carafe.</p>",
+    "variants": [
+      {
+        "id": 4006,
+        "price": "86.00",
+        "sku": "SPO-01",
+        "inventoryQuantity": 20
+      }
+    ]
+  }
+]

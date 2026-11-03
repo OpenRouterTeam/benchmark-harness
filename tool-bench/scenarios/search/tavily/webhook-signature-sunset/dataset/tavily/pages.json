@@ -1,0 +1,96 @@
+[
+  {
+    "_key": "https://docs.ferrowave.dev/",
+    "url": "https://docs.ferrowave.dev/",
+    "title": "Ferrowave Developer Docs",
+    "content": "Guides, API reference and changelog for the Ferrowave payments platform.",
+    "raw_content": "# Ferrowave Developer Docs\n\n- [Webhooks](https://docs.ferrowave.dev/guides/webhooks)\n- [API keys](https://docs.ferrowave.dev/guides/api-keys)\n- [Changelog](https://docs.ferrowave.dev/changelog)\n- [Legacy v1 docs](https://docs.ferrowave.dev/legacy/v1)",
+    "favicon": "https://docs.ferrowave.dev/favicon.ico",
+    "links": [
+      "https://docs.ferrowave.dev/guides/webhooks",
+      "https://docs.ferrowave.dev/guides/api-keys",
+      "https://docs.ferrowave.dev/changelog",
+      "https://docs.ferrowave.dev/legacy/v1",
+      "https://status.ferrowave.com/",
+      "https://github.com/ferrowave/ferrowave-node"
+    ]
+  },
+  {
+    "_key": "https://docs.ferrowave.dev/guides/webhooks",
+    "url": "https://docs.ferrowave.dev/guides/webhooks",
+    "title": "Webhooks | Ferrowave Docs",
+    "content": "Receive events from Ferrowave. Every delivery is signed; see Verifying signatures.",
+    "raw_content": "# Webhooks\n\nFerrowave sends events to your HTTPS endpoint. Every delivery is signed.\n\n- [Verifying signatures](https://docs.ferrowave.dev/guides/webhooks/verify-signatures)\n- [Retries](https://docs.ferrowave.dev/guides/webhooks/retries)",
+    "published_date": "2026-06-01",
+    "links": [
+      "https://docs.ferrowave.dev/guides/webhooks/verify-signatures",
+      "https://docs.ferrowave.dev/guides/webhooks/retries"
+    ]
+  },
+  {
+    "_key": "https://docs.ferrowave.dev/guides/webhooks/verify-signatures",
+    "url": "https://docs.ferrowave.dev/guides/webhooks/verify-signatures",
+    "title": "Verifying webhook signatures | Ferrowave Docs",
+    "content": "Verify the Ferrowave-Signature-V2 header (HMAC-SHA256 over timestamp and body) on every webhook delivery.",
+    "raw_content": "# Verifying webhook signatures\n\nEvery webhook delivery carries a `Ferrowave-Signature-V2` header: `t=<unix timestamp>,v2=<hex HMAC-SHA256 of \"<t>.<body>\">` signed with your endpoint secret.\n\nReject deliveries whose timestamp is more than 5 minutes old.\n\n## Migrating from v1 signatures\n\nThe v1 `X-Ferrowave-Sig` header (HMAC-SHA1) is still sent alongside v2 for now. Ferrowave will **stop sending v1 webhook signatures on January 15, 2027**. Switch your verification to `Ferrowave-Signature-V2` before then.",
+    "published_date": "2026-08-10",
+    "links": ["https://docs.ferrowave.dev/guides/webhooks", "https://docs.ferrowave.dev/changelog"]
+  },
+  {
+    "_key": "https://docs.ferrowave.dev/guides/webhooks/retries",
+    "url": "https://docs.ferrowave.dev/guides/webhooks/retries",
+    "title": "Webhook retries | Ferrowave Docs",
+    "content": "Failed webhook deliveries are retried with exponential backoff for up to 3 days.",
+    "raw_content": "# Webhook retries\n\nFailed deliveries are retried with exponential backoff for up to 3 days.",
+    "published_date": "2026-06-01",
+    "links": ["https://docs.ferrowave.dev/guides/webhooks"]
+  },
+  {
+    "_key": "https://docs.ferrowave.dev/guides/api-keys",
+    "url": "https://docs.ferrowave.dev/guides/api-keys",
+    "title": "API keys | Ferrowave Docs",
+    "content": "Create restricted API keys. Legacy v1 API keys stop working on December 1, 2026.",
+    "raw_content": "# API keys\n\nUse restricted keys (`fw_rk_...`) for server-side integrations.\n\n> Legacy v1 API keys (`fw_live_...`) stop working on **December 1, 2026**. Rotate to v2 keys from the dashboard.",
+    "published_date": "2026-09-01",
+    "links": ["https://docs.ferrowave.dev/changelog"]
+  },
+  {
+    "_key": "https://docs.ferrowave.dev/changelog",
+    "url": "https://docs.ferrowave.dev/changelog",
+    "title": "Changelog | Ferrowave Docs",
+    "content": "Release notes for the Ferrowave API and SDKs.",
+    "raw_content": "# Changelog\n\n## 2026-09-01\n- Legacy v1 API keys will stop working on 2026-12-01.\n\n## 2026-08-10\n- Webhook signatures v2 (`Ferrowave-Signature-V2`) are generally available. The v1 signature header will be retired; see [Verifying webhook signatures](https://docs.ferrowave.dev/guides/webhooks/verify-signatures) for the date.\n\n## 2026-05-14\n- ferrowave-node 4.0 released. The 3.x SDK reaches end of life on 2026-11-30.",
+    "published_date": "2026-09-01",
+    "links": [
+      "https://docs.ferrowave.dev/guides/webhooks/verify-signatures",
+      "https://docs.ferrowave.dev/guides/api-keys"
+    ]
+  },
+  {
+    "_key": "https://docs.ferrowave.dev/legacy/v1",
+    "url": "https://docs.ferrowave.dev/legacy/v1",
+    "title": "Legacy v1 documentation | Ferrowave Docs",
+    "content": "Archived documentation for the Ferrowave v1 API, including v1 webhooks.",
+    "raw_content": "# Legacy v1 documentation\n\nThis is archived documentation for API v1.\n\n- [v1 webhooks](https://docs.ferrowave.dev/legacy/v1/webhooks)",
+    "published_date": "2025-03-01",
+    "links": ["https://docs.ferrowave.dev/legacy/v1/webhooks"]
+  },
+  {
+    "_key": "https://docs.ferrowave.dev/legacy/v1/webhooks",
+    "url": "https://docs.ferrowave.dev/legacy/v1/webhooks",
+    "title": "Webhooks (v1, archived) | Ferrowave Docs",
+    "content": "v1 webhooks are signed with the X-Ferrowave-Sig header (HMAC-SHA1). v1 webhooks are supported until June 30, 2026.",
+    "raw_content": "# Webhooks (v1, archived)\n\n> Archived March 2025. This page is no longer maintained.\n\nv1 webhook deliveries are signed with the `X-Ferrowave-Sig` header (HMAC-SHA1 of the body). v1 webhooks are supported until June 30, 2026.",
+    "published_date": "2025-03-01",
+    "links": ["https://docs.ferrowave.dev/legacy/v1"]
+  },
+  {
+    "_key": "https://www.ferrowave.com/blog/webhooks-v2",
+    "url": "https://www.ferrowave.com/blog/webhooks-v2",
+    "title": "Introducing signed webhooks v2 | Ferrowave Blog",
+    "content": "Webhook signatures v2 use HMAC-SHA256 and include a timestamp to stop replay attacks. Migration details are in the docs.",
+    "raw_content": "# Introducing signed webhooks v2\n\nWebhook signatures v2 use HMAC-SHA256 and include a timestamp to stop replay attacks. We expect to retire v1 signatures sometime in 2027; the docs have the exact date.",
+    "published_date": "2026-08-10",
+    "links": ["https://docs.ferrowave.dev/guides/webhooks/verify-signatures"]
+  }
+]

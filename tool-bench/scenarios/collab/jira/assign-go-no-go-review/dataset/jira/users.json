@@ -1,0 +1,75 @@
+[
+  {
+    "name": "jordan.lee",
+    "key": "JIRAUSER10000",
+    "displayName": "Jordan Lee",
+    "emailAddress": "jordan.lee@octo-corp.example",
+    "me": true,
+    "timeZone": "America/New_York",
+    "active": true,
+    "_key": "jordan.lee"
+  },
+  {
+    "name": "priya.natarajan",
+    "key": "JIRAUSER10001",
+    "displayName": "Priya Natarajan",
+    "emailAddress": "priya.natarajan@octo-corp.example",
+    "timeZone": "America/New_York",
+    "active": true,
+    "_key": "priya.natarajan"
+  },
+  {
+    "name": "alex.kim",
+    "key": "JIRAUSER10002",
+    "displayName": "Alex Kim",
+    "emailAddress": "alex.kim@octo-corp.example",
+    "timeZone": "America/New_York",
+    "active": true,
+    "_key": "alex.kim"
+  },
+  {
+    "name": "alex.kimball",
+    "key": "JIRAUSER10003",
+    "displayName": "Alex Kimball",
+    "emailAddress": "alex.kimball@octo-corp.example",
+    "timeZone": "America/New_York",
+    "active": true,
+    "_key": "alex.kimball"
+  },
+  {
+    "name": "sam.ortiz",
+    "key": "JIRAUSER10004",
+    "displayName": "Sam Ortiz",
+    "emailAddress": "sam.ortiz@octo-corp.example",
+    "timeZone": "America/New_York",
+    "active": true,
+    "_key": "sam.ortiz"
+  },
+  {
+    "name": "lena.fischer",
+    "key": "JIRAUSER10005",
+    "displayName": "Lena Fischer",
+    "emailAddress": "lena.fischer@octo-corp.example",
+    "timeZone": "America/New_York",
+    "active": true,
+    "_key": "lena.fischer"
+  },
+  {
+    "name": "marcus.webb",
+    "key": "JIRAUSER10006",
+    "displayName": "Marcus Webb",
+    "emailAddress": "marcus.webb@octo-corp.example",
+    "timeZone": "America/New_York",
+    "active": true,
+    "_key": "marcus.webb"
+  },
+  {
+    "name": "old.contractor",
+    "key": "JIRAUSER10007",
+    "displayName": "Alex Kim (contractor)",
+    "emailAddress": "akim@contractor.example",
+    "active": false,
+    "timeZone": "America/New_York",
+    "_key": "old.contractor"
+  }
+]

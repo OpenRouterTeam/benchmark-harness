@@ -1,0 +1,477 @@
+[
+  {
+    "id": "dpl_1ijIq6r015f3b89pqQsLeT07whaO",
+    "name": "checkout-api",
+    "url": "checkout-api-1ijiq6r01-acme-shop.vercel.app",
+    "projectId": "prj_Tt5m7wZLjgqPCBUfmEh1nWJN9ZIW",
+    "target": "production",
+    "readyState": "READY",
+    "type": "LAMBDAS",
+    "source": "git",
+    "createdAt": 1782981300000,
+    "buildingAt": 1782981304000,
+    "ready": 1782981371000,
+    "creator": {
+      "uid": "Lw3nB8qXv2RkT6yHc9MdZp4a",
+      "email": "mateo@acme-shop.com",
+      "username": "mateo-a",
+      "githubLogin": "mateoalv"
+    },
+    "meta": {
+      "githubCommitAuthorName": "Mateo Alvarez",
+      "githubCommitAuthorLogin": "mateoalv",
+      "githubCommitMessage": "Pin stripe-node to 14.x (#88)",
+      "githubCommitOrg": "acme-shop",
+      "githubCommitRef": "main",
+      "githubCommitRepo": "checkout-api",
+      "githubCommitRepoId": "690113207",
+      "githubCommitSha": "f19c3e7a5d0b28f4c6e1a9d3b7f0c2e8a4d6b153",
+      "githubDeployment": "1",
+      "githubOrg": "acme-shop",
+      "githubRepo": "checkout-api",
+      "githubRepoId": "690113207",
+      "githubRepoOwnerType": "Organization"
+    },
+    "gitSource": {
+      "type": "github",
+      "repoId": 690113207,
+      "ref": "main",
+      "sha": "f19c3e7a5d0b28f4c6e1a9d3b7f0c2e8a4d6b153"
+    },
+    "alias": [
+      "api-legacy.acme-shop.com",
+      "checkout-api-acme-shop.vercel.app"
+    ],
+    "regions": [
+      "iad1"
+    ],
+    "inspectorUrl": "https://vercel.com/acme-shop/checkout-api/1ijIq6r015f3b89pqQsLeT07whaO"
+  },
+  {
+    "id": "dpl_PVHdoMs1gRmMtJWmSaLVMgARwzVW",
+    "name": "docs",
+    "url": "docs-pvhdoms1g-acme-shop.vercel.app",
+    "projectId": "prj_8uh4fJyvBcj41eSFaHbqW7k91M3h",
+    "target": "production",
+    "readyState": "READY",
+    "type": "LAMBDAS",
+    "source": "git",
+    "createdAt": 1790769300000,
+    "buildingAt": 1790769304000,
+    "ready": 1790769371000,
+    "creator": {
+      "uid": "Qm7vC2tYh5NwK8rXb4LpZs6d",
+      "email": "jun@acme-shop.com",
+      "username": "jun-park",
+      "githubLogin": "junpark"
+    },
+    "meta": {
+      "githubCommitAuthorName": "Jun Park",
+      "githubCommitAuthorLogin": "junpark",
+      "githubCommitMessage": "Document webhook retries",
+      "githubCommitOrg": "acme-shop",
+      "githubCommitRef": "main",
+      "githubCommitRepo": "docs",
+      "githubCommitRepoId": "702338114",
+      "githubCommitSha": "6d0a4e8c2f7b19d3a5c0e6f2b8d4a1c9e7f3b052",
+      "githubDeployment": "1",
+      "githubOrg": "acme-shop",
+      "githubRepo": "docs",
+      "githubRepoId": "702338114",
+      "githubRepoOwnerType": "Organization"
+    },
+    "gitSource": {
+      "type": "github",
+      "repoId": 702338114,
+      "ref": "main",
+      "sha": "6d0a4e8c2f7b19d3a5c0e6f2b8d4a1c9e7f3b052"
+    },
+    "alias": [
+      "docs.acme-shop.com",
+      "docs-acme-shop.vercel.app"
+    ],
+    "regions": [
+      "iad1"
+    ],
+    "inspectorUrl": "https://vercel.com/acme-shop/docs/PVHdoMs1gRmMtJWmSaLVMgARwzVW"
+  },
+  {
+    "id": "dpl_31CbxP6STgiIcddZvYPTtDYiJkhL",
+    "name": "checkout-api-next",
+    "url": "checkout-api-next-31cbxp6st-acme-shop.vercel.app",
+    "projectId": "prj_9NauQLxYvOeIyWZWq6mqvavv9xuH",
+    "target": "production",
+    "readyState": "READY",
+    "type": "LAMBDAS",
+    "source": "git",
+    "createdAt": 1792518000000,
+    "buildingAt": 1792518004000,
+    "ready": 1792518071000,
+    "creator": {
+      "uid": "Lw3nB8qXv2RkT6yHc9MdZp4a",
+      "email": "mateo@acme-shop.com",
+      "username": "mateo-a",
+      "githubLogin": "mateoalv"
+    },
+    "meta": {
+      "githubCommitAuthorName": "Mateo Alvarez",
+      "githubCommitAuthorLogin": "mateoalv",
+      "githubCommitMessage": "Idempotency keys for refunds (#64)",
+      "githubCommitOrg": "acme-shop",
+      "githubCommitRef": "main",
+      "githubCommitRepo": "checkout-api-next",
+      "githubCommitRepoId": "801552930",
+      "githubCommitSha": "8a2f6d0c4e9b13a7f5d1c8e2b6a0f4d9c3e7b521",
+      "githubDeployment": "1",
+      "githubOrg": "acme-shop",
+      "githubRepo": "checkout-api-next",
+      "githubRepoId": "801552930",
+      "githubRepoOwnerType": "Organization"
+    },
+    "gitSource": {
+      "type": "github",
+      "repoId": 801552930,
+      "ref": "main",
+      "sha": "8a2f6d0c4e9b13a7f5d1c8e2b6a0f4d9c3e7b521"
+    },
+    "alias": [
+      "api.acme-shop.com",
+      "checkout-api-next-acme-shop.vercel.app"
+    ],
+    "regions": [
+      "iad1"
+    ],
+    "inspectorUrl": "https://vercel.com/acme-shop/checkout-api-next/31CbxP6STgiIcddZvYPTtDYiJkhL"
+  },
+  {
+    "id": "dpl_8o704GjcwumkLAaxPwjoxb4V6QDF",
+    "name": "storefront",
+    "url": "storefront-8o704gjcw-acme-shop.vercel.app",
+    "projectId": "prj_3dw2VoUa166qmaLV3P6dm828isAX",
+    "target": "production",
+    "readyState": "READY",
+    "type": "LAMBDAS",
+    "source": "git",
+    "createdAt": 1792834920000,
+    "buildingAt": 1792834924000,
+    "ready": 1792834991000,
+    "creator": {
+      "uid": "Lw3nB8qXv2RkT6yHc9MdZp4a",
+      "email": "mateo@acme-shop.com",
+      "username": "mateo-a",
+      "githubLogin": "mateoalv"
+    },
+    "meta": {
+      "githubCommitAuthorName": "Mateo Alvarez",
+      "githubCommitAuthorLogin": "mateoalv",
+      "githubCommitMessage": "Fix tax rounding for EU orders (#482)",
+      "githubCommitOrg": "acme-shop",
+      "githubCommitRef": "main",
+      "githubCommitRepo": "storefront",
+      "githubCommitRepoId": "712004311",
+      "githubCommitSha": "c3a9f12e8b47d05a6e21f9b3c7d84e50a1b6f2d9",
+      "githubDeployment": "1",
+      "githubOrg": "acme-shop",
+      "githubRepo": "storefront",
+      "githubRepoId": "712004311",
+      "githubRepoOwnerType": "Organization"
+    },
+    "gitSource": {
+      "type": "github",
+      "repoId": 712004311,
+      "ref": "main",
+      "sha": "c3a9f12e8b47d05a6e21f9b3c7d84e50a1b6f2d9"
+    },
+    "alias": [],
+    "regions": [
+      "iad1"
+    ],
+    "inspectorUrl": "https://vercel.com/acme-shop/storefront/8o704GjcwumkLAaxPwjoxb4V6QDF"
+  },
+  {
+    "id": "dpl_sxzR1ENpPTbZwLOubuwxzYolZyx0",
+    "name": "storefront",
+    "url": "storefront-sxzr1enpp-acme-shop.vercel.app",
+    "projectId": "prj_3dw2VoUa166qmaLV3P6dm828isAX",
+    "target": null,
+    "readyState": "READY",
+    "type": "LAMBDAS",
+    "source": "git",
+    "createdAt": 1792940580000,
+    "buildingAt": 1792940584000,
+    "ready": 1792940651000,
+    "creator": {
+      "uid": "Qm7vC2tYh5NwK8rXb4LpZs6d",
+      "email": "jun@acme-shop.com",
+      "username": "jun-park",
+      "githubLogin": "junpark"
+    },
+    "meta": {
+      "githubCommitAuthorName": "Jun Park",
+      "githubCommitAuthorLogin": "junpark",
+      "githubCommitMessage": "Show item count on cart badge",
+      "githubCommitOrg": "acme-shop",
+      "githubCommitRef": "fix/cart-badge",
+      "githubCommitRepo": "storefront",
+      "githubCommitRepoId": "712004311",
+      "githubCommitSha": "91b7e4c2d8a05f3e6b1c9d7a2e4f8b0c6d3a5e71",
+      "githubDeployment": "1",
+      "githubOrg": "acme-shop",
+      "githubRepo": "storefront",
+      "githubRepoId": "712004311",
+      "githubRepoOwnerType": "Organization"
+    },
+    "gitSource": {
+      "type": "github",
+      "repoId": 712004311,
+      "ref": "fix/cart-badge",
+      "sha": "91b7e4c2d8a05f3e6b1c9d7a2e4f8b0c6d3a5e71"
+    },
+    "alias": [
+      "storefront-git-fix-cart-badge-acme-shop.vercel.app"
+    ],
+    "regions": [
+      "iad1"
+    ],
+    "inspectorUrl": "https://vercel.com/acme-shop/storefront/sxzR1ENpPTbZwLOubuwxzYolZyx0"
+  },
+  {
+    "id": "dpl_FtAVsX1HHV2AIfRXwGMbHX0OrVir",
+    "name": "storefront-admin",
+    "url": "storefront-admin-ftavsx1hh-acme-shop.vercel.app",
+    "projectId": "prj_ysFUnRJiXZGcxlQubrXGJqx7GadE",
+    "target": "production",
+    "readyState": "READY",
+    "type": "LAMBDAS",
+    "source": "git",
+    "createdAt": 1793008800000,
+    "buildingAt": 1793008804000,
+    "ready": 1793008871000,
+    "creator": {
+      "uid": "Qm7vC2tYh5NwK8rXb4LpZs6d",
+      "email": "jun@acme-shop.com",
+      "username": "jun-park",
+      "githubLogin": "junpark"
+    },
+    "meta": {
+      "githubCommitAuthorName": "Jun Park",
+      "githubCommitAuthorLogin": "junpark",
+      "githubCommitMessage": "Add bulk refund action (#219)",
+      "githubCommitOrg": "acme-shop",
+      "githubCommitRef": "main",
+      "githubCommitRepo": "storefront-admin",
+      "githubCommitRepoId": "712004388",
+      "githubCommitSha": "b4d8f2a6c0e19375d7b3f1a9e5c2d8b06a4f7e31",
+      "githubDeployment": "1",
+      "githubOrg": "acme-shop",
+      "githubRepo": "storefront-admin",
+      "githubRepoId": "712004388",
+      "githubRepoOwnerType": "Organization"
+    },
+    "gitSource": {
+      "type": "github",
+      "repoId": 712004388,
+      "ref": "main",
+      "sha": "b4d8f2a6c0e19375d7b3f1a9e5c2d8b06a4f7e31"
+    },
+    "alias": [
+      "admin.acme-shop.com",
+      "storefront-admin-acme-shop.vercel.app"
+    ],
+    "regions": [
+      "iad1"
+    ],
+    "inspectorUrl": "https://vercel.com/acme-shop/storefront-admin/FtAVsX1HHV2AIfRXwGMbHX0OrVir"
+  },
+  {
+    "id": "dpl_PHkhNPm61EU1aF79kakZb9UhQNNQ",
+    "name": "storefront",
+    "url": "storefront-phkhnpm61-acme-shop.vercel.app",
+    "projectId": "prj_3dw2VoUa166qmaLV3P6dm828isAX",
+    "target": "production",
+    "readyState": "ERROR",
+    "type": "LAMBDAS",
+    "source": "git",
+    "createdAt": 1793013480000,
+    "buildingAt": 1793013484000,
+    "ready": 1793013532000,
+    "creator": {
+      "uid": "Qm7vC2tYh5NwK8rXb4LpZs6d",
+      "email": "jun@acme-shop.com",
+      "username": "jun-park",
+      "githubLogin": "junpark"
+    },
+    "meta": {
+      "githubCommitAuthorName": "Jun Park",
+      "githubCommitAuthorLogin": "junpark",
+      "githubCommitMessage": "Bump eslint config (#488)",
+      "githubCommitOrg": "acme-shop",
+      "githubCommitRef": "main",
+      "githubCommitRepo": "storefront",
+      "githubCommitRepoId": "712004311",
+      "githubCommitSha": "2f6c8a1e4d9b07c3a5e2f1d8b6c4a9e07d3b5f12",
+      "githubDeployment": "1",
+      "githubOrg": "acme-shop",
+      "githubRepo": "storefront",
+      "githubRepoId": "712004311",
+      "githubRepoOwnerType": "Organization"
+    },
+    "gitSource": {
+      "type": "github",
+      "repoId": 712004311,
+      "ref": "main",
+      "sha": "2f6c8a1e4d9b07c3a5e2f1d8b6c4a9e07d3b5f12"
+    },
+    "alias": [],
+    "regions": [
+      "iad1"
+    ],
+    "inspectorUrl": "https://vercel.com/acme-shop/storefront/PHkhNPm61EU1aF79kakZb9UhQNNQ",
+    "errorCode": "BUILD_UTILS_SPAWN_1",
+    "errorMessage": "Command \"pnpm run build\" exited with 1",
+    "errorStep": "build"
+  },
+  {
+    "id": "dpl_7wC1vKiBnuwDgHLXzdLRklqAYci5",
+    "name": "storefront",
+    "url": "storefront-7wc1vkibn-acme-shop.vercel.app",
+    "projectId": "prj_3dw2VoUa166qmaLV3P6dm828isAX",
+    "target": "production",
+    "readyState": "READY",
+    "type": "LAMBDAS",
+    "source": "git",
+    "createdAt": 1793175300000,
+    "buildingAt": 1793175304000,
+    "ready": 1793175371000,
+    "creator": {
+      "uid": "Lw3nB8qXv2RkT6yHc9MdZp4a",
+      "email": "mateo@acme-shop.com",
+      "username": "mateo-a",
+      "githubLogin": "mateoalv"
+    },
+    "meta": {
+      "githubCommitAuthorName": "Mateo Alvarez",
+      "githubCommitAuthorLogin": "mateoalv",
+      "githubCommitMessage": "Switch to payments client v3 (#491)",
+      "githubCommitOrg": "acme-shop",
+      "githubCommitRef": "main",
+      "githubCommitRepo": "storefront",
+      "githubCommitRepoId": "712004311",
+      "githubCommitSha": "e07a3c9d5b1f48e2a6c0d7b9f3e1a5c8d2b4f690",
+      "githubDeployment": "1",
+      "githubOrg": "acme-shop",
+      "githubRepo": "storefront",
+      "githubRepoId": "712004311",
+      "githubRepoOwnerType": "Organization"
+    },
+    "gitSource": {
+      "type": "github",
+      "repoId": 712004311,
+      "ref": "main",
+      "sha": "e07a3c9d5b1f48e2a6c0d7b9f3e1a5c8d2b4f690"
+    },
+    "alias": [
+      "acme-shop.com",
+      "storefront-acme-shop.vercel.app"
+    ],
+    "regions": [
+      "iad1"
+    ],
+    "inspectorUrl": "https://vercel.com/acme-shop/storefront/7wC1vKiBnuwDgHLXzdLRklqAYci5"
+  },
+  {
+    "id": "dpl_1KT70nyZgoWTlCSRmxLe0svxe4Xx",
+    "name": "storefront",
+    "url": "storefront-1kt70nyzg-acme-shop.vercel.app",
+    "projectId": "prj_3dw2VoUa166qmaLV3P6dm828isAX",
+    "target": null,
+    "readyState": "READY",
+    "type": "LAMBDAS",
+    "source": "git",
+    "createdAt": 1793179860000,
+    "buildingAt": 1793179864000,
+    "ready": 1793179931000,
+    "creator": {
+      "uid": "Lw3nB8qXv2RkT6yHc9MdZp4a",
+      "email": "mateo@acme-shop.com",
+      "username": "mateo-a",
+      "githubLogin": "mateoalv"
+    },
+    "meta": {
+      "githubCommitAuthorName": "Mateo Alvarez",
+      "githubCommitAuthorLogin": "mateoalv",
+      "githubCommitMessage": "Gift card redemption at checkout",
+      "githubCommitOrg": "acme-shop",
+      "githubCommitRef": "feat/gift-cards",
+      "githubCommitRepo": "storefront",
+      "githubCommitRepoId": "712004311",
+      "githubCommitSha": "4be1d07c9a3f58e2b6d0c1a7e9f4b3d25c8a6e10",
+      "githubDeployment": "1",
+      "githubOrg": "acme-shop",
+      "githubRepo": "storefront",
+      "githubRepoId": "712004311",
+      "githubRepoOwnerType": "Organization"
+    },
+    "gitSource": {
+      "type": "github",
+      "repoId": 712004311,
+      "ref": "feat/gift-cards",
+      "sha": "4be1d07c9a3f58e2b6d0c1a7e9f4b3d25c8a6e10"
+    },
+    "alias": [
+      "storefront-git-feat-gift-cards-acme-shop.vercel.app"
+    ],
+    "regions": [
+      "iad1"
+    ],
+    "inspectorUrl": "https://vercel.com/acme-shop/storefront/1KT70nyZgoWTlCSRmxLe0svxe4Xx"
+  },
+  {
+    "id": "dpl_lk10nmLEMdeJTM77c5pSb2Hdhpol",
+    "name": "storefront-admin",
+    "url": "storefront-admin-lk10nmlem-acme-shop.vercel.app",
+    "projectId": "prj_ysFUnRJiXZGcxlQubrXGJqx7GadE",
+    "target": null,
+    "readyState": "ERROR",
+    "type": "LAMBDAS",
+    "source": "git",
+    "createdAt": 1793186400000,
+    "buildingAt": 1793186404000,
+    "ready": 1793186452000,
+    "creator": {
+      "uid": "Qm7vC2tYh5NwK8rXb4LpZs6d",
+      "email": "jun@acme-shop.com",
+      "username": "jun-park",
+      "githubLogin": "junpark"
+    },
+    "meta": {
+      "githubCommitAuthorName": "Jun Park",
+      "githubCommitAuthorLogin": "junpark",
+      "githubCommitMessage": "WIP: order export to CSV",
+      "githubCommitOrg": "acme-shop",
+      "githubCommitRef": "feat/order-export",
+      "githubCommitRepo": "storefront-admin",
+      "githubCommitRepoId": "712004388",
+      "githubCommitSha": "0c5e9a3d7f1b48c2e6a0d4b8f2c7e1a9d3b5f068",
+      "githubDeployment": "1",
+      "githubOrg": "acme-shop",
+      "githubRepo": "storefront-admin",
+      "githubRepoId": "712004388",
+      "githubRepoOwnerType": "Organization"
+    },
+    "gitSource": {
+      "type": "github",
+      "repoId": 712004388,
+      "ref": "feat/order-export",
+      "sha": "0c5e9a3d7f1b48c2e6a0d4b8f2c7e1a9d3b5f068"
+    },
+    "alias": [],
+    "regions": [
+      "iad1"
+    ],
+    "inspectorUrl": "https://vercel.com/acme-shop/storefront-admin/lk10nmLEMdeJTM77c5pSb2Hdhpol",
+    "errorCode": "BUILD_UTILS_SPAWN_1",
+    "errorMessage": "Command \"pnpm run build\" exited with 1",
+    "errorStep": "build"
+  }
+]

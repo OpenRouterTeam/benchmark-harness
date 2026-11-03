@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"add_note_to_incident","arguments":{"incident_id":"Q3K8ORDBLAG2RX","note":"Handing off to DBRE: replica-2 disk is at 100%, needs a volume resize."}}}

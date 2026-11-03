@@ -1,0 +1,50 @@
+[
+ {
+  "id": "ou-UqlxZGAjbb7RdYDO",
+  "organization": "acme-platform",
+  "user": "user-sCLiMu3Hnw2KThIL",
+  "status": "active",
+  "email": "sam.rivera@acme.io",
+  "created-at": "2024-02-01T10:00:00Z"
+ },
+ {
+  "id": "ou-37pW7zC0vdIOEOhc",
+  "organization": "acme-platform",
+  "user": "user-sIP8122NxE6G9g6M",
+  "status": "active",
+  "email": "priya.nair@acme.io",
+  "created-at": "2024-02-01T10:00:00Z"
+ },
+ {
+  "id": "ou-uqoGm0pqgtHcvlIl",
+  "organization": "acme-platform",
+  "user": "user-Vm0I7MiOQY9x5zBV",
+  "status": "active",
+  "email": "dmitri.volkov@acme.io",
+  "created-at": "2024-02-01T10:00:00Z"
+ },
+ {
+  "id": "ou-YDuBwAQ1603gzx6m",
+  "organization": "acme-platform",
+  "user": "user-TSdKoSGwM7m5pCTl",
+  "status": "active",
+  "email": "alice.wong@acme.io",
+  "created-at": "2024-02-01T10:00:00Z"
+ },
+ {
+  "id": "ou-8kPoBbdzkT66VlX5",
+  "organization": "acme-sandbox",
+  "user": "user-sCLiMu3Hnw2KThIL",
+  "status": "active",
+  "email": "sam.rivera@acme.io",
+  "created-at": "2024-06-01T10:00:00Z"
+ },
+ {
+  "id": "ou-HOE9AWd72Yqwv48p",
+  "organization": "acme-platform",
+  "user": null,
+  "status": "invited",
+  "email": "jun.park@acme.io",
+  "created-at": "2026-10-20T09:00:00Z"
+ }
+]

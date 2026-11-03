@@ -1,0 +1,5 @@
+[
+  {"id": "txn_NorthwindFeb00000000001", "amount": 12000, "fee": 378, "created": 1770714000, "available_on": 1770886800, "type": "charge", "source": "ch_NorthwindFeb000000000001", "status": "available", "description": "Order #1041"},
+  {"id": "txn_NorthwindMarA0000000002", "amount": 48000, "fee": 1422, "created": 1773134040, "available_on": 1773306840, "type": "charge", "source": "ch_NorthwindMarA00000000002", "status": "available", "description": "Order #1077"},
+  {"id": "txn_PayoutFeb0000000000003", "amount": -11622, "fee": 0, "created": 1771113600, "available_on": 1771113600, "type": "payout", "source": "po_Feb15000000000000000001", "status": "available", "description": "STRIPE PAYOUT"}
+]

@@ -1,0 +1,7 @@
+[
+  {"id": 9030001, "name": "Jordan Blake", "email": "jordan.blake@octo-corp.example", "role": "admin", "organization_id": null, "created_at": "2024-02-01T10:00:00Z", "time_zone": "Eastern Time (US & Canada)", "iana_time_zone": "America/New_York"},
+  {"id": 9030002, "name": "Rita Gomez", "email": "rita.gomez@octo-corp.example", "role": "agent", "organization_id": null, "created_at": "2025-01-08T08:00:00Z"},
+  {"id": 9030101, "name": "Sam Ortiz", "email": "sam.ortiz@fastmail.com", "role": "end-user", "organization_id": null, "created_at": "2025-09-30T10:05:00Z"},
+  {"id": 9030102, "name": "Sam Ortiz", "email": "sortiz@gmail.com", "role": "end-user", "organization_id": null, "created_at": "2026-01-14T10:05:00Z"},
+  {"id": 9030103, "name": "Ben Carter", "email": "ben.carter@outlook.com", "role": "end-user", "organization_id": null, "created_at": "2025-11-20T10:05:00Z"}
+]

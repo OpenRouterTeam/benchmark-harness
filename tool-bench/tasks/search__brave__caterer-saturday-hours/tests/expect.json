@@ -1,0 +1,22 @@
+{
+  "state": [],
+  "required_calls": [
+    {
+      "service": "brave",
+      "method": "GET",
+      "path": null,
+      "path_regex": "^/res/v1/local/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [],
+  "answer": {
+    "contains": [
+      "555-0142"
+    ],
+    "regex": "(?i)0?9(:00)?\\s*(am|a\\.m\\.)?\\s*(-|–|—|to|until)\\s*(14:00|14\\.00|2(:00)?\\s*(pm|p\\.m\\.))"
+  }
+}

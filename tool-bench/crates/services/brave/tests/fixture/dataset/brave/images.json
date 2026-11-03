@@ -1,0 +1,23 @@
+[
+  {
+    "_key": "https://www.ironbarkhosting.com/press",
+    "url": "https://www.ironbarkhosting.com/press",
+    "title": "Ironbark Hosting logo (press kit)",
+    "source": "ironbarkhosting.com",
+    "image_url": "https://www.ironbarkhosting.com/press/ironbark-logo.png",
+    "width": 1600,
+    "height": 900,
+    "confidence": "high",
+    "page_fetched": "2026-09-02T10:11:12Z"
+  },
+  {
+    "_key": "https://commons.example.org/ironbark-tree",
+    "url": "https://commons.example.org/ironbark-tree",
+    "title": "Ironbark tree in Victoria",
+    "image_url": "https://commons.example.org/files/ironbark-tree.jpg",
+    "width": 3000,
+    "height": 2000,
+    "confidence": "medium",
+    "page_fetched": "2025-12-01T00:00:00Z"
+  }
+]

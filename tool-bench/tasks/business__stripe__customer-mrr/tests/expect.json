@@ -1,0 +1,22 @@
+{
+  "state": [],
+  "required_calls": [],
+  "forbidden_calls": [
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": {
+    "contains": [],
+    "regex": "(^|[^0-9,])439(\\.00)?([^0-9.]|\\.([^0-9]|$)|$)"
+  }
+}

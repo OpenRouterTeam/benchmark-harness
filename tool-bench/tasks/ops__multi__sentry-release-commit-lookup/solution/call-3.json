@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"pull_request_read","arguments":{"method":"get","owner":"lumen-labs","pullNumber":57,"repo":"storefront"}}}

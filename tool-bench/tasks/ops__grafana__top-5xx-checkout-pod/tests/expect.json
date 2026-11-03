@@ -1,0 +1,33 @@
+{
+  "state": [],
+  "required_calls": [
+    {
+      "service": "grafana",
+      "method": null,
+      "path": null,
+      "path_regex": "^/api/datasources/(uid/prom-prod/resources|proxy/uid/prom-prod)/api/v1/query(_range)?$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "grafana",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": {
+    "contains": [
+      "checkout-7b9d6c5f4-xk2lp"
+    ],
+    "regex": null
+  }
+}

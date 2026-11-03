@@ -1,0 +1,74 @@
+[
+  {
+    "id": "2dad689e-9ace-5467-9b02-0cc4e445cfa4",
+    "name": "Casey Morgan",
+    "displayName": "casey",
+    "email": "casey.morgan@octo-corp.example",
+    "active": true,
+    "admin": true,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "a4176131-9edb-57a6-9830-0638d2d2fa29",
+    "name": "Priya Natarajan",
+    "displayName": "priya",
+    "email": "priya.natarajan@octo-corp.example",
+    "active": true,
+    "admin": false,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "1102b6c1-4993-5d71-a256-93aa9e7017c3",
+    "name": "Sam Ortiz",
+    "displayName": "sam",
+    "email": "sam.ortiz@octo-corp.example",
+    "active": true,
+    "admin": false,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "6fd304f8-c8c8-5e04-8b31-cd8e030b5cc9",
+    "name": "Alex Rivera",
+    "displayName": "alex.r",
+    "email": "alex.rivera@octo-corp.example",
+    "active": true,
+    "admin": false,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "0bfae6ae-01d0-58d1-a611-7d1973102c45",
+    "name": "Alex Kim",
+    "displayName": "alexk",
+    "email": "alex.kim@octo-corp.example",
+    "active": true,
+    "admin": false,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "3dbdd473-1a04-5dda-ad95-4c583313bccd",
+    "name": "Lena Fischer",
+    "displayName": "lena",
+    "email": "lena.fischer@octo-corp.example",
+    "active": true,
+    "admin": false,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "f265b518-6a58-54fe-88a3-4de6c02ca349",
+    "name": "Marcus Webb",
+    "displayName": "marcus",
+    "email": "marcus.webb@octo-corp.example",
+    "active": true,
+    "admin": true,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "544efc27-a502-5f02-85d8-b0ee4a171005",
+    "name": "Jonah Woods",
+    "displayName": "jonah",
+    "email": "jonah.woods@contractor.example",
+    "active": false,
+    "admin": false,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  }
+]

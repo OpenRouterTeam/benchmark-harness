@@ -1,0 +1,42 @@
+[
+  {
+    "_key": "1001",
+    "id": "1001",
+    "repo": "octo-org/payments-api",
+    "reason": "review_requested",
+    "unread": true,
+    "updated_at": "2026-03-12T15:40:00Z",
+    "subject": {
+      "title": "Add exponential backoff to webhook retries",
+      "type": "PullRequest",
+      "number": 42
+    }
+  },
+  {
+    "_key": "1002",
+    "id": "1002",
+    "repo": "octo-org/payments-api",
+    "reason": "subscribed",
+    "unread": false,
+    "updated_at": "2026-03-08T13:00:00Z",
+    "last_read_at": "2026-03-08T14:00:00Z",
+    "subject": {
+      "title": "Webhook retries hammer merchant endpoints",
+      "type": "Issue",
+      "number": 39
+    }
+  },
+  {
+    "_key": "1003",
+    "id": "1003",
+    "repo": "octo-org/app",
+    "reason": "mention",
+    "unread": true,
+    "updated_at": "2026-03-13T08:00:00Z",
+    "subject": {
+      "title": "Flaky login test",
+      "type": "Issue",
+      "number": 3
+    }
+  }
+]

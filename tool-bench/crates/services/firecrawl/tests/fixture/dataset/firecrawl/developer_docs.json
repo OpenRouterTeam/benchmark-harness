@@ -1,0 +1,27 @@
+[
+  {
+    "_key": "issue:acme/sdk#12",
+    "id": "issue:acme/sdk#12",
+    "url": "https://github.com/acme/sdk/issues/12",
+    "title": "Retry on 429 not working",
+    "passages": [
+      {
+        "text": "The SDK ignores Retry-After on 429 responses."
+      }
+    ],
+    "keywords": [
+      "rate limit"
+    ]
+  },
+  {
+    "_key": "doc:abc",
+    "id": "doc:abc",
+    "url": "https://acme.dev/docs/page-01",
+    "title": "SDK configuration",
+    "passages": [
+      {
+        "text": "Set maxRetries to control retries."
+      }
+    ]
+  }
+]

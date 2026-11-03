@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"execute_sql","arguments":{"project_id":"qmvbxtzkplrnwdhyfaco","query":"select o.id, o.status, o.total, o.created_at, o.stripe_charge_id from public.orders o join public.customers c on c.id = o.customer_id where c.email = 'priya.shah@acme.io' order by o.created_at"}}}

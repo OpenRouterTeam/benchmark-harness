@@ -1,0 +1,44 @@
+{
+  "state": [],
+  "required_calls": [],
+  "forbidden_calls": [
+    {
+      "service": "gitlab",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/api/v4/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "gitlab",
+      "method": "PUT",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "gitlab",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": {
+    "contains": [
+      "5520",
+      "integration-tests",
+      "refund_reason"
+    ],
+    "regex": null
+  }
+}

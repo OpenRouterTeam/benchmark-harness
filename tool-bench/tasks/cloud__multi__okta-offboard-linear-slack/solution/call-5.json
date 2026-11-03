@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"linear_removeUserFromTeam","arguments":{"teamId":"6da75b4c-0e7c-5ac7-a415-f09a129582b1","userId":"3dbdd473-1a04-5dda-ad95-4c583313bccd"}}}

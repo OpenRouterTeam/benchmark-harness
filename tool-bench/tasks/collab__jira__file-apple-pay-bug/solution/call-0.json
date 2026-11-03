@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"jira_search_assignable_users","arguments":{"project_key":"WEB","query":"Alex Kim"}}}

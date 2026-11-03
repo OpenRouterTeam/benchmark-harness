@@ -1,0 +1,66 @@
+{
+  "state": [
+    {
+      "pointer": "/services/grafana/oncall_alert_groups/IHQ4K2M7/state",
+      "equals": "acknowledged",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/grafana/oncall_alert_groups/IST7B3N1/state",
+      "equals": "new",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/grafana/oncall_alert_groups/IOLD9X1Z/state",
+      "equals": "resolved",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "grafana",
+      "method": "POST",
+      "path": "/oncall/api/v1/alert_groups/IHQ4K2M7/acknowledge",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "grafana",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/oncall/api/v1/alert_groups/(IST7B3N1|IOLD9X1Z|IPG2L8R4)/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "grafana",
+      "method": "POST",
+      "path": null,
+      "path_regex": "/(resolve|silence)$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": {
+    "contains": [],
+    "regex": "(?i)brennan"
+  }
+}

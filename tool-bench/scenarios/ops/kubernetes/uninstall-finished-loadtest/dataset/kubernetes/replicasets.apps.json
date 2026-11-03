@@ -1,0 +1,355 @@
+[
+  {
+    "_key": "kube-system/coredns-fq7th5455q",
+    "metadata": {
+      "name": "coredns-fq7th5455q",
+      "namespace": "kube-system",
+      "uid": "84caa95f-f60b-42fa-a34a-e0eb02cc9359",
+      "resourceVersion": "41221",
+      "creationTimestamp": "2026-11-02T16:20:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "coredns",
+        "k8s-app": "kube-dns",
+        "pod-template-hash": "fq7th5455q"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/desired-replicas": "2",
+        "deployment.kubernetes.io/max-replicas": "3",
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "name": "coredns",
+          "uid": "6801ad47-277d-4c9c-a457-259d27997b8c",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ],
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 2,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "coredns",
+          "pod-template-hash": "fq7th5455q"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "coredns",
+            "k8s-app": "kube-dns",
+            "pod-template-hash": "fq7th5455q"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "coredns",
+              "image": "registry.k8s.io/coredns/coredns:v1.12.0",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "70Mi"
+                },
+                "limits": {
+                  "memory": "170Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 53,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      }
+    },
+    "status": {
+      "replicas": 2,
+      "fullyLabeledReplicas": 2,
+      "readyReplicas": 2,
+      "availableReplicas": 2,
+      "observedGeneration": 1
+    }
+  },
+  {
+    "_key": "kube-system/metrics-server-52pzb89fg",
+    "metadata": {
+      "name": "metrics-server-52pzb89fg",
+      "namespace": "kube-system",
+      "uid": "3241fb1e-517d-47c7-a900-5fae1102a27f",
+      "resourceVersion": "41289",
+      "creationTimestamp": "2026-11-02T16:20:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "metrics-server",
+        "k8s-app": "metrics-server",
+        "pod-template-hash": "52pzb89fg"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/desired-replicas": "1",
+        "deployment.kubernetes.io/max-replicas": "2",
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "name": "metrics-server",
+          "uid": "b4e14320-6831-4fb5-a784-a60602739ef0",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ],
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 1,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "metrics-server",
+          "pod-template-hash": "52pzb89fg"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "metrics-server",
+            "k8s-app": "metrics-server",
+            "pod-template-hash": "52pzb89fg"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "metrics-server",
+              "image": "registry.k8s.io/metrics-server/metrics-server:v0.7.2",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "200Mi"
+                },
+                "limits": {
+                  "memory": "400Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 10250,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      }
+    },
+    "status": {
+      "replicas": 1,
+      "fullyLabeledReplicas": 1,
+      "readyReplicas": 1,
+      "availableReplicas": 1,
+      "observedGeneration": 1
+    }
+  },
+  {
+    "_key": "checkout/checkout-web-9725xrrfc",
+    "metadata": {
+      "name": "checkout-web-9725xrrfc",
+      "namespace": "checkout",
+      "uid": "715f72fb-9ae1-423f-a5bd-50fad3ef685b",
+      "resourceVersion": "41442",
+      "creationTimestamp": "2026-11-02T16:20:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "checkout-web",
+        "team": "checkout",
+        "pod-template-hash": "9725xrrfc"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/desired-replicas": "3",
+        "deployment.kubernetes.io/max-replicas": "4",
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "name": "checkout-web",
+          "uid": "6da0e11e-8416-42af-a5ab-6cc5e6e351dd",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ],
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 3,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "checkout-web",
+          "pod-template-hash": "9725xrrfc"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "checkout-web",
+            "team": "checkout",
+            "pod-template-hash": "9725xrrfc"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "checkout-web",
+              "image": "ghcr.io/octo-corp/checkout-web:5.2.0",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "128Mi"
+                },
+                "limits": {
+                  "memory": "512Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 3000,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      }
+    },
+    "status": {
+      "replicas": 3,
+      "fullyLabeledReplicas": 3,
+      "readyReplicas": 3,
+      "availableReplicas": 3,
+      "observedGeneration": 1
+    }
+  },
+  {
+    "_key": "perf/k6-operator-controller-manager-m2m8p844v",
+    "metadata": {
+      "name": "k6-operator-controller-manager-m2m8p844v",
+      "namespace": "perf",
+      "uid": "261f05ea-ae16-4f71-a127-b5222c654f2b",
+      "resourceVersion": "41527",
+      "creationTimestamp": "2026-11-02T16:20:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "k6-operator",
+        "app.kubernetes.io/instance": "k6-operator",
+        "app.kubernetes.io/managed-by": "Helm",
+        "helm.sh/chart": "k6-operator-3.9.0",
+        "pod-template-hash": "m2m8p844v"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/desired-replicas": "1",
+        "deployment.kubernetes.io/max-replicas": "2",
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "name": "k6-operator-controller-manager",
+          "uid": "41980822-adb2-43d1-a12f-e0bab2e95a41",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ],
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 1,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "k6-operator-controller-manager",
+          "pod-template-hash": "m2m8p844v"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "k6-operator",
+            "app.kubernetes.io/instance": "k6-operator",
+            "app.kubernetes.io/managed-by": "Helm",
+            "helm.sh/chart": "k6-operator-3.9.0",
+            "pod-template-hash": "m2m8p844v"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "manager",
+              "image": "ghcr.io/grafana/k6-operator:controller-v0.0.19",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "128Mi"
+                },
+                "limits": {
+                  "memory": "256Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File"
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      }
+    },
+    "status": {
+      "replicas": 1,
+      "fullyLabeledReplicas": 1,
+      "readyReplicas": 1,
+      "availableReplicas": 1,
+      "observedGeneration": 1
+    }
+  }
+]

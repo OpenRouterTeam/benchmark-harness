@@ -1,0 +1,61 @@
+[
+  {
+    "id": "0c7e4b21-9d3a-4e6f-a1b2-5c8d7e6f9a11",
+    "name": "Tailspin pricing",
+    "status": "active",
+    "schedule": { "text": "every 12 hours", "timezone": "UTC", "intervalMinutes": 720 },
+    "goal": "Alert when Tailspin Toys changes plan prices or discounts.",
+    "targets": [{ "type": "scrape", "urls": ["https://www.tailspintoys.com/pricing"] }],
+    "notification": { "email": { "enabled": true, "recipients": ["pricing-intel@contoso.example"], "includeDiffs": true } },
+    "retentionDays": 30,
+    "createdAt": "2026-03-04T09:00:00Z",
+    "updatedAt": "2026-03-04T09:00:00Z",
+    "lastRunAt": "2026-10-29T12:00:00Z",
+    "nextRunAt": "2026-10-30T00:00:00Z",
+    "lastCheckId": "c4a1e2f3-0b9c-4d8e-9f7a-6b5c4d3e2f16"
+  },
+  {
+    "id": "0c7e4b21-9d3a-4e6f-a1b2-5c8d7e6f9a12",
+    "name": "Tailspin plans",
+    "status": "active",
+    "schedule": { "text": "every 12 hours", "timezone": "UTC", "intervalMinutes": 720 },
+    "goal": "Alert when Tailspin Toys changes plan prices or discounts on the new plans page.",
+    "targets": [{ "type": "scrape", "urls": ["https://www.tailspintoys.com/plans"] }],
+    "notification": { "email": { "enabled": true, "recipients": ["pricing-intel@contoso.example"], "includeDiffs": true } },
+    "retentionDays": 30,
+    "createdAt": "2026-10-21T14:20:00Z",
+    "updatedAt": "2026-10-21T14:20:00Z",
+    "lastRunAt": "2026-10-29T12:00:00Z",
+    "nextRunAt": "2026-10-30T00:00:00Z",
+    "lastCheckId": "c4a1e2f3-0b9c-4d8e-9f7a-6b5c4d3e2f26"
+  },
+  {
+    "id": "0c7e4b21-9d3a-4e6f-a1b2-5c8d7e6f9a13",
+    "name": "Tailspin pricing (EU)",
+    "status": "active",
+    "schedule": { "text": "daily", "timezone": "Europe/Berlin", "intervalMinutes": 1440 },
+    "goal": "Alert when Tailspin Toys changes EUR prices.",
+    "targets": [{ "type": "scrape", "urls": ["https://www.tailspintoys.eu/pricing"] }],
+    "notification": { "email": { "enabled": true, "recipients": ["emea-pricing@contoso.example"], "includeDiffs": true } },
+    "retentionDays": 30,
+    "createdAt": "2026-05-11T08:00:00Z",
+    "updatedAt": "2026-05-11T08:00:00Z",
+    "lastRunAt": "2026-10-29T06:00:00Z",
+    "nextRunAt": "2026-10-30T06:00:00Z",
+    "lastCheckId": "c4a1e2f3-0b9c-4d8e-9f7a-6b5c4d3e2f33"
+  },
+  {
+    "id": "0c7e4b21-9d3a-4e6f-a1b2-5c8d7e6f9a14",
+    "name": "Wingtip careers",
+    "status": "active",
+    "schedule": { "text": "daily", "timezone": "UTC", "intervalMinutes": 1440 },
+    "goal": "Track new roles at Wingtip.",
+    "targets": [{ "type": "scrape", "urls": ["https://careers.wingtiptoys.com"] }],
+    "retentionDays": 30,
+    "createdAt": "2026-07-01T08:00:00Z",
+    "updatedAt": "2026-07-01T08:00:00Z",
+    "lastRunAt": "2026-10-29T08:00:00Z",
+    "nextRunAt": "2026-10-30T08:00:00Z",
+    "lastCheckId": "c4a1e2f3-0b9c-4d8e-9f7a-6b5c4d3e2f41"
+  }
+]

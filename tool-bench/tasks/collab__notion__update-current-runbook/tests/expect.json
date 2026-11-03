@@ -1,0 +1,69 @@
+{
+  "state": [
+    {
+      "pointer": "/services/notion/blocks/d18edb31-c7d9-4fa2-9759-783c0b2d0b89/paragraph/rich_text/0/plain_text",
+      "equals": null,
+      "exists": null,
+      "contains": "Sam Ortiz, +1 555-0142",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/notion/blocks/d18edb31-c7d9-4fa2-9759-783c0b2d0b89/in_trash",
+      "equals": false,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/notion/blocks/797571e3-b5c2-4333-9bcc-6ca755e33da8/paragraph/rich_text/0/plain_text",
+      "equals": "Escalation contact: Marcus Webb, +1 555-0100 (Head of Infrastructure)",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/notion/blocks/a9a99f03-de31-4aed-afe2-a35b8992a846/paragraph/rich_text/0/plain_text",
+      "equals": "Escalation contact: Dana Whitfield, +1 555-0100",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/notion/pages/d96308fa-d662-45d9-9cb1-2f6e47a717b7/in_trash",
+      "equals": true,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "notion",
+      "method": "PATCH",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "notion",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

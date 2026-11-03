@@ -1,0 +1,40 @@
+[
+  {
+    "_key": "lumen-retail",
+    "id": 20,
+    "name": "Lumen Retail",
+    "full_path": "lumen-retail",
+    "description": "Lumen Retail engineering",
+    "visibility": "private",
+    "created_at": "2022-01-04T09:00:00.000Z",
+    "members": [
+      {
+        "username": "sam.lindqvist",
+        "access_level": 50
+      },
+      {
+        "username": "maria.okafor",
+        "access_level": 40
+      }
+    ]
+  },
+  {
+    "_key": "lumen-retail/storefront",
+    "id": 21,
+    "name": "Storefront",
+    "full_path": "lumen-retail/storefront",
+    "description": "Web storefront and its deploy configs",
+    "visibility": "private",
+    "created_at": "2022-02-01T09:00:00.000Z",
+    "members": [
+      {
+        "username": "jon.berg",
+        "access_level": 30
+      },
+      {
+        "username": "deploy-bot",
+        "access_level": 40
+      }
+    ]
+  }
+]

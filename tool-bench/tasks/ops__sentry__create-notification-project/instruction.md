@@ -1,0 +1,1 @@
+We're spinning up a new Node.js service called notification-service, and the Payments team will own it. Please create a Sentry project for it in our `lumen-labs` org, named `notification-service`, and write its DSN to `/app/answer.md` so I can add it to the service config.

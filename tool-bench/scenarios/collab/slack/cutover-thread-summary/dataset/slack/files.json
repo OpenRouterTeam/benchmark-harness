@@ -1,0 +1,17 @@
+[
+  {
+    "_key": "F0MIGRUNBK1",
+    "id": "F0MIGRUNBK1",
+    "name": "pg16-cutover-runbook.md",
+    "title": "PG16 cutover runbook",
+    "mimetype": "text/markdown",
+    "filetype": "markdown",
+    "size": 1843,
+    "user": "U05SORTIZ6M",
+    "created": 1792670400,
+    "channels": [
+      "C05DBMIG2RT"
+    ],
+    "content": "# PG16 cutover runbook\n1. Freeze writes via feature flag `payments.writes`\n2. Final logical replication sync\n3. Flip PgBouncer to the new primary\n4. Payments verification (Priya)\n5. Rollback deadline 00:30 CT"
+  }
+]

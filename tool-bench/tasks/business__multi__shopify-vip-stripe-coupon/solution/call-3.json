@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"stripe_api_read","arguments":{"livemode":false,"parameters":{"customer":"cus_PrRmOutlk01Ab"},"stripe_api_operation_id":"GetSubscriptions","stripe_context":"acct_1OctoGd7Rq2LmN4p"}}}

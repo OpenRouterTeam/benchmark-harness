@@ -1,0 +1,13 @@
+[
+  {
+    "_key": "PSPAYPR/1",
+    "id": "PQ7OV01",
+    "start": "2026-10-30T06:00:00Z",
+    "end": "2026-10-31T06:00:00Z",
+    "user": {
+      "id": "PPR1YAR",
+      "type": "user_reference"
+    },
+    "time_zone": "America/New_York"
+  }
+]

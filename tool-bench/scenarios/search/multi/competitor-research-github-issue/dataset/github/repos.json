@@ -1,0 +1,125 @@
+[
+  {
+    "_key": "octo-org/competitive-intel",
+    "id": 1297001,
+    "name": "competitive-intel",
+    "full_name": "octo-org/competitive-intel",
+    "owner": "octo-org",
+    "private": true,
+    "visibility": "private",
+    "description": "Competitive intelligence tracker: one issue per competitor move (pricing, launches, funding).",
+    "language": "Markdown",
+    "topics": [
+      "competitive-intel"
+    ],
+    "default_branch": "main",
+    "archived": false,
+    "created_at": "2025-01-06T00:00:00Z",
+    "updated_at": "2026-10-21T09:00:00Z",
+    "pushed_at": "2026-10-21T09:00:00Z",
+    "stargazers_count": 2,
+    "forks_count": 0,
+    "has_issues": true,
+    "has_discussions": false,
+    "collaborators": [
+      {
+        "login": "mona",
+        "permission": "admin"
+      },
+      {
+        "login": "dhruv",
+        "permission": "write"
+      },
+      {
+        "login": "elena",
+        "permission": "write"
+      },
+      {
+        "login": "kwame",
+        "permission": "write"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/competitive-intel-2024",
+    "id": 1296801,
+    "name": "competitive-intel-2024",
+    "full_name": "octo-org/competitive-intel-2024",
+    "owner": "octo-org",
+    "private": true,
+    "visibility": "private",
+    "description": "ARCHIVED: 2024 competitor tracker. Use octo-org/competitive-intel.",
+    "language": "Markdown",
+    "topics": [
+      "competitive-intel"
+    ],
+    "default_branch": "main",
+    "archived": true,
+    "created_at": "2024-01-08T00:00:00Z",
+    "updated_at": "2024-12-20T12:00:00Z",
+    "pushed_at": "2024-12-20T12:00:00Z",
+    "stargazers_count": 2,
+    "forks_count": 0,
+    "has_issues": true,
+    "has_discussions": false,
+    "collaborators": [
+      {
+        "login": "mona",
+        "permission": "admin"
+      },
+      {
+        "login": "dhruv",
+        "permission": "write"
+      },
+      {
+        "login": "elena",
+        "permission": "write"
+      },
+      {
+        "login": "kwame",
+        "permission": "write"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/pricing-site",
+    "id": 1297002,
+    "name": "pricing-site",
+    "full_name": "octo-org/pricing-site",
+    "owner": "octo-org",
+    "private": true,
+    "visibility": "private",
+    "description": "Marketing site pricing pages",
+    "language": "TypeScript",
+    "topics": [
+      "web"
+    ],
+    "default_branch": "main",
+    "archived": false,
+    "created_at": "2024-06-01T00:00:00Z",
+    "updated_at": "2026-10-20T15:00:00Z",
+    "pushed_at": "2026-10-20T15:00:00Z",
+    "stargazers_count": 2,
+    "forks_count": 0,
+    "has_issues": true,
+    "has_discussions": false,
+    "collaborators": [
+      {
+        "login": "mona",
+        "permission": "admin"
+      },
+      {
+        "login": "dhruv",
+        "permission": "write"
+      },
+      {
+        "login": "elena",
+        "permission": "write"
+      },
+      {
+        "login": "kwame",
+        "permission": "write"
+      }
+    ]
+  }
+]

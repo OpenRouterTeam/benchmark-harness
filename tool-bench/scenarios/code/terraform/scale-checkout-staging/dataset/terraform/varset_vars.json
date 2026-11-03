@@ -1,0 +1,62 @@
+[
+ {
+  "id": "var-BC57OMbOhqtbkOD2",
+  "varset": "varset-1mdQPr17uuGTMTox",
+  "key": "TFC_AWS_RUN_ROLE_ARN",
+  "value": "arn:aws:iam::412345678901:role/tfc-prod-runner",
+  "category": "env",
+  "hcl": false,
+  "sensitive": false,
+  "description": null
+ },
+ {
+  "id": "var-9vPiyiNkR0MGgO4q",
+  "varset": "varset-1mdQPr17uuGTMTox",
+  "key": "TFC_AWS_PROVIDER_AUTH",
+  "value": "true",
+  "category": "env",
+  "hcl": false,
+  "sensitive": false,
+  "description": null
+ },
+ {
+  "id": "var-gt5O982R0ksCVxtC",
+  "varset": "varset-ky6y5Ae4omE6TXll",
+  "key": "TFC_AWS_RUN_ROLE_ARN",
+  "value": "arn:aws:iam::598765432109:role/tfc-staging-runner",
+  "category": "env",
+  "hcl": false,
+  "sensitive": false,
+  "description": null
+ },
+ {
+  "id": "var-hsTXYfEiwLtV0fJV",
+  "varset": "varset-ky6y5Ae4omE6TXll",
+  "key": "TFC_AWS_PROVIDER_AUTH",
+  "value": "true",
+  "category": "env",
+  "hcl": false,
+  "sensitive": false,
+  "description": null
+ },
+ {
+  "id": "var-TFuXQ4UGwKcVZHSQ",
+  "varset": "varset-x0tvNK0CkSRCeah3",
+  "key": "DD_SITE",
+  "value": "datadoghq.com",
+  "category": "env",
+  "hcl": false,
+  "sensitive": false,
+  "description": null
+ },
+ {
+  "id": "var-hKdRNLp4yoJe8CHq",
+  "varset": "varset-x0tvNK0CkSRCeah3",
+  "key": "default_tags",
+  "value": "{ owner = \"platform\", managed_by = \"terraform\" }",
+  "category": "terraform",
+  "hcl": true,
+  "sensitive": false,
+  "description": "Tags merged into every provider default_tags block"
+ }
+]

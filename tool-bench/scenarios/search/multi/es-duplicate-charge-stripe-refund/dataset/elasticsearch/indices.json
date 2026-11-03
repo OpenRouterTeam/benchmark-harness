@@ -1,0 +1,88 @@
+[
+  {
+    "_key": "orders-2026",
+    "mappings": {
+      "properties": {
+        "order_id": {
+          "type": "keyword"
+        },
+        "customer_email": {
+          "type": "keyword"
+        },
+        "customer_name": {
+          "type": "text"
+        },
+        "created_at": {
+          "type": "date"
+        },
+        "total": {
+          "type": "scaled_float",
+          "scaling_factor": 100
+        },
+        "currency": {
+          "type": "keyword"
+        },
+        "status": {
+          "type": "keyword"
+        },
+        "items": {
+          "type": "integer"
+        },
+        "payment_intent": {
+          "type": "keyword"
+        },
+        "stripe_charge_id": {
+          "type": "keyword"
+        }
+      }
+    },
+    "health": "green",
+    "status": "open",
+    "pri": 3,
+    "rep": 1,
+    "uuid": "k2Ym5zSdA1eH7jQ0lUrV9W"
+  },
+  {
+    "_key": "orders-2025",
+    "mappings": {
+      "properties": {
+        "order_id": {
+          "type": "keyword"
+        },
+        "customer_email": {
+          "type": "keyword"
+        },
+        "customer_name": {
+          "type": "text"
+        },
+        "created_at": {
+          "type": "date"
+        },
+        "total": {
+          "type": "scaled_float",
+          "scaling_factor": 100
+        },
+        "currency": {
+          "type": "keyword"
+        },
+        "status": {
+          "type": "keyword"
+        },
+        "items": {
+          "type": "integer"
+        },
+        "payment_intent": {
+          "type": "keyword"
+        },
+        "stripe_charge_id": {
+          "type": "keyword"
+        }
+      }
+    },
+    "health": "green",
+    "status": "close",
+    "pri": 1,
+    "rep": 1,
+    "uuid": "m4Ao7bUfC3gJ9lS2nWtX1Y"
+  }
+]

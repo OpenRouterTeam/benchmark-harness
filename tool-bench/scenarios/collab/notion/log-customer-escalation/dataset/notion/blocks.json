@@ -1,0 +1,411 @@
+[
+  {
+    "object": "block",
+    "id": "e89c64d2-d5fe-4227-b75a-732140627802",
+    "parent": {
+      "type": "page_id",
+      "page_id": "7c41530e-e886-4046-9cb4-2f49e6957f99"
+    },
+    "created_time": "2026-10-01T15:00:00.000Z",
+    "last_edited_time": "2026-10-01T15:00:00.000Z",
+    "created_by": {
+      "object": "user",
+      "id": "79efe920-c85f-42d9-af64-17a9c2eff3d0"
+    },
+    "last_edited_by": {
+      "object": "user",
+      "id": "79efe920-c85f-42d9-af64-17a9c2eff3d0"
+    },
+    "has_children": false,
+    "archived": false,
+    "in_trash": false,
+    "type": "heading_2",
+    "heading_2": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Escalation",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Escalation",
+          "href": null
+        }
+      ],
+      "color": "default",
+      "is_toggleable": false
+    },
+    "_order": 1
+  },
+  {
+    "object": "block",
+    "id": "d18edb31-c7d9-4fa2-9759-783c0b2d0b89",
+    "parent": {
+      "type": "page_id",
+      "page_id": "7c41530e-e886-4046-9cb4-2f49e6957f99"
+    },
+    "created_time": "2026-10-01T15:00:00.000Z",
+    "last_edited_time": "2026-10-01T15:00:00.000Z",
+    "created_by": {
+      "object": "user",
+      "id": "79efe920-c85f-42d9-af64-17a9c2eff3d0"
+    },
+    "last_edited_by": {
+      "object": "user",
+      "id": "79efe920-c85f-42d9-af64-17a9c2eff3d0"
+    },
+    "has_children": false,
+    "archived": false,
+    "in_trash": false,
+    "type": "paragraph",
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Escalation contact: Marcus Webb, +1 555-0100 (Head of Infrastructure)",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Escalation contact: Marcus Webb, +1 555-0100 (Head of Infrastructure)",
+          "href": null
+        }
+      ],
+      "color": "default"
+    },
+    "_order": 2
+  },
+  {
+    "object": "block",
+    "id": "09d6e78a-ff10-4c62-afd0-1912d496ecc7",
+    "parent": {
+      "type": "page_id",
+      "page_id": "7c41530e-e886-4046-9cb4-2f49e6957f99"
+    },
+    "created_time": "2026-10-01T15:00:00.000Z",
+    "last_edited_time": "2026-10-01T15:00:00.000Z",
+    "created_by": {
+      "object": "user",
+      "id": "79efe920-c85f-42d9-af64-17a9c2eff3d0"
+    },
+    "last_edited_by": {
+      "object": "user",
+      "id": "79efe920-c85f-42d9-af64-17a9c2eff3d0"
+    },
+    "has_children": false,
+    "archived": false,
+    "in_trash": false,
+    "type": "paragraph",
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "If the escalation contact does not answer within 10 minutes, page the VP Engineering.",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "If the escalation contact does not answer within 10 minutes, page the VP Engineering.",
+          "href": null
+        }
+      ],
+      "color": "default"
+    },
+    "_order": 3
+  },
+  {
+    "object": "block",
+    "id": "f9957c9e-3f7f-4ad6-adaa-1926c8efe1c2",
+    "parent": {
+      "type": "page_id",
+      "page_id": "7c41530e-e886-4046-9cb4-2f49e6957f99"
+    },
+    "created_time": "2026-10-01T15:00:00.000Z",
+    "last_edited_time": "2026-10-01T15:00:00.000Z",
+    "created_by": {
+      "object": "user",
+      "id": "79efe920-c85f-42d9-af64-17a9c2eff3d0"
+    },
+    "last_edited_by": {
+      "object": "user",
+      "id": "79efe920-c85f-42d9-af64-17a9c2eff3d0"
+    },
+    "has_children": false,
+    "archived": false,
+    "in_trash": false,
+    "type": "heading_2",
+    "heading_2": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Checklist",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Checklist",
+          "href": null
+        }
+      ],
+      "color": "default",
+      "is_toggleable": false
+    },
+    "_order": 4
+  },
+  {
+    "object": "block",
+    "id": "421c026d-f2fa-43ba-91b0-fda09306a15b",
+    "parent": {
+      "type": "page_id",
+      "page_id": "7c41530e-e886-4046-9cb4-2f49e6957f99"
+    },
+    "created_time": "2026-10-01T15:00:00.000Z",
+    "last_edited_time": "2026-10-01T15:00:00.000Z",
+    "created_by": {
+      "object": "user",
+      "id": "79efe920-c85f-42d9-af64-17a9c2eff3d0"
+    },
+    "last_edited_by": {
+      "object": "user",
+      "id": "79efe920-c85f-42d9-af64-17a9c2eff3d0"
+    },
+    "has_children": false,
+    "archived": false,
+    "in_trash": false,
+    "type": "to_do",
+    "to_do": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Acknowledge the page in PagerDuty",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Acknowledge the page in PagerDuty",
+          "href": null
+        }
+      ],
+      "color": "default",
+      "checked": false
+    },
+    "_order": 5
+  },
+  {
+    "object": "block",
+    "id": "66024678-ad2c-4c83-85cd-ddc31afcf442",
+    "parent": {
+      "type": "page_id",
+      "page_id": "7c41530e-e886-4046-9cb4-2f49e6957f99"
+    },
+    "created_time": "2026-10-01T15:00:00.000Z",
+    "last_edited_time": "2026-10-01T15:00:00.000Z",
+    "created_by": {
+      "object": "user",
+      "id": "79efe920-c85f-42d9-af64-17a9c2eff3d0"
+    },
+    "last_edited_by": {
+      "object": "user",
+      "id": "79efe920-c85f-42d9-af64-17a9c2eff3d0"
+    },
+    "has_children": false,
+    "archived": false,
+    "in_trash": false,
+    "type": "to_do",
+    "to_do": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Open an incident channel in Slack",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Open an incident channel in Slack",
+          "href": null
+        }
+      ],
+      "color": "default",
+      "checked": false
+    },
+    "_order": 6
+  },
+  {
+    "object": "block",
+    "id": "797571e3-b5c2-4333-9bcc-6ca755e33da8",
+    "parent": {
+      "type": "page_id",
+      "page_id": "d96308fa-d662-45d9-9cb1-2f6e47a717b7"
+    },
+    "created_time": "2026-10-01T15:00:00.000Z",
+    "last_edited_time": "2026-10-01T15:00:00.000Z",
+    "created_by": {
+      "object": "user",
+      "id": "79efe920-c85f-42d9-af64-17a9c2eff3d0"
+    },
+    "last_edited_by": {
+      "object": "user",
+      "id": "79efe920-c85f-42d9-af64-17a9c2eff3d0"
+    },
+    "has_children": false,
+    "archived": false,
+    "in_trash": false,
+    "type": "paragraph",
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Escalation contact: Marcus Webb, +1 555-0100 (Head of Infrastructure)",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Escalation contact: Marcus Webb, +1 555-0100 (Head of Infrastructure)",
+          "href": null
+        }
+      ],
+      "color": "default"
+    },
+    "_order": 1
+  },
+  {
+    "object": "block",
+    "id": "a9a99f03-de31-4aed-afe2-a35b8992a846",
+    "parent": {
+      "type": "page_id",
+      "page_id": "9533b63d-7327-4785-873d-74c08ceadad6"
+    },
+    "created_time": "2026-10-01T15:00:00.000Z",
+    "last_edited_time": "2026-10-01T15:00:00.000Z",
+    "created_by": {
+      "object": "user",
+      "id": "79efe920-c85f-42d9-af64-17a9c2eff3d0"
+    },
+    "last_edited_by": {
+      "object": "user",
+      "id": "79efe920-c85f-42d9-af64-17a9c2eff3d0"
+    },
+    "has_children": false,
+    "archived": false,
+    "in_trash": false,
+    "type": "paragraph",
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Escalation contact: Dana Whitfield, +1 555-0100",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Escalation contact: Dana Whitfield, +1 555-0100",
+          "href": null
+        }
+      ],
+      "color": "default"
+    },
+    "_order": 1
+  },
+  {
+    "object": "block",
+    "id": "76ae44d9-5788-4345-96a6-53e125ae72ec",
+    "parent": {
+      "type": "page_id",
+      "page_id": "58716b7b-2d69-42df-a28b-5d40452f7e57"
+    },
+    "created_time": "2026-10-01T15:00:00.000Z",
+    "last_edited_time": "2026-10-01T15:00:00.000Z",
+    "created_by": {
+      "object": "user",
+      "id": "79efe920-c85f-42d9-af64-17a9c2eff3d0"
+    },
+    "last_edited_by": {
+      "object": "user",
+      "id": "79efe920-c85f-42d9-af64-17a9c2eff3d0"
+    },
+    "has_children": false,
+    "archived": false,
+    "in_trash": false,
+    "type": "paragraph",
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Start here for engineering docs.",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Start here for engineering docs.",
+          "href": null
+        }
+      ],
+      "color": "default"
+    },
+    "_order": 1
+  }
+]

@@ -1,0 +1,16 @@
+[
+  {
+    "id": "401",
+    "name": "acme-shop/storefront",
+    "url": "https://github.com/acme-shop/storefront",
+    "provider": {
+      "id": "integrations:github",
+      "name": "GitHub"
+    },
+    "status": "active",
+    "externalSlug": "acme-shop/storefront",
+    "externalId": "690113301",
+    "integrationId": "91",
+    "dateCreated": "2023-04-03T10:10:00Z"
+  }
+]

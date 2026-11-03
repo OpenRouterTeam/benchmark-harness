@@ -1,0 +1,46 @@
+[
+  {
+    "id": "PDEP001",
+    "supporting_service": {
+      "id": "PSVCHKA",
+      "type": "service"
+    },
+    "dependent_service": {
+      "id": "PBSCHKO",
+      "type": "business_service"
+    }
+  },
+  {
+    "id": "PDEP002",
+    "supporting_service": {
+      "id": "PSVPAYA",
+      "type": "service"
+    },
+    "dependent_service": {
+      "id": "PSVCHKA",
+      "type": "service"
+    }
+  },
+  {
+    "id": "PDEP003",
+    "supporting_service": {
+      "id": "PSVORDB",
+      "type": "service"
+    },
+    "dependent_service": {
+      "id": "PSVCHKA",
+      "type": "service"
+    }
+  },
+  {
+    "id": "PDEP004",
+    "supporting_service": {
+      "id": "PSVPAYA",
+      "type": "service"
+    },
+    "dependent_service": {
+      "id": "PBSPAYM",
+      "type": "business_service"
+    }
+  }
+]

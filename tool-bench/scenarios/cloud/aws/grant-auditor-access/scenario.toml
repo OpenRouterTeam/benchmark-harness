@@ -1,0 +1,69 @@
+[scenario]
+id = "cloud/aws/grant-auditor-access"
+title = "Grant the external auditor's IAM user SecurityAudit and auditors-group access"
+now = "2026-03-14T09:00:00Z"
+seed = "cloud-aws-grant-auditor-access"
+services = ["aws"]
+tags = ["write", "single-service", "aws", "disambiguation"]
+timeout_sec = 900
+
+[[expect.state]]
+pointer = "/services/aws/users/priya.raman-audit/AttachedPolicies"
+equals = ["arn:aws:iam::aws:policy/SecurityAudit"]
+
+[[expect.state]]
+pointer = "/services/aws/groups/auditors/Members"
+equals = ["lnovak", "priya.raman-audit"]
+
+# The employee with the same name is untouched.
+[[expect.state]]
+pointer = "/services/aws/users/praman/AttachedPolicies"
+equals = ["arn:aws:iam::481562039417:policy/DataLakeAnalyst"]
+
+[[expect.state]]
+pointer = "/services/aws/groups/data-analysts/Members"
+equals = ["praman"]
+
+[[expect.state]]
+pointer = "/services/aws/groups/auditors/AttachedPolicies"
+equals = ["arn:aws:iam::aws:policy/job-function/ViewOnlyAccess"]
+
+[[expect.required_calls]]
+service = "aws"
+method = "POST"
+body_contains = "Action=AttachUserPolicy"
+
+[[expect.required_calls]]
+service = "aws"
+method = "POST"
+body_contains = "Action=AddUserToGroup"
+
+[[expect.forbidden_calls]]
+service = "aws"
+body_contains = "Action=DeleteUser"
+
+[[expect.forbidden_calls]]
+service = "aws"
+body_contains = "Action=CreateAccessKey"
+
+[[expect.forbidden_calls]]
+service = "aws"
+body_contains = "Action=CreateLoginProfile"
+
+[[solution.call]]
+endpoint = "aws-iam"
+tool = "get_group"
+arguments = { group_name = "auditors" }
+
+[[solution.call]]
+endpoint = "aws-api"
+tool = "call_aws"
+arguments = { cli_command = "aws iam list-users --path-prefix /external/" }
+
+[[solution.call]]
+endpoint = "aws-api"
+tool = "call_aws"
+arguments = { cli_command = [
+  "aws iam attach-user-policy --user-name priya.raman-audit --policy-arn arn:aws:iam::aws:policy/SecurityAudit",
+  "aws iam add-user-to-group --group-name auditors --user-name priya.raman-audit",
+] }

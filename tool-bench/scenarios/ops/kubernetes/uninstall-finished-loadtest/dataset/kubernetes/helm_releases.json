@@ -1,0 +1,170 @@
+[
+  {
+    "_key": "perf/k6-operator.v3",
+    "name": "k6-operator",
+    "info": {
+      "first_deployed": "2026-08-16T16:20:00Z",
+      "last_deployed": "2026-10-23T16:20:00Z",
+      "deleted": "",
+      "description": "Upgrade complete",
+      "status": "deployed"
+    },
+    "chart": {
+      "metadata": {
+        "name": "k6-operator",
+        "version": "3.9.0",
+        "description": "A Helm chart for the k6 operator",
+        "apiVersion": "v2",
+        "appVersion": "0.0.19",
+        "type": "application"
+      },
+      "lock": null,
+      "templates": [],
+      "values": {},
+      "schema": null,
+      "files": []
+    },
+    "config": {
+      "manager": {
+        "image": {
+          "tag": "controller-v0.0.19"
+        }
+      }
+    },
+    "manifest": "---\n# Source: k6-operator/templates/deployment.yaml\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: k6-operator-controller-manager\n  namespace: perf\n  labels:\n    app.kubernetes.io/name: k6-operator\nspec:\n  replicas: 1\n  selector:\n    matchLabels:\n      app.kubernetes.io/name: k6-operator\n  template:\n    metadata:\n      labels:\n        app.kubernetes.io/name: k6-operator\n    spec:\n      containers:\n        - name: manager\n          image: ghcr.io/grafana/k6-operator:controller-v0.0.19\n",
+    "version": 3,
+    "namespace": "perf"
+  },
+  {
+    "_key": "perf/checkout-loadtest.v1",
+    "name": "checkout-loadtest",
+    "info": {
+      "first_deployed": "2026-11-01T16:20:00Z",
+      "last_deployed": "2026-11-01T16:20:00Z",
+      "deleted": "",
+      "description": "Install complete",
+      "status": "superseded"
+    },
+    "chart": {
+      "metadata": {
+        "name": "k6-test",
+        "version": "0.4.2",
+        "description": "Runs a k6 load test as a Kubernetes Job",
+        "apiVersion": "v2",
+        "appVersion": "0.52.0",
+        "type": "application"
+      },
+      "lock": null,
+      "templates": [],
+      "values": {},
+      "schema": null,
+      "files": []
+    },
+    "config": {
+      "vus": 200,
+      "parallelism": 4
+    },
+    "manifest": "---\n# Source: k6-test/templates/configmap.yaml\napiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: checkout-loadtest-script\n  namespace: perf\n  labels:\n    app.kubernetes.io/name: k6-test\n    app.kubernetes.io/instance: checkout-loadtest\n    app.kubernetes.io/managed-by: Helm\n    helm.sh/chart: k6-test-0.4.2\ndata:\n  script.js: |\n    import http from 'k6/http';\n    export const options = { vus: 400, duration: '45m' };\n    export default function () { http.post('http://checkout-web.checkout.svc:3000/api/checkout', JSON.stringify({ cart: 'load-test' })); }\n---\n# Source: k6-test/templates/job.yaml\napiVersion: batch/v1\nkind: Job\nmetadata:\n  name: checkout-loadtest\n  namespace: perf\n  labels:\n    app.kubernetes.io/name: k6-test\n    app.kubernetes.io/instance: checkout-loadtest\n    app.kubernetes.io/managed-by: Helm\n    helm.sh/chart: k6-test-0.4.2\nspec:\n  parallelism: 4\n  completions: 4\n  backoffLimit: 0\n  template:\n    metadata:\n      labels:\n        app.kubernetes.io/name: k6-test\n        app.kubernetes.io/instance: checkout-loadtest\n    spec:\n      restartPolicy: Never\n      containers:\n        - name: k6\n          image: grafana/k6:0.52.0\n          args: [\"run\", \"--vus\", \"200\", \"/scripts/script.js\"]\n          resources:\n            requests:\n              cpu: 500m\n              memory: 512Mi\n            limits:\n              memory: 1Gi\n",
+    "version": 1,
+    "namespace": "perf"
+  },
+  {
+    "_key": "perf/checkout-loadtest.v2",
+    "name": "checkout-loadtest",
+    "info": {
+      "first_deployed": "2026-11-01T16:20:00Z",
+      "last_deployed": "2026-11-03T14:20:00Z",
+      "deleted": "",
+      "description": "Upgrade complete",
+      "status": "deployed"
+    },
+    "chart": {
+      "metadata": {
+        "name": "k6-test",
+        "version": "0.4.2",
+        "description": "Runs a k6 load test as a Kubernetes Job",
+        "apiVersion": "v2",
+        "appVersion": "0.52.0",
+        "type": "application"
+      },
+      "lock": null,
+      "templates": [],
+      "values": {},
+      "schema": null,
+      "files": []
+    },
+    "config": {
+      "vus": 400,
+      "parallelism": 4
+    },
+    "manifest": "---\n# Source: k6-test/templates/configmap.yaml\napiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: checkout-loadtest-script\n  namespace: perf\n  labels:\n    app.kubernetes.io/name: k6-test\n    app.kubernetes.io/instance: checkout-loadtest\n    app.kubernetes.io/managed-by: Helm\n    helm.sh/chart: k6-test-0.4.2\ndata:\n  script.js: |\n    import http from 'k6/http';\n    export const options = { vus: 400, duration: '45m' };\n    export default function () { http.post('http://checkout-web.checkout.svc:3000/api/checkout', JSON.stringify({ cart: 'load-test' })); }\n---\n# Source: k6-test/templates/job.yaml\napiVersion: batch/v1\nkind: Job\nmetadata:\n  name: checkout-loadtest\n  namespace: perf\n  labels:\n    app.kubernetes.io/name: k6-test\n    app.kubernetes.io/instance: checkout-loadtest\n    app.kubernetes.io/managed-by: Helm\n    helm.sh/chart: k6-test-0.4.2\nspec:\n  parallelism: 4\n  completions: 4\n  backoffLimit: 0\n  template:\n    metadata:\n      labels:\n        app.kubernetes.io/name: k6-test\n        app.kubernetes.io/instance: checkout-loadtest\n    spec:\n      restartPolicy: Never\n      containers:\n        - name: k6\n          image: grafana/k6:0.52.0\n          args: [\"run\", \"--vus\", \"400\", \"/scripts/script.js\"]\n          resources:\n            requests:\n              cpu: 500m\n              memory: 512Mi\n            limits:\n              memory: 1Gi\n",
+    "version": 2,
+    "namespace": "perf"
+  },
+  {
+    "_key": "perf/search-loadtest.v1",
+    "name": "search-loadtest",
+    "info": {
+      "first_deployed": "2026-11-04T15:20:00Z",
+      "last_deployed": "2026-11-04T15:20:00Z",
+      "deleted": "",
+      "description": "Install complete",
+      "status": "deployed"
+    },
+    "chart": {
+      "metadata": {
+        "name": "k6-test",
+        "version": "0.4.2",
+        "description": "Runs a k6 load test as a Kubernetes Job",
+        "apiVersion": "v2",
+        "appVersion": "0.52.0",
+        "type": "application"
+      },
+      "lock": null,
+      "templates": [],
+      "values": {},
+      "schema": null,
+      "files": []
+    },
+    "config": {
+      "vus": 150,
+      "parallelism": 2
+    },
+    "manifest": "---\n# Source: k6-test/templates/configmap.yaml\napiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: search-loadtest-script\n  namespace: perf\n  labels:\n    app.kubernetes.io/name: k6-test\n    app.kubernetes.io/instance: search-loadtest\n    app.kubernetes.io/managed-by: Helm\n    helm.sh/chart: k6-test-0.4.2\ndata:\n  script.js: |\n    import http from 'k6/http';\n    export const options = { vus: 150, duration: '3h' };\n    export default function () { http.get('http://search-api.search.svc:8080/v2/search?q=boots'); }\n---\n# Source: k6-test/templates/job.yaml\napiVersion: batch/v1\nkind: Job\nmetadata:\n  name: search-loadtest\n  namespace: perf\n  labels:\n    app.kubernetes.io/name: k6-test\n    app.kubernetes.io/instance: search-loadtest\n    app.kubernetes.io/managed-by: Helm\n    helm.sh/chart: k6-test-0.4.2\nspec:\n  parallelism: 2\n  completions: 2\n  backoffLimit: 0\n  template:\n    metadata:\n      labels:\n        app.kubernetes.io/name: k6-test\n        app.kubernetes.io/instance: search-loadtest\n    spec:\n      restartPolicy: Never\n      containers:\n        - name: k6\n          image: grafana/k6:0.52.0\n          args: [\"run\", \"--vus\", \"150\", \"/scripts/script.js\"]\n          resources:\n            requests:\n              cpu: 500m\n              memory: 512Mi\n            limits:\n              memory: 1Gi\n",
+    "version": 1,
+    "namespace": "perf"
+  },
+  {
+    "_key": "perf-staging/checkout-loadtest.v1",
+    "name": "checkout-loadtest",
+    "info": {
+      "first_deployed": "2026-10-26T16:20:00Z",
+      "last_deployed": "2026-10-26T16:20:00Z",
+      "deleted": "",
+      "description": "Install complete",
+      "status": "deployed"
+    },
+    "chart": {
+      "metadata": {
+        "name": "k6-test",
+        "version": "0.4.1",
+        "description": "Runs a k6 load test as a Kubernetes Job",
+        "apiVersion": "v2",
+        "appVersion": "0.51.0",
+        "type": "application"
+      },
+      "lock": null,
+      "templates": [],
+      "values": {},
+      "schema": null,
+      "files": []
+    },
+    "config": {
+      "vus": 20,
+      "parallelism": 1
+    },
+    "manifest": "---\n# Source: k6-test/templates/configmap.yaml\napiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: checkout-loadtest-script\n  namespace: perf-staging\n  labels:\n    app.kubernetes.io/name: k6-test\n    app.kubernetes.io/instance: checkout-loadtest\n    app.kubernetes.io/managed-by: Helm\n    helm.sh/chart: k6-test-0.4.1\ndata:\n  script.js: |\n    import http from 'k6/http';\n    export const options = { vus: 400, duration: '45m' };\n    export default function () { http.post('http://checkout-web.checkout.svc:3000/api/checkout', JSON.stringify({ cart: 'load-test' })); }\n---\n# Source: k6-test/templates/job.yaml\napiVersion: batch/v1\nkind: Job\nmetadata:\n  name: checkout-loadtest\n  namespace: perf-staging\n  labels:\n    app.kubernetes.io/name: k6-test\n    app.kubernetes.io/instance: checkout-loadtest\n    app.kubernetes.io/managed-by: Helm\n    helm.sh/chart: k6-test-0.4.1\nspec:\n  parallelism: 1\n  completions: 1\n  backoffLimit: 0\n  template:\n    metadata:\n      labels:\n        app.kubernetes.io/name: k6-test\n        app.kubernetes.io/instance: checkout-loadtest\n    spec:\n      restartPolicy: Never\n      containers:\n        - name: k6\n          image: grafana/k6:0.52.0\n          args: [\"run\", \"--vus\", \"20\", \"/scripts/script.js\"]\n          resources:\n            requests:\n              cpu: 500m\n              memory: 512Mi\n            limits:\n              memory: 1Gi\n",
+    "version": 1,
+    "namespace": "perf-staging"
+  }
+]

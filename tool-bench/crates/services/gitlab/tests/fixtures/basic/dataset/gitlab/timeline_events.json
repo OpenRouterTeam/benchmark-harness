@@ -1,0 +1,14 @@
+[
+  {
+    "_key": "1",
+    "id": 1,
+    "incident": "acme/platform/api#3",
+    "note": "Alert fired: p99 latency > 800ms",
+    "occurred_at": "2026-03-13T08:10:00.000Z",
+    "created_at": "2026-03-13T08:21:00.000Z",
+    "action": "comment",
+    "tags": [
+      "Start time"
+    ]
+  }
+]

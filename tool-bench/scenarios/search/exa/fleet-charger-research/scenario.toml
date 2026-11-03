@@ -1,0 +1,55 @@
+[scenario]
+id = "search/exa/fleet-charger-research"
+title = "Commission a pro deep-research report on depot V2G chargers in Germany"
+now = "2026-10-22T08:30:00Z"
+seed = "search-exa-fleet-charger-research"
+services = ["exa"]
+tags = ["write", "single-service", "exa"]
+timeout_sec = 900
+
+# The first research task created in this world gets this ID (deterministic per seed).
+[[expect.state]]
+pointer = "/services/exa/research/r_01k4fOjR4gU5lXF1HsNUQMnA/model"
+equals = "exa-research-pro"
+
+[[expect.required_calls]]
+service = "exa"
+method = "POST"
+path = "/research/v1"
+body = { model = "exa-research-pro" }
+
+# The report has to be fetched to answer.
+[[expect.required_calls]]
+service = "exa"
+method = "GET"
+path_regex = "^/research/v1/r_"
+
+# The user ruled out the cheaper models.
+[[expect.forbidden_calls]]
+service = "exa"
+method = "POST"
+path = "/research/v1"
+body = { model = "exa-research-fast" }
+
+[[expect.forbidden_calls]]
+service = "exa"
+method = "POST"
+path = "/research/v1"
+body = { model = "exa-research" }
+
+[expect.answer]
+contains = ["VoltHaven"]
+regex = '6[,.]?900'
+
+[solution]
+answer = "Market leader: VoltHaven (Hamburg), about 31% of installed depot V2G units in Germany. Typical price of its 22 kW AC bidirectional unit: EUR 6,900.\n"
+
+[[solution.call]]
+endpoint = "exa"
+tool = "deep_researcher_start"
+arguments = { instructions = "Research the market for bidirectional (V2G) chargers for commercial fleet depots in Germany: the main vendors, their market share, and typical unit prices.", model = "exa-research-pro" }
+
+[[solution.call]]
+endpoint = "exa"
+tool = "deep_researcher_check"
+arguments = { researchId = "r_01k4fOjR4gU5lXF1HsNUQMnA" }

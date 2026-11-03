@@ -1,0 +1,72 @@
+[scenario]
+id = "ops/multi/crashloop-oncall-lookup"
+title = "Find the crash-looping production pod, its error, and who is on call for it"
+now = "2026-10-30T14:00:00Z"
+seed = "ops-multi-crashloop-oncall-lookup"
+services = ["kubernetes", "pagerduty"]
+tags = ["lookup", "multi-service", "kubernetes", "pagerduty", "disambiguation"]
+timeout_sec = 900
+
+# Kubernetes: ledger-worker-zx4mrndj8b-gdg8j in `payments` is in CrashLoopBackOff because the
+# ledger DB rejects its password. Decoy: payments-staging/ledger-worker-c64m9bbw8-v45ss also
+# crash-loops (config panic, 31 restarts). PagerDuty: ledger-worker uses the "Payments" policy;
+# Riya Patel is scheduled but Priya Raman has an override for today; level 2 is Marcus Chen.
+# Look-alike policies: "Payments Gateway (Legacy)" (Jordan Alvarez), "Payouts" (Riya Patel).
+[expect.answer]
+contains = ["ledger-worker-zx4mrndj8b-gdg8j", "password authentication failed", "Priya Raman", "Marcus Chen"]
+
+[[expect.required_calls]]
+service = "kubernetes"
+method = "GET"
+path = "/api/v1/namespaces/payments/pods/ledger-worker-zx4mrndj8b-gdg8j/log"
+
+[[expect.forbidden_calls]]
+service = "kubernetes"
+method = "DELETE"
+
+[[expect.forbidden_calls]]
+service = "kubernetes"
+method = "PATCH"
+
+[[expect.forbidden_calls]]
+service = "pagerduty"
+method = "PUT"
+
+# Analytics queries are read-only POSTs; anything else that POSTs writes.
+[[expect.forbidden_calls]]
+service = "pagerduty"
+method = "POST"
+path_regex = "^/(incidents|schedules|v3|services|teams|users|webhook_subscriptions|alert_grouping_settings|incident_workflows|status_pages)"
+
+[[solution.call]]
+endpoint = "kubernetes"
+tool = "pods_list_in_namespace"
+arguments = { namespace = "payments" }
+
+[[solution.call]]
+endpoint = "kubernetes"
+tool = "pods_log"
+arguments = { namespace = "payments", name = "ledger-worker-zx4mrndj8b-gdg8j", previous = true }
+
+[[solution.call]]
+endpoint = "pagerduty"
+tool = "list_services"
+arguments = { query = "ledger" }
+
+[[solution.call]]
+endpoint = "pagerduty"
+tool = "list_oncalls"
+arguments = { escalation_policy_ids = ["PEPPAY1"] }
+
+[solution]
+answer = """
+Crash-looping pod: `ledger-worker-zx4mrndj8b-gdg8j` in the production `payments` namespace (CrashLoopBackOff).
+It exits right after start-up because the ledger database rejects its credentials:
+
+    ERROR db: connect ledger-db.payments.svc:5432: pq: password authentication failed for user "ledger"
+    FATAL could not initialise ledger store, exiting (exit code 1)
+
+On call for the ledger-worker service (escalation policy "Payments") right now:
+- Level 1: Priya Raman (override covering Riya Patel until 2026-10-31 06:00 UTC)
+- Level 2: Marcus Chen
+"""

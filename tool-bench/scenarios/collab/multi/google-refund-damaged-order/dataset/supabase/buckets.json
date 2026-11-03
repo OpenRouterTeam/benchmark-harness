@@ -1,0 +1,29 @@
+[
+  {
+    "_key": "qmvbxtzkplrnwdhyfaco/invoices",
+    "id": "invoices",
+    "name": "invoices",
+    "owner": "",
+    "created_at": "2026-02-10T09:31:00.000Z",
+    "updated_at": "2026-02-10T09:31:00.000Z",
+    "public": false
+  },
+  {
+    "_key": "qmvbxtzkplrnwdhyfaco/product-images",
+    "id": "product-images",
+    "name": "product-images",
+    "owner": "",
+    "created_at": "2025-09-04T12:00:00.000Z",
+    "updated_at": "2025-11-20T08:15:00.000Z",
+    "public": true
+  },
+  {
+    "_key": "bdnfrjskvlqmzpxtwcgh/site-assets",
+    "id": "site-assets",
+    "name": "site-assets",
+    "owner": "",
+    "created_at": "2026-01-12T11:00:00.000Z",
+    "updated_at": "2026-01-12T11:00:00.000Z",
+    "public": true
+  }
+]

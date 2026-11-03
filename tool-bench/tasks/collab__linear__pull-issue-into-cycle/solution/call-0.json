@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"linear_getActiveCycle","arguments":{"teamId":"5854633b-d1e9-52b6-b3c7-d309bfb881cb"}}}

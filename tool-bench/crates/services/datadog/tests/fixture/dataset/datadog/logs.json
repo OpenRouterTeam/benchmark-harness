@@ -1,0 +1,121 @@
+[
+  {
+    "id": "AwAAAZK1aa0001",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T14:10:00.000Z",
+      "host": "web-prod-01",
+      "service": "checkout-api",
+      "status": "error",
+      "message": "POST /api/checkout failed: upstream connect error (connection reset by peer)",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:python",
+        "host:web-prod-01"
+      ],
+      "attributes": {
+        "env": "prod",
+        "http": {
+          "status_code": 503,
+          "method": "POST"
+        },
+        "duration": 1532
+      }
+    }
+  },
+  {
+    "id": "AwAAAZK1aa0002",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T14:20:00.000Z",
+      "host": "web-prod-01",
+      "service": "checkout-api",
+      "status": "error",
+      "message": "POST /api/checkout failed: upstream connect error (connection reset by peer)",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:python",
+        "host:web-prod-01"
+      ],
+      "attributes": {
+        "env": "prod",
+        "http": {
+          "status_code": 503,
+          "method": "POST"
+        },
+        "duration": 1610
+      }
+    }
+  },
+  {
+    "id": "AwAAAZK1aa0003",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T14:30:00.000Z",
+      "host": "web-prod-02",
+      "service": "checkout-api",
+      "status": "info",
+      "message": "POST /api/checkout 200 in 412ms",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:python",
+        "host:web-prod-02"
+      ],
+      "attributes": {
+        "env": "prod",
+        "http": {
+          "status_code": 200,
+          "method": "POST"
+        },
+        "duration": 412
+      }
+    }
+  },
+  {
+    "id": "AwAAAZK1aa0004",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T14:40:00.000Z",
+      "host": "web-staging-01",
+      "service": "checkout-api",
+      "status": "error",
+      "message": "POST /api/checkout failed: connection reset by peer",
+      "tags": [
+        "env:staging",
+        "service:checkout-api",
+        "source:python",
+        "host:web-staging-01"
+      ],
+      "attributes": {
+        "env": "staging",
+        "http": {
+          "status_code": 503,
+          "method": "POST"
+        }
+      }
+    }
+  },
+  {
+    "id": "AwAAAZK1aa0005",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T14:50:00.000Z",
+      "host": "db-prod-01",
+      "service": "postgres",
+      "status": "warn",
+      "message": "checkpoints are occurring too frequently (24 seconds apart)",
+      "tags": [
+        "env:prod",
+        "service:postgres",
+        "source:python",
+        "host:db-prod-01"
+      ],
+      "attributes": {
+        "env": "prod"
+      }
+    }
+  }
+]

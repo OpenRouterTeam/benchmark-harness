@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"jira_add_comment","arguments":{"body":"Stopped (not terminated) the production instance reporting-worker-legacy (i-07b9d1f3a5c8e2046) and tagged it DecommissionTicket=OPS-34. Its EBS volume is kept. The staging copy (i-0e4a6c8b2d1f35790) is still running.","issue_key":"OPS-34"}}}

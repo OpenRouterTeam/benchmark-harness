@@ -1,0 +1,83 @@
+[scenario]
+id = "cloud/cloudflare/route-orders-api-v2"
+title = "Route /v2 API traffic to the new Worker"
+now = "2026-10-28T15:00:00Z"
+seed = "cloud-cloudflare-route-orders-api-v2"
+services = ["cloudflare"]
+tags = ["write", "single-service", "cloudflare"]
+timeout_sec = 900
+
+# New route ids hash (zone, pattern): 5af521d0... is api.octo-corp.com/v2/* on octo-corp.com.
+[[expect.state]]
+pointer = "/services/cloudflare/workers_routes/5af521d08a8f83440981f48ff71d8553/pattern"
+equals = "api.octo-corp.com/v2/*"
+
+[[expect.state]]
+pointer = "/services/cloudflare/workers_routes/5af521d08a8f83440981f48ff71d8553/script"
+equals = "orders-api-v2"
+
+[[expect.state]]
+pointer = "/services/cloudflare/workers_routes/5af521d08a8f83440981f48ff71d8553/zone_id"
+equals = "023e105f4ecef8ad9ca31a8372d0c353"
+
+# Existing routes keep their Workers.
+[[expect.state]]
+pointer = "/services/cloudflare/workers_routes/9a4c1e7b3d0f5a8c2e6b9d1f4a7c0e3b/script"
+equals = "orders-api"
+
+[[expect.state]]
+pointer = "/services/cloudflare/workers_routes/9a4c1e7b3d0f5a8c2e6b9d1f4a7c0e3b/pattern"
+equals = "api.octo-corp.com/*"
+
+[[expect.state]]
+pointer = "/services/cloudflare/workers_routes/0b5d2f8c4e1a6b9d3f7c0e2a5b8d1f4c/script"
+equals = "orders-api"
+
+[[expect.state]]
+pointer = "/services/cloudflare/workers_routes/0b5d2f8c4e1a6b9d3f7c0e2a5b8d1f4c/pattern"
+equals = "api.octo-corp.com/v1/*"
+
+[[expect.state]]
+pointer = "/services/cloudflare/workers_routes/2d7f4b0e6a3c8d1f5b9e2a4c7d0f3b6e/script"
+equals = "orders-api-v2-staging"
+
+[[expect.required_calls]]
+service = "cloudflare"
+method = "POST"
+path = "/client/v4/zones/023e105f4ecef8ad9ca31a8372d0c353/workers/routes"
+
+[[expect.forbidden_calls]]
+service = "cloudflare"
+method = "DELETE"
+path_regex = "/workers/"
+
+# Redeploying or deleting Workers is out of scope.
+[[expect.forbidden_calls]]
+service = "cloudflare"
+method = "PUT"
+path_regex = "/workers/scripts/"
+
+[[solution.call]]
+endpoint = "cloudflare"
+tool = "execute"
+arguments = { code = """
+async () => {
+  const zone = (await cloudflare.request({ method: 'GET', path: '/zones', query: { name: 'octo-corp.com' } })).result[0];
+  const routes = (await cloudflare.request({ method: 'GET', path: `/zones/${zone.id}/workers/routes` })).result;
+  return { zone: zone.id, routes };
+}
+""" }
+
+[[solution.call]]
+endpoint = "cloudflare"
+tool = "execute"
+arguments = { code = """
+async () => {
+  const r = await cloudflare.request({
+    method: 'POST',
+    path: '/zones/023e105f4ecef8ad9ca31a8372d0c353/workers/routes',
+    body: { pattern: 'api.octo-corp.com/v2/*', script: 'orders-api-v2' },
+  });
+  return r.result;
+}
+""" }

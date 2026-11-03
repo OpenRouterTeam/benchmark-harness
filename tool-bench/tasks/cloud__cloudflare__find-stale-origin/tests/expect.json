@@ -1,0 +1,50 @@
+{
+  "state": [],
+  "required_calls": [],
+  "forbidden_calls": [
+    {
+      "service": "cloudflare",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/client/v4/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "cloudflare",
+      "method": "PUT",
+      "path": null,
+      "path_regex": "^/client/v4/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "cloudflare",
+      "method": "PATCH",
+      "path": null,
+      "path_regex": "^/client/v4/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "cloudflare",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": "^/client/v4/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": {
+    "contains": [],
+    "regex": "(?i)^\\W*checkout\\.octo-shop\\.com\\W*$"
+  }
+}

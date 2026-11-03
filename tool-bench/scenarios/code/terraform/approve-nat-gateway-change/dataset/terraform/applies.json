@@ -1,0 +1,249 @@
+[
+ {
+  "id": "apply-63Pl7yaowgLXsou5",
+  "run": "run-Sxnff6DCeHaF93uZ",
+  "status": "finished",
+  "resource-additions": 0,
+  "resource-changes": 2,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-14T10:02:31Z",
+   "started-at": "2026-10-14T10:02:31Z",
+   "finished-at": "2026-10-14T10:02:31Z"
+  }
+ },
+ {
+  "id": "apply-HHyj31Q2ABZBgWNd",
+  "run": "run-V1kS7u01JzNGAFbo",
+  "status": "finished",
+  "resource-additions": 0,
+  "resource-changes": 1,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-21T16:40:02Z",
+   "started-at": "2026-10-21T16:40:02Z",
+   "finished-at": "2026-10-21T16:40:02Z"
+  }
+ },
+ {
+  "id": "apply-U2GPhIhiMiW25zs1",
+  "run": "run-nAAGvVVuIe2rfmNM",
+  "status": "unreachable",
+  "resource-additions": 0,
+  "resource-changes": 0,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {}
+ },
+ {
+  "id": "apply-OttY2qKt1DNXCd1P",
+  "run": "run-Gy4tBHGggKx49nbH",
+  "status": "errored",
+  "resource-additions": 1,
+  "resource-changes": 0,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-28T13:12:09Z",
+   "started-at": "2026-10-28T13:12:09Z",
+   "errored-at": "2026-10-28T13:12:09Z"
+  },
+  "log": "Terraform v1.9.5\non linux_amd64\nInitializing plugins and modules...\naws_db_parameter_group.payments_pg16: Creating...\naws_db_parameter_group.payments_pg16: Creation complete after 2s [id=payments-pg16]\naws_db_instance.payments: Modifying... [id=db-3QF7Z2KXMN4LJ5RT]\n\nError: updating RDS DB Instance (payments-prod-db): operation error RDS: ModifyDBInstance, https response error StatusCode: 400, RequestID: 6f1c2a9e-1b7d-4c3e-9a55-2d8e0f4b7c61, api error InvalidParameterCombination: Cannot upgrade postgres from 14.12 to 16.4. You must set AllowMajorVersionUpgrade to true when upgrading to a new major version.\n\n  with aws_db_instance.payments,\n  on rds.tf line 12, in resource \"aws_db_instance\" \"payments\":\n  12: resource \"aws_db_instance\" \"payments\" {\n\nApply failed! Resources: 1 added, 0 changed, 0 destroyed.\n"
+ },
+ {
+  "id": "apply-tKTvtEDVZ2fl95Oo",
+  "run": "run-C10xz3XBQqFb67U5",
+  "status": "finished",
+  "resource-additions": 1,
+  "resource-changes": 1,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-26T11:18:40Z",
+   "started-at": "2026-10-26T11:18:40Z",
+   "finished-at": "2026-10-26T11:18:40Z"
+  }
+ },
+ {
+  "id": "apply-CKvvcQ6hAmNeTc9U",
+  "run": "run-YF4vEQXaSoBg49H3",
+  "status": "errored",
+  "resource-additions": 0,
+  "resource-changes": 0,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-27T17:03:12Z",
+   "started-at": "2026-10-27T17:03:12Z",
+   "errored-at": "2026-10-27T17:03:12Z"
+  },
+  "log": "Terraform v1.9.5\non linux_amd64\nInitializing plugins and modules...\naws_db_parameter_group.payments_pg14: Destroying... [id=payments-pg14]\n\nError: deleting RDS DB Parameter Group (payments-pg14): operation error RDS: DeleteDBParameterGroup, https response error StatusCode: 400, api error InvalidDBParameterGroupState: One or more database instances are still members of this parameter group payments-pg14, so the group cannot be deleted\n\nApply failed! Resources: 0 added, 0 changed, 0 destroyed.\n"
+ },
+ {
+  "id": "apply-6ETcP58pdlLrVLrd",
+  "run": "run-0vzoy5tA8SJFq039",
+  "status": "finished",
+  "resource-additions": 0,
+  "resource-changes": 1,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-23T09:10:31Z",
+   "started-at": "2026-10-23T09:10:31Z",
+   "finished-at": "2026-10-23T09:10:31Z"
+  }
+ },
+ {
+  "id": "apply-b5HDtD8xAB0pg13R",
+  "run": "run-0AIole4acN2clBcU",
+  "status": "finished",
+  "resource-additions": 0,
+  "resource-changes": 1,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-23T14:38:12Z",
+   "started-at": "2026-10-23T14:38:12Z",
+   "finished-at": "2026-10-23T14:38:12Z"
+  }
+ },
+ {
+  "id": "apply-BBn9uxTJ81uEYhFf",
+  "run": "run-BeAXHFF4UdtJc99V",
+  "status": "finished",
+  "resource-additions": 0,
+  "resource-changes": 1,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-20T15:01:44Z",
+   "started-at": "2026-10-20T15:01:44Z",
+   "finished-at": "2026-10-20T15:01:44Z"
+  }
+ },
+ {
+  "id": "apply-UpEcrL68If1kHpYw",
+  "run": "run-jCcDubzVP5ob0NM7",
+  "status": "running",
+  "resource-additions": 0,
+  "resource-changes": 0,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-27T23:38:52Z",
+   "started-at": "2026-10-27T23:38:52Z"
+  }
+ },
+ {
+  "id": "apply-wpYpGaGkF1TpRh3E",
+  "run": "run-gSSY7IvhFL3jO8Ya",
+  "status": "finished",
+  "resource-additions": 0,
+  "resource-changes": 1,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-26T09:58:20Z",
+   "started-at": "2026-10-26T09:58:20Z",
+   "finished-at": "2026-10-26T09:58:20Z"
+  }
+ },
+ {
+  "id": "apply-nFwYqd6SeU1IkhE3",
+  "run": "run-K3bTuSoe0tCTeKPW",
+  "status": "finished",
+  "resource-additions": 0,
+  "resource-changes": 1,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-09-30T11:57:00Z",
+   "started-at": "2026-09-30T11:57:00Z",
+   "finished-at": "2026-09-30T11:57:00Z"
+  }
+ },
+ {
+  "id": "apply-qHt2I54AI7BbjHHk",
+  "run": "run-hIykSRnRyJGBlLvl",
+  "status": "finished",
+  "resource-additions": 0,
+  "resource-changes": 1,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-08-02T02:58:00Z",
+   "started-at": "2026-08-02T02:58:00Z",
+   "finished-at": "2026-08-02T02:58:00Z"
+  }
+ },
+ {
+  "id": "apply-YELBgDFhiOTPFPdq",
+  "run": "run-vLlZhMPdaZ0ZRFyL",
+  "status": "finished",
+  "resource-additions": 1,
+  "resource-changes": 0,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-02T13:28:00Z",
+   "started-at": "2026-10-02T13:28:00Z",
+   "finished-at": "2026-10-02T13:28:00Z"
+  }
+ },
+ {
+  "id": "apply-A3G2WcgG3fqTPhiP",
+  "run": "run-Vckpoh9IvCZiQ160",
+  "status": "unreachable",
+  "resource-additions": 0,
+  "resource-changes": 0,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {}
+ },
+ {
+  "id": "apply-rGXcdrhL17Kg8DnD",
+  "run": "run-1q2oy8I2MqSd5oM4",
+  "status": "pending",
+  "resource-additions": 0,
+  "resource-changes": 0,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {}
+ },
+ {
+  "id": "apply-tRAL2GsFamPtO7Wh",
+  "run": "run-blTtGlrNXHe62r7y",
+  "status": "pending",
+  "resource-additions": 0,
+  "resource-changes": 0,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {}
+ },
+ {
+  "id": "apply-VGGQ2Y414J1yJGzF",
+  "run": "run-aRQYuP1jUBhRyE09",
+  "status": "finished",
+  "resource-additions": 1,
+  "resource-changes": 0,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {
+   "queued-at": "2026-10-19T11:59:30Z",
+   "started-at": "2026-10-19T11:59:30Z",
+   "finished-at": "2026-10-19T11:59:30Z"
+  }
+ },
+ {
+  "id": "apply-SO2YMmetSrOM3OTL",
+  "run": "run-0b1Ax4B0hIqUDgw8",
+  "status": "unreachable",
+  "resource-additions": 0,
+  "resource-changes": 0,
+  "resource-destructions": 0,
+  "resource-imports": 0,
+  "status-timestamps": {}
+ }
+]

@@ -1,0 +1,16 @@
+[
+  {
+    "_key": "arn:aws:iam::481562039417:policy/DataLakeAnalyst",
+    "PolicyName": "DataLakeAnalyst", "PolicyId": "ANPAXB4NW7DATALAKE01", "Arn": "arn:aws:iam::481562039417:policy/DataLakeAnalyst",
+    "Path": "/", "DefaultVersionId": "v2", "IsAttachable": true, "Description": "Query access to the data lake",
+    "CreateDate": "2024-07-08T11:50:00Z", "UpdateDate": "2025-01-14T09:10:00Z",
+    "Document": { "Version": "2012-10-17", "Statement": [{ "Effect": "Allow", "Action": ["s3:GetObject", "s3:ListBucket", "athena:*"], "Resource": "*" }] }
+  },
+  {
+    "_key": "arn:aws:iam::481562039417:policy/AuditEvidenceBucketRead",
+    "PolicyName": "AuditEvidenceBucketRead", "PolicyId": "ANPAXB4NW7AUDITEV002", "Arn": "arn:aws:iam::481562039417:policy/AuditEvidenceBucketRead",
+    "Path": "/", "DefaultVersionId": "v1", "IsAttachable": true, "Description": "Read the audit evidence bucket",
+    "CreateDate": "2025-02-03T10:00:00Z", "UpdateDate": "2025-02-03T10:00:00Z",
+    "Document": { "Version": "2012-10-17", "Statement": [{ "Effect": "Allow", "Action": ["s3:GetObject", "s3:ListBucket"], "Resource": ["arn:aws:s3:::northwind-audit-evidence", "arn:aws:s3:::northwind-audit-evidence/*"] }] }
+  }
+]

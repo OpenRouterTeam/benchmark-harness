@@ -1,0 +1,1 @@
+Harbor & Pine Coffee Co. (cus_mxxxdqMeoA1GEc) has an MRR of $439.00: Team monthly with 6 additional seats ($339.00/month) plus the Analytics add-on billed yearly ($1,200.00/year = $100.00/month). The canceled Starter plan and the Extra location trial are not counted.

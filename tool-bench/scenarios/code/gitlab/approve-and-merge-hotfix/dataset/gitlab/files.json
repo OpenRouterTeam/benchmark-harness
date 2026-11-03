@@ -1,0 +1,14 @@
+[
+  {
+    "_key": "northwind/payments/ledger:main:posting/refunds.go",
+    "content": "package posting\n\nfunc PostRefund(tx *sql.Tx, r Refund) error {\n\t_, err := tx.Exec(insertRefundEntry, r.ID, r.AmountCents)\n\treturn err\n}\n"
+  },
+  {
+    "_key": "northwind/payments/ledger:hotfix/double-post-refunds:posting/refunds.go",
+    "content": "package posting\n\nfunc PostRefund(tx *sql.Tx, r Refund) error {\n\tif exists, err := alreadyPosted(tx, r.IdempotencyKey); err != nil || exists {\n\t\treturn err\n\t}\n\t_, err := tx.Exec(insertRefundEntry, r.ID, r.AmountCents)\n\treturn err\n}\n"
+  },
+  {
+    "_key": "northwind/payments/ledger:main:.gitlab-ci.yml",
+    "content": "stages: [test]\ngo-test:\n  stage: test\n  script: go test ./...\n"
+  }
+]

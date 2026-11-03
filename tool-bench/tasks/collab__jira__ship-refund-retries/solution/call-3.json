@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"jira_add_comment","arguments":{"body":"Shipped in release 2026.11.","issue_key":"PAY-121"}}}

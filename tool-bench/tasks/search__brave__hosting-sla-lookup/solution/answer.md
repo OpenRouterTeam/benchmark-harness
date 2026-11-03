@@ -1,0 +1,1 @@
+Ironbark Hosting Business plan (SLA effective 2026-07-01): 99.95% monthly uptime. If uptime falls below 99.95% the service credit is 10% of the monthly fee (25% below 99.0%). Source: https://www.ironbarkhosting.com/legal/sla

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"add_user_to_group","arguments":{"group_id":"00g2pltfrm7Gh8Ij9x7","user_id":"00u1mrgnzlz6Wx3Yz4x7"}}}

@@ -1,0 +1,9 @@
+[
+  {
+    "id": "10",
+    "serviceDeskId": "1",
+    "name": "Get IT help",
+    "description": "Hardware and access requests",
+    "issueType": "Service Request"
+  }
+]

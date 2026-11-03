@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"create_annotation","arguments":{"dashboardUid":"checkout-prod","tags":["deploy","checkout"],"text":"Deploy checkout v4.19.0","time":1794492300000}}}

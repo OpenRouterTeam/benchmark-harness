@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"esql","arguments":{"query":"FROM requests-checkout-2026.10 | WHERE endpoint == \"/checkout/submit\" AND status_code < 400 AND @timestamp >= \"2026-10-30T00:00:00Z\" | STATS avg_ms = AVG(duration_ms), requests = COUNT(*) BY region | SORT avg_ms DESC"}}}

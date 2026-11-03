@@ -1,0 +1,36 @@
+[
+  {
+    "id": "10100",
+    "project": "PAY",
+    "name": "2026.10",
+    "released": true,
+    "archived": false,
+    "releaseDate": "2026-10-08"
+  },
+  {
+    "id": "10101",
+    "project": "PAY",
+    "name": "2026.11",
+    "released": false,
+    "archived": false,
+    "startDate": "2026-10-09",
+    "releaseDate": "2026-11-12",
+    "description": "Payments v2 GA"
+  },
+  {
+    "id": "10102",
+    "project": "PAY",
+    "name": "2026.12",
+    "released": false,
+    "archived": false,
+    "releaseDate": "2026-12-10"
+  },
+  {
+    "id": "10110",
+    "project": "WEB",
+    "name": "4.2",
+    "released": false,
+    "archived": false,
+    "releaseDate": "2026-11-18"
+  }
+]

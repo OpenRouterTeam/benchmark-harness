@@ -1,0 +1,1 @@
+File a bug in the Web Storefront Jira project: the Apple Pay button is missing at checkout on iOS 18 Safari. Make it High priority, put it in the Checkout component, add the label `ios`, and assign it to Alex Kim from the storefront team. Create exactly one issue.

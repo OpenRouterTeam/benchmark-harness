@@ -1,0 +1,403 @@
+[
+  {
+    "_key": "kube-system/coredns",
+    "metadata": {
+      "name": "coredns",
+      "namespace": "kube-system",
+      "uid": "6801ad47-277d-4c9c-a457-259d27997b8c",
+      "resourceVersion": "41204",
+      "creationTimestamp": "2025-10-20T16:20:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "coredns",
+        "k8s-app": "kube-dns"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 2,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "coredns"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "coredns",
+            "k8s-app": "kube-dns"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "coredns",
+              "image": "registry.k8s.io/coredns/coredns:v1.12.0",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "70Mi"
+                },
+                "limits": {
+                  "memory": "170Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 53,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      },
+      "strategy": {
+        "type": "RollingUpdate",
+        "rollingUpdate": {
+          "maxUnavailable": "25%",
+          "maxSurge": "25%"
+        }
+      },
+      "revisionHistoryLimit": 10,
+      "progressDeadlineSeconds": 600
+    },
+    "status": {
+      "observedGeneration": 1,
+      "replicas": 2,
+      "updatedReplicas": 2,
+      "readyReplicas": 2,
+      "availableReplicas": 2,
+      "conditions": [
+        {
+          "type": "Available",
+          "status": "True",
+          "lastUpdateTime": "2026-11-02T16:20:00Z",
+          "lastTransitionTime": "2026-11-02T16:20:00Z",
+          "reason": "MinimumReplicasAvailable",
+          "message": "Deployment has minimum availability."
+        },
+        {
+          "type": "Progressing",
+          "status": "True",
+          "lastUpdateTime": "2026-11-02T16:20:00Z",
+          "lastTransitionTime": "2025-10-20T16:20:00Z",
+          "reason": "NewReplicaSetAvailable",
+          "message": "ReplicaSet \"coredns-fq7th5455q\" has successfully progressed."
+        }
+      ]
+    }
+  },
+  {
+    "_key": "kube-system/metrics-server",
+    "metadata": {
+      "name": "metrics-server",
+      "namespace": "kube-system",
+      "uid": "b4e14320-6831-4fb5-a784-a60602739ef0",
+      "resourceVersion": "41272",
+      "creationTimestamp": "2025-10-20T16:20:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "metrics-server",
+        "k8s-app": "metrics-server"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 1,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "metrics-server"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "metrics-server",
+            "k8s-app": "metrics-server"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "metrics-server",
+              "image": "registry.k8s.io/metrics-server/metrics-server:v0.7.2",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "200Mi"
+                },
+                "limits": {
+                  "memory": "400Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 10250,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      },
+      "strategy": {
+        "type": "RollingUpdate",
+        "rollingUpdate": {
+          "maxUnavailable": "25%",
+          "maxSurge": "25%"
+        }
+      },
+      "revisionHistoryLimit": 10,
+      "progressDeadlineSeconds": 600
+    },
+    "status": {
+      "observedGeneration": 1,
+      "replicas": 1,
+      "updatedReplicas": 1,
+      "readyReplicas": 1,
+      "availableReplicas": 1,
+      "conditions": [
+        {
+          "type": "Available",
+          "status": "True",
+          "lastUpdateTime": "2026-11-02T16:20:00Z",
+          "lastTransitionTime": "2026-11-02T16:20:00Z",
+          "reason": "MinimumReplicasAvailable",
+          "message": "Deployment has minimum availability."
+        },
+        {
+          "type": "Progressing",
+          "status": "True",
+          "lastUpdateTime": "2026-11-02T16:20:00Z",
+          "lastTransitionTime": "2025-10-20T16:20:00Z",
+          "reason": "NewReplicaSetAvailable",
+          "message": "ReplicaSet \"metrics-server-52pzb89fg\" has successfully progressed."
+        }
+      ]
+    }
+  },
+  {
+    "_key": "checkout/checkout-web",
+    "metadata": {
+      "name": "checkout-web",
+      "namespace": "checkout",
+      "uid": "6da0e11e-8416-42af-a5ab-6cc5e6e351dd",
+      "resourceVersion": "41425",
+      "creationTimestamp": "2026-09-05T16:20:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "checkout-web",
+        "team": "checkout"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 3,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "checkout-web"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "checkout-web",
+            "team": "checkout"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "checkout-web",
+              "image": "ghcr.io/octo-corp/checkout-web:5.2.0",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "128Mi"
+                },
+                "limits": {
+                  "memory": "512Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 3000,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      },
+      "strategy": {
+        "type": "RollingUpdate",
+        "rollingUpdate": {
+          "maxUnavailable": "25%",
+          "maxSurge": "25%"
+        }
+      },
+      "revisionHistoryLimit": 10,
+      "progressDeadlineSeconds": 600
+    },
+    "status": {
+      "observedGeneration": 1,
+      "replicas": 3,
+      "updatedReplicas": 3,
+      "readyReplicas": 3,
+      "availableReplicas": 3,
+      "conditions": [
+        {
+          "type": "Available",
+          "status": "True",
+          "lastUpdateTime": "2026-11-02T16:20:00Z",
+          "lastTransitionTime": "2026-11-02T16:20:00Z",
+          "reason": "MinimumReplicasAvailable",
+          "message": "Deployment has minimum availability."
+        },
+        {
+          "type": "Progressing",
+          "status": "True",
+          "lastUpdateTime": "2026-11-02T16:20:00Z",
+          "lastTransitionTime": "2026-09-05T16:20:00Z",
+          "reason": "NewReplicaSetAvailable",
+          "message": "ReplicaSet \"checkout-web-9725xrrfc\" has successfully progressed."
+        }
+      ]
+    }
+  },
+  {
+    "_key": "perf/k6-operator-controller-manager",
+    "metadata": {
+      "name": "k6-operator-controller-manager",
+      "namespace": "perf",
+      "uid": "41980822-adb2-43d1-a12f-e0bab2e95a41",
+      "resourceVersion": "41510",
+      "creationTimestamp": "2026-09-05T16:20:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "k6-operator",
+        "app.kubernetes.io/instance": "k6-operator",
+        "app.kubernetes.io/managed-by": "Helm",
+        "helm.sh/chart": "k6-operator-3.9.0"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 1,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "k6-operator-controller-manager"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "k6-operator",
+            "app.kubernetes.io/instance": "k6-operator",
+            "app.kubernetes.io/managed-by": "Helm",
+            "helm.sh/chart": "k6-operator-3.9.0"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "manager",
+              "image": "ghcr.io/grafana/k6-operator:controller-v0.0.19",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "128Mi"
+                },
+                "limits": {
+                  "memory": "256Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File"
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      },
+      "strategy": {
+        "type": "RollingUpdate",
+        "rollingUpdate": {
+          "maxUnavailable": "25%",
+          "maxSurge": "25%"
+        }
+      },
+      "revisionHistoryLimit": 10,
+      "progressDeadlineSeconds": 600
+    },
+    "status": {
+      "observedGeneration": 1,
+      "replicas": 1,
+      "updatedReplicas": 1,
+      "readyReplicas": 1,
+      "availableReplicas": 1,
+      "conditions": [
+        {
+          "type": "Available",
+          "status": "True",
+          "lastUpdateTime": "2026-11-02T16:20:00Z",
+          "lastTransitionTime": "2026-11-02T16:20:00Z",
+          "reason": "MinimumReplicasAvailable",
+          "message": "Deployment has minimum availability."
+        },
+        {
+          "type": "Progressing",
+          "status": "True",
+          "lastUpdateTime": "2026-11-02T16:20:00Z",
+          "lastTransitionTime": "2026-09-05T16:20:00Z",
+          "reason": "NewReplicaSetAvailable",
+          "message": "ReplicaSet \"k6-operator-controller-manager-m2m8p844v\" has successfully progressed."
+        }
+      ]
+    }
+  }
+]

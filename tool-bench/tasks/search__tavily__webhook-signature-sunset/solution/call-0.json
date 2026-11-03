@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"tavily_map","arguments":{"max_depth":2,"url":"https://docs.ferrowave.dev"}}}

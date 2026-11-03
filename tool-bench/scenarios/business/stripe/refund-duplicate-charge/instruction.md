@@ -1,0 +1,1 @@
+Northwind Bakery emailed support: their card was charged twice for wholesale order #1077 on March 10. Please refund the duplicate charge (the second one that went through) in full in Stripe, and record the refund reason as a duplicate. Leave the original charge for that order, and every other payment, as it is.

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"merge_pull_request","arguments":{"merge_method":"squash","owner":"octo-org","pullNumber":57,"repo":"web"}}}

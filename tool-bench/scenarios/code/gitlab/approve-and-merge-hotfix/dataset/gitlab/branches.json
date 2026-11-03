@@ -1,0 +1,26 @@
+[
+  {
+    "_key": "northwind/payments/ledger:main",
+    "name": "main",
+    "commit": "b53cc05521bb890c3b594541739cfebb76fc1117",
+    "base": null
+  },
+  {
+    "_key": "northwind/payments/ledger:hotfix/double-post-refunds",
+    "name": "hotfix/double-post-refunds",
+    "commit": "fa48931e67e0f23ec1147679ea8fd4fe8aa7b18b",
+    "base": "main"
+  },
+  {
+    "_key": "northwind/payments/ledger:fix/payout-export-dupes",
+    "name": "fix/payout-export-dupes",
+    "commit": "acce1b3f4d5baf31587c585a55e9754af8d8174b",
+    "base": "main"
+  },
+  {
+    "_key": "northwind/payments/ledger:refactor/posting",
+    "name": "refactor/posting",
+    "commit": "9932a4ff93982c8d81c6e4f87b7904edfd58731e",
+    "base": "main"
+  }
+]

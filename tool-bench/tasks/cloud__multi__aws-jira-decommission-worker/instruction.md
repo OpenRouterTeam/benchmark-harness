@@ -1,0 +1,1 @@
+There's a decommission ticket assigned to me in our OPS Jira project for the legacy reporting worker. Please do what it asks in AWS, then add a comment on the ticket saying what you did and close it as Done.

@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "order_id": 5001,
+    "number": "INV-2026-00001",
+    "amount": 1500.0,
+    "issued_at": "2026-02-21T10:15:00+00:00",
+    "pdf_path": "invoices/2026/INV-2026-00001.pdf"
+  },
+  {
+    "id": 2,
+    "order_id": 5002,
+    "number": "INV-2026-00002",
+    "amount": 300.0,
+    "issued_at": "2026-03-04T12:30:00+00:00",
+    "pdf_path": "invoices/2026/INV-2026-00002.pdf"
+  },
+  {
+    "id": 3,
+    "order_id": 5004,
+    "number": "INV-2026-00003",
+    "amount": 412.5,
+    "issued_at": "2026-03-06T14:02:33+00:00",
+    "pdf_path": "invoices/2026/INV-2026-00003.pdf"
+  },
+  {
+    "id": 4,
+    "order_id": 5005,
+    "number": "INV-2026-00004",
+    "amount": 980.0,
+    "issued_at": "2026-03-11T09:47:20+00:00",
+    "pdf_path": "invoices/2026/INV-2026-00004.pdf"
+  },
+  {
+    "id": 5,
+    "order_id": 5007,
+    "number": "INV-2026-00005",
+    "amount": 120.0,
+    "issued_at": "2026-03-12T19:05:44+00:00",
+    "pdf_path": "invoices/2026/INV-2026-00005.pdf"
+  },
+  {
+    "id": 6,
+    "order_id": 5008,
+    "number": "INV-2026-00006",
+    "amount": 389.0,
+    "issued_at": "2026-03-18T11:11:11+00:00",
+    "pdf_path": "invoices/2026/INV-2026-00006.pdf"
+  },
+  {
+    "id": 7,
+    "order_id": 5010,
+    "number": "INV-2026-00007",
+    "amount": 640.25,
+    "issued_at": "2026-03-09T13:45:00+00:00",
+    "pdf_path": "invoices/2026/INV-2026-00007.pdf"
+  },
+  {
+    "id": 8,
+    "order_id": 5012,
+    "number": "INV-2026-00008",
+    "amount": 433.0,
+    "issued_at": "2026-03-27T20:15:49+00:00",
+    "pdf_path": "invoices/2026/INV-2026-00008.pdf"
+  },
+  {
+    "id": 9,
+    "order_id": 5013,
+    "number": "INV-2026-00009",
+    "amount": 120.0,
+    "issued_at": "2026-03-31T23:30:00+00:00",
+    "pdf_path": "invoices/2026/INV-2026-00009.pdf"
+  },
+  {
+    "id": 10,
+    "order_id": 5014,
+    "number": "INV-2026-00010",
+    "amount": 500.0,
+    "issued_at": "2026-04-01T00:10:00+00:00",
+    "pdf_path": "invoices/2026/INV-2026-00010.pdf"
+  },
+  {
+    "id": 11,
+    "order_id": 5016,
+    "number": "INV-2026-00011",
+    "amount": 210.4,
+    "issued_at": "2026-03-25T15:35:27+00:00",
+    "pdf_path": "invoices/2026/INV-2026-00011.pdf"
+  },
+  {
+    "id": 12,
+    "order_id": 5017,
+    "number": "INV-2026-00012",
+    "amount": 75.1,
+    "issued_at": "2026-02-27T22:12:00+00:00",
+    "pdf_path": "invoices/2026/INV-2026-00012.pdf"
+  },
+  {
+    "id": 13,
+    "order_id": 5018,
+    "number": "INV-2026-00013",
+    "amount": 200.0,
+    "issued_at": "2026-04-01T09:30:00+00:00",
+    "pdf_path": "invoices/2026/INV-2026-00013.pdf"
+  },
+  {
+    "id": 14,
+    "order_id": 5019,
+    "number": "INV-2026-00014",
+    "amount": 318.6,
+    "issued_at": "2026-03-19T10:20:30+00:00",
+    "pdf_path": "invoices/2026/INV-2026-00014.pdf"
+  },
+  {
+    "id": 15,
+    "order_id": 5022,
+    "number": "INV-2026-00015",
+    "amount": 62.0,
+    "issued_at": "2026-03-14T10:00:00+00:00",
+    "pdf_path": "invoices/2026/INV-2026-00015.pdf"
+  }
+]

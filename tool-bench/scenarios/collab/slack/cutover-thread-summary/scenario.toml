@@ -1,0 +1,46 @@
+[scenario]
+id = "collab/slack/cutover-thread-summary"
+title = "Summarise the agreed Postgres cutover window as a thread reply"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-slack-cutover-thread-summary"
+services = ["slack"]
+tags = ["write", "single-service", "slack"]
+timeout_sec = 900
+
+# The first message the caller posts in #db-migration must be a reply in the cutover
+# proposal thread with the window that was finally agreed (not the original proposal).
+[[expect.state]]
+pointer = "/services/slack/posted/C05DBMIG2RT#1/thread_ts"
+equals = "1792600205.318801"
+
+[[expect.state]]
+pointer = "/services/slack/posted/C05DBMIG2RT#1/text"
+contains = "2026-11-07"
+
+[[expect.state]]
+pointer = "/services/slack/posted/C05DBMIG2RT#1/text"
+contains = "22:00"
+
+[[expect.state]]
+pointer = "/services/slack/posted/C01GENERAL0#1"
+exists = false
+
+[[expect.required_calls]]
+service = "slack"
+path = "/_mcp/tools/call"
+body = { name = "slack_send_message" }
+
+[[solution.call]]
+endpoint = "slack"
+tool = "slack_search_channels"
+arguments = { keywords = ["migration"], natural_language_query = "postgres migration channel" }
+
+[[solution.call]]
+endpoint = "slack"
+tool = "slack_read_thread"
+arguments = { channel_id = "C05DBMIG2RT", message_ts = "1792600205.318801" }
+
+[[solution.call]]
+endpoint = "slack"
+tool = "slack_send_message"
+arguments = { channel_id = "C05DBMIG2RT", thread_ts = "1792600205.318801", message = "Summary: the production cutover window is Saturday 2026-11-07, 22:00-01:00 CT (moved off Nov 6 because of the payments change freeze). Sam leads the cutover, Priya handles payments verification, rollback deadline 00:30 CT." }

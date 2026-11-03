@@ -1,0 +1,17 @@
+[
+  {
+    "id": "pm_HarborVisa00000000000001",
+    "type": "card",
+    "customer": "cus_HarborPine0001",
+    "created": 1740787200,
+    "billing_details": {"address": {"city": "Portland", "country": "US", "line1": "18 SE Pine St", "line2": null, "postal_code": "97214", "state": "OR"}, "email": "ap@harborpine.coffee", "name": "Harbor & Pine Coffee Co.", "phone": null, "tax_id": null},
+    "card": {"brand": "visa", "country": "US", "exp_month": 8, "exp_year": 2028, "funding": "credit", "last4": "4242"}
+  },
+  {
+    "id": "pm_NorthwindMc0000000000002",
+    "type": "card",
+    "customer": "cus_Northwind00002",
+    "created": 1756684800,
+    "card": {"brand": "mastercard", "country": "US", "exp_month": 2, "exp_year": 2027, "funding": "debit", "last4": "4444"}
+  }
+]

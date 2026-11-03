@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"create_schedule_override","arguments":{"override_request":{"overrides":[{"end":"2026-10-31T17:00:00Z","start":"2026-10-31T09:00:00Z","user_id":"PJ0RLEE"}]},"schedule_id":"PSPLTPR"}}}

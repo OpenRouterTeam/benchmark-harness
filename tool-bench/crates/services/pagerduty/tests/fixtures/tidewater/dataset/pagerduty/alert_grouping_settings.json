@@ -1,0 +1,44 @@
+[
+  {
+    "id": "PAGS001",
+    "name": "orders-db content grouping",
+    "description": "Group replica alerts by host.",
+    "type": "content_based",
+    "config": {
+      "aggregate": "all",
+      "fields": [
+        "summary",
+        "component"
+      ],
+      "time_window": 600
+    },
+    "services": [
+      {
+        "id": "PSVORDB",
+        "type": "service_reference"
+      }
+    ],
+    "created_at": "2026-02-10T09:00:00Z",
+    "updated_at": "2026-02-10T09:00:00Z"
+  },
+  {
+    "id": "PAGS002",
+    "name": "checkout intelligent grouping",
+    "description": null,
+    "type": "intelligent",
+    "config": {
+      "time_window": 300,
+      "iag_fields": [
+        "summary"
+      ]
+    },
+    "services": [
+      {
+        "id": "PSVCHKA",
+        "type": "service_reference"
+      }
+    ],
+    "created_at": "2026-03-01T09:00:00Z",
+    "updated_at": "2026-03-01T09:00:00Z"
+  }
+]

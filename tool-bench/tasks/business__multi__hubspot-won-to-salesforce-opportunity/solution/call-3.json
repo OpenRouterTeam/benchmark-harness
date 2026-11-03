@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"hubspot-create-engagement","arguments":{"associations":{"dealIds":[9100104]},"metadata":{"body":"Synced to Salesforce: opportunity 0065g00000IDWm1AAH marked Closed Won ($176,500, closed 2026-10-28)."},"ownerId":81234501,"timestamp":1793282400000,"type":"NOTE"}}}

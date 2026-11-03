@@ -1,0 +1,236 @@
+[
+  {
+    "_key": "STOREFRONT-5R",
+    "id": "7201330418",
+    "shortId": "STOREFRONT-5R",
+    "title": "TypeError: paymentsClient.confirmCardPayment is not a function",
+    "culprit": "submitPayment(app/checkout/PaymentStep)",
+    "level": "error",
+    "status": "unresolved",
+    "substatus": "new",
+    "statusDetails": {},
+    "project": "storefront",
+    "platform": "javascript",
+    "type": "error",
+    "issueType": "error",
+    "issueCategory": "error",
+    "priority": "high",
+    "metadata": {
+      "type": "TypeError",
+      "value": "paymentsClient.confirmCardPayment is not a function",
+      "filename": "webpack:///./app/checkout/PaymentStep.tsx",
+      "function": "submitPayment"
+    },
+    "count": "3184",
+    "userCount": 2210,
+    "firstSeen": "2026-10-28T08:19:12Z",
+    "lastSeen": "2026-10-28T14:52:40Z",
+    "firstRelease": "e07a3c9d5b1f48e2a6c0d7b9f3e1a5c8d2b4f690",
+    "lastRelease": "e07a3c9d5b1f48e2a6c0d7b9f3e1a5c8d2b4f690",
+    "assignedTo": null,
+    "isUnhandled": true,
+    "tags": {
+      "release": [
+        {
+          "value": "e07a3c9d5b1f48e2a6c0d7b9f3e1a5c8d2b4f690",
+          "count": 3184,
+          "firstSeen": "2026-10-28T08:19:12Z",
+          "lastSeen": "2026-10-28T14:52:40Z"
+        }
+      ],
+      "environment": [
+        {
+          "value": "production",
+          "count": 3184
+        }
+      ],
+      "browser": [
+        {
+          "value": "Chrome 130.0",
+          "count": 1910
+        },
+        {
+          "value": "Safari 18.0",
+          "count": 1274
+        }
+      ]
+    }
+  },
+  {
+    "_key": "STOREFRONT-5T",
+    "id": "7201331102",
+    "shortId": "STOREFRONT-5T",
+    "title": "TypeError: Cannot read properties of undefined (reading 'balance')",
+    "culprit": "GiftCardField(app/checkout/GiftCardField)",
+    "level": "error",
+    "status": "unresolved",
+    "substatus": "new",
+    "statusDetails": {},
+    "project": "storefront",
+    "platform": "javascript",
+    "type": "error",
+    "issueType": "error",
+    "issueCategory": "error",
+    "priority": "high",
+    "metadata": {
+      "type": "TypeError",
+      "value": "Cannot read properties of undefined (reading 'balance')",
+      "filename": "webpack:///./app/checkout/GiftCardField.tsx",
+      "function": "GiftCardField"
+    },
+    "count": "41",
+    "userCount": 6,
+    "firstSeen": "2026-10-28T09:40:05Z",
+    "lastSeen": "2026-10-28T13:05:51Z",
+    "firstRelease": "4be1d07c9a3f58e2b6d0c1a7e9f4b3d25c8a6e10",
+    "lastRelease": "4be1d07c9a3f58e2b6d0c1a7e9f4b3d25c8a6e10",
+    "assignedTo": null,
+    "isUnhandled": true,
+    "tags": {
+      "release": [
+        {
+          "value": "4be1d07c9a3f58e2b6d0c1a7e9f4b3d25c8a6e10",
+          "count": 41,
+          "firstSeen": "2026-10-28T09:40:05Z",
+          "lastSeen": "2026-10-28T13:05:51Z"
+        }
+      ],
+      "environment": [
+        {
+          "value": "preview",
+          "count": 41
+        }
+      ],
+      "browser": [
+        {
+          "value": "Chrome 130.0",
+          "count": 24
+        },
+        {
+          "value": "Safari 18.0",
+          "count": 17
+        }
+      ]
+    }
+  },
+  {
+    "_key": "STOREFRONT-4W",
+    "id": "7201298877",
+    "shortId": "STOREFRONT-4W",
+    "title": "ChunkLoadError: Loading chunk 418 failed.",
+    "culprit": "app/cart/CartDrawer",
+    "level": "error",
+    "status": "unresolved",
+    "substatus": "ongoing",
+    "statusDetails": {},
+    "project": "storefront",
+    "platform": "javascript",
+    "type": "error",
+    "issueType": "error",
+    "issueCategory": "error",
+    "priority": "high",
+    "metadata": {
+      "type": "ChunkLoadError",
+      "value": "Loading chunk 418 failed.",
+      "filename": "webpack:///./app/cart/CartDrawer.tsx",
+      "function": "loadChunk"
+    },
+    "count": "212",
+    "userCount": 180,
+    "firstSeen": "2026-10-24T10:02:00Z",
+    "lastSeen": "2026-10-28T11:41:00Z",
+    "firstRelease": "c3a9f12e8b47d05a6e21f9b3c7d84e50a1b6f2d9",
+    "lastRelease": "e07a3c9d5b1f48e2a6c0d7b9f3e1a5c8d2b4f690",
+    "assignedTo": null,
+    "isUnhandled": true,
+    "tags": {
+      "release": [
+        {
+          "value": "c3a9f12e8b47d05a6e21f9b3c7d84e50a1b6f2d9",
+          "count": 160,
+          "firstSeen": "2026-10-24T10:02:00Z",
+          "lastSeen": "2026-10-28T08:14:00Z"
+        },
+        {
+          "value": "e07a3c9d5b1f48e2a6c0d7b9f3e1a5c8d2b4f690",
+          "count": 52,
+          "firstSeen": "2026-10-28T08:21:00Z",
+          "lastSeen": "2026-10-28T11:41:00Z"
+        }
+      ],
+      "environment": [
+        {
+          "value": "production",
+          "count": 212
+        }
+      ],
+      "browser": [
+        {
+          "value": "Chrome 130.0",
+          "count": 127
+        },
+        {
+          "value": "Safari 18.0",
+          "count": 85
+        }
+      ]
+    }
+  },
+  {
+    "_key": "STOREFRONT-ADMIN-1C",
+    "id": "7201312240",
+    "shortId": "STOREFRONT-ADMIN-1C",
+    "title": "TypeError: refunds.map is not a function",
+    "culprit": "BulkRefundTable(app/orders/BulkRefundTable)",
+    "level": "error",
+    "status": "unresolved",
+    "substatus": "ongoing",
+    "statusDetails": {},
+    "project": "storefront-admin",
+    "platform": "javascript",
+    "type": "error",
+    "issueType": "error",
+    "issueCategory": "error",
+    "priority": "high",
+    "metadata": {
+      "type": "TypeError",
+      "value": "refunds.map is not a function",
+      "filename": "webpack:///./app/orders/BulkRefundTable.tsx",
+      "function": "BulkRefundTable"
+    },
+    "count": "96",
+    "userCount": 4,
+    "firstSeen": "2026-10-27T08:05:00Z",
+    "lastSeen": "2026-10-28T12:10:00Z",
+    "firstRelease": "b4d8f2a6c0e19375d7b3f1a9e5c2d8b06a4f7e31",
+    "lastRelease": "b4d8f2a6c0e19375d7b3f1a9e5c2d8b06a4f7e31",
+    "assignedTo": null,
+    "isUnhandled": true,
+    "tags": {
+      "release": [
+        {
+          "value": "b4d8f2a6c0e19375d7b3f1a9e5c2d8b06a4f7e31",
+          "count": 96,
+          "firstSeen": "2026-10-27T08:05:00Z",
+          "lastSeen": "2026-10-28T12:10:00Z"
+        }
+      ],
+      "environment": [
+        {
+          "value": "production",
+          "count": 96
+        }
+      ],
+      "browser": [
+        {
+          "value": "Chrome 130.0",
+          "count": 57
+        },
+        {
+          "value": "Safari 18.0",
+          "count": 39
+        }
+      ]
+    }
+  }
+]

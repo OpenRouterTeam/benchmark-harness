@@ -1,0 +1,2072 @@
+[
+  {
+    "_key": "a8929fee6eedb7ac4497638b1e462650",
+    "eventID": "a8929fee6eedb7ac4497638b1e462650",
+    "groupID": "6184420311",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-14T21:00:00Z",
+    "title": "OperationalError: could not obtain connection from pool within 5.0s",
+    "message": "",
+    "level": "error",
+    "culprit": "checkout.views.orders in create_order",
+    "platform": "python",
+    "release": "checkout-api@2026.10.14",
+    "environment": "production",
+    "user": {
+      "id": "u_51877",
+      "email": "amara.okafor@example.net",
+      "ip_address": "198.51.100.71"
+    },
+    "exception": {
+      "type": "OperationalError",
+      "value": "could not obtain connection from pool within 5.0s",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "django/core/handlers/base.py",
+          "function": "_get_response",
+          "lineNo": 197,
+          "inApp": false,
+          "module": "django.core.handlers.base"
+        },
+        {
+          "filename": "checkout/views/orders.py",
+          "function": "create_order",
+          "lineNo": 88,
+          "inApp": true,
+          "module": "checkout.views.orders",
+          "context": [
+            [
+              87,
+              "    with transaction.atomic():"
+            ],
+            [
+              88,
+              "        order = Order.objects.create_from_cart(cart)"
+            ]
+          ]
+        },
+        {
+          "filename": "sqlalchemy/pool/base.py",
+          "function": "_do_get",
+          "lineNo": 168,
+          "inApp": false,
+          "module": "sqlalchemy.pool.base"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "a39135fda964ccd062cc3b18e4abb90f",
+    "eventID": "a39135fda964ccd062cc3b18e4abb90f",
+    "groupID": "6184420311",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-16T11:00:00Z",
+    "title": "OperationalError: could not obtain connection from pool within 5.0s",
+    "message": "",
+    "level": "error",
+    "culprit": "checkout.views.orders in create_order",
+    "platform": "python",
+    "release": "checkout-api@2026.10.14",
+    "environment": "production",
+    "user": {
+      "id": "u_60231",
+      "email": "li.wei@example.org",
+      "ip_address": "192.0.2.18"
+    },
+    "exception": {
+      "type": "OperationalError",
+      "value": "could not obtain connection from pool within 5.0s",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "django/core/handlers/base.py",
+          "function": "_get_response",
+          "lineNo": 197,
+          "inApp": false,
+          "module": "django.core.handlers.base"
+        },
+        {
+          "filename": "checkout/views/orders.py",
+          "function": "create_order",
+          "lineNo": 88,
+          "inApp": true,
+          "module": "checkout.views.orders",
+          "context": [
+            [
+              87,
+              "    with transaction.atomic():"
+            ],
+            [
+              88,
+              "        order = Order.objects.create_from_cart(cart)"
+            ]
+          ]
+        },
+        {
+          "filename": "sqlalchemy/pool/base.py",
+          "function": "_do_get",
+          "lineNo": 168,
+          "inApp": false,
+          "module": "sqlalchemy.pool.base"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "c585d0cbcc7784a93bbd38df8ec84656",
+    "eventID": "c585d0cbcc7784a93bbd38df8ec84656",
+    "groupID": "6184420311",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-17T22:00:00Z",
+    "title": "OperationalError: could not obtain connection from pool within 5.0s",
+    "message": "",
+    "level": "error",
+    "culprit": "checkout.views.orders in create_order",
+    "platform": "python",
+    "release": "checkout-api@2026.10.14",
+    "environment": "production",
+    "user": {
+      "id": "u_72290",
+      "email": "noah.becker@example.com",
+      "ip_address": "203.0.113.140"
+    },
+    "exception": {
+      "type": "OperationalError",
+      "value": "could not obtain connection from pool within 5.0s",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "django/core/handlers/base.py",
+          "function": "_get_response",
+          "lineNo": 197,
+          "inApp": false,
+          "module": "django.core.handlers.base"
+        },
+        {
+          "filename": "checkout/views/orders.py",
+          "function": "create_order",
+          "lineNo": 88,
+          "inApp": true,
+          "module": "checkout.views.orders",
+          "context": [
+            [
+              87,
+              "    with transaction.atomic():"
+            ],
+            [
+              88,
+              "        order = Order.objects.create_from_cart(cart)"
+            ]
+          ]
+        },
+        {
+          "filename": "sqlalchemy/pool/base.py",
+          "function": "_do_get",
+          "lineNo": 168,
+          "inApp": false,
+          "module": "sqlalchemy.pool.base"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "e4ba70d7305983527fe00878304ded25",
+    "eventID": "e4ba70d7305983527fe00878304ded25",
+    "groupID": "6184420311",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-19T13:00:00Z",
+    "title": "OperationalError: could not obtain connection from pool within 5.0s",
+    "message": "",
+    "level": "error",
+    "culprit": "checkout.views.orders in create_order",
+    "platform": "python",
+    "release": "checkout-api@2026.10.19",
+    "environment": "production",
+    "user": {
+      "id": "u_80115",
+      "email": "isabel.rocha@example.net",
+      "ip_address": "198.51.100.9"
+    },
+    "exception": {
+      "type": "OperationalError",
+      "value": "could not obtain connection from pool within 5.0s",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "django/core/handlers/base.py",
+          "function": "_get_response",
+          "lineNo": 197,
+          "inApp": false,
+          "module": "django.core.handlers.base"
+        },
+        {
+          "filename": "checkout/views/orders.py",
+          "function": "create_order",
+          "lineNo": 88,
+          "inApp": true,
+          "module": "checkout.views.orders",
+          "context": [
+            [
+              87,
+              "    with transaction.atomic():"
+            ],
+            [
+              88,
+              "        order = Order.objects.create_from_cart(cart)"
+            ]
+          ]
+        },
+        {
+          "filename": "sqlalchemy/pool/base.py",
+          "function": "_do_get",
+          "lineNo": 168,
+          "inApp": false,
+          "module": "sqlalchemy.pool.base"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "a263a17cff1a26fc6f99642ce2371af8",
+    "eventID": "a263a17cff1a26fc6f99642ce2371af8",
+    "groupID": "6184420311",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-20T07:00:00Z",
+    "title": "OperationalError: could not obtain connection from pool within 5.0s",
+    "message": "",
+    "level": "error",
+    "culprit": "checkout.views.orders in create_order",
+    "platform": "python",
+    "release": "checkout-api@2026.10.19",
+    "environment": "production",
+    "user": {
+      "id": "u_48213",
+      "email": "jordan.miles@example.com",
+      "ip_address": "203.0.113.24"
+    },
+    "exception": {
+      "type": "OperationalError",
+      "value": "could not obtain connection from pool within 5.0s",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "django/core/handlers/base.py",
+          "function": "_get_response",
+          "lineNo": 197,
+          "inApp": false,
+          "module": "django.core.handlers.base"
+        },
+        {
+          "filename": "checkout/views/orders.py",
+          "function": "create_order",
+          "lineNo": 88,
+          "inApp": true,
+          "module": "checkout.views.orders",
+          "context": [
+            [
+              87,
+              "    with transaction.atomic():"
+            ],
+            [
+              88,
+              "        order = Order.objects.create_from_cart(cart)"
+            ]
+          ]
+        },
+        {
+          "filename": "sqlalchemy/pool/base.py",
+          "function": "_do_get",
+          "lineNo": 168,
+          "inApp": false,
+          "module": "sqlalchemy.pool.base"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "2175c00ed0b6ecb4284e07b1aa7682bd",
+    "eventID": "2175c00ed0b6ecb4284e07b1aa7682bd",
+    "groupID": "6184420311",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-20T14:48:00Z",
+    "title": "OperationalError: could not obtain connection from pool within 5.0s",
+    "message": "",
+    "level": "error",
+    "culprit": "checkout.views.orders in create_order",
+    "platform": "python",
+    "release": "checkout-api@2026.10.19",
+    "environment": "production",
+    "user": {
+      "id": "u_51877",
+      "email": "amara.okafor@example.net",
+      "ip_address": "198.51.100.71"
+    },
+    "exception": {
+      "type": "OperationalError",
+      "value": "could not obtain connection from pool within 5.0s",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "django/core/handlers/base.py",
+          "function": "_get_response",
+          "lineNo": 197,
+          "inApp": false,
+          "module": "django.core.handlers.base"
+        },
+        {
+          "filename": "checkout/views/orders.py",
+          "function": "create_order",
+          "lineNo": 88,
+          "inApp": true,
+          "module": "checkout.views.orders",
+          "context": [
+            [
+              87,
+              "    with transaction.atomic():"
+            ],
+            [
+              88,
+              "        order = Order.objects.create_from_cart(cart)"
+            ]
+          ]
+        },
+        {
+          "filename": "sqlalchemy/pool/base.py",
+          "function": "_do_get",
+          "lineNo": 168,
+          "inApp": false,
+          "module": "sqlalchemy.pool.base"
+        }
+      ]
+    },
+    "trace": "a3f9c1e27b4d4f0e9c8b7a6d5e4f3c2b",
+    "spanId": "b1c2d3e4f5a60718",
+    "transaction": "POST /api/orders/",
+    "request": {
+      "method": "POST",
+      "url": "https://checkout.lumenlabs.dev/api/orders/"
+    },
+    "breadcrumbs": [
+      {
+        "timestamp": "2026-10-20T14:47:24Z",
+        "category": "query",
+        "level": "info",
+        "message": "SELECT ... FROM carts WHERE id = %s"
+      },
+      {
+        "timestamp": "2026-10-20T14:48:00Z",
+        "category": "sqlalchemy.pool",
+        "level": "warning",
+        "message": "pool checkout waited 5.0s (20/20 in use)"
+      }
+    ]
+  },
+  {
+    "_key": "d16a235895928fde5e415f6a24fb7b2d",
+    "eventID": "d16a235895928fde5e415f6a24fb7b2d",
+    "groupID": "6184420297",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-14T11:00:00Z",
+    "title": "KeyError: 'shipping_address'",
+    "message": "",
+    "level": "error",
+    "culprit": "checkout.serializers.address in validate",
+    "platform": "python",
+    "release": "checkout-api@2026.10.14",
+    "environment": "production",
+    "user": {
+      "id": "u_60231",
+      "email": "li.wei@example.org",
+      "ip_address": "192.0.2.18"
+    },
+    "exception": {
+      "type": "KeyError",
+      "value": "'shipping_address'",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "checkout/serializers/address.py",
+          "function": "validate",
+          "lineNo": 34,
+          "inApp": true,
+          "module": "checkout.serializers.address"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "53943f54bb8eb47dafb93507d9ef3a74",
+    "eventID": "53943f54bb8eb47dafb93507d9ef3a74",
+    "groupID": "6184420297",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-16T17:00:00Z",
+    "title": "KeyError: 'shipping_address'",
+    "message": "",
+    "level": "error",
+    "culprit": "checkout.serializers.address in validate",
+    "platform": "python",
+    "release": "checkout-api@2026.10.14",
+    "environment": "production",
+    "user": {
+      "id": "u_72290",
+      "email": "noah.becker@example.com",
+      "ip_address": "203.0.113.140"
+    },
+    "exception": {
+      "type": "KeyError",
+      "value": "'shipping_address'",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "checkout/serializers/address.py",
+          "function": "validate",
+          "lineNo": 34,
+          "inApp": true,
+          "module": "checkout.serializers.address"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "9b2958df19ee90c527c62128b5a71c3c",
+    "eventID": "9b2958df19ee90c527c62128b5a71c3c",
+    "groupID": "6184420297",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-19T20:00:00Z",
+    "title": "KeyError: 'shipping_address'",
+    "message": "",
+    "level": "error",
+    "culprit": "checkout.serializers.address in validate",
+    "platform": "python",
+    "release": "checkout-api@2026.10.19",
+    "environment": "production",
+    "user": {
+      "id": "u_80115",
+      "email": "isabel.rocha@example.net",
+      "ip_address": "198.51.100.9"
+    },
+    "exception": {
+      "type": "KeyError",
+      "value": "'shipping_address'",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "checkout/serializers/address.py",
+          "function": "validate",
+          "lineNo": 34,
+          "inApp": true,
+          "module": "checkout.serializers.address"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "8207a0ae5ddd7246fda8954d2d33cdab",
+    "eventID": "8207a0ae5ddd7246fda8954d2d33cdab",
+    "groupID": "6184420297",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-20T12:30:00Z",
+    "title": "KeyError: 'shipping_address'",
+    "message": "",
+    "level": "error",
+    "culprit": "checkout.serializers.address in validate",
+    "platform": "python",
+    "release": "checkout-api@2026.10.19",
+    "environment": "production",
+    "user": {
+      "id": "u_48213",
+      "email": "jordan.miles@example.com",
+      "ip_address": "203.0.113.24"
+    },
+    "exception": {
+      "type": "KeyError",
+      "value": "'shipping_address'",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "checkout/serializers/address.py",
+          "function": "validate",
+          "lineNo": 34,
+          "inApp": true,
+          "module": "checkout.serializers.address"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "cac085bea8a51bbafbbf220205d0325f",
+    "eventID": "cac085bea8a51bbafbbf220205d0325f",
+    "groupID": "6184419876",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-15T16:00:00Z",
+    "title": "CardError: Your card was declined.",
+    "message": "",
+    "level": "warning",
+    "culprit": "checkout.payments.stripe in charge",
+    "platform": "python",
+    "release": "checkout-api@2026.10.14",
+    "environment": "production",
+    "user": {
+      "id": "u_51877",
+      "email": "amara.okafor@example.net",
+      "ip_address": "198.51.100.71"
+    },
+    "exception": {
+      "type": "CardError",
+      "value": "Your card was declined.",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "checkout/payments/stripe.py",
+          "function": "charge",
+          "lineNo": 112,
+          "inApp": true,
+          "module": "checkout.payments.stripe"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "d7a93aa8465da2dcfb5aa8d3568feaf5",
+    "eventID": "d7a93aa8465da2dcfb5aa8d3568feaf5",
+    "groupID": "6184419876",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-18T20:00:00Z",
+    "title": "CardError: Your card was declined.",
+    "message": "",
+    "level": "warning",
+    "culprit": "checkout.payments.stripe in charge",
+    "platform": "python",
+    "release": "checkout-api@2026.10.14",
+    "environment": "production",
+    "user": {
+      "id": "u_60231",
+      "email": "li.wei@example.org",
+      "ip_address": "192.0.2.18"
+    },
+    "exception": {
+      "type": "CardError",
+      "value": "Your card was declined.",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "checkout/payments/stripe.py",
+          "function": "charge",
+          "lineNo": 112,
+          "inApp": true,
+          "module": "checkout.payments.stripe"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "da5d477b3a98f681f664f166db33ffa6",
+    "eventID": "da5d477b3a98f681f664f166db33ffa6",
+    "groupID": "6184419876",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-20T15:24:00Z",
+    "title": "CardError: Your card was declined.",
+    "message": "",
+    "level": "warning",
+    "culprit": "checkout.payments.stripe in charge",
+    "platform": "python",
+    "release": "checkout-api@2026.10.19",
+    "environment": "production",
+    "user": {
+      "id": "u_72290",
+      "email": "noah.becker@example.com",
+      "ip_address": "203.0.113.140"
+    },
+    "exception": {
+      "type": "CardError",
+      "value": "Your card was declined.",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "checkout/payments/stripe.py",
+          "function": "charge",
+          "lineNo": 112,
+          "inApp": true,
+          "module": "checkout.payments.stripe"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "f1f95983cab32708723e9cc27eb34c00",
+    "eventID": "f1f95983cab32708723e9cc27eb34c00",
+    "groupID": "6184418802",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-14T00:00:00Z",
+    "title": "TimeoutError: inventory-service did not respond within 3.0s",
+    "message": "",
+    "level": "error",
+    "culprit": "checkout.clients.inventory in reserve",
+    "platform": "python",
+    "release": "checkout-api@2026.10.14",
+    "environment": "production",
+    "user": {
+      "id": "u_60231",
+      "email": "li.wei@example.org",
+      "ip_address": "192.0.2.18"
+    },
+    "exception": {
+      "type": "TimeoutError",
+      "value": "inventory-service did not respond within 3.0s",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "checkout/clients/inventory.py",
+          "function": "reserve",
+          "lineNo": 76,
+          "inApp": true,
+          "module": "checkout.clients.inventory"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "1721b21bf60b4183df26a600370fe22b",
+    "eventID": "1721b21bf60b4183df26a600370fe22b",
+    "groupID": "6184418802",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-14T10:00:00Z",
+    "title": "TimeoutError: inventory-service did not respond within 3.0s",
+    "message": "",
+    "level": "error",
+    "culprit": "checkout.clients.inventory in reserve",
+    "platform": "python",
+    "release": "checkout-api@2026.10.14",
+    "environment": "production",
+    "user": {
+      "id": "u_72290",
+      "email": "noah.becker@example.com",
+      "ip_address": "203.0.113.140"
+    },
+    "exception": {
+      "type": "TimeoutError",
+      "value": "inventory-service did not respond within 3.0s",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "checkout/clients/inventory.py",
+          "function": "reserve",
+          "lineNo": 76,
+          "inApp": true,
+          "module": "checkout.clients.inventory"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "d8b2afbcc210b1fdca96b3af2523c54f",
+    "eventID": "d8b2afbcc210b1fdca96b3af2523c54f",
+    "groupID": "6184418802",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-15T06:00:00Z",
+    "title": "TimeoutError: inventory-service did not respond within 3.0s",
+    "message": "",
+    "level": "error",
+    "culprit": "checkout.clients.inventory in reserve",
+    "platform": "python",
+    "release": "checkout-api@2026.10.14",
+    "environment": "production",
+    "user": {
+      "id": "u_80115",
+      "email": "isabel.rocha@example.net",
+      "ip_address": "198.51.100.9"
+    },
+    "exception": {
+      "type": "TimeoutError",
+      "value": "inventory-service did not respond within 3.0s",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "checkout/clients/inventory.py",
+          "function": "reserve",
+          "lineNo": 76,
+          "inApp": true,
+          "module": "checkout.clients.inventory"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "6f24f93c23491f884e98270e29f26233",
+    "eventID": "6f24f93c23491f884e98270e29f26233",
+    "groupID": "6184418802",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-16T02:00:00Z",
+    "title": "TimeoutError: inventory-service did not respond within 3.0s",
+    "message": "",
+    "level": "error",
+    "culprit": "checkout.clients.inventory in reserve",
+    "platform": "python",
+    "release": "checkout-api@2026.10.14",
+    "environment": "production",
+    "user": {
+      "id": "u_48213",
+      "email": "jordan.miles@example.com",
+      "ip_address": "203.0.113.24"
+    },
+    "exception": {
+      "type": "TimeoutError",
+      "value": "inventory-service did not respond within 3.0s",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "checkout/clients/inventory.py",
+          "function": "reserve",
+          "lineNo": 76,
+          "inApp": true,
+          "module": "checkout.clients.inventory"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "8347853a5db18221006b8c7b19c558c8",
+    "eventID": "8347853a5db18221006b8c7b19c558c8",
+    "groupID": "6184418802",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-16T22:00:00Z",
+    "title": "TimeoutError: inventory-service did not respond within 3.0s",
+    "message": "",
+    "level": "error",
+    "culprit": "checkout.clients.inventory in reserve",
+    "platform": "python",
+    "release": "checkout-api@2026.10.14",
+    "environment": "production",
+    "user": {
+      "id": "u_51877",
+      "email": "amara.okafor@example.net",
+      "ip_address": "198.51.100.71"
+    },
+    "exception": {
+      "type": "TimeoutError",
+      "value": "inventory-service did not respond within 3.0s",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "checkout/clients/inventory.py",
+          "function": "reserve",
+          "lineNo": 76,
+          "inApp": true,
+          "module": "checkout.clients.inventory"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "d71c5dccf456c20bc8772a230723d3ba",
+    "eventID": "d71c5dccf456c20bc8772a230723d3ba",
+    "groupID": "6184418802",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-18T04:00:00Z",
+    "title": "TimeoutError: inventory-service did not respond within 3.0s",
+    "message": "",
+    "level": "error",
+    "culprit": "checkout.clients.inventory in reserve",
+    "platform": "python",
+    "release": "checkout-api@2026.10.14",
+    "environment": "production",
+    "user": {
+      "id": "u_60231",
+      "email": "li.wei@example.org",
+      "ip_address": "192.0.2.18"
+    },
+    "exception": {
+      "type": "TimeoutError",
+      "value": "inventory-service did not respond within 3.0s",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "checkout/clients/inventory.py",
+          "function": "reserve",
+          "lineNo": 76,
+          "inApp": true,
+          "module": "checkout.clients.inventory"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "3883a5a0ae509089e7cf7c0ad166f727",
+    "eventID": "3883a5a0ae509089e7cf7c0ad166f727",
+    "groupID": "6184418802",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-19T10:00:00Z",
+    "title": "TimeoutError: inventory-service did not respond within 3.0s",
+    "message": "",
+    "level": "error",
+    "culprit": "checkout.clients.inventory in reserve",
+    "platform": "python",
+    "release": "checkout-api@2026.10.14",
+    "environment": "production",
+    "user": {
+      "id": "u_72290",
+      "email": "noah.becker@example.com",
+      "ip_address": "203.0.113.140"
+    },
+    "exception": {
+      "type": "TimeoutError",
+      "value": "inventory-service did not respond within 3.0s",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "checkout/clients/inventory.py",
+          "function": "reserve",
+          "lineNo": 76,
+          "inApp": true,
+          "module": "checkout.clients.inventory"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "52d5ebd02c5572d549ea62b668722540",
+    "eventID": "52d5ebd02c5572d549ea62b668722540",
+    "groupID": "6184419102",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-18T14:00:00Z",
+    "title": "DisallowedHost: Invalid HTTP_HOST header: '10.4.2.17:8000'",
+    "message": "",
+    "level": "error",
+    "culprit": "django.http.request in get_host",
+    "platform": "python",
+    "release": "checkout-api@2026.10.14",
+    "environment": "production",
+    "user": {
+      "id": "u_60231",
+      "email": "li.wei@example.org",
+      "ip_address": "192.0.2.18"
+    },
+    "exception": {
+      "type": "DisallowedHost",
+      "value": "Invalid HTTP_HOST header: '10.4.2.17:8000'",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "django/http/request.py",
+          "function": "get_host",
+          "lineNo": 151,
+          "inApp": false,
+          "module": "django.http.request"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "6252cfc5384938de00e8966aa7c4b399",
+    "eventID": "6252cfc5384938de00e8966aa7c4b399",
+    "groupID": "6184419102",
+    "project": "checkout-api",
+    "dateCreated": "2026-10-20T14:00:00Z",
+    "title": "DisallowedHost: Invalid HTTP_HOST header: '10.4.2.17:8000'",
+    "message": "",
+    "level": "error",
+    "culprit": "django.http.request in get_host",
+    "platform": "python",
+    "release": "checkout-api@2026.10.19",
+    "environment": "production",
+    "user": {
+      "id": "u_72290",
+      "email": "noah.becker@example.com",
+      "ip_address": "203.0.113.140"
+    },
+    "exception": {
+      "type": "DisallowedHost",
+      "value": "Invalid HTTP_HOST header: '10.4.2.17:8000'",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "django/http/request.py",
+          "function": "get_host",
+          "lineNo": 151,
+          "inApp": false,
+          "module": "django.http.request"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "e7a022b67d0908b8badd2999d53365b1",
+    "eventID": "e7a022b67d0908b8badd2999d53365b1",
+    "groupID": "6184417730",
+    "project": "payments-worker",
+    "dateCreated": "2026-10-11T03:00:00Z",
+    "title": "OperationalError: could not obtain connection from pool within 5.0s",
+    "message": "",
+    "level": "error",
+    "culprit": "payments_worker.tasks.capture in capture_payment",
+    "platform": "python",
+    "release": "payments-worker@1.14.2",
+    "environment": "production",
+    "user": {
+      "id": "u_48213",
+      "email": "jordan.miles@example.com",
+      "ip_address": "203.0.113.24"
+    },
+    "exception": {
+      "type": "OperationalError",
+      "value": "could not obtain connection from pool within 5.0s",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "celery/app/trace.py",
+          "function": "trace_task",
+          "lineNo": 453,
+          "inApp": false,
+          "module": "celery.app.trace"
+        },
+        {
+          "filename": "payments_worker/tasks/capture.py",
+          "function": "capture_payment",
+          "lineNo": 61,
+          "inApp": true,
+          "module": "payments_worker.tasks.capture",
+          "context": [
+            [
+              60,
+              "    with db.session() as session:"
+            ],
+            [
+              61,
+              "        intent = session.get(PaymentIntent, intent_id)"
+            ]
+          ]
+        },
+        {
+          "filename": "sqlalchemy/pool/impl.py",
+          "function": "_do_get",
+          "lineNo": 168,
+          "inApp": false,
+          "module": "sqlalchemy.pool.impl"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "ee468c31c9b4c06955dd8ce0da9fefb1",
+    "eventID": "ee468c31c9b4c06955dd8ce0da9fefb1",
+    "groupID": "6184417730",
+    "project": "payments-worker",
+    "dateCreated": "2026-10-15T16:00:00Z",
+    "title": "OperationalError: could not obtain connection from pool within 5.0s",
+    "message": "",
+    "level": "error",
+    "culprit": "payments_worker.tasks.capture in capture_payment",
+    "platform": "python",
+    "release": "payments-worker@1.14.2",
+    "environment": "production",
+    "user": {
+      "id": "u_51877",
+      "email": "amara.okafor@example.net",
+      "ip_address": "198.51.100.71"
+    },
+    "exception": {
+      "type": "OperationalError",
+      "value": "could not obtain connection from pool within 5.0s",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "celery/app/trace.py",
+          "function": "trace_task",
+          "lineNo": 453,
+          "inApp": false,
+          "module": "celery.app.trace"
+        },
+        {
+          "filename": "payments_worker/tasks/capture.py",
+          "function": "capture_payment",
+          "lineNo": 61,
+          "inApp": true,
+          "module": "payments_worker.tasks.capture",
+          "context": [
+            [
+              60,
+              "    with db.session() as session:"
+            ],
+            [
+              61,
+              "        intent = session.get(PaymentIntent, intent_id)"
+            ]
+          ]
+        },
+        {
+          "filename": "sqlalchemy/pool/impl.py",
+          "function": "_do_get",
+          "lineNo": 168,
+          "inApp": false,
+          "module": "sqlalchemy.pool.impl"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "0f8018964412a84860d385e02f0b3ba2",
+    "eventID": "0f8018964412a84860d385e02f0b3ba2",
+    "groupID": "6184417730",
+    "project": "payments-worker",
+    "dateCreated": "2026-10-19T00:00:00Z",
+    "title": "OperationalError: could not obtain connection from pool within 5.0s",
+    "message": "",
+    "level": "error",
+    "culprit": "payments_worker.tasks.capture in capture_payment",
+    "platform": "python",
+    "release": "payments-worker@1.14.2",
+    "environment": "production",
+    "user": {
+      "id": "u_60231",
+      "email": "li.wei@example.org",
+      "ip_address": "192.0.2.18"
+    },
+    "exception": {
+      "type": "OperationalError",
+      "value": "could not obtain connection from pool within 5.0s",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "celery/app/trace.py",
+          "function": "trace_task",
+          "lineNo": 453,
+          "inApp": false,
+          "module": "celery.app.trace"
+        },
+        {
+          "filename": "payments_worker/tasks/capture.py",
+          "function": "capture_payment",
+          "lineNo": 61,
+          "inApp": true,
+          "module": "payments_worker.tasks.capture",
+          "context": [
+            [
+              60,
+              "    with db.session() as session:"
+            ],
+            [
+              61,
+              "        intent = session.get(PaymentIntent, intent_id)"
+            ]
+          ]
+        },
+        {
+          "filename": "sqlalchemy/pool/impl.py",
+          "function": "_do_get",
+          "lineNo": 168,
+          "inApp": false,
+          "module": "sqlalchemy.pool.impl"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "ef26dd4c49259891b1cf845e745b1acf",
+    "eventID": "ef26dd4c49259891b1cf845e745b1acf",
+    "groupID": "6184417730",
+    "project": "payments-worker",
+    "dateCreated": "2026-10-20T08:30:00Z",
+    "title": "OperationalError: could not obtain connection from pool within 5.0s",
+    "message": "",
+    "level": "error",
+    "culprit": "payments_worker.tasks.capture in capture_payment",
+    "platform": "python",
+    "release": "payments-worker@1.14.2",
+    "environment": "production",
+    "user": {
+      "id": "u_72290",
+      "email": "noah.becker@example.com",
+      "ip_address": "203.0.113.140"
+    },
+    "exception": {
+      "type": "OperationalError",
+      "value": "could not obtain connection from pool within 5.0s",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "celery/app/trace.py",
+          "function": "trace_task",
+          "lineNo": 453,
+          "inApp": false,
+          "module": "celery.app.trace"
+        },
+        {
+          "filename": "payments_worker/tasks/capture.py",
+          "function": "capture_payment",
+          "lineNo": 61,
+          "inApp": true,
+          "module": "payments_worker.tasks.capture",
+          "context": [
+            [
+              60,
+              "    with db.session() as session:"
+            ],
+            [
+              61,
+              "        intent = session.get(PaymentIntent, intent_id)"
+            ]
+          ]
+        },
+        {
+          "filename": "sqlalchemy/pool/impl.py",
+          "function": "_do_get",
+          "lineNo": 168,
+          "inApp": false,
+          "module": "sqlalchemy.pool.impl"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "1dfef0887a15564423e2c10c2d28f035",
+    "eventID": "1dfef0887a15564423e2c10c2d28f035",
+    "groupID": "6184417704",
+    "project": "payments-worker",
+    "dateCreated": "2026-10-12T08:00:00Z",
+    "title": "OperationalError: server closed the connection unexpectedly",
+    "message": "",
+    "level": "error",
+    "culprit": "payments_worker.tasks.refund in refund_payment",
+    "platform": "python",
+    "release": "payments-worker@1.14.2",
+    "environment": "production",
+    "user": {
+      "id": "u_80115",
+      "email": "isabel.rocha@example.net",
+      "ip_address": "198.51.100.9"
+    },
+    "exception": {
+      "type": "OperationalError",
+      "value": "server closed the connection unexpectedly",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "payments_worker/tasks/refund.py",
+          "function": "refund_payment",
+          "lineNo": 44,
+          "inApp": true,
+          "module": "payments_worker.tasks.refund"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "4ffb33c923b5d12272fca75fed3e18d0",
+    "eventID": "4ffb33c923b5d12272fca75fed3e18d0",
+    "groupID": "6184417704",
+    "project": "payments-worker",
+    "dateCreated": "2026-10-20T13:30:00Z",
+    "title": "OperationalError: server closed the connection unexpectedly",
+    "message": "",
+    "level": "error",
+    "culprit": "payments_worker.tasks.refund in refund_payment",
+    "platform": "python",
+    "release": "payments-worker@1.15.0",
+    "environment": "production",
+    "user": {
+      "id": "u_48213",
+      "email": "jordan.miles@example.com",
+      "ip_address": "203.0.113.24"
+    },
+    "exception": {
+      "type": "OperationalError",
+      "value": "server closed the connection unexpectedly",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "payments_worker/tasks/refund.py",
+          "function": "refund_payment",
+          "lineNo": 44,
+          "inApp": true,
+          "module": "payments_worker.tasks.refund"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "092b1e48f38d105ebf94e63ede00b922",
+    "eventID": "092b1e48f38d105ebf94e63ede00b922",
+    "groupID": "6184416950",
+    "project": "payments-worker",
+    "dateCreated": "2026-10-09T21:00:00Z",
+    "title": "IdempotencyError: capture already in progress for pi_3Q",
+    "message": "",
+    "level": "error",
+    "culprit": "payments_worker.tasks.capture in capture_payment",
+    "platform": "python",
+    "release": "payments-worker@1.14.1",
+    "environment": "production",
+    "user": {
+      "id": "u_48213",
+      "email": "jordan.miles@example.com",
+      "ip_address": "203.0.113.24"
+    },
+    "exception": {
+      "type": "IdempotencyError",
+      "value": "capture already in progress for pi_3Q",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "payments_worker/tasks/capture.py",
+          "function": "capture_payment",
+          "lineNo": 70,
+          "inApp": true,
+          "module": "payments_worker.tasks.capture"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "0867281980828f29f649b0742dfa600f",
+    "eventID": "0867281980828f29f649b0742dfa600f",
+    "groupID": "6184421045",
+    "project": "storefront-web",
+    "dateCreated": "2026-10-15T17:30:00Z",
+    "title": "TypeError: Cannot read properties of undefined (reading 'map')",
+    "message": "",
+    "level": "error",
+    "culprit": "ProductGrid(app/components/ProductGrid)",
+    "platform": "javascript",
+    "release": "storefront@5.3.0",
+    "environment": "production",
+    "user": {
+      "id": "u_48213",
+      "email": "jordan.miles@example.com",
+      "ip_address": "203.0.113.24"
+    },
+    "exception": {
+      "type": "TypeError",
+      "value": "Cannot read properties of undefined (reading 'map')",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "webpack:///./node_modules/react-dom/cjs/react-dom.production.min.js",
+          "function": "renderWithHooks",
+          "lineNo": 160,
+          "inApp": false,
+          "colNo": 137
+        },
+        {
+          "filename": "webpack:///./app/components/ProductGrid.tsx",
+          "function": "ProductGrid",
+          "lineNo": 42,
+          "inApp": true,
+          "colNo": 31,
+          "context": [
+            [
+              41,
+              "  const { data } = useCatalog(categoryId);"
+            ],
+            [
+              42,
+              "  const tiles = data.products.map((p) => <ProductTile key={p.id} product={p} />);"
+            ]
+          ]
+        }
+      ]
+    },
+    "tags": {
+      "browser": "Chrome 130.0",
+      "url": "https://shop.lumenlabs.dev/c/outdoor"
+    }
+  },
+  {
+    "_key": "27cdd8013ebecc16310fd380ae2eee08",
+    "eventID": "27cdd8013ebecc16310fd380ae2eee08",
+    "groupID": "6184421045",
+    "project": "storefront-web",
+    "dateCreated": "2026-10-17T08:00:00Z",
+    "title": "TypeError: Cannot read properties of undefined (reading 'map')",
+    "message": "",
+    "level": "error",
+    "culprit": "ProductGrid(app/components/ProductGrid)",
+    "platform": "javascript",
+    "release": "storefront@5.3.0",
+    "environment": "production",
+    "user": {
+      "id": "u_51877",
+      "email": "amara.okafor@example.net",
+      "ip_address": "198.51.100.71"
+    },
+    "exception": {
+      "type": "TypeError",
+      "value": "Cannot read properties of undefined (reading 'map')",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "webpack:///./node_modules/react-dom/cjs/react-dom.production.min.js",
+          "function": "renderWithHooks",
+          "lineNo": 160,
+          "inApp": false,
+          "colNo": 137
+        },
+        {
+          "filename": "webpack:///./app/components/ProductGrid.tsx",
+          "function": "ProductGrid",
+          "lineNo": 42,
+          "inApp": true,
+          "colNo": 31,
+          "context": [
+            [
+              41,
+              "  const { data } = useCatalog(categoryId);"
+            ],
+            [
+              42,
+              "  const tiles = data.products.map((p) => <ProductTile key={p.id} product={p} />);"
+            ]
+          ]
+        }
+      ]
+    },
+    "tags": {
+      "browser": "Safari 18.0"
+    }
+  },
+  {
+    "_key": "24a59c2638f946ad2dffa8582b25cc55",
+    "eventID": "24a59c2638f946ad2dffa8582b25cc55",
+    "groupID": "6184421045",
+    "project": "storefront-web",
+    "dateCreated": "2026-10-19T00:00:00Z",
+    "title": "TypeError: Cannot read properties of undefined (reading 'map')",
+    "message": "",
+    "level": "error",
+    "culprit": "ProductGrid(app/components/ProductGrid)",
+    "platform": "javascript",
+    "release": "storefront@5.3.1",
+    "environment": "production",
+    "user": {
+      "id": "u_60231",
+      "email": "li.wei@example.org",
+      "ip_address": "192.0.2.18"
+    },
+    "exception": {
+      "type": "TypeError",
+      "value": "Cannot read properties of undefined (reading 'map')",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "webpack:///./node_modules/react-dom/cjs/react-dom.production.min.js",
+          "function": "renderWithHooks",
+          "lineNo": 160,
+          "inApp": false,
+          "colNo": 137
+        },
+        {
+          "filename": "webpack:///./app/components/ProductGrid.tsx",
+          "function": "ProductGrid",
+          "lineNo": 42,
+          "inApp": true,
+          "colNo": 31,
+          "context": [
+            [
+              41,
+              "  const { data } = useCatalog(categoryId);"
+            ],
+            [
+              42,
+              "  const tiles = data.products.map((p) => <ProductTile key={p.id} product={p} />);"
+            ]
+          ]
+        }
+      ]
+    },
+    "tags": {
+      "browser": "Chrome 130.0"
+    }
+  },
+  {
+    "_key": "e25dba103f614e143d49c0283395b45c",
+    "eventID": "e25dba103f614e143d49c0283395b45c",
+    "groupID": "6184421045",
+    "project": "storefront-web",
+    "dateCreated": "2026-10-20T15:12:00Z",
+    "title": "TypeError: Cannot read properties of undefined (reading 'map')",
+    "message": "",
+    "level": "error",
+    "culprit": "ProductGrid(app/components/ProductGrid)",
+    "platform": "javascript",
+    "release": "storefront@5.3.1",
+    "environment": "production",
+    "user": {
+      "id": "u_72290",
+      "email": "noah.becker@example.com",
+      "ip_address": "203.0.113.140"
+    },
+    "exception": {
+      "type": "TypeError",
+      "value": "Cannot read properties of undefined (reading 'map')",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "webpack:///./node_modules/react-dom/cjs/react-dom.production.min.js",
+          "function": "renderWithHooks",
+          "lineNo": 160,
+          "inApp": false,
+          "colNo": 137
+        },
+        {
+          "filename": "webpack:///./app/components/ProductGrid.tsx",
+          "function": "ProductGrid",
+          "lineNo": 42,
+          "inApp": true,
+          "colNo": 31,
+          "context": [
+            [
+              41,
+              "  const { data } = useCatalog(categoryId);"
+            ],
+            [
+              42,
+              "  const tiles = data.products.map((p) => <ProductTile key={p.id} product={p} />);"
+            ]
+          ]
+        }
+      ]
+    },
+    "tags": {
+      "browser": "Firefox 131.0"
+    }
+  },
+  {
+    "_key": "44916a8dd4ea2710af892b800e7d2df3",
+    "eventID": "44916a8dd4ea2710af892b800e7d2df3",
+    "groupID": "6184420122",
+    "project": "storefront-web",
+    "dateCreated": "2026-10-03T00:00:00Z",
+    "title": "TypeError: Cannot read properties of undefined (reading 'map')",
+    "message": "",
+    "level": "error",
+    "culprit": "CartDrawer(app/components/CartDrawer)",
+    "platform": "javascript",
+    "release": "storefront@5.2.0",
+    "environment": "production",
+    "user": {
+      "id": "u_60231",
+      "email": "li.wei@example.org",
+      "ip_address": "192.0.2.18"
+    },
+    "exception": {
+      "type": "TypeError",
+      "value": "Cannot read properties of undefined (reading 'map')",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "webpack:///./node_modules/react-dom/cjs/react-dom.production.min.js",
+          "function": "renderWithHooks",
+          "lineNo": 160,
+          "inApp": false,
+          "colNo": 137
+        },
+        {
+          "filename": "webpack:///./app/components/CartDrawer.tsx",
+          "function": "CartDrawer",
+          "lineNo": 27,
+          "inApp": true,
+          "colNo": 24,
+          "context": [
+            [
+              26,
+              "  const cart = useCart();"
+            ],
+            [
+              27,
+              "  const rows = cart.lineItems.map(renderLine);"
+            ]
+          ]
+        }
+      ]
+    },
+    "tags": {
+      "browser": "Chrome 129.0"
+    }
+  },
+  {
+    "_key": "2169bf17a17c27b97fa48bd641b2ab90",
+    "eventID": "2169bf17a17c27b97fa48bd641b2ab90",
+    "groupID": "6184420122",
+    "project": "storefront-web",
+    "dateCreated": "2026-10-08T04:00:00Z",
+    "title": "TypeError: Cannot read properties of undefined (reading 'map')",
+    "message": "",
+    "level": "error",
+    "culprit": "CartDrawer(app/components/CartDrawer)",
+    "platform": "javascript",
+    "release": "storefront@5.2.0",
+    "environment": "production",
+    "user": {
+      "id": "u_72290",
+      "email": "noah.becker@example.com",
+      "ip_address": "203.0.113.140"
+    },
+    "exception": {
+      "type": "TypeError",
+      "value": "Cannot read properties of undefined (reading 'map')",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "webpack:///./node_modules/react-dom/cjs/react-dom.production.min.js",
+          "function": "renderWithHooks",
+          "lineNo": 160,
+          "inApp": false,
+          "colNo": 137
+        },
+        {
+          "filename": "webpack:///./app/components/CartDrawer.tsx",
+          "function": "CartDrawer",
+          "lineNo": 27,
+          "inApp": true,
+          "colNo": 24,
+          "context": [
+            [
+              26,
+              "  const cart = useCart();"
+            ],
+            [
+              27,
+              "  const rows = cart.lineItems.map(renderLine);"
+            ]
+          ]
+        }
+      ]
+    },
+    "tags": {
+      "browser": "Safari 18.0"
+    }
+  },
+  {
+    "_key": "e8f91fca5fb053553453009056928d9c",
+    "eventID": "e8f91fca5fb053553453009056928d9c",
+    "groupID": "6184420122",
+    "project": "storefront-web",
+    "dateCreated": "2026-10-16T12:00:00Z",
+    "title": "TypeError: Cannot read properties of undefined (reading 'map')",
+    "message": "",
+    "level": "error",
+    "culprit": "CartDrawer(app/components/CartDrawer)",
+    "platform": "javascript",
+    "release": "storefront@5.3.0",
+    "environment": "production",
+    "user": {
+      "id": "u_80115",
+      "email": "isabel.rocha@example.net",
+      "ip_address": "198.51.100.9"
+    },
+    "exception": {
+      "type": "TypeError",
+      "value": "Cannot read properties of undefined (reading 'map')",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "webpack:///./node_modules/react-dom/cjs/react-dom.production.min.js",
+          "function": "renderWithHooks",
+          "lineNo": 160,
+          "inApp": false,
+          "colNo": 137
+        },
+        {
+          "filename": "webpack:///./app/components/CartDrawer.tsx",
+          "function": "CartDrawer",
+          "lineNo": 27,
+          "inApp": true,
+          "colNo": 24,
+          "context": [
+            [
+              26,
+              "  const cart = useCart();"
+            ],
+            [
+              27,
+              "  const rows = cart.lineItems.map(renderLine);"
+            ]
+          ]
+        }
+      ]
+    },
+    "tags": {
+      "browser": "Chrome 130.0"
+    }
+  },
+  {
+    "_key": "75735545772afb26cfa97adaeb321af2",
+    "eventID": "75735545772afb26cfa97adaeb321af2",
+    "groupID": "6184420122",
+    "project": "storefront-web",
+    "dateCreated": "2026-10-20T13:48:00Z",
+    "title": "TypeError: Cannot read properties of undefined (reading 'map')",
+    "message": "",
+    "level": "error",
+    "culprit": "CartDrawer(app/components/CartDrawer)",
+    "platform": "javascript",
+    "release": "storefront@5.3.1",
+    "environment": "production",
+    "user": {
+      "id": "u_48213",
+      "email": "jordan.miles@example.com",
+      "ip_address": "203.0.113.24"
+    },
+    "exception": {
+      "type": "TypeError",
+      "value": "Cannot read properties of undefined (reading 'map')",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "webpack:///./node_modules/react-dom/cjs/react-dom.production.min.js",
+          "function": "renderWithHooks",
+          "lineNo": 160,
+          "inApp": false,
+          "colNo": 137
+        },
+        {
+          "filename": "webpack:///./app/components/CartDrawer.tsx",
+          "function": "CartDrawer",
+          "lineNo": 27,
+          "inApp": true,
+          "colNo": 24,
+          "context": [
+            [
+              26,
+              "  const cart = useCart();"
+            ],
+            [
+              27,
+              "  const rows = cart.lineItems.map(renderLine);"
+            ]
+          ]
+        }
+      ]
+    },
+    "tags": {
+      "browser": "Chrome 130.0"
+    }
+  },
+  {
+    "_key": "0e5d676637e7da42b08c15ec28d1f1ce",
+    "eventID": "0e5d676637e7da42b08c15ec28d1f1ce",
+    "groupID": "6184419530",
+    "project": "storefront-web",
+    "dateCreated": "2026-10-11T22:00:00Z",
+    "title": "TypeError: Cannot read properties of null (reading 'addEventListener')",
+    "message": "",
+    "level": "error",
+    "culprit": "initStickyHeader(app/layout/header)",
+    "platform": "javascript",
+    "release": "storefront@5.2.0",
+    "environment": "production",
+    "user": {
+      "id": "u_48213",
+      "email": "jordan.miles@example.com",
+      "ip_address": "203.0.113.24"
+    },
+    "exception": {
+      "type": "TypeError",
+      "value": "Cannot read properties of null (reading 'addEventListener')",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "webpack:///./app/layout/header.ts",
+          "function": "initStickyHeader",
+          "lineNo": 12,
+          "inApp": true,
+          "colNo": 9
+        }
+      ]
+    }
+  },
+  {
+    "_key": "d005ab80c3ca6ef0979cff44eb35b1d5",
+    "eventID": "d005ab80c3ca6ef0979cff44eb35b1d5",
+    "groupID": "6184420987",
+    "project": "storefront-web",
+    "dateCreated": "2026-10-15T17:00:00Z",
+    "title": "ChunkLoadError: Loading chunk 712 failed.",
+    "message": "",
+    "level": "error",
+    "culprit": "app/checkout/page",
+    "platform": "javascript",
+    "release": "storefront@5.3.0",
+    "environment": "production",
+    "user": {
+      "id": "u_60231",
+      "email": "li.wei@example.org",
+      "ip_address": "192.0.2.18"
+    },
+    "exception": {
+      "type": "ChunkLoadError",
+      "value": "Loading chunk 712 failed.",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "webpack:///./webpack/runtime/jsonp chunk loading",
+          "function": "__webpack_require__.f.j",
+          "lineNo": 27,
+          "inApp": false
+        }
+      ]
+    }
+  },
+  {
+    "_key": "a47a078090974bbb5e45dd3d76d5796a",
+    "eventID": "a47a078090974bbb5e45dd3d76d5796a",
+    "groupID": "6184420987",
+    "project": "storefront-web",
+    "dateCreated": "2026-10-20T11:00:00Z",
+    "title": "ChunkLoadError: Loading chunk 712 failed.",
+    "message": "",
+    "level": "error",
+    "culprit": "app/checkout/page",
+    "platform": "javascript",
+    "release": "storefront@5.3.1",
+    "environment": "production",
+    "user": {
+      "id": "u_72290",
+      "email": "noah.becker@example.com",
+      "ip_address": "203.0.113.140"
+    },
+    "exception": {
+      "type": "ChunkLoadError",
+      "value": "Loading chunk 712 failed.",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "webpack:///./webpack/runtime/jsonp chunk loading",
+          "function": "__webpack_require__.f.j",
+          "lineNo": 27,
+          "inApp": false
+        }
+      ]
+    }
+  },
+  {
+    "_key": "79f9efdd4e915ae7508377c69f89d5fb",
+    "eventID": "79f9efdd4e915ae7508377c69f89d5fb",
+    "groupID": "6184421050",
+    "project": "admin-dashboard",
+    "dateCreated": "2026-10-15T18:00:00Z",
+    "title": "TypeError: Cannot read properties of undefined (reading 'map')",
+    "message": "",
+    "level": "error",
+    "culprit": "RefundTable(src/orders/RefundTable)",
+    "platform": "javascript",
+    "release": "admin@2.8.0",
+    "environment": "production",
+    "user": {
+      "id": "u_48213",
+      "email": "jordan.miles@example.com",
+      "ip_address": "203.0.113.24"
+    },
+    "exception": {
+      "type": "TypeError",
+      "value": "Cannot read properties of undefined (reading 'map')",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "webpack:///./node_modules/react-dom/cjs/react-dom.production.min.js",
+          "function": "renderWithHooks",
+          "lineNo": 160,
+          "inApp": false,
+          "colNo": 137
+        },
+        {
+          "filename": "webpack:///./src/orders/RefundTable.tsx",
+          "function": "RefundTable",
+          "lineNo": 58,
+          "inApp": true,
+          "colNo": 27,
+          "context": [
+            [
+              58,
+              "  return selection.orders.map((o) => <RefundRow order={o} />);"
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "_key": "7c71765af9efec76fb38adafa51e4b20",
+    "eventID": "7c71765af9efec76fb38adafa51e4b20",
+    "groupID": "6184421050",
+    "project": "admin-dashboard",
+    "dateCreated": "2026-10-20T10:00:00Z",
+    "title": "TypeError: Cannot read properties of undefined (reading 'map')",
+    "message": "",
+    "level": "error",
+    "culprit": "RefundTable(src/orders/RefundTable)",
+    "platform": "javascript",
+    "release": "admin@2.8.0",
+    "environment": "production",
+    "user": {
+      "id": "u_51877",
+      "email": "amara.okafor@example.net",
+      "ip_address": "198.51.100.71"
+    },
+    "exception": {
+      "type": "TypeError",
+      "value": "Cannot read properties of undefined (reading 'map')",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "webpack:///./node_modules/react-dom/cjs/react-dom.production.min.js",
+          "function": "renderWithHooks",
+          "lineNo": 160,
+          "inApp": false,
+          "colNo": 137
+        },
+        {
+          "filename": "webpack:///./src/orders/RefundTable.tsx",
+          "function": "RefundTable",
+          "lineNo": 58,
+          "inApp": true,
+          "colNo": 27,
+          "context": [
+            [
+              58,
+              "  return selection.orders.map((o) => <RefundRow order={o} />);"
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "_key": "be54256ecf2dc9d8cf4be81bb3341e9a",
+    "eventID": "be54256ecf2dc9d8cf4be81bb3341e9a",
+    "groupID": "6184420400",
+    "project": "ios-app",
+    "dateCreated": "2026-10-13T04:00:00Z",
+    "title": "EXC_BAD_ACCESS: Attempted to dereference garbage pointer 0x10",
+    "message": "",
+    "level": "error",
+    "culprit": "ApplePaySheet.present(_:)",
+    "platform": "cocoa",
+    "release": "ios@3.21.0",
+    "environment": "production",
+    "user": {
+      "id": "u_48213",
+      "email": "jordan.miles@example.com",
+      "ip_address": "203.0.113.24"
+    },
+    "exception": {
+      "type": "EXC_BAD_ACCESS",
+      "value": "Attempted to dereference garbage pointer 0x10",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "ApplePaySheet.swift",
+          "function": "ApplePaySheet.present(_:)",
+          "lineNo": 88,
+          "inApp": true
+        }
+      ]
+    }
+  },
+  {
+    "_key": "a88a31f7a59203c49611816e0fdafe9e",
+    "eventID": "a88a31f7a59203c49611816e0fdafe9e",
+    "groupID": "6184420400",
+    "project": "ios-app",
+    "dateCreated": "2026-10-20T04:00:00Z",
+    "title": "EXC_BAD_ACCESS: Attempted to dereference garbage pointer 0x10",
+    "message": "",
+    "level": "error",
+    "culprit": "ApplePaySheet.present(_:)",
+    "platform": "cocoa",
+    "release": "ios@3.21.0",
+    "environment": "production",
+    "user": {
+      "id": "u_51877",
+      "email": "amara.okafor@example.net",
+      "ip_address": "198.51.100.71"
+    },
+    "exception": {
+      "type": "EXC_BAD_ACCESS",
+      "value": "Attempted to dereference garbage pointer 0x10",
+      "mechanism": {
+        "type": "generic",
+        "handled": false
+      },
+      "frames": [
+        {
+          "filename": "ApplePaySheet.swift",
+          "function": "ApplePaySheet.present(_:)",
+          "lineNo": 88,
+          "inApp": true
+        }
+      ]
+    },
+    "threads": [
+      {
+        "id": 0,
+        "name": "com.apple.main-thread",
+        "crashed": true,
+        "current": true,
+        "frames": [
+          {
+            "filename": "UIKitCore",
+            "function": "-[UIApplication sendAction:to:from:forEvent:]",
+            "lineNo": 0,
+            "inApp": false
+          },
+          {
+            "filename": "CheckoutViewController.swift",
+            "function": "CheckoutViewController.payTapped(_:)",
+            "lineNo": 141,
+            "inApp": true
+          },
+          {
+            "filename": "ApplePaySheet.swift",
+            "function": "ApplePaySheet.present(_:)",
+            "lineNo": 88,
+            "inApp": true
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "name": "com.lumenlabs.network",
+        "crashed": false,
+        "current": false,
+        "frames": [
+          {
+            "filename": "libsystem_kernel.dylib",
+            "function": "mach_msg2_trap",
+            "lineNo": 0,
+            "inApp": false
+          }
+        ]
+      }
+    ]
+  }
+]

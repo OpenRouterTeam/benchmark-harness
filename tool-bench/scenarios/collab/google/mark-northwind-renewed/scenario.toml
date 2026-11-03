@@ -1,0 +1,69 @@
+[scenario]
+id = "collab/google/mark-northwind-renewed"
+title = "Mark Northwind renewed in the 2026 vendor renewals sheet, per Lena's email"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-google-mark-northwind-renewed"
+services = ["google"]
+tags = ["write", "single-service", "google", "gmail", "sheets", "disambiguation"]
+timeout_sec = 900
+
+# Row 2 of "Vendor renewals 2026" (Renewals tab) becomes 2027-11-30 / Renewed. The
+# Northwood Logistics row, the Archive tab and the 2025 tracker stay as they are.
+[[expect.state]]
+pointer = "/services/google/drive_files/1p91PmGrfYlol_BkGN9Op8j9dWzibNwgg/sheets/0/values/1/0"
+equals = "Northwind Traders"
+
+[[expect.state]]
+pointer = "/services/google/drive_files/1p91PmGrfYlol_BkGN9Op8j9dWzibNwgg/sheets/0/values/1/2"
+equals = "2027-11-30"
+
+[[expect.state]]
+pointer = "/services/google/drive_files/1p91PmGrfYlol_BkGN9Op8j9dWzibNwgg/sheets/0/values/1/3"
+equals = "Renewed"
+
+[[expect.state]]
+pointer = "/services/google/drive_files/1p91PmGrfYlol_BkGN9Op8j9dWzibNwgg/sheets/0/values/2"
+equals = ["Northwood Logistics", "Sam Ortiz", "2026-12-15", "Pending renewal", "Freight contract"]
+
+[[expect.state]]
+pointer = "/services/google/drive_files/1p91PmGrfYlol_BkGN9Op8j9dWzibNwgg/sheets/0/values/4"
+equals = ["Fabrikam Inc", "Priya Natarajan", "2026-11-15", "Under review", "Call on 11/3"]
+
+[[expect.state]]
+pointer = "/services/google/drive_files/1_x8cbfTBtuujAmxfx9ZG2B5yGE5HDyhh/sheets/0/values/1"
+equals = ["Northwind Traders", "Lena Fischer", "2025-11-30", "Renewed", "Renewed through 2026-11-30"]
+
+[[expect.required_calls]]
+service = "google"
+path = "/_mcp/tools/call"
+body = { name = "modify_sheet_values", arguments = { spreadsheet_id = "1p91PmGrfYlol_BkGN9Op8j9dWzibNwgg" } }
+
+[[expect.forbidden_calls]]
+service = "google"
+path = "/_mcp/tools/call"
+body = { name = "modify_sheet_values", arguments = { spreadsheet_id = "1_x8cbfTBtuujAmxfx9ZG2B5yGE5HDyhh" } }
+
+[[solution.call]]
+endpoint = "google-workspace"
+tool = "search_gmail_messages"
+arguments = { query = "from:lena.fischer@octo-corp.example renewal" }
+
+[[solution.call]]
+endpoint = "google-workspace"
+tool = "get_gmail_message_content"
+arguments = { message_id = "a9de6f0a996bc25f" }
+
+[[solution.call]]
+endpoint = "google-workspace"
+tool = "list_spreadsheets"
+arguments = {}
+
+[[solution.call]]
+endpoint = "google-workspace"
+tool = "read_sheet_values"
+arguments = { spreadsheet_id = "1p91PmGrfYlol_BkGN9Op8j9dWzibNwgg", range_name = "Renewals!A1:E10" }
+
+[[solution.call]]
+endpoint = "google-workspace"
+tool = "modify_sheet_values"
+arguments = { spreadsheet_id = "1p91PmGrfYlol_BkGN9Op8j9dWzibNwgg", range_name = "Renewals!C2:D2", values = [["2027-11-30", "Renewed"]] }

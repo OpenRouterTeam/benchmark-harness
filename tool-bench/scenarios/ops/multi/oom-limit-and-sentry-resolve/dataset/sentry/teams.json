@@ -1,0 +1,44 @@
+[
+  {
+    "id": "4507210",
+    "slug": "platform",
+    "name": "Platform",
+    "dateCreated": "2023-02-06T20:30:02Z",
+    "_key": "platform"
+  },
+  {
+    "id": "4507214",
+    "slug": "frontend-web",
+    "name": "Frontend Web",
+    "dateCreated": "2023-02-07T21:16:40Z",
+    "_key": "frontend-web"
+  },
+  {
+    "id": "4507219",
+    "slug": "payments",
+    "name": "Payments",
+    "dateCreated": "2023-03-15T03:40:11Z",
+    "_key": "payments"
+  },
+  {
+    "id": "4507223",
+    "slug": "payments-infra",
+    "name": "Payments Infra",
+    "dateCreated": "2024-01-22T22:05:00Z",
+    "_key": "payments-infra"
+  },
+  {
+    "id": "4507230",
+    "slug": "mobile",
+    "name": "Mobile",
+    "dateCreated": "2024-09-10T00:46:27Z",
+    "_key": "mobile"
+  },
+  {
+    "id": "4507241",
+    "slug": "data",
+    "name": "Data",
+    "dateCreated": "2024-03-04T09:00:00Z",
+    "_key": "data"
+  }
+]

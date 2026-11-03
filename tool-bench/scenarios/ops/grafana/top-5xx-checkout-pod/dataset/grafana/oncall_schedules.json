@@ -1,0 +1,65 @@
+[
+  {
+    "_key": "SCK1PRIM",
+    "id": "SCK1PRIM",
+    "team_id": "TCK4M2P8",
+    "type": "web",
+    "on_call_now": [
+      "UZ9D6K3L"
+    ],
+    "name": "Checkout Primary",
+    "ical_url_primary": null,
+    "ical_url_overrides": null,
+    "enable_web_overrides": true,
+    "time_zone": "UTC",
+    "slack": {
+      "channel_id": null,
+      "user_group_id": null
+    },
+    "shifts": [
+      "OCKP0001"
+    ]
+  },
+  {
+    "_key": "SCK2SECN",
+    "id": "SCK2SECN",
+    "team_id": "TCK4M2P8",
+    "type": "web",
+    "on_call_now": [
+      "UB5N1W4E"
+    ],
+    "name": "Checkout Secondary",
+    "ical_url_primary": null,
+    "ical_url_overrides": null,
+    "enable_web_overrides": true,
+    "time_zone": "UTC",
+    "slack": {
+      "channel_id": null,
+      "user_group_id": null
+    },
+    "shifts": [
+      "OCKS0001"
+    ]
+  },
+  {
+    "_key": "SSR1PRIM",
+    "id": "SSR1PRIM",
+    "team_id": "TSR8N3Q1",
+    "type": "web",
+    "on_call_now": [
+      "UQ3M8R2T"
+    ],
+    "name": "SRE Primary",
+    "ical_url_primary": null,
+    "ical_url_overrides": null,
+    "enable_web_overrides": true,
+    "time_zone": "UTC",
+    "slack": {
+      "channel_id": null,
+      "user_group_id": null
+    },
+    "shifts": [
+      "OSRP0001"
+    ]
+  }
+]

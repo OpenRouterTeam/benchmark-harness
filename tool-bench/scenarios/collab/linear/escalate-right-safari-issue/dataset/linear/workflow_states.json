@@ -1,0 +1,212 @@
+[
+  {
+    "id": "7b96f818-c6c2-5eec-b968-3b1abdc1b2f0",
+    "teamId": "a7c70c10-090f-50bf-a8ce-b4cdee9d8572",
+    "name": "Backlog",
+    "type": "backlog",
+    "color": "#bec2c8",
+    "position": 0,
+    "description": null,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "a963daa7-a208-522d-98a0-24992cb0e2ed",
+    "teamId": "a7c70c10-090f-50bf-a8ce-b4cdee9d8572",
+    "name": "Todo",
+    "type": "unstarted",
+    "color": "#e2e2e2",
+    "position": 1,
+    "description": null,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "1bf2e271-f765-5dce-bbdd-56b9366aacc6",
+    "teamId": "a7c70c10-090f-50bf-a8ce-b4cdee9d8572",
+    "name": "In Progress",
+    "type": "started",
+    "color": "#f2c94c",
+    "position": 2,
+    "description": null,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "8e6f9641-c2c5-5ef8-9921-5abc7a8cea38",
+    "teamId": "a7c70c10-090f-50bf-a8ce-b4cdee9d8572",
+    "name": "In Review",
+    "type": "started",
+    "color": "#0f783c",
+    "position": 3,
+    "description": null,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "4ed11568-6dd0-5b94-bf4e-ba05dd563850",
+    "teamId": "a7c70c10-090f-50bf-a8ce-b4cdee9d8572",
+    "name": "Done",
+    "type": "completed",
+    "color": "#5e6ad2",
+    "position": 4,
+    "description": null,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "99afb074-55c3-5598-a54a-aeacf48ea5ff",
+    "teamId": "a7c70c10-090f-50bf-a8ce-b4cdee9d8572",
+    "name": "Canceled",
+    "type": "canceled",
+    "color": "#95a2b3",
+    "position": 5,
+    "description": null,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "b52a52db-28d0-561c-8da0-6e18bd5f9fa8",
+    "teamId": "a7c70c10-090f-50bf-a8ce-b4cdee9d8572",
+    "name": "Duplicate",
+    "type": "canceled",
+    "color": "#95a2b3",
+    "position": 6,
+    "description": null,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "b1bac644-a518-5be3-9055-013f718463f6",
+    "teamId": "5854633b-d1e9-52b6-b3c7-d309bfb881cb",
+    "name": "Backlog",
+    "type": "backlog",
+    "color": "#bec2c8",
+    "position": 0,
+    "description": null,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "652554bb-d48e-5da9-b511-cca8605b5027",
+    "teamId": "5854633b-d1e9-52b6-b3c7-d309bfb881cb",
+    "name": "Todo",
+    "type": "unstarted",
+    "color": "#e2e2e2",
+    "position": 1,
+    "description": null,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "41688e9c-05a3-5fce-be65-9c7049e13037",
+    "teamId": "5854633b-d1e9-52b6-b3c7-d309bfb881cb",
+    "name": "In Progress",
+    "type": "started",
+    "color": "#f2c94c",
+    "position": 2,
+    "description": null,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "162dc3da-8809-5412-b6b9-d8144fe5a567",
+    "teamId": "5854633b-d1e9-52b6-b3c7-d309bfb881cb",
+    "name": "In Review",
+    "type": "started",
+    "color": "#0f783c",
+    "position": 3,
+    "description": null,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "464b7d47-51c4-50ce-aa96-03bed89ef6af",
+    "teamId": "5854633b-d1e9-52b6-b3c7-d309bfb881cb",
+    "name": "Done",
+    "type": "completed",
+    "color": "#5e6ad2",
+    "position": 4,
+    "description": null,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "fb070dcd-c7bd-5158-ae4f-36266ea325d2",
+    "teamId": "5854633b-d1e9-52b6-b3c7-d309bfb881cb",
+    "name": "Canceled",
+    "type": "canceled",
+    "color": "#95a2b3",
+    "position": 5,
+    "description": null,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "b09b4369-fc2a-5558-9d93-91e73e8ceca3",
+    "teamId": "5854633b-d1e9-52b6-b3c7-d309bfb881cb",
+    "name": "Duplicate",
+    "type": "canceled",
+    "color": "#95a2b3",
+    "position": 6,
+    "description": null,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "9a267636-58b9-595e-97ba-dd828cf1939c",
+    "teamId": "6da75b4c-0e7c-5ac7-a415-f09a129582b1",
+    "name": "Backlog",
+    "type": "backlog",
+    "color": "#bec2c8",
+    "position": 0,
+    "description": null,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "0964aa8b-46b3-5ca7-89ef-326f7c8ffadb",
+    "teamId": "6da75b4c-0e7c-5ac7-a415-f09a129582b1",
+    "name": "Todo",
+    "type": "unstarted",
+    "color": "#e2e2e2",
+    "position": 1,
+    "description": null,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "4f856b72-2c9a-52b0-9765-a08e69992cea",
+    "teamId": "6da75b4c-0e7c-5ac7-a415-f09a129582b1",
+    "name": "In Progress",
+    "type": "started",
+    "color": "#f2c94c",
+    "position": 2,
+    "description": null,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "39d2dc75-744a-5c07-bf7a-46cfafec879b",
+    "teamId": "6da75b4c-0e7c-5ac7-a415-f09a129582b1",
+    "name": "In Review",
+    "type": "started",
+    "color": "#0f783c",
+    "position": 3,
+    "description": null,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "37276926-2b4f-572f-8936-43c1ad0b7381",
+    "teamId": "6da75b4c-0e7c-5ac7-a415-f09a129582b1",
+    "name": "Done",
+    "type": "completed",
+    "color": "#5e6ad2",
+    "position": 4,
+    "description": null,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "e0b9b456-9020-5342-846e-94ba4c79982e",
+    "teamId": "6da75b4c-0e7c-5ac7-a415-f09a129582b1",
+    "name": "Canceled",
+    "type": "canceled",
+    "color": "#95a2b3",
+    "position": 5,
+    "description": null,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "ca70fc38-a9a8-50d6-a702-f5123f9dcfb5",
+    "teamId": "6da75b4c-0e7c-5ac7-a415-f09a129582b1",
+    "name": "Duplicate",
+    "type": "canceled",
+    "color": "#95a2b3",
+    "position": 6,
+    "description": null,
+    "createdAt": "2024-01-08T09:00:00.000Z"
+  }
+]

@@ -1,0 +1,2131 @@
+{
+ "Name": "s3",
+ "ServiceName": "S3",
+ "Actions": [
+  {
+   "Name": "AbortMultipartUpload",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "AllowVendedLogDeliveryForResource",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "AssociateAccessGrantsIdentityCenter",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "BypassGovernanceRetention",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateAccessGrant",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateAccessGrantsInstance",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateAccessGrantsLocation",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateAccessPoint",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateAccessPointForObjectLambda",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateBucket",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateBucketMetadataTableConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateJob",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateMultiRegionAccessPoint",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateStorageLensGroup",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteAccessGrant",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteAccessGrantsInstance",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteAccessGrantsInstanceResourcePolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteAccessGrantsLocation",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteAccessPoint",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteAccessPointForObjectLambda",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteAccessPointPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteAccessPointPolicyForObjectLambda",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteBucket",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteBucketMetadataTableConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteBucketPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteBucketWebsite",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteJobTagging",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteMultiRegionAccessPoint",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteObject",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteObjectAnnotation",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteObjectTagging",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteObjectVersion",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteObjectVersionAnnotation",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteObjectVersionTagging",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteStorageLensConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteStorageLensConfigurationTagging",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteStorageLensGroup",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DescribeJob",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DescribeMultiRegionAccessPointOperation",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "DissociateAccessGrantsIdentityCenter",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "GetAccelerateConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetAccessGrant",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetAccessGrantsInstance",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetAccessGrantsInstanceForPrefix",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetAccessGrantsInstanceResourcePolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetAccessGrantsLocation",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetAccessPoint",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetAccessPointConfigurationForObjectLambda",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetAccessPointForObjectLambda",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetAccessPointPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetAccessPointPolicyForObjectLambda",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetAccessPointPolicyStatus",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetAccessPointPolicyStatusForObjectLambda",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetAccountPublicAccessBlock",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetAnalyticsConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetBucketAbac",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetBucketAcl",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetBucketCORS",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetBucketLocation",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetBucketLogging",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetBucketMetadataTableConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetBucketNotification",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetBucketObjectLockConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetBucketOwnershipControls",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetBucketPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetBucketPolicyStatus",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetBucketPublicAccessBlock",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetBucketRequestPayment",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetBucketTagging",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetBucketVersioning",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetBucketWebsite",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetDataAccess",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetEncryptionConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetIntelligentTieringConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetInventoryConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetJobTagging",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetLifecycleConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetMetricsConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetMultiRegionAccessPoint",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetMultiRegionAccessPointPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetMultiRegionAccessPointPolicyStatus",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetMultiRegionAccessPointRoutes",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetObject",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetObjectAcl",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetObjectAnnotation",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetObjectAttributes",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetObjectLegalHold",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetObjectRetention",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetObjectTagging",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetObjectTorrent",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetObjectVersion",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetObjectVersionAcl",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetObjectVersionAnnotation",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetObjectVersionAnnotationForReplication",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetObjectVersionAttributes",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetObjectVersionForReplication",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetObjectVersionTagging",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetObjectVersionTorrent",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetReplicationConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetStorageLensConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetStorageLensConfigurationTagging",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetStorageLensDashboard",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetStorageLensGroup",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "InitiateReplication",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "ListAccessGrants",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListAccessGrantsInstances",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListAccessGrantsLocations",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListAccessPoints",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListAccessPointsForObjectLambda",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListAllMyBuckets",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListBucket",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListBucketMultipartUploads",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListBucketVersions",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListCallerAccessGrants",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListJobs",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListMultiRegionAccessPoints",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListMultipartUploadParts",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListObjectAnnotations",
+   "Annotations": {
+    "Properties": {
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListObjectVersionAnnotations",
+   "Annotations": {
+    "Properties": {
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListStorageLensConfigurations",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListStorageLensGroups",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListTagsForResource",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ObjectOwnerOverrideToBucketOwner",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PauseReplication",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutAccelerateConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutAccessGrantsInstanceResourcePolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutAccessPointConfigurationForObjectLambda",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutAccessPointPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutAccessPointPolicyForObjectLambda",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutAccessPointPublicAccessBlock",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutAccountPublicAccessBlock",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutAnalyticsConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutBucketAbac",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutBucketAcl",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutBucketCORS",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutBucketLogging",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutBucketNotification",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutBucketObjectLockConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutBucketOwnershipControls",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutBucketPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutBucketPublicAccessBlock",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutBucketRequestPayment",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutBucketTagging",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutBucketVersioning",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutBucketWebsite",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutEncryptionConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutIntelligentTieringConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutInventoryConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutJobTagging",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutLifecycleConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutMetricsConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutMultiRegionAccessPointPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutObject",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutObjectAcl",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutObjectAnnotation",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutObjectLegalHold",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutObjectRetention",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutObjectTagging",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutObjectVersionAcl",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutObjectVersionAnnotation",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutObjectVersionTagging",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutReplicationConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutStorageLensConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutStorageLensConfigurationTagging",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "ReplicateDelete",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "ReplicateObject",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "ReplicateObjectAnnotation",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "ReplicateTags",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "RestoreObject",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "SubmitMultiRegionAccessPointRoutes",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "TagResource",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UntagResource",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateAccessGrantsLocation",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateBucketMetadataAnnotationTableConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateBucketMetadataInventoryTableConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateBucketMetadataJournalTableConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateJobPriority",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateJobStatus",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateObjectEncryption",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateStorageLensGroup",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  }
+ ],
+ "Version": "v1.5"
+}

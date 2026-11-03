@@ -1,0 +1,5 @@
+[
+  {"id": 3600401, "name": "Northwind Health", "domain_names": ["northwindhealth.example"], "created_at": "2025-05-20T10:00:00Z", "tags": ["enterprise", "healthcare"]},
+  {"id": 3600402, "name": "Northwind Traders", "domain_names": ["northwindtraders.example"], "created_at": "2025-03-17T12:55:00Z", "tags": ["mid-market"]},
+  {"id": 3600403, "name": "Cedar Pharmacy", "domain_names": ["cedarpharmacy.example"], "created_at": "2026-02-02T08:55:00Z", "tags": ["smb", "healthcare"]}
+]

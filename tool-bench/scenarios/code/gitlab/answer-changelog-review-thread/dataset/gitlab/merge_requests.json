@@ -1,0 +1,119 @@
+[
+  {
+    "_key": "northwind/billing/billing-service!88",
+    "id": 9188,
+    "iid": 88,
+    "title": "Bump payments-sdk to 4.2.0",
+    "description": "Picks up the new 3DS2 challenge flow and the refund idempotency keys.",
+    "state": "opened",
+    "source_branch": "deps/payments-sdk-4.2",
+    "target_branch": "main",
+    "author": "sam.okafor",
+    "assignees": [
+      "sam.okafor"
+    ],
+    "reviewers": [
+      "dana.kowalski",
+      "lena.fischer"
+    ],
+    "labels": [
+      "dependencies"
+    ],
+    "sha": "24f172e5f801f520765fdc1dcfa16dc929323edf",
+    "created_at": "2026-04-01T11:05:00.000Z",
+    "updated_at": "2026-04-01T15:41:00.000Z",
+    "approved_by": [],
+    "commits": [
+      "24f172e5f801f520765fdc1dcfa16dc929323edf",
+      "1d91daaa1e5fee421843a73b24092f99cab360cd"
+    ],
+    "changes": [
+      {
+        "old_path": "build.gradle.kts",
+        "new_path": "build.gradle.kts",
+        "a_mode": "100644",
+        "b_mode": "100644",
+        "new_file": false,
+        "renamed_file": false,
+        "deleted_file": false,
+        "diff": "@@ -12,7 +12,7 @@ dependencies {\n     implementation(\"io.ktor:ktor-server-core:2.3.12\")\n-    implementation(\"io.northwind:payments-sdk:4.1.3\")\n+    implementation(\"io.northwind:payments-sdk:4.2.0\")\n     testImplementation(kotlin(\"test\"))\n }\n"
+      },
+      {
+        "old_path": "CHANGELOG.md",
+        "new_path": "CHANGELOG.md",
+        "a_mode": "100644",
+        "b_mode": "100644",
+        "new_file": false,
+        "renamed_file": false,
+        "deleted_file": false,
+        "diff": "@@ -1,3 +1,6 @@\n # Changelog\n \n+## Unreleased\n+- Bump payments-sdk to 4.2.0 (3DS2 challenge flow, refund idempotency keys)\n+\n ## 2026.03.2\n"
+      }
+    ]
+  },
+  {
+    "_key": "northwind/billing/billing-service!80",
+    "id": 9180,
+    "iid": 80,
+    "title": "Bump payments-sdk to 4.1.3",
+    "description": "Security patch release.",
+    "state": "merged",
+    "source_branch": "deps/payments-sdk-4.1.3",
+    "target_branch": "main",
+    "author": "renovate-bot",
+    "assignees": [],
+    "reviewers": [
+      "dana.kowalski"
+    ],
+    "labels": [
+      "dependencies"
+    ],
+    "sha": "141d73d72b5e02e9b867d8434057e5ea9ffc12f6",
+    "merge_commit_sha": "9e371656cdd1284b7d201df5ab1dddc05efcc6eb",
+    "merged_by": "dana.kowalski",
+    "merged_at": "2026-03-12T10:00:00.000Z",
+    "created_at": "2026-03-11T10:00:00.000Z",
+    "updated_at": "2026-03-12T10:00:00.000Z",
+    "approved_by": [
+      "dana.kowalski"
+    ],
+    "changes": [],
+    "commits": []
+  },
+  {
+    "_key": "northwind/mobile/checkout-ios!212",
+    "id": 9212,
+    "iid": 212,
+    "title": "Bump PaymentsSDK to 4.2.0",
+    "description": "Adopt the 4.2 SDK for the new 3DS2 sheet.",
+    "state": "opened",
+    "source_branch": "deps/payments-sdk-4.2",
+    "target_branch": "main",
+    "author": "mei.lin",
+    "assignees": [
+      "mei.lin"
+    ],
+    "reviewers": [
+      "dana.kowalski"
+    ],
+    "labels": [],
+    "sha": "5a495e0c21f0d992b6fceaf9aa742b374ba6cb70",
+    "created_at": "2026-04-01T12:05:00.000Z",
+    "updated_at": "2026-04-01T14:00:00.000Z",
+    "approved_by": [],
+    "commits": [
+      "5a495e0c21f0d992b6fceaf9aa742b374ba6cb70"
+    ],
+    "changes": [
+      {
+        "old_path": "Package.swift",
+        "new_path": "Package.swift",
+        "a_mode": "100644",
+        "b_mode": "100644",
+        "new_file": false,
+        "renamed_file": false,
+        "deleted_file": false,
+        "diff": "@@ -8,1 +8,1 @@\n-        .package(url: \"https://git.northwind.io/sdk/payments-ios\", from: \"4.1.3\"),\n+        .package(url: \"https://git.northwind.io/sdk/payments-ios\", from: \"4.2.0\"),\n"
+      }
+    ]
+  }
+]

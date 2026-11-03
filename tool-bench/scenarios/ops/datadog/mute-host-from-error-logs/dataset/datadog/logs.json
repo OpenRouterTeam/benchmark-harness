@@ -1,0 +1,936 @@
+[
+  {
+    "id": "AwAAAZo1dd0001",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T12:41:09.000Z",
+      "host": "checkout-api-prod-1a",
+      "service": "checkout-api",
+      "status": "error",
+      "message": "upstream connect error or disconnect/reset before headers. reset reason: connection reset by peer",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1a",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 503
+        }
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0002",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:03:12.000Z",
+      "host": "checkout-api-prod-1b",
+      "service": "checkout-api",
+      "status": "error",
+      "message": "upstream connect error or disconnect/reset before headers. reset reason: connection reset by peer",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1b",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 503
+        },
+        "upstream": {
+          "cluster": "payments-api",
+          "address": "10.42.7.19:8443"
+        }
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0020",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:05:00.000Z",
+      "host": "checkout-api-prod-1a",
+      "service": "checkout-api",
+      "status": "info",
+      "message": "POST /api/v1/checkout 200",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1a",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 200
+        },
+        "duration": 182000000
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0021",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:05:00.000Z",
+      "host": "checkout-api-prod-1c",
+      "service": "checkout-api",
+      "status": "info",
+      "message": "POST /api/v1/checkout 200",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1c",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 200
+        },
+        "duration": 182000000
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0017",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:07:30.000Z",
+      "host": "checkout-worker-prod-1b",
+      "service": "checkout-worker",
+      "status": "error",
+      "message": "failed to publish order.completed: context deadline exceeded",
+      "tags": [
+        "env:prod",
+        "service:checkout-worker",
+        "source:go",
+        "host:checkout-worker-prod-1b",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout-worker.main"
+        },
+        "kafka": {
+          "topic": "order.completed"
+        }
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0003",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:09:40.000Z",
+      "host": "checkout-api-prod-1b",
+      "service": "checkout-api",
+      "status": "error",
+      "message": "upstream connect error or disconnect/reset before headers. reset reason: connection reset by peer",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1b",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 503
+        },
+        "upstream": {
+          "cluster": "payments-api",
+          "address": "10.42.7.19:8443"
+        }
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0029",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:12:40.000Z",
+      "host": "payments-api-prod-1a",
+      "service": "payments-api",
+      "status": "error",
+      "message": "connection reset by peer while reading request body",
+      "tags": [
+        "env:prod",
+        "service:payments-api",
+        "source:go",
+        "host:payments-api-prod-1a",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "payments-api.main"
+        },
+        "http": {
+          "method": "POST",
+          "status_code": 499
+        }
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0014",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:14:22.000Z",
+      "host": "checkout-api-staging-1b",
+      "service": "checkout-api",
+      "status": "error",
+      "message": "upstream connect error or disconnect/reset before headers. reset reason: connection reset by peer",
+      "tags": [
+        "env:staging",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-staging-1b",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "staging",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 503
+        }
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0004",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:17:05.000Z",
+      "host": "checkout-api-prod-1b",
+      "service": "checkout-api",
+      "status": "error",
+      "message": "upstream connect error or disconnect/reset before headers. reset reason: connection reset by peer",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1b",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 503
+        },
+        "upstream": {
+          "cluster": "payments-api",
+          "address": "10.42.7.19:8443"
+        }
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0022",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:20:00.000Z",
+      "host": "checkout-api-prod-1a",
+      "service": "checkout-api",
+      "status": "info",
+      "message": "POST /api/v1/checkout 200",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1a",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 200
+        },
+        "duration": 182000000
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0023",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:20:00.000Z",
+      "host": "checkout-api-prod-1c",
+      "service": "checkout-api",
+      "status": "info",
+      "message": "POST /api/v1/checkout 200",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1c",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 200
+        },
+        "duration": 182000000
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0005",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:24:51.000Z",
+      "host": "checkout-api-prod-1b",
+      "service": "checkout-api",
+      "status": "error",
+      "message": "upstream connect error or disconnect/reset before headers. reset reason: connection reset by peer",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1b",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 503
+        },
+        "upstream": {
+          "cluster": "payments-api",
+          "address": "10.42.7.19:8443"
+        }
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0018",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:27:14.000Z",
+      "host": "checkout-worker-prod-1b",
+      "service": "checkout-worker",
+      "status": "error",
+      "message": "failed to publish order.completed: context deadline exceeded",
+      "tags": [
+        "env:prod",
+        "service:checkout-worker",
+        "source:go",
+        "host:checkout-worker-prod-1b",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout-worker.main"
+        },
+        "kafka": {
+          "topic": "order.completed"
+        }
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0006",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:31:18.000Z",
+      "host": "checkout-api-prod-1b",
+      "service": "checkout-api",
+      "status": "error",
+      "message": "upstream connect error or disconnect/reset before headers. reset reason: connection reset by peer",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1b",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 503
+        },
+        "upstream": {
+          "cluster": "payments-api",
+          "address": "10.42.7.19:8443"
+        }
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0024",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:35:00.000Z",
+      "host": "checkout-api-prod-1a",
+      "service": "checkout-api",
+      "status": "info",
+      "message": "POST /api/v1/checkout 200",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1a",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 200
+        },
+        "duration": 182000000
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0025",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:35:00.000Z",
+      "host": "checkout-api-prod-1c",
+      "service": "checkout-api",
+      "status": "info",
+      "message": "POST /api/v1/checkout 200",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1c",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 200
+        },
+        "duration": 182000000
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0015",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:36:50.000Z",
+      "host": "checkout-api-staging-1b",
+      "service": "checkout-api",
+      "status": "error",
+      "message": "upstream connect error or disconnect/reset before headers. reset reason: connection reset by peer",
+      "tags": [
+        "env:staging",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-staging-1b",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "staging",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 503
+        }
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0007",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:38:02.000Z",
+      "host": "checkout-api-prod-1b",
+      "service": "checkout-api",
+      "status": "error",
+      "message": "upstream connect error or disconnect/reset before headers. reset reason: connection reset by peer",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1b",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 503
+        },
+        "upstream": {
+          "cluster": "payments-api",
+          "address": "10.42.7.19:8443"
+        }
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0028",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:44:18.000Z",
+      "host": "checkout-api-prod-1a",
+      "service": "checkout-api",
+      "status": "warn",
+      "message": "slow upstream response from payments-api (1.9s)",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1a",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "duration": 1900000000
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0008",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:46:33.000Z",
+      "host": "checkout-api-prod-1b",
+      "service": "checkout-api",
+      "status": "error",
+      "message": "upstream connect error or disconnect/reset before headers. reset reason: connection reset by peer",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1b",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 503
+        },
+        "upstream": {
+          "cluster": "payments-api",
+          "address": "10.42.7.19:8443"
+        }
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0019",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:49:55.000Z",
+      "host": "checkout-worker-prod-1b",
+      "service": "checkout-worker",
+      "status": "error",
+      "message": "failed to publish order.completed: context deadline exceeded",
+      "tags": [
+        "env:prod",
+        "service:checkout-worker",
+        "source:go",
+        "host:checkout-worker-prod-1b",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout-worker.main"
+        },
+        "kafka": {
+          "topic": "order.completed"
+        }
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0026",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:50:00.000Z",
+      "host": "checkout-api-prod-1a",
+      "service": "checkout-api",
+      "status": "info",
+      "message": "POST /api/v1/checkout 200",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1a",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 200
+        },
+        "duration": 182000000
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0027",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:50:00.000Z",
+      "host": "checkout-api-prod-1c",
+      "service": "checkout-api",
+      "status": "info",
+      "message": "POST /api/v1/checkout 200",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1c",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 200
+        },
+        "duration": 182000000
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0009",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:53:27.000Z",
+      "host": "checkout-api-prod-1b",
+      "service": "checkout-api",
+      "status": "error",
+      "message": "upstream connect error or disconnect/reset before headers. reset reason: connection reset by peer",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1b",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 503
+        },
+        "upstream": {
+          "cluster": "payments-api",
+          "address": "10.42.7.19:8443"
+        }
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0016",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T13:58:01.000Z",
+      "host": "checkout-api-staging-1b",
+      "service": "checkout-api",
+      "status": "error",
+      "message": "upstream connect error or disconnect/reset before headers. reset reason: connection reset by peer",
+      "tags": [
+        "env:staging",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-staging-1b",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "staging",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 503
+        }
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0010",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T14:01:44.000Z",
+      "host": "checkout-api-prod-1b",
+      "service": "checkout-api",
+      "status": "error",
+      "message": "upstream connect error or disconnect/reset before headers. reset reason: connection reset by peer",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1b",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 503
+        },
+        "upstream": {
+          "cluster": "payments-api",
+          "address": "10.42.7.19:8443"
+        }
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0011",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T14:11:03.000Z",
+      "host": "checkout-api-prod-1b",
+      "service": "checkout-api",
+      "status": "error",
+      "message": "upstream connect error or disconnect/reset before headers. reset reason: connection reset by peer",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1b",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 503
+        },
+        "upstream": {
+          "cluster": "payments-api",
+          "address": "10.42.7.19:8443"
+        }
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0012",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T14:22:36.000Z",
+      "host": "checkout-api-prod-1b",
+      "service": "checkout-api",
+      "status": "error",
+      "message": "upstream connect error or disconnect/reset before headers. reset reason: connection reset by peer",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1b",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 503
+        },
+        "upstream": {
+          "cluster": "payments-api",
+          "address": "10.42.7.19:8443"
+        }
+      }
+    }
+  },
+  {
+    "id": "AwAAAZo1dd0013",
+    "type": "log",
+    "attributes": {
+      "timestamp": "2026-10-30T14:29:08.000Z",
+      "host": "checkout-api-prod-1b",
+      "service": "checkout-api",
+      "status": "error",
+      "message": "upstream connect error or disconnect/reset before headers. reset reason: connection reset by peer",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "source:go",
+        "host:checkout-api-prod-1b",
+        "team:payments"
+      ],
+      "attributes": {
+        "env": "prod",
+        "logger": {
+          "name": "checkout.http"
+        },
+        "http": {
+          "method": "POST",
+          "url_details": {
+            "path": "/api/v1/checkout"
+          },
+          "status_code": 503
+        },
+        "upstream": {
+          "cluster": "payments-api",
+          "address": "10.42.7.19:8443"
+        }
+      }
+    }
+  }
+]

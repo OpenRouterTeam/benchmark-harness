@@ -1,0 +1,138 @@
+[
+  {
+    "_key": "octo-org/payments-api:bug",
+    "id": 300,
+    "name": "bug",
+    "color": "d73a4a",
+    "description": "Something isn't working",
+    "default": true
+  },
+  {
+    "_key": "octo-org/payments-api:enhancement",
+    "id": 301,
+    "name": "enhancement",
+    "color": "a2eeef",
+    "description": "New feature or request",
+    "default": true
+  },
+  {
+    "_key": "octo-org/payments-api:documentation",
+    "id": 302,
+    "name": "documentation",
+    "color": "0075ca",
+    "description": "Improvements or additions to documentation",
+    "default": true
+  },
+  {
+    "_key": "octo-org/payments-api:good first issue",
+    "id": 303,
+    "name": "good first issue",
+    "color": "7057ff",
+    "description": "Good for newcomers",
+    "default": false
+  },
+  {
+    "_key": "octo-org/billing-worker:bug",
+    "id": 310,
+    "name": "bug",
+    "color": "d73a4a",
+    "description": "Something isn't working",
+    "default": true
+  },
+  {
+    "_key": "octo-org/billing-worker:enhancement",
+    "id": 311,
+    "name": "enhancement",
+    "color": "a2eeef",
+    "description": "New feature or request",
+    "default": true
+  },
+  {
+    "_key": "octo-org/billing-worker:documentation",
+    "id": 312,
+    "name": "documentation",
+    "color": "0075ca",
+    "description": "Improvements or additions to documentation",
+    "default": true
+  },
+  {
+    "_key": "octo-org/billing-worker:good first issue",
+    "id": 313,
+    "name": "good first issue",
+    "color": "7057ff",
+    "description": "Good for newcomers",
+    "default": false
+  },
+  {
+    "_key": "octo-org/web:bug",
+    "id": 320,
+    "name": "bug",
+    "color": "d73a4a",
+    "description": "Something isn't working",
+    "default": true
+  },
+  {
+    "_key": "octo-org/web:enhancement",
+    "id": 321,
+    "name": "enhancement",
+    "color": "a2eeef",
+    "description": "New feature or request",
+    "default": true
+  },
+  {
+    "_key": "octo-org/web:documentation",
+    "id": 322,
+    "name": "documentation",
+    "color": "0075ca",
+    "description": "Improvements or additions to documentation",
+    "default": true
+  },
+  {
+    "_key": "octo-org/web:good first issue",
+    "id": 323,
+    "name": "good first issue",
+    "color": "7057ff",
+    "description": "Good for newcomers",
+    "default": false
+  },
+  {
+    "_key": "octo-org/payments-api:sev-1",
+    "id": 340,
+    "name": "sev-1",
+    "color": "b60205",
+    "description": "Customer-impacting incident, fix now",
+    "default": false
+  },
+  {
+    "_key": "octo-org/payments-api:sev-2",
+    "id": 341,
+    "name": "sev-2",
+    "color": "d93f0b",
+    "description": "Degraded, fix this sprint",
+    "default": false
+  },
+  {
+    "_key": "octo-org/payments-api:customer-reported",
+    "id": 342,
+    "name": "customer-reported",
+    "color": "c5def5",
+    "description": "Raised through support",
+    "default": false
+  },
+  {
+    "_key": "octo-org/payments-api:observability",
+    "id": 343,
+    "name": "observability",
+    "color": "bfdadc",
+    "description": "Logging, metrics, tracing",
+    "default": false
+  },
+  {
+    "_key": "octo-org/billing-worker:sev-1",
+    "id": 344,
+    "name": "sev-1",
+    "color": "b60205",
+    "description": "Customer-impacting incident, fix now",
+    "default": false
+  }
+]

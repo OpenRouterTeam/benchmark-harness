@@ -1,0 +1,14 @@
+[
+  {
+    "_key": "crm.customers",
+    "indexes": [
+      {
+        "key": {
+          "email": 1
+        },
+        "name": "email_1",
+        "unique": true
+      }
+    ]
+  }
+]

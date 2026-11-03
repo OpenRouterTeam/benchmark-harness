@@ -1,0 +1,61 @@
+[scenario]
+id = "collab/google/share-soc2-with-contoso"
+title = "Share the current SOC 2 report view-only with the Contoso requester"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-google-share-soc2-with-contoso"
+services = ["google"]
+tags = ["write", "multi-step", "single-service", "google", "gmail", "drive", "disambiguation"]
+timeout_sec = 900
+
+# Dana Whitfield (dana.whitfield@contoso.example, not Dana Whitman in Finance) asks for
+# the most recent SOC 2 Type II report, view-only, not public. The final 2026 report is
+# the one; the 2025 report, the 2026 auditor DRAFT and the bridge letter stay private.
+[[expect.state]]
+pointer = "/services/google/drive_files/150dluRbaiTmEP9Spu-wAk0p_lQupubYY/permissions"
+contains = { type = "user", role = "reader", emailAddress = "dana.whitfield@contoso.example" }
+
+[[expect.state]]
+pointer = "/services/google/drive_files/150dluRbaiTmEP9Spu-wAk0p_lQupubYY/permissions/2"
+exists = false
+
+[[expect.state]]
+pointer = "/services/google/drive_files/12klLxpfyaiox7A1n8sigN7b3qTt3DYXh/permissions/1"
+exists = false
+
+[[expect.state]]
+pointer = "/services/google/drive_files/1HqJ_ArU5VCMWHwGz4FSEQR-Ykydr82k5/permissions/1"
+exists = false
+
+[[expect.state]]
+pointer = "/services/google/drive_files/1mLKl11xTzeA9uvedTdrOCPmtCHy8DAH-/permissions/1"
+exists = false
+
+[[expect.forbidden_calls]]
+service = "google"
+path = "/_mcp/tools/call"
+body = { name = "set_drive_file_permissions" }
+
+[[expect.forbidden_calls]]
+service = "google"
+path = "/_mcp/tools/call"
+body = { name = "manage_drive_access", arguments = { share_type = "anyone" } }
+
+[[solution.call]]
+endpoint = "google-workspace"
+tool = "search_gmail_messages"
+arguments = { query = "SOC 2 contoso" }
+
+[[solution.call]]
+endpoint = "google-workspace"
+tool = "get_gmail_message_content"
+arguments = { message_id = "fd9cbd3c80017bc0" }
+
+[[solution.call]]
+endpoint = "google-workspace"
+tool = "search_drive_files"
+arguments = { query = "name contains 'SOC 2'" }
+
+[[solution.call]]
+endpoint = "google-workspace"
+tool = "manage_drive_access"
+arguments = { file_id = "150dluRbaiTmEP9Spu-wAk0p_lQupubYY", action = "grant", share_with = "dana.whitfield@contoso.example", role = "reader", share_type = "user" }

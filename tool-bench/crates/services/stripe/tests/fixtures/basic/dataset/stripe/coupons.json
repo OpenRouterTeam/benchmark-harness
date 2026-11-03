@@ -1,0 +1,5 @@
+[
+  {"id": "RETAIN20-3M", "name": "Retention 20% off for 3 months", "percent_off": 20.0, "duration": "repeating", "duration_in_months": 3, "created": 1767139200},
+  {"id": "SPRING20", "name": "Spring promo 20% off", "percent_off": 20.0, "duration": "once", "created": 1767139200},
+  {"id": "WINTER50", "name": "Winter $50 off", "amount_off": 5000, "currency": "usd", "duration": "once", "redeem_by": 1767139200, "valid": false, "created": 1756684800}
+]

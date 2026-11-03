@@ -1,0 +1,33 @@
+[
+  {
+    "id": "PEO0001",
+    "name": "Tidewater Global Ingest",
+    "description": "Routes monitoring events from Datadog and CloudWatch to services.",
+    "team": {
+      "id": "PTPLATF",
+      "type": "team_reference"
+    },
+    "routes": 2,
+    "integrations": [
+      {
+        "id": "6d1b2a90-3c4f-4e8a-9b21-7f0e5d8c1a32",
+        "label": "Datadog",
+        "parameters": {
+          "routing_key": "R02E8TIDEWATERDATADOG0001",
+          "type": "global"
+        }
+      }
+    ],
+    "created_at": "2025-06-02T10:00:00Z",
+    "created_by": {
+      "id": "PA1EXKM",
+      "type": "user_reference"
+    },
+    "updated_at": "2026-09-15T08:30:00Z",
+    "updated_by": {
+      "id": "PA1EXKM",
+      "type": "user_reference"
+    },
+    "version": "9c41f0aa"
+  }
+]

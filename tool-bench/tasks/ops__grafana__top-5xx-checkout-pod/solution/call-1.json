@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"query_prometheus","arguments":{"datasourceUid":"prom-prod","endTime":"now","expr":"sum by (pod) (rate(http_requests_total{namespace=\"shop-prod\", service=\"checkout\", status=~\"5..\"}[5m]))","queryType":"instant"}}}

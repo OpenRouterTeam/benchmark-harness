@@ -1,0 +1,55 @@
+[scenario]
+id = "business/salesforce/log-call-on-contact"
+title = "Log a completed call on the right contact"
+now = "2026-05-12T15:00:00Z"
+seed = "business-salesforce-log-call-on-contact"
+services = ["salesforce"]
+tags = ["write", "single-service", "salesforce", "disambiguation"]
+timeout_sec = 900
+
+# The first Task the org creates gets Id 00T8c0000000001EAA. Its contact must be Dana
+# Whitfield at Northgate Analytics, not Dan Whitfield (same account) or Dana Whitfield at
+# Northgate Capital Partners.
+[[expect.state]]
+pointer = "/services/salesforce/Task/00T8c0000000001EAA/WhoId"
+equals = "0035g00000p3z7WAAQ"
+
+[[expect.state]]
+pointer = "/services/salesforce/Task/00T8c0000000001EAA/Subject"
+equals = "Renewal pricing call"
+
+[[expect.state]]
+pointer = "/services/salesforce/Task/00T8c0000000001EAA/Status"
+equals = "Completed"
+
+[[expect.state]]
+pointer = "/services/salesforce/Task/00T8c0000000001EAA/ActivityDate"
+equals = "2026-05-12"
+
+[[expect.state]]
+pointer = "/services/salesforce/Task/00T8c0000000001EAA/Description"
+contains = "quote"
+
+# Exactly one task is logged.
+[[expect.state]]
+pointer = "/services/salesforce/Task/00T8c0000000002EAA"
+exists = false
+
+[[expect.required_calls]]
+service = "salesforce"
+method = "POST"
+path_regex = "^/services/data/v[0-9.]+/(composite/sobjects|sobjects/Task)$"
+
+[[expect.forbidden_calls]]
+service = "salesforce"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "salesforce"
+tool = "salesforce_query_records"
+arguments = { objectName = "Contact", fields = ["Id", "Name", "Title", "Email", "Account.Name"], whereClause = "LastName = 'Whitfield'" }
+
+[[solution.call]]
+endpoint = "salesforce"
+tool = "salesforce_dml_records"
+arguments = { operation = "insert", objectName = "Task", records = [{ WhoId = "0035g00000p3z7WAAQ", WhatId = "0015g000008HFvFAAW", Subject = "Renewal pricing call", Status = "Completed", ActivityDate = "2026-05-12", TaskSubtype = "Call", Type = "Call", Description = "Discussed renewal pricing. Dana wants a 3-year quote by May 22." }] }

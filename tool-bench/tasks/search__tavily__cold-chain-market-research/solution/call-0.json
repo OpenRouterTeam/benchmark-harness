@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"tavily_research","arguments":{"input":"Which vendors sell wireless cold-chain temperature monitoring sensors to grocery chains in the Nordic countries, what is each vendor's market share, and what do they charge per sensor per month?","model":"mini"}}}

@@ -1,0 +1,1 @@
+Please log a new entry in our Customer escalations database in Notion: Acme Retail reported "Checkout button unresponsive on Safari" today (October 29, 2026). It's a Sev 2, currently Open, and Alex Kim owns it.

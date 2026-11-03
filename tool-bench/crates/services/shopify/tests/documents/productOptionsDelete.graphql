@@ -1,0 +1,49 @@
+
+          mutation productOptionsDelete(
+            $productId: ID!
+            $options: [ID!]!
+          ) {
+            productOptionsDelete(
+              productId: $productId
+              options: $options
+            ) {
+              product {
+                ...ProductOptionsFields
+              }
+              userErrors {
+                field
+                message
+                code
+              }
+            }
+          }
+          
+  fragment ProductOptionsFields on Product {
+    id
+    title
+    options {
+      id
+      name
+      position
+      optionValues {
+        id
+        name
+        hasVariants
+      }
+    }
+    variants(first: 20) {
+      edges {
+        node {
+          id
+          title
+          price
+          selectedOptions {
+            name
+            value
+          }
+        }
+      }
+    }
+  }
+
+        

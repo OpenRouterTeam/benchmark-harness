@@ -1,0 +1,155 @@
+[
+  {
+    "id": "price_k9GAJDsMyuEBblDQ7HWxly8D",
+    "object": "price",
+    "active": true,
+    "created": 1740787200,
+    "currency": "usd",
+    "lookup_key": "starter_monthly",
+    "nickname": "Starter monthly",
+    "product": "prod_6kPq0FxhMihJhg",
+    "recurring": {
+      "interval": "month",
+      "interval_count": 1,
+      "usage_type": "licensed"
+    },
+    "type": "recurring",
+    "unit_amount": 9900
+  },
+  {
+    "id": "price_h2UUKkyxi0yKxW9ARCV4SGy7",
+    "object": "price",
+    "active": true,
+    "created": 1740787200,
+    "currency": "usd",
+    "lookup_key": "team_monthly",
+    "nickname": "Team monthly",
+    "product": "prod_Nziw9bQQntniXU",
+    "recurring": {
+      "interval": "month",
+      "interval_count": 1,
+      "usage_type": "licensed"
+    },
+    "type": "recurring",
+    "unit_amount": 24900
+  },
+  {
+    "id": "price_O58DdL3SVnHOYNJ1zAbKEwgp",
+    "object": "price",
+    "active": true,
+    "created": 1740787200,
+    "currency": "usd",
+    "lookup_key": "team_yearly",
+    "nickname": "Team yearly",
+    "product": "prod_Nziw9bQQntniXU",
+    "recurring": {
+      "interval": "year",
+      "interval_count": 1,
+      "usage_type": "licensed"
+    },
+    "type": "recurring",
+    "unit_amount": 249000
+  },
+  {
+    "id": "price_PVR4l1vPdDw8YrhRTeztlUat",
+    "object": "price",
+    "active": true,
+    "created": 1740787200,
+    "currency": "usd",
+    "lookup_key": "growth_monthly",
+    "nickname": "Growth monthly",
+    "product": "prod_WjaHKBaJjEFkn7",
+    "recurring": {
+      "interval": "month",
+      "interval_count": 1,
+      "usage_type": "licensed"
+    },
+    "type": "recurring",
+    "unit_amount": 49900
+  },
+  {
+    "id": "price_Juky1Gcvmydaqtb2Milst0QO",
+    "object": "price",
+    "active": true,
+    "created": 1740787200,
+    "currency": "usd",
+    "lookup_key": "seat_monthly",
+    "nickname": "Seat monthly",
+    "product": "prod_8zIxFlnFAFf1Nx",
+    "recurring": {
+      "interval": "month",
+      "interval_count": 1,
+      "usage_type": "licensed"
+    },
+    "type": "recurring",
+    "unit_amount": 1500
+  },
+  {
+    "id": "price_Fco47w3JW6xNqrPtsNH7Qaxm",
+    "object": "price",
+    "active": true,
+    "created": 1740787200,
+    "currency": "usd",
+    "lookup_key": "analytics_yearly",
+    "nickname": "Analytics yearly",
+    "product": "prod_g1dI6gJhualgUl",
+    "recurring": {
+      "interval": "year",
+      "interval_count": 1,
+      "usage_type": "licensed"
+    },
+    "type": "recurring",
+    "unit_amount": 120000
+  },
+  {
+    "id": "price_tcxg83PKs4s0fRsvyKINyvJy",
+    "object": "price",
+    "active": true,
+    "created": 1740787200,
+    "currency": "usd",
+    "lookup_key": "export_monthly",
+    "nickname": "Data export monthly",
+    "product": "prod_Ilp4JjficqM8y8",
+    "recurring": {
+      "interval": "month",
+      "interval_count": 1,
+      "usage_type": "licensed"
+    },
+    "type": "recurring",
+    "unit_amount": 9900
+  },
+  {
+    "id": "price_8IpwkGYVgthVCVNXTLEkgXBF",
+    "object": "price",
+    "active": true,
+    "created": 1740787200,
+    "currency": "usd",
+    "lookup_key": "storage_monthly",
+    "nickname": "Storage monthly",
+    "product": "prod_taGaWMiNipnb7t",
+    "recurring": {
+      "interval": "month",
+      "interval_count": 1,
+      "usage_type": "licensed"
+    },
+    "type": "recurring",
+    "unit_amount": 2000
+  },
+  {
+    "id": "price_pmUKBVFOU0WO2xEiXQfY6D2D",
+    "object": "price",
+    "active": true,
+    "created": 1740787200,
+    "currency": "usd",
+    "lookup_key": "location_monthly",
+    "nickname": "Extra location monthly",
+    "product": "prod_U92R6Ktjym2qVN",
+    "recurring": {
+      "interval": "month",
+      "interval_count": 1,
+      "usage_type": "licensed"
+    },
+    "type": "recurring",
+    "unit_amount": 4900
+  }
+]

@@ -1,0 +1,33 @@
+[scenario]
+id = "collab/slack/observability-decision"
+title = "Find which observability vendor was chosen and when the contract starts"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-slack-observability-decision"
+services = ["slack"]
+tags = ["lookup", "single-service", "slack", "disambiguation"]
+timeout_sec = 900
+
+# The final decision is a reply in the #infra evaluation thread. Distractors: an early
+# "leaning Datadog" note in #eng-leads, a Honeycomb rumour in #general, and quotes that
+# predate the decision.
+[expect.answer]
+contains = ["Grafana Cloud"]
+regex = "(?i)(2026-11-15|nov(ember)?\\.?\\s+15(th)?)"
+
+[[expect.forbidden_calls]]
+service = "slack"
+path = "/_mcp/tools/call"
+body = { name = "slack_send_message" }
+
+[[solution.call]]
+endpoint = "slack"
+tool = "slack_search_public_and_private"
+arguments = { keywords = ["observability"], natural_language_query = "Which observability vendor did we pick and when does the contract start?" }
+
+[[solution.call]]
+endpoint = "slack"
+tool = "slack_read_thread"
+arguments = { channel_id = "C03INFRA9QX", message_ts = "1791990131.120442" }
+
+[solution]
+answer = "We went with Grafana Cloud. Dana confirmed the decision in the #infra evaluation thread on Oct 27: the contract starts on 2026-11-15 for a 3-year term (Datadog stays until the migration completes on 2027-01-31).\n"

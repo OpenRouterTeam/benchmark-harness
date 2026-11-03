@@ -1,0 +1,26 @@
+[
+  {
+    "id": "9a4c1e7b3d0f5a8c2e6b9d1f4a7c0e3b",
+    "zone_id": "023e105f4ecef8ad9ca31a8372d0c353",
+    "pattern": "api.octo-corp.com/*",
+    "script": "orders-api"
+  },
+  {
+    "id": "0b5d2f8c4e1a6b9d3f7c0e2a5b8d1f4c",
+    "zone_id": "023e105f4ecef8ad9ca31a8372d0c353",
+    "pattern": "api.octo-corp.com/v1/*",
+    "script": "orders-api"
+  },
+  {
+    "id": "1c6e3a9d5f2b7c0e4a8d1f3b6c9e2a5d",
+    "zone_id": "023e105f4ecef8ad9ca31a8372d0c353",
+    "pattern": "octo-corp.com/assets/*",
+    "script": null
+  },
+  {
+    "id": "2d7f4b0e6a3c8d1f5b9e2a4c7d0f3b6e",
+    "zone_id": "e9a7c5b3d1f0e8c6a4b2d0f9e7c5a3b1",
+    "pattern": "api.octo-corp.dev/v2/*",
+    "script": "orders-api-v2-staging"
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "_key": "1",
+    "id": 1,
+    "project": "acme/platform/api",
+    "author": "dana",
+    "action_name": "commented on",
+    "target_type": "Note",
+    "target_id": 9001,
+    "target_iid": 7,
+    "target_title": "Fix token bucket refill race",
+    "created_at": "2026-03-10T09:00:00.000Z"
+  }
+]

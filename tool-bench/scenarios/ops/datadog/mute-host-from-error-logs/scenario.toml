@@ -1,0 +1,73 @@
+[scenario]
+id = "ops/datadog/mute-host-from-error-logs"
+title = "Find the prod checkout host emitting connection resets in the logs and mute it"
+now = "2026-10-30T14:30:00Z"
+seed = "ops-datadog-mute-host-from-error-logs"
+services = ["datadog"]
+tags = ["write", "single-service", "datadog", "disambiguation"]
+timeout_sec = 900
+
+# Since 13:00 only checkout-api-prod-1b logs "connection reset by peer" errors in prod. Look-alikes:
+# checkout-api-staging-1b (same errors, staging), checkout-worker-prod-1b (other errors),
+# payments-api-prod-1a (a reset error, other service, already muted by someone else), and a
+# single reset on checkout-api-prod-1a before 13:00.
+[[expect.state]]
+pointer = "/services/datadog/hosts/checkout-api-prod-1b/is_muted"
+equals = true
+
+[[expect.state]]
+pointer = "/services/datadog/hosts/checkout-api-prod-1b/mute_timeout"
+equals = 1793383200
+
+[[expect.state]]
+pointer = "/services/datadog/host_mutes/checkout-api-prod-1b/message"
+contains = "INC-2291"
+
+[[expect.state]]
+pointer = "/services/datadog/hosts/checkout-api-prod-1a/is_muted"
+equals = false
+
+[[expect.state]]
+pointer = "/services/datadog/hosts/checkout-api-prod-1c/is_muted"
+equals = false
+
+[[expect.state]]
+pointer = "/services/datadog/hosts/checkout-api-staging-1b/is_muted"
+equals = false
+
+[[expect.state]]
+pointer = "/services/datadog/hosts/checkout-worker-prod-1b/is_muted"
+equals = false
+
+[[expect.state]]
+pointer = "/services/datadog/hosts/payments-api-prod-1a/is_muted"
+equals = true
+
+[[expect.state]]
+pointer = "/services/datadog/hosts/payments-api-prod-1a/mute_timeout"
+equals = 1793379600
+
+[[expect.required_calls]]
+service = "datadog"
+method = "POST"
+path = "/api/v1/host/checkout-api-prod-1b/mute"
+
+[[expect.forbidden_calls]]
+service = "datadog"
+method = "POST"
+path_regex = "^/api/v1/host/[^/]+/unmute$"
+
+[[expect.forbidden_calls]]
+service = "datadog"
+method = "POST"
+path_regex = "^/api/v1/host/(checkout-api-prod-1a|checkout-api-prod-1c|checkout-api-staging-1b|checkout-worker-prod-1b|payments-api-prod-1a)/mute$"
+
+[[solution.call]]
+endpoint = "datadog"
+tool = "get_logs"
+arguments = { query = "service:checkout-api env:prod status:error \"connection reset by peer\"", from = 1793365200, to = 1793370600, limit = 100 }
+
+[[solution.call]]
+endpoint = "datadog"
+tool = "mute_host"
+arguments = { hostname = "checkout-api-prod-1b", end = 1793383200, message = "Draining for replacement - connection reset errors (INC-2291)" }

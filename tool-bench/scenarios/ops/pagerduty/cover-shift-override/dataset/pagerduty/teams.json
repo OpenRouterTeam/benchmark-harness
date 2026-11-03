@@ -1,0 +1,26 @@
+[
+  {
+    "id": "PTPLATF",
+    "name": "Platform",
+    "description": "Core infrastructure: Kubernetes, networking, CI/CD and shared databases.",
+    "default_role": "manager"
+  },
+  {
+    "id": "PTPAYMT",
+    "name": "Payments",
+    "description": "Card processing, payouts and the payments gateway.",
+    "default_role": "manager"
+  },
+  {
+    "id": "PTDBREL",
+    "name": "Database Reliability",
+    "description": "Owns database operations, replication and backups.",
+    "default_role": "manager"
+  },
+  {
+    "id": "PTCOMRC",
+    "name": "Commerce",
+    "description": "Checkout, cart and storefront.",
+    "default_role": "manager"
+  }
+]

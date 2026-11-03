@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"call_aws","arguments":{"cli_command":["aws iam attach-user-policy --user-name priya.raman-audit --policy-arn arn:aws:iam::aws:policy/SecurityAudit","aws iam add-user-to-group --group-name auditors --user-name priya.raman-audit"]}}}

@@ -1,0 +1,73 @@
+[
+  {
+    "id": "PCE0001",
+    "summary": "Deploy checkout-api release checkout-api@2026.10.19 to production",
+    "timestamp": "2026-10-19T12:00:00Z",
+    "services": [
+      {
+        "id": "PSVCHKA",
+        "type": "service_reference"
+      }
+    ],
+    "integration": {
+      "id": "PINTGH1",
+      "type": "inbound_integration_reference",
+      "summary": "GitHub Actions"
+    },
+    "source": "github-actions",
+    "links": [
+      {
+        "href": "https://github.com/lumenlabs/checkout-api/releases/tag/checkout-api@2026.10.19",
+        "text": "Release checkout-api@2026.10.19"
+      }
+    ],
+    "custom_details": {
+      "release": "checkout-api@2026.10.19",
+      "author": "theo.brown",
+      "environment": "production"
+    }
+  },
+  {
+    "id": "PCE0002",
+    "summary": "Deploy checkout-api release 2026.10.30.1 to staging",
+    "timestamp": "2026-10-20T12:58:00Z",
+    "services": [
+      {
+        "id": "PSVCHKS",
+        "type": "service_reference"
+      }
+    ],
+    "integration": {
+      "id": "PINTGH1",
+      "type": "inbound_integration_reference",
+      "summary": "GitHub Actions"
+    },
+    "source": "github-actions",
+    "custom_details": {
+      "release": "2026.10.30.1",
+      "author": "lena.weber",
+      "environment": "staging"
+    }
+  },
+  {
+    "id": "PCE0003",
+    "summary": "Increase orders-db max_wal_size to 8GB",
+    "timestamp": "2026-10-20T11:50:00Z",
+    "services": [
+      {
+        "id": "PSVORDB",
+        "type": "service_reference"
+      }
+    ],
+    "integration": {
+      "id": "PINTTF1",
+      "type": "inbound_integration_reference",
+      "summary": "Terraform Cloud"
+    },
+    "source": "terraform",
+    "custom_details": {
+      "workspace": "orders-db-prod",
+      "run": "run-8KqW2"
+    }
+  }
+]

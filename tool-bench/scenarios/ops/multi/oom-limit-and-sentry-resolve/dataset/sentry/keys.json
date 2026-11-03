@@ -1,0 +1,90 @@
+[
+  {
+    "_key": "storefront-web/Default",
+    "id": "5b2f0c9e81d34a7f9c6e0b1d2a3f4e5c",
+    "name": "Default",
+    "project": "storefront-web",
+    "public": "5b2f0c9e81d34a7f9c6e0b1d2a3f4e5c",
+    "secret": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+    "isActive": true,
+    "rateLimit": null,
+    "dateCreated": "2023-02-07T21:20:13Z"
+  },
+  {
+    "_key": "admin-dashboard/Default",
+    "id": "8c41d0e2f3a54b6c9d7e8f9a0b1c2d3e",
+    "name": "Default",
+    "project": "admin-dashboard",
+    "public": "8c41d0e2f3a54b6c9d7e8f9a0b1c2d3e",
+    "secret": "1a2b3c4d5e6f708192a3b4c5d6e7f809",
+    "isActive": true,
+    "rateLimit": null,
+    "dateCreated": "2023-05-12T01:37:09Z"
+  },
+  {
+    "_key": "checkout-api/Default",
+    "id": "c7d2e9f04a1b4c3d8e5f6a7b8c9d0e1f",
+    "name": "Default",
+    "project": "checkout-api",
+    "public": "c7d2e9f04a1b4c3d8e5f6a7b8c9d0e1f",
+    "secret": "2b3c4d5e6f708192a3b4c5d6e7f8091a",
+    "isActive": true,
+    "rateLimit": null,
+    "dateCreated": "2023-03-15T03:45:40Z"
+  },
+  {
+    "_key": "checkout-api/staging",
+    "id": "d1e2f3a4b5c64d7e8f90a1b2c3d4e5f6",
+    "name": "staging",
+    "project": "checkout-api",
+    "public": "d1e2f3a4b5c64d7e8f90a1b2c3d4e5f6",
+    "secret": "3c4d5e6f708192a3b4c5d6e7f8091a2b",
+    "isActive": true,
+    "rateLimit": null,
+    "dateCreated": "2024-05-02T20:15:00Z"
+  },
+  {
+    "_key": "payments-worker/Default",
+    "id": "e3f4a5b6c7d84e9fa0b1c2d3e4f5a6b7",
+    "name": "Default",
+    "project": "payments-worker",
+    "public": "e3f4a5b6c7d84e9fa0b1c2d3e4f5a6b7",
+    "secret": "4d5e6f708192a3b4c5d6e7f8091a2b3c",
+    "isActive": true,
+    "rateLimit": null,
+    "dateCreated": "2024-01-22T22:17:18Z"
+  },
+  {
+    "_key": "ios-app/Default",
+    "id": "f5a6b7c8d9e04f1a2b3c4d5e6f7a8b9c",
+    "name": "Default",
+    "project": "ios-app",
+    "public": "f5a6b7c8d9e04f1a2b3c4d5e6f7a8b9c",
+    "secret": "5e6f708192a3b4c5d6e7f8091a2b3c4d",
+    "isActive": true,
+    "rateLimit": null,
+    "dateCreated": "2024-09-10T00:55:00Z"
+  },
+  {
+    "_key": "report-builder/Default",
+    "id": "a9b8c7d6e5f44a3b2c1d0e9f8a7b6c5d",
+    "name": "Default",
+    "project": "report-builder",
+    "public": "a9b8c7d6e5f44a3b2c1d0e9f8a7b6c5d",
+    "secret": "6f708192a3b4c5d6e7f8091a2b3c4d5e",
+    "isActive": true,
+    "rateLimit": null,
+    "dateCreated": "2024-03-04T09:21:00Z"
+  },
+  {
+    "_key": "billing-exporter/Default",
+    "id": "b0c1d2e3f4a54b6c7d8e9f0a1b2c3d4e",
+    "name": "Default",
+    "project": "billing-exporter",
+    "public": "b0c1d2e3f4a54b6c7d8e9f0a1b2c3d4e",
+    "secret": "708192a3b4c5d6e7f8091a2b3c4d5e6f",
+    "isActive": true,
+    "rateLimit": null,
+    "dateCreated": "2024-06-11T13:01:00Z"
+  }
+]

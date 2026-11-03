@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"apply_migration","arguments":{"name":"enable_rls_on_invoices","project_id":"qmvbxtzkplrnwdhyfaco","query":"alter table public.invoices enable row level security;"}}}

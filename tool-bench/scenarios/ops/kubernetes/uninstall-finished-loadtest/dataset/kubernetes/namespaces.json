@@ -1,0 +1,145 @@
+[
+  {
+    "_key": "default",
+    "metadata": {
+      "name": "default",
+      "uid": "f2fbe20f-ffe1-4641-a177-030dcb8915c3",
+      "resourceVersion": "41017",
+      "creationTimestamp": "2025-09-30T16:20:00Z",
+      "labels": {
+        "kubernetes.io/metadata.name": "default"
+      }
+    },
+    "spec": {
+      "finalizers": [
+        "kubernetes"
+      ]
+    },
+    "status": {
+      "phase": "Active"
+    }
+  },
+  {
+    "_key": "kube-system",
+    "metadata": {
+      "name": "kube-system",
+      "uid": "3f0dc022-cc97-4aae-af9c-44ce98b4c6d2",
+      "resourceVersion": "41051",
+      "creationTimestamp": "2025-09-30T16:20:00Z",
+      "labels": {
+        "kubernetes.io/metadata.name": "kube-system"
+      }
+    },
+    "spec": {
+      "finalizers": [
+        "kubernetes"
+      ]
+    },
+    "status": {
+      "phase": "Active"
+    }
+  },
+  {
+    "_key": "kube-public",
+    "metadata": {
+      "name": "kube-public",
+      "uid": "030efa4c-fda2-4ef9-a348-7eb618da9e1f",
+      "resourceVersion": "41085",
+      "creationTimestamp": "2025-09-30T16:20:00Z",
+      "labels": {
+        "kubernetes.io/metadata.name": "kube-public"
+      }
+    },
+    "spec": {
+      "finalizers": [
+        "kubernetes"
+      ]
+    },
+    "status": {
+      "phase": "Active"
+    }
+  },
+  {
+    "_key": "kube-node-lease",
+    "metadata": {
+      "name": "kube-node-lease",
+      "uid": "62cddf7a-bb68-4a19-a16d-cf532029c214",
+      "resourceVersion": "41119",
+      "creationTimestamp": "2025-09-30T16:20:00Z",
+      "labels": {
+        "kubernetes.io/metadata.name": "kube-node-lease"
+      }
+    },
+    "spec": {
+      "finalizers": [
+        "kubernetes"
+      ]
+    },
+    "status": {
+      "phase": "Active"
+    }
+  },
+  {
+    "_key": "perf",
+    "metadata": {
+      "name": "perf",
+      "uid": "d36c919f-dc1b-4d82-a157-4bc545aa47b6",
+      "resourceVersion": "41323",
+      "creationTimestamp": "2026-08-06T16:20:00Z",
+      "labels": {
+        "kubernetes.io/metadata.name": "perf",
+        "team": "platform"
+      }
+    },
+    "spec": {
+      "finalizers": [
+        "kubernetes"
+      ]
+    },
+    "status": {
+      "phase": "Active"
+    }
+  },
+  {
+    "_key": "perf-staging",
+    "metadata": {
+      "name": "perf-staging",
+      "uid": "494de662-b9eb-4d09-aba7-516b884fd195",
+      "resourceVersion": "41357",
+      "creationTimestamp": "2026-08-06T16:20:00Z",
+      "labels": {
+        "kubernetes.io/metadata.name": "perf-staging",
+        "team": "platform"
+      }
+    },
+    "spec": {
+      "finalizers": [
+        "kubernetes"
+      ]
+    },
+    "status": {
+      "phase": "Active"
+    }
+  },
+  {
+    "_key": "checkout",
+    "metadata": {
+      "name": "checkout",
+      "uid": "f199ca97-2783-4d2d-a8d3-d02d66a0edaf",
+      "resourceVersion": "41391",
+      "creationTimestamp": "2026-08-06T16:20:00Z",
+      "labels": {
+        "kubernetes.io/metadata.name": "checkout",
+        "team": "checkout"
+      }
+    },
+    "spec": {
+      "finalizers": [
+        "kubernetes"
+      ]
+    },
+    "status": {
+      "phase": "Active"
+    }
+  }
+]

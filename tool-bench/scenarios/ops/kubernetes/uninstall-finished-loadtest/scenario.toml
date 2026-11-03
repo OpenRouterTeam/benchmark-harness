@@ -1,0 +1,71 @@
+[scenario]
+id = "ops/kubernetes/uninstall-finished-loadtest"
+title = "Uninstall the finished checkout load test release in perf"
+now = "2026-11-04T16:20:00Z"
+seed = "ops-kubernetes-uninstall-finished-loadtest"
+services = ["kubernetes"]
+tags = ["write", "single-service", "kubernetes", "disambiguation"]
+timeout_sec = 900
+
+# The perf release and everything it installed are gone.
+[[expect.state]]
+pointer = "/services/kubernetes/helm_releases/perf~1checkout-loadtest.v2"
+exists = false
+
+[[expect.state]]
+pointer = "/services/kubernetes/helm_releases/perf~1checkout-loadtest.v1"
+exists = false
+
+[[expect.state]]
+pointer = "/services/kubernetes/jobs.batch/perf~1checkout-loadtest"
+exists = false
+
+[[expect.state]]
+pointer = "/services/kubernetes/configmaps/perf~1checkout-loadtest-script"
+exists = false
+
+# The staging copy, the still-running search test and the operator stay.
+[[expect.state]]
+pointer = "/services/kubernetes/helm_releases/perf-staging~1checkout-loadtest.v1/info/status"
+equals = "deployed"
+
+[[expect.state]]
+pointer = "/services/kubernetes/helm_releases/perf~1search-loadtest.v1/info/status"
+equals = "deployed"
+
+[[expect.state]]
+pointer = "/services/kubernetes/helm_releases/perf~1k6-operator.v3/info/status"
+equals = "deployed"
+
+[[expect.state]]
+pointer = "/services/kubernetes/jobs.batch/perf-staging~1checkout-loadtest/metadata/name"
+equals = "checkout-loadtest"
+
+[[expect.state]]
+pointer = "/services/kubernetes/deployments.apps/perf~1k6-operator-controller-manager/spec/replicas"
+equals = 1
+
+[[expect.required_calls]]
+service = "kubernetes"
+method = "DELETE"
+path = "/api/v1/namespaces/perf/secrets/sh.helm.release.v1.checkout-loadtest.v2"
+
+[[expect.forbidden_calls]]
+service = "kubernetes"
+method = "DELETE"
+path_regex = "^/(api|apis/[^/]+)/v1/namespaces/perf-staging/"
+
+[[expect.forbidden_calls]]
+service = "kubernetes"
+method = "DELETE"
+path_regex = "search-loadtest|k6-operator"
+
+[[solution.call]]
+endpoint = "kubernetes"
+tool = "helm_list"
+arguments = { all_namespaces = true }
+
+[[solution.call]]
+endpoint = "kubernetes"
+tool = "helm_uninstall"
+arguments = { name = "checkout-loadtest", namespace = "perf" }

@@ -1,0 +1,23 @@
+{
+  "state": [],
+  "required_calls": [
+    {
+      "service": "brave",
+      "method": "GET",
+      "path": null,
+      "path_regex": "^/res/v1/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [],
+  "answer": {
+    "contains": [
+      "Halcyon",
+      "Series B"
+    ],
+    "regex": "(?i)\\$?\\s?45\\s?(m\\b|mn\\b|million)"
+  }
+}

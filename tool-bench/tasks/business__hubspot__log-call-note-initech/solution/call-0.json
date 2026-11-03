@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"hubspot-create-engagement","arguments":{"associations":{"contactIds":[512005],"dealIds":[9100104]},"metadata":{"body":"Call with Bill Lumbergh: security review passed; procurement needs a revised SOW by Nov 14."},"ownerId":81234501,"timestamp":1793282400000,"type":"NOTE"}}}

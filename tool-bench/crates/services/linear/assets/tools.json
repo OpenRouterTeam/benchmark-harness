@@ -1,0 +1,4126 @@
+{
+ "linear_addAttachment": {
+  "array_out": false,
+  "props": {
+   "commentBody": {
+    "type": "string"
+   },
+   "groupBySource": {
+    "type": "boolean"
+   },
+   "iconUrl": {
+    "type": "string"
+   },
+   "issueId": {
+    "type": "string"
+   },
+   "metadata": {
+    "type": "object"
+   },
+   "subtitle": {
+    "type": "string"
+   },
+   "title": {
+    "type": "string"
+   },
+   "url": {
+    "nullable": true,
+    "type": "string"
+   }
+  },
+  "required": [
+   "issueId",
+   "title",
+   "url"
+  ]
+ },
+ "linear_addIssueLabel": {
+  "array_out": false,
+  "props": {
+   "issueId": {
+    "type": "string"
+   },
+   "labelId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "issueId",
+   "labelId"
+  ]
+ },
+ "linear_addIssueToCycle": {
+  "array_out": false,
+  "props": {
+   "cycleId": {
+    "type": "string"
+   },
+   "issueId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "issueId",
+   "cycleId"
+  ]
+ },
+ "linear_addIssueToProject": {
+  "array_out": false,
+  "props": {
+   "issueId": {
+    "type": "string"
+   },
+   "projectId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "issueId",
+   "projectId"
+  ]
+ },
+ "linear_addIssueToRelease": {
+  "array_out": false,
+  "props": {
+   "issueId": {
+    "type": "string"
+   },
+   "releaseId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "issueId",
+   "releaseId"
+  ]
+ },
+ "linear_addProjectMember": {
+  "array_out": false,
+  "props": {
+   "projectId": {
+    "type": "string"
+   },
+   "userId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "projectId",
+   "userId"
+  ]
+ },
+ "linear_addProjectToInitiative": {
+  "array_out": false,
+  "props": {
+   "initiativeId": {
+    "type": "string"
+   },
+   "projectId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "initiativeId",
+   "projectId"
+  ]
+ },
+ "linear_addToFavorites": {
+  "array_out": false,
+  "props": {
+   "entityId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "entityId"
+  ]
+ },
+ "linear_addUserToTeam": {
+  "array_out": false,
+  "props": {
+   "owner": {
+    "type": "boolean"
+   },
+   "sortOrder": {
+    "type": "number"
+   },
+   "teamId": {
+    "type": "string"
+   },
+   "userId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "teamId",
+   "userId"
+  ]
+ },
+ "linear_archiveCustomerNeed": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_archiveDocument": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_archiveInitiative": {
+  "array_out": false,
+  "props": {
+   "initiativeId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "initiativeId"
+  ]
+ },
+ "linear_archiveInitiativeUpdate": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_archiveIssue": {
+  "array_out": false,
+  "props": {
+   "issueId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "issueId"
+  ]
+ },
+ "linear_archiveManagedOAuthApplication": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_archiveMilestone": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_archiveProject": {
+  "array_out": false,
+  "props": {
+   "projectId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "projectId"
+  ]
+ },
+ "linear_archiveProjectUpdate": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_archiveRelease": {
+  "array_out": false,
+  "props": {
+   "releaseId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "releaseId"
+  ]
+ },
+ "linear_archiveReleasePipeline": {
+  "array_out": false,
+  "props": {
+   "pipelineId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "pipelineId"
+  ]
+ },
+ "linear_archiveReleaseStage": {
+  "array_out": false,
+  "props": {
+   "stageId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "stageId"
+  ]
+ },
+ "linear_archiveRoadmap": {
+  "array_out": false,
+  "props": {
+   "roadmapId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "roadmapId"
+  ]
+ },
+ "linear_archiveTeam": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_archiveTemplate": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_assignIssue": {
+  "array_out": false,
+  "props": {
+   "assigneeId": {
+    "type": "string"
+   },
+   "issueId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "issueId",
+   "assigneeId"
+  ]
+ },
+ "linear_completeCycle": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_completeRelease": {
+  "array_out": false,
+  "props": {
+   "pipelineId": {
+    "type": "string"
+   },
+   "version": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "pipelineId"
+  ]
+ },
+ "linear_convertIssueToSubtask": {
+  "array_out": false,
+  "props": {
+   "issueId": {
+    "type": "string"
+   },
+   "parentIssueId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "issueId",
+   "parentIssueId"
+  ]
+ },
+ "linear_createComment": {
+  "array_out": false,
+  "props": {
+   "body": {
+    "type": "string"
+   },
+   "documentContentId": {
+    "type": "string"
+   },
+   "initiativeId": {
+    "type": "string"
+   },
+   "initiativeUpdateId": {
+    "type": "string"
+   },
+   "issueId": {
+    "type": "string"
+   },
+   "parentId": {
+    "type": "string"
+   },
+   "postId": {
+    "type": "string"
+   },
+   "projectId": {
+    "type": "string"
+   },
+   "projectUpdateId": {
+    "type": "string"
+   },
+   "quotedText": {
+    "type": "string"
+   },
+   "subscriberIds": {
+    "type": "array"
+   }
+  },
+  "required": [
+   "body"
+  ]
+ },
+ "linear_createCustomer": {
+  "array_out": false,
+  "props": {
+   "domains": {
+    "type": "array"
+   },
+   "externalIds": {
+    "type": "array"
+   },
+   "logoUrl": {
+    "type": "string"
+   },
+   "mainSourceId": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "ownerId": {
+    "type": "string"
+   },
+   "revenue": {
+    "type": "number"
+   },
+   "size": {
+    "type": "number"
+   },
+   "slackChannelId": {
+    "type": "string"
+   },
+   "statusId": {
+    "type": "string"
+   },
+   "tierId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "name"
+  ]
+ },
+ "linear_createCustomerNeed": {
+  "array_out": false,
+  "props": {
+   "attachmentId": {
+    "type": "string"
+   },
+   "attachmentUrl": {
+    "type": "string"
+   },
+   "body": {
+    "type": "string"
+   },
+   "commentId": {
+    "type": "string"
+   },
+   "createdAt": {
+    "type": "string"
+   },
+   "customerExternalId": {
+    "type": "string"
+   },
+   "customerId": {
+    "type": "string"
+   },
+   "issueId": {
+    "type": "string"
+   },
+   "priority": {
+    "type": "number"
+   },
+   "projectId": {
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_createCustomerNeedFromAttachment": {
+  "array_out": false,
+  "props": {
+   "attachmentId": {
+    "type": "string"
+   },
+   "customerExternalId": {
+    "type": "string"
+   },
+   "customerId": {
+    "type": "string"
+   },
+   "priority": {
+    "type": "number"
+   }
+  },
+  "required": [
+   "attachmentId"
+  ]
+ },
+ "linear_createCycle": {
+  "array_out": false,
+  "props": {
+   "completedAt": {
+    "type": "string"
+   },
+   "description": {
+    "type": "string"
+   },
+   "endsAt": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "startsAt": {
+    "type": "string"
+   },
+   "teamId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "teamId",
+   "startsAt",
+   "endsAt"
+  ]
+ },
+ "linear_createDocument": {
+  "array_out": false,
+  "props": {
+   "color": {
+    "type": "string"
+   },
+   "content": {
+    "type": "string"
+   },
+   "cycleId": {
+    "type": "string"
+   },
+   "icon": {
+    "type": "string"
+   },
+   "initiativeId": {
+    "type": "string"
+   },
+   "issueId": {
+    "type": "string"
+   },
+   "lastAppliedTemplateId": {
+    "type": "string"
+   },
+   "projectId": {
+    "type": "string"
+   },
+   "releaseId": {
+    "type": "string"
+   },
+   "resourceFolderId": {
+    "type": "string"
+   },
+   "sortOrder": {
+    "type": "number"
+   },
+   "teamId": {
+    "type": "string"
+   },
+   "title": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "title"
+  ]
+ },
+ "linear_createInitiative": {
+  "array_out": false,
+  "props": {
+   "color": {
+    "type": "string"
+   },
+   "content": {
+    "type": "string"
+   },
+   "description": {
+    "type": "string"
+   },
+   "icon": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "ownerId": {
+    "type": "string"
+   },
+   "status": {
+    "enum": [
+     "Planned",
+     "Active",
+     "Completed"
+    ],
+    "type": "string"
+   },
+   "targetDate": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "name"
+  ]
+ },
+ "linear_createInitiativeUpdate": {
+  "array_out": false,
+  "props": {
+   "body": {
+    "type": "string"
+   },
+   "health": {
+    "enum": [
+     "onTrack",
+     "atRisk",
+     "offTrack"
+    ],
+    "type": "string"
+   },
+   "initiativeId": {
+    "type": "string"
+   },
+   "isDiffHidden": {
+    "type": "boolean"
+   }
+  },
+  "required": [
+   "initiativeId",
+   "body"
+  ]
+ },
+ "linear_createIssue": {
+  "array_out": false,
+  "props": {
+   "assigneeId": {
+    "type": "string"
+   },
+   "cycleId": {
+    "type": "string"
+   },
+   "description": {
+    "type": "string"
+   },
+   "dueDate": {
+    "type": "string"
+   },
+   "estimate": {
+    "type": "number"
+   },
+   "labelIds": {
+    "type": "array"
+   },
+   "parentId": {
+    "type": "string"
+   },
+   "priority": {
+    "type": "number"
+   },
+   "projectId": {
+    "type": "string"
+   },
+   "projectMilestoneId": {
+    "type": "string"
+   },
+   "sortOrder": {
+    "type": "number"
+   },
+   "stateId": {
+    "type": "string"
+   },
+   "subscriberIds": {
+    "type": "array"
+   },
+   "teamId": {
+    "type": "string"
+   },
+   "templateId": {
+    "type": "string"
+   },
+   "title": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "title",
+   "teamId"
+  ]
+ },
+ "linear_createIssueFromTemplate": {
+  "array_out": false,
+  "props": {
+   "cycleId": {
+    "type": "string"
+   },
+   "description": {
+    "type": "string"
+   },
+   "priority": {
+    "type": "number"
+   },
+   "projectId": {
+    "type": "string"
+   },
+   "projectMilestoneId": {
+    "type": "string"
+   },
+   "teamId": {
+    "type": "string"
+   },
+   "templateId": {
+    "type": "string"
+   },
+   "title": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "teamId",
+   "templateId"
+  ]
+ },
+ "linear_createIssueRelation": {
+  "array_out": false,
+  "props": {
+   "issueId": {
+    "type": "string"
+   },
+   "relatedIssueId": {
+    "type": "string"
+   },
+   "type": {
+    "enum": [
+     "blocks",
+     "blocked_by",
+     "related",
+     "duplicate",
+     "duplicate_of"
+    ],
+    "type": "string"
+   }
+  },
+  "required": [
+   "issueId",
+   "relatedIssueId",
+   "type"
+  ]
+ },
+ "linear_createIssueTemplate": {
+  "array_out": false,
+  "props": {
+   "description": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "sortOrder": {
+    "type": "number"
+   },
+   "teamId": {
+    "type": "string"
+   },
+   "templateData": {
+    "type": "object"
+   }
+  },
+  "required": [
+   "name",
+   "templateData"
+  ]
+ },
+ "linear_createManagedOAuthApplication": {
+  "array_out": false,
+  "props": {
+   "confirmSecretExposure": {
+    "type": "boolean"
+   },
+   "description": {
+    "type": "string"
+   },
+   "developer": {
+    "type": "string"
+   },
+   "developerUrl": {
+    "type": "string"
+   },
+   "grantTypes": {
+    "items_enum": [
+     "authorization_code",
+     "client_credentials"
+    ],
+    "type": "array"
+   },
+   "idempotencyKey": {
+    "type": "string"
+   },
+   "imageUrl": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "redirectUris": {
+    "type": "array"
+   },
+   "webhookResourceTypes": {
+    "items_enum": [
+     "AgentSessionEvent",
+     "AppUserNotification",
+     "Attachment",
+     "Comment",
+     "Customer",
+     "CustomerNeed",
+     "Cycle",
+     "Document",
+     "Initiative",
+     "InitiativeUpdate",
+     "Issue",
+     "IssueLabel",
+     "IssueSLA",
+     "OAuthAuthorization",
+     "PermissionChange",
+     "Project",
+     "ProjectLabel",
+     "ProjectUpdate",
+     "Reaction",
+     "Release",
+     "ReleaseNote",
+     "User"
+    ],
+    "type": "array"
+   },
+   "webhookUrl": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "name",
+   "developer",
+   "redirectUris",
+   "confirmSecretExposure"
+  ]
+ },
+ "linear_createMilestone": {
+  "array_out": false,
+  "props": {
+   "description": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "projectId": {
+    "type": "string"
+   },
+   "sortOrder": {
+    "type": "number"
+   },
+   "targetDate": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "name",
+   "projectId"
+  ]
+ },
+ "linear_createOAuthClientCredentialsToken": {
+  "array_out": false,
+  "props": {
+   "clientId": {
+    "type": "string"
+   },
+   "clientSecret": {
+    "type": "string"
+   },
+   "confirmScopeChangeRisk": {
+    "type": "boolean"
+   },
+   "confirmSecretExposure": {
+    "type": "boolean"
+   },
+   "scopes": {
+    "items_enum": [
+     "read",
+     "write",
+     "issues:create",
+     "comments:create",
+     "timeSchedule:write",
+     "app:assignable",
+     "app:mentionable",
+     "customer:read",
+     "customer:write",
+     "initiative:read",
+     "initiative:write"
+    ],
+    "type": "array"
+   }
+  },
+  "required": [
+   "clientId",
+   "clientSecret",
+   "scopes",
+   "confirmSecretExposure",
+   "confirmScopeChangeRisk"
+  ]
+ },
+ "linear_createProject": {
+  "array_out": false,
+  "props": {
+   "color": {
+    "type": "string"
+   },
+   "content": {
+    "type": "string"
+   },
+   "description": {
+    "type": "string"
+   },
+   "icon": {
+    "type": "string"
+   },
+   "leadId": {
+    "type": "string"
+   },
+   "memberIds": {
+    "type": "array"
+   },
+   "name": {
+    "type": "string"
+   },
+   "sortOrder": {
+    "type": "number"
+   },
+   "startDate": {
+    "type": "string"
+   },
+   "state": {
+    "type": "string"
+   },
+   "targetDate": {
+    "type": "string"
+   },
+   "teamIds": {
+    "type": "array"
+   }
+  },
+  "required": [
+   "name",
+   "teamIds"
+  ]
+ },
+ "linear_createProjectUpdate": {
+  "array_out": false,
+  "props": {
+   "body": {
+    "type": "string"
+   },
+   "health": {
+    "enum": [
+     "onTrack",
+     "atRisk",
+     "offTrack"
+    ],
+    "type": "string"
+   },
+   "isDiffHidden": {
+    "type": "boolean"
+   },
+   "projectId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "projectId",
+   "body"
+  ]
+ },
+ "linear_createRelease": {
+  "array_out": false,
+  "props": {
+   "commitSha": {
+    "type": "string"
+   },
+   "completedAt": {
+    "type": "string"
+   },
+   "createdAt": {
+    "type": "string"
+   },
+   "description": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "pipelineId": {
+    "type": "string"
+   },
+   "stageId": {
+    "type": "string"
+   },
+   "startDate": {
+    "type": "string"
+   },
+   "startedAt": {
+    "type": "string"
+   },
+   "targetDate": {
+    "type": "string"
+   },
+   "version": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "pipelineId",
+   "name"
+  ]
+ },
+ "linear_createReleaseNote": {
+  "array_out": false,
+  "props": {
+   "content": {
+    "type": "string"
+   },
+   "pipelineId": {
+    "type": "string"
+   },
+   "rangeFromReleaseId": {
+    "type": "string"
+   },
+   "rangeToReleaseId": {
+    "type": "string"
+   },
+   "releaseIds": {
+    "type": "array"
+   }
+  },
+  "required": [
+   "pipelineId"
+  ]
+ },
+ "linear_createReleasePipeline": {
+  "array_out": false,
+  "props": {
+   "includePathPatterns": {
+    "type": "array"
+   },
+   "isProduction": {
+    "type": "boolean"
+   },
+   "name": {
+    "type": "string"
+   },
+   "slugId": {
+    "type": "string"
+   },
+   "teamIds": {
+    "type": "array"
+   },
+   "type": {
+    "enum": [
+     "continuous",
+     "scheduled"
+    ],
+    "type": "string"
+   }
+  },
+  "required": [
+   "name",
+   "teamIds"
+  ]
+ },
+ "linear_createReleaseStage": {
+  "array_out": false,
+  "props": {
+   "color": {
+    "type": "string"
+   },
+   "frozen": {
+    "type": "boolean"
+   },
+   "id": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "pipelineId": {
+    "type": "string"
+   },
+   "position": {
+    "type": "number"
+   },
+   "type": {
+    "enum": [
+     "planned",
+     "started",
+     "completed",
+     "canceled"
+    ],
+    "type": "string"
+   }
+  },
+  "required": [
+   "pipelineId",
+   "name",
+   "color",
+   "position",
+   "type"
+  ]
+ },
+ "linear_createRoadmap": {
+  "array_out": false,
+  "props": {
+   "color": {
+    "type": "string"
+   },
+   "description": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "ownerId": {
+    "type": "string"
+   },
+   "sortOrder": {
+    "type": "number"
+   }
+  },
+  "required": [
+   "name"
+  ]
+ },
+ "linear_createSavedView": {
+  "array_out": false,
+  "props": {
+   "color": {
+    "type": "string"
+   },
+   "description": {
+    "type": "string"
+   },
+   "filterData": {
+    "type": "object"
+   },
+   "filters": {
+    "type": "object"
+   },
+   "icon": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "ownerId": {
+    "type": "string"
+   },
+   "projectFilterData": {
+    "type": "object"
+   },
+   "projectId": {
+    "type": "string"
+   },
+   "shared": {
+    "type": "boolean"
+   },
+   "teamId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "name"
+  ]
+ },
+ "linear_createTeam": {
+  "array_out": false,
+  "props": {
+   "color": {
+    "nullable": true,
+    "type": "string"
+   },
+   "description": {
+    "nullable": true,
+    "type": "string"
+   },
+   "icon": {
+    "nullable": true,
+    "type": "string"
+   },
+   "key": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "parentId": {
+    "type": "string"
+   },
+   "private": {
+    "type": "boolean"
+   },
+   "timezone": {
+    "type": "string"
+   },
+   "visibility": {
+    "enum": [
+     "public",
+     "private"
+    ],
+    "type": "string"
+   }
+  },
+  "required": [
+   "name"
+  ]
+ },
+ "linear_createTeamLabel": {
+  "array_out": false,
+  "props": {
+   "color": {
+    "type": "string"
+   },
+   "description": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "parentId": {
+    "type": "string"
+   },
+   "teamId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "teamId",
+   "name"
+  ]
+ },
+ "linear_createWebhook": {
+  "array_out": false,
+  "props": {
+   "allPublicTeams": {
+    "type": "boolean"
+   },
+   "enabled": {
+    "type": "boolean"
+   },
+   "label": {
+    "type": "string"
+   },
+   "resourceTypes": {
+    "type": "array"
+   },
+   "secret": {
+    "type": "string"
+   },
+   "teamId": {
+    "type": "string"
+   },
+   "url": {
+    "nullable": true,
+    "type": "string"
+   }
+  },
+  "required": [
+   "url",
+   "resourceTypes"
+  ]
+ },
+ "linear_createWorkflowState": {
+  "array_out": false,
+  "props": {
+   "color": {
+    "type": "string"
+   },
+   "description": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "position": {
+    "type": "number"
+   },
+   "teamId": {
+    "type": "string"
+   },
+   "type": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "name",
+   "teamId",
+   "type",
+   "color"
+  ]
+ },
+ "linear_deleteComment": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_deleteCustomer": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_deleteCustomerNeed": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_deleteInitiative": {
+  "array_out": false,
+  "props": {
+   "initiativeId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "initiativeId"
+  ]
+ },
+ "linear_deleteIssueRelation": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_deleteProjectUpdate": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_deleteReleaseNote": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_deleteReleasePipeline": {
+  "array_out": false,
+  "props": {
+   "pipelineId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "pipelineId"
+  ]
+ },
+ "linear_deleteSavedView": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_deleteWebhook": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_duplicateIssue": {
+  "array_out": false,
+  "props": {
+   "issueId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "issueId"
+  ]
+ },
+ "linear_generateOAuthApplicationSetup": {
+  "array_out": false,
+  "props": {
+   "description": {
+    "type": "string"
+   },
+   "developer": {
+    "type": "string"
+   },
+   "developerUrl": {
+    "type": "string"
+   },
+   "distribution": {
+    "enum": [
+     "private",
+     "public"
+    ],
+    "type": "string"
+   },
+   "grantTypes": {
+    "items_enum": [
+     "authorization_code",
+     "client_credentials"
+    ],
+    "type": "array"
+   },
+   "imageUrl": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "redirectUris": {
+    "type": "array"
+   },
+   "webhookEnabled": {
+    "type": "boolean"
+   },
+   "webhookResourceTypes": {
+    "items_enum": [
+     "AgentSessionEvent",
+     "AppUserNotification",
+     "Attachment",
+     "Comment",
+     "Customer",
+     "CustomerNeed",
+     "Cycle",
+     "Document",
+     "Initiative",
+     "InitiativeUpdate",
+     "Issue",
+     "IssueLabel",
+     "IssueSLA",
+     "OAuthAuthorization",
+     "PermissionChange",
+     "Project",
+     "ProjectLabel",
+     "ProjectUpdate",
+     "Reaction",
+     "Release",
+     "ReleaseNote",
+     "User"
+    ],
+    "type": "array"
+   },
+   "webhookUrl": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "name",
+   "developer",
+   "redirectUris"
+  ]
+ },
+ "linear_generateOAuthAuthorizationUrl": {
+  "array_out": false,
+  "props": {
+   "actor": {
+    "enum": [
+     "user",
+     "app"
+    ],
+    "type": "string"
+   },
+   "clientId": {
+    "type": "string"
+   },
+   "codeChallenge": {
+    "type": "string"
+   },
+   "promptConsent": {
+    "type": "boolean"
+   },
+   "redirectUri": {
+    "type": "string"
+   },
+   "scopes": {
+    "items_enum": [
+     "read",
+     "write",
+     "issues:create",
+     "comments:create",
+     "timeSchedule:write",
+     "admin",
+     "app:assignable",
+     "app:mentionable",
+     "customer:read",
+     "customer:write",
+     "initiative:read",
+     "initiative:write"
+    ],
+    "type": "array"
+   },
+   "state": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "clientId",
+   "redirectUri",
+   "scopes"
+  ]
+ },
+ "linear_getActiveCycle": {
+  "array_out": false,
+  "props": {
+   "teamId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "teamId"
+  ]
+ },
+ "linear_getAttachments": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "issueId": {
+    "type": "string"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   }
+  },
+  "required": [
+   "issueId"
+  ]
+ },
+ "linear_getAuthenticationSessions": {
+  "array_out": true,
+  "props": {},
+  "required": []
+ },
+ "linear_getComments": {
+  "array_out": true,
+  "props": {
+   "cursor": {
+    "type": "string"
+   },
+   "documentContentId": {
+    "type": "string"
+   },
+   "initiativeId": {
+    "type": "string"
+   },
+   "initiativeUpdateId": {
+    "type": "string"
+   },
+   "issueId": {
+    "type": "string"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "postId": {
+    "type": "string"
+   },
+   "projectId": {
+    "type": "string"
+   },
+   "projectUpdateId": {
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_getCustomFields": {
+  "array_out": true,
+  "props": {},
+  "required": []
+ },
+ "linear_getCustomerById": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_getCustomerNeedById": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_getCustomerNeeds": {
+  "array_out": true,
+  "props": {
+   "customerId": {
+    "type": "string"
+   },
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "issueId": {
+    "type": "string"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "priority": {
+    "type": "number"
+   },
+   "projectId": {
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_getCustomerStatuses": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_getCustomerTiers": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_getCustomers": {
+  "array_out": true,
+  "props": {
+   "domain": {
+    "type": "string"
+   },
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "name": {
+    "type": "string"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "ownerId": {
+    "type": "string"
+   },
+   "statusId": {
+    "type": "string"
+   },
+   "tierId": {
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_getCycleById": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_getCycleDocuments": {
+  "array_out": true,
+  "props": {
+   "cycleId": {
+    "type": "string"
+   },
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "title": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "cycleId"
+  ]
+ },
+ "linear_getCycleIssues": {
+  "array_out": true,
+  "props": {
+   "assigneeId": {
+    "type": "string"
+   },
+   "cycleId": {
+    "type": "string"
+   },
+   "includeCompleted": {
+    "type": "boolean"
+   },
+   "labelIds": {
+    "type": "array"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "states": {
+    "type": "array"
+   }
+  },
+  "required": [
+   "cycleId"
+  ]
+ },
+ "linear_getCycleStats": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_getCycles": {
+  "array_out": true,
+  "props": {
+   "limit": {
+    "type": "integer"
+   },
+   "teamId": {
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_getDocumentById": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_getDocumentContentHistory": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_getDocuments": {
+  "array_out": true,
+  "props": {
+   "cycleId": {
+    "type": "string"
+   },
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "initiativeId": {
+    "type": "string"
+   },
+   "issueId": {
+    "type": "string"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "projectId": {
+    "type": "string"
+   },
+   "releaseId": {
+    "type": "string"
+   },
+   "teamId": {
+    "type": "string"
+   },
+   "title": {
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_getFavoriteViews": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_getInitiativeById": {
+  "array_out": false,
+  "props": {
+   "includeProjects": {
+    "type": "boolean"
+   },
+   "initiativeId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "initiativeId"
+  ]
+ },
+ "linear_getInitiativeDocuments": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "initiativeId": {
+    "type": "string"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "title": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "initiativeId"
+  ]
+ },
+ "linear_getInitiativeProjects": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "initiativeId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "initiativeId"
+  ]
+ },
+ "linear_getInitiativeUpdateById": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_getInitiativeUpdates": {
+  "array_out": true,
+  "props": {
+   "initiativeId": {
+    "type": "string"
+   },
+   "limit": {
+    "type": "integer"
+   }
+  },
+  "required": [
+   "initiativeId"
+  ]
+ },
+ "linear_getInitiatives": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "number"
+   }
+  },
+  "required": []
+ },
+ "linear_getIntegrations": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_getIssueById": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_getIssueCustomFields": {
+  "array_out": false,
+  "props": {
+   "issueId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "issueId"
+  ]
+ },
+ "linear_getIssueDocuments": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "issueId": {
+    "type": "string"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "title": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "issueId"
+  ]
+ },
+ "linear_getIssueHistory": {
+  "array_out": false,
+  "props": {
+   "issueId": {
+    "type": "string"
+   },
+   "limit": {
+    "type": "number"
+   }
+  },
+  "required": [
+   "issueId"
+  ]
+ },
+ "linear_getIssueTemplateById": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_getIssueTemplates": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_getIssues": {
+  "array_out": true,
+  "props": {
+   "limit": {
+    "type": "number"
+   }
+  },
+  "required": []
+ },
+ "linear_getLabels": {
+  "array_out": true,
+  "props": {},
+  "required": []
+ },
+ "linear_getManagedOAuthApplicationById": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_getManagedOAuthApplications": {
+  "array_out": true,
+  "props": {},
+  "required": []
+ },
+ "linear_getMilestoneById": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_getMilestones": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "projectId": {
+    "type": "string"
+   },
+   "status": {
+    "enum": [
+     "done",
+     "next",
+     "overdue",
+     "unstarted"
+    ],
+    "type": "string"
+   },
+   "teamId": {
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_getNotifications": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_getOrganization": {
+  "array_out": false,
+  "props": {},
+  "required": []
+ },
+ "linear_getOrganizationAuditEvents": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_getProjectById": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_getProjectDocuments": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "projectId": {
+    "type": "string"
+   },
+   "title": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "projectId"
+  ]
+ },
+ "linear_getProjectIssues": {
+  "array_out": true,
+  "props": {
+   "assigneeId": {
+    "type": "string"
+   },
+   "cycleId": {
+    "type": "string"
+   },
+   "includeCompleted": {
+    "type": "boolean"
+   },
+   "labelIds": {
+    "type": "array"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "projectId": {
+    "type": "string"
+   },
+   "projectMilestoneId": {
+    "type": "string"
+   },
+   "states": {
+    "type": "array"
+   }
+  },
+  "required": [
+   "projectId"
+  ]
+ },
+ "linear_getProjectMembers": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "includeDisabled": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "projectId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "projectId"
+  ]
+ },
+ "linear_getProjectUpdateById": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_getProjectUpdates": {
+  "array_out": true,
+  "props": {
+   "limit": {
+    "type": "number"
+   },
+   "projectId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "projectId"
+  ]
+ },
+ "linear_getProjects": {
+  "array_out": true,
+  "props": {},
+  "required": []
+ },
+ "linear_getRateLimitStatus": {
+  "array_out": false,
+  "props": {},
+  "required": []
+ },
+ "linear_getReleaseById": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_getReleaseDocuments": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "releaseId": {
+    "type": "string"
+   },
+   "title": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "releaseId"
+  ]
+ },
+ "linear_getReleaseNoteById": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_getReleaseNotes": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_getReleasePipelineById": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_getReleasePipelines": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_getReleaseStages": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "pipelineId": {
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_getReleases": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "pipelineId": {
+    "type": "string"
+   },
+   "stageId": {
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_getRoadmapById": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_getRoadmaps": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_getSavedViews": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_getServerStatus": {
+  "array_out": false,
+  "props": {},
+  "required": []
+ },
+ "linear_getSubscriptions": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_getTeamDocuments": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "teamId": {
+    "type": "string"
+   },
+   "title": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "teamId"
+  ]
+ },
+ "linear_getTeamLabels": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "teamId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "teamId"
+  ]
+ },
+ "linear_getTeamMemberships": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "teamId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "teamId"
+  ]
+ },
+ "linear_getTeamResources": {
+  "array_out": false,
+  "props": {
+   "teamId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "teamId"
+  ]
+ },
+ "linear_getTeamTemplates": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "teamId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "teamId"
+  ]
+ },
+ "linear_getTeams": {
+  "array_out": true,
+  "props": {},
+  "required": []
+ },
+ "linear_getUnreadNotificationCount": {
+  "array_out": false,
+  "props": {
+   "limit": {
+    "type": "integer"
+   }
+  },
+  "required": []
+ },
+ "linear_getUserAuditEvents": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "userId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "userId"
+  ]
+ },
+ "linear_getUsers": {
+  "array_out": true,
+  "props": {},
+  "required": []
+ },
+ "linear_getViewer": {
+  "array_out": false,
+  "props": {},
+  "required": []
+ },
+ "linear_getWebhookById": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_getWebhooks": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "teamId": {
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_getWorkflowStates": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "teamId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "teamId"
+  ]
+ },
+ "linear_logoutAllSessions": {
+  "array_out": false,
+  "props": {},
+  "required": []
+ },
+ "linear_logoutOtherSessions": {
+  "array_out": false,
+  "props": {},
+  "required": []
+ },
+ "linear_logoutSession": {
+  "array_out": false,
+  "props": {
+   "sessionId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "sessionId"
+  ]
+ },
+ "linear_markAllNotificationsAsRead": {
+  "array_out": false,
+  "props": {
+   "limit": {
+    "type": "integer"
+   }
+  },
+  "required": []
+ },
+ "linear_markNotificationAsRead": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_removeFromFavorites": {
+  "array_out": false,
+  "props": {
+   "entityId": {
+    "type": "string"
+   },
+   "favoriteId": {
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_removeIssueFromCycle": {
+  "array_out": false,
+  "props": {
+   "cycleId": {
+    "type": "string"
+   },
+   "issueId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "issueId",
+   "cycleId"
+  ]
+ },
+ "linear_removeIssueFromProject": {
+  "array_out": false,
+  "props": {
+   "issueId": {
+    "type": "string"
+   },
+   "projectId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "issueId",
+   "projectId"
+  ]
+ },
+ "linear_removeIssueFromRelease": {
+  "array_out": false,
+  "props": {
+   "issueId": {
+    "type": "string"
+   },
+   "releaseId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "issueId",
+   "releaseId"
+  ]
+ },
+ "linear_removeIssueLabel": {
+  "array_out": false,
+  "props": {
+   "issueId": {
+    "type": "string"
+   },
+   "labelId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "issueId",
+   "labelId"
+  ]
+ },
+ "linear_removeProjectFromInitiative": {
+  "array_out": false,
+  "props": {
+   "initiativeId": {
+    "type": "string"
+   },
+   "projectId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "initiativeId",
+   "projectId"
+  ]
+ },
+ "linear_removeProjectMember": {
+  "array_out": false,
+  "props": {
+   "projectId": {
+    "type": "string"
+   },
+   "userId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "projectId",
+   "userId"
+  ]
+ },
+ "linear_removeUserFromTeam": {
+  "array_out": false,
+  "props": {
+   "alsoLeaveParentTeams": {
+    "type": "boolean"
+   },
+   "teamId": {
+    "type": "string"
+   },
+   "userId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "teamId",
+   "userId"
+  ]
+ },
+ "linear_rotateManagedOAuthApplicationSecret": {
+  "array_out": false,
+  "props": {
+   "confirmSecretExposure": {
+    "type": "boolean"
+   },
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id",
+   "confirmSecretExposure"
+  ]
+ },
+ "linear_rotateManagedOAuthApplicationWebhookSecret": {
+  "array_out": false,
+  "props": {
+   "confirmSecretExposure": {
+    "type": "boolean"
+   },
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id",
+   "confirmSecretExposure"
+  ]
+ },
+ "linear_rotateWebhookSecret": {
+  "array_out": false,
+  "props": {
+   "confirmSecretExposure": {
+    "type": "boolean"
+   },
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id",
+   "confirmSecretExposure"
+  ]
+ },
+ "linear_searchDocuments": {
+  "array_out": false,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "includeComments": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "orderBy": {
+    "enum": [
+     "createdAt",
+     "updatedAt"
+    ],
+    "type": "string"
+   },
+   "snippetSize": {
+    "type": "number"
+   },
+   "teamId": {
+    "type": "string"
+   },
+   "term": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "term"
+  ]
+ },
+ "linear_searchIssues": {
+  "array_out": true,
+  "props": {
+   "assigneeId": {
+    "type": "string"
+   },
+   "dates": {
+    "type": "object"
+   },
+   "limit": {
+    "type": "number"
+   },
+   "projectId": {
+    "type": "string"
+   },
+   "query": {
+    "type": "string"
+   },
+   "states": {
+    "type": "array"
+   },
+   "teamId": {
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_searchReleases": {
+  "array_out": true,
+  "props": {
+   "includeArchived": {
+    "type": "boolean"
+   },
+   "limit": {
+    "type": "integer"
+   },
+   "pipelineId": {
+    "type": "string"
+   },
+   "stageId": {
+    "type": "string"
+   },
+   "term": {
+    "type": "string"
+   }
+  },
+  "required": []
+ },
+ "linear_setIssuePriority": {
+  "array_out": false,
+  "props": {
+   "issueId": {
+    "type": "string"
+   },
+   "priority": {
+    "enum": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "type": "number"
+   }
+  },
+  "required": [
+   "issueId",
+   "priority"
+  ]
+ },
+ "linear_subscribeToIssue": {
+  "array_out": false,
+  "props": {
+   "issueId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "issueId"
+  ]
+ },
+ "linear_transferIssue": {
+  "array_out": false,
+  "props": {
+   "issueId": {
+    "type": "string"
+   },
+   "teamId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "issueId",
+   "teamId"
+  ]
+ },
+ "linear_unarchiveCustomerNeed": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_unarchiveDocument": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_unarchiveInitiative": {
+  "array_out": false,
+  "props": {
+   "initiativeId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "initiativeId"
+  ]
+ },
+ "linear_unarchiveInitiativeUpdate": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_unarchiveProjectUpdate": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_unarchiveRelease": {
+  "array_out": false,
+  "props": {
+   "releaseId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "releaseId"
+  ]
+ },
+ "linear_unarchiveReleasePipeline": {
+  "array_out": false,
+  "props": {
+   "pipelineId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "pipelineId"
+  ]
+ },
+ "linear_unarchiveReleaseStage": {
+  "array_out": false,
+  "props": {
+   "stageId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "stageId"
+  ]
+ },
+ "linear_updateComment": {
+  "array_out": false,
+  "props": {
+   "body": {
+    "type": "string"
+   },
+   "doNotSubscribeToIssue": {
+    "type": "boolean"
+   },
+   "id": {
+    "type": "string"
+   },
+   "quotedText": {
+    "type": "string"
+   },
+   "resolvingCommentId": {
+    "type": "string"
+   },
+   "resolvingUserId": {
+    "type": "string"
+   },
+   "subscriberIds": {
+    "type": "array"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_updateCustomer": {
+  "array_out": false,
+  "props": {
+   "domains": {
+    "type": "array"
+   },
+   "externalIds": {
+    "type": "array"
+   },
+   "id": {
+    "type": "string"
+   },
+   "logoUrl": {
+    "type": "string"
+   },
+   "mainSourceId": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "ownerId": {
+    "type": "string"
+   },
+   "revenue": {
+    "type": "number"
+   },
+   "size": {
+    "type": "number"
+   },
+   "slackChannelId": {
+    "type": "string"
+   },
+   "statusId": {
+    "type": "string"
+   },
+   "tierId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_updateCustomerNeed": {
+  "array_out": false,
+  "props": {
+   "applyPriorityToRelatedNeeds": {
+    "type": "boolean"
+   },
+   "attachmentUrl": {
+    "type": "string"
+   },
+   "body": {
+    "type": "string"
+   },
+   "customerExternalId": {
+    "type": "string"
+   },
+   "customerId": {
+    "type": "string"
+   },
+   "id": {
+    "type": "string"
+   },
+   "issueId": {
+    "type": "string"
+   },
+   "priority": {
+    "type": "number"
+   },
+   "projectId": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_updateCycle": {
+  "array_out": false,
+  "props": {
+   "completedAt": {
+    "type": "string"
+   },
+   "description": {
+    "type": "string"
+   },
+   "endsAt": {
+    "type": "string"
+   },
+   "id": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "startsAt": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_updateDocument": {
+  "array_out": false,
+  "props": {
+   "color": {
+    "nullable": true,
+    "type": "string"
+   },
+   "content": {
+    "nullable": true,
+    "type": "string"
+   },
+   "cycleId": {
+    "nullable": true,
+    "type": "string"
+   },
+   "hiddenAt": {
+    "nullable": true,
+    "type": "string"
+   },
+   "icon": {
+    "nullable": true,
+    "type": "string"
+   },
+   "id": {
+    "type": "string"
+   },
+   "initiativeId": {
+    "nullable": true,
+    "type": "string"
+   },
+   "issueId": {
+    "nullable": true,
+    "type": "string"
+   },
+   "lastAppliedTemplateId": {
+    "nullable": true,
+    "type": "string"
+   },
+   "projectId": {
+    "nullable": true,
+    "type": "string"
+   },
+   "releaseId": {
+    "nullable": true,
+    "type": "string"
+   },
+   "resourceFolderId": {
+    "nullable": true,
+    "type": "string"
+   },
+   "sortOrder": {
+    "type": "number"
+   },
+   "teamId": {
+    "nullable": true,
+    "type": "string"
+   },
+   "title": {
+    "type": "string"
+   },
+   "trashed": {
+    "type": "boolean"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_updateInitiative": {
+  "array_out": false,
+  "props": {
+   "color": {
+    "type": "string"
+   },
+   "content": {
+    "type": "string"
+   },
+   "description": {
+    "type": "string"
+   },
+   "icon": {
+    "type": "string"
+   },
+   "initiativeId": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "ownerId": {
+    "type": "string"
+   },
+   "status": {
+    "enum": [
+     "Planned",
+     "Active",
+     "Completed"
+    ],
+    "type": "string"
+   },
+   "targetDate": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "initiativeId"
+  ]
+ },
+ "linear_updateInitiativeUpdate": {
+  "array_out": false,
+  "props": {
+   "body": {
+    "type": "string"
+   },
+   "health": {
+    "enum": [
+     "onTrack",
+     "atRisk",
+     "offTrack"
+    ],
+    "type": "string"
+   },
+   "id": {
+    "type": "string"
+   },
+   "isDiffHidden": {
+    "type": "boolean"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_updateIssue": {
+  "array_out": false,
+  "props": {
+   "addedLabelIds": {
+    "type": "array"
+   },
+   "assigneeId": {
+    "type": "string"
+   },
+   "cycleId": {
+    "type": "string"
+   },
+   "description": {
+    "type": "string"
+   },
+   "dueDate": {
+    "type": "string"
+   },
+   "estimate": {
+    "type": "number"
+   },
+   "id": {
+    "type": "string"
+   },
+   "labelIds": {
+    "type": "array"
+   },
+   "parentId": {
+    "type": "string"
+   },
+   "priority": {
+    "type": "number"
+   },
+   "projectId": {
+    "type": "string"
+   },
+   "projectMilestoneId": {
+    "type": "string"
+   },
+   "removedLabelIds": {
+    "type": "array"
+   },
+   "sortOrder": {
+    "type": "number"
+   },
+   "stateId": {
+    "type": "string"
+   },
+   "subscriberIds": {
+    "type": "array"
+   },
+   "teamId": {
+    "type": "string"
+   },
+   "title": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_updateIssueCustomField": {
+  "array_out": false,
+  "props": {
+   "customFieldId": {
+    "type": "string"
+   },
+   "issueId": {
+    "type": "string"
+   },
+   "value": {
+    "type": "any"
+   }
+  },
+  "required": [
+   "issueId",
+   "customFieldId",
+   "value"
+  ]
+ },
+ "linear_updateIssueTemplate": {
+  "array_out": false,
+  "props": {
+   "description": {
+    "nullable": true,
+    "type": "string"
+   },
+   "id": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "sortOrder": {
+    "nullable": true,
+    "type": "number"
+   },
+   "teamId": {
+    "nullable": true,
+    "type": "string"
+   },
+   "templateData": {
+    "type": "object"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_updateManagedOAuthApplication": {
+  "array_out": false,
+  "props": {
+   "description": {
+    "nullable": true,
+    "type": "string"
+   },
+   "developer": {
+    "type": "string"
+   },
+   "developerUrl": {
+    "nullable": true,
+    "type": "string"
+   },
+   "grantTypes": {
+    "items_enum": [
+     "authorization_code",
+     "client_credentials"
+    ],
+    "type": "array"
+   },
+   "id": {
+    "type": "string"
+   },
+   "imageUrl": {
+    "nullable": true,
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "redirectUris": {
+    "type": "array"
+   },
+   "webhookEnabled": {
+    "type": "boolean"
+   },
+   "webhookResourceTypes": {
+    "items_enum": [
+     "AgentSessionEvent",
+     "AppUserNotification",
+     "Attachment",
+     "Comment",
+     "Customer",
+     "CustomerNeed",
+     "Cycle",
+     "Document",
+     "Initiative",
+     "InitiativeUpdate",
+     "Issue",
+     "IssueLabel",
+     "IssueSLA",
+     "OAuthAuthorization",
+     "PermissionChange",
+     "Project",
+     "ProjectLabel",
+     "ProjectUpdate",
+     "Reaction",
+     "Release",
+     "ReleaseNote",
+     "User"
+    ],
+    "type": "array"
+   },
+   "webhookUrl": {
+    "nullable": true,
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_updateMilestone": {
+  "array_out": false,
+  "props": {
+   "description": {
+    "type": "string"
+   },
+   "id": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "projectId": {
+    "type": "string"
+   },
+   "sortOrder": {
+    "type": "number"
+   },
+   "targetDate": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_updateProject": {
+  "array_out": false,
+  "props": {
+   "color": {
+    "type": "string"
+   },
+   "content": {
+    "type": "string"
+   },
+   "description": {
+    "type": "string"
+   },
+   "icon": {
+    "type": "string"
+   },
+   "id": {
+    "type": "string"
+   },
+   "leadId": {
+    "type": "string"
+   },
+   "memberIds": {
+    "type": "array"
+   },
+   "name": {
+    "type": "string"
+   },
+   "sortOrder": {
+    "type": "number"
+   },
+   "startDate": {
+    "type": "string"
+   },
+   "state": {
+    "type": "string"
+   },
+   "targetDate": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_updateProjectUpdate": {
+  "array_out": false,
+  "props": {
+   "body": {
+    "type": "string"
+   },
+   "health": {
+    "enum": [
+     "onTrack",
+     "atRisk",
+     "offTrack"
+    ],
+    "type": "string"
+   },
+   "id": {
+    "type": "string"
+   },
+   "isDiffHidden": {
+    "type": "boolean"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_updateRelease": {
+  "array_out": false,
+  "props": {
+   "commitSha": {
+    "type": "string"
+   },
+   "completedAt": {
+    "type": "string"
+   },
+   "description": {
+    "type": "string"
+   },
+   "id": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "pipelineId": {
+    "type": "string"
+   },
+   "stageId": {
+    "type": "string"
+   },
+   "startDate": {
+    "type": "string"
+   },
+   "startedAt": {
+    "type": "string"
+   },
+   "targetDate": {
+    "type": "string"
+   },
+   "trashed": {
+    "type": "boolean"
+   },
+   "version": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_updateReleaseNote": {
+  "array_out": false,
+  "props": {
+   "content": {
+    "type": "string"
+   },
+   "id": {
+    "type": "string"
+   },
+   "rangeFromReleaseId": {
+    "type": "string"
+   },
+   "rangeToReleaseId": {
+    "type": "string"
+   },
+   "releaseIds": {
+    "type": "array"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_updateReleasePipeline": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   },
+   "includePathPatterns": {
+    "type": "array"
+   },
+   "isProduction": {
+    "type": "boolean"
+   },
+   "name": {
+    "type": "string"
+   },
+   "slugId": {
+    "type": "string"
+   },
+   "teamIds": {
+    "type": "array"
+   },
+   "type": {
+    "enum": [
+     "continuous",
+     "scheduled"
+    ],
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_updateReleaseStage": {
+  "array_out": false,
+  "props": {
+   "color": {
+    "type": "string"
+   },
+   "frozen": {
+    "type": "boolean"
+   },
+   "id": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "position": {
+    "type": "number"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_updateRoadmap": {
+  "array_out": false,
+  "props": {
+   "color": {
+    "type": "string"
+   },
+   "description": {
+    "type": "string"
+   },
+   "id": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "ownerId": {
+    "type": "string"
+   },
+   "sortOrder": {
+    "type": "number"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_updateSavedView": {
+  "array_out": false,
+  "props": {
+   "color": {
+    "nullable": true,
+    "type": "string"
+   },
+   "description": {
+    "nullable": true,
+    "type": "string"
+   },
+   "filterData": {
+    "nullable": true,
+    "type": "object"
+   },
+   "filters": {
+    "nullable": true,
+    "type": "object"
+   },
+   "icon": {
+    "nullable": true,
+    "type": "string"
+   },
+   "id": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "ownerId": {
+    "nullable": true,
+    "type": "string"
+   },
+   "projectFilterData": {
+    "nullable": true,
+    "type": "object"
+   },
+   "projectId": {
+    "nullable": true,
+    "type": "string"
+   },
+   "shared": {
+    "type": "boolean"
+   },
+   "teamId": {
+    "nullable": true,
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_updateTeam": {
+  "array_out": false,
+  "props": {
+   "color": {
+    "nullable": true,
+    "type": "string"
+   },
+   "description": {
+    "nullable": true,
+    "type": "string"
+   },
+   "icon": {
+    "nullable": true,
+    "type": "string"
+   },
+   "id": {
+    "type": "string"
+   },
+   "key": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "parentId": {
+    "type": "string"
+   },
+   "private": {
+    "type": "boolean"
+   },
+   "timezone": {
+    "type": "string"
+   },
+   "visibility": {
+    "enum": [
+     "public",
+     "private"
+    ],
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_updateTeamMembership": {
+  "array_out": false,
+  "props": {
+   "id": {
+    "type": "string"
+   },
+   "owner": {
+    "type": "boolean"
+   },
+   "sortOrder": {
+    "nullable": true,
+    "type": "number"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_updateWebhook": {
+  "array_out": false,
+  "props": {
+   "enabled": {
+    "type": "boolean"
+   },
+   "id": {
+    "type": "string"
+   },
+   "label": {
+    "nullable": true,
+    "type": "string"
+   },
+   "resourceTypes": {
+    "type": "array"
+   },
+   "secret": {
+    "type": "string"
+   },
+   "url": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ },
+ "linear_updateWorkflowState": {
+  "array_out": false,
+  "props": {
+   "color": {
+    "nullable": true,
+    "type": "string"
+   },
+   "description": {
+    "nullable": true,
+    "type": "string"
+   },
+   "id": {
+    "type": "string"
+   },
+   "name": {
+    "type": "string"
+   },
+   "position": {
+    "type": "number"
+   }
+  },
+  "required": [
+   "id"
+  ]
+ }
+}

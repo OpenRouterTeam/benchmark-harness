@@ -1,0 +1,110 @@
+[
+  {
+    "id": "79021ef4-2684-5acf-b0ec-d8a4090bead9",
+    "teamId": "a7c70c10-090f-50bf-a8ce-b4cdee9d8572",
+    "userId": "2dad689e-9ace-5467-9b02-0cc4e445cfa4",
+    "owner": false,
+    "sortOrder": 0,
+    "createdAt": "2024-01-08T09:00:00.000Z",
+    "updatedAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "0d215ac5-24e4-5b98-bd6f-6b205d5d63ab",
+    "teamId": "a7c70c10-090f-50bf-a8ce-b4cdee9d8572",
+    "userId": "1102b6c1-4993-5d71-a256-93aa9e7017c3",
+    "owner": false,
+    "sortOrder": 0,
+    "createdAt": "2024-01-08T09:00:00.000Z",
+    "updatedAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "b7ff7552-2fba-53a7-8404-765ddf87f20a",
+    "teamId": "a7c70c10-090f-50bf-a8ce-b4cdee9d8572",
+    "userId": "f265b518-6a58-54fe-88a3-4de6c02ca349",
+    "owner": true,
+    "sortOrder": 0,
+    "createdAt": "2024-01-08T09:00:00.000Z",
+    "updatedAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "4e47bf4e-63bf-5f26-bdd8-642dc45d7d95",
+    "teamId": "a7c70c10-090f-50bf-a8ce-b4cdee9d8572",
+    "userId": "6fd304f8-c8c8-5e04-8b31-cd8e030b5cc9",
+    "owner": true,
+    "sortOrder": 0,
+    "createdAt": "2024-01-08T09:00:00.000Z",
+    "updatedAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "a48e5ef9-d398-5f5d-8381-d09bdae72be2",
+    "teamId": "5854633b-d1e9-52b6-b3c7-d309bfb881cb",
+    "userId": "2dad689e-9ace-5467-9b02-0cc4e445cfa4",
+    "owner": false,
+    "sortOrder": 0,
+    "createdAt": "2024-01-08T09:00:00.000Z",
+    "updatedAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "ab503205-147e-5067-acc0-d50feb05d2d5",
+    "teamId": "5854633b-d1e9-52b6-b3c7-d309bfb881cb",
+    "userId": "a4176131-9edb-57a6-9830-0638d2d2fa29",
+    "owner": true,
+    "sortOrder": 0,
+    "createdAt": "2024-01-08T09:00:00.000Z",
+    "updatedAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "c60777c7-e380-5228-a6ab-bbee164139de",
+    "teamId": "5854633b-d1e9-52b6-b3c7-d309bfb881cb",
+    "userId": "3dbdd473-1a04-5dda-ad95-4c583313bccd",
+    "owner": false,
+    "sortOrder": 0,
+    "createdAt": "2024-01-08T09:00:00.000Z",
+    "updatedAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "1660643f-c512-5fa6-9b09-ce598291dada",
+    "teamId": "5854633b-d1e9-52b6-b3c7-d309bfb881cb",
+    "userId": "1102b6c1-4993-5d71-a256-93aa9e7017c3",
+    "owner": false,
+    "sortOrder": 0,
+    "createdAt": "2024-01-08T09:00:00.000Z",
+    "updatedAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "e90b6dce-e2ca-5017-b7a3-d85a526eb0cf",
+    "teamId": "6da75b4c-0e7c-5ac7-a415-f09a129582b1",
+    "userId": "2dad689e-9ace-5467-9b02-0cc4e445cfa4",
+    "owner": false,
+    "sortOrder": 0,
+    "createdAt": "2024-01-08T09:00:00.000Z",
+    "updatedAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "45ab43ee-0145-57b1-899c-c92a33fbbd69",
+    "teamId": "6da75b4c-0e7c-5ac7-a415-f09a129582b1",
+    "userId": "0bfae6ae-01d0-58d1-a611-7d1973102c45",
+    "owner": false,
+    "sortOrder": 0,
+    "createdAt": "2024-01-08T09:00:00.000Z",
+    "updatedAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "d68a6792-48a4-5efa-8479-46a7d1da312c",
+    "teamId": "6da75b4c-0e7c-5ac7-a415-f09a129582b1",
+    "userId": "6fd304f8-c8c8-5e04-8b31-cd8e030b5cc9",
+    "owner": true,
+    "sortOrder": 0,
+    "createdAt": "2024-01-08T09:00:00.000Z",
+    "updatedAt": "2024-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "b66a35a6-c23a-5722-be9c-0ba91aba0db0",
+    "teamId": "6da75b4c-0e7c-5ac7-a415-f09a129582b1",
+    "userId": "3dbdd473-1a04-5dda-ad95-4c583313bccd",
+    "owner": false,
+    "sortOrder": 0,
+    "createdAt": "2024-01-08T09:00:00.000Z",
+    "updatedAt": "2024-01-08T09:00:00.000Z"
+  }
+]

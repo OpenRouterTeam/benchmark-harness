@@ -1,0 +1,59 @@
+[
+  {
+    "id": "3a1f0c9e2b7d4e6f8a9b0c1d2e3f4a5b",
+    "zone_id": "a1b2c3d4e5f60718293a4b5c6d7e8f90",
+    "zone_name": "octo-corp.com",
+    "name": "octo-corp.com",
+    "type": "A",
+    "content": "203.0.113.10",
+    "proxied": true,
+    "ttl": 1,
+    "comment": "apex",
+    "tags": [],
+    "created_on": "2021-06-01T12:35:00.000000Z",
+    "modified_on": "2024-09-01T10:00:00.000000Z"
+  },
+  {
+    "id": "4b2a1d0f3c8e5f7a9b0c1d2e3f4a5b6c",
+    "zone_id": "a1b2c3d4e5f60718293a4b5c6d7e8f90",
+    "zone_name": "octo-corp.com",
+    "name": "www.octo-corp.com",
+    "type": "CNAME",
+    "content": "octo-corp.com",
+    "proxied": true,
+    "ttl": 1,
+    "comment": null,
+    "tags": ["team:web"],
+    "created_on": "2021-06-01T12:36:00.000000Z",
+    "modified_on": "2021-06-01T12:36:00.000000Z"
+  },
+  {
+    "id": "5c3b2e1a4d9f6a8b0c1d2e3f4a5b6c7d",
+    "zone_id": "a1b2c3d4e5f60718293a4b5c6d7e8f90",
+    "zone_name": "octo-corp.com",
+    "name": "octo-corp.com",
+    "type": "MX",
+    "content": "mx1.mail.example.net",
+    "priority": 10,
+    "proxied": false,
+    "ttl": 3600,
+    "comment": null,
+    "tags": [],
+    "created_on": "2021-06-01T12:37:00.000000Z",
+    "modified_on": "2021-06-01T12:37:00.000000Z"
+  },
+  {
+    "id": "6d4c3f2b5e0a7b9c1d2e3f4a5b6c7d8e",
+    "zone_id": "b2c3d4e5f60718293a4b5c6d7e8f90a1",
+    "zone_name": "octo-corp.dev",
+    "name": "api.octo-corp.dev",
+    "type": "A",
+    "content": "198.51.100.7",
+    "proxied": false,
+    "ttl": 300,
+    "comment": "staging api",
+    "tags": [],
+    "created_on": "2022-01-10T10:00:00.000000Z",
+    "modified_on": "2022-01-10T10:00:00.000000Z"
+  }
+]

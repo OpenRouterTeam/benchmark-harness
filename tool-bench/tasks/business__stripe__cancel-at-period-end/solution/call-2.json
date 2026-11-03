@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"stripe_api_write","arguments":{"livemode":false,"parameters":{"cancel_at_period_end":true,"cancellation_details":{"comment":"Customer requested cancellation via email"},"id":"sub_eAeIb5HpilxLht73ad3sTPEH"},"stripe_api_operation_id":"PostSubscriptionsSubscriptionExposedId","stripe_context":"acct_1FwY8bQk2LmN4pRs"}}}

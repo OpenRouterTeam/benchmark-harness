@@ -1,0 +1,107 @@
+[
+  {
+    "id": "pm_9Q1NGqNl9OSZ2TNMxHIIdyhV",
+    "object": "payment_method",
+    "billing_details": {
+      "address": {
+        "city": null,
+        "country": "US",
+        "line1": null,
+        "line2": null,
+        "postal_code": null,
+        "state": null
+      },
+      "email": "ap@harborpine.coffee",
+      "name": "Harbor & Pine Coffee Co.",
+      "phone": null,
+      "tax_id": null
+    },
+    "card": {
+      "brand": "visa",
+      "checks": {
+        "address_line1_check": null,
+        "address_postal_code_check": "pass",
+        "cvc_check": "pass"
+      },
+      "country": "US",
+      "exp_month": 8,
+      "exp_year": 2028,
+      "fingerprint": "MNT2ZSO9lNqGN1Q9",
+      "funding": "credit",
+      "last4": "4242"
+    },
+    "created": 1741108920,
+    "customer": "cus_mxxxdqMeoA1GEc",
+    "type": "card"
+  },
+  {
+    "id": "pm_lxD6mxZLsornhnWpBxC569Uv",
+    "object": "payment_method",
+    "billing_details": {
+      "address": {
+        "city": null,
+        "country": "US",
+        "line1": null,
+        "line2": null,
+        "postal_code": null,
+        "state": null
+      },
+      "email": "orders@harborpineroasters.com",
+      "name": "Harbor & Pine Roasters",
+      "phone": null,
+      "tax_id": null
+    },
+    "card": {
+      "brand": "mastercard",
+      "checks": {
+        "address_line1_check": null,
+        "address_postal_code_check": "pass",
+        "cvc_check": "pass"
+      },
+      "country": "US",
+      "exp_month": 8,
+      "exp_year": 2028,
+      "fingerprint": "pWnhnrosLZxm6Dxl",
+      "funding": "credit",
+      "last4": "5454"
+    },
+    "created": 1747685100,
+    "customer": "cus_KLuZbdeYbCuh62",
+    "type": "card"
+  },
+  {
+    "id": "pm_xRmpvcm2h55TSXJwVyafhKdC",
+    "object": "payment_method",
+    "billing_details": {
+      "address": {
+        "city": null,
+        "country": "US",
+        "line1": null,
+        "line2": null,
+        "postal_code": null,
+        "state": null
+      },
+      "email": "owner@northwindbakery.com",
+      "name": "Northwind Bakery",
+      "phone": null,
+      "tax_id": null
+    },
+    "card": {
+      "brand": "visa",
+      "checks": {
+        "address_line1_check": null,
+        "address_postal_code_check": "pass",
+        "cvc_check": "pass"
+      },
+      "country": "US",
+      "exp_month": 8,
+      "exp_year": 2028,
+      "fingerprint": "wJXST55h2mcvpmRx",
+      "funding": "credit",
+      "last4": "1881"
+    },
+    "created": 1756744800,
+    "customer": "cus_9QBU7Zcqm1FH2Y",
+    "type": "card"
+  }
+]

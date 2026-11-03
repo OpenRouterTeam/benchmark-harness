@@ -1,0 +1,122 @@
+[
+  {
+    "_key": "in-cluster",
+    "server": "https://kubernetes.default.svc",
+    "name": "in-cluster",
+    "config": {
+      "tlsClientConfig": {
+        "insecure": false
+      }
+    },
+    "connectionState": {
+      "status": "Successful",
+      "message": "",
+      "attemptedAt": "2026-10-01T08:00:00Z"
+    },
+    "serverVersion": "1.30",
+    "info": {
+      "connectionState": {
+        "status": "Successful",
+        "message": "",
+        "attemptedAt": "2026-10-01T08:00:00Z"
+      },
+      "serverVersion": "1.30",
+      "cacheInfo": {
+        "resourcesCount": 2140,
+        "apisCount": 84,
+        "lastCacheSyncTime": "2026-10-01T08:00:00Z"
+      },
+      "applicationsCount": 0,
+      "apiVersions": [
+        "apps/v1",
+        "batch/v1",
+        "v1",
+        "networking.k8s.io/v1",
+        "argoproj.io/v1alpha1"
+      ]
+    },
+    "labels": {}
+  },
+  {
+    "_key": "prod-us-east-1",
+    "server": "https://prod-use1.k8s.lumen.internal",
+    "name": "prod-us-east-1",
+    "config": {
+      "tlsClientConfig": {
+        "insecure": false
+      }
+    },
+    "connectionState": {
+      "status": "Successful",
+      "message": "",
+      "attemptedAt": "2026-10-01T08:00:00Z"
+    },
+    "serverVersion": "1.30",
+    "info": {
+      "connectionState": {
+        "status": "Successful",
+        "message": "",
+        "attemptedAt": "2026-10-01T08:00:00Z"
+      },
+      "serverVersion": "1.30",
+      "cacheInfo": {
+        "resourcesCount": 2140,
+        "apisCount": 84,
+        "lastCacheSyncTime": "2026-10-01T08:00:00Z"
+      },
+      "applicationsCount": 0,
+      "apiVersions": [
+        "apps/v1",
+        "batch/v1",
+        "v1",
+        "networking.k8s.io/v1",
+        "argoproj.io/v1alpha1"
+      ]
+    },
+    "labels": {
+      "env": "production",
+      "region": "us-east-1"
+    }
+  },
+  {
+    "_key": "staging-us-east-1",
+    "server": "https://staging-use1.k8s.lumen.internal",
+    "name": "staging-us-east-1",
+    "config": {
+      "tlsClientConfig": {
+        "insecure": false
+      }
+    },
+    "connectionState": {
+      "status": "Successful",
+      "message": "",
+      "attemptedAt": "2026-10-01T08:00:00Z"
+    },
+    "serverVersion": "1.30",
+    "info": {
+      "connectionState": {
+        "status": "Successful",
+        "message": "",
+        "attemptedAt": "2026-10-01T08:00:00Z"
+      },
+      "serverVersion": "1.30",
+      "cacheInfo": {
+        "resourcesCount": 2140,
+        "apisCount": 84,
+        "lastCacheSyncTime": "2026-10-01T08:00:00Z"
+      },
+      "applicationsCount": 0,
+      "apiVersions": [
+        "apps/v1",
+        "batch/v1",
+        "v1",
+        "networking.k8s.io/v1",
+        "argoproj.io/v1alpha1"
+      ]
+    },
+    "labels": {
+      "env": "staging",
+      "region": "us-east-1"
+    }
+  }
+]

@@ -1,0 +1,23 @@
+[
+  {
+    "_key": "qmvbxtzkplrnwdhyfaco/performance/auth_rls_initplan/customers",
+    "project": "qmvbxtzkplrnwdhyfaco",
+    "type": "performance",
+    "name": "auth_rls_initplan",
+    "title": "Auth RLS Initialization Plan",
+    "level": "WARN",
+    "facing": "EXTERNAL",
+    "categories": [
+      "PERFORMANCE"
+    ],
+    "description": "Detects if calls to `current_setting()` and `auth.<function>()` in RLS policies are being unnecessarily re-evaluated for each row",
+    "detail": "Table `public.customers` has a row level security policy `Customers can read their own row` that re-evaluates auth.uid() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing `auth.<function>()` with `(select auth.<function>())`.",
+    "remediation": "https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select",
+    "metadata": {
+      "name": "customers",
+      "type": "table",
+      "schema": "public"
+    },
+    "cache_key": "auth_rls_initplan_public_customers_Customers can read their own row"
+  }
+]

@@ -1,0 +1,598 @@
+{
+  "name": "datadog",
+  "server_info": {
+    "name": "Datadog MCP Server",
+    "version": "1.8.0"
+  },
+  "protocol_version": "2025-06-18",
+  "tools": [
+    {
+      "name": "list_incidents",
+      "description": "Get incidents from Datadog",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "pageSize": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 10
+          },
+          "pageOffset": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_incident",
+      "description": "Get an incident from Datadog",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "incidentId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "incidentId"
+        ]
+      }
+    },
+    {
+      "name": "query_metrics",
+      "description": "Query timeseries points of metrics from Datadog",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "number",
+            "description": "Start of the queried time period, seconds since the Unix epoch."
+          },
+          "to": {
+            "type": "number",
+            "description": "End of the queried time period, seconds since the Unix epoch."
+          },
+          "query": {
+            "type": "string",
+            "description": "Datadog metrics query string. e.g. \"avg:system.cpu.user{*}"
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "get_logs",
+      "description": "Search and retrieve logs from Datadog",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "default": "",
+            "description": "Datadog logs query string"
+          },
+          "from": {
+            "type": "number",
+            "description": "Start time in epoch seconds"
+          },
+          "to": {
+            "type": "number",
+            "description": "End time in epoch seconds"
+          },
+          "limit": {
+            "type": "number",
+            "default": 100,
+            "description": "Maximum number of logs to return. Default is 100."
+          }
+        },
+        "required": [
+          "from",
+          "to"
+        ]
+      }
+    },
+    {
+      "name": "get_all_services",
+      "description": "Extract all unique service names from logs",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "default": "*",
+            "description": "Optional query filter for log search"
+          },
+          "from": {
+            "type": "number",
+            "description": "Start time in epoch seconds"
+          },
+          "to": {
+            "type": "number",
+            "description": "End time in epoch seconds"
+          },
+          "limit": {
+            "type": "number",
+            "default": 1000,
+            "description": "Maximum number of logs to search through. Default is 1000."
+          }
+        },
+        "required": [
+          "from",
+          "to"
+        ]
+      }
+    },
+    {
+      "name": "get_monitors",
+      "description": "Get monitors status from Datadog",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "groupStates": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "alert",
+                "warn",
+                "no data",
+                "ok"
+              ]
+            },
+            "description": "Filter monitors by their states"
+          },
+          "name": {
+            "type": "string",
+            "description": "Filter monitors by name"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter monitors by tags"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "list_dashboards",
+      "description": "Get list of dashboards from Datadog",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Filter dashboards by name"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter dashboards by tags"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_dashboard",
+      "description": "Get a dashboard from Datadog",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "dashboardId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "dashboardId"
+        ]
+      }
+    },
+    {
+      "name": "list_traces",
+      "description": "Get APM traces from Datadog",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Datadog APM trace query string"
+          },
+          "from": {
+            "type": "number",
+            "description": "Start time in epoch seconds"
+          },
+          "to": {
+            "type": "number",
+            "description": "End time in epoch seconds"
+          },
+          "limit": {
+            "type": "number",
+            "default": 100,
+            "description": "Maximum number of traces to return"
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "timestamp",
+              "-timestamp"
+            ],
+            "default": "-timestamp",
+            "description": "Sort order for traces"
+          },
+          "service": {
+            "type": "string",
+            "description": "Filter by service name"
+          },
+          "operation": {
+            "type": "string",
+            "description": "Filter by operation name"
+          }
+        },
+        "required": [
+          "query",
+          "from",
+          "to"
+        ]
+      }
+    },
+    {
+      "name": "mute_host",
+      "description": "Mute a host in Datadog",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "hostname": {
+            "type": "string",
+            "description": "The name of the host to mute"
+          },
+          "message": {
+            "type": "string",
+            "description": "Message to associate with the muting of this host"
+          },
+          "end": {
+            "type": "integer",
+            "description": "POSIX timestamp for when the mute should end"
+          },
+          "override": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true and the host is already muted, replaces existing end time"
+          }
+        },
+        "required": [
+          "hostname"
+        ]
+      }
+    },
+    {
+      "name": "unmute_host",
+      "description": "Unmute a host in Datadog",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "hostname": {
+            "type": "string",
+            "description": "The name of the host to unmute"
+          }
+        },
+        "required": [
+          "hostname"
+        ]
+      }
+    },
+    {
+      "name": "list_hosts",
+      "description": "Get list of hosts from Datadog",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "filter": {
+            "type": "string",
+            "description": "Filter string for search results"
+          },
+          "sort_field": {
+            "type": "string",
+            "description": "Field to sort hosts by"
+          },
+          "sort_dir": {
+            "type": "string",
+            "description": "Sort direction (asc/desc)"
+          },
+          "start": {
+            "type": "integer",
+            "description": "Starting offset for pagination"
+          },
+          "count": {
+            "type": "integer",
+            "maximum": 1000,
+            "description": "Max number of hosts to return (max: 1000)"
+          },
+          "from": {
+            "type": "integer",
+            "description": "Search hosts from this UNIX timestamp"
+          },
+          "include_muted_hosts_data": {
+            "type": "boolean",
+            "description": "Include muted hosts status and expiry"
+          },
+          "include_hosts_metadata": {
+            "type": "boolean",
+            "description": "Include host metadata (version, platform, etc)"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_active_hosts_count",
+      "description": "Get the total number of active hosts in Datadog (defaults to last 5 minutes)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "integer",
+            "default": 7200,
+            "description": "Number of seconds from which you want to get total number of active hosts (defaults to 2h)"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "list_downtimes",
+      "description": "List scheduled downtimes from Datadog",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "currentOnly": {
+            "type": "boolean"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "schedule_downtime",
+      "description": "Schedule a downtime in Datadog",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "scope": {
+            "type": "string",
+            "minLength": 1
+          },
+          "start": {
+            "type": "number"
+          },
+          "end": {
+            "type": "number"
+          },
+          "message": {
+            "type": "string"
+          },
+          "timezone": {
+            "type": "string"
+          },
+          "monitorId": {
+            "type": "number"
+          },
+          "monitorTags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "recurrence": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "days",
+                  "weeks",
+                  "months",
+                  "years"
+                ]
+              },
+              "period": {
+                "type": "number",
+                "minimum": 1
+              },
+              "weekDays": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "Mon",
+                    "Tue",
+                    "Wed",
+                    "Thu",
+                    "Fri",
+                    "Sat",
+                    "Sun"
+                  ]
+                }
+              },
+              "until": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "type",
+              "period"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "scope"
+        ]
+      }
+    },
+    {
+      "name": "cancel_downtime",
+      "description": "Cancel a scheduled downtime in Datadog",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "downtimeId": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "downtimeId"
+        ]
+      }
+    },
+    {
+      "name": "get_rum_applications",
+      "description": "Get all RUM applications in the organization",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "get_rum_events",
+      "description": "Search and retrieve RUM events from Datadog",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "default": "",
+            "description": "Datadog RUM query string"
+          },
+          "from": {
+            "type": "number",
+            "description": "Start time in epoch seconds"
+          },
+          "to": {
+            "type": "number",
+            "description": "End time in epoch seconds"
+          },
+          "limit": {
+            "type": "number",
+            "default": 100,
+            "description": "Maximum number of events to return. Default is 100."
+          }
+        },
+        "required": [
+          "from",
+          "to"
+        ]
+      }
+    },
+    {
+      "name": "get_rum_grouped_event_count",
+      "description": "Search, group and count RUM events by a specified dimension",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "default": "*",
+            "description": "Optional query filter for RUM search"
+          },
+          "from": {
+            "type": "number",
+            "description": "Start time in epoch seconds"
+          },
+          "to": {
+            "type": "number",
+            "description": "End time in epoch seconds"
+          },
+          "groupBy": {
+            "type": "string",
+            "default": "application.name",
+            "description": "Dimension to group results by. Default is application.name"
+          }
+        },
+        "required": [
+          "from",
+          "to"
+        ]
+      }
+    },
+    {
+      "name": "get_rum_page_performance",
+      "description": "Get page (view) performance metrics from RUM data",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "default": "*",
+            "description": "Optional query filter for RUM search"
+          },
+          "from": {
+            "type": "number",
+            "description": "Start time in epoch seconds"
+          },
+          "to": {
+            "type": "number",
+            "description": "End time in epoch seconds"
+          },
+          "metricNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": [
+              "view.load_time",
+              "view.first_contentful_paint",
+              "view.largest_contentful_paint"
+            ],
+            "description": "Array of metric names to retrieve"
+          }
+        },
+        "required": [
+          "from",
+          "to"
+        ]
+      }
+    },
+    {
+      "name": "get_rum_page_waterfall",
+      "description": "Retrieve RUM page (view) waterfall data filtered by application name and session ID",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "applicationName": {
+            "type": "string",
+            "description": "Application name to filter events"
+          },
+          "sessionId": {
+            "type": "string",
+            "description": "Session ID to filter events"
+          }
+        },
+        "required": [
+          "applicationName",
+          "sessionId"
+        ]
+      }
+    }
+  ],
+  "sha256": "15d59c703efc028779c21ca1be17456eb6b5f4cd6791fb1e277407131d5f8116",
+  "counts": {
+    "tools": 21,
+    "bytes": 8608,
+    "o200k": 1965
+  }
+}

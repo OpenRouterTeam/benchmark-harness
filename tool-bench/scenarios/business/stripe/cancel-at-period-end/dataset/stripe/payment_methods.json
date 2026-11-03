@@ -1,0 +1,72 @@
+[
+  {
+    "id": "pm_XbHR67RukP05Si73vC6752L7",
+    "object": "payment_method",
+    "billing_details": {
+      "address": {
+        "city": null,
+        "country": "US",
+        "line1": null,
+        "line2": null,
+        "postal_code": null,
+        "state": null
+      },
+      "email": "finance@lumenanalytics.io",
+      "name": "Lumen Analytics",
+      "phone": null,
+      "tax_id": null
+    },
+    "card": {
+      "brand": "visa",
+      "checks": {
+        "address_line1_check": null,
+        "address_postal_code_check": "pass",
+        "cvc_check": "pass"
+      },
+      "country": "US",
+      "exp_month": 8,
+      "exp_year": 2028,
+      "fingerprint": "37iS50PkuR76RHbX",
+      "funding": "credit",
+      "last4": "0077"
+    },
+    "created": 1762971600,
+    "customer": "cus_dwkWx7hg1i0iRL",
+    "type": "card"
+  },
+  {
+    "id": "pm_ebR70nBK2Jw0rVDQ0amh9FoY",
+    "object": "payment_method",
+    "billing_details": {
+      "address": {
+        "city": null,
+        "country": "US",
+        "line1": null,
+        "line2": null,
+        "postal_code": null,
+        "state": null
+      },
+      "email": "billing@lumenlabs.dev",
+      "name": "Lumen Labs",
+      "phone": null,
+      "tax_id": null
+    },
+    "card": {
+      "brand": "visa",
+      "checks": {
+        "address_line1_check": null,
+        "address_postal_code_check": "pass",
+        "cvc_check": "pass"
+      },
+      "country": "US",
+      "exp_month": 8,
+      "exp_year": 2028,
+      "fingerprint": "QDVr0wJ2KBn07Rbe",
+      "funding": "credit",
+      "last4": "3184"
+    },
+    "created": 1748962800,
+    "customer": "cus_xE7F2irKjuSKJa",
+    "type": "card"
+  }
+]

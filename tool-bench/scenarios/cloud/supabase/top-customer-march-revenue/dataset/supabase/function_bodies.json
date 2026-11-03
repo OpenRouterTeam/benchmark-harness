@@ -1,0 +1,20 @@
+[
+  {
+    "_key": "qmvbxtzkplrnwdhyfaco/stripe-webhook",
+    "files": [
+      {
+        "name": "index.ts",
+        "content": "import Stripe from 'npm:stripe@17';\n\nconst stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!);\n\nDeno.serve(async (req) => {\n  const signature = req.headers.get('stripe-signature')!;\n  const event = await stripe.webhooks.constructEventAsync(await req.text(), signature, Deno.env.get('STRIPE_WEBHOOK_SECRET')!);\n  console.log('stripe event', event.type);\n  return new Response(JSON.stringify({ received: true }), { headers: { 'Content-Type': 'application/json' } });\n});\n"
+      }
+    ]
+  },
+  {
+    "_key": "qmvbxtzkplrnwdhyfaco/send-order-email",
+    "files": [
+      {
+        "name": "index.ts",
+        "content": "Deno.serve(async (req) => {\n  const { order_id } = await req.json();\n  // Sends the order confirmation through the transactional email provider.\n  return new Response(JSON.stringify({ queued: order_id }), { headers: { 'Content-Type': 'application/json' } });\n});\n"
+      }
+    ]
+  }
+]

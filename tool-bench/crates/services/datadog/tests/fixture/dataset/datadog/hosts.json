@@ -1,0 +1,217 @@
+[
+  {
+    "_key": "web-prod-01",
+    "name": "web-prod-01",
+    "host_name": "web-prod-01",
+    "id": 2810311001,
+    "aliases": [
+      "web-prod-01",
+      "i-00000000a781f159"
+    ],
+    "apps": [
+      "agent",
+      "ntp",
+      "nginx"
+    ],
+    "aws_name": "web-prod-01",
+    "is_muted": false,
+    "mute_timeout": null,
+    "last_reported_time": 1793372370,
+    "up": true,
+    "sources": [
+      "agent",
+      "aws"
+    ],
+    "tags_by_source": {
+      "Datadog": [
+        "host:web-prod-01"
+      ],
+      "Users": [
+        "env:prod",
+        "service:checkout-api"
+      ]
+    },
+    "meta": {
+      "agent_version": "7.58.2",
+      "platform": "linux2",
+      "processor": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "cpuCores": 4,
+      "machine": "amd64",
+      "pythonV": "3.12.6",
+      "socket-hostname": "web-prod-01",
+      "socket-fqdn": "web-prod-01.ec2.internal",
+      "gohai": "{}",
+      "install_method": {
+        "tool": "install_script",
+        "tool_version": "install_script-1.30.0",
+        "installer_version": "install_script-1.30.0"
+      }
+    },
+    "metrics": {
+      "cpu": 41.2,
+      "iowait": 0.4,
+      "load": 0.31
+    }
+  },
+  {
+    "_key": "web-prod-02",
+    "name": "web-prod-02",
+    "host_name": "web-prod-02",
+    "id": 2810311002,
+    "aliases": [
+      "web-prod-02",
+      "i-00000000a781f15a"
+    ],
+    "apps": [
+      "agent",
+      "ntp",
+      "nginx"
+    ],
+    "aws_name": "web-prod-02",
+    "is_muted": true,
+    "mute_timeout": 1793379600,
+    "last_reported_time": 1793372355,
+    "up": true,
+    "sources": [
+      "agent",
+      "aws"
+    ],
+    "tags_by_source": {
+      "Datadog": [
+        "host:web-prod-02"
+      ],
+      "Users": [
+        "env:prod",
+        "service:checkout-api"
+      ]
+    },
+    "meta": {
+      "agent_version": "7.58.2",
+      "platform": "linux2",
+      "processor": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "cpuCores": 4,
+      "machine": "amd64",
+      "pythonV": "3.12.6",
+      "socket-hostname": "web-prod-02",
+      "socket-fqdn": "web-prod-02.ec2.internal",
+      "gohai": "{}",
+      "install_method": {
+        "tool": "install_script",
+        "tool_version": "install_script-1.30.0",
+        "installer_version": "install_script-1.30.0"
+      }
+    },
+    "metrics": {
+      "cpu": 38.0,
+      "iowait": 0.4,
+      "load": 0.31
+    }
+  },
+  {
+    "_key": "web-staging-01",
+    "name": "web-staging-01",
+    "host_name": "web-staging-01",
+    "id": 2810311003,
+    "aliases": [
+      "web-staging-01",
+      "i-00000000a781f15b"
+    ],
+    "apps": [
+      "agent",
+      "ntp",
+      "nginx"
+    ],
+    "aws_name": "web-staging-01",
+    "is_muted": false,
+    "mute_timeout": null,
+    "last_reported_time": 1793372340,
+    "up": true,
+    "sources": [
+      "agent",
+      "aws"
+    ],
+    "tags_by_source": {
+      "Datadog": [
+        "host:web-staging-01"
+      ],
+      "Users": [
+        "env:staging",
+        "service:checkout-api"
+      ]
+    },
+    "meta": {
+      "agent_version": "7.58.2",
+      "platform": "linux2",
+      "processor": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "cpuCores": 4,
+      "machine": "amd64",
+      "pythonV": "3.12.6",
+      "socket-hostname": "web-staging-01",
+      "socket-fqdn": "web-staging-01.ec2.internal",
+      "gohai": "{}",
+      "install_method": {
+        "tool": "install_script",
+        "tool_version": "install_script-1.30.0",
+        "installer_version": "install_script-1.30.0"
+      }
+    },
+    "metrics": {
+      "cpu": 5.1,
+      "iowait": 0.4,
+      "load": 0.31
+    }
+  },
+  {
+    "_key": "db-prod-01",
+    "name": "db-prod-01",
+    "host_name": "db-prod-01",
+    "id": 2810311004,
+    "aliases": [
+      "db-prod-01",
+      "i-00000000a781f15c"
+    ],
+    "apps": [
+      "agent",
+      "postgres"
+    ],
+    "aws_name": "db-prod-01",
+    "is_muted": false,
+    "mute_timeout": null,
+    "last_reported_time": 1793358000,
+    "up": false,
+    "sources": [
+      "agent",
+      "aws"
+    ],
+    "tags_by_source": {
+      "Datadog": [
+        "host:db-prod-01"
+      ],
+      "Users": [
+        "env:prod",
+        "role:postgres"
+      ]
+    },
+    "meta": {
+      "agent_version": "7.58.2",
+      "platform": "linux2",
+      "processor": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "cpuCores": 4,
+      "machine": "amd64",
+      "pythonV": "3.12.6",
+      "socket-hostname": "db-prod-01",
+      "socket-fqdn": "db-prod-01.ec2.internal",
+      "gohai": "{}",
+      "install_method": {
+        "tool": "install_script",
+        "tool_version": "install_script-1.30.0",
+        "installer_version": "install_script-1.30.0"
+      }
+    },
+    "metrics": {
+      "cpu": 0.0,
+      "iowait": 0.4,
+      "load": 0.31
+    }
+  }
+]

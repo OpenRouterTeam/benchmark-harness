@@ -1,0 +1,67 @@
+[
+  {
+    "id": "cus_pSUd3Vj4eF7gD2",
+    "object": "customer",
+    "address": null,
+    "balance": 0,
+    "created": 1745338200,
+    "currency": "usd",
+    "description": "Brightline Studio",
+    "email": "maya@brightline.studio",
+    "invoice_prefix": "BRT4C2D9",
+    "metadata": {
+      "company": "Brightline Studio"
+    },
+    "name": "Maya Chen",
+    "next_invoice_sequence": 12,
+    "phone": null,
+    "invoice_settings": {
+      "custom_fields": null,
+      "default_payment_method": "pm_isdqLs5zMYVtSBUcegXBdCSd",
+      "footer": null,
+      "rendering_options": null
+    }
+  },
+  {
+    "id": "cus_SnEf69uU3Kw9LV",
+    "object": "customer",
+    "address": null,
+    "balance": 0,
+    "created": 1759891440,
+    "currency": "usd",
+    "description": "Freelance",
+    "email": "maya.chen@gmail.com",
+    "invoice_prefix": "MCG8E1F3",
+    "metadata": {},
+    "name": "Maya Chen",
+    "next_invoice_sequence": 6,
+    "phone": null,
+    "invoice_settings": {
+      "custom_fields": null,
+      "default_payment_method": "pm_eGOpjLZ22c0ULs9YXQuqL0rL",
+      "footer": null,
+      "rendering_options": null
+    }
+  },
+  {
+    "id": "cus_vwNihU3TIbkbWE",
+    "object": "customer",
+    "address": null,
+    "balance": 0,
+    "created": 1755612000,
+    "currency": "usd",
+    "description": null,
+    "email": "owen@brightman.co",
+    "invoice_prefix": "OBC11A7E",
+    "metadata": {},
+    "name": "Owen Brightman",
+    "next_invoice_sequence": 8,
+    "phone": null,
+    "invoice_settings": {
+      "custom_fields": null,
+      "default_payment_method": "pm_K05ZFdg2H7DnEZPAXsv4L2xv",
+      "footer": null,
+      "rendering_options": null
+    }
+  }
+]

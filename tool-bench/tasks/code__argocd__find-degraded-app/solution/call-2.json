@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_resource_events","arguments":{"applicationName":"checkout-web","applicationNamespace":"argocd","resourceName":"checkout-web-7f8b9c6d5-q2x7m","resourceNamespace":"storefront","resourceUID":"0d3df349-e40e-5789-bc1f-b9740a79c8a0"}}}

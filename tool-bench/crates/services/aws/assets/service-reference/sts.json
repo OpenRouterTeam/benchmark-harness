@@ -1,0 +1,196 @@
+{
+ "Name": "sts",
+ "ServiceName": "STS",
+ "Actions": [
+  {
+   "Name": "AssumeRole",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "AssumeRoleWithSAML",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "AssumeRoleWithWebIdentity",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "AssumeRoot",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DecodeAuthorizationMessage",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "GetAccessKeyInfo",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetCallerIdentity",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetDelegatedAccessToken",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "GetFederationToken",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "GetServiceBearerToken",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetSessionToken",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetWebIdentityToken",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "SetContext",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "SetSourceIdentity",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "TagGetWebIdentityToken",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "TagSession",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  }
+ ],
+ "Version": "v1.5"
+}

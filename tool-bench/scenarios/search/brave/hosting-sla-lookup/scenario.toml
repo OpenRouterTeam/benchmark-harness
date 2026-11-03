@@ -1,0 +1,27 @@
+[scenario]
+id = "search/brave/hosting-sla-lookup"
+title = "Look up a hosting provider's current Business-plan SLA"
+now = "2026-10-26T14:00:00Z"
+seed = "search-brave-hosting-sla-lookup"
+services = ["brave"]
+tags = ["lookup", "single-service", "brave"]
+timeout_sec = 900
+
+# Current SLA: 99.95% / 10%. Distractors: archived 2024 SLA and a Reddit post (99.9% / 5%),
+# a look-alike provider "IronBank Hosting" (99.99% / 20%).
+[expect.answer]
+contains = ["99.95"]
+regex = '(?i)\b10\s?(%|percent)'
+
+[[expect.required_calls]]
+service = "brave"
+method = "GET"
+path_regex = "^/res/v1/"
+
+[solution]
+answer = "Ironbark Hosting Business plan (SLA effective 2026-07-01): 99.95% monthly uptime. If uptime falls below 99.95% the service credit is 10% of the monthly fee (25% below 99.0%). Source: https://www.ironbarkhosting.com/legal/sla\n"
+
+[[solution.call]]
+endpoint = "brave-search"
+tool = "brave_web_search"
+arguments = { query = "Ironbark Hosting SLA Business plan uptime service credit", extra_snippets = true }

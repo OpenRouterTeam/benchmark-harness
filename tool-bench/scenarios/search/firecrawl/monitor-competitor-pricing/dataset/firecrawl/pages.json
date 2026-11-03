@@ -1,0 +1,27 @@
+[
+  {
+    "_key": "https://www.fabrikam.io/pricing",
+    "title": "Plans & Pricing | Fabrikam",
+    "description": "Fabrikam plans for growing support teams.",
+    "language": "en",
+    "markdown": "# Plans & Pricing\n\n## Essentials\n\n$19 per agent / month, billed annually\n\n- Email and chat support\n- 2 help centers\n\n## Growth\n\n$49 per agent / month, billed annually\n\n- Everything in Essentials\n- AI reply suggestions (1,000 per month)\n- SLA policies\n\n## Scale\n\n$99 per agent / month, billed annually\n\n- Unlimited AI replies\n- Sandbox and audit log\n\n*Prices effective October 15, 2026.*"
+  },
+  {
+    "_key": "https://www.fabrikam.io/careers",
+    "title": "Careers | Fabrikam",
+    "language": "en",
+    "markdown": "# Join Fabrikam\n\n## Open roles\n\n- Senior Backend Engineer (Remote)\n- Account Executive, EMEA (London)\n- Product Designer (Berlin)"
+  },
+  {
+    "_key": "https://www.fabrikam.io",
+    "title": "Fabrikam | Customer support software",
+    "language": "en",
+    "markdown": "# Customer support your team will love\n\n[Pricing](https://www.fabrikam.io/pricing) · [Careers](https://www.fabrikam.io/careers) · [Blog](https://www.fabrikam.io/blog)"
+  },
+  {
+    "_key": "https://blog.contoso.com",
+    "title": "Contoso Blog",
+    "language": "en",
+    "markdown": "# Contoso Blog\n\n- October 21, 2026: Contoso Desk 4.2 is here\n- September 30, 2026: How we cut first-response time in half"
+  }
+]

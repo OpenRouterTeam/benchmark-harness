@@ -1,0 +1,1 @@
+The most urgent open bug in Payments v2 is PAY-118 "Refund webhook retries double-charge customers after 3DS timeout" (priority Urgent). It is assigned to Priya Natarajan and is In Progress (in the current cycle, 42).

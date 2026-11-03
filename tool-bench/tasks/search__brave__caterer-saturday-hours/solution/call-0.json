@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"brave_local_search","arguments":{"query":"Juniper & Rye Catering Portland Oregon"}}}

@@ -1,0 +1,128 @@
+{
+  "state": [
+    {
+      "pointer": "/services/mongodb/db.shop.orders/65f1a000000000000000000a/status",
+      "equals": "refunded",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/mongodb/db.shop.orders/65f1a000000000000000000a/refund/reason",
+      "equals": "damaged in transit",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/mongodb/db.shop.orders/65f1a000000000000000000a/refund/amount",
+      "equals": 214.5,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/mongodb/db.shop.orders/65f1a000000000000000000a/total",
+      "equals": 214.5,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/mongodb/db.shop.orders/65f1a0000000000000000002/status",
+      "equals": "delivered",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/mongodb/db.shop.orders/65f1a0000000000000000002/refund",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/mongodb/db.shop.orders/65f1a0000000000000000010/status",
+      "equals": "delivered",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/mongodb/db.shop_staging.orders/65f7aa000000000000000007/status",
+      "equals": "delivered",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "mongodb",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "collection": "orders",
+          "database": "shop"
+        },
+        "name": "update-many"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "mongodb",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "delete-many"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "mongodb",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "drop-collection"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "mongodb",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "collection": "orders"
+        },
+        "name": "insert-many"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

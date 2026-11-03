@@ -1,0 +1,46 @@
+[
+  {
+    "_key": "lumen-retail/storefront/checkout-web",
+    "id": 311,
+    "name": "checkout-web",
+    "path_with_namespace": "lumen-retail/storefront/checkout-web",
+    "description": "Checkout web front end (Next.js)",
+    "default_branch": "main",
+    "visibility": "private",
+    "created_at": "2022-02-10T10:00:00.000Z",
+    "last_activity_at": "2026-10-29T13:20:00.000Z",
+    "topics": [
+      "typescript",
+      "nextjs"
+    ]
+  },
+  {
+    "_key": "lumen-retail/storefront/storefront-deploy",
+    "id": 312,
+    "name": "storefront-deploy",
+    "path_with_namespace": "lumen-retail/storefront/storefront-deploy",
+    "description": "Kustomize overlays for the storefront apps, synced by Argo CD",
+    "default_branch": "main",
+    "visibility": "private",
+    "created_at": "2022-02-10T10:00:00.000Z",
+    "last_activity_at": "2026-10-29T13:20:00.000Z",
+    "topics": [
+      "gitops",
+      "kustomize"
+    ]
+  },
+  {
+    "_key": "lumen-retail/storefront/catalog-api",
+    "id": 313,
+    "name": "catalog-api",
+    "path_with_namespace": "lumen-retail/storefront/catalog-api",
+    "description": "Catalog API",
+    "default_branch": "main",
+    "visibility": "private",
+    "created_at": "2022-02-10T10:00:00.000Z",
+    "last_activity_at": "2026-10-29T13:20:00.000Z",
+    "topics": [
+      "go"
+    ]
+  }
+]

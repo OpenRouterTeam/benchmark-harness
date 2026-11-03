@@ -1,0 +1,8 @@
+[
+  { "_key": "northwind-app-assets/static/logo.svg", "Bucket": "northwind-app-assets", "Key": "static/logo.svg", "Size": 4211, "LastModified": "2026-02-27T15:02:11Z", "ContentType": "image/svg+xml", "Body": "<svg xmlns=\"http://www.w3.org/2000/svg\"/>" },
+  { "_key": "northwind-app-assets/static/app.3f9c1.js", "Bucket": "northwind-app-assets", "Key": "static/app.3f9c1.js", "Size": 183220, "LastModified": "2026-03-12T19:44:08Z", "ContentType": "application/javascript", "Body": "console.log('northwind');" },
+  { "_key": "northwind-legacy-exports/2017/06/customers.csv", "Bucket": "northwind-legacy-exports", "Key": "2017/06/customers.csv", "Size": 912334, "LastModified": "2017-06-30T02:00:14Z", "ContentType": "text/csv", "Body": "id,name,email\n" },
+  { "_key": "northwind-legacy-exports/2017/07/customers.csv", "Bucket": "northwind-legacy-exports", "Key": "2017/07/customers.csv", "Size": 925118, "LastModified": "2017-07-31T02:00:09Z", "ContentType": "text/csv", "Body": "id,name,email\n" },
+  { "_key": "northwind-legacy-exports-2019/2019/01/invoices.csv", "Bucket": "northwind-legacy-exports-2019", "Key": "2019/01/invoices.csv", "Size": 301877, "LastModified": "2019-01-31T02:00:41Z", "ContentType": "text/csv", "Body": "invoice,total\n" },
+  { "_key": "northwind-terraform-state/prod/network.tfstate", "Bucket": "northwind-terraform-state", "Key": "prod/network.tfstate", "Size": 88213, "LastModified": "2026-03-10T11:17:52Z", "ContentType": "application/json", "Body": "{\"version\": 4}" }
+]

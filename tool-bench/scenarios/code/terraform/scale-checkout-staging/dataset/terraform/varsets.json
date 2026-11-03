@@ -1,0 +1,46 @@
+[
+ {
+  "id": "varset-1mdQPr17uuGTMTox",
+  "organization": "acme-platform",
+  "name": "aws-prod-oidc",
+  "description": "Dynamic AWS credentials for production accounts",
+  "global": false,
+  "priority": false,
+  "updated-at": "2026-06-11T10:00:00Z",
+  "workspaces": [
+   "ws-vJd7W10B1cG75Uxp",
+   "ws-ZQ7RjwWMr2evfIuC",
+   "ws-gOHPQz7D1ZRgqBJq",
+   "ws-X6Cm5W6LhJnKhlo2",
+   "ws-HJppEOWB3EN8FR2P"
+  ],
+  "projects": []
+ },
+ {
+  "id": "varset-ky6y5Ae4omE6TXll",
+  "organization": "acme-platform",
+  "name": "aws-staging-oidc",
+  "description": "Dynamic AWS credentials for staging accounts",
+  "global": false,
+  "priority": false,
+  "updated-at": "2026-06-11T10:00:00Z",
+  "workspaces": [
+   "ws-gIbdcZTYOZS7TluO",
+   "ws-FxCPzmnaeIMOUbSd",
+   "ws-1XTLw5Eso096xbeL",
+   "ws-aM6dcH7sRwt97v2D"
+  ],
+  "projects": []
+ },
+ {
+  "id": "varset-x0tvNK0CkSRCeah3",
+  "organization": "acme-platform",
+  "name": "datadog-common",
+  "description": "Datadog site and tags applied everywhere",
+  "global": true,
+  "priority": false,
+  "updated-at": "2026-02-01T10:00:00Z",
+  "workspaces": [],
+  "projects": []
+ }
+]

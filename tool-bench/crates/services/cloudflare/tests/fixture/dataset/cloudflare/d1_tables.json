@@ -1,0 +1,13 @@
+[
+  {
+    "_key": "5d1a0b7c-3e2f-4a9b-8c7d-6e5f4a3b2c1d/orders",
+    "database_id": "5d1a0b7c-3e2f-4a9b-8c7d-6e5f4a3b2c1d",
+    "name": "orders",
+    "sql": "CREATE TABLE orders (id INTEGER PRIMARY KEY, customer TEXT NOT NULL, total_cents INTEGER NOT NULL, status TEXT NOT NULL)",
+    "rows": [
+      { "id": 1, "customer": "ada@example.com", "total_cents": 4200, "status": "paid" },
+      { "id": 2, "customer": "bob@example.com", "total_cents": 1999, "status": "refunded" },
+      { "id": 3, "customer": "ada@example.com", "total_cents": 1500, "status": "paid" }
+    ]
+  }
+]

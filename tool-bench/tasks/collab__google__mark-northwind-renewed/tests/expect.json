@@ -1,0 +1,105 @@
+{
+  "state": [
+    {
+      "pointer": "/services/google/drive_files/1p91PmGrfYlol_BkGN9Op8j9dWzibNwgg/sheets/0/values/1/0",
+      "equals": "Northwind Traders",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/google/drive_files/1p91PmGrfYlol_BkGN9Op8j9dWzibNwgg/sheets/0/values/1/2",
+      "equals": "2027-11-30",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/google/drive_files/1p91PmGrfYlol_BkGN9Op8j9dWzibNwgg/sheets/0/values/1/3",
+      "equals": "Renewed",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/google/drive_files/1p91PmGrfYlol_BkGN9Op8j9dWzibNwgg/sheets/0/values/2",
+      "equals": [
+        "Northwood Logistics",
+        "Sam Ortiz",
+        "2026-12-15",
+        "Pending renewal",
+        "Freight contract"
+      ],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/google/drive_files/1p91PmGrfYlol_BkGN9Op8j9dWzibNwgg/sheets/0/values/4",
+      "equals": [
+        "Fabrikam Inc",
+        "Priya Natarajan",
+        "2026-11-15",
+        "Under review",
+        "Call on 11/3"
+      ],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/google/drive_files/1_x8cbfTBtuujAmxfx9ZG2B5yGE5HDyhh/sheets/0/values/1",
+      "equals": [
+        "Northwind Traders",
+        "Lena Fischer",
+        "2025-11-30",
+        "Renewed",
+        "Renewed through 2026-11-30"
+      ],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "google",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "spreadsheet_id": "1p91PmGrfYlol_BkGN9Op8j9dWzibNwgg"
+        },
+        "name": "modify_sheet_values"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "google",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "spreadsheet_id": "1_x8cbfTBtuujAmxfx9ZG2B5yGE5HDyhh"
+        },
+        "name": "modify_sheet_values"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

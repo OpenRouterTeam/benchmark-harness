@@ -1,0 +1,21 @@
+[
+  {
+    "id": "report-bidirectional-depot-chargers-de",
+    "match": ["bidirectional|v2g|vehicle-to-grid", "germany|german"],
+    "content": "# Bidirectional (V2G) chargers for commercial fleet depots in Germany, 2026\n\n## Summary\nDepot-scale bidirectional charging in Germany moved from pilots to procurement in 2026, driven by the EnWG Section 14a grid-fee reductions for controllable loads. Three vendors account for roughly two thirds of installed depot units.\n\n## Vendors\n\n| Vendor | HQ | Share of installed depot V2G units (DE) | Typical price, 22 kW AC bidirectional unit |\n|---|---|---|---|\n| VoltHaven | Hamburg | 31% | EUR 6,900 |\n| Ladewerk Systems | Stuttgart | 21% | EUR 7,450 |\n| GridNest | Munich | 14% | EUR 6,200 (requires GridNest energy-management subscription) |\n\n## Key findings\n- VoltHaven is the market leader, supplying the two largest parcel-delivery fleets.\n- Average payback for depots participating in frequency-containment markets is 4.5 years.\n- DC bidirectional units (50 kW+) remain rare outside bus depots and cost EUR 28,000-35,000.\n\n## Sources\n[1] VoltHaven fleet products: https://www.volthaven.de/en/fleet\n[2] Ladewerk Systems pricing sheet 2026: https://ladewerk.de/downloads/preise-2026.pdf\n[3] BNetzA Section 14a guidance: https://www.bundesnetzagentur.de/14a\n",
+    "parsed": {
+      "marketLeader": "VoltHaven",
+      "leaderPriceEur": 6900
+    },
+    "citations": [
+      { "id": "https://www.volthaven.de/en/fleet", "url": "https://www.volthaven.de/en/fleet", "title": "VoltHaven fleet charging" },
+      { "id": "https://ladewerk.de/downloads/preise-2026.pdf", "url": "https://ladewerk.de/downloads/preise-2026.pdf", "title": "Ladewerk Systems Preisliste 2026" }
+    ]
+  },
+  {
+    "id": "report-bidirectional-home-chargers",
+    "match": ["bidirectional|v2g", "home|residential"],
+    "content": "# Bidirectional home chargers\n\nResidential V2H/V2G wallboxes in Europe cost EUR 3,500-5,000. The best-selling unit in 2026 is the HomeLoop Duo at EUR 3,990.\n",
+    "citations": []
+  }
+]

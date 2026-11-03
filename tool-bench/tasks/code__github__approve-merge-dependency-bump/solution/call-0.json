@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"pull_request_review_write","arguments":{"body":"Security patch for CVE-2021-23337, CI is green. LGTM.","event":"APPROVE","method":"create","owner":"octo-org","pullNumber":57,"repo":"web"}}}

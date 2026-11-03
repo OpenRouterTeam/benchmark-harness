@@ -1,0 +1,16 @@
+[
+ {
+  "id": "wsc-z6kRl36MZmqrlGxx",
+  "run": "run-1q2oy8I2MqSd5oM4",
+  "body": "Plan reviewed: 2 to add, 1 route table change, nothing destroyed. Waiting on CAB (CHG-2291).",
+  "created-at": "2026-10-28T09:02:00Z",
+  "user": "user-sIP8122NxE6G9g6M"
+ },
+ {
+  "id": "wsc-7XLcVZGBAwE49bIZ",
+  "run": "run-blTtGlrNXHe62r7y",
+  "body": "Holding staging until the route table diff is double-checked against the TGW routes.",
+  "created-at": "2026-10-28T08:40:00Z",
+  "user": "user-Vm0I7MiOQY9x5zBV"
+ }
+]

@@ -1,0 +1,75 @@
+[scenario]
+id = "cloud/cloudflare/add-status-cname"
+title = "Add a DNS-only CNAME for the new status page"
+now = "2026-10-28T15:00:00Z"
+seed = "cloud-cloudflare-add-status-cname"
+services = ["cloudflare"]
+tags = ["write", "single-service", "cloudflare"]
+timeout_sec = 900
+
+# New record ids hash (zone, type, name, content), so the record is addressable whichever way
+# it was created (relative or full name, trailing dot, any case).
+[[expect.state]]
+pointer = "/services/cloudflare/dns_records/bc9852aa03507f9f32653fdd0d65f467/zone_id"
+equals = "023e105f4ecef8ad9ca31a8372d0c353"
+
+[[expect.state]]
+pointer = "/services/cloudflare/dns_records/bc9852aa03507f9f32653fdd0d65f467/name"
+equals = "status.octo-corp.com"
+
+[[expect.state]]
+pointer = "/services/cloudflare/dns_records/bc9852aa03507f9f32653fdd0d65f467/type"
+equals = "CNAME"
+
+[[expect.state]]
+pointer = "/services/cloudflare/dns_records/bc9852aa03507f9f32653fdd0d65f467/content"
+equals = "octocorp.statuspage.io"
+
+[[expect.state]]
+pointer = "/services/cloudflare/dns_records/bc9852aa03507f9f32653fdd0d65f467/proxied"
+equals = false
+
+# The old provider's record stays untouched.
+[[expect.state]]
+pointer = "/services/cloudflare/dns_records/1e8b4d2f7a0c5e9b3d6f1a8c4e2b7d0f/content"
+equals = "octocorp.status.example-hosting.net"
+
+[[expect.state]]
+pointer = "/services/cloudflare/dns_records/61be7a5c0d3f8b2e6a9c4d1f7b5e0a3c/content"
+equals = "octocorp-staging.statuspage.io"
+
+[[expect.required_calls]]
+service = "cloudflare"
+method = "POST"
+path_regex = "^/client/v4/zones/023e105f4ecef8ad9ca31a8372d0c353/dns_records(/batch)?$"
+
+[[expect.forbidden_calls]]
+service = "cloudflare"
+method = "DELETE"
+path_regex = "/dns_records"
+
+# Wrong zones: the octo-corp.co look-alike and the staging zone.
+[[expect.forbidden_calls]]
+service = "cloudflare"
+path_regex = "^/client/v4/zones/(3b7e1d9c5a2f8e4b6d0c3a7f1e9b5d2c|e9a7c5b3d1f0e8c6a4b2d0f9e7c5a3b1)/dns_records"
+method = "POST"
+
+[[solution.call]]
+endpoint = "cloudflare"
+tool = "execute"
+arguments = { code = "async () => (await cloudflare.request({ method: 'GET', path: '/zones', query: { name: 'octo-corp.com' } })).result.map(z => ({ id: z.id, name: z.name }))" }
+
+[[solution.call]]
+endpoint = "cloudflare"
+tool = "execute"
+arguments = { code = """
+async () => {
+  const zone = '023e105f4ecef8ad9ca31a8372d0c353';
+  const created = await cloudflare.request({
+    method: 'POST',
+    path: `/zones/${zone}/dns_records`,
+    body: { type: 'CNAME', name: 'status.octo-corp.com', content: 'octocorp.statuspage.io', proxied: false, ttl: 1, comment: 'Atlassian Statuspage' },
+  });
+  return created.result;
+}
+""" }

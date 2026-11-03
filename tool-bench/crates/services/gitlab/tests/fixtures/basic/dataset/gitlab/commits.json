@@ -1,0 +1,40 @@
+[
+  {
+    "_key": "acme/platform/api@c0ffee0000000000000000000000000000000001",
+    "id": "c0ffee0000000000000000000000000000000001",
+    "title": "Add token bucket limiter",
+    "message": "Add token bucket limiter\n",
+    "author_name": "Raj Malhotra",
+    "author_email": "raj@acme.dev",
+    "authored_date": "2026-03-01T10:00:00.000Z",
+    "committed_date": "2026-03-01T10:00:00.000Z",
+    "parent_ids": [],
+    "branch": "main"
+  },
+  {
+    "_key": "acme/platform/api@9f1c2e7a4b5d6c8e0f1a2b3c4d5e6f708192a3b4",
+    "id": "9f1c2e7a4b5d6c8e0f1a2b3c4d5e6f708192a3b4",
+    "title": "Clamp refill to capacity",
+    "message": "Clamp refill to capacity\n",
+    "author_name": "Raj Malhotra",
+    "author_email": "raj@acme.dev",
+    "authored_date": "2026-03-09T11:50:00.000Z",
+    "committed_date": "2026-03-09T11:50:00.000Z",
+    "parent_ids": [
+      "c0ffee0000000000000000000000000000000001"
+    ],
+    "branch": "fix/rate-limiter"
+  },
+  {
+    "_key": "acme/platform/web@aa00000000000000000000000000000000000001",
+    "id": "aa00000000000000000000000000000000000001",
+    "title": "Initial commit",
+    "message": "Initial commit\n",
+    "author_name": "Dana Whitfield",
+    "author_email": "dana@acme.dev",
+    "authored_date": "2024-02-02T10:00:00.000Z",
+    "committed_date": "2024-02-02T10:00:00.000Z",
+    "parent_ids": [],
+    "branch": "main"
+  }
+]

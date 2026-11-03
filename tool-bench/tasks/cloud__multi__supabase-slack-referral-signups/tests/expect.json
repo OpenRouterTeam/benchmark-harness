@@ -1,0 +1,56 @@
+{
+  "state": [],
+  "required_calls": [],
+  "forbidden_calls": [
+    {
+      "service": "slack",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "slack_send_message"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "supabase",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "apply_migration"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "supabase",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "update public.",
+      "min_count": 1
+    },
+    {
+      "service": "supabase",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "delete from",
+      "min_count": 1
+    }
+  ],
+  "answer": {
+    "contains": [
+      "410.5"
+    ],
+    "regex": "(?i)(\\b4\\s+(new\\s+)?(customers|signups|sign-ups|users|people|referr)|(customers|signups|sign-ups|sign ups|users|people)[^0-9\\n]{0,40}\\b4\\b)"
+  }
+}

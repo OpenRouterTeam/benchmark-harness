@@ -1,0 +1,52 @@
+[
+  {
+    "_key": "acme/platform/api",
+    "id": 101,
+    "name": "api",
+    "path_with_namespace": "acme/platform/api",
+    "description": "Public REST API",
+    "default_branch": "main",
+    "visibility": "private",
+    "created_at": "2024-01-15T10:00:00.000Z",
+    "last_activity_at": "2026-03-13T17:20:00.000Z",
+    "topics": [
+      "rust",
+      "api"
+    ],
+    "merge_method": "merge",
+    "members": [
+      {
+        "username": "raj",
+        "access_level": 40
+      }
+    ],
+    "approvals_before_merge": 1,
+    "ci_results": {
+      "unit-tests": "success"
+    }
+  },
+  {
+    "_key": "acme/platform/web",
+    "id": 102,
+    "name": "web",
+    "path_with_namespace": "acme/platform/web",
+    "description": "Customer web app",
+    "default_branch": "main",
+    "visibility": "internal",
+    "created_at": "2024-02-02T10:00:00.000Z",
+    "last_activity_at": "2026-03-12T11:00:00.000Z",
+    "topics": [
+      "typescript"
+    ]
+  },
+  {
+    "_key": "dana/dotfiles",
+    "id": 140,
+    "name": "dotfiles",
+    "path_with_namespace": "dana/dotfiles",
+    "description": "",
+    "default_branch": "main",
+    "visibility": "public",
+    "created_at": "2024-05-02T10:00:00.000Z"
+  }
+]

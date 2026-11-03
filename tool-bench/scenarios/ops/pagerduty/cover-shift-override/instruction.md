@@ -1,0 +1,1 @@
+I'm the Platform primary on-call this week, but tomorrow (Saturday, October 31) I'm unavailable from 09:00 to 17:00 UTC. Jordan Lee from the Platform team agreed to cover for me. Please set that up in PagerDuty so pages go to Jordan during exactly that window. Don't change the regular rotation or any other schedule.

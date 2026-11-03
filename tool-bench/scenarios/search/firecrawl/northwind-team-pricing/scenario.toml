@@ -1,0 +1,26 @@
+[scenario]
+id = "search/firecrawl/northwind-team-pricing"
+title = "Look up a competitor's current Team plan price and seat count"
+now = "2026-10-28T15:00:00Z"
+seed = "search-firecrawl-northwind-team-pricing"
+services = ["firecrawl"]
+tags = ["lookup", "single-service", "firecrawl", "disambiguation"]
+timeout_sec = 900
+
+# $79/month billed annually with 12 seats is only on the live pricing page; the 2025 blog
+# post and the G2 listing say $69 and 10 seats, and monthly billing is $99.
+[expect.answer]
+regex = '(?is)(\$\s?79\b.*\b12\b|\b12\b.*\$\s?79\b)'
+
+[[solution.call]]
+endpoint = "firecrawl"
+tool = "firecrawl_search"
+arguments = { query = "Northwind Analytics pricing Team plan", limit = 5 }
+
+[[solution.call]]
+endpoint = "firecrawl"
+tool = "firecrawl_scrape"
+arguments = { url = "https://www.northwind-analytics.com/pricing", formats = ["markdown"] }
+
+[solution]
+answer = "Northwind Analytics Team plan: $79 per month when billed annually (USD), including 12 seats. (Source: https://www.northwind-analytics.com/pricing)\n"

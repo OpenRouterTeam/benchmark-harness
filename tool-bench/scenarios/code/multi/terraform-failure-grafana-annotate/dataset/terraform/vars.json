@@ -1,0 +1,200 @@
+[
+ {
+  "id": "var-RO7IPImDs7qcRdp2",
+  "workspace": "ws-vJd7W10B1cG75Uxp",
+  "key": "db_instance_class",
+  "value": "db.r6g.xlarge",
+  "category": "terraform",
+  "sensitive": false,
+  "hcl": false,
+  "description": null,
+  "created-at": "2024-03-12T10:05:00Z"
+ },
+ {
+  "id": "var-LiptHDtJuS1yiY1P",
+  "workspace": "ws-vJd7W10B1cG75Uxp",
+  "key": "engine_version",
+  "value": "16.4",
+  "category": "terraform",
+  "sensitive": false,
+  "hcl": false,
+  "description": null,
+  "created-at": "2024-03-12T10:05:00Z"
+ },
+ {
+  "id": "var-NaTDSOqMCnbF3j7H",
+  "workspace": "ws-vJd7W10B1cG75Uxp",
+  "key": "AWS_REGION",
+  "value": "us-east-1",
+  "category": "env",
+  "sensitive": false,
+  "hcl": false,
+  "description": null,
+  "created-at": "2024-03-12T10:05:00Z"
+ },
+ {
+  "id": "var-Gq7bsp04Qws42VnR",
+  "workspace": "ws-gIbdcZTYOZS7TluO",
+  "key": "db_instance_class",
+  "value": "db.t4g.large",
+  "category": "terraform",
+  "sensitive": false,
+  "hcl": false,
+  "description": null,
+  "created-at": "2024-03-12T10:05:00Z"
+ },
+ {
+  "id": "var-c2iRbJy6s79c6VC6",
+  "workspace": "ws-gIbdcZTYOZS7TluO",
+  "key": "engine_version",
+  "value": "16.4",
+  "category": "terraform",
+  "sensitive": false,
+  "hcl": false,
+  "description": null,
+  "created-at": "2024-03-12T10:05:00Z"
+ },
+ {
+  "id": "var-4eRpJG8P0JYsXLTJ",
+  "workspace": "ws-FxCPzmnaeIMOUbSd",
+  "key": "desired_count",
+  "value": "2",
+  "category": "terraform",
+  "sensitive": false,
+  "hcl": false,
+  "description": "Number of checkout tasks to keep running",
+  "created-at": "2024-03-12T10:05:00Z"
+ },
+ {
+  "id": "var-1JLSNjKjIWXdESUn",
+  "workspace": "ws-FxCPzmnaeIMOUbSd",
+  "key": "container_image",
+  "value": "acme/checkout:2.14.0",
+  "category": "terraform",
+  "sensitive": false,
+  "hcl": false,
+  "description": null,
+  "created-at": "2024-03-12T10:05:00Z"
+ },
+ {
+  "id": "var-w6vOLf60kvxWb9hr",
+  "workspace": "ws-FxCPzmnaeIMOUbSd",
+  "key": "max_capacity",
+  "value": "6",
+  "category": "terraform",
+  "sensitive": false,
+  "hcl": false,
+  "description": "Autoscaling ceiling",
+  "created-at": "2024-03-12T10:05:00Z"
+ },
+ {
+  "id": "var-S30oW4rPEHrUO48a",
+  "workspace": "ws-FxCPzmnaeIMOUbSd",
+  "key": "environment",
+  "value": "staging",
+  "category": "terraform",
+  "sensitive": false,
+  "hcl": false,
+  "description": null,
+  "created-at": "2024-03-12T10:05:00Z"
+ },
+ {
+  "id": "var-xpm8uyMOAlg7Q7ir",
+  "workspace": "ws-FxCPzmnaeIMOUbSd",
+  "key": "AWS_REGION",
+  "value": "us-east-1",
+  "category": "env",
+  "sensitive": false,
+  "hcl": false,
+  "description": null,
+  "created-at": "2024-03-12T10:05:00Z"
+ },
+ {
+  "id": "var-oxi9NfF4dbsL4cbi",
+  "workspace": "ws-FxCPzmnaeIMOUbSd",
+  "key": "DD_API_KEY",
+  "value": "dd-staging-0f9c",
+  "category": "env",
+  "sensitive": true,
+  "hcl": false,
+  "description": null,
+  "created-at": "2024-03-12T10:05:00Z"
+ },
+ {
+  "id": "var-FwwYKSi27hH9ISlj",
+  "workspace": "ws-ZQ7RjwWMr2evfIuC",
+  "key": "desired_count",
+  "value": "6",
+  "category": "terraform",
+  "sensitive": false,
+  "hcl": false,
+  "description": "Number of checkout tasks to keep running",
+  "created-at": "2024-03-12T10:05:00Z"
+ },
+ {
+  "id": "var-wF4kFICgGAhcrWDZ",
+  "workspace": "ws-ZQ7RjwWMr2evfIuC",
+  "key": "container_image",
+  "value": "acme/checkout:2.14.0",
+  "category": "terraform",
+  "sensitive": false,
+  "hcl": false,
+  "description": null,
+  "created-at": "2024-03-12T10:05:00Z"
+ },
+ {
+  "id": "var-HFGVF0AeJoMl9Slk",
+  "workspace": "ws-ZQ7RjwWMr2evfIuC",
+  "key": "max_capacity",
+  "value": "12",
+  "category": "terraform",
+  "sensitive": false,
+  "hcl": false,
+  "description": "Autoscaling ceiling",
+  "created-at": "2024-03-12T10:05:00Z"
+ },
+ {
+  "id": "var-oPDS159cduiUG24e",
+  "workspace": "ws-ZQ7RjwWMr2evfIuC",
+  "key": "environment",
+  "value": "prod",
+  "category": "terraform",
+  "sensitive": false,
+  "hcl": false,
+  "description": null,
+  "created-at": "2024-03-12T10:05:00Z"
+ },
+ {
+  "id": "var-ZEoXIujxVGNknjOc",
+  "workspace": "ws-ZQ7RjwWMr2evfIuC",
+  "key": "AWS_REGION",
+  "value": "us-east-1",
+  "category": "env",
+  "sensitive": false,
+  "hcl": false,
+  "description": null,
+  "created-at": "2024-03-12T10:05:00Z"
+ },
+ {
+  "id": "var-naPUPwxdmjqm3rhz",
+  "workspace": "ws-gOHPQz7D1ZRgqBJq",
+  "key": "desired_count",
+  "value": "8",
+  "category": "terraform",
+  "sensitive": false,
+  "hcl": false,
+  "description": null,
+  "created-at": "2024-03-12T10:05:00Z"
+ },
+ {
+  "id": "var-HzXM5kJJvnaw7ez1",
+  "workspace": "ws-gOHPQz7D1ZRgqBJq",
+  "key": "AWS_REGION",
+  "value": "us-east-1",
+  "category": "env",
+  "sensitive": false,
+  "hcl": false,
+  "description": null,
+  "created-at": "2024-03-12T10:05:00Z"
+ }
+]

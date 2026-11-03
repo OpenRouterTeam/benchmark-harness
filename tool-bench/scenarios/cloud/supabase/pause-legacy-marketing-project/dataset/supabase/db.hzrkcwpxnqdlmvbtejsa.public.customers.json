@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "email": "qa+ana@northwind.test",
+    "full_name": "QA Ana",
+    "country": "ES",
+    "created_at": "2026-01-10T09:00:00+00:00"
+  },
+  {
+    "id": 2,
+    "email": "qa+grace@northwind.test",
+    "full_name": "QA Grace",
+    "country": "KR",
+    "created_at": "2026-01-10T09:05:00+00:00"
+  },
+  {
+    "id": 3,
+    "email": "priya.shah@fastmail.com",
+    "full_name": "Priya Shah",
+    "country": "GB",
+    "created_at": "2026-02-07T11:30:00+00:00"
+  },
+  {
+    "id": 4,
+    "email": "loadtest@northwind.test",
+    "full_name": "Load Test Bot",
+    "country": null,
+    "created_at": "2026-02-15T00:00:00+00:00"
+  }
+]

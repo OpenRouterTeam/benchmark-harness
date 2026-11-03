@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_commit","arguments":{"detail":"none","owner":"acme-shop","repo":"storefront","sha":"c3a9f12e8b47d05a6e21f9b3c7d84e50a1b6f2d9"}}}

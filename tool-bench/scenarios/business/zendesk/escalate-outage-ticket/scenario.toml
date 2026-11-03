@@ -1,0 +1,112 @@
+[scenario]
+id = "business/zendesk/escalate-outage-ticket"
+title = "Escalate a customer's open outage ticket with an internal note"
+now = "2026-10-30T13:20:00Z"
+seed = "business-zendesk-escalate-outage-ticket"
+services = ["zendesk"]
+tags = ["write", "single-service", "zendesk", "disambiguation"]
+timeout_sec = 900
+
+# The open Northwind Health 502 ticket is 6230. Look-alikes: 6225 (same customer, same
+# symptom, solved two weeks ago), 6201 (Northwind Traders, 502s, solved), 6232 (Northwind
+# Health billing question), 6233 (another customer's API issue).
+# 6230 has two comments in the dataset, so the internal note is comments/6230/3.
+[[expect.state]]
+pointer = "/services/zendesk/tickets/6230/priority"
+equals = "urgent"
+
+[[expect.state]]
+pointer = "/services/zendesk/tickets/6230/tags"
+contains = "escalated"
+
+# Any comment on the ticket (its position depends on what else the agent posts).
+[[expect.state]]
+pointer = "/services/zendesk/comments"
+key_prefix = "6230/"
+any = { public = false, body = "INC-4471" }
+
+[[expect.state]]
+pointer = "/services/zendesk/tickets/6230/status"
+equals = "open"
+
+[[expect.required_calls]]
+service = "zendesk"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "update_ticket", arguments = { ticket_id = 6230 } }
+
+[[expect.required_calls]]
+service = "zendesk"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket_comment", arguments = { ticket_id = 6230 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket_comment", arguments = { ticket_id = 6230, public = true } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "update_ticket", arguments = { ticket_id = 6225 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket_comment", arguments = { ticket_id = 6225 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "update_ticket", arguments = { ticket_id = 6201 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket_comment", arguments = { ticket_id = 6201 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "update_ticket", arguments = { ticket_id = 6232 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket_comment", arguments = { ticket_id = 6232 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "update_ticket", arguments = { ticket_id = 6233 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket_comment", arguments = { ticket_id = 6233 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket" }
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "get_tickets"
+arguments = {}
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "get_ticket"
+arguments = { ticket_id = 6230 }
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "update_ticket"
+arguments = { ticket_id = 6230, priority = "urgent", tags = ["api", "patient_portal", "escalated"] }
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "create_ticket_comment"
+arguments = { ticket_id = 6230, public = false, comment = "Escalated to on-call engineering under incident INC-4471. The 502s are blocking patient check-ins at Northwind Health." }

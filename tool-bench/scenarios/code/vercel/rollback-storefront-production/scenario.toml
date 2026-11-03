@@ -1,0 +1,45 @@
+[scenario]
+id = "code/vercel/rollback-storefront-production"
+title = "Roll storefront production back to the last good deployment"
+now = "2026-10-28T15:00:00Z"
+seed = "code-vercel-rollback-storefront-production"
+services = ["vercel"]
+tags = ["write", "single-service", "vercel"]
+timeout_sec = 900
+
+# Production must serve c3a9f12 again (the build live before e07a3c9). Redeploying the failed
+# eslint build (2f6c8a1) fails again and leaves e07a3c9 serving.
+[[expect.state]]
+pointer = "/services/vercel/projects/prj_3dw2VoUa166qmaLV3P6dm828isAX/targets/production/meta/githubCommitSha"
+equals = "c3a9f12e8b47d05a6e21f9b3c7d84e50a1b6f2d9"
+
+[[expect.state]]
+pointer = "/services/vercel/projects/prj_3dw2VoUa166qmaLV3P6dm828isAX/targets/production/readyState"
+equals = "READY"
+
+[[expect.state]]
+pointer = "/services/vercel/projects/prj_3dw2VoUa166qmaLV3P6dm828isAX/targets/production/alias"
+contains = "acme-shop.com"
+
+[[expect.required_calls]]
+service = "vercel"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "vercel-create-deployment" }
+
+[[expect.forbidden_calls]]
+service = "vercel"
+body = { name = "vercel-delete-project" }
+
+[[expect.forbidden_calls]]
+service = "vercel"
+body = { name = "vercel-remove-environment-variable" }
+
+[[expect.forbidden_calls]]
+service = "vercel"
+body = { name = "vercel-create-environment-variables" }
+
+[[solution.call]]
+endpoint = "vercel"
+tool = "vercel-create-deployment"
+arguments = { name = "storefront", deploymentId = "dpl_8o704GjcwumkLAaxPwjoxb4V6QDF", target = "production" }

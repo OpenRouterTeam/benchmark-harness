@@ -1,0 +1,115 @@
+{
+  "state": [
+    {
+      "pointer": "/services/datadog/downtimes/2318857/monitor_id",
+      "equals": 7301,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/datadog/downtimes/2318857/scope",
+      "equals": null,
+      "exists": null,
+      "contains": "host:pg-prod-replica-2",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/datadog/downtimes/2318857/start",
+      "equals": 1793412000,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/datadog/downtimes/2318857/end",
+      "equals": 1793419200,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/datadog/downtimes/2318857/message",
+      "equals": null,
+      "exists": null,
+      "contains": "CHG-5012",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/datadog/downtimes/2318857/disabled",
+      "equals": false,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/datadog/downtimes/2318849/disabled",
+      "equals": false,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/datadog/downtimes/2318856/disabled",
+      "equals": false,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/datadog/downtimes/2318858",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "datadog",
+      "method": "POST",
+      "path": "/api/v1/downtime",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "monitor_id": 7301
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "datadog",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "datadog",
+      "method": "POST",
+      "path": "/api/v1/downtime",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "monitor_id": 7302
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

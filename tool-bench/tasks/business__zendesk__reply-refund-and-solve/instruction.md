@@ -1,0 +1,1 @@
+Billing just confirmed that the refund for Marcus Chen's duplicate October charge has been issued. The refund reference is RF-88213, and it should show up on his card within 5–7 business days. Please reply to Marcus on his support ticket about it so he knows (include the refund reference), and then mark that ticket as solved. Leave his other tickets alone.

@@ -1,0 +1,1954 @@
+[
+  {
+    "_key": "kube-system/coredns-fq7th5455q-mv9vx",
+    "metadata": {
+      "name": "coredns-fq7th5455q-mv9vx",
+      "namespace": "kube-system",
+      "uid": "033ca4a3-3516-4dff-ad39-d52437e723f4",
+      "resourceVersion": "41238",
+      "creationTimestamp": "2026-11-01T08:40:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "coredns",
+        "k8s-app": "kube-dns",
+        "pod-template-hash": "fq7th5455q"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "ReplicaSet",
+          "name": "coredns-fq7th5455q",
+          "uid": "84caa95f-f60b-42fa-a34a-e0eb02cc9359",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ]
+    },
+    "spec": {
+      "containers": [
+        {
+          "name": "coredns",
+          "image": "registry.k8s.io/coredns/coredns:v1.12.0",
+          "imagePullPolicy": "IfNotPresent",
+          "resources": {
+            "requests": {
+              "cpu": "100m",
+              "memory": "70Mi"
+            },
+            "limits": {
+              "memory": "170Mi"
+            }
+          },
+          "terminationMessagePath": "/dev/termination-log",
+          "terminationMessagePolicy": "File",
+          "ports": [
+            {
+              "name": "http",
+              "containerPort": 53,
+              "protocol": "TCP"
+            }
+          ]
+        }
+      ],
+      "restartPolicy": "Always",
+      "terminationGracePeriodSeconds": 30,
+      "dnsPolicy": "ClusterFirst",
+      "serviceAccountName": "default",
+      "serviceAccount": "default",
+      "nodeName": "ip-10-0-1-21.ec2.internal",
+      "securityContext": {},
+      "schedulerName": "default-scheduler",
+      "tolerations": [
+        {
+          "key": "node.kubernetes.io/not-ready",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        },
+        {
+          "key": "node.kubernetes.io/unreachable",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        }
+      ],
+      "priority": 0,
+      "enableServiceLinks": true,
+      "preemptionPolicy": "PreemptLowerPriority"
+    },
+    "status": {
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        }
+      ],
+      "hostIP": "10.0.1.21",
+      "hostIPs": [
+        {
+          "ip": "10.0.1.21"
+        }
+      ],
+      "podIP": "10.244.1.16",
+      "podIPs": [
+        {
+          "ip": "10.244.1.16"
+        }
+      ],
+      "startTime": "2026-11-01T08:40:00Z",
+      "containerStatuses": [
+        {
+          "name": "coredns",
+          "image": "registry.k8s.io/coredns/coredns:v1.12.0",
+          "imageID": "registry.k8s.io/coredns/coredns@sha256:19e9472ad36dd96739661eef8cac0cb5ea88ebce2ba314318ff6fb7d0c75773a",
+          "containerID": "containerd://8da6b940b88416130638999632536676cace99ea96cec7f33920173b88cf701e",
+          "restartCount": 0,
+          "started": true,
+          "ready": true,
+          "state": {
+            "running": {
+              "startedAt": "2026-11-01T08:40:00Z"
+            }
+          },
+          "lastState": {}
+        }
+      ],
+      "qosClass": "Burstable"
+    }
+  },
+  {
+    "_key": "kube-system/coredns-fq7th5455q-dvsfj",
+    "metadata": {
+      "name": "coredns-fq7th5455q-dvsfj",
+      "namespace": "kube-system",
+      "uid": "4649abd0-6be4-4f93-a0e4-622e5b1c0e45",
+      "resourceVersion": "41255",
+      "creationTimestamp": "2026-11-01T08:37:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "coredns",
+        "k8s-app": "kube-dns",
+        "pod-template-hash": "fq7th5455q"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "ReplicaSet",
+          "name": "coredns-fq7th5455q",
+          "uid": "84caa95f-f60b-42fa-a34a-e0eb02cc9359",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ]
+    },
+    "spec": {
+      "containers": [
+        {
+          "name": "coredns",
+          "image": "registry.k8s.io/coredns/coredns:v1.12.0",
+          "imagePullPolicy": "IfNotPresent",
+          "resources": {
+            "requests": {
+              "cpu": "100m",
+              "memory": "70Mi"
+            },
+            "limits": {
+              "memory": "170Mi"
+            }
+          },
+          "terminationMessagePath": "/dev/termination-log",
+          "terminationMessagePolicy": "File",
+          "ports": [
+            {
+              "name": "http",
+              "containerPort": 53,
+              "protocol": "TCP"
+            }
+          ]
+        }
+      ],
+      "restartPolicy": "Always",
+      "terminationGracePeriodSeconds": 30,
+      "dnsPolicy": "ClusterFirst",
+      "serviceAccountName": "default",
+      "serviceAccount": "default",
+      "nodeName": "ip-10-0-2-37.ec2.internal",
+      "securityContext": {},
+      "schedulerName": "default-scheduler",
+      "tolerations": [
+        {
+          "key": "node.kubernetes.io/not-ready",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        },
+        {
+          "key": "node.kubernetes.io/unreachable",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        }
+      ],
+      "priority": 0,
+      "enableServiceLinks": true,
+      "preemptionPolicy": "PreemptLowerPriority"
+    },
+    "status": {
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:37:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:37:00Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:37:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:37:00Z"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:37:00Z"
+        }
+      ],
+      "hostIP": "10.0.2.37",
+      "hostIPs": [
+        {
+          "ip": "10.0.2.37"
+        }
+      ],
+      "podIP": "10.244.1.17",
+      "podIPs": [
+        {
+          "ip": "10.244.1.17"
+        }
+      ],
+      "startTime": "2026-11-01T08:37:00Z",
+      "containerStatuses": [
+        {
+          "name": "coredns",
+          "image": "registry.k8s.io/coredns/coredns:v1.12.0",
+          "imageID": "registry.k8s.io/coredns/coredns@sha256:19e9472ad36dd96739661eef8cac0cb5ea88ebce2ba314318ff6fb7d0c75773a",
+          "containerID": "containerd://c5d03f8ea6e0624b6ca07a38feea2964c7e6855a2e52d72011309f2b14387dbd",
+          "restartCount": 0,
+          "started": true,
+          "ready": true,
+          "state": {
+            "running": {
+              "startedAt": "2026-11-01T08:37:00Z"
+            }
+          },
+          "lastState": {}
+        }
+      ],
+      "qosClass": "Burstable"
+    }
+  },
+  {
+    "_key": "kube-system/metrics-server-52pzb89fg-mrpgn",
+    "metadata": {
+      "name": "metrics-server-52pzb89fg-mrpgn",
+      "namespace": "kube-system",
+      "uid": "3f9bc916-288a-4a19-a044-e604a53e005b",
+      "resourceVersion": "41306",
+      "creationTimestamp": "2026-11-01T08:40:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "metrics-server",
+        "k8s-app": "metrics-server",
+        "pod-template-hash": "52pzb89fg"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "ReplicaSet",
+          "name": "metrics-server-52pzb89fg",
+          "uid": "3241fb1e-517d-47c7-a900-5fae1102a27f",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ]
+    },
+    "spec": {
+      "containers": [
+        {
+          "name": "metrics-server",
+          "image": "registry.k8s.io/metrics-server/metrics-server:v0.7.2",
+          "imagePullPolicy": "IfNotPresent",
+          "resources": {
+            "requests": {
+              "cpu": "100m",
+              "memory": "200Mi"
+            },
+            "limits": {
+              "memory": "400Mi"
+            }
+          },
+          "terminationMessagePath": "/dev/termination-log",
+          "terminationMessagePolicy": "File",
+          "ports": [
+            {
+              "name": "http",
+              "containerPort": 10250,
+              "protocol": "TCP"
+            }
+          ]
+        }
+      ],
+      "restartPolicy": "Always",
+      "terminationGracePeriodSeconds": 30,
+      "dnsPolicy": "ClusterFirst",
+      "serviceAccountName": "default",
+      "serviceAccount": "default",
+      "nodeName": "ip-10-0-3-52.ec2.internal",
+      "securityContext": {},
+      "schedulerName": "default-scheduler",
+      "tolerations": [
+        {
+          "key": "node.kubernetes.io/not-ready",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        },
+        {
+          "key": "node.kubernetes.io/unreachable",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        }
+      ],
+      "priority": 0,
+      "enableServiceLinks": true,
+      "preemptionPolicy": "PreemptLowerPriority"
+    },
+    "status": {
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        }
+      ],
+      "hostIP": "10.0.3.52",
+      "hostIPs": [
+        {
+          "ip": "10.0.3.52"
+        }
+      ],
+      "podIP": "10.244.1.18",
+      "podIPs": [
+        {
+          "ip": "10.244.1.18"
+        }
+      ],
+      "startTime": "2026-11-01T08:40:00Z",
+      "containerStatuses": [
+        {
+          "name": "metrics-server",
+          "image": "registry.k8s.io/metrics-server/metrics-server:v0.7.2",
+          "imageID": "registry.k8s.io/metrics-server/metrics-server@sha256:a51111da857e8d8d8e3ae6029e96e6de65885c29d9d257399c1da7bbaa0a6bf1",
+          "containerID": "containerd://da5e5fbcc4078dfd05cef6e30bf83e6342b66e82862e9c4c32aaa720b48fbf61",
+          "restartCount": 0,
+          "started": true,
+          "ready": true,
+          "state": {
+            "running": {
+              "startedAt": "2026-11-01T08:40:00Z"
+            }
+          },
+          "lastState": {}
+        }
+      ],
+      "qosClass": "Burstable"
+    }
+  },
+  {
+    "_key": "payments/payments-api-86zf47v9z-fhnrw",
+    "metadata": {
+      "name": "payments-api-86zf47v9z-fhnrw",
+      "namespace": "payments",
+      "uid": "95382dc5-8516-4200-a23d-612192059183",
+      "resourceVersion": "41459",
+      "creationTimestamp": "2026-11-01T08:40:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "payments-api",
+        "team": "payments",
+        "pod-template-hash": "86zf47v9z"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "ReplicaSet",
+          "name": "payments-api-86zf47v9z",
+          "uid": "5f98bee6-8f71-4d58-a153-472f30fdc7e6",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ]
+    },
+    "spec": {
+      "containers": [
+        {
+          "name": "payments-api",
+          "image": "ghcr.io/octo-corp/payments-api:2.14.1",
+          "imagePullPolicy": "IfNotPresent",
+          "resources": {
+            "requests": {
+              "cpu": "250m",
+              "memory": "256Mi"
+            },
+            "limits": {
+              "memory": "512Mi"
+            }
+          },
+          "terminationMessagePath": "/dev/termination-log",
+          "terminationMessagePolicy": "File",
+          "ports": [
+            {
+              "name": "http",
+              "containerPort": 8080,
+              "protocol": "TCP"
+            }
+          ],
+          "env": [
+            {
+              "name": "LEDGER_URL",
+              "value": "http://ledger-worker.payments.svc:8080"
+            },
+            {
+              "name": "LOG_LEVEL",
+              "value": "info"
+            }
+          ]
+        }
+      ],
+      "restartPolicy": "Always",
+      "terminationGracePeriodSeconds": 30,
+      "dnsPolicy": "ClusterFirst",
+      "serviceAccountName": "default",
+      "serviceAccount": "default",
+      "nodeName": "ip-10-0-1-21.ec2.internal",
+      "securityContext": {},
+      "schedulerName": "default-scheduler",
+      "tolerations": [
+        {
+          "key": "node.kubernetes.io/not-ready",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        },
+        {
+          "key": "node.kubernetes.io/unreachable",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        }
+      ],
+      "priority": 0,
+      "enableServiceLinks": true,
+      "preemptionPolicy": "PreemptLowerPriority"
+    },
+    "status": {
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        }
+      ],
+      "hostIP": "10.0.1.21",
+      "hostIPs": [
+        {
+          "ip": "10.0.1.21"
+        }
+      ],
+      "podIP": "10.244.1.19",
+      "podIPs": [
+        {
+          "ip": "10.244.1.19"
+        }
+      ],
+      "startTime": "2026-11-01T08:40:00Z",
+      "containerStatuses": [
+        {
+          "name": "payments-api",
+          "image": "ghcr.io/octo-corp/payments-api:2.14.1",
+          "imageID": "ghcr.io/octo-corp/payments-api@sha256:dd93c5f91df133cbb1bceef014a0ee3290cae61221b2b7952d025a423490975a",
+          "containerID": "containerd://35f3fe059a639fc5f9afd466c46380f5f2e63b663f96ac60ea422f3b46fd7e39",
+          "restartCount": 0,
+          "started": true,
+          "ready": true,
+          "state": {
+            "running": {
+              "startedAt": "2026-11-01T08:40:00Z"
+            }
+          },
+          "lastState": {}
+        }
+      ],
+      "qosClass": "Burstable"
+    }
+  },
+  {
+    "_key": "payments/payments-api-86zf47v9z-r9xzx",
+    "metadata": {
+      "name": "payments-api-86zf47v9z-r9xzx",
+      "namespace": "payments",
+      "uid": "bf90c929-cfa9-4072-ad25-9aef3e475617",
+      "resourceVersion": "41476",
+      "creationTimestamp": "2026-11-01T08:37:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "payments-api",
+        "team": "payments",
+        "pod-template-hash": "86zf47v9z"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "ReplicaSet",
+          "name": "payments-api-86zf47v9z",
+          "uid": "5f98bee6-8f71-4d58-a153-472f30fdc7e6",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ]
+    },
+    "spec": {
+      "containers": [
+        {
+          "name": "payments-api",
+          "image": "ghcr.io/octo-corp/payments-api:2.14.1",
+          "imagePullPolicy": "IfNotPresent",
+          "resources": {
+            "requests": {
+              "cpu": "250m",
+              "memory": "256Mi"
+            },
+            "limits": {
+              "memory": "512Mi"
+            }
+          },
+          "terminationMessagePath": "/dev/termination-log",
+          "terminationMessagePolicy": "File",
+          "ports": [
+            {
+              "name": "http",
+              "containerPort": 8080,
+              "protocol": "TCP"
+            }
+          ],
+          "env": [
+            {
+              "name": "LEDGER_URL",
+              "value": "http://ledger-worker.payments.svc:8080"
+            },
+            {
+              "name": "LOG_LEVEL",
+              "value": "info"
+            }
+          ]
+        }
+      ],
+      "restartPolicy": "Always",
+      "terminationGracePeriodSeconds": 30,
+      "dnsPolicy": "ClusterFirst",
+      "serviceAccountName": "default",
+      "serviceAccount": "default",
+      "nodeName": "ip-10-0-2-37.ec2.internal",
+      "securityContext": {},
+      "schedulerName": "default-scheduler",
+      "tolerations": [
+        {
+          "key": "node.kubernetes.io/not-ready",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        },
+        {
+          "key": "node.kubernetes.io/unreachable",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        }
+      ],
+      "priority": 0,
+      "enableServiceLinks": true,
+      "preemptionPolicy": "PreemptLowerPriority"
+    },
+    "status": {
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:37:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:37:00Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:37:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:37:00Z"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:37:00Z"
+        }
+      ],
+      "hostIP": "10.0.2.37",
+      "hostIPs": [
+        {
+          "ip": "10.0.2.37"
+        }
+      ],
+      "podIP": "10.244.1.20",
+      "podIPs": [
+        {
+          "ip": "10.244.1.20"
+        }
+      ],
+      "startTime": "2026-11-01T08:37:00Z",
+      "containerStatuses": [
+        {
+          "name": "payments-api",
+          "image": "ghcr.io/octo-corp/payments-api:2.14.1",
+          "imageID": "ghcr.io/octo-corp/payments-api@sha256:dd93c5f91df133cbb1bceef014a0ee3290cae61221b2b7952d025a423490975a",
+          "containerID": "containerd://c199ae890779df1c192a80b2c1ed595feb7035853b7683fb902b54b18761e943",
+          "restartCount": 0,
+          "started": true,
+          "ready": true,
+          "state": {
+            "running": {
+              "startedAt": "2026-11-01T08:37:00Z"
+            }
+          },
+          "lastState": {}
+        }
+      ],
+      "qosClass": "Burstable"
+    }
+  },
+  {
+    "_key": "payments/payments-api-86zf47v9z-q8wj4",
+    "metadata": {
+      "name": "payments-api-86zf47v9z-q8wj4",
+      "namespace": "payments",
+      "uid": "0d891efe-0fbf-48ca-aac6-de2f1851e988",
+      "resourceVersion": "41493",
+      "creationTimestamp": "2026-11-01T08:34:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "payments-api",
+        "team": "payments",
+        "pod-template-hash": "86zf47v9z"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "ReplicaSet",
+          "name": "payments-api-86zf47v9z",
+          "uid": "5f98bee6-8f71-4d58-a153-472f30fdc7e6",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ]
+    },
+    "spec": {
+      "containers": [
+        {
+          "name": "payments-api",
+          "image": "ghcr.io/octo-corp/payments-api:2.14.1",
+          "imagePullPolicy": "IfNotPresent",
+          "resources": {
+            "requests": {
+              "cpu": "250m",
+              "memory": "256Mi"
+            },
+            "limits": {
+              "memory": "512Mi"
+            }
+          },
+          "terminationMessagePath": "/dev/termination-log",
+          "terminationMessagePolicy": "File",
+          "ports": [
+            {
+              "name": "http",
+              "containerPort": 8080,
+              "protocol": "TCP"
+            }
+          ],
+          "env": [
+            {
+              "name": "LEDGER_URL",
+              "value": "http://ledger-worker.payments.svc:8080"
+            },
+            {
+              "name": "LOG_LEVEL",
+              "value": "info"
+            }
+          ]
+        }
+      ],
+      "restartPolicy": "Always",
+      "terminationGracePeriodSeconds": 30,
+      "dnsPolicy": "ClusterFirst",
+      "serviceAccountName": "default",
+      "serviceAccount": "default",
+      "nodeName": "ip-10-0-3-52.ec2.internal",
+      "securityContext": {},
+      "schedulerName": "default-scheduler",
+      "tolerations": [
+        {
+          "key": "node.kubernetes.io/not-ready",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        },
+        {
+          "key": "node.kubernetes.io/unreachable",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        }
+      ],
+      "priority": 0,
+      "enableServiceLinks": true,
+      "preemptionPolicy": "PreemptLowerPriority"
+    },
+    "status": {
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:34:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:34:00Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:34:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:34:00Z"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:34:00Z"
+        }
+      ],
+      "hostIP": "10.0.3.52",
+      "hostIPs": [
+        {
+          "ip": "10.0.3.52"
+        }
+      ],
+      "podIP": "10.244.1.21",
+      "podIPs": [
+        {
+          "ip": "10.244.1.21"
+        }
+      ],
+      "startTime": "2026-11-01T08:34:00Z",
+      "containerStatuses": [
+        {
+          "name": "payments-api",
+          "image": "ghcr.io/octo-corp/payments-api:2.14.1",
+          "imageID": "ghcr.io/octo-corp/payments-api@sha256:dd93c5f91df133cbb1bceef014a0ee3290cae61221b2b7952d025a423490975a",
+          "containerID": "containerd://6551125cf73ae7be9aac1e35077df5da7fba783c6c2f85e1b70cdd30f22bc816",
+          "restartCount": 0,
+          "started": true,
+          "ready": true,
+          "state": {
+            "running": {
+              "startedAt": "2026-11-01T08:34:00Z"
+            }
+          },
+          "lastState": {}
+        }
+      ],
+      "qosClass": "Burstable"
+    }
+  },
+  {
+    "_key": "payments/ledger-worker-zx4mrndj8b-dwvg9",
+    "metadata": {
+      "name": "ledger-worker-zx4mrndj8b-dwvg9",
+      "namespace": "payments",
+      "uid": "b08dd8c0-fa2a-4acc-a6c3-44b4b8798a0e",
+      "resourceVersion": "41544",
+      "creationTimestamp": "2026-11-01T08:40:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "ledger-worker",
+        "team": "payments",
+        "pod-template-hash": "zx4mrndj8b"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "ReplicaSet",
+          "name": "ledger-worker-zx4mrndj8b",
+          "uid": "90df12e0-7435-40f1-a10f-063fd9fc4743",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ]
+    },
+    "spec": {
+      "containers": [
+        {
+          "name": "ledger-worker",
+          "image": "ghcr.io/octo-corp/ledger-worker:1.9.0",
+          "imagePullPolicy": "IfNotPresent",
+          "resources": {
+            "requests": {
+              "cpu": "100m",
+              "memory": "128Mi"
+            },
+            "limits": {
+              "memory": "256Mi"
+            }
+          },
+          "terminationMessagePath": "/dev/termination-log",
+          "terminationMessagePolicy": "File",
+          "ports": [
+            {
+              "name": "http",
+              "containerPort": 8080,
+              "protocol": "TCP"
+            }
+          ],
+          "env": [
+            {
+              "name": "LEDGER_DB_HOST",
+              "value": "ledger-db.payments.svc"
+            },
+            {
+              "name": "LEDGER_DB_USER",
+              "value": "ledger"
+            },
+            {
+              "name": "KAFKA_BROKERS",
+              "value": "kafka-0.kafka.data.svc:9092"
+            }
+          ]
+        }
+      ],
+      "restartPolicy": "Always",
+      "terminationGracePeriodSeconds": 30,
+      "dnsPolicy": "ClusterFirst",
+      "serviceAccountName": "default",
+      "serviceAccount": "default",
+      "nodeName": "ip-10-0-2-37.ec2.internal",
+      "securityContext": {},
+      "schedulerName": "default-scheduler",
+      "tolerations": [
+        {
+          "key": "node.kubernetes.io/not-ready",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        },
+        {
+          "key": "node.kubernetes.io/unreachable",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        }
+      ],
+      "priority": 0,
+      "enableServiceLinks": true,
+      "preemptionPolicy": "PreemptLowerPriority"
+    },
+    "status": {
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        }
+      ],
+      "hostIP": "10.0.2.37",
+      "hostIPs": [
+        {
+          "ip": "10.0.2.37"
+        }
+      ],
+      "podIP": "10.244.1.22",
+      "podIPs": [
+        {
+          "ip": "10.244.1.22"
+        }
+      ],
+      "startTime": "2026-11-01T08:40:00Z",
+      "containerStatuses": [
+        {
+          "name": "ledger-worker",
+          "image": "ghcr.io/octo-corp/ledger-worker:1.9.0",
+          "imageID": "ghcr.io/octo-corp/ledger-worker@sha256:909ff1a977b5d87fd0a9e317e927d91d084149570b82932b53325dd51795d711",
+          "containerID": "containerd://73defd72f358a4fbbb44724506a0ead2065b86d34607ecba2484ef741aef22a3",
+          "restartCount": 0,
+          "started": true,
+          "ready": true,
+          "state": {
+            "running": {
+              "startedAt": "2026-11-01T08:40:00Z"
+            }
+          },
+          "lastState": {}
+        }
+      ],
+      "qosClass": "Burstable"
+    }
+  },
+  {
+    "_key": "payments/ledger-worker-zx4mrndj8b-gdg8j",
+    "metadata": {
+      "name": "ledger-worker-zx4mrndj8b-gdg8j",
+      "namespace": "payments",
+      "uid": "8a8f27e6-3bfb-4a7a-a7ef-0af031be34f8",
+      "resourceVersion": "41561",
+      "creationTimestamp": "2026-11-01T08:37:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "ledger-worker",
+        "team": "payments",
+        "pod-template-hash": "zx4mrndj8b"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "ReplicaSet",
+          "name": "ledger-worker-zx4mrndj8b",
+          "uid": "90df12e0-7435-40f1-a10f-063fd9fc4743",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ]
+    },
+    "spec": {
+      "containers": [
+        {
+          "name": "ledger-worker",
+          "image": "ghcr.io/octo-corp/ledger-worker:1.9.0",
+          "imagePullPolicy": "IfNotPresent",
+          "resources": {
+            "requests": {
+              "cpu": "100m",
+              "memory": "128Mi"
+            },
+            "limits": {
+              "memory": "256Mi"
+            }
+          },
+          "terminationMessagePath": "/dev/termination-log",
+          "terminationMessagePolicy": "File",
+          "ports": [
+            {
+              "name": "http",
+              "containerPort": 8080,
+              "protocol": "TCP"
+            }
+          ],
+          "env": [
+            {
+              "name": "LEDGER_DB_HOST",
+              "value": "ledger-db.payments.svc"
+            },
+            {
+              "name": "LEDGER_DB_USER",
+              "value": "ledger"
+            },
+            {
+              "name": "KAFKA_BROKERS",
+              "value": "kafka-0.kafka.data.svc:9092"
+            }
+          ]
+        }
+      ],
+      "restartPolicy": "Always",
+      "terminationGracePeriodSeconds": 30,
+      "dnsPolicy": "ClusterFirst",
+      "serviceAccountName": "default",
+      "serviceAccount": "default",
+      "nodeName": "ip-10-0-3-52.ec2.internal",
+      "securityContext": {},
+      "schedulerName": "default-scheduler",
+      "tolerations": [
+        {
+          "key": "node.kubernetes.io/not-ready",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        },
+        {
+          "key": "node.kubernetes.io/unreachable",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        }
+      ],
+      "priority": 0,
+      "enableServiceLinks": true,
+      "preemptionPolicy": "PreemptLowerPriority"
+    },
+    "status": {
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:37:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:37:00Z"
+        },
+        {
+          "type": "Ready",
+          "status": "False",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-03T08:36:00Z",
+          "reason": "ContainersNotReady",
+          "message": "containers with unready status: [ledger-worker]"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "False",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-03T08:36:00Z",
+          "reason": "ContainersNotReady",
+          "message": "containers with unready status: [ledger-worker]"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:37:00Z"
+        }
+      ],
+      "hostIP": "10.0.3.52",
+      "hostIPs": [
+        {
+          "ip": "10.0.3.52"
+        }
+      ],
+      "podIP": "10.244.1.23",
+      "podIPs": [
+        {
+          "ip": "10.244.1.23"
+        }
+      ],
+      "startTime": "2026-11-01T08:37:00Z",
+      "containerStatuses": [
+        {
+          "name": "ledger-worker",
+          "image": "ghcr.io/octo-corp/ledger-worker:1.9.0",
+          "imageID": "ghcr.io/octo-corp/ledger-worker@sha256:909ff1a977b5d87fd0a9e317e927d91d084149570b82932b53325dd51795d711",
+          "containerID": "containerd://bb3bdccbc74db124fdc1d45d0d4c46ae0f8c0b8192ecd75738297affc186e3cb",
+          "restartCount": 14,
+          "started": false,
+          "ready": false,
+          "state": {
+            "waiting": {
+              "reason": "CrashLoopBackOff",
+              "message": "back-off 5m0s restarting failed container=ledger-worker pod=ledger-worker-zx4mrndj8b-gdg8j_payments(8a8f27e6-3bfb-4a7a-a7ef-0af031be34f8)"
+            }
+          },
+          "lastState": {
+            "terminated": {
+              "exitCode": 1,
+              "reason": "Error",
+              "startedAt": "2026-11-03T08:33:41Z",
+              "finishedAt": "2026-11-03T08:33:44Z",
+              "containerID": "containerd://5b1d8f0c2a3e4f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a"
+            }
+          }
+        }
+      ],
+      "qosClass": "Burstable"
+    }
+  },
+  {
+    "_key": "payments/refund-scheduler-jrh52sks4-5bgnd",
+    "metadata": {
+      "name": "refund-scheduler-jrh52sks4-5bgnd",
+      "namespace": "payments",
+      "uid": "2386292c-acdd-4d9e-ae6e-2bb9b56b8f1a",
+      "resourceVersion": "41612",
+      "creationTimestamp": "2026-11-01T08:40:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "refund-scheduler",
+        "team": "payments",
+        "pod-template-hash": "jrh52sks4"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "ReplicaSet",
+          "name": "refund-scheduler-jrh52sks4",
+          "uid": "35e85c65-9930-4dd7-ab40-31c082baaff9",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ]
+    },
+    "spec": {
+      "containers": [
+        {
+          "name": "refund-scheduler",
+          "image": "ghcr.io/octo-corp/refund-scheduler:0.6.3",
+          "imagePullPolicy": "IfNotPresent",
+          "resources": {
+            "requests": {
+              "cpu": "100m",
+              "memory": "128Mi"
+            },
+            "limits": {
+              "memory": "256Mi"
+            }
+          },
+          "terminationMessagePath": "/dev/termination-log",
+          "terminationMessagePolicy": "File"
+        }
+      ],
+      "restartPolicy": "Always",
+      "terminationGracePeriodSeconds": 30,
+      "dnsPolicy": "ClusterFirst",
+      "serviceAccountName": "default",
+      "serviceAccount": "default",
+      "nodeName": "ip-10-0-1-21.ec2.internal",
+      "securityContext": {},
+      "schedulerName": "default-scheduler",
+      "tolerations": [
+        {
+          "key": "node.kubernetes.io/not-ready",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        },
+        {
+          "key": "node.kubernetes.io/unreachable",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        }
+      ],
+      "priority": 0,
+      "enableServiceLinks": true,
+      "preemptionPolicy": "PreemptLowerPriority"
+    },
+    "status": {
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        }
+      ],
+      "hostIP": "10.0.1.21",
+      "hostIPs": [
+        {
+          "ip": "10.0.1.21"
+        }
+      ],
+      "podIP": "10.244.1.24",
+      "podIPs": [
+        {
+          "ip": "10.244.1.24"
+        }
+      ],
+      "startTime": "2026-11-01T08:40:00Z",
+      "containerStatuses": [
+        {
+          "name": "refund-scheduler",
+          "image": "ghcr.io/octo-corp/refund-scheduler:0.6.3",
+          "imageID": "ghcr.io/octo-corp/refund-scheduler@sha256:763ecb61a22e0743d031fa983c7bddc7b86753f539e347a99ab060aac3986b7b",
+          "containerID": "containerd://9c05e78721e93f902fb263435d209eeae663ac2ab200dbf76a76d693bad4b2eb",
+          "restartCount": 1,
+          "started": true,
+          "ready": true,
+          "state": {
+            "running": {
+              "startedAt": "2026-11-01T08:40:00Z"
+            }
+          },
+          "lastState": {
+            "terminated": {
+              "exitCode": 137,
+              "reason": "OOMKilled",
+              "startedAt": "2026-10-27T02:10:11Z",
+              "finishedAt": "2026-10-28T19:02:55Z"
+            }
+          }
+        }
+      ],
+      "qosClass": "Burstable"
+    }
+  },
+  {
+    "_key": "payments-staging/ledger-worker-c64m9bbw8-v45ss",
+    "metadata": {
+      "name": "ledger-worker-c64m9bbw8-v45ss",
+      "namespace": "payments-staging",
+      "uid": "58647b2a-27e8-4402-a2fb-204dfa918293",
+      "resourceVersion": "41697",
+      "creationTimestamp": "2026-11-01T08:40:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "ledger-worker",
+        "team": "payments",
+        "pod-template-hash": "c64m9bbw8"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "ReplicaSet",
+          "name": "ledger-worker-c64m9bbw8",
+          "uid": "744af920-89d9-41e7-af78-a714c0cf25a8",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ]
+    },
+    "spec": {
+      "containers": [
+        {
+          "name": "ledger-worker",
+          "image": "ghcr.io/octo-corp/ledger-worker:1.10.0-rc.2",
+          "imagePullPolicy": "IfNotPresent",
+          "resources": {
+            "requests": {
+              "cpu": "100m",
+              "memory": "128Mi"
+            },
+            "limits": {
+              "memory": "256Mi"
+            }
+          },
+          "terminationMessagePath": "/dev/termination-log",
+          "terminationMessagePolicy": "File",
+          "ports": [
+            {
+              "name": "http",
+              "containerPort": 8080,
+              "protocol": "TCP"
+            }
+          ],
+          "env": [
+            {
+              "name": "LEDGER_DB_HOST",
+              "value": "ledger-db.payments-staging.svc"
+            },
+            {
+              "name": "LEDGER_DB_USER",
+              "value": "ledger"
+            }
+          ]
+        }
+      ],
+      "restartPolicy": "Always",
+      "terminationGracePeriodSeconds": 30,
+      "dnsPolicy": "ClusterFirst",
+      "serviceAccountName": "default",
+      "serviceAccount": "default",
+      "nodeName": "ip-10-0-1-21.ec2.internal",
+      "securityContext": {},
+      "schedulerName": "default-scheduler",
+      "tolerations": [
+        {
+          "key": "node.kubernetes.io/not-ready",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        },
+        {
+          "key": "node.kubernetes.io/unreachable",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        }
+      ],
+      "priority": 0,
+      "enableServiceLinks": true,
+      "preemptionPolicy": "PreemptLowerPriority"
+    },
+    "status": {
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "Ready",
+          "status": "False",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-03T08:36:00Z",
+          "reason": "ContainersNotReady",
+          "message": "containers with unready status: [ledger-worker]"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "False",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-03T08:36:00Z",
+          "reason": "ContainersNotReady",
+          "message": "containers with unready status: [ledger-worker]"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        }
+      ],
+      "hostIP": "10.0.1.21",
+      "hostIPs": [
+        {
+          "ip": "10.0.1.21"
+        }
+      ],
+      "podIP": "10.244.1.25",
+      "podIPs": [
+        {
+          "ip": "10.244.1.25"
+        }
+      ],
+      "startTime": "2026-11-01T08:40:00Z",
+      "containerStatuses": [
+        {
+          "name": "ledger-worker",
+          "image": "ghcr.io/octo-corp/ledger-worker:1.10.0-rc.2",
+          "imageID": "ghcr.io/octo-corp/ledger-worker@sha256:d946d4e73b3737394fd5562d7c6ab0c3ce4dba7bcdda7f5c35c7c20be002f7bd",
+          "containerID": "containerd://fe9a6ca3d8aef85ebb14c768685ecb74146a597610677ab05eef89f9c5b6651d",
+          "restartCount": 31,
+          "started": false,
+          "ready": false,
+          "state": {
+            "waiting": {
+              "reason": "CrashLoopBackOff",
+              "message": "back-off 5m0s restarting failed container=ledger-worker pod=ledger-worker-c64m9bbw8-v45ss_payments-staging(58647b2a-27e8-4402-a2fb-204dfa918293)"
+            }
+          },
+          "lastState": {
+            "terminated": {
+              "exitCode": 2,
+              "reason": "Error",
+              "startedAt": "2026-11-03T08:35:02Z",
+              "finishedAt": "2026-11-03T08:35:03Z"
+            }
+          }
+        }
+      ],
+      "qosClass": "Burstable"
+    }
+  },
+  {
+    "_key": "payments-staging/payments-api-jlmdhmtwc4-f2kp7",
+    "metadata": {
+      "name": "payments-api-jlmdhmtwc4-f2kp7",
+      "namespace": "payments-staging",
+      "uid": "e33d51e2-7680-44dc-a754-f36a48a531d9",
+      "resourceVersion": "41748",
+      "creationTimestamp": "2026-11-01T08:40:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "payments-api",
+        "team": "payments",
+        "pod-template-hash": "jlmdhmtwc4"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "ReplicaSet",
+          "name": "payments-api-jlmdhmtwc4",
+          "uid": "8a093f42-d103-407a-acc0-d18780c4d826",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ]
+    },
+    "spec": {
+      "containers": [
+        {
+          "name": "payments-api",
+          "image": "ghcr.io/octo-corp/payments-api:2.15.0-rc.1",
+          "imagePullPolicy": "IfNotPresent",
+          "resources": {
+            "requests": {
+              "cpu": "100m",
+              "memory": "128Mi"
+            },
+            "limits": {
+              "memory": "512Mi"
+            }
+          },
+          "terminationMessagePath": "/dev/termination-log",
+          "terminationMessagePolicy": "File",
+          "ports": [
+            {
+              "name": "http",
+              "containerPort": 8080,
+              "protocol": "TCP"
+            }
+          ]
+        }
+      ],
+      "restartPolicy": "Always",
+      "terminationGracePeriodSeconds": 30,
+      "dnsPolicy": "ClusterFirst",
+      "serviceAccountName": "default",
+      "serviceAccount": "default",
+      "nodeName": "ip-10-0-2-37.ec2.internal",
+      "securityContext": {},
+      "schedulerName": "default-scheduler",
+      "tolerations": [
+        {
+          "key": "node.kubernetes.io/not-ready",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        },
+        {
+          "key": "node.kubernetes.io/unreachable",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        }
+      ],
+      "priority": 0,
+      "enableServiceLinks": true,
+      "preemptionPolicy": "PreemptLowerPriority"
+    },
+    "status": {
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        }
+      ],
+      "hostIP": "10.0.2.37",
+      "hostIPs": [
+        {
+          "ip": "10.0.2.37"
+        }
+      ],
+      "podIP": "10.244.1.26",
+      "podIPs": [
+        {
+          "ip": "10.244.1.26"
+        }
+      ],
+      "startTime": "2026-11-01T08:40:00Z",
+      "containerStatuses": [
+        {
+          "name": "payments-api",
+          "image": "ghcr.io/octo-corp/payments-api:2.15.0-rc.1",
+          "imageID": "ghcr.io/octo-corp/payments-api@sha256:8e26549b3cae7d16fc02489a0fefc923737809710d2faeac7f06880fb5918298",
+          "containerID": "containerd://b6f7d59a06b183be71896b452974599d998ace1a6b204deb82fdb251abdcdb2b",
+          "restartCount": 0,
+          "started": true,
+          "ready": true,
+          "state": {
+            "running": {
+              "startedAt": "2026-11-01T08:40:00Z"
+            }
+          },
+          "lastState": {}
+        }
+      ],
+      "qosClass": "Burstable"
+    }
+  },
+  {
+    "_key": "checkout/checkout-web-9725xrrfc-rtr94",
+    "metadata": {
+      "name": "checkout-web-9725xrrfc-rtr94",
+      "namespace": "checkout",
+      "uid": "5ee65ae9-5dab-4d54-af62-5ba002524737",
+      "resourceVersion": "41799",
+      "creationTimestamp": "2026-11-01T08:40:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "checkout-web",
+        "team": "checkout",
+        "pod-template-hash": "9725xrrfc"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "ReplicaSet",
+          "name": "checkout-web-9725xrrfc",
+          "uid": "715f72fb-9ae1-423f-a5bd-50fad3ef685b",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ]
+    },
+    "spec": {
+      "containers": [
+        {
+          "name": "checkout-web",
+          "image": "ghcr.io/octo-corp/checkout-web:5.2.0",
+          "imagePullPolicy": "IfNotPresent",
+          "resources": {
+            "requests": {
+              "cpu": "100m",
+              "memory": "128Mi"
+            },
+            "limits": {
+              "memory": "512Mi"
+            }
+          },
+          "terminationMessagePath": "/dev/termination-log",
+          "terminationMessagePolicy": "File",
+          "ports": [
+            {
+              "name": "http",
+              "containerPort": 3000,
+              "protocol": "TCP"
+            }
+          ]
+        }
+      ],
+      "restartPolicy": "Always",
+      "terminationGracePeriodSeconds": 30,
+      "dnsPolicy": "ClusterFirst",
+      "serviceAccountName": "default",
+      "serviceAccount": "default",
+      "nodeName": "ip-10-0-1-21.ec2.internal",
+      "securityContext": {},
+      "schedulerName": "default-scheduler",
+      "tolerations": [
+        {
+          "key": "node.kubernetes.io/not-ready",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        },
+        {
+          "key": "node.kubernetes.io/unreachable",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        }
+      ],
+      "priority": 0,
+      "enableServiceLinks": true,
+      "preemptionPolicy": "PreemptLowerPriority"
+    },
+    "status": {
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:40:00Z"
+        }
+      ],
+      "hostIP": "10.0.1.21",
+      "hostIPs": [
+        {
+          "ip": "10.0.1.21"
+        }
+      ],
+      "podIP": "10.244.1.27",
+      "podIPs": [
+        {
+          "ip": "10.244.1.27"
+        }
+      ],
+      "startTime": "2026-11-01T08:40:00Z",
+      "containerStatuses": [
+        {
+          "name": "checkout-web",
+          "image": "ghcr.io/octo-corp/checkout-web:5.2.0",
+          "imageID": "ghcr.io/octo-corp/checkout-web@sha256:078c389a456e341b154f3ad14fe24acc0305889b301eb98ebc48882884c5a17d",
+          "containerID": "containerd://c6588bce5d544270272256a4406296c14d4f008c48b22ebaf34261c5ee6fbb5d",
+          "restartCount": 0,
+          "started": true,
+          "ready": true,
+          "state": {
+            "running": {
+              "startedAt": "2026-11-01T08:40:00Z"
+            }
+          },
+          "lastState": {}
+        }
+      ],
+      "qosClass": "Burstable"
+    }
+  },
+  {
+    "_key": "checkout/checkout-web-9725xrrfc-kbxhg",
+    "metadata": {
+      "name": "checkout-web-9725xrrfc-kbxhg",
+      "namespace": "checkout",
+      "uid": "02d69fba-2b92-47df-a957-a6cf4f78e82b",
+      "resourceVersion": "41816",
+      "creationTimestamp": "2026-11-01T08:37:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "checkout-web",
+        "team": "checkout",
+        "pod-template-hash": "9725xrrfc"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "ReplicaSet",
+          "name": "checkout-web-9725xrrfc",
+          "uid": "715f72fb-9ae1-423f-a5bd-50fad3ef685b",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ]
+    },
+    "spec": {
+      "containers": [
+        {
+          "name": "checkout-web",
+          "image": "ghcr.io/octo-corp/checkout-web:5.2.0",
+          "imagePullPolicy": "IfNotPresent",
+          "resources": {
+            "requests": {
+              "cpu": "100m",
+              "memory": "128Mi"
+            },
+            "limits": {
+              "memory": "512Mi"
+            }
+          },
+          "terminationMessagePath": "/dev/termination-log",
+          "terminationMessagePolicy": "File",
+          "ports": [
+            {
+              "name": "http",
+              "containerPort": 3000,
+              "protocol": "TCP"
+            }
+          ]
+        }
+      ],
+      "restartPolicy": "Always",
+      "terminationGracePeriodSeconds": 30,
+      "dnsPolicy": "ClusterFirst",
+      "serviceAccountName": "default",
+      "serviceAccount": "default",
+      "nodeName": "ip-10-0-3-52.ec2.internal",
+      "securityContext": {},
+      "schedulerName": "default-scheduler",
+      "tolerations": [
+        {
+          "key": "node.kubernetes.io/not-ready",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        },
+        {
+          "key": "node.kubernetes.io/unreachable",
+          "operator": "Exists",
+          "effect": "NoExecute",
+          "tolerationSeconds": 300
+        }
+      ],
+      "priority": 0,
+      "enableServiceLinks": true,
+      "preemptionPolicy": "PreemptLowerPriority"
+    },
+    "status": {
+      "phase": "Running",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:37:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:37:00Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:37:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:37:00Z"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-11-01T08:37:00Z"
+        }
+      ],
+      "hostIP": "10.0.3.52",
+      "hostIPs": [
+        {
+          "ip": "10.0.3.52"
+        }
+      ],
+      "podIP": "10.244.1.28",
+      "podIPs": [
+        {
+          "ip": "10.244.1.28"
+        }
+      ],
+      "startTime": "2026-11-01T08:37:00Z",
+      "containerStatuses": [
+        {
+          "name": "checkout-web",
+          "image": "ghcr.io/octo-corp/checkout-web:5.2.0",
+          "imageID": "ghcr.io/octo-corp/checkout-web@sha256:078c389a456e341b154f3ad14fe24acc0305889b301eb98ebc48882884c5a17d",
+          "containerID": "containerd://e3ed30a80014b4420e6f3721d038108703aadb3f6bd2aeec8a2bb53908b27b9b",
+          "restartCount": 0,
+          "started": true,
+          "ready": true,
+          "state": {
+            "running": {
+              "startedAt": "2026-11-01T08:37:00Z"
+            }
+          },
+          "lastState": {}
+        }
+      ],
+      "qosClass": "Burstable"
+    }
+  }
+]

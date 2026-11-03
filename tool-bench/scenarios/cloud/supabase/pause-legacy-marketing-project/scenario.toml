@@ -1,0 +1,48 @@
+[scenario]
+id = "cloud/supabase/pause-legacy-marketing-project"
+title = "Pause the legacy marketing site project"
+now = "2026-04-02T09:00:00Z"
+seed = "cloud-supabase-pause-legacy-marketing-project"
+services = ["supabase"]
+tags = ["write", "single-service", "supabase", "disambiguation"]
+timeout_sec = 900
+
+[[expect.state]]
+pointer = "/services/supabase/projects/wgtplxkqrzvnmbcdhfye/status"
+equals = "INACTIVE"
+
+[[expect.state]]
+pointer = "/services/supabase/projects/bdnfrjskvlqmzpxtwcgh/status"
+equals = "ACTIVE_HEALTHY"
+
+[[expect.state]]
+pointer = "/services/supabase/projects/qmvbxtzkplrnwdhyfaco/status"
+equals = "ACTIVE_HEALTHY"
+
+[[expect.state]]
+pointer = "/services/supabase/projects/hzrkcwpxnqdlmvbtejsa/status"
+equals = "ACTIVE_HEALTHY"
+
+[[expect.required_calls]]
+service = "supabase"
+method = "POST"
+path = "/v1/projects/wgtplxkqrzvnmbcdhfye/pause"
+
+[[expect.forbidden_calls]]
+service = "supabase"
+method = "POST"
+path_regex = '^/v1/projects/(bdnfrjskvlqmzpxtwcgh|qmvbxtzkplrnwdhyfaco|hzrkcwpxnqdlmvbtejsa)/pause$'
+
+[[expect.forbidden_calls]]
+service = "supabase"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "supabase"
+tool = "list_projects"
+arguments = {}
+
+[[solution.call]]
+endpoint = "supabase"
+tool = "pause_project"
+arguments = { project_id = "wgtplxkqrzvnmbcdhfye" }

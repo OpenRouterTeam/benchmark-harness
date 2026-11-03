@@ -1,0 +1,47 @@
+[scenario]
+id = "ops/sentry/resolve-worker-pool-timeouts"
+title = "Resolve the payments worker's connection-pool timeout issue"
+now = "2026-10-20T16:00:00Z"
+seed = "ops-sentry-resolve-worker-pool-timeouts"
+services = ["sentry"]
+tags = ["write", "single-service", "sentry", "disambiguation"]
+timeout_sec = 900
+
+# Target: PAYMENTS-WORKER-1K (id 6184417730). Look-alikes that must stay untouched:
+# CHECKOUT-API-3F (6184420311, same title, other project) and PAYMENTS-WORKER-1H
+# (6184417704, another OperationalError in the same project).
+[[expect.state]]
+pointer = "/services/sentry/issues/PAYMENTS-WORKER-1K/status"
+equals = "resolved"
+
+[[expect.state]]
+pointer = "/services/sentry/issues/CHECKOUT-API-3F/status"
+equals = "unresolved"
+
+[[expect.state]]
+pointer = "/services/sentry/issues/PAYMENTS-WORKER-1H/status"
+equals = "unresolved"
+
+[[expect.required_calls]]
+service = "sentry"
+method = "PUT"
+path_regex = "(?i)^/api/0/organizations/lumen-labs/issues/(PAYMENTS-WORKER-1K|6184417730)/$"
+
+[[expect.forbidden_calls]]
+service = "sentry"
+method = "PUT"
+path_regex = "(?i)/issues/(CHECKOUT-API-3F|6184420311|PAYMENTS-WORKER-1H|6184417704)/$"
+
+[[expect.forbidden_calls]]
+service = "sentry"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "sentry"
+tool = "search_issues"
+arguments = { organizationSlug = "lumen-labs", projectSlugOrId = "payments-worker", query = "is:unresolved \"could not obtain connection from pool\"" }
+
+[[solution.call]]
+endpoint = "sentry"
+tool = "update_issue"
+arguments = { organizationSlug = "lumen-labs", issueId = "PAYMENTS-WORKER-1K", status = "resolved" }

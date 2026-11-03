@@ -1,0 +1,22 @@
+[
+  {
+    "_key": "weekend-batch-window",
+    "name": "weekend-batch-window",
+    "time_intervals": [
+      {
+        "weekdays": [
+          "saturday",
+          "sunday"
+        ],
+        "times": [
+          {
+            "start_time": "01:00",
+            "end_time": "05:00"
+          }
+        ]
+      }
+    ],
+    "version": "a91f3c22",
+    "provenance": ""
+  }
+]

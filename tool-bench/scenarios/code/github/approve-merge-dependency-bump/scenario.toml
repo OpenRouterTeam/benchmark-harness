@@ -1,0 +1,57 @@
+[scenario]
+id = "code/github/approve-merge-dependency-bump"
+title = "Approve and squash-merge a green dependency bump"
+now = "2026-03-12T09:00:00Z"
+seed = "code-github-approve-merge-dependency-bump"
+services = ["github"]
+tags = ["single-service", "write", "github"]
+timeout_sec = 900
+
+# main requires one approval, so the merge only succeeds after an approving review.
+# The repo only allows squash and rebase merges; the user asked for squash.
+[[expect.state]]
+pointer = "/services/github/pulls/octo-org~1web#57/merged"
+equals = true
+
+[[expect.state]]
+pointer = "/services/github/pulls/octo-org~1web#57/merge_method"
+equals = "squash"
+
+[[expect.state]]
+pointer = "/services/github/pulls/octo-org~1web#58/state"
+equals = "open"
+
+[[expect.state]]
+pointer = "/services/github/pulls/octo-org~1web#55/state"
+equals = "open"
+
+[[expect.required_calls]]
+service = "github"
+method = "POST"
+path = "/api/graphql"
+body_contains = "\"event\":\"APPROVE\""
+
+[[expect.required_calls]]
+service = "github"
+method = "PUT"
+path = "/api/v3/repos/octo-org/web/pulls/57/merge"
+
+[[expect.forbidden_calls]]
+service = "github"
+method = "PUT"
+path_regex = "^/api/v3/repos/octo-org/web/pulls/(55|58)/merge$"
+
+[[expect.forbidden_calls]]
+service = "github"
+method = "PATCH"
+path_regex = "^/api/v3/repos/octo-org/web/pulls/(55|58)$"
+
+[[solution.call]]
+endpoint = "github"
+tool = "pull_request_review_write"
+arguments = { method = "create", owner = "octo-org", repo = "web", pullNumber = 57, event = "APPROVE", body = "Security patch for CVE-2021-23337, CI is green. LGTM." }
+
+[[solution.call]]
+endpoint = "github"
+tool = "merge_pull_request"
+arguments = { owner = "octo-org", repo = "web", pullNumber = 57, merge_method = "squash" }

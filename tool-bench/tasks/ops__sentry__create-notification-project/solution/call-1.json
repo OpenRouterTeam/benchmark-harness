@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"execute_sentry_tool","arguments":{"arguments":{"name":"notification-service","organizationSlug":"lumen-labs","platform":"node","teamSlug":"payments"},"name":"create_project"}}}

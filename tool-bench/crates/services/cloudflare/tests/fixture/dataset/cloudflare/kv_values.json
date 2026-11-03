@@ -1,0 +1,16 @@
+[
+  {
+    "_key": "c0ffee00c0ffee00c0ffee00c0ffee00/banner",
+    "namespace_id": "c0ffee00c0ffee00c0ffee00c0ffee00",
+    "key": "banner",
+    "value": "Spring sale ends Friday"
+  },
+  {
+    "_key": "c0ffee00c0ffee00c0ffee00c0ffee00/flags",
+    "namespace_id": "c0ffee00c0ffee00c0ffee00c0ffee00",
+    "key": "flags",
+    "value": "{\"checkout_v2\":false}",
+    "value_json": { "checkout_v2": false },
+    "metadata": { "owner": "web" }
+  }
+]

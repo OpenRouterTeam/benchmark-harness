@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"remove_user_from_group","arguments":{"group_id":"00g2spprt12Ac5Ef6x7","user_id":"00u1mrgnzlz6Wx3Yz4x7"}}}

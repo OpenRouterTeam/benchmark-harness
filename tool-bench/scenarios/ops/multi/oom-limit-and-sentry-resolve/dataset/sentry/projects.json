@@ -1,0 +1,114 @@
+[
+  {
+    "id": "4508812001",
+    "slug": "storefront-web",
+    "name": "storefront-web",
+    "platform": "javascript-react",
+    "teams": [
+      "frontend-web"
+    ],
+    "environments": [
+      "production",
+      "staging"
+    ],
+    "dateCreated": "2023-02-07T21:20:13Z",
+    "firstEvent": "2023-02-07T21:46:00Z",
+    "hasReplays": true,
+    "_key": "storefront-web"
+  },
+  {
+    "id": "4508812002",
+    "slug": "admin-dashboard",
+    "name": "admin-dashboard",
+    "platform": "javascript-react",
+    "teams": [
+      "frontend-web"
+    ],
+    "environments": [
+      "production"
+    ],
+    "dateCreated": "2023-05-12T01:37:09Z",
+    "firstEvent": "2023-05-12T02:17:47Z",
+    "_key": "admin-dashboard"
+  },
+  {
+    "id": "4508812003",
+    "slug": "checkout-api",
+    "name": "checkout-api",
+    "platform": "python-django",
+    "teams": [
+      "payments"
+    ],
+    "environments": [
+      "production",
+      "staging"
+    ],
+    "dateCreated": "2023-03-15T03:45:40Z",
+    "firstEvent": "2023-03-15T04:27:03Z",
+    "firstTransactionEvent": true,
+    "_key": "checkout-api"
+  },
+  {
+    "id": "4508812004",
+    "slug": "payments-worker",
+    "name": "payments-worker",
+    "platform": "python-celery",
+    "teams": [
+      "payments",
+      "payments-infra"
+    ],
+    "environments": [
+      "production"
+    ],
+    "dateCreated": "2024-01-22T22:17:18Z",
+    "firstEvent": "2024-01-22T22:55:55Z",
+    "_key": "payments-worker"
+  },
+  {
+    "id": "4508812005",
+    "slug": "ios-app",
+    "name": "ios-app",
+    "platform": "apple-ios",
+    "teams": [
+      "mobile"
+    ],
+    "environments": [
+      "production",
+      "testflight"
+    ],
+    "dateCreated": "2024-09-10T00:55:00Z",
+    "firstEvent": "2024-09-10T19:28:20Z",
+    "_key": "ios-app"
+  },
+  {
+    "id": "4508812006",
+    "slug": "report-builder",
+    "name": "report-builder",
+    "platform": "python-celery",
+    "teams": [
+      "data"
+    ],
+    "environments": [
+      "production",
+      "staging"
+    ],
+    "dateCreated": "2024-03-04T09:20:00Z",
+    "firstEvent": "2024-03-04T10:02:00Z",
+    "_key": "report-builder"
+  },
+  {
+    "id": "4508812007",
+    "slug": "billing-exporter",
+    "name": "billing-exporter",
+    "platform": "python-celery",
+    "teams": [
+      "payments"
+    ],
+    "environments": [
+      "production"
+    ],
+    "dateCreated": "2024-06-11T13:00:00Z",
+    "firstEvent": "2024-06-11T13:40:00Z",
+    "_key": "billing-exporter"
+  }
+]

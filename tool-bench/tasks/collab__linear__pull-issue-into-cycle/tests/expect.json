@@ -1,0 +1,75 @@
+{
+  "state": [
+    {
+      "pointer": "/services/linear/issues/PAY-121/cycleId",
+      "equals": "627fb4e1-47ac-567a-99cd-3e236709e3b0",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/issues/PAY-121/stateId",
+      "equals": "41688e9c-05a3-5fce-be65-9c7049e13037",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/issues/PAY-120/cycleId",
+      "equals": "954f7df0-17ca-5a9a-835d-528b021a4997",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/issues/PAY-120/stateId",
+      "equals": "464b7d47-51c4-50ce-aa96-03bed89ef6af",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "linear",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "linear",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "linear_archiveIssue"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "linear",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "linear_completeCycle"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

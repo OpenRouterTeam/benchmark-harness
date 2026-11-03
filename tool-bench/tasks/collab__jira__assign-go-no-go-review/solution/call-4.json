@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"jira_transition_issue","arguments":{"issue_key":"PAY-124","transition_id":"11"}}}

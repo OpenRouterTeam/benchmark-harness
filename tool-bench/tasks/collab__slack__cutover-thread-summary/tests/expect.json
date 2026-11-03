@@ -1,0 +1,52 @@
+{
+  "state": [
+    {
+      "pointer": "/services/slack/posted/C05DBMIG2RT#1/thread_ts",
+      "equals": "1792600205.318801",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/slack/posted/C05DBMIG2RT#1/text",
+      "equals": null,
+      "exists": null,
+      "contains": "2026-11-07",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/slack/posted/C05DBMIG2RT#1/text",
+      "equals": null,
+      "exists": null,
+      "contains": "22:00",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/slack/posted/C01GENERAL0#1",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "slack",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "slack_send_message"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [],
+  "answer": null
+}

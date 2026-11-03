@@ -1,0 +1,20 @@
+[
+ {
+  "id": "tprj-cYaxGxkqpT6du2Cr",
+  "team": "team-u7OrFuXEPzft5K2j",
+  "project": "prj-ybX47sD3ublmAH34",
+  "access": "maintain"
+ },
+ {
+  "id": "tprj-MnVz4JVSFsmtixqI",
+  "team": "team-u7OrFuXEPzft5K2j",
+  "project": "prj-RGb4nwJ3c5kaUkvv",
+  "access": "write"
+ },
+ {
+  "id": "tprj-DZ1IMuux8xITmmyL",
+  "team": "team-FinCX2EJQ4XdcdZc",
+  "project": "prj-9d3t4avzjdAU9FdH",
+  "access": "read"
+ }
+]

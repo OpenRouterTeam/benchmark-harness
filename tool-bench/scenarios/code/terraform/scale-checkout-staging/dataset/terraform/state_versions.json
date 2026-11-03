@@ -1,0 +1,720 @@
+[
+ {
+  "id": "sv-QhpDlxZ9u0JYsIC1",
+  "workspace": "ws-vJd7W10B1cG75Uxp",
+  "serial": 41,
+  "created-at": "2026-10-21T16:42:10Z",
+  "terraform-version": "1.9.5",
+  "status": "finalized",
+  "size": 12130,
+  "run": null,
+  "vcs-commit-sha": null,
+  "vcs-commit-url": null,
+  "resources": [
+   {
+    "type": "aws_db_instance",
+    "name": "payments",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_db_parameter_group",
+    "name": "payments_pg14",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_ecs_service",
+    "name": "payments_api",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_ecs_task_definition",
+    "name": "payments_api",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_lb",
+    "name": "payments",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_lb_target_group",
+    "name": "payments_api",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_security_group",
+    "name": "payments_db",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_kms_key",
+    "name": "payments",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_cloudwatch_log_group",
+    "name": "payments_api",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_iam_role",
+    "name": "payments_task",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "module.iam"
+   },
+   {
+    "type": "aws_subnet",
+    "name": "private",
+    "count": 3,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "module.vpc_lookup"
+   }
+  ],
+  "outputs": [
+   {
+    "id": "wsout-6c3zSNqaPwtk2lz7",
+    "name": "db_endpoint",
+    "type": "string",
+    "value": "payments-prod-db.c9akciq32.us-east-1.rds.amazonaws.com:5432",
+    "sensitive": false
+   },
+   {
+    "id": "wsout-U2xLeDX126tWPnJm",
+    "name": "api_url",
+    "type": "string",
+    "value": "https://payments-api.acme.io",
+    "sensitive": false
+   },
+   {
+    "id": "wsout-Fsn1kVmS4JQNStN6",
+    "name": "db_password",
+    "type": "string",
+    "value": "s3cr3t-rotated",
+    "sensitive": true
+   }
+  ],
+  "created-by": "user-A8A0AX37KC262Y8i"
+ },
+ {
+  "id": "sv-b39P9N4w6GH6nzW4",
+  "workspace": "ws-gIbdcZTYOZS7TluO",
+  "serial": 63,
+  "created-at": "2026-10-26T11:20:00Z",
+  "terraform-version": "1.9.5",
+  "status": "finalized",
+  "size": 7250,
+  "run": null,
+  "vcs-commit-sha": null,
+  "vcs-commit-url": null,
+  "resources": [
+   {
+    "type": "aws_db_instance",
+    "name": "payments",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_db_parameter_group",
+    "name": "payments_pg16",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_ecs_service",
+    "name": "payments_api",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_lb",
+    "name": "payments",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_security_group",
+    "name": "payments_db",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   }
+  ],
+  "outputs": [
+   {
+    "id": "wsout-gbthYl4xYRR4ySFV",
+    "name": "api_url",
+    "type": "string",
+    "value": "https://payments-api.staging.acme.io",
+    "sensitive": false
+   }
+  ],
+  "created-by": "user-A8A0AX37KC262Y8i"
+ },
+ {
+  "id": "sv-yXN439U1zTorXyMM",
+  "workspace": "ws-FxCPzmnaeIMOUbSd",
+  "serial": 112,
+  "created-at": "2026-10-23T09:12:00Z",
+  "terraform-version": "1.9.5",
+  "status": "finalized",
+  "size": 7860,
+  "run": null,
+  "vcs-commit-sha": null,
+  "vcs-commit-url": null,
+  "resources": [
+   {
+    "type": "aws_ecs_service",
+    "name": "checkout",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_ecs_task_definition",
+    "name": "checkout",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_appautoscaling_target",
+    "name": "checkout",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_appautoscaling_policy",
+    "name": "checkout_cpu",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_lb_target_group",
+    "name": "checkout",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_cloudwatch_log_group",
+    "name": "checkout",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   }
+  ],
+  "outputs": [
+   {
+    "id": "wsout-3PeJiNLH1XNSWQB4",
+    "name": "service_name",
+    "type": "string",
+    "value": "checkout-staging",
+    "sensitive": false
+   },
+   {
+    "id": "wsout-FyrytTWPLfVK2Fd0",
+    "name": "desired_count",
+    "type": "string",
+    "value": "2",
+    "sensitive": false
+   }
+  ],
+  "created-by": "user-A8A0AX37KC262Y8i"
+ },
+ {
+  "id": "sv-Dm7Ay9vqJlP4fCsq",
+  "workspace": "ws-ZQ7RjwWMr2evfIuC",
+  "serial": 207,
+  "created-at": "2026-10-23T14:40:00Z",
+  "terraform-version": "1.9.5",
+  "status": "finalized",
+  "size": 8470,
+  "run": null,
+  "vcs-commit-sha": null,
+  "vcs-commit-url": null,
+  "resources": [
+   {
+    "type": "aws_ecs_service",
+    "name": "checkout",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_ecs_task_definition",
+    "name": "checkout",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_appautoscaling_target",
+    "name": "checkout",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_appautoscaling_policy",
+    "name": "checkout_cpu",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_lb_target_group",
+    "name": "checkout",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_cloudwatch_log_group",
+    "name": "checkout",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_wafv2_web_acl_association",
+    "name": "checkout",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   }
+  ],
+  "outputs": [
+   {
+    "id": "wsout-3LZ6tODFN3IVAu4w",
+    "name": "service_name",
+    "type": "string",
+    "value": "checkout-prod",
+    "sensitive": false
+   },
+   {
+    "id": "wsout-C2W0PuOTN8U2kmzu",
+    "name": "desired_count",
+    "type": "string",
+    "value": "6",
+    "sensitive": false
+   }
+  ],
+  "created-by": "user-A8A0AX37KC262Y8i"
+ },
+ {
+  "id": "sv-ll6jW8mIw5J6Lppq",
+  "workspace": "ws-gOHPQz7D1ZRgqBJq",
+  "serial": 318,
+  "created-at": "2026-10-20T15:03:00Z",
+  "terraform-version": "1.9.5",
+  "status": "finalized",
+  "size": 7250,
+  "run": null,
+  "vcs-commit-sha": null,
+  "vcs-commit-url": null,
+  "resources": [
+   {
+    "type": "aws_ecs_service",
+    "name": "orders_api",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_dynamodb_table",
+    "name": "orders",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_dynamodb_table",
+    "name": "order_events",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_sqs_queue",
+    "name": "order_events",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_lambda_function",
+    "name": "order_projector",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   }
+  ],
+  "outputs": [
+   {
+    "id": "wsout-NcZLklCibMa2ftzo",
+    "name": "orders_table",
+    "type": "string",
+    "value": "orders-prod",
+    "sensitive": false
+   }
+  ],
+  "created-by": "user-A8A0AX37KC262Y8i"
+ },
+ {
+  "id": "sv-3XV5luS3B2jv8du7",
+  "workspace": "ws-1XTLw5Eso096xbeL",
+  "serial": 402,
+  "created-at": "2026-10-26T10:00:00Z",
+  "terraform-version": "1.9.5",
+  "status": "finalized",
+  "size": 6030,
+  "run": null,
+  "vcs-commit-sha": null,
+  "vcs-commit-url": null,
+  "resources": [
+   {
+    "type": "aws_ecs_service",
+    "name": "orders_api",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_dynamodb_table",
+    "name": "orders",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_dynamodb_table",
+    "name": "order_events",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   }
+  ],
+  "outputs": [
+   {
+    "id": "wsout-S5nKHXYiUHu45ZJ7",
+    "name": "orders_table",
+    "type": "string",
+    "value": "orders-staging",
+    "sensitive": false
+   }
+  ],
+  "created-by": "user-A8A0AX37KC262Y8i"
+ },
+ {
+  "id": "sv-Bl2EKtt1unzFQTjn",
+  "workspace": "ws-QMfGO0wb8mhyWgrq",
+  "serial": 1290,
+  "created-at": "2026-09-30T12:00:00Z",
+  "terraform-version": "1.5.7",
+  "status": "finalized",
+  "size": 9690,
+  "run": null,
+  "vcs-commit-sha": null,
+  "vcs-commit-url": null,
+  "resources": [
+   {
+    "type": "aws_instance",
+    "name": "orders_app",
+    "count": 4,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_rds_cluster",
+    "name": "orders",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_rds_cluster_instance",
+    "name": "orders",
+    "count": 2,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_elb",
+    "name": "orders",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_autoscaling_group",
+    "name": "orders_app",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   }
+  ],
+  "outputs": [
+   {
+    "id": "wsout-pbK1Prti63bjLno6",
+    "name": "elb_dns",
+    "type": "string",
+    "value": "orders-legacy-1987654321.us-east-1.elb.amazonaws.com",
+    "sensitive": false
+   }
+  ],
+  "created-by": "user-A8A0AX37KC262Y8i"
+ },
+ {
+  "id": "sv-XYt9OWT9f5n6zXpP",
+  "workspace": "ws-95PzHZEp3LC2DVAm",
+  "serial": 77,
+  "created-at": "2026-08-02T03:00:00Z",
+  "terraform-version": "1.6.6",
+  "status": "finalized",
+  "size": 6030,
+  "run": null,
+  "vcs-commit-sha": null,
+  "vcs-commit-url": null,
+  "resources": [
+   {
+    "type": "aws_glue_job",
+    "name": "billing_rollup",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_sfn_state_machine",
+    "name": "billing_nightly",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_s3_bucket",
+    "name": "billing_exports",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   }
+  ],
+  "outputs": [
+   {
+    "id": "wsout-h1BSwc01RBW3kIUz",
+    "name": "exports_bucket",
+    "type": "string",
+    "value": "acme-billing-exports",
+    "sensitive": false
+   }
+  ],
+  "created-by": "user-A8A0AX37KC262Y8i"
+ },
+ {
+  "id": "sv-2HkRH31vgu6V7Nh1",
+  "workspace": "ws-X6Cm5W6LhJnKhlo2",
+  "serial": 96,
+  "created-at": "2026-10-02T13:30:00Z",
+  "terraform-version": "1.9.5",
+  "status": "finalized",
+  "size": 12130,
+  "run": null,
+  "vcs-commit-sha": null,
+  "vcs-commit-url": null,
+  "resources": [
+   {
+    "type": "aws_vpc",
+    "name": "core",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_subnet",
+    "name": "private",
+    "count": 3,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_subnet",
+    "name": "public",
+    "count": 3,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_nat_gateway",
+    "name": "a",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_eip",
+    "name": "nat_a",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_route_table",
+    "name": "private",
+    "count": 3,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_ec2_transit_gateway_vpc_attachment",
+    "name": "core",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   }
+  ],
+  "outputs": [
+   {
+    "id": "wsout-j3QJVXFZrHstAmws",
+    "name": "vpc_id",
+    "type": "string",
+    "value": "vpc-0a1b2c3d4e5f60718",
+    "sensitive": false
+   },
+   {
+    "id": "wsout-gLZgpXft2SMHS0de",
+    "name": "private_subnet_ids",
+    "type": [
+     "list",
+     "string"
+    ],
+    "value": [
+     "subnet-0aa1",
+     "subnet-0bb2",
+     "subnet-0cc3"
+    ],
+    "sensitive": false
+   }
+  ],
+  "created-by": "user-A8A0AX37KC262Y8i"
+ },
+ {
+  "id": "sv-PlJucp73Rd7QLWjW",
+  "workspace": "ws-aM6dcH7sRwt97v2D",
+  "serial": 140,
+  "created-at": "2026-10-02T11:00:00Z",
+  "terraform-version": "1.9.5",
+  "status": "finalized",
+  "size": 11520,
+  "run": null,
+  "vcs-commit-sha": null,
+  "vcs-commit-url": null,
+  "resources": [
+   {
+    "type": "aws_vpc",
+    "name": "core",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_subnet",
+    "name": "private",
+    "count": 3,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_subnet",
+    "name": "public",
+    "count": 3,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_nat_gateway",
+    "name": "a",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_eip",
+    "name": "nat_a",
+    "count": 1,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_route_table",
+    "name": "private",
+    "count": 3,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   }
+  ],
+  "outputs": [
+   {
+    "id": "wsout-5HhwgKqe219rh2LO",
+    "name": "vpc_id",
+    "type": "string",
+    "value": "vpc-0f9e8d7c6b5a49382",
+    "sensitive": false
+   }
+  ],
+  "created-by": "user-A8A0AX37KC262Y8i"
+ },
+ {
+  "id": "sv-Dunun7nQhOf84Oxu",
+  "workspace": "ws-HJppEOWB3EN8FR2P",
+  "serial": 210,
+  "created-at": "2026-10-19T12:00:00Z",
+  "terraform-version": "1.9.5",
+  "status": "finalized",
+  "size": 18840,
+  "run": null,
+  "vcs-commit-sha": null,
+  "vcs-commit-url": null,
+  "resources": [
+   {
+    "type": "aws_route53_zone",
+    "name": "public",
+    "count": 2,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   },
+   {
+    "type": "aws_route53_record",
+    "name": "records",
+    "count": 22,
+    "provider": "registry.terraform.io/hashicorp/aws",
+    "module": "root"
+   }
+  ],
+  "outputs": [],
+  "created-by": "user-A8A0AX37KC262Y8i"
+ }
+]

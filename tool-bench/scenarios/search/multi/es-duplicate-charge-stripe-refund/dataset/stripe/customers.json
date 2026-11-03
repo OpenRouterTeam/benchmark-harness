@@ -1,0 +1,62 @@
+[
+  {
+    "id": "cus_Q7wLeeJr84Hk2D",
+    "object": "customer",
+    "address": null,
+    "balance": 0,
+    "created": 1762077600,
+    "currency": "usd",
+    "description": null,
+    "email": "jordan.lee@example.com",
+    "invoice_prefix": "Q7WLEEJR",
+    "metadata": {},
+    "name": "Jordan Lee",
+    "next_invoice_sequence": 1,
+    "phone": null
+  },
+  {
+    "id": "cus_Q8xLeighM2pR5s",
+    "object": "customer",
+    "address": null,
+    "balance": 0,
+    "created": 1768039200,
+    "currency": "usd",
+    "description": null,
+    "email": "jordan.leigh@example.com",
+    "invoice_prefix": "Q8XLEIGH",
+    "metadata": {},
+    "name": "Jordan Leigh",
+    "next_invoice_sequence": 1,
+    "phone": null
+  },
+  {
+    "id": "cus_Q9yJLeeT6vA3fZ",
+    "object": "customer",
+    "address": null,
+    "balance": 0,
+    "created": 1772359200,
+    "currency": "usd",
+    "description": null,
+    "email": "j.lee@example.com",
+    "invoice_prefix": "Q9YJLEET",
+    "metadata": {},
+    "name": "J. Lee",
+    "next_invoice_sequence": 1,
+    "phone": null
+  },
+  {
+    "id": "cus_QAzPriyaN5gB8h",
+    "object": "customer",
+    "address": null,
+    "balance": 0,
+    "created": 1772359200,
+    "currency": "usd",
+    "description": null,
+    "email": "priya.n@example.com",
+    "invoice_prefix": "QAZPRIYA",
+    "metadata": {},
+    "name": "Priya N",
+    "next_invoice_sequence": 1,
+    "phone": null
+  }
+]

@@ -1,0 +1,21 @@
+[
+  {
+    "_key": "octo-org/product-marketing",
+    "id": 51,
+    "name": "Product Marketing",
+    "slug": "product-marketing",
+    "description": "Positioning, pricing and competitive intel",
+    "privacy": "closed",
+    "members": [
+      "mona",
+      "dhruv",
+      "elena",
+      "kwame"
+    ],
+    "repos": [
+      "octo-org/competitive-intel",
+      "octo-org/competitive-intel-2024",
+      "octo-org/pricing-site"
+    ]
+  }
+]

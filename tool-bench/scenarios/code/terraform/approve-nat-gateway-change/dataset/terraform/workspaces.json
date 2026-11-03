@@ -1,0 +1,602 @@
+[
+ {
+  "id": "ws-vJd7W10B1cG75Uxp",
+  "name": "payments-api-prod",
+  "organization": "acme-platform",
+  "project": "prj-9d3t4avzjdAU9FdH",
+  "description": "Payments API: Aurora-free RDS Postgres, ECS service and ALB (PCI scope)",
+  "created-at": "2024-03-12T10:00:00Z",
+  "updated-at": "2026-10-20T10:00:00Z",
+  "execution-mode": "remote",
+  "auto-apply": false,
+  "terraform-version": "1.9.5",
+  "working-directory": "envs/prod",
+  "locked": false,
+  "locked-by": null,
+  "resource-count": 37,
+  "tag-names": [
+   "payments",
+   "prod",
+   "pci"
+  ],
+  "tag-bindings": [
+   {
+    "key": "team",
+    "value": "payments"
+   },
+   {
+    "key": "env",
+    "value": "prod"
+   }
+  ],
+  "vcs-repo": {
+   "branch": "main",
+   "ingress-submodules": false,
+   "identifier": "acme/payments-infra",
+   "display-identifier": "acme/payments-infra",
+   "oauth-token-id": "ot-5qR8wXmN2vPa7Ldk",
+   "repository-http-url": "https://github.com/acme/payments-infra",
+   "service-provider": "github",
+   "webhook-url": "https://app.terraform.io/webhooks/vcs/2b6f0c14-0d3c-4c1e-9b1a-8a3c5f7e1d22",
+   "tags-regex": null,
+   "tags": false
+  },
+  "source": "tfe-ui",
+  "current-state-version": "sv-QhpDlxZ9u0JYsIC1",
+  "current-run": "run-Gy4tBHGggKx49nbH",
+  "latest-run": "run-Gy4tBHGggKx49nbH"
+ },
+ {
+  "id": "ws-gIbdcZTYOZS7TluO",
+  "name": "payments-api-staging",
+  "organization": "acme-platform",
+  "project": "prj-9d3t4avzjdAU9FdH",
+  "description": "Payments API staging",
+  "created-at": "2024-03-12T10:00:00Z",
+  "updated-at": "2026-10-20T10:00:00Z",
+  "execution-mode": "remote",
+  "auto-apply": false,
+  "terraform-version": "1.9.5",
+  "working-directory": "envs/staging",
+  "locked": false,
+  "locked-by": null,
+  "resource-count": 29,
+  "tag-names": [
+   "payments",
+   "staging"
+  ],
+  "tag-bindings": [
+   {
+    "key": "team",
+    "value": "payments"
+   },
+   {
+    "key": "env",
+    "value": "staging"
+   }
+  ],
+  "vcs-repo": {
+   "branch": "main",
+   "ingress-submodules": false,
+   "identifier": "acme/payments-infra",
+   "display-identifier": "acme/payments-infra",
+   "oauth-token-id": "ot-5qR8wXmN2vPa7Ldk",
+   "repository-http-url": "https://github.com/acme/payments-infra",
+   "service-provider": "github",
+   "webhook-url": "https://app.terraform.io/webhooks/vcs/2b6f0c14-0d3c-4c1e-9b1a-8a3c5f7e1d22",
+   "tags-regex": null,
+   "tags": false
+  },
+  "source": "tfe-ui",
+  "current-state-version": "sv-b39P9N4w6GH6nzW4",
+  "current-run": "run-YF4vEQXaSoBg49H3",
+  "latest-run": "run-YF4vEQXaSoBg49H3"
+ },
+ {
+  "id": "ws-FxCPzmnaeIMOUbSd",
+  "name": "checkout-service-staging",
+  "organization": "acme-platform",
+  "project": "prj-RGb4nwJ3c5kaUkvv",
+  "description": "Checkout service (ECS Fargate) - staging",
+  "created-at": "2024-03-12T10:00:00Z",
+  "updated-at": "2026-10-20T10:00:00Z",
+  "execution-mode": "remote",
+  "auto-apply": false,
+  "terraform-version": "1.9.5",
+  "working-directory": "services/checkout/staging",
+  "locked": false,
+  "locked-by": null,
+  "resource-count": 18,
+  "tag-names": [
+   "checkout",
+   "staging"
+  ],
+  "tag-bindings": [
+   {
+    "key": "team",
+    "value": "commerce"
+   },
+   {
+    "key": "env",
+    "value": "staging"
+   }
+  ],
+  "vcs-repo": {
+   "branch": "main",
+   "ingress-submodules": false,
+   "identifier": "acme/commerce-infra",
+   "display-identifier": "acme/commerce-infra",
+   "oauth-token-id": "ot-5qR8wXmN2vPa7Ldk",
+   "repository-http-url": "https://github.com/acme/commerce-infra",
+   "service-provider": "github",
+   "webhook-url": "https://app.terraform.io/webhooks/vcs/2b6f0c14-0d3c-4c1e-9b1a-8a3c5f7e1d22",
+   "tags-regex": null,
+   "tags": false
+  },
+  "source": "tfe-ui",
+  "simulated-plan": {
+   "resource-changes": [
+    {
+     "address": "aws_ecs_service.checkout",
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "desired_count": 2
+     },
+     "after": {
+      "desired_count": 4
+     }
+    },
+    {
+     "address": "aws_appautoscaling_target.checkout",
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "min_capacity": 2,
+      "max_capacity": 6
+     },
+     "after": {
+      "min_capacity": 4,
+      "max_capacity": 6
+     }
+    }
+   ]
+  },
+  "current-state-version": "sv-yXN439U1zTorXyMM",
+  "current-run": "run-0vzoy5tA8SJFq039",
+  "latest-run": "run-0vzoy5tA8SJFq039"
+ },
+ {
+  "id": "ws-ZQ7RjwWMr2evfIuC",
+  "name": "checkout-service-prod",
+  "organization": "acme-platform",
+  "project": "prj-RGb4nwJ3c5kaUkvv",
+  "description": "Checkout service (ECS Fargate) - production",
+  "created-at": "2024-03-12T10:00:00Z",
+  "updated-at": "2026-10-20T10:00:00Z",
+  "execution-mode": "remote",
+  "auto-apply": false,
+  "terraform-version": "1.9.5",
+  "working-directory": "services/checkout/prod",
+  "locked": false,
+  "locked-by": null,
+  "resource-count": 21,
+  "tag-names": [
+   "checkout",
+   "prod"
+  ],
+  "tag-bindings": [
+   {
+    "key": "team",
+    "value": "commerce"
+   },
+   {
+    "key": "env",
+    "value": "prod"
+   }
+  ],
+  "vcs-repo": {
+   "branch": "main",
+   "ingress-submodules": false,
+   "identifier": "acme/commerce-infra",
+   "display-identifier": "acme/commerce-infra",
+   "oauth-token-id": "ot-5qR8wXmN2vPa7Ldk",
+   "repository-http-url": "https://github.com/acme/commerce-infra",
+   "service-provider": "github",
+   "webhook-url": "https://app.terraform.io/webhooks/vcs/2b6f0c14-0d3c-4c1e-9b1a-8a3c5f7e1d22",
+   "tags-regex": null,
+   "tags": false
+  },
+  "source": "tfe-ui",
+  "simulated-plan": {
+   "resource-changes": [
+    {
+     "address": "aws_ecs_service.checkout",
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "desired_count": 6
+     },
+     "after": {
+      "desired_count": 4
+     }
+    }
+   ]
+  },
+  "current-state-version": "sv-Dm7Ay9vqJlP4fCsq",
+  "current-run": "run-0AIole4acN2clBcU",
+  "latest-run": "run-0AIole4acN2clBcU"
+ },
+ {
+  "id": "ws-gOHPQz7D1ZRgqBJq",
+  "name": "orders-api-prod",
+  "organization": "acme-platform",
+  "project": "prj-RGb4nwJ3c5kaUkvv",
+  "description": "Orders API on ECS + DynamoDB - production",
+  "created-at": "2024-03-12T10:00:00Z",
+  "updated-at": "2026-10-27T23:41:09Z",
+  "execution-mode": "remote",
+  "auto-apply": false,
+  "terraform-version": "1.9.5",
+  "working-directory": "services/orders/prod",
+  "locked": true,
+  "locked-by": {
+   "type": "runs",
+   "id": "run-jCcDubzVP5ob0NM7"
+  },
+  "resource-count": 44,
+  "tag-names": [
+   "orders",
+   "prod"
+  ],
+  "tag-bindings": [
+   {
+    "key": "team",
+    "value": "commerce"
+   },
+   {
+    "key": "env",
+    "value": "prod"
+   }
+  ],
+  "vcs-repo": {
+   "branch": "main",
+   "ingress-submodules": false,
+   "identifier": "acme/commerce-infra",
+   "display-identifier": "acme/commerce-infra",
+   "oauth-token-id": "ot-5qR8wXmN2vPa7Ldk",
+   "repository-http-url": "https://github.com/acme/commerce-infra",
+   "service-provider": "github",
+   "webhook-url": "https://app.terraform.io/webhooks/vcs/2b6f0c14-0d3c-4c1e-9b1a-8a3c5f7e1d22",
+   "tags-regex": null,
+   "tags": false
+  },
+  "source": "tfe-ui",
+  "current-state-version": "sv-ll6jW8mIw5J6Lppq",
+  "current-run": "run-jCcDubzVP5ob0NM7",
+  "latest-run": "run-jCcDubzVP5ob0NM7",
+  "locked-reason": ""
+ },
+ {
+  "id": "ws-1XTLw5Eso096xbeL",
+  "name": "orders-api-staging",
+  "organization": "acme-platform",
+  "project": "prj-RGb4nwJ3c5kaUkvv",
+  "description": "Orders API - staging",
+  "created-at": "2024-03-12T10:00:00Z",
+  "updated-at": "2026-10-20T10:00:00Z",
+  "execution-mode": "remote",
+  "auto-apply": false,
+  "terraform-version": "1.9.5",
+  "working-directory": "services/orders/staging",
+  "locked": false,
+  "locked-by": null,
+  "resource-count": 39,
+  "tag-names": [
+   "orders",
+   "staging"
+  ],
+  "tag-bindings": [
+   {
+    "key": "team",
+    "value": "commerce"
+   },
+   {
+    "key": "env",
+    "value": "staging"
+   }
+  ],
+  "vcs-repo": {
+   "branch": "main",
+   "ingress-submodules": false,
+   "identifier": "acme/commerce-infra",
+   "display-identifier": "acme/commerce-infra",
+   "oauth-token-id": "ot-5qR8wXmN2vPa7Ldk",
+   "repository-http-url": "https://github.com/acme/commerce-infra",
+   "service-provider": "github",
+   "webhook-url": "https://app.terraform.io/webhooks/vcs/2b6f0c14-0d3c-4c1e-9b1a-8a3c5f7e1d22",
+   "tags-regex": null,
+   "tags": false
+  },
+  "source": "tfe-ui",
+  "current-state-version": "sv-3XV5luS3B2jv8du7",
+  "current-run": "run-gSSY7IvhFL3jO8Ya",
+  "latest-run": "run-gSSY7IvhFL3jO8Ya"
+ },
+ {
+  "id": "ws-QMfGO0wb8mhyWgrq",
+  "name": "orders-api-prod-legacy",
+  "organization": "acme-platform",
+  "project": "prj-WtYRcQLbjROqv4f8",
+  "description": "Legacy orders monolith (EC2 + Aurora MySQL). Being migrated to orders-api-prod.",
+  "created-at": "2024-03-12T10:00:00Z",
+  "updated-at": "2026-10-27T18:05:00Z",
+  "execution-mode": "remote",
+  "auto-apply": false,
+  "terraform-version": "1.5.7",
+  "working-directory": "",
+  "locked": true,
+  "locked-by": {
+   "type": "users",
+   "id": "user-Vm0I7MiOQY9x5zBV"
+  },
+  "resource-count": 63,
+  "tag-names": [
+   "orders",
+   "prod",
+   "legacy"
+  ],
+  "tag-bindings": [
+   {
+    "key": "team",
+    "value": "commerce"
+   },
+   {
+    "key": "env",
+    "value": "prod"
+   },
+   {
+    "key": "lifecycle",
+    "value": "decommission"
+   }
+  ],
+  "vcs-repo": {
+   "branch": "master",
+   "ingress-submodules": false,
+   "identifier": "acme/orders-monolith-infra",
+   "display-identifier": "acme/orders-monolith-infra",
+   "oauth-token-id": "ot-5qR8wXmN2vPa7Ldk",
+   "repository-http-url": "https://github.com/acme/orders-monolith-infra",
+   "service-provider": "github",
+   "webhook-url": "https://app.terraform.io/webhooks/vcs/2b6f0c14-0d3c-4c1e-9b1a-8a3c5f7e1d22",
+   "tags-regex": null,
+   "tags": false
+  },
+  "source": "tfe-ui",
+  "current-state-version": "sv-Bl2EKtt1unzFQTjn",
+  "current-run": "run-K3bTuSoe0tCTeKPW",
+  "latest-run": "run-K3bTuSoe0tCTeKPW",
+  "locked-reason": "Aurora -> DynamoDB data migration in progress, do not unlock (Dmitri)"
+ },
+ {
+  "id": "ws-95PzHZEp3LC2DVAm",
+  "name": "billing-etl-prod",
+  "organization": "acme-platform",
+  "project": "prj-WtYRcQLbjROqv4f8",
+  "description": "Nightly billing ETL (Glue + Step Functions)",
+  "created-at": "2024-03-12T10:00:00Z",
+  "updated-at": "2026-10-20T10:00:00Z",
+  "execution-mode": "remote",
+  "auto-apply": false,
+  "terraform-version": "1.6.6",
+  "working-directory": "etl",
+  "locked": false,
+  "locked-by": null,
+  "resource-count": 12,
+  "tag-names": [
+   "billing",
+   "prod",
+   "legacy"
+  ],
+  "tag-bindings": [],
+  "vcs-repo": {
+   "branch": "main",
+   "ingress-submodules": false,
+   "identifier": "acme/billing-etl",
+   "display-identifier": "acme/billing-etl",
+   "oauth-token-id": "ot-5qR8wXmN2vPa7Ldk",
+   "repository-http-url": "https://github.com/acme/billing-etl",
+   "service-provider": "github",
+   "webhook-url": "https://app.terraform.io/webhooks/vcs/2b6f0c14-0d3c-4c1e-9b1a-8a3c5f7e1d22",
+   "tags-regex": null,
+   "tags": false
+  },
+  "source": "tfe-ui",
+  "current-state-version": "sv-XYt9OWT9f5n6zXpP",
+  "current-run": "run-hIykSRnRyJGBlLvl",
+  "latest-run": "run-hIykSRnRyJGBlLvl"
+ },
+ {
+  "id": "ws-X6Cm5W6LhJnKhlo2",
+  "name": "network-core-prod",
+  "organization": "acme-platform",
+  "project": "prj-ybX47sD3ublmAH34",
+  "description": "Shared production VPC, subnets, NAT and transit gateway attachments",
+  "created-at": "2024-03-12T10:00:00Z",
+  "updated-at": "2026-10-28T08:47:00Z",
+  "execution-mode": "remote",
+  "auto-apply": false,
+  "terraform-version": "1.9.5",
+  "working-directory": "core/prod",
+  "locked": true,
+  "locked-by": {
+   "type": "runs",
+   "id": "run-1q2oy8I2MqSd5oM4"
+  },
+  "resource-count": 58,
+  "tag-names": [
+   "network",
+   "prod"
+  ],
+  "tag-bindings": [
+   {
+    "key": "team",
+    "value": "platform"
+   },
+   {
+    "key": "env",
+    "value": "prod"
+   }
+  ],
+  "vcs-repo": {
+   "branch": "main",
+   "ingress-submodules": false,
+   "identifier": "acme/network-core",
+   "display-identifier": "acme/network-core",
+   "oauth-token-id": "ot-5qR8wXmN2vPa7Ldk",
+   "repository-http-url": "https://github.com/acme/network-core",
+   "service-provider": "github",
+   "webhook-url": "https://app.terraform.io/webhooks/vcs/2b6f0c14-0d3c-4c1e-9b1a-8a3c5f7e1d22",
+   "tags-regex": null,
+   "tags": false
+  },
+  "source": "tfe-ui",
+  "current-state-version": "sv-2HkRH31vgu6V7Nh1",
+  "current-run": "run-1q2oy8I2MqSd5oM4",
+  "latest-run": "run-1q2oy8I2MqSd5oM4",
+  "readme": "# network-core-prod\n\nShared production VPC for all ACME workloads.\n\n* Owner: platform-eng (#platform-oncall)\n* Changes require a CAB ticket (CHG-xxxx) before apply.\n"
+ },
+ {
+  "id": "ws-aM6dcH7sRwt97v2D",
+  "name": "network-core-staging",
+  "organization": "acme-platform",
+  "project": "prj-ybX47sD3ublmAH34",
+  "description": "Shared staging VPC",
+  "created-at": "2024-03-12T10:00:00Z",
+  "updated-at": "2026-10-28T08:31:00Z",
+  "execution-mode": "remote",
+  "auto-apply": false,
+  "terraform-version": "1.9.5",
+  "working-directory": "core/staging",
+  "locked": true,
+  "locked-by": {
+   "type": "runs",
+   "id": "run-blTtGlrNXHe62r7y"
+  },
+  "resource-count": 52,
+  "tag-names": [
+   "network",
+   "staging"
+  ],
+  "tag-bindings": [
+   {
+    "key": "team",
+    "value": "platform"
+   },
+   {
+    "key": "env",
+    "value": "staging"
+   }
+  ],
+  "vcs-repo": {
+   "branch": "main",
+   "ingress-submodules": false,
+   "identifier": "acme/network-core",
+   "display-identifier": "acme/network-core",
+   "oauth-token-id": "ot-5qR8wXmN2vPa7Ldk",
+   "repository-http-url": "https://github.com/acme/network-core",
+   "service-provider": "github",
+   "webhook-url": "https://app.terraform.io/webhooks/vcs/2b6f0c14-0d3c-4c1e-9b1a-8a3c5f7e1d22",
+   "tags-regex": null,
+   "tags": false
+  },
+  "source": "tfe-ui",
+  "current-state-version": "sv-PlJucp73Rd7QLWjW",
+  "current-run": "run-blTtGlrNXHe62r7y",
+  "latest-run": "run-blTtGlrNXHe62r7y"
+ },
+ {
+  "id": "ws-HJppEOWB3EN8FR2P",
+  "name": "dns-zones-prod",
+  "organization": "acme-platform",
+  "project": "prj-ybX47sD3ublmAH34",
+  "description": "Route53 public and private hosted zones",
+  "created-at": "2024-03-12T10:00:00Z",
+  "updated-at": "2026-10-20T10:00:00Z",
+  "execution-mode": "remote",
+  "auto-apply": true,
+  "terraform-version": "1.9.5",
+  "working-directory": "dns",
+  "locked": false,
+  "locked-by": null,
+  "resource-count": 24,
+  "tag-names": [
+   "dns",
+   "prod"
+  ],
+  "tag-bindings": [],
+  "vcs-repo": {
+   "branch": "main",
+   "ingress-submodules": false,
+   "identifier": "acme/network-core",
+   "display-identifier": "acme/network-core",
+   "oauth-token-id": "ot-5qR8wXmN2vPa7Ldk",
+   "repository-http-url": "https://github.com/acme/network-core",
+   "service-provider": "github",
+   "webhook-url": "https://app.terraform.io/webhooks/vcs/2b6f0c14-0d3c-4c1e-9b1a-8a3c5f7e1d22",
+   "tags-regex": null,
+   "tags": false
+  },
+  "source": "tfe-ui",
+  "current-state-version": "sv-Dunun7nQhOf84Oxu",
+  "current-run": "run-aRQYuP1jUBhRyE09",
+  "latest-run": "run-aRQYuP1jUBhRyE09"
+ },
+ {
+  "id": "ws-i0F81Hk5tvGLpmR9",
+  "name": "orders-api-prod",
+  "organization": "acme-sandbox",
+  "project": "prj-rCO9267t206heGJO",
+  "description": "Sam's sandbox copy of the orders stack",
+  "created-at": "2024-03-12T10:00:00Z",
+  "updated-at": "2026-10-20T10:00:00Z",
+  "execution-mode": "remote",
+  "auto-apply": false,
+  "terraform-version": "1.9.5",
+  "working-directory": "",
+  "locked": false,
+  "locked-by": null,
+  "resource-count": 6,
+  "tag-names": [
+   "sandbox"
+  ],
+  "tag-bindings": [],
+  "vcs-repo": null,
+  "source": "tfe-ui",
+  "current-run": "run-0b1Ax4B0hIqUDgw8",
+  "latest-run": "run-0b1Ax4B0hIqUDgw8"
+ },
+ {
+  "id": "ws-PEG13w8uGqxNUJDm",
+  "name": "playground",
+  "organization": "acme-sandbox",
+  "project": "prj-rCO9267t206heGJO",
+  "description": "Scratch workspace",
+  "created-at": "2024-03-12T10:00:00Z",
+  "updated-at": "2026-10-20T10:00:00Z",
+  "execution-mode": "local",
+  "auto-apply": false,
+  "terraform-version": "1.9.5",
+  "working-directory": "",
+  "locked": false,
+  "locked-by": null,
+  "resource-count": 0,
+  "tag-names": [],
+  "tag-bindings": [],
+  "vcs-repo": null,
+  "source": "tfe-ui"
+ }
+]

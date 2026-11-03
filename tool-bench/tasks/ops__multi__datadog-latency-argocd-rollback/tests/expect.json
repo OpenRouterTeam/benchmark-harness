@@ -1,0 +1,115 @@
+{
+  "state": [
+    {
+      "pointer": "/services/argocd/applications/argocd~1billing-api/spec/source/targetRevision",
+      "equals": "v2.8.0",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/argocd/applications/argocd~1billing-api/spec/syncPolicy/automated",
+      "equals": null,
+      "exists": true,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/argocd/applications/argocd~1billing-api/status/sync/status",
+      "equals": "Synced",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/argocd/applications/argocd~1billing-api/status/operationState/syncResult/revision",
+      "equals": "f4befdc6efa7504dc43d29f4de52c0f1529f52d2",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/argocd/applications/argocd~1billing-api-staging/spec/source/targetRevision",
+      "equals": "main",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/argocd/applications/argocd~1billing-api-staging/status/sync/revision",
+      "equals": "5ab7f03e2c9d18b46e0f7a3c1d2b95e8f46a0c13",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/argocd/applications/argocd~1billing-worker/spec/source/targetRevision",
+      "equals": "main",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "datadog",
+      "method": "GET",
+      "path": "/api/v1/query",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "argocd",
+      "method": "PUT",
+      "path": "/api/v1/applications/billing-api",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "argocd",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "argocd",
+      "method": "PUT",
+      "path": null,
+      "path_regex": "^/api/v1/applications/billing-(api-staging|worker)$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "argocd",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/api/v1/applications/billing-(api-staging|worker)/sync$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

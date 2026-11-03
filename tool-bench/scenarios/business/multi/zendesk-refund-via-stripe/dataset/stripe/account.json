@@ -1,0 +1,22 @@
+[
+  {
+    "id": "acct_1FwY8bQk2LmN4pRs",
+    "business_profile": {
+      "mcc": "5734",
+      "name": "Fernway Software",
+      "support_email": "billing@fernway.io",
+      "support_phone": null,
+      "support_address": null,
+      "url": "https://fernway.io"
+    },
+    "created": 1740787200,
+    "email": "ops@fernway.io",
+    "livemode": false,
+    "settings": {
+      "dashboard": {
+        "display_name": "Fernway Software",
+        "timezone": "America/Los_Angeles"
+      }
+    }
+  }
+]

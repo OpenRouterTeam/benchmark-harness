@@ -1,0 +1,44 @@
+[
+  {
+    "_key": "northwind/payments/checkout-api~backend",
+    "id": 1301,
+    "name": "backend",
+    "color": "#428bca",
+    "description": "Server-side work"
+  },
+  {
+    "_key": "northwind/payments/checkout-api~frontend",
+    "id": 1302,
+    "name": "frontend",
+    "color": "#5cb85c",
+    "description": null
+  },
+  {
+    "_key": "northwind/payments/checkout-api~postmortem",
+    "id": 1303,
+    "name": "postmortem",
+    "color": "#7f8c8d",
+    "description": "Postmortem documents and follow-ups"
+  },
+  {
+    "_key": "northwind~reliability",
+    "id": 1101,
+    "name": "reliability",
+    "color": "#ad4363",
+    "description": "Availability, resilience and SLOs (org-wide)"
+  },
+  {
+    "_key": "northwind~reliability-review",
+    "id": 1102,
+    "name": "reliability-review",
+    "color": "#c39bd3",
+    "description": "Needs a review from the SRE guild"
+  },
+  {
+    "_key": "northwind/mobile/checkout-ios~ios",
+    "id": 1401,
+    "name": "ios",
+    "color": "#000000",
+    "description": null
+  }
+]

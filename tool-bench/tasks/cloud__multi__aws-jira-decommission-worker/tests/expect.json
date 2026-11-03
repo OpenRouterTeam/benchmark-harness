@@ -1,0 +1,171 @@
+{
+  "state": [
+    {
+      "pointer": "/services/aws/instances/i-07b9d1f3a5c8e2046/instanceState/name",
+      "equals": "stopped",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/aws/instances/i-07b9d1f3a5c8e2046/tagSet",
+      "equals": null,
+      "exists": null,
+      "contains": {
+        "key": "DecommissionTicket",
+        "value": "OPS-34"
+      },
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/aws/instances/i-0e4a6c8b2d1f35790/instanceState/name",
+      "equals": "running",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/aws/instances/i-0e4a6c8b2d1f35790/tagSet",
+      "equals": [
+        {
+          "key": "Name",
+          "value": "reporting-worker-legacy"
+        },
+        {
+          "key": "Environment",
+          "value": "staging"
+        },
+        {
+          "key": "Team",
+          "value": "data-eng"
+        }
+      ],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/aws/instances/i-0a3f5c7e9b1d24680/instanceState/name",
+      "equals": "running",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/aws/instances/i-0c8e2a4f6b1d39057/tagSet",
+      "equals": null,
+      "exists": null,
+      "contains": {
+        "key": "DecommissionTicket",
+        "value": "OPS-33"
+      },
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/jira/issues/OPS-34/fields/status",
+      "equals": "Done",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/jira/issues/OPS-34/fields/resolution",
+      "equals": "Done",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/jira/comments",
+      "equals": null,
+      "exists": null,
+      "contains": null,
+      "any": {
+        "author": "jordan.lee",
+        "issue": "OPS-34"
+      },
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/jira/issues/OPS-33/fields/status",
+      "equals": "Done",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "aws",
+      "method": "POST",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "Action=StopInstances",
+      "min_count": 1
+    },
+    {
+      "service": "aws",
+      "method": "POST",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "Action=CreateTags",
+      "min_count": 1
+    },
+    {
+      "service": "jira",
+      "method": "POST",
+      "path": "/rest/api/2/issue/OPS-34/transitions",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "aws",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "Action=TerminateInstances",
+      "min_count": 1
+    },
+    {
+      "service": "aws",
+      "method": "POST",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "i-0e4a6c8b2d1f35790",
+      "min_count": 1
+    },
+    {
+      "service": "jira",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

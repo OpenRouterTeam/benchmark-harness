@@ -1,0 +1,44 @@
+[
+  {
+    "_key": "aa5a315d61ae9438b18d",
+    "id": "aa5a315d61ae9438b18d",
+    "description": "psql snippets",
+    "public": true,
+    "owner": "mona",
+    "files": {
+      "queries.sql": {
+        "content": "select 1;\n"
+      }
+    },
+    "created_at": "2026-01-10T00:00:00Z",
+    "updated_at": "2026-01-10T00:00:00Z"
+  },
+  {
+    "_key": "bb5a315d61ae9438b18e",
+    "id": "bb5a315d61ae9438b18e",
+    "description": "secret notes",
+    "public": false,
+    "owner": "mona",
+    "files": {
+      "notes.md": {
+        "content": "# notes\n"
+      }
+    },
+    "created_at": "2026-02-10T00:00:00Z",
+    "updated_at": "2026-02-10T00:00:00Z"
+  },
+  {
+    "_key": "cc5a315d61ae9438b18f",
+    "id": "cc5a315d61ae9438b18f",
+    "description": "jdoe dotfiles",
+    "public": true,
+    "owner": "jdoe",
+    "files": {
+      ".zshrc": {
+        "content": "export EDITOR=vim\n"
+      }
+    },
+    "created_at": "2026-02-11T00:00:00Z",
+    "updated_at": "2026-02-11T00:00:00Z"
+  }
+]

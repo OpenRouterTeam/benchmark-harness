@@ -1,0 +1,205 @@
+[
+  {
+    "active": false,
+    "active_child": null,
+    "canceled": 1792685520,
+    "creator_id": 1445400,
+    "disabled": true,
+    "downtime_type": 0,
+    "end": 1792893600,
+    "id": 2207690,
+    "message": "CHG-4410 payments network maintenance - core switch replacement (original date, rescheduled to Oct 31)",
+    "monitor_id": null,
+    "monitor_tags": [
+      "*"
+    ],
+    "mute_first_recovery_notification": false,
+    "notify_end_states": [
+      "alert",
+      "no data",
+      "warn"
+    ],
+    "notify_end_types": [
+      "expired"
+    ],
+    "parent_id": null,
+    "recurrence": null,
+    "scope": [
+      "env:prod",
+      "service:payments-api"
+    ],
+    "start": 1792879200,
+    "timezone": "UTC",
+    "updater_id": null
+  },
+  {
+    "active": false,
+    "active_child": null,
+    "canceled": null,
+    "creator_id": 1445400,
+    "disabled": false,
+    "downtime_type": 0,
+    "end": 1793412000,
+    "id": 2207702,
+    "message": "Nightly payments batch reconciliation window",
+    "monitor_id": null,
+    "monitor_tags": [
+      "*"
+    ],
+    "mute_first_recovery_notification": false,
+    "notify_end_states": [
+      "alert",
+      "no data",
+      "warn"
+    ],
+    "notify_end_types": [
+      "expired"
+    ],
+    "parent_id": null,
+    "recurrence": {
+      "period": 1,
+      "rrule": null,
+      "type": "days",
+      "until_date": null,
+      "until_occurrences": null,
+      "week_days": null
+    },
+    "scope": [
+      "service:payments-batch"
+    ],
+    "start": 1793408400,
+    "timezone": "UTC",
+    "updater_id": null
+  },
+  {
+    "active": false,
+    "active_child": null,
+    "canceled": null,
+    "creator_id": 1445400,
+    "disabled": false,
+    "downtime_type": 0,
+    "end": 1793498400,
+    "id": 2207731,
+    "message": "CHG-4410 payments network maintenance - core switch replacement. Contact @network-oncall",
+    "monitor_id": null,
+    "monitor_tags": [
+      "*"
+    ],
+    "mute_first_recovery_notification": false,
+    "notify_end_states": [
+      "alert",
+      "no data",
+      "warn"
+    ],
+    "notify_end_types": [
+      "expired"
+    ],
+    "parent_id": null,
+    "recurrence": null,
+    "scope": [
+      "env:prod",
+      "service:payments-api"
+    ],
+    "start": 1793484000,
+    "timezone": "UTC",
+    "updater_id": null
+  },
+  {
+    "active": false,
+    "active_child": null,
+    "canceled": null,
+    "creator_id": 1445400,
+    "disabled": false,
+    "downtime_type": 0,
+    "end": 1793494800,
+    "id": 2207745,
+    "message": "CHG-4401 payments-db failover drill",
+    "monitor_id": null,
+    "monitor_tags": [
+      "*"
+    ],
+    "mute_first_recovery_notification": false,
+    "notify_end_states": [
+      "alert",
+      "no data",
+      "warn"
+    ],
+    "notify_end_types": [
+      "expired"
+    ],
+    "parent_id": null,
+    "recurrence": null,
+    "scope": [
+      "env:prod",
+      "service:payments-db"
+    ],
+    "start": 1793487600,
+    "timezone": "UTC",
+    "updater_id": null
+  },
+  {
+    "active": false,
+    "active_child": null,
+    "canceled": null,
+    "creator_id": 1445400,
+    "disabled": false,
+    "downtime_type": 0,
+    "end": 1793397600,
+    "id": 2207752,
+    "message": "CHG-4410 rehearsal on staging (core switch replacement)",
+    "monitor_id": null,
+    "monitor_tags": [
+      "*"
+    ],
+    "mute_first_recovery_notification": false,
+    "notify_end_states": [
+      "alert",
+      "no data",
+      "warn"
+    ],
+    "notify_end_types": [
+      "expired"
+    ],
+    "parent_id": null,
+    "recurrence": null,
+    "scope": [
+      "env:staging",
+      "service:payments-api"
+    ],
+    "start": 1793390400,
+    "timezone": "UTC",
+    "updater_id": null
+  },
+  {
+    "active": false,
+    "active_child": null,
+    "canceled": null,
+    "creator_id": 1445400,
+    "disabled": false,
+    "downtime_type": 0,
+    "end": 1793359800,
+    "id": 2207760,
+    "message": "web-prod-07 kernel patching CHG-4433",
+    "monitor_id": null,
+    "monitor_tags": [
+      "*"
+    ],
+    "mute_first_recovery_notification": false,
+    "notify_end_states": [
+      "alert",
+      "no data",
+      "warn"
+    ],
+    "notify_end_types": [
+      "expired"
+    ],
+    "parent_id": null,
+    "recurrence": null,
+    "scope": [
+      "host:web-prod-07"
+    ],
+    "start": 1793352600,
+    "timezone": "UTC",
+    "updater_id": null
+  }
+]

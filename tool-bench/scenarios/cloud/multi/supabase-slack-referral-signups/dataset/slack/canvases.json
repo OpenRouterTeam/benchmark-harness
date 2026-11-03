@@ -1,0 +1,14 @@
+[
+  {
+    "_key": "F0OBSCANV01",
+    "id": "F0OBSCANV01",
+    "title": "Observability vendor scorecard",
+    "user": "U02MWEBB8XH",
+    "created": 1791979200,
+    "updated": 1792497600,
+    "channels": [
+      "C03INFRA9QX"
+    ],
+    "content": "## Criteria\n- Metrics at our cardinality\n- Tracing UX\n- Log retention\n- Price\n\n## Scores\n| Vendor | Metrics | Tracing | Logs | Price |\n|---|---|---|---|---|\n| Datadog | 5 | 4 | 4 | 2 |\n| Grafana Cloud | 4 | 3 | 5 | 4 |\n| Honeycomb | 2 | 5 | 3 | 3 |\n\nFinal decision is recorded in the #infra thread."
+  }
+]

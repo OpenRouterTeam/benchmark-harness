@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"vercel-create-deployment","arguments":{"deploymentId":"dpl_8o704GjcwumkLAaxPwjoxb4V6QDF","name":"storefront","target":"production"}}}

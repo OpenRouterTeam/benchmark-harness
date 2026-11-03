@@ -1,0 +1,304 @@
+[
+  {
+    "id": "PSPLTPR",
+    "name": "Platform Primary",
+    "time_zone": "America/Los_Angeles",
+    "description": "Weekly primary rotation for the Platform team (hand-off Mondays 09:00 PT).",
+    "teams": [
+      {
+        "id": "PTPLATF",
+        "type": "team_reference"
+      }
+    ],
+    "schedule_layers": [
+      {
+        "id": "PL8T1A2",
+        "name": "Weekly",
+        "start": "2026-09-07T16:00:00Z",
+        "end": null,
+        "rotation_virtual_start": "2026-09-07T16:00:00Z",
+        "rotation_turn_length_seconds": 604800,
+        "users": [
+          {
+            "user": {
+              "id": "PM3IWNG",
+              "type": "user_reference"
+            }
+          },
+          {
+            "user": {
+              "id": "PA1EXKM",
+              "type": "user_reference"
+            }
+          },
+          {
+            "user": {
+              "id": "PJ0RLEE",
+              "type": "user_reference"
+            }
+          }
+        ],
+        "restrictions": []
+      }
+    ]
+  },
+  {
+    "id": "PSPLTSC",
+    "name": "Platform Secondary",
+    "time_zone": "America/Los_Angeles",
+    "description": "Weekly secondary rotation for the Platform team.",
+    "teams": [
+      {
+        "id": "PTPLATF",
+        "type": "team_reference"
+      }
+    ],
+    "schedule_layers": [
+      {
+        "id": "PL8T2B3",
+        "name": "Weekly",
+        "start": "2026-09-07T16:00:00Z",
+        "end": null,
+        "rotation_virtual_start": "2026-09-07T16:00:00Z",
+        "rotation_turn_length_seconds": 604800,
+        "users": [
+          {
+            "user": {
+              "id": "PJ0RLEE",
+              "type": "user_reference"
+            }
+          },
+          {
+            "user": {
+              "id": "PM3IWNG",
+              "type": "user_reference"
+            }
+          },
+          {
+            "user": {
+              "id": "PA1EXKM",
+              "type": "user_reference"
+            }
+          }
+        ],
+        "restrictions": []
+      }
+    ]
+  },
+  {
+    "id": "PSDPLPR",
+    "name": "Data Platform Primary",
+    "time_zone": "America/Chicago",
+    "description": "Batch pipelines and the warehouse.",
+    "teams": [
+      {
+        "id": "PTPLATF",
+        "type": "team_reference"
+      }
+    ],
+    "schedule_layers": [
+      {
+        "id": "PL8D1C4",
+        "name": "Weekly",
+        "start": "2026-09-07T14:00:00Z",
+        "end": null,
+        "rotation_virtual_start": "2026-09-07T14:00:00Z",
+        "rotation_turn_length_seconds": 604800,
+        "users": [
+          {
+            "user": {
+              "id": "PS4MOKF",
+              "type": "user_reference"
+            }
+          },
+          {
+            "user": {
+              "id": "PJ0RLEE",
+              "type": "user_reference"
+            }
+          }
+        ],
+        "restrictions": []
+      }
+    ]
+  },
+  {
+    "id": "PSPAYPR",
+    "name": "Payments Primary",
+    "time_zone": "America/New_York",
+    "description": "Weekly primary rotation for Payments (hand-off Mondays 09:00 ET).",
+    "teams": [
+      {
+        "id": "PTPAYMT",
+        "type": "team_reference"
+      }
+    ],
+    "schedule_layers": [
+      {
+        "id": "PL8P1D5",
+        "name": "Weekly",
+        "start": "2026-10-05T13:00:00Z",
+        "end": null,
+        "rotation_virtual_start": "2026-10-05T13:00:00Z",
+        "rotation_turn_length_seconds": 604800,
+        "users": [
+          {
+            "user": {
+              "id": "PR1YPTL",
+              "type": "user_reference"
+            }
+          },
+          {
+            "user": {
+              "id": "PPR1YAR",
+              "type": "user_reference"
+            }
+          },
+          {
+            "user": {
+              "id": "PJ0RALV",
+              "type": "user_reference"
+            }
+          }
+        ],
+        "restrictions": []
+      }
+    ]
+  },
+  {
+    "id": "PSPAYGW",
+    "name": "Payments Gateway (Legacy)",
+    "time_zone": "America/New_York",
+    "description": "Legacy gateway, being decommissioned in Q1.",
+    "teams": [
+      {
+        "id": "PTPAYMT",
+        "type": "team_reference"
+      }
+    ],
+    "schedule_layers": [
+      {
+        "id": "PL8P2E6",
+        "name": "Always",
+        "start": "2026-01-05T14:00:00Z",
+        "end": null,
+        "rotation_virtual_start": "2026-01-05T14:00:00Z",
+        "rotation_turn_length_seconds": 604800,
+        "users": [
+          {
+            "user": {
+              "id": "PJ0RALV",
+              "type": "user_reference"
+            }
+          }
+        ],
+        "restrictions": []
+      }
+    ]
+  },
+  {
+    "id": "PSDBRPR",
+    "name": "DBRE Primary",
+    "time_zone": "Etc/UTC",
+    "description": "Daily rotation for production databases (hand-off 00:00 UTC).",
+    "teams": [
+      {
+        "id": "PTDBREL",
+        "type": "team_reference"
+      }
+    ],
+    "schedule_layers": [
+      {
+        "id": "PL8B1F7",
+        "name": "Daily",
+        "start": "2026-10-01T00:00:00Z",
+        "end": null,
+        "rotation_virtual_start": "2026-10-01T00:00:00Z",
+        "rotation_turn_length_seconds": 86400,
+        "users": [
+          {
+            "user": {
+              "id": "PS4MOKF",
+              "type": "user_reference"
+            }
+          },
+          {
+            "user": {
+              "id": "PDNGYN2",
+              "type": "user_reference"
+            }
+          }
+        ],
+        "restrictions": []
+      }
+    ]
+  },
+  {
+    "id": "PSDBRST",
+    "name": "DBRE Staging",
+    "time_zone": "Etc/UTC",
+    "description": "Best-effort coverage for staging databases.",
+    "teams": [
+      {
+        "id": "PTDBREL",
+        "type": "team_reference"
+      }
+    ],
+    "schedule_layers": [
+      {
+        "id": "PL8B2G8",
+        "name": "Weekly",
+        "start": "2026-10-05T00:00:00Z",
+        "end": null,
+        "rotation_virtual_start": "2026-10-05T00:00:00Z",
+        "rotation_turn_length_seconds": 604800,
+        "users": [
+          {
+            "user": {
+              "id": "PS4MOKF",
+              "type": "user_reference"
+            }
+          }
+        ],
+        "restrictions": []
+      }
+    ]
+  },
+  {
+    "id": "PSCOMPR",
+    "name": "Commerce Primary",
+    "time_zone": "Europe/Berlin",
+    "description": "Weekly rotation for checkout and storefront.",
+    "teams": [
+      {
+        "id": "PTCOMRC",
+        "type": "team_reference"
+      }
+    ],
+    "schedule_layers": [
+      {
+        "id": "PL8C1H9",
+        "name": "Weekly",
+        "start": "2026-10-05T08:00:00Z",
+        "end": null,
+        "rotation_virtual_start": "2026-10-05T08:00:00Z",
+        "rotation_turn_length_seconds": 604800,
+        "users": [
+          {
+            "user": {
+              "id": "PLWEBR5",
+              "type": "user_reference"
+            }
+          },
+          {
+            "user": {
+              "id": "PTBRWN8",
+              "type": "user_reference"
+            }
+          }
+        ],
+        "restrictions": []
+      }
+    ]
+  }
+]

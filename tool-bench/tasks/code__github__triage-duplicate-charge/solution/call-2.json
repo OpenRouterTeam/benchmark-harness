@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"issue_write","arguments":{"assignees":["sam"],"issue_number":12,"labels":["bug","customer-reported","sev-1"],"method":"update","owner":"octo-org","repo":"payments-api"}}}

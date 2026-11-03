@@ -1,0 +1,14 @@
+[
+  {
+    "id": "1",
+    "name": "PAY board",
+    "type": "scrum",
+    "project": "PAY"
+  },
+  {
+    "id": "2",
+    "name": "WEB board",
+    "type": "kanban",
+    "project": "WEB"
+  }
+]

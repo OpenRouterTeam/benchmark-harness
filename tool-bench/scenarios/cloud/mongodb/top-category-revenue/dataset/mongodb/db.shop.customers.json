@@ -1,0 +1,74 @@
+[
+  {
+    "_key": "65d1c0000000000000000001",
+    "_id": {
+      "$oid": "65d1c0000000000000000001"
+    },
+    "name": "Priya Natarajan",
+    "email": "priya.natarajan@example.com",
+    "tier": "gold",
+    "createdAt": {
+      "$date": "2025-01-10T09:00:00.000Z"
+    }
+  },
+  {
+    "_key": "65d1c0000000000000000002",
+    "_id": {
+      "$oid": "65d1c0000000000000000002"
+    },
+    "name": "Marcus Webb",
+    "email": "marcus.webb@example.net",
+    "tier": "silver",
+    "createdAt": {
+      "$date": "2025-02-11T09:00:00.000Z"
+    }
+  },
+  {
+    "_key": "65d1c0000000000000000003",
+    "_id": {
+      "$oid": "65d1c0000000000000000003"
+    },
+    "name": "Hana Sato",
+    "email": "hana.sato@example.org",
+    "tier": "standard",
+    "createdAt": {
+      "$date": "2025-03-12T09:00:00.000Z"
+    }
+  },
+  {
+    "_key": "65d1c0000000000000000004",
+    "_id": {
+      "$oid": "65d1c0000000000000000004"
+    },
+    "name": "Diego Alvarez",
+    "email": "diego.alvarez@example.com",
+    "tier": "gold",
+    "createdAt": {
+      "$date": "2025-04-13T09:00:00.000Z"
+    }
+  },
+  {
+    "_key": "65d1c0000000000000000005",
+    "_id": {
+      "$oid": "65d1c0000000000000000005"
+    },
+    "name": "Grace Okafor",
+    "email": "grace.okafor@example.com",
+    "tier": "silver",
+    "createdAt": {
+      "$date": "2025-05-14T09:00:00.000Z"
+    }
+  },
+  {
+    "_key": "65d1c0000000000000000006",
+    "_id": {
+      "$oid": "65d1c0000000000000000006"
+    },
+    "name": "Tomasz Nowak",
+    "email": "tomasz.nowak@example.pl",
+    "tier": "standard",
+    "createdAt": {
+      "$date": "2025-06-15T09:00:00.000Z"
+    }
+  }
+]

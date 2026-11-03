@@ -1,0 +1,212 @@
+[
+  {
+    "id": 8001,
+    "title": "Harbor Canvas Tote",
+    "handle": "harbor-canvas-tote",
+    "vendor": "Octo Goods",
+    "productType": "Bags",
+    "status": "ACTIVE",
+    "tags": [
+      "bags"
+    ],
+    "createdAt": "2025-09-01T12:00:00Z",
+    "publishedAt": "2025-09-01T12:00:00Z",
+    "descriptionHtml": "<p>Waxed canvas tote with leather handles.</p>",
+    "options": [
+      {
+        "id": 11,
+        "name": "Color",
+        "position": 1,
+        "values": [
+          {
+            "id": 21,
+            "name": "Navy"
+          },
+          {
+            "id": 22,
+            "name": "Sand"
+          }
+        ]
+      }
+    ],
+    "variants": [
+      {
+        "id": 4001,
+        "price": "48.00",
+        "sku": "HCT-NVY",
+        "inventoryQuantity": 14,
+        "selectedOptions": [
+          {
+            "name": "Color",
+            "value": "Navy"
+          }
+        ]
+      },
+      {
+        "id": 4002,
+        "price": "48.00",
+        "sku": "HCT-SND",
+        "inventoryQuantity": 9,
+        "selectedOptions": [
+          {
+            "name": "Color",
+            "value": "Sand"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 8002,
+    "title": "Merino Crew Sweater",
+    "handle": "merino-crew-sweater",
+    "vendor": "Seaside Apparel",
+    "productType": "Sweaters",
+    "status": "ACTIVE",
+    "tags": [
+      "knitwear"
+    ],
+    "createdAt": "2025-09-10T12:00:00Z",
+    "publishedAt": "2025-09-10T12:00:00Z",
+    "descriptionHtml": "<p>Fine merino, relaxed fit.</p>",
+    "options": [
+      {
+        "id": 12,
+        "name": "Size",
+        "position": 1,
+        "values": [
+          {
+            "id": 23,
+            "name": "S"
+          },
+          {
+            "id": 24,
+            "name": "M"
+          },
+          {
+            "id": 25,
+            "name": "L"
+          }
+        ]
+      }
+    ],
+    "variants": [
+      {
+        "id": 4003,
+        "price": "128.00",
+        "sku": "MCS-S",
+        "inventoryQuantity": 6,
+        "selectedOptions": [
+          {
+            "name": "Size",
+            "value": "S"
+          }
+        ]
+      },
+      {
+        "id": 4004,
+        "price": "128.00",
+        "sku": "MCS-M",
+        "inventoryQuantity": 11,
+        "selectedOptions": [
+          {
+            "name": "Size",
+            "value": "M"
+          }
+        ]
+      },
+      {
+        "id": 4005,
+        "price": "128.00",
+        "sku": "MCS-L",
+        "inventoryQuantity": 4,
+        "selectedOptions": [
+          {
+            "name": "Size",
+            "value": "L"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 8003,
+    "title": "Stoneware Pour-Over Set",
+    "handle": "stoneware-pour-over-set",
+    "vendor": "Kiln & Co",
+    "productType": "Kitchen",
+    "status": "ACTIVE",
+    "tags": [
+      "coffee",
+      "gift"
+    ],
+    "createdAt": "2025-10-01T12:00:00Z",
+    "publishedAt": "2025-10-01T12:00:00Z",
+    "descriptionHtml": "<p>Hand-glazed dripper and carafe.</p>",
+    "variants": [
+      {
+        "id": 4006,
+        "price": "86.00",
+        "sku": "SPO-01",
+        "inventoryQuantity": 20
+      }
+    ]
+  },
+  {
+    "id": 8004,
+    "title": "Trailhead Rain Jacket",
+    "handle": "trailhead-rain-jacket",
+    "vendor": "Seaside Apparel",
+    "productType": "Outerwear",
+    "status": "ACTIVE",
+    "tags": [
+      "outerwear"
+    ],
+    "createdAt": "2025-10-15T12:00:00Z",
+    "publishedAt": "2025-10-15T12:00:00Z",
+    "descriptionHtml": "<p>2.5-layer waterproof shell.</p>",
+    "options": [
+      {
+        "id": 13,
+        "name": "Size",
+        "position": 1,
+        "values": [
+          {
+            "id": 26,
+            "name": "M"
+          },
+          {
+            "id": 27,
+            "name": "L"
+          }
+        ]
+      }
+    ],
+    "variants": [
+      {
+        "id": 4007,
+        "price": "210.00",
+        "sku": "TRJ-M",
+        "inventoryQuantity": 5,
+        "selectedOptions": [
+          {
+            "name": "Size",
+            "value": "M"
+          }
+        ]
+      },
+      {
+        "id": 4008,
+        "price": "210.00",
+        "sku": "TRJ-L",
+        "inventoryQuantity": 3,
+        "selectedOptions": [
+          {
+            "name": "Size",
+            "value": "L"
+          }
+        ]
+      }
+    ]
+  }
+]

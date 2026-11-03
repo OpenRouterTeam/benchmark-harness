@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"jira_search","arguments":{"fields":"summary,status,assignee,issuelinks","jql":"project = PAY AND sprint in openSprints() AND issueLinkType = \"is blocked by\"","limit":20}}}

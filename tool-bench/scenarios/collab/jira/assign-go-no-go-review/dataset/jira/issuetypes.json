@@ -1,0 +1,38 @@
+[
+  {
+    "id": "10000",
+    "name": "Epic",
+    "description": "A big user story that needs to be broken down.",
+    "subtask": false
+  },
+  {
+    "id": "10001",
+    "name": "Story",
+    "description": "A user story.",
+    "subtask": false
+  },
+  {
+    "id": "10002",
+    "name": "Task",
+    "description": "A task that needs to be done.",
+    "subtask": false
+  },
+  {
+    "id": "10003",
+    "name": "Sub-task",
+    "description": "The sub-task of the issue.",
+    "subtask": true
+  },
+  {
+    "id": "10004",
+    "name": "Bug",
+    "description": "A problem which impairs or prevents the functions of the product.",
+    "subtask": false
+  },
+  {
+    "id": "10100",
+    "name": "Service Request",
+    "description": "A request from a customer.",
+    "subtask": false
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "_key": "41",
+    "id": 41,
+    "project": "acme/platform/api",
+    "sha": "c0ffee0000000000000000000000000000000001",
+    "ref": "main",
+    "status": "success",
+    "name": "sonarqube",
+    "target_url": "https://sonar.acme.dev",
+    "created_at": "2026-03-01T10:10:00.000Z",
+    "author": "deploy-bot"
+  }
+]

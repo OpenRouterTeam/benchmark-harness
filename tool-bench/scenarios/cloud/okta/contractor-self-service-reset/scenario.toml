@@ -1,0 +1,90 @@
+[scenario]
+id = "cloud/okta/contractor-self-service-reset"
+title = "Turn off self-service password reset and unlock for contractors"
+now = "2026-03-14T09:00:00Z"
+seed = "cloud-okta-contractor-self-service-reset"
+services = ["okta"]
+tags = ["write", "single-service", "okta"]
+timeout_sec = 900
+
+# PASSWORD policies: Contractors 00p4pwcntr2Uv9Wx0x7 (rule 0pr5rule0tr2Uv9Wx0x7),
+# Employees 00p4pwempl4Yz1Ab2x7 (rule 0pr5rule1pl4Yz1Ab2x7), Default 00p4pwdflt0Pq7Rs8tx7
+# (system rule 0pr5rule2lt0Pq7Rs8tx). All start with reset ALLOW; unlock ALLOW except Default.
+[[expect.state]]
+pointer = "/services/okta/policy_rules/00p4pwcntr2Uv9Wx0x7~10pr5rule0tr2Uv9Wx0x7/actions/selfServicePasswordReset/access"
+equals = "DENY"
+
+[[expect.state]]
+pointer = "/services/okta/policy_rules/00p4pwcntr2Uv9Wx0x7~10pr5rule0tr2Uv9Wx0x7/actions/selfServiceUnlock/access"
+equals = "DENY"
+
+# Contractors can still change their password while signed in, and the rule stays on.
+[[expect.state]]
+pointer = "/services/okta/policy_rules/00p4pwcntr2Uv9Wx0x7~10pr5rule0tr2Uv9Wx0x7/actions/passwordChange/access"
+equals = "ALLOW"
+
+[[expect.state]]
+pointer = "/services/okta/policy_rules/00p4pwcntr2Uv9Wx0x7~10pr5rule0tr2Uv9Wx0x7/status"
+equals = "ACTIVE"
+
+[[expect.state]]
+pointer = "/services/okta/policies/00p4pwcntr2Uv9Wx0x7/status"
+equals = "ACTIVE"
+
+# Employees and the default policy are untouched.
+[[expect.state]]
+pointer = "/services/okta/policy_rules/00p4pwempl4Yz1Ab2x7~10pr5rule1pl4Yz1Ab2x7/actions/selfServicePasswordReset/access"
+equals = "ALLOW"
+
+[[expect.state]]
+pointer = "/services/okta/policy_rules/00p4pwempl4Yz1Ab2x7~10pr5rule1pl4Yz1Ab2x7/actions/selfServiceUnlock/access"
+equals = "ALLOW"
+
+[[expect.state]]
+pointer = "/services/okta/policy_rules/00p4pwdflt0Pq7Rs8tx7~10pr5rule2lt0Pq7Rs8tx/actions/selfServicePasswordReset/access"
+equals = "ALLOW"
+
+[[expect.required_calls]]
+service = "okta"
+method = "PUT"
+path = "/api/v1/policies/00p4pwcntr2Uv9Wx0x7/rules/0pr5rule0tr2Uv9Wx0x7"
+
+[[expect.forbidden_calls]]
+service = "okta"
+method = "PUT"
+path_regex = "^/api/v1/policies/(00p4pwempl4Yz1Ab2x7|00p4pwdflt0Pq7Rs8tx7)"
+
+[[expect.forbidden_calls]]
+service = "okta"
+method = "DELETE"
+path_regex = "^/api/v1/policies"
+
+[[expect.forbidden_calls]]
+service = "okta"
+method = "POST"
+path_regex = "^/api/v1/policies/.*lifecycle/deactivate$"
+
+[[solution.call]]
+endpoint = "okta"
+tool = "list_policies"
+arguments = { type = "PASSWORD" }
+
+[[solution.call]]
+endpoint = "okta"
+tool = "list_policy_rules"
+arguments = { policy_id = "00p4pwcntr2Uv9Wx0x7" }
+
+[[solution.call]]
+endpoint = "okta"
+tool = "update_policy_rule"
+
+[solution.call.arguments]
+policy_id = "00p4pwcntr2Uv9Wx0x7"
+rule_id = "0pr5rule0tr2Uv9Wx0x7"
+
+[solution.call.arguments.rule_data]
+type = "PASSWORD"
+name = "Contractors rule"
+priority = 1
+conditions = { people = { users = { exclude = [] } }, network = { connection = "ANYWHERE" } }
+actions = { passwordChange = { access = "ALLOW" }, selfServicePasswordReset = { access = "DENY" }, selfServiceUnlock = { access = "DENY" } }

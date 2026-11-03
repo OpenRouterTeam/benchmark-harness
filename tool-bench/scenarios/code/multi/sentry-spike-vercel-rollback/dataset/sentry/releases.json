@@ -1,0 +1,157 @@
+[
+  {
+    "id": 291004101,
+    "version": "c3a9f12e8b47d05a6e21f9b3c7d84e50a1b6f2d9",
+    "projects": [
+      "storefront"
+    ],
+    "dateCreated": "2026-10-24T09:42:00Z",
+    "dateReleased": "2026-10-24T09:43:11Z",
+    "commits": [
+      {
+        "id": "c3a9f12e8b47d05a6e21f9b3c7d84e50a1b6f2d9",
+        "message": "Fix tax rounding for EU orders (#482)",
+        "dateCreated": "2026-10-24T09:32:00Z",
+        "author": {
+          "name": "Mateo Alvarez",
+          "email": "mateo@acme-shop.com"
+        }
+      }
+    ],
+    "deploys": [
+      {
+        "id": "8100101",
+        "environment": "production",
+        "name": null,
+        "url": "https://storefront-8o704gjcw-acme-shop.vercel.app",
+        "dateStarted": "2026-10-24T09:42:04Z",
+        "dateFinished": "2026-10-24T09:43:11Z"
+      }
+    ],
+    "_key": "c3a9f12e8b47d05a6e21f9b3c7d84e50a1b6f2d9"
+  },
+  {
+    "id": 291004102,
+    "version": "91b7e4c2d8a05f3e6b1c9d7a2e4f8b0c6d3a5e71",
+    "projects": [
+      "storefront"
+    ],
+    "dateCreated": "2026-10-25T15:03:00Z",
+    "dateReleased": "2026-10-25T15:04:11Z",
+    "commits": [
+      {
+        "id": "91b7e4c2d8a05f3e6b1c9d7a2e4f8b0c6d3a5e71",
+        "message": "Show item count on cart badge",
+        "dateCreated": "2026-10-25T14:53:00Z",
+        "author": {
+          "name": "Jun Park",
+          "email": "jun@acme-shop.com"
+        }
+      }
+    ],
+    "deploys": [
+      {
+        "id": "8100102",
+        "environment": "preview",
+        "name": null,
+        "url": "https://storefront-sxzr1enpp-acme-shop.vercel.app",
+        "dateStarted": "2026-10-25T15:03:04Z",
+        "dateFinished": "2026-10-25T15:04:11Z"
+      }
+    ],
+    "_key": "91b7e4c2d8a05f3e6b1c9d7a2e4f8b0c6d3a5e71"
+  },
+  {
+    "id": 291004103,
+    "version": "b4d8f2a6c0e19375d7b3f1a9e5c2d8b06a4f7e31",
+    "projects": [
+      "storefront-admin"
+    ],
+    "dateCreated": "2026-10-26T10:00:00Z",
+    "dateReleased": "2026-10-26T10:01:11Z",
+    "commits": [
+      {
+        "id": "b4d8f2a6c0e19375d7b3f1a9e5c2d8b06a4f7e31",
+        "message": "Add bulk refund action (#219)",
+        "dateCreated": "2026-10-26T09:50:00Z",
+        "author": {
+          "name": "Jun Park",
+          "email": "jun@acme-shop.com"
+        }
+      }
+    ],
+    "deploys": [
+      {
+        "id": "8100103",
+        "environment": "production",
+        "name": null,
+        "url": "https://storefront-admin-ftavsx1hh-acme-shop.vercel.app",
+        "dateStarted": "2026-10-26T10:00:04Z",
+        "dateFinished": "2026-10-26T10:01:11Z"
+      }
+    ],
+    "_key": "b4d8f2a6c0e19375d7b3f1a9e5c2d8b06a4f7e31"
+  },
+  {
+    "id": 291004104,
+    "version": "e07a3c9d5b1f48e2a6c0d7b9f3e1a5c8d2b4f690",
+    "projects": [
+      "storefront"
+    ],
+    "dateCreated": "2026-10-28T08:15:00Z",
+    "dateReleased": "2026-10-28T08:16:11Z",
+    "commits": [
+      {
+        "id": "e07a3c9d5b1f48e2a6c0d7b9f3e1a5c8d2b4f690",
+        "message": "Switch to payments client v3 (#491)",
+        "dateCreated": "2026-10-28T08:05:00Z",
+        "author": {
+          "name": "Mateo Alvarez",
+          "email": "mateo@acme-shop.com"
+        }
+      }
+    ],
+    "deploys": [
+      {
+        "id": "8100104",
+        "environment": "production",
+        "name": null,
+        "url": "https://storefront-7wc1vkibn-acme-shop.vercel.app",
+        "dateStarted": "2026-10-28T08:15:04Z",
+        "dateFinished": "2026-10-28T08:16:11Z"
+      }
+    ],
+    "_key": "e07a3c9d5b1f48e2a6c0d7b9f3e1a5c8d2b4f690"
+  },
+  {
+    "id": 291004105,
+    "version": "4be1d07c9a3f58e2b6d0c1a7e9f4b3d25c8a6e10",
+    "projects": [
+      "storefront"
+    ],
+    "dateCreated": "2026-10-28T09:31:00Z",
+    "dateReleased": "2026-10-28T09:32:11Z",
+    "commits": [
+      {
+        "id": "4be1d07c9a3f58e2b6d0c1a7e9f4b3d25c8a6e10",
+        "message": "Gift card redemption at checkout",
+        "dateCreated": "2026-10-28T09:21:00Z",
+        "author": {
+          "name": "Mateo Alvarez",
+          "email": "mateo@acme-shop.com"
+        }
+      }
+    ],
+    "deploys": [
+      {
+        "id": "8100105",
+        "environment": "preview",
+        "name": null,
+        "url": "https://storefront-1kt70nyzg-acme-shop.vercel.app",
+        "dateStarted": "2026-10-28T09:31:04Z",
+        "dateFinished": "2026-10-28T09:32:11Z"
+      }
+    ],
+    "_key": "4be1d07c9a3f58e2b6d0c1a7e9f4b3d25c8a6e10"
+  }
+]

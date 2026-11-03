@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"alerting_silences_write","arguments":{"comment":"CHG-7781 storage maintenance on pg-replica-2","created_by":"sre","ends_at":"2026-11-13T04:00:00Z","matchers":[{"name":"alertname","value":"PostgresReplicationLag"},{"name":"instance","value":"pg-replica-2"}],"operation":"create","starts_at":"2026-11-13T02:00:00Z"}}}

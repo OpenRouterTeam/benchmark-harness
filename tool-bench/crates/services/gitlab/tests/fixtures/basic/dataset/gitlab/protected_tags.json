@@ -1,0 +1,8 @@
+[
+  {
+    "_key": "acme/platform/api:v*",
+    "id": 22,
+    "name": "v*",
+    "create_access_level": 40
+  }
+]

@@ -1,0 +1,911 @@
+[
+  {
+    "_key": "kube-system/coredns",
+    "metadata": {
+      "name": "coredns",
+      "namespace": "kube-system",
+      "uid": "6801ad47-277d-4c9c-a457-259d27997b8c",
+      "resourceVersion": "41204",
+      "creationTimestamp": "2025-10-15T14:00:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "coredns",
+        "k8s-app": "kube-dns"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 2,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "coredns"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "coredns",
+            "k8s-app": "kube-dns"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "coredns",
+              "image": "registry.k8s.io/coredns/coredns:v1.12.0",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "70Mi"
+                },
+                "limits": {
+                  "memory": "170Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 53,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      },
+      "strategy": {
+        "type": "RollingUpdate",
+        "rollingUpdate": {
+          "maxUnavailable": "25%",
+          "maxSurge": "25%"
+        }
+      },
+      "revisionHistoryLimit": 10,
+      "progressDeadlineSeconds": 600
+    },
+    "status": {
+      "observedGeneration": 1,
+      "replicas": 2,
+      "updatedReplicas": 2,
+      "readyReplicas": 2,
+      "availableReplicas": 2,
+      "conditions": [
+        {
+          "type": "Available",
+          "status": "True",
+          "lastUpdateTime": "2026-10-28T14:00:00Z",
+          "lastTransitionTime": "2026-10-28T14:00:00Z",
+          "reason": "MinimumReplicasAvailable",
+          "message": "Deployment has minimum availability."
+        },
+        {
+          "type": "Progressing",
+          "status": "True",
+          "lastUpdateTime": "2026-10-28T14:00:00Z",
+          "lastTransitionTime": "2025-10-15T14:00:00Z",
+          "reason": "NewReplicaSetAvailable",
+          "message": "ReplicaSet \"coredns-fq7th5455q\" has successfully progressed."
+        }
+      ]
+    }
+  },
+  {
+    "_key": "kube-system/metrics-server",
+    "metadata": {
+      "name": "metrics-server",
+      "namespace": "kube-system",
+      "uid": "b4e14320-6831-4fb5-a784-a60602739ef0",
+      "resourceVersion": "41272",
+      "creationTimestamp": "2025-10-15T14:00:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "metrics-server",
+        "k8s-app": "metrics-server"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 1,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "metrics-server"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "metrics-server",
+            "k8s-app": "metrics-server"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "metrics-server",
+              "image": "registry.k8s.io/metrics-server/metrics-server:v0.7.2",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "200Mi"
+                },
+                "limits": {
+                  "memory": "400Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 10250,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      },
+      "strategy": {
+        "type": "RollingUpdate",
+        "rollingUpdate": {
+          "maxUnavailable": "25%",
+          "maxSurge": "25%"
+        }
+      },
+      "revisionHistoryLimit": 10,
+      "progressDeadlineSeconds": 600
+    },
+    "status": {
+      "observedGeneration": 1,
+      "replicas": 1,
+      "updatedReplicas": 1,
+      "readyReplicas": 1,
+      "availableReplicas": 1,
+      "conditions": [
+        {
+          "type": "Available",
+          "status": "True",
+          "lastUpdateTime": "2026-10-28T14:00:00Z",
+          "lastTransitionTime": "2026-10-28T14:00:00Z",
+          "reason": "MinimumReplicasAvailable",
+          "message": "Deployment has minimum availability."
+        },
+        {
+          "type": "Progressing",
+          "status": "True",
+          "lastUpdateTime": "2026-10-28T14:00:00Z",
+          "lastTransitionTime": "2025-10-15T14:00:00Z",
+          "reason": "NewReplicaSetAvailable",
+          "message": "ReplicaSet \"metrics-server-52pzb89fg\" has successfully progressed."
+        }
+      ]
+    }
+  },
+  {
+    "_key": "shop-prod/checkout",
+    "metadata": {
+      "name": "checkout",
+      "namespace": "shop-prod",
+      "uid": "67feaa03-727f-434e-ad4f-1a87c645e3ba",
+      "resourceVersion": "41425",
+      "creationTimestamp": "2026-08-31T14:00:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "checkout",
+        "team": "shop"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 3,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "checkout"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "checkout",
+            "team": "shop"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "checkout",
+              "image": "ghcr.io/tidewater/checkout:4.18.2",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "256Mi"
+                },
+                "limits": {
+                  "memory": "512Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 8080,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      },
+      "strategy": {
+        "type": "RollingUpdate",
+        "rollingUpdate": {
+          "maxUnavailable": "25%",
+          "maxSurge": "25%"
+        }
+      },
+      "revisionHistoryLimit": 10,
+      "progressDeadlineSeconds": 600
+    },
+    "status": {
+      "observedGeneration": 1,
+      "replicas": 3,
+      "updatedReplicas": 3,
+      "readyReplicas": 3,
+      "availableReplicas": 3,
+      "conditions": [
+        {
+          "type": "Available",
+          "status": "True",
+          "lastUpdateTime": "2026-10-28T14:00:00Z",
+          "lastTransitionTime": "2026-10-28T14:00:00Z",
+          "reason": "MinimumReplicasAvailable",
+          "message": "Deployment has minimum availability."
+        },
+        {
+          "type": "Progressing",
+          "status": "True",
+          "lastUpdateTime": "2026-10-28T14:00:00Z",
+          "lastTransitionTime": "2026-08-31T14:00:00Z",
+          "reason": "NewReplicaSetAvailable",
+          "message": "ReplicaSet \"checkout-tscdrh8t48\" has successfully progressed."
+        }
+      ]
+    }
+  },
+  {
+    "_key": "shop-prod/checkout-worker",
+    "metadata": {
+      "name": "checkout-worker",
+      "namespace": "shop-prod",
+      "uid": "15c2883f-79c0-478a-a596-320b1f0ecfb4",
+      "resourceVersion": "41527",
+      "creationTimestamp": "2026-08-31T14:00:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "checkout-worker",
+        "team": "shop"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 2,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "checkout-worker"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "checkout-worker",
+            "team": "shop"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "checkout-worker",
+              "image": "ghcr.io/tidewater/checkout-worker:4.18.2",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "256Mi"
+                },
+                "limits": {
+                  "memory": "512Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 8080,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      },
+      "strategy": {
+        "type": "RollingUpdate",
+        "rollingUpdate": {
+          "maxUnavailable": "25%",
+          "maxSurge": "25%"
+        }
+      },
+      "revisionHistoryLimit": 10,
+      "progressDeadlineSeconds": 600
+    },
+    "status": {
+      "observedGeneration": 1,
+      "replicas": 2,
+      "updatedReplicas": 2,
+      "readyReplicas": 2,
+      "availableReplicas": 2,
+      "conditions": [
+        {
+          "type": "Available",
+          "status": "True",
+          "lastUpdateTime": "2026-10-28T14:00:00Z",
+          "lastTransitionTime": "2026-10-28T14:00:00Z",
+          "reason": "MinimumReplicasAvailable",
+          "message": "Deployment has minimum availability."
+        },
+        {
+          "type": "Progressing",
+          "status": "True",
+          "lastUpdateTime": "2026-10-28T14:00:00Z",
+          "lastTransitionTime": "2026-08-31T14:00:00Z",
+          "reason": "NewReplicaSetAvailable",
+          "message": "ReplicaSet \"checkout-worker-qmw92xpzvg\" has successfully progressed."
+        }
+      ]
+    }
+  },
+  {
+    "_key": "shop-prod/cart",
+    "metadata": {
+      "name": "cart",
+      "namespace": "shop-prod",
+      "uid": "36b0f6e8-a696-4a7f-ad3d-b73e2929d535",
+      "resourceVersion": "41612",
+      "creationTimestamp": "2026-08-31T14:00:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "cart",
+        "team": "shop"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 3,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "cart"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "cart",
+            "team": "shop"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "cart",
+              "image": "ghcr.io/tidewater/cart:3.4.0",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "256Mi"
+                },
+                "limits": {
+                  "memory": "512Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 8080,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      },
+      "strategy": {
+        "type": "RollingUpdate",
+        "rollingUpdate": {
+          "maxUnavailable": "25%",
+          "maxSurge": "25%"
+        }
+      },
+      "revisionHistoryLimit": 10,
+      "progressDeadlineSeconds": 600
+    },
+    "status": {
+      "observedGeneration": 1,
+      "replicas": 3,
+      "updatedReplicas": 3,
+      "readyReplicas": 3,
+      "availableReplicas": 3,
+      "conditions": [
+        {
+          "type": "Available",
+          "status": "True",
+          "lastUpdateTime": "2026-10-28T14:00:00Z",
+          "lastTransitionTime": "2026-10-28T14:00:00Z",
+          "reason": "MinimumReplicasAvailable",
+          "message": "Deployment has minimum availability."
+        },
+        {
+          "type": "Progressing",
+          "status": "True",
+          "lastUpdateTime": "2026-10-28T14:00:00Z",
+          "lastTransitionTime": "2026-08-31T14:00:00Z",
+          "reason": "NewReplicaSetAvailable",
+          "message": "ReplicaSet \"cart-w7sftqsz9\" has successfully progressed."
+        }
+      ]
+    }
+  },
+  {
+    "_key": "shop-prod/catalog",
+    "metadata": {
+      "name": "catalog",
+      "namespace": "shop-prod",
+      "uid": "2e3c70ce-9bd9-4712-aa8b-69fbe4d1d0c8",
+      "resourceVersion": "41714",
+      "creationTimestamp": "2026-08-31T14:00:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "catalog",
+        "team": "shop"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 4,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "catalog"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "catalog",
+            "team": "shop"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "catalog",
+              "image": "ghcr.io/tidewater/catalog:7.1.1",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "256Mi"
+                },
+                "limits": {
+                  "memory": "1Gi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 8080,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      },
+      "strategy": {
+        "type": "RollingUpdate",
+        "rollingUpdate": {
+          "maxUnavailable": "25%",
+          "maxSurge": "25%"
+        }
+      },
+      "revisionHistoryLimit": 10,
+      "progressDeadlineSeconds": 600
+    },
+    "status": {
+      "observedGeneration": 1,
+      "replicas": 4,
+      "updatedReplicas": 4,
+      "readyReplicas": 4,
+      "availableReplicas": 4,
+      "conditions": [
+        {
+          "type": "Available",
+          "status": "True",
+          "lastUpdateTime": "2026-10-28T14:00:00Z",
+          "lastTransitionTime": "2026-10-28T14:00:00Z",
+          "reason": "MinimumReplicasAvailable",
+          "message": "Deployment has minimum availability."
+        },
+        {
+          "type": "Progressing",
+          "status": "True",
+          "lastUpdateTime": "2026-10-28T14:00:00Z",
+          "lastTransitionTime": "2026-08-31T14:00:00Z",
+          "reason": "NewReplicaSetAvailable",
+          "message": "ReplicaSet \"catalog-4gwznbr4fb\" has successfully progressed."
+        }
+      ]
+    }
+  },
+  {
+    "_key": "shop-staging/checkout",
+    "metadata": {
+      "name": "checkout",
+      "namespace": "shop-staging",
+      "uid": "ce3d223a-7a1b-425c-a66b-eb1d43db6049",
+      "resourceVersion": "41833",
+      "creationTimestamp": "2026-08-31T14:00:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "checkout",
+        "team": "shop"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 1,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "checkout"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "checkout",
+            "team": "shop"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "checkout",
+              "image": "ghcr.io/tidewater/checkout:4.19.0-rc.1",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "256Mi"
+                },
+                "limits": {
+                  "memory": "512Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 8080,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      },
+      "strategy": {
+        "type": "RollingUpdate",
+        "rollingUpdate": {
+          "maxUnavailable": "25%",
+          "maxSurge": "25%"
+        }
+      },
+      "revisionHistoryLimit": 10,
+      "progressDeadlineSeconds": 600
+    },
+    "status": {
+      "observedGeneration": 1,
+      "replicas": 1,
+      "updatedReplicas": 1,
+      "readyReplicas": 1,
+      "availableReplicas": 1,
+      "conditions": [
+        {
+          "type": "Available",
+          "status": "True",
+          "lastUpdateTime": "2026-10-28T14:00:00Z",
+          "lastTransitionTime": "2026-10-28T14:00:00Z",
+          "reason": "MinimumReplicasAvailable",
+          "message": "Deployment has minimum availability."
+        },
+        {
+          "type": "Progressing",
+          "status": "True",
+          "lastUpdateTime": "2026-10-28T14:00:00Z",
+          "lastTransitionTime": "2026-08-31T14:00:00Z",
+          "reason": "NewReplicaSetAvailable",
+          "message": "ReplicaSet \"checkout-776spq2b8h\" has successfully progressed."
+        }
+      ]
+    }
+  },
+  {
+    "_key": "shop-staging/cart",
+    "metadata": {
+      "name": "cart",
+      "namespace": "shop-staging",
+      "uid": "8395cb56-0b22-40d6-a771-b379776a5b59",
+      "resourceVersion": "41901",
+      "creationTimestamp": "2026-08-31T14:00:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "cart",
+        "team": "shop"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 1,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "cart"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "cart",
+            "team": "shop"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "cart",
+              "image": "ghcr.io/tidewater/cart:3.5.0-rc.2",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "256Mi"
+                },
+                "limits": {
+                  "memory": "512Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 8080,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      },
+      "strategy": {
+        "type": "RollingUpdate",
+        "rollingUpdate": {
+          "maxUnavailable": "25%",
+          "maxSurge": "25%"
+        }
+      },
+      "revisionHistoryLimit": 10,
+      "progressDeadlineSeconds": 600
+    },
+    "status": {
+      "observedGeneration": 1,
+      "replicas": 1,
+      "updatedReplicas": 1,
+      "readyReplicas": 1,
+      "availableReplicas": 1,
+      "conditions": [
+        {
+          "type": "Available",
+          "status": "True",
+          "lastUpdateTime": "2026-10-28T14:00:00Z",
+          "lastTransitionTime": "2026-10-28T14:00:00Z",
+          "reason": "MinimumReplicasAvailable",
+          "message": "Deployment has minimum availability."
+        },
+        {
+          "type": "Progressing",
+          "status": "True",
+          "lastUpdateTime": "2026-10-28T14:00:00Z",
+          "lastTransitionTime": "2026-08-31T14:00:00Z",
+          "reason": "NewReplicaSetAvailable",
+          "message": "ReplicaSet \"cart-74lxsst29\" has successfully progressed."
+        }
+      ]
+    }
+  },
+  {
+    "_key": "payments/payments-api",
+    "metadata": {
+      "name": "payments-api",
+      "namespace": "payments",
+      "uid": "c5ceb222-e1e8-40b8-a1bf-f2fa3dcd72dc",
+      "resourceVersion": "41969",
+      "creationTimestamp": "2026-08-31T14:00:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "payments-api",
+        "team": "shop"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 3,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "payments-api"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "payments-api",
+            "team": "shop"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "payments-api",
+              "image": "ghcr.io/tidewater/payments-api:2.14.1",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "256Mi"
+                },
+                "limits": {
+                  "memory": "512Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 8080,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      },
+      "strategy": {
+        "type": "RollingUpdate",
+        "rollingUpdate": {
+          "maxUnavailable": "25%",
+          "maxSurge": "25%"
+        }
+      },
+      "revisionHistoryLimit": 10,
+      "progressDeadlineSeconds": 600
+    },
+    "status": {
+      "observedGeneration": 1,
+      "replicas": 3,
+      "updatedReplicas": 3,
+      "readyReplicas": 3,
+      "availableReplicas": 3,
+      "conditions": [
+        {
+          "type": "Available",
+          "status": "True",
+          "lastUpdateTime": "2026-10-28T14:00:00Z",
+          "lastTransitionTime": "2026-10-28T14:00:00Z",
+          "reason": "MinimumReplicasAvailable",
+          "message": "Deployment has minimum availability."
+        },
+        {
+          "type": "Progressing",
+          "status": "True",
+          "lastUpdateTime": "2026-10-28T14:00:00Z",
+          "lastTransitionTime": "2026-08-31T14:00:00Z",
+          "reason": "NewReplicaSetAvailable",
+          "message": "ReplicaSet \"payments-api-86zf47v9z\" has successfully progressed."
+        }
+      ]
+    }
+  }
+]

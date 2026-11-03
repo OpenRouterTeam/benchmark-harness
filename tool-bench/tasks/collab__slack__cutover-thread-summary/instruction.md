@@ -1,0 +1,1 @@
+The thread in our Postgres migration channel about the production cutover window went back and forth a few times. Please reply in that thread with a short summary of the window that was finally agreed, so people don't have to read the whole thing. Give the date as YYYY-MM-DD and the times in 24-hour Central time, and mention who is leading the cutover.

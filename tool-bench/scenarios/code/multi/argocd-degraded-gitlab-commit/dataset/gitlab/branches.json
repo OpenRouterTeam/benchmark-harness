@@ -1,0 +1,20 @@
+[
+  {
+    "_key": "lumen-retail/storefront/checkout-web:main",
+    "name": "main",
+    "commit": "d05b8e3a7c1f49e2b6d0a3c8f5e1b7d29c4a6f03",
+    "base": null
+  },
+  {
+    "_key": "lumen-retail/storefront/storefront-deploy:main",
+    "name": "main",
+    "commit": "a23f2a7b21f788c07d95ceaeb529e54b7ae3dbcd",
+    "base": null
+  },
+  {
+    "_key": "lumen-retail/storefront/catalog-api:main",
+    "name": "main",
+    "commit": "7b2e9d4c1a6f30e85d2b7c9a4e1f6d03b8c5a2e7",
+    "base": null
+  }
+]

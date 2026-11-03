@@ -1,0 +1,60 @@
+{
+  "state": [
+    {
+      "pointer": "/services/slack/posted/D09KIMDM4X1#1/text",
+      "equals": null,
+      "exists": null,
+      "contains": "2026-11-10",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/slack/posted/D0RIVDM2KQ8#1",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/slack/posted/C06RELEASE1#1",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "slack",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "slack_send_message"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "slack",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "channel_id": "U04ARIVERA9"
+        },
+        "name": "slack_send_message"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

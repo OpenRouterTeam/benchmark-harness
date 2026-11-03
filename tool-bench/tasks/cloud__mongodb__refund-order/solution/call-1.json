@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"update-many","arguments":{"collection":"orders","connectionId":"preconfigured","database":"shop","filter":{"orderNumber":10482},"update":{"$set":{"refund.amount":214.5,"refund.reason":"damaged in transit","status":"refunded"}}}}}

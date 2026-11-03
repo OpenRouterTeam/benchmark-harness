@@ -1,0 +1,20 @@
+[
+  {
+    "id": "10500",
+    "type": "10000",
+    "inward": "PAY-119",
+    "outward": "PAY-117"
+  },
+  {
+    "id": "10501",
+    "type": "10003",
+    "inward": "PAY-120",
+    "outward": "PAY-116"
+  },
+  {
+    "id": "10502",
+    "type": "10000",
+    "inward": "PAY-122",
+    "outward": "PAY-121"
+  }
+]

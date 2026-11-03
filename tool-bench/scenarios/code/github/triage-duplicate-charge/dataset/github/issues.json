@@ -1,0 +1,107 @@
+[
+  {
+    "_key": "octo-org/payments-api#7",
+    "id": 7107,
+    "node_id": "I_kwDO20E80F123982",
+    "number": 7,
+    "title": "Duplicate charge after network blip",
+    "body": "During the 2025-11-18 network incident some cards were charged twice. Root cause: the client retried with a fresh idempotency key.",
+    "user": "hubot",
+    "labels": [
+      "bug",
+      "customer-reported"
+    ],
+    "assignees": [
+      "priya"
+    ],
+    "milestone": null,
+    "state": "closed",
+    "state_reason": "completed",
+    "locked": false,
+    "created_at": "2025-11-18T10:00:00Z",
+    "updated_at": "2025-11-21T09:00:00Z",
+    "closed_at": "2025-11-21T09:00:00Z"
+  },
+  {
+    "_key": "octo-org/payments-api#12",
+    "id": 7112,
+    "node_id": "I_kwDOB6F06EA4C8E7",
+    "number": 12,
+    "title": "Customers charged twice when card authorisation is retried",
+    "body": "Support ticket #48213 and 6 similar: when the gateway times out, the retry creates a second authorisation instead of reusing the first one. Customers see two holds and sometimes two captures.\n\nStarted after the retry policy change on 2026-03-01.",
+    "user": "hubot",
+    "labels": [
+      "bug",
+      "customer-reported"
+    ],
+    "assignees": [],
+    "milestone": null,
+    "state": "open",
+    "state_reason": null,
+    "locked": false,
+    "created_at": "2026-03-13T09:40:00Z",
+    "updated_at": "2026-03-13T09:40:00Z",
+    "closed_at": null
+  },
+  {
+    "_key": "octo-org/payments-api#14",
+    "id": 7114,
+    "node_id": "I_kwDO6DE1B8833E93",
+    "number": 14,
+    "title": "Duplicate idempotency keys in request logs",
+    "body": "The structured logs show the same idempotency key on unrelated requests; probably a logging bug, not a functional one.",
+    "user": "octocat",
+    "labels": [
+      "observability"
+    ],
+    "assignees": [],
+    "milestone": null,
+    "state": "open",
+    "state_reason": null,
+    "locked": false,
+    "created_at": "2026-03-10T12:00:00Z",
+    "updated_at": "2026-03-10T12:00:00Z",
+    "closed_at": null
+  },
+  {
+    "_key": "octo-org/billing-worker#3",
+    "id": 7203,
+    "node_id": "I_kwDOFCE1F3734C31",
+    "number": 3,
+    "title": "Duplicate invoice emails sent when the mailer retries",
+    "body": "If the SMTP relay is slow, the dunning job retries and customers get the same invoice email twice. No double charges.",
+    "user": "hubot",
+    "labels": [
+      "bug",
+      "customer-reported"
+    ],
+    "assignees": [],
+    "milestone": null,
+    "state": "open",
+    "state_reason": null,
+    "locked": false,
+    "created_at": "2026-03-09T11:00:00Z",
+    "updated_at": "2026-03-09T11:00:00Z",
+    "closed_at": null
+  },
+  {
+    "_key": "octo-org/web#88",
+    "id": 7288,
+    "node_id": "I_kwDO0AF075FD9A0C",
+    "number": 88,
+    "title": "Pay button can be double-clicked on slow connections",
+    "body": "The checkout button isn't disabled after the first click. The API rejects the second submit thanks to idempotency keys, but users see an error.",
+    "user": "lin",
+    "labels": [
+      "bug"
+    ],
+    "assignees": [],
+    "milestone": null,
+    "state": "open",
+    "state_reason": null,
+    "locked": false,
+    "created_at": "2026-03-05T15:00:00Z",
+    "updated_at": "2026-03-05T15:00:00Z",
+    "closed_at": null
+  }
+]

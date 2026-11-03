@@ -1,0 +1,184 @@
+[
+ {
+  "id": "mod-nUZfGDqZmPoXZBiJ",
+  "organization": "acme-platform",
+  "namespace": "acme-platform",
+  "name": "ecs-service",
+  "provider": "aws",
+  "registry-name": "private",
+  "status": "setup_complete",
+  "publishing-mechanism": "git_tag",
+  "created-at": "2025-02-10T10:00:00Z",
+  "updated-at": "2026-09-01T10:00:00Z",
+  "version-statuses": [
+   {
+    "version": "3.2.0",
+    "status": "ok"
+   },
+   {
+    "version": "3.1.4",
+    "status": "ok"
+   }
+  ],
+  "vcs-repo": {
+   "branch": "",
+   "ingress-submodules": false,
+   "identifier": "acme/terraform-aws-ecs-service",
+   "display-identifier": "acme/terraform-aws-ecs-service",
+   "oauth-token-id": "ot-5qR8wXmN2vPa7Ldk",
+   "repository-http-url": "https://github.com/acme/terraform-aws-ecs-service",
+   "service-provider": "github",
+   "webhook-url": "https://app.terraform.io/webhooks/vcs/6b3c",
+   "tags": true,
+   "tags-regex": null
+  },
+  "details": {
+   "description": "Opinionated ECS Fargate service with ALB target group, autoscaling and Datadog sidecar",
+   "versions": [
+    "3.1.4",
+    "3.2.0"
+   ],
+   "downloads": 412,
+   "root": {
+    "readme": "# ecs-service\n\nACME's standard ECS Fargate service module.\n\n## Usage\n\n```hcl\nmodule \"checkout\" {\n  source  = \"app.terraform.io/acme-platform/ecs-service/aws\"\n  version = \"~> 3.2\"\n\n  name          = \"checkout\"\n  image         = \"acme/checkout:2.14.0\"\n  desired_count = 2\n}\n```\n",
+    "inputs": [
+     {
+      "name": "name",
+      "type": "string",
+      "description": "Service name",
+      "default": null,
+      "required": true
+     },
+     {
+      "name": "image",
+      "type": "string",
+      "description": "Container image",
+      "default": null,
+      "required": true
+     },
+     {
+      "name": "desired_count",
+      "type": "number",
+      "description": "Number of tasks",
+      "default": 2,
+      "required": false
+     },
+     {
+      "name": "cpu",
+      "type": "number",
+      "description": "Task CPU units",
+      "default": 512,
+      "required": false
+     },
+     {
+      "name": "environment",
+      "type": "string",
+      "description": "Deployment environment",
+      "default": null,
+      "required": true
+     }
+    ],
+    "outputs": [
+     {
+      "name": "service_name",
+      "description": "ECS service name"
+     },
+     {
+      "name": "target_group_arn",
+      "description": "ALB target group ARN"
+     }
+    ],
+    "provider_dependencies": [
+     {
+      "name": "aws",
+      "namespace": "hashicorp",
+      "source": "hashicorp/aws",
+      "version": ">= 5.40"
+     }
+    ],
+    "resources": [
+     {
+      "name": "this",
+      "type": "aws_ecs_service"
+     },
+     {
+      "name": "this",
+      "type": "aws_ecs_task_definition"
+     },
+     {
+      "name": "this",
+      "type": "aws_lb_target_group"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "id": "mod-a724YWoD6sPLLeup",
+  "organization": "acme-platform",
+  "namespace": "acme-platform",
+  "name": "vpc-baseline",
+  "provider": "aws",
+  "registry-name": "private",
+  "status": "setup_complete",
+  "publishing-mechanism": "git_tag",
+  "created-at": "2024-08-01T10:00:00Z",
+  "updated-at": "2026-07-15T10:00:00Z",
+  "version-statuses": [
+   {
+    "version": "2.0.1",
+    "status": "ok"
+   }
+  ],
+  "vcs-repo": {
+   "branch": "",
+   "ingress-submodules": false,
+   "identifier": "acme/terraform-aws-vpc-baseline",
+   "display-identifier": "acme/terraform-aws-vpc-baseline",
+   "oauth-token-id": "ot-5qR8wXmN2vPa7Ldk",
+   "repository-http-url": "https://github.com/acme/terraform-aws-vpc-baseline",
+   "service-provider": "github",
+   "webhook-url": "https://app.terraform.io/webhooks/vcs/91f0",
+   "tags": true,
+   "tags-regex": null
+  },
+  "details": {
+   "description": "Wraps terraform-aws-modules/vpc with ACME CIDR allocation and flow logs",
+   "versions": [
+    "2.0.1"
+   ],
+   "downloads": 57,
+   "root": {
+    "inputs": [
+     {
+      "name": "name",
+      "type": "string",
+      "description": "VPC name",
+      "default": null,
+      "required": true
+     },
+     {
+      "name": "cidr_block",
+      "type": "string",
+      "description": "VPC CIDR from IPAM",
+      "default": null,
+      "required": true
+     }
+    ],
+    "outputs": [
+     {
+      "name": "vpc_id",
+      "description": "VPC ID"
+     }
+    ],
+    "dependencies": [
+     {
+      "name": "vpc",
+      "source": "terraform-aws-modules/vpc/aws",
+      "version": "5.16.0"
+     }
+    ]
+   }
+  }
+ }
+]

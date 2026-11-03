@@ -1,0 +1,160 @@
+[
+  {
+    "_key": "octo-org/payments-api",
+    "id": 1296301,
+    "name": "payments-api",
+    "full_name": "octo-org/payments-api",
+    "owner": "octo-org",
+    "private": true,
+    "visibility": "private",
+    "description": "Payments service: charges, refunds, webhooks",
+    "language": "Go",
+    "topics": [
+      "payments",
+      "go"
+    ],
+    "default_branch": "main",
+    "created_at": "2024-03-01T00:00:00Z",
+    "updated_at": "2026-03-13T08:00:00Z",
+    "pushed_at": "2026-03-13T08:00:00Z",
+    "stargazers_count": 3,
+    "forks_count": 0,
+    "has_issues": true,
+    "has_discussions": false,
+    "collaborators": [
+      {
+        "login": "mona",
+        "permission": "admin"
+      },
+      {
+        "login": "jdoe",
+        "permission": "write"
+      },
+      {
+        "login": "priya",
+        "permission": "write"
+      },
+      {
+        "login": "sam",
+        "permission": "write"
+      },
+      {
+        "login": "lin",
+        "permission": "write"
+      },
+      {
+        "login": "octocat",
+        "permission": "maintain"
+      },
+      {
+        "login": "hubot",
+        "permission": "triage"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/billing-worker",
+    "id": 1296302,
+    "name": "billing-worker",
+    "full_name": "octo-org/billing-worker",
+    "owner": "octo-org",
+    "private": true,
+    "visibility": "private",
+    "description": "Invoice generation and dunning jobs",
+    "language": "Go",
+    "topics": [
+      "billing",
+      "payments"
+    ],
+    "default_branch": "main",
+    "created_at": "2024-04-01T00:00:00Z",
+    "updated_at": "2026-03-09T12:00:00Z",
+    "pushed_at": "2026-03-09T12:00:00Z",
+    "stargazers_count": 3,
+    "forks_count": 0,
+    "has_issues": true,
+    "has_discussions": false,
+    "collaborators": [
+      {
+        "login": "mona",
+        "permission": "admin"
+      },
+      {
+        "login": "jdoe",
+        "permission": "write"
+      },
+      {
+        "login": "priya",
+        "permission": "write"
+      },
+      {
+        "login": "sam",
+        "permission": "write"
+      },
+      {
+        "login": "lin",
+        "permission": "write"
+      },
+      {
+        "login": "octocat",
+        "permission": "maintain"
+      },
+      {
+        "login": "hubot",
+        "permission": "triage"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/web",
+    "id": 1296310,
+    "name": "web",
+    "full_name": "octo-org/web",
+    "owner": "octo-org",
+    "private": true,
+    "visibility": "private",
+    "description": "Marketing site and customer dashboard",
+    "language": "TypeScript",
+    "topics": [
+      "web"
+    ],
+    "default_branch": "main",
+    "created_at": "2024-06-01T00:00:00Z",
+    "updated_at": "2026-03-13T11:00:00Z",
+    "pushed_at": "2026-03-13T11:00:00Z",
+    "stargazers_count": 3,
+    "forks_count": 0,
+    "has_issues": true,
+    "has_discussions": false,
+    "collaborators": [
+      {
+        "login": "mona",
+        "permission": "admin"
+      },
+      {
+        "login": "jdoe",
+        "permission": "write"
+      },
+      {
+        "login": "priya",
+        "permission": "write"
+      },
+      {
+        "login": "sam",
+        "permission": "write"
+      },
+      {
+        "login": "lin",
+        "permission": "write"
+      },
+      {
+        "login": "octocat",
+        "permission": "maintain"
+      },
+      {
+        "login": "hubot",
+        "permission": "triage"
+      }
+    ]
+  }
+]

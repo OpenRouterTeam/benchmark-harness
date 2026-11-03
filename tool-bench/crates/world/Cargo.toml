@@ -1,0 +1,49 @@
+[package]
+name = "world"
+edition.workspace = true
+version.workspace = true
+publish.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+axum.workspace = true
+axum-server.workspace = true
+rcgen.workspace = true
+mock-core.workspace = true
+mock-argocd.workspace = true
+mock-aws.workspace = true
+mock-brave.workspace = true
+mock-cloudflare.workspace = true
+mock-datadog.workspace = true
+mock-elasticsearch.workspace = true
+mock-exa.workspace = true
+mock-firecrawl.workspace = true
+mock-github.workspace = true
+mock-gitlab.workspace = true
+mock-google.workspace = true
+mock-grafana.workspace = true
+mock-hubspot.workspace = true
+mock-jira.workspace = true
+mock-kubernetes.workspace = true
+mock-linear.workspace = true
+mock-mongodb.workspace = true
+mock-notion.workspace = true
+mock-okta.workspace = true
+mock-pagerduty.workspace = true
+mock-salesforce.workspace = true
+mock-sentry.workspace = true
+mock-shopify.workspace = true
+mock-slack.workspace = true
+mock-stripe.workspace = true
+mock-supabase.workspace = true
+mock-tavily.workspace = true
+mock-terraform.workspace = true
+mock-vercel.workspace = true
+mock-zendesk.workspace = true
+serde_json.workspace = true
+tower.workspace = true
+reqwest.workspace = true
+tokio.workspace = true
+
+[dev-dependencies]
+catalog.workspace = true

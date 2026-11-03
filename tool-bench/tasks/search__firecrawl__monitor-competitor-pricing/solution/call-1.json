@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"firecrawl_monitor_create","arguments":{"email":"pricing-intel@contoso.example","goal":"Alert when Fabrikam changes any plan price or plan limit.","includeDiffs":true,"name":"Fabrikam pricing","page":"https://www.fabrikam.io/pricing","scheduleText":"daily","timezone":"UTC"}}}

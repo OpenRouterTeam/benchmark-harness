@@ -1,0 +1,961 @@
+{
+  "name": "argocd",
+  "server_info": {
+    "name": "argocd-mcp",
+    "version": "0.0.0"
+  },
+  "protocol_version": "2025-06-18",
+  "tools": [
+    {
+      "name": "list_applications",
+      "description": "list_applications returns list of applications",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "search": {
+            "type": "string",
+            "description": "Search applications by name. This is a partial match on the application name and does not support glob patterns (e.g. \"*\"). Optional."
+          },
+          "limit": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "description": "Maximum number of applications to return. Use this to reduce token usage when there are many applications. Optional."
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of applications to skip before returning results. Use with limit for pagination. Optional."
+          },
+          "argocdBaseUrl": {
+            "type": "string",
+            "description": "ArgoCD base URL to use for this call (e.g. \"https://argocd.example.com\"). Overrides the server default. Optional if the server is configured with a default base URL (x-argocd-base-url header or ARGOCD_BASE_URL env var); otherwise required."
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "list_clusters",
+      "description": "list_clusters returns list of clusters registered with ArgoCD",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "server": {
+            "type": "string",
+            "description": "Filter clusters by server URL. Optional."
+          },
+          "name": {
+            "type": "string",
+            "description": "Filter clusters by name. Optional."
+          },
+          "argocdBaseUrl": {
+            "type": "string",
+            "description": "ArgoCD base URL to use for this call (e.g. \"https://argocd.example.com\"). Overrides the server default. Optional if the server is configured with a default base URL (x-argocd-base-url header or ARGOCD_BASE_URL env var); otherwise required."
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_application",
+      "description": "get_application returns application by application name. Optionally specify the application namespace to get applications from non-default namespaces.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "applicationName": {
+            "type": "string"
+          },
+          "applicationNamespace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The namespace where the ArgoCD application resource will be created.\n     This is the namespace of the Application resource itself, not the destination namespace for the application's resources.\n     You can specify any valid Kubernetes namespace (e.g., 'argocd', 'argocd-apps', 'my-namespace', etc.).\n     The default ArgoCD namespace is typically 'argocd', but you can use any namespace you prefer."
+          },
+          "argocdBaseUrl": {
+            "type": "string",
+            "description": "ArgoCD base URL to use for this call (e.g. \"https://argocd.example.com\"). Overrides the server default. Optional if the server is configured with a default base URL (x-argocd-base-url header or ARGOCD_BASE_URL env var); otherwise required."
+          }
+        },
+        "required": [
+          "applicationName"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_appproject",
+      "description": "get_appproject returns an ArgoCD AppProject (project) by its name. AppProjects provide a logical grouping of applications and define allowed sources, destinations, cluster/repository whitelists, and RBAC roles.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectName": {
+            "type": "string",
+            "description": "The name of the ArgoCD AppProject to fetch."
+          },
+          "argocdBaseUrl": {
+            "type": "string",
+            "description": "ArgoCD base URL to use for this call (e.g. \"https://argocd.example.com\"). Overrides the server default. Optional if the server is configured with a default base URL (x-argocd-base-url header or ARGOCD_BASE_URL env var); otherwise required."
+          }
+        },
+        "required": [
+          "projectName"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_application_resource_tree",
+      "description": "get_application_resource_tree returns resource tree for application by application name. Optionally specify the application namespace to get resource tree from applications in non-default namespaces.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "applicationName": {
+            "type": "string"
+          },
+          "applicationNamespace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The namespace where the application is located. Required if application is not in the default namespace."
+          },
+          "argocdBaseUrl": {
+            "type": "string",
+            "description": "ArgoCD base URL to use for this call (e.g. \"https://argocd.example.com\"). Overrides the server default. Optional if the server is configured with a default base URL (x-argocd-base-url header or ARGOCD_BASE_URL env var); otherwise required."
+          }
+        },
+        "required": [
+          "applicationName"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_application_managed_resources",
+      "description": "get_application_managed_resources returns managed resources for application by application name with optional filtering. Use filters to avoid token limits with large applications. Examples: kind=\"ConfigMap\" for config maps only, namespace=\"production\" for specific namespace, or combine multiple filters.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "applicationName": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "description": "Filter by Kubernetes resource kind (e.g., \"ConfigMap\", \"Secret\", \"Deployment\")"
+          },
+          "namespace": {
+            "type": "string",
+            "description": "Filter by Kubernetes namespace"
+          },
+          "name": {
+            "type": "string",
+            "description": "Filter by resource name"
+          },
+          "version": {
+            "type": "string",
+            "description": "Filter by resource API version"
+          },
+          "group": {
+            "type": "string",
+            "description": "Filter by API group"
+          },
+          "appNamespace": {
+            "type": "string",
+            "description": "Filter by Argo CD application namespace"
+          },
+          "project": {
+            "type": "string",
+            "description": "Filter by Argo CD project"
+          },
+          "argocdBaseUrl": {
+            "type": "string",
+            "description": "ArgoCD base URL to use for this call (e.g. \"https://argocd.example.com\"). Overrides the server default. Optional if the server is configured with a default base URL (x-argocd-base-url header or ARGOCD_BASE_URL env var); otherwise required."
+          }
+        },
+        "required": [
+          "applicationName"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_application_workload_logs",
+      "description": "get_application_workload_logs returns logs for application workload (Deployment, StatefulSet, Pod, etc.) by application name and resource ref and optionally container name",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "applicationName": {
+            "type": "string"
+          },
+          "applicationNamespace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The namespace where the ArgoCD application resource will be created.\n     This is the namespace of the Application resource itself, not the destination namespace for the application's resources.\n     You can specify any valid Kubernetes namespace (e.g., 'argocd', 'argocd-apps', 'my-namespace', etc.).\n     The default ArgoCD namespace is typically 'argocd', but you can use any namespace you prefer."
+          },
+          "resourceRef": {
+            "type": "object",
+            "properties": {
+              "uid": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string"
+              },
+              "namespace": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              },
+              "group": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "uid",
+              "kind",
+              "namespace",
+              "name",
+              "version",
+              "group"
+            ],
+            "additionalProperties": false
+          },
+          "container": {
+            "type": "string"
+          },
+          "argocdBaseUrl": {
+            "type": "string",
+            "description": "ArgoCD base URL to use for this call (e.g. \"https://argocd.example.com\"). Overrides the server default. Optional if the server is configured with a default base URL (x-argocd-base-url header or ARGOCD_BASE_URL env var); otherwise required."
+          }
+        },
+        "required": [
+          "applicationName",
+          "applicationNamespace",
+          "resourceRef",
+          "container"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_application_events",
+      "description": "get_application_events returns events for application by application name. Optionally specify the application namespace to get events from applications in non-default namespaces.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "applicationName": {
+            "type": "string"
+          },
+          "applicationNamespace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The namespace where the application is located. Required if application is not in the default namespace."
+          },
+          "argocdBaseUrl": {
+            "type": "string",
+            "description": "ArgoCD base URL to use for this call (e.g. \"https://argocd.example.com\"). Overrides the server default. Optional if the server is configured with a default base URL (x-argocd-base-url header or ARGOCD_BASE_URL env var); otherwise required."
+          }
+        },
+        "required": [
+          "applicationName"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_resource_events",
+      "description": "get_resource_events returns events for a resource that is managed by an application",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "applicationName": {
+            "type": "string"
+          },
+          "applicationNamespace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The namespace where the ArgoCD application resource will be created.\n     This is the namespace of the Application resource itself, not the destination namespace for the application's resources.\n     You can specify any valid Kubernetes namespace (e.g., 'argocd', 'argocd-apps', 'my-namespace', etc.).\n     The default ArgoCD namespace is typically 'argocd', but you can use any namespace you prefer."
+          },
+          "resourceUID": {
+            "type": "string"
+          },
+          "resourceNamespace": {
+            "type": "string"
+          },
+          "resourceName": {
+            "type": "string"
+          },
+          "argocdBaseUrl": {
+            "type": "string",
+            "description": "ArgoCD base URL to use for this call (e.g. \"https://argocd.example.com\"). Overrides the server default. Optional if the server is configured with a default base URL (x-argocd-base-url header or ARGOCD_BASE_URL env var); otherwise required."
+          }
+        },
+        "required": [
+          "applicationName",
+          "applicationNamespace",
+          "resourceUID",
+          "resourceNamespace",
+          "resourceName"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_resources",
+      "description": "get_resources return manifests for resources specified by resourceRefs. If resourceRefs is empty or not provided, fetches all resources managed by the application.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "applicationName": {
+            "type": "string"
+          },
+          "applicationNamespace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The namespace where the ArgoCD application resource will be created.\n     This is the namespace of the Application resource itself, not the destination namespace for the application's resources.\n     You can specify any valid Kubernetes namespace (e.g., 'argocd', 'argocd-apps', 'my-namespace', etc.).\n     The default ArgoCD namespace is typically 'argocd', but you can use any namespace you prefer."
+          },
+          "resourceRefs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "uid": {
+                  "type": "string"
+                },
+                "kind": {
+                  "type": "string"
+                },
+                "namespace": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "version": {
+                  "type": "string"
+                },
+                "group": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "uid",
+                "kind",
+                "namespace",
+                "name",
+                "version",
+                "group"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "argocdBaseUrl": {
+            "type": "string",
+            "description": "ArgoCD base URL to use for this call (e.g. \"https://argocd.example.com\"). Overrides the server default. Optional if the server is configured with a default base URL (x-argocd-base-url header or ARGOCD_BASE_URL env var); otherwise required."
+          }
+        },
+        "required": [
+          "applicationName",
+          "applicationNamespace"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_resource_actions",
+      "description": "get_resource_actions returns actions for a resource that is managed by an application",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "applicationName": {
+            "type": "string"
+          },
+          "applicationNamespace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The namespace where the ArgoCD application resource will be created.\n     This is the namespace of the Application resource itself, not the destination namespace for the application's resources.\n     You can specify any valid Kubernetes namespace (e.g., 'argocd', 'argocd-apps', 'my-namespace', etc.).\n     The default ArgoCD namespace is typically 'argocd', but you can use any namespace you prefer."
+          },
+          "resourceRef": {
+            "type": "object",
+            "properties": {
+              "uid": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string"
+              },
+              "namespace": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              },
+              "group": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "uid",
+              "kind",
+              "namespace",
+              "name",
+              "version",
+              "group"
+            ],
+            "additionalProperties": false
+          },
+          "argocdBaseUrl": {
+            "type": "string",
+            "description": "ArgoCD base URL to use for this call (e.g. \"https://argocd.example.com\"). Overrides the server default. Optional if the server is configured with a default base URL (x-argocd-base-url header or ARGOCD_BASE_URL env var); otherwise required."
+          }
+        },
+        "required": [
+          "applicationName",
+          "applicationNamespace",
+          "resourceRef"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "create_application",
+      "description": "create_application creates a new ArgoCD application in the specified namespace. The application.metadata.namespace field determines where the Application resource will be created (e.g., \"argocd\", \"argocd-apps\", or any custom namespace).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "application": {
+            "type": "object",
+            "properties": {
+              "metadata": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "namespace": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The namespace where the ArgoCD application resource will be created.\n     This is the namespace of the Application resource itself, not the destination namespace for the application's resources.\n     You can specify any valid Kubernetes namespace (e.g., 'argocd', 'argocd-apps', 'my-namespace', etc.).\n     The default ArgoCD namespace is typically 'argocd', but you can use any namespace you prefer."
+                  }
+                },
+                "required": [
+                  "name",
+                  "namespace"
+                ],
+                "additionalProperties": false
+              },
+              "spec": {
+                "type": "object",
+                "properties": {
+                  "project": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "properties": {
+                      "repoURL": {
+                        "type": "string"
+                      },
+                      "path": {
+                        "type": "string"
+                      },
+                      "targetRevision": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "repoURL",
+                      "path",
+                      "targetRevision"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "syncPolicy": {
+                    "type": "object",
+                    "properties": {
+                      "syncOptions": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "automated": {
+                        "type": "object",
+                        "properties": {
+                          "prune": {
+                            "type": "boolean"
+                          },
+                          "selfHeal": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "prune",
+                          "selfHeal"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "retry": {
+                        "type": "object",
+                        "properties": {
+                          "limit": {
+                            "type": "number"
+                          },
+                          "backoff": {
+                            "type": "object",
+                            "properties": {
+                              "duration": {
+                                "type": "string"
+                              },
+                              "maxDuration": {
+                                "type": "string"
+                              },
+                              "factor": {
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "duration",
+                              "maxDuration",
+                              "factor"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "limit",
+                          "backoff"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "syncOptions",
+                      "retry"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "destination": {
+                    "type": "object",
+                    "properties": {
+                      "server": {
+                        "type": "string"
+                      },
+                      "namespace": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false,
+                    "description": "The destination of the application.\n         Only one of server or name must be specified."
+                  }
+                },
+                "required": [
+                  "project",
+                  "source",
+                  "syncPolicy",
+                  "destination"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "metadata",
+              "spec"
+            ],
+            "additionalProperties": false
+          },
+          "argocdBaseUrl": {
+            "type": "string",
+            "description": "ArgoCD base URL to use for this call (e.g. \"https://argocd.example.com\"). Overrides the server default. Optional if the server is configured with a default base URL (x-argocd-base-url header or ARGOCD_BASE_URL env var); otherwise required."
+          }
+        },
+        "required": [
+          "application"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "update_application",
+      "description": "update_application updates application",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "applicationName": {
+            "type": "string"
+          },
+          "application": {
+            "type": "object",
+            "properties": {
+              "metadata": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "namespace": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The namespace where the ArgoCD application resource will be created.\n     This is the namespace of the Application resource itself, not the destination namespace for the application's resources.\n     You can specify any valid Kubernetes namespace (e.g., 'argocd', 'argocd-apps', 'my-namespace', etc.).\n     The default ArgoCD namespace is typically 'argocd', but you can use any namespace you prefer."
+                  }
+                },
+                "required": [
+                  "name",
+                  "namespace"
+                ],
+                "additionalProperties": false
+              },
+              "spec": {
+                "type": "object",
+                "properties": {
+                  "project": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "properties": {
+                      "repoURL": {
+                        "type": "string"
+                      },
+                      "path": {
+                        "type": "string"
+                      },
+                      "targetRevision": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "repoURL",
+                      "path",
+                      "targetRevision"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "syncPolicy": {
+                    "type": "object",
+                    "properties": {
+                      "syncOptions": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "automated": {
+                        "type": "object",
+                        "properties": {
+                          "prune": {
+                            "type": "boolean"
+                          },
+                          "selfHeal": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "prune",
+                          "selfHeal"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "retry": {
+                        "type": "object",
+                        "properties": {
+                          "limit": {
+                            "type": "number"
+                          },
+                          "backoff": {
+                            "type": "object",
+                            "properties": {
+                              "duration": {
+                                "type": "string"
+                              },
+                              "maxDuration": {
+                                "type": "string"
+                              },
+                              "factor": {
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "duration",
+                              "maxDuration",
+                              "factor"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "limit",
+                          "backoff"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "syncOptions",
+                      "retry"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "destination": {
+                    "type": "object",
+                    "properties": {
+                      "server": {
+                        "type": "string"
+                      },
+                      "namespace": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false,
+                    "description": "The destination of the application.\n         Only one of server or name must be specified."
+                  }
+                },
+                "required": [
+                  "project",
+                  "source",
+                  "syncPolicy",
+                  "destination"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "metadata",
+              "spec"
+            ],
+            "additionalProperties": false
+          },
+          "argocdBaseUrl": {
+            "type": "string",
+            "description": "ArgoCD base URL to use for this call (e.g. \"https://argocd.example.com\"). Overrides the server default. Optional if the server is configured with a default base URL (x-argocd-base-url header or ARGOCD_BASE_URL env var); otherwise required."
+          }
+        },
+        "required": [
+          "applicationName",
+          "application"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "delete_application",
+      "description": "delete_application deletes application. Specify applicationNamespace if the application is in a non-default namespace to avoid permission errors.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "applicationName": {
+            "type": "string"
+          },
+          "applicationNamespace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The namespace where the application is located. Required if application is not in the default namespace."
+          },
+          "cascade": {
+            "type": "boolean",
+            "description": "Whether to cascade the deletion to child resources"
+          },
+          "propagationPolicy": {
+            "type": "string",
+            "description": "Deletion propagation policy (e.g., \"Foreground\", \"Background\", \"Orphan\")"
+          },
+          "argocdBaseUrl": {
+            "type": "string",
+            "description": "ArgoCD base URL to use for this call (e.g. \"https://argocd.example.com\"). Overrides the server default. Optional if the server is configured with a default base URL (x-argocd-base-url header or ARGOCD_BASE_URL env var); otherwise required."
+          }
+        },
+        "required": [
+          "applicationName"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "sync_application",
+      "description": "sync_application syncs application. Specify applicationNamespace if the application is in a non-default namespace to avoid permission errors.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "applicationName": {
+            "type": "string"
+          },
+          "applicationNamespace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The namespace where the application is located. Required if application is not in the default namespace."
+          },
+          "dryRun": {
+            "type": "boolean",
+            "description": "Perform a dry run sync without applying changes"
+          },
+          "prune": {
+            "type": "boolean",
+            "description": "Remove resources that are no longer defined in the source"
+          },
+          "revision": {
+            "type": "string",
+            "description": "Sync to a specific revision instead of the latest"
+          },
+          "syncOptions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Additional sync options (e.g., [\"CreateNamespace=true\", \"PrunePropagationPolicy=foreground\"])"
+          },
+          "argocdBaseUrl": {
+            "type": "string",
+            "description": "ArgoCD base URL to use for this call (e.g. \"https://argocd.example.com\"). Overrides the server default. Optional if the server is configured with a default base URL (x-argocd-base-url header or ARGOCD_BASE_URL env var); otherwise required."
+          }
+        },
+        "required": [
+          "applicationName"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "run_resource_action",
+      "description": "run_resource_action runs an action on a resource",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "applicationName": {
+            "type": "string"
+          },
+          "applicationNamespace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The namespace where the ArgoCD application resource will be created.\n     This is the namespace of the Application resource itself, not the destination namespace for the application's resources.\n     You can specify any valid Kubernetes namespace (e.g., 'argocd', 'argocd-apps', 'my-namespace', etc.).\n     The default ArgoCD namespace is typically 'argocd', but you can use any namespace you prefer."
+          },
+          "resourceRef": {
+            "type": "object",
+            "properties": {
+              "uid": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string"
+              },
+              "namespace": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              },
+              "group": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "uid",
+              "kind",
+              "namespace",
+              "name",
+              "version",
+              "group"
+            ],
+            "additionalProperties": false
+          },
+          "action": {
+            "type": "string"
+          },
+          "argocdBaseUrl": {
+            "type": "string",
+            "description": "ArgoCD base URL to use for this call (e.g. \"https://argocd.example.com\"). Overrides the server default. Optional if the server is configured with a default base URL (x-argocd-base-url header or ARGOCD_BASE_URL env var); otherwise required."
+          }
+        },
+        "required": [
+          "applicationName",
+          "applicationNamespace",
+          "resourceRef",
+          "action"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    }
+  ],
+  "sha256": "f6a7badce258dee75f42007f9f052eaeabc6f910035da0568027824470d357e3",
+  "counts": {
+    "tools": 16,
+    "bytes": 22435,
+    "o200k": 4969
+  }
+}

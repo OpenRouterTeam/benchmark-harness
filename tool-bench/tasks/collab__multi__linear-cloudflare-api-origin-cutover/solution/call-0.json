@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"linear_searchIssues","arguments":{"query":"origin-3","teamId":"a7c70c10-090f-50bf-a8ce-b4cdee9d8572"}}}

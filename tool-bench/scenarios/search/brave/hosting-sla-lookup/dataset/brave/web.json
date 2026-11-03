@@ -1,0 +1,55 @@
+[
+  {
+    "_key": "https://www.ironbarkhosting.com/legal/sla",
+    "url": "https://www.ironbarkhosting.com/legal/sla",
+    "title": "Service Level Agreement | Ironbark Hosting",
+    "description": "Ironbark Hosting's SLA (effective July 1, 2026): Starter 99.9%, Business 99.95%, Enterprise 99.99% monthly uptime. Service credits apply when uptime falls below the commitment.",
+    "page_age": "2026-07-01",
+    "extra_snippets": [
+      "Business plan: 99.95% monthly uptime. If monthly uptime falls below 99.95%, you receive a service credit of 10% of the monthly fee; below 99.0%, 25%.",
+      "Starter plan: 99.9% monthly uptime, no service credits.",
+      "Enterprise plan: 99.99% monthly uptime with credits of up to 50%."
+    ],
+    "content": "# Service Level Agreement\n\nEffective July 1, 2026. Supersedes all previous versions.\n\n| Plan | Monthly uptime commitment | Service credit |\n|---|---|---|\n| Starter | 99.9% | none |\n| Business | 99.95% | 10% of the monthly fee below 99.95%; 25% below 99.0% |\n| Enterprise | 99.99% | up to 50% |\n\nCredits must be requested within 30 days.",
+    "keywords": "uptime guarantee sla service credit"
+  },
+  {
+    "_key": "https://www.ironbarkhosting.com/legal/sla-2024",
+    "url": "https://www.ironbarkhosting.com/legal/sla-2024",
+    "title": "Service Level Agreement (archived 2024 version) | Ironbark Hosting",
+    "description": "Archived SLA, effective January 2024 to June 2026: Business 99.9% monthly uptime with a 5% service credit.",
+    "page_age": "2024-01-10",
+    "extra_snippets": [
+      "Business plan: 99.9% monthly uptime. Service credit: 5% of the monthly fee.",
+      "This version was replaced on July 1, 2026."
+    ],
+    "content": "# Service Level Agreement (2024)\n\nArchived. Replaced on July 1, 2026.\n\nBusiness plan: 99.9% monthly uptime. Service credit: 5% of the monthly fee.",
+    "keywords": "uptime guarantee sla service credit"
+  },
+  {
+    "_key": "https://www.ironbarkhosting.com/pricing",
+    "url": "https://www.ironbarkhosting.com/pricing",
+    "title": "Pricing | Ironbark Hosting",
+    "description": "Starter $12/month, Business $59/month, Enterprise from $499/month. All plans include DDoS protection and daily backups.",
+    "page_age": "2026-08-15",
+    "content": "# Pricing\n\n- Starter: $12 / month\n- Business: $59 / month\n- Enterprise: from $499 / month"
+  },
+  {
+    "_key": "https://www.ironbankhosting.net/sla",
+    "url": "https://www.ironbankhosting.net/sla",
+    "title": "Uptime SLA - IronBank Hosting",
+    "description": "IronBank Hosting guarantees 99.99% uptime on every plan, including Business, with a 20% service credit.",
+    "page_age": "2026-03-02",
+    "content": "# Uptime SLA\n\nIronBank Hosting guarantees 99.99% uptime on every plan, including Business. Credit: 20%.",
+    "keywords": "ironbark business uptime guarantee sla service credit"
+  },
+  {
+    "_key": "https://www.reddit.com/r/webhosting/comments/1f3k2a/ironbark_hosting_business_sla",
+    "url": "https://www.reddit.com/r/webhosting/comments/1f3k2a/ironbark_hosting_business_sla",
+    "title": "Ironbark Hosting Business SLA worth it? : r/webhosting",
+    "description": "Their Business SLA is only 99.9% and the credit is a measly 5%... (posted March 2025)",
+    "page_age": "2025-03-18",
+    "content": "Their Business SLA is only 99.9% and the credit is a measly 5%. Anyone actually claimed it?",
+    "keywords": "uptime guarantee"
+  }
+]

@@ -1,0 +1,1 @@
+Please add an item to our Payments v2 launch checklist (the Slack list): "Rotate webhook signing secrets", owned by Priya Natarajan, status In progress, due November 5, 2026. Leave the other items and the list's columns as they are.

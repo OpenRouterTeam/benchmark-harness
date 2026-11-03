@@ -1,0 +1,30 @@
+[
+  {
+    "id": "PPRIO01",
+    "name": "P1",
+    "description": "Critical: customer-facing outage",
+    "order": 1,
+    "color": "a8171c"
+  },
+  {
+    "id": "PPRIO02",
+    "name": "P2",
+    "description": "High: major degradation",
+    "order": 2,
+    "color": "eb6016"
+  },
+  {
+    "id": "PPRIO03",
+    "name": "P3",
+    "description": "Moderate: partial degradation",
+    "order": 3,
+    "color": "f9b406"
+  },
+  {
+    "id": "PPRIO04",
+    "name": "P4",
+    "description": "Low: no customer impact",
+    "order": 4,
+    "color": "71818f"
+  }
+]

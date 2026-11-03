@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"execute_sql","arguments":{"project_id":"qmvbxtzkplrnwdhyfaco","query":"select count(*) as customers from public.customers where referral_code = 'FALL26' and email not like '%@octo-shop.com'"}}}

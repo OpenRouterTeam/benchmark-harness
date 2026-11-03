@@ -1,0 +1,91 @@
+[scenario]
+id = "search/multi/vendor-rate-limit-zendesk-reply"
+title = "Look up a vendor's current rate limit and answer the customer's ticket with it"
+now = "2026-10-29T15:00:00Z"
+seed = "search-multi-vendor-rate-limit-zendesk-reply"
+services = ["tavily", "zendesk"]
+tags = ["write", "multi-service", "tavily", "zendesk", "disambiguation"]
+timeout_sec = 900
+
+# Quillstream's current v3 docs: Business = 750 requests/minute (burst 120), per workspace.
+# Stale numbers: deprecated v2 docs and a 2025 review (300), a forum post (500); Quillpad is a
+# different vendor (400). The right ticket is 5302 (Priya Shah, open). Look-alikes: her solved
+# ticket 5287, Priya Sharma's Quillpad ticket 5298, and Tomas's Quillstream ticket 5301.
+[[expect.state]]
+pointer = "/services/zendesk/comments"
+key_prefix = "5302/"
+any = { public = true, body = "750" }
+
+[[expect.state]]
+pointer = "/services/zendesk/tickets/5302/status"
+equals = "pending"
+
+[[expect.state]]
+pointer = "/services/zendesk/tickets/5287/status"
+equals = "solved"
+
+[[expect.state]]
+pointer = "/services/zendesk/tickets/5298/status"
+equals = "open"
+
+[[expect.state]]
+pointer = "/services/zendesk/tickets/5301/status"
+equals = "open"
+
+[[expect.state]]
+pointer = "/services/zendesk/comments/5298~12"
+exists = false
+
+[[expect.state]]
+pointer = "/services/zendesk/comments/5287~13"
+exists = false
+
+[[expect.state]]
+pointer = "/services/zendesk/comments/5301~12"
+exists = false
+
+[[expect.required_calls]]
+service = "tavily"
+method = "POST"
+path_regex = "^/(search|extract|crawl|map|research)$"
+
+[[expect.required_calls]]
+service = "zendesk"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket_comment", arguments = { ticket_id = 5302 } }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket" }
+
+[[solution.call]]
+endpoint = "tavily"
+tool = "tavily_search"
+arguments = { query = "Quillstream API rate limit Business plan requests per minute" }
+
+[[solution.call]]
+endpoint = "tavily"
+tool = "tavily_extract"
+arguments = { urls = ["https://docs.quillstream.io/api/rate-limits"] }
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "get_tickets"
+arguments = {}
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "get_ticket_comments"
+arguments = { ticket_id = 5302 }
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "create_ticket_comment"
+arguments = { ticket_id = 5302, public = true, comment = "Hi Priya,\n\nAccording to Quillstream's current API documentation (v3, updated September 14, 2026), the Business plan allows 750 requests per minute, with bursts of up to 120. The limit is shared across the whole Quillstream workspace, not per API key, so any other integrations using the same workspace count towards it. When you go over it, Quillstream returns 429 with a Retry-After header.\n\nIf you space your sync below 750 requests per minute (including other tools on that workspace), the 429s should stop. Let us know how it goes!\n\nRita" }
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "update_ticket"
+arguments = { ticket_id = 5302, status = "pending" }

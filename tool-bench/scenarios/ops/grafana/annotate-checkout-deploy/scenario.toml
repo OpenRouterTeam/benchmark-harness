@@ -1,0 +1,62 @@
+[scenario]
+id = "ops/grafana/annotate-checkout-deploy"
+title = "Annotate the production checkout deploy on the right dashboard"
+now = "2026-11-12T15:30:00Z"
+seed = "ops-grafana-annotate-checkout-deploy"
+services = ["grafana"]
+tags = ["write", "single-service", "grafana", "disambiguation"]
+timeout_sec = 900
+
+# The dataset's highest annotation id is 41, so the new annotation is 42.
+[[expect.state]]
+pointer = "/services/grafana/annotations/42/dashboardUID"
+equals = "checkout-prod"
+
+[[expect.state]]
+pointer = "/services/grafana/annotations/42/time"
+equals = 1794492300000
+
+[[expect.state]]
+pointer = "/services/grafana/annotations/42/text"
+contains = "4.19.0"
+
+[[expect.state]]
+pointer = "/services/grafana/annotations/42/tags"
+contains = "deploy"
+
+[[expect.state]]
+pointer = "/services/grafana/annotations/42/tags"
+contains = "checkout"
+
+[[expect.state]]
+pointer = "/services/grafana/annotations/43"
+exists = false
+
+[[expect.state]]
+pointer = "/services/grafana/annotations/39/text"
+equals = "Deploy checkout v4.19.0 to staging"
+
+[[expect.required_calls]]
+service = "grafana"
+method = "POST"
+path = "/api/annotations"
+body = { dashboardUID = "checkout-prod" }
+
+[[expect.forbidden_calls]]
+service = "grafana"
+method = "DELETE"
+
+[[expect.forbidden_calls]]
+service = "grafana"
+method = "POST"
+path = "/api/dashboards/db"
+
+[[solution.call]]
+endpoint = "grafana"
+tool = "search_dashboards"
+arguments = { query = "Checkout Service" }
+
+[[solution.call]]
+endpoint = "grafana"
+tool = "create_annotation"
+arguments = { dashboardUid = "checkout-prod", time = 1794492300000, text = "Deploy checkout v4.19.0", tags = ["deploy", "checkout"] }

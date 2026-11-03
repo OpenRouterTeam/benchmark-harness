@@ -1,0 +1,1070 @@
+[
+  {
+    "_key": "9b7c0027-1f2e-4c3d-8a5b-000000000027",
+    "uuid": "9b7c0027-1f2e-4c3d-8a5b-000000000027",
+    "published": "2026-03-13T16:55:02.000Z",
+    "eventType": "user.session.start",
+    "version": "0",
+    "severity": "INFO",
+    "displayMessage": "User login to Okta",
+    "actor": {
+      "id": "00u1jrdnptl2Uv9Wx0x7",
+      "type": "User",
+      "alternateId": "jordan.patel@octo-corp.example",
+      "displayName": "Jordan Patel",
+      "detailEntry": null
+    },
+    "client": {
+      "userAgent": {
+        "rawUserAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
+        "os": "Mac OS X",
+        "browser": "SAFARI"
+      },
+      "zone": "null",
+      "device": "Computer",
+      "id": null,
+      "ipAddress": "203.0.113.42",
+      "geographicalContext": {
+        "city": "New York",
+        "state": "New York",
+        "country": "United States",
+        "postalCode": null,
+        "geolocation": {
+          "lat": 40.7128,
+          "lon": -74.006
+        }
+      }
+    },
+    "device": null,
+    "authenticationContext": {
+      "authenticationProvider": null,
+      "credentialProvider": null,
+      "credentialType": null,
+      "issuer": null,
+      "authenticationStep": 0,
+      "externalSessionId": "idx00000000000000027",
+      "interface": null
+    },
+    "outcome": {
+      "result": "SUCCESS",
+      "reason": null
+    },
+    "securityContext": {
+      "asNumber": 64496,
+      "asOrg": "example isp",
+      "isp": "example isp",
+      "domain": null,
+      "isProxy": false
+    },
+    "debugContext": {
+      "debugData": {
+        "requestUri": "/idp/idx/challenge/answer",
+        "threatSuspected": "false"
+      }
+    },
+    "legacyEventType": null,
+    "transaction": {
+      "type": "WEB",
+      "id": "aT00000000000000000027",
+      "detail": {}
+    },
+    "request": {
+      "ipChain": [
+        {
+          "ip": "203.0.113.42",
+          "geographicalContext": null,
+          "version": "V4",
+          "source": null
+        }
+      ]
+    },
+    "target": [
+      {
+        "id": "00u1jrdnptl2Uv9Wx0x7",
+        "type": "User",
+        "alternateId": "jordan.patel@octo-corp.example",
+        "displayName": "Jordan Patel",
+        "detailEntry": null
+      }
+    ]
+  },
+  {
+    "_key": "9b7c0028-1f2e-4c3d-8a5b-000000000028",
+    "uuid": "9b7c0028-1f2e-4c3d-8a5b-000000000028",
+    "published": "2026-03-13T22:40:50.000Z",
+    "eventType": "user.session.start",
+    "version": "0",
+    "severity": "INFO",
+    "displayMessage": "User login to Okta",
+    "actor": {
+      "id": "00u1mrcschn0Kl7Mn8x7",
+      "type": "User",
+      "alternateId": "marcus.chen@octo-corp.example",
+      "displayName": "Marcus Chen",
+      "detailEntry": null
+    },
+    "client": {
+      "userAgent": {
+        "rawUserAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
+        "os": "Mac OS X",
+        "browser": "SAFARI"
+      },
+      "zone": "null",
+      "device": "Computer",
+      "id": null,
+      "ipAddress": "203.0.113.10",
+      "geographicalContext": {
+        "city": "San Francisco",
+        "state": "California",
+        "country": "United States",
+        "postalCode": null,
+        "geolocation": {
+          "lat": 37.7749,
+          "lon": -122.4194
+        }
+      }
+    },
+    "device": null,
+    "authenticationContext": {
+      "authenticationProvider": null,
+      "credentialProvider": null,
+      "credentialType": null,
+      "issuer": null,
+      "authenticationStep": 0,
+      "externalSessionId": "idx00000000000000028",
+      "interface": null
+    },
+    "outcome": {
+      "result": "FAILURE",
+      "reason": "INVALID_CREDENTIALS"
+    },
+    "securityContext": {
+      "asNumber": 64496,
+      "asOrg": "example isp",
+      "isp": "example isp",
+      "domain": null,
+      "isProxy": false
+    },
+    "debugContext": {
+      "debugData": {
+        "requestUri": "/idp/idx/challenge/answer",
+        "threatSuspected": "false"
+      }
+    },
+    "legacyEventType": "core.user_auth.login_failed",
+    "transaction": {
+      "type": "WEB",
+      "id": "aT00000000000000000028",
+      "detail": {}
+    },
+    "request": {
+      "ipChain": [
+        {
+          "ip": "203.0.113.10",
+          "geographicalContext": null,
+          "version": "V4",
+          "source": null
+        }
+      ]
+    },
+    "target": [
+      {
+        "id": "00u1mrcschn0Kl7Mn8x7",
+        "type": "User",
+        "alternateId": "marcus.chen@octo-corp.example",
+        "displayName": "Marcus Chen",
+        "detailEntry": null
+      }
+    ]
+  },
+  {
+    "_key": "9b7c0029-1f2e-4c3d-8a5b-000000000029",
+    "uuid": "9b7c0029-1f2e-4c3d-8a5b-000000000029",
+    "published": "2026-03-13T22:41:50.000Z",
+    "eventType": "user.session.start",
+    "version": "0",
+    "severity": "INFO",
+    "displayMessage": "User login to Okta",
+    "actor": {
+      "id": "00u1mrcschn0Kl7Mn8x7",
+      "type": "User",
+      "alternateId": "marcus.chen@octo-corp.example",
+      "displayName": "Marcus Chen",
+      "detailEntry": null
+    },
+    "client": {
+      "userAgent": {
+        "rawUserAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
+        "os": "Mac OS X",
+        "browser": "SAFARI"
+      },
+      "zone": "null",
+      "device": "Computer",
+      "id": null,
+      "ipAddress": "203.0.113.10",
+      "geographicalContext": {
+        "city": "San Francisco",
+        "state": "California",
+        "country": "United States",
+        "postalCode": null,
+        "geolocation": {
+          "lat": 37.7749,
+          "lon": -122.4194
+        }
+      }
+    },
+    "device": null,
+    "authenticationContext": {
+      "authenticationProvider": null,
+      "credentialProvider": null,
+      "credentialType": null,
+      "issuer": null,
+      "authenticationStep": 0,
+      "externalSessionId": "idx00000000000000029",
+      "interface": null
+    },
+    "outcome": {
+      "result": "FAILURE",
+      "reason": "INVALID_CREDENTIALS"
+    },
+    "securityContext": {
+      "asNumber": 64496,
+      "asOrg": "example isp",
+      "isp": "example isp",
+      "domain": null,
+      "isProxy": false
+    },
+    "debugContext": {
+      "debugData": {
+        "requestUri": "/idp/idx/challenge/answer",
+        "threatSuspected": "false"
+      }
+    },
+    "legacyEventType": "core.user_auth.login_failed",
+    "transaction": {
+      "type": "WEB",
+      "id": "aT00000000000000000029",
+      "detail": {}
+    },
+    "request": {
+      "ipChain": [
+        {
+          "ip": "203.0.113.10",
+          "geographicalContext": null,
+          "version": "V4",
+          "source": null
+        }
+      ]
+    },
+    "target": [
+      {
+        "id": "00u1mrcschn0Kl7Mn8x7",
+        "type": "User",
+        "alternateId": "marcus.chen@octo-corp.example",
+        "displayName": "Marcus Chen",
+        "detailEntry": null
+      }
+    ]
+  },
+  {
+    "_key": "9b7c0030-1f2e-4c3d-8a5b-000000000030",
+    "uuid": "9b7c0030-1f2e-4c3d-8a5b-000000000030",
+    "published": "2026-03-13T22:42:50.000Z",
+    "eventType": "user.session.start",
+    "version": "0",
+    "severity": "INFO",
+    "displayMessage": "User login to Okta",
+    "actor": {
+      "id": "00u1mrcschn0Kl7Mn8x7",
+      "type": "User",
+      "alternateId": "marcus.chen@octo-corp.example",
+      "displayName": "Marcus Chen",
+      "detailEntry": null
+    },
+    "client": {
+      "userAgent": {
+        "rawUserAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
+        "os": "Mac OS X",
+        "browser": "SAFARI"
+      },
+      "zone": "null",
+      "device": "Computer",
+      "id": null,
+      "ipAddress": "203.0.113.10",
+      "geographicalContext": {
+        "city": "San Francisco",
+        "state": "California",
+        "country": "United States",
+        "postalCode": null,
+        "geolocation": {
+          "lat": 37.7749,
+          "lon": -122.4194
+        }
+      }
+    },
+    "device": null,
+    "authenticationContext": {
+      "authenticationProvider": null,
+      "credentialProvider": null,
+      "credentialType": null,
+      "issuer": null,
+      "authenticationStep": 0,
+      "externalSessionId": "idx00000000000000030",
+      "interface": null
+    },
+    "outcome": {
+      "result": "FAILURE",
+      "reason": "INVALID_CREDENTIALS"
+    },
+    "securityContext": {
+      "asNumber": 64496,
+      "asOrg": "example isp",
+      "isp": "example isp",
+      "domain": null,
+      "isProxy": false
+    },
+    "debugContext": {
+      "debugData": {
+        "requestUri": "/idp/idx/challenge/answer",
+        "threatSuspected": "false"
+      }
+    },
+    "legacyEventType": "core.user_auth.login_failed",
+    "transaction": {
+      "type": "WEB",
+      "id": "aT00000000000000000030",
+      "detail": {}
+    },
+    "request": {
+      "ipChain": [
+        {
+          "ip": "203.0.113.10",
+          "geographicalContext": null,
+          "version": "V4",
+          "source": null
+        }
+      ]
+    },
+    "target": [
+      {
+        "id": "00u1mrcschn0Kl7Mn8x7",
+        "type": "User",
+        "alternateId": "marcus.chen@octo-corp.example",
+        "displayName": "Marcus Chen",
+        "detailEntry": null
+      }
+    ]
+  },
+  {
+    "_key": "9b7c0031-1f2e-4c3d-8a5b-000000000031",
+    "uuid": "9b7c0031-1f2e-4c3d-8a5b-000000000031",
+    "published": "2026-03-13T23:02:14.000Z",
+    "eventType": "user.session.start",
+    "version": "0",
+    "severity": "INFO",
+    "displayMessage": "User login to Okta",
+    "actor": {
+      "id": "00u1mrcschn0Kl7Mn8x7",
+      "type": "User",
+      "alternateId": "marcus.chen@octo-corp.example",
+      "displayName": "Marcus Chen",
+      "detailEntry": null
+    },
+    "client": {
+      "userAgent": {
+        "rawUserAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
+        "os": "Mac OS X",
+        "browser": "SAFARI"
+      },
+      "zone": "null",
+      "device": "Computer",
+      "id": null,
+      "ipAddress": "203.0.113.10",
+      "geographicalContext": {
+        "city": "San Francisco",
+        "state": "California",
+        "country": "United States",
+        "postalCode": null,
+        "geolocation": {
+          "lat": 37.7749,
+          "lon": -122.4194
+        }
+      }
+    },
+    "device": null,
+    "authenticationContext": {
+      "authenticationProvider": null,
+      "credentialProvider": null,
+      "credentialType": null,
+      "issuer": null,
+      "authenticationStep": 0,
+      "externalSessionId": "idx00000000000000031",
+      "interface": null
+    },
+    "outcome": {
+      "result": "SUCCESS",
+      "reason": null
+    },
+    "securityContext": {
+      "asNumber": 64496,
+      "asOrg": "example isp",
+      "isp": "example isp",
+      "domain": null,
+      "isProxy": false
+    },
+    "debugContext": {
+      "debugData": {
+        "requestUri": "/idp/idx/challenge/answer",
+        "threatSuspected": "false"
+      }
+    },
+    "legacyEventType": null,
+    "transaction": {
+      "type": "WEB",
+      "id": "aT00000000000000000031",
+      "detail": {}
+    },
+    "request": {
+      "ipChain": [
+        {
+          "ip": "203.0.113.10",
+          "geographicalContext": null,
+          "version": "V4",
+          "source": null
+        }
+      ]
+    },
+    "target": [
+      {
+        "id": "00u1mrcschn0Kl7Mn8x7",
+        "type": "User",
+        "alternateId": "marcus.chen@octo-corp.example",
+        "displayName": "Marcus Chen",
+        "detailEntry": null
+      }
+    ]
+  },
+  {
+    "_key": "9b7c0032-1f2e-4c3d-8a5b-000000000032",
+    "uuid": "9b7c0032-1f2e-4c3d-8a5b-000000000032",
+    "published": "2026-03-14T00:10:09.000Z",
+    "eventType": "user.session.start",
+    "version": "0",
+    "severity": "INFO",
+    "displayMessage": "User login to Okta",
+    "actor": {
+      "id": "00u1alxkmem2Op9Qr0x7",
+      "type": "User",
+      "alternateId": "alex.kim@octo-corp.example",
+      "displayName": "Alex Kim",
+      "detailEntry": null
+    },
+    "client": {
+      "userAgent": {
+        "rawUserAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
+        "os": "Mac OS X",
+        "browser": "SAFARI"
+      },
+      "zone": "null",
+      "device": "Computer",
+      "id": null,
+      "ipAddress": "198.51.100.90",
+      "geographicalContext": {
+        "city": "Austin",
+        "state": "Texas",
+        "country": "United States",
+        "postalCode": null,
+        "geolocation": {
+          "lat": 30.2672,
+          "lon": -97.7431
+        }
+      }
+    },
+    "device": null,
+    "authenticationContext": {
+      "authenticationProvider": null,
+      "credentialProvider": null,
+      "credentialType": null,
+      "issuer": null,
+      "authenticationStep": 0,
+      "externalSessionId": "idx00000000000000032",
+      "interface": null
+    },
+    "outcome": {
+      "result": "FAILURE",
+      "reason": "INVALID_CREDENTIALS"
+    },
+    "securityContext": {
+      "asNumber": 64496,
+      "asOrg": "example isp",
+      "isp": "example isp",
+      "domain": null,
+      "isProxy": false
+    },
+    "debugContext": {
+      "debugData": {
+        "requestUri": "/idp/idx/challenge/answer",
+        "threatSuspected": "false"
+      }
+    },
+    "legacyEventType": "core.user_auth.login_failed",
+    "transaction": {
+      "type": "WEB",
+      "id": "aT00000000000000000032",
+      "detail": {}
+    },
+    "request": {
+      "ipChain": [
+        {
+          "ip": "198.51.100.90",
+          "geographicalContext": null,
+          "version": "V4",
+          "source": null
+        }
+      ]
+    },
+    "target": [
+      {
+        "id": "00u1alxkmem2Op9Qr0x7",
+        "type": "User",
+        "alternateId": "alex.kim@octo-corp.example",
+        "displayName": "Alex Kim",
+        "detailEntry": null
+      }
+    ]
+  },
+  {
+    "_key": "9b7c0033-1f2e-4c3d-8a5b-000000000033",
+    "uuid": "9b7c0033-1f2e-4c3d-8a5b-000000000033",
+    "published": "2026-03-14T00:11:09.000Z",
+    "eventType": "user.session.start",
+    "version": "0",
+    "severity": "INFO",
+    "displayMessage": "User login to Okta",
+    "actor": {
+      "id": "00u1alxkmem2Op9Qr0x7",
+      "type": "User",
+      "alternateId": "alex.kim@octo-corp.example",
+      "displayName": "Alex Kim",
+      "detailEntry": null
+    },
+    "client": {
+      "userAgent": {
+        "rawUserAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
+        "os": "Mac OS X",
+        "browser": "SAFARI"
+      },
+      "zone": "null",
+      "device": "Computer",
+      "id": null,
+      "ipAddress": "198.51.100.90",
+      "geographicalContext": {
+        "city": "Austin",
+        "state": "Texas",
+        "country": "United States",
+        "postalCode": null,
+        "geolocation": {
+          "lat": 30.2672,
+          "lon": -97.7431
+        }
+      }
+    },
+    "device": null,
+    "authenticationContext": {
+      "authenticationProvider": null,
+      "credentialProvider": null,
+      "credentialType": null,
+      "issuer": null,
+      "authenticationStep": 0,
+      "externalSessionId": "idx00000000000000033",
+      "interface": null
+    },
+    "outcome": {
+      "result": "FAILURE",
+      "reason": "INVALID_CREDENTIALS"
+    },
+    "securityContext": {
+      "asNumber": 64496,
+      "asOrg": "example isp",
+      "isp": "example isp",
+      "domain": null,
+      "isProxy": false
+    },
+    "debugContext": {
+      "debugData": {
+        "requestUri": "/idp/idx/challenge/answer",
+        "threatSuspected": "false"
+      }
+    },
+    "legacyEventType": "core.user_auth.login_failed",
+    "transaction": {
+      "type": "WEB",
+      "id": "aT00000000000000000033",
+      "detail": {}
+    },
+    "request": {
+      "ipChain": [
+        {
+          "ip": "198.51.100.90",
+          "geographicalContext": null,
+          "version": "V4",
+          "source": null
+        }
+      ]
+    },
+    "target": [
+      {
+        "id": "00u1alxkmem2Op9Qr0x7",
+        "type": "User",
+        "alternateId": "alex.kim@octo-corp.example",
+        "displayName": "Alex Kim",
+        "detailEntry": null
+      }
+    ]
+  },
+  {
+    "_key": "9b7c0034-1f2e-4c3d-8a5b-000000000034",
+    "uuid": "9b7c0034-1f2e-4c3d-8a5b-000000000034",
+    "published": "2026-03-14T00:12:09.000Z",
+    "eventType": "user.session.start",
+    "version": "0",
+    "severity": "INFO",
+    "displayMessage": "User login to Okta",
+    "actor": {
+      "id": "00u1alxkmem2Op9Qr0x7",
+      "type": "User",
+      "alternateId": "alex.kim@octo-corp.example",
+      "displayName": "Alex Kim",
+      "detailEntry": null
+    },
+    "client": {
+      "userAgent": {
+        "rawUserAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
+        "os": "Mac OS X",
+        "browser": "SAFARI"
+      },
+      "zone": "null",
+      "device": "Computer",
+      "id": null,
+      "ipAddress": "198.51.100.90",
+      "geographicalContext": {
+        "city": "Austin",
+        "state": "Texas",
+        "country": "United States",
+        "postalCode": null,
+        "geolocation": {
+          "lat": 30.2672,
+          "lon": -97.7431
+        }
+      }
+    },
+    "device": null,
+    "authenticationContext": {
+      "authenticationProvider": null,
+      "credentialProvider": null,
+      "credentialType": null,
+      "issuer": null,
+      "authenticationStep": 0,
+      "externalSessionId": "idx00000000000000034",
+      "interface": null
+    },
+    "outcome": {
+      "result": "FAILURE",
+      "reason": "INVALID_CREDENTIALS"
+    },
+    "securityContext": {
+      "asNumber": 64496,
+      "asOrg": "example isp",
+      "isp": "example isp",
+      "domain": null,
+      "isProxy": false
+    },
+    "debugContext": {
+      "debugData": {
+        "requestUri": "/idp/idx/challenge/answer",
+        "threatSuspected": "false"
+      }
+    },
+    "legacyEventType": "core.user_auth.login_failed",
+    "transaction": {
+      "type": "WEB",
+      "id": "aT00000000000000000034",
+      "detail": {}
+    },
+    "request": {
+      "ipChain": [
+        {
+          "ip": "198.51.100.90",
+          "geographicalContext": null,
+          "version": "V4",
+          "source": null
+        }
+      ]
+    },
+    "target": [
+      {
+        "id": "00u1alxkmem2Op9Qr0x7",
+        "type": "User",
+        "alternateId": "alex.kim@octo-corp.example",
+        "displayName": "Alex Kim",
+        "detailEntry": null
+      }
+    ]
+  },
+  {
+    "_key": "9b7c0035-1f2e-4c3d-8a5b-000000000035",
+    "uuid": "9b7c0035-1f2e-4c3d-8a5b-000000000035",
+    "published": "2026-03-14T00:13:09.000Z",
+    "eventType": "user.session.start",
+    "version": "0",
+    "severity": "INFO",
+    "displayMessage": "User login to Okta",
+    "actor": {
+      "id": "00u1alxkmem2Op9Qr0x7",
+      "type": "User",
+      "alternateId": "alex.kim@octo-corp.example",
+      "displayName": "Alex Kim",
+      "detailEntry": null
+    },
+    "client": {
+      "userAgent": {
+        "rawUserAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
+        "os": "Mac OS X",
+        "browser": "SAFARI"
+      },
+      "zone": "null",
+      "device": "Computer",
+      "id": null,
+      "ipAddress": "198.51.100.90",
+      "geographicalContext": {
+        "city": "Austin",
+        "state": "Texas",
+        "country": "United States",
+        "postalCode": null,
+        "geolocation": {
+          "lat": 30.2672,
+          "lon": -97.7431
+        }
+      }
+    },
+    "device": null,
+    "authenticationContext": {
+      "authenticationProvider": null,
+      "credentialProvider": null,
+      "credentialType": null,
+      "issuer": null,
+      "authenticationStep": 0,
+      "externalSessionId": "idx00000000000000035",
+      "interface": null
+    },
+    "outcome": {
+      "result": "FAILURE",
+      "reason": "INVALID_CREDENTIALS"
+    },
+    "securityContext": {
+      "asNumber": 64496,
+      "asOrg": "example isp",
+      "isp": "example isp",
+      "domain": null,
+      "isProxy": false
+    },
+    "debugContext": {
+      "debugData": {
+        "requestUri": "/idp/idx/challenge/answer",
+        "threatSuspected": "false"
+      }
+    },
+    "legacyEventType": "core.user_auth.login_failed",
+    "transaction": {
+      "type": "WEB",
+      "id": "aT00000000000000000035",
+      "detail": {}
+    },
+    "request": {
+      "ipChain": [
+        {
+          "ip": "198.51.100.90",
+          "geographicalContext": null,
+          "version": "V4",
+          "source": null
+        }
+      ]
+    },
+    "target": [
+      {
+        "id": "00u1alxkmem2Op9Qr0x7",
+        "type": "User",
+        "alternateId": "alex.kim@octo-corp.example",
+        "displayName": "Alex Kim",
+        "detailEntry": null
+      }
+    ]
+  },
+  {
+    "_key": "9b7c0036-1f2e-4c3d-8a5b-000000000036",
+    "uuid": "9b7c0036-1f2e-4c3d-8a5b-000000000036",
+    "published": "2026-03-14T00:14:09.000Z",
+    "eventType": "user.session.start",
+    "version": "0",
+    "severity": "INFO",
+    "displayMessage": "User login to Okta",
+    "actor": {
+      "id": "00u1alxkmem2Op9Qr0x7",
+      "type": "User",
+      "alternateId": "alex.kim@octo-corp.example",
+      "displayName": "Alex Kim",
+      "detailEntry": null
+    },
+    "client": {
+      "userAgent": {
+        "rawUserAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
+        "os": "Mac OS X",
+        "browser": "SAFARI"
+      },
+      "zone": "null",
+      "device": "Computer",
+      "id": null,
+      "ipAddress": "198.51.100.90",
+      "geographicalContext": {
+        "city": "Austin",
+        "state": "Texas",
+        "country": "United States",
+        "postalCode": null,
+        "geolocation": {
+          "lat": 30.2672,
+          "lon": -97.7431
+        }
+      }
+    },
+    "device": null,
+    "authenticationContext": {
+      "authenticationProvider": null,
+      "credentialProvider": null,
+      "credentialType": null,
+      "issuer": null,
+      "authenticationStep": 0,
+      "externalSessionId": "idx00000000000000036",
+      "interface": null
+    },
+    "outcome": {
+      "result": "FAILURE",
+      "reason": "INVALID_CREDENTIALS"
+    },
+    "securityContext": {
+      "asNumber": 64496,
+      "asOrg": "example isp",
+      "isp": "example isp",
+      "domain": null,
+      "isProxy": false
+    },
+    "debugContext": {
+      "debugData": {
+        "requestUri": "/idp/idx/challenge/answer",
+        "threatSuspected": "false"
+      }
+    },
+    "legacyEventType": "core.user_auth.login_failed",
+    "transaction": {
+      "type": "WEB",
+      "id": "aT00000000000000000036",
+      "detail": {}
+    },
+    "request": {
+      "ipChain": [
+        {
+          "ip": "198.51.100.90",
+          "geographicalContext": null,
+          "version": "V4",
+          "source": null
+        }
+      ]
+    },
+    "target": [
+      {
+        "id": "00u1alxkmem2Op9Qr0x7",
+        "type": "User",
+        "alternateId": "alex.kim@octo-corp.example",
+        "displayName": "Alex Kim",
+        "detailEntry": null
+      }
+    ]
+  },
+  {
+    "_key": "9b7c0037-1f2e-4c3d-8a5b-000000000037",
+    "uuid": "9b7c0037-1f2e-4c3d-8a5b-000000000037",
+    "published": "2026-03-14T00:15:09.000Z",
+    "eventType": "user.session.start",
+    "version": "0",
+    "severity": "INFO",
+    "displayMessage": "User login to Okta",
+    "actor": {
+      "id": "00u1alxkmem2Op9Qr0x7",
+      "type": "User",
+      "alternateId": "alex.kim@octo-corp.example",
+      "displayName": "Alex Kim",
+      "detailEntry": null
+    },
+    "client": {
+      "userAgent": {
+        "rawUserAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
+        "os": "Mac OS X",
+        "browser": "SAFARI"
+      },
+      "zone": "null",
+      "device": "Computer",
+      "id": null,
+      "ipAddress": "198.51.100.90",
+      "geographicalContext": {
+        "city": "Austin",
+        "state": "Texas",
+        "country": "United States",
+        "postalCode": null,
+        "geolocation": {
+          "lat": 30.2672,
+          "lon": -97.7431
+        }
+      }
+    },
+    "device": null,
+    "authenticationContext": {
+      "authenticationProvider": null,
+      "credentialProvider": null,
+      "credentialType": null,
+      "issuer": null,
+      "authenticationStep": 0,
+      "externalSessionId": "idx00000000000000037",
+      "interface": null
+    },
+    "outcome": {
+      "result": "FAILURE",
+      "reason": "INVALID_CREDENTIALS"
+    },
+    "securityContext": {
+      "asNumber": 64496,
+      "asOrg": "example isp",
+      "isp": "example isp",
+      "domain": null,
+      "isProxy": false
+    },
+    "debugContext": {
+      "debugData": {
+        "requestUri": "/idp/idx/challenge/answer",
+        "threatSuspected": "false"
+      }
+    },
+    "legacyEventType": "core.user_auth.login_failed",
+    "transaction": {
+      "type": "WEB",
+      "id": "aT00000000000000000037",
+      "detail": {}
+    },
+    "request": {
+      "ipChain": [
+        {
+          "ip": "198.51.100.90",
+          "geographicalContext": null,
+          "version": "V4",
+          "source": null
+        }
+      ]
+    },
+    "target": [
+      {
+        "id": "00u1alxkmem2Op9Qr0x7",
+        "type": "User",
+        "alternateId": "alex.kim@octo-corp.example",
+        "displayName": "Alex Kim",
+        "detailEntry": null
+      }
+    ]
+  },
+  {
+    "_key": "9b7c0038-1f2e-4c3d-8a5b-000000000038",
+    "uuid": "9b7c0038-1f2e-4c3d-8a5b-000000000038",
+    "published": "2026-03-14T00:16:09.000Z",
+    "eventType": "user.session.start",
+    "version": "0",
+    "severity": "INFO",
+    "displayMessage": "User login to Okta",
+    "actor": {
+      "id": "00u1alxkmem2Op9Qr0x7",
+      "type": "User",
+      "alternateId": "alex.kim@octo-corp.example",
+      "displayName": "Alex Kim",
+      "detailEntry": null
+    },
+    "client": {
+      "userAgent": {
+        "rawUserAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
+        "os": "Mac OS X",
+        "browser": "SAFARI"
+      },
+      "zone": "null",
+      "device": "Computer",
+      "id": null,
+      "ipAddress": "198.51.100.90",
+      "geographicalContext": {
+        "city": "Austin",
+        "state": "Texas",
+        "country": "United States",
+        "postalCode": null,
+        "geolocation": {
+          "lat": 30.2672,
+          "lon": -97.7431
+        }
+      }
+    },
+    "device": null,
+    "authenticationContext": {
+      "authenticationProvider": null,
+      "credentialProvider": null,
+      "credentialType": null,
+      "issuer": null,
+      "authenticationStep": 0,
+      "externalSessionId": "idx00000000000000038",
+      "interface": null
+    },
+    "outcome": {
+      "result": "FAILURE",
+      "reason": "INVALID_CREDENTIALS"
+    },
+    "securityContext": {
+      "asNumber": 64496,
+      "asOrg": "example isp",
+      "isp": "example isp",
+      "domain": null,
+      "isProxy": false
+    },
+    "debugContext": {
+      "debugData": {
+        "requestUri": "/idp/idx/challenge/answer",
+        "threatSuspected": "false"
+      }
+    },
+    "legacyEventType": "core.user_auth.login_failed",
+    "transaction": {
+      "type": "WEB",
+      "id": "aT00000000000000000038",
+      "detail": {}
+    },
+    "request": {
+      "ipChain": [
+        {
+          "ip": "198.51.100.90",
+          "geographicalContext": null,
+          "version": "V4",
+          "source": null
+        }
+      ]
+    },
+    "target": [
+      {
+        "id": "00u1alxkmem2Op9Qr0x7",
+        "type": "User",
+        "alternateId": "alex.kim@octo-corp.example",
+        "displayName": "Alex Kim",
+        "detailEntry": null
+      }
+    ]
+  }
+]

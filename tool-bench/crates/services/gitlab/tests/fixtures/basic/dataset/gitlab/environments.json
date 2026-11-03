@@ -1,0 +1,22 @@
+[
+  {
+    "_key": "71",
+    "id": 71,
+    "project": "acme/platform/api",
+    "name": "production",
+    "external_url": "https://api.acme.dev",
+    "state": "available",
+    "tier": "production",
+    "created_at": "2025-01-01T00:00:00.000Z",
+    "updated_at": "2026-03-01T09:00:00.000Z"
+  },
+  {
+    "_key": "72",
+    "id": 72,
+    "project": "acme/platform/api",
+    "name": "review/fix-rate-limiter",
+    "state": "available",
+    "created_at": "2026-03-09T12:00:00.000Z",
+    "updated_at": "2026-03-09T12:00:00.000Z"
+  }
+]

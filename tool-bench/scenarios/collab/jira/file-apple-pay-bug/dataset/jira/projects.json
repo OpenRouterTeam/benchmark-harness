@@ -1,0 +1,121 @@
+[
+  {
+    "id": "10000",
+    "key": "PAY",
+    "name": "Payments",
+    "projectTypeKey": "software",
+    "lead": "priya.natarajan",
+    "description": "Payments platform: checkout, refunds and payouts.",
+    "issueTypes": [
+      "Epic",
+      "Story",
+      "Task",
+      "Sub-task",
+      "Bug"
+    ],
+    "components": [
+      {
+        "id": "10000",
+        "name": "Checkout",
+        "description": "Checkout API and UI",
+        "lead": "alex.kim"
+      },
+      {
+        "id": "10001",
+        "name": "Refunds",
+        "description": "Refund processing"
+      },
+      {
+        "id": "10002",
+        "name": "Payouts",
+        "description": "Merchant payouts"
+      }
+    ],
+    "roles": {
+      "Administrators": [
+        "priya.natarajan"
+      ],
+      "Developers": [
+        "alex.kim",
+        "sam.ortiz",
+        "jordan.lee",
+        "alex.kimball"
+      ],
+      "Users": [
+        "lena.fischer",
+        "marcus.webb"
+      ]
+    },
+    "_key": "PAY"
+  },
+  {
+    "id": "10001",
+    "key": "WEB",
+    "name": "Web Storefront",
+    "projectTypeKey": "software",
+    "lead": "lena.fischer",
+    "description": "Customer-facing storefront.",
+    "issueTypes": [
+      "Epic",
+      "Story",
+      "Task",
+      "Sub-task",
+      "Bug"
+    ],
+    "components": [
+      {
+        "id": "10010",
+        "name": "Checkout",
+        "description": "Storefront checkout pages",
+        "lead": "alex.kim"
+      },
+      {
+        "id": "10011",
+        "name": "Catalog",
+        "description": "Product listing"
+      },
+      {
+        "id": "10012",
+        "name": "Accounts",
+        "description": "Sign-in and profiles"
+      }
+    ],
+    "roles": {
+      "Administrators": [
+        "lena.fischer"
+      ],
+      "Developers": [
+        "alex.kim",
+        "alex.kimball",
+        "marcus.webb"
+      ],
+      "Users": [
+        "jordan.lee"
+      ]
+    },
+    "_key": "WEB"
+  },
+  {
+    "id": "10002",
+    "key": "OPS",
+    "name": "Ops Help Desk",
+    "projectTypeKey": "service_desk",
+    "lead": "sam.ortiz",
+    "description": "Internal operations requests.",
+    "issueTypes": [
+      "Service Request",
+      "Task"
+    ],
+    "components": [],
+    "roles": {
+      "Administrators": [
+        "sam.ortiz"
+      ],
+      "Service Desk Team": [
+        "sam.ortiz",
+        "jordan.lee"
+      ]
+    },
+    "_key": "OPS"
+  }
+]

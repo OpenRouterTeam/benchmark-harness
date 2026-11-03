@@ -1,0 +1,51 @@
+[scenario]
+id = "business/hubspot/log-call-note-initech"
+title = "Log a call note on the Initech data warehouse deal"
+now = "2026-10-29T14:00:00Z"
+seed = "business-hubspot-log-call-note-initech"
+services = ["hubspot"]
+tags = ["single-service", "write", "hubspot"]
+timeout_sec = 900
+
+# The new note is the next activity id (61000005, after notes 61000001-3 and task 61000004),
+# whether created through engagements v1 or CRM v3 notes. It must hang off the open
+# migration deal 9100104, not the closed "Phase 0 Assessment" deal 9100105.
+[[expect.state]]
+pointer = "/services/hubspot/notes/61000005/properties/hs_note_body"
+contains = "security review passed"
+
+[[expect.state]]
+pointer = "/services/hubspot/notes/61000005/properties/hs_note_body"
+contains = "revised SOW by Nov 14"
+
+[[expect.state]]
+pointer = "/services/hubspot/associations/deals~19100104~1notes~161000005"
+exists = true
+
+[[expect.state]]
+pointer = "/services/hubspot/associations/deals~19100105~1notes~161000005"
+exists = false
+
+[[expect.state]]
+pointer = "/services/hubspot/notes/61000006"
+exists = false
+
+[[expect.required_calls]]
+service = "hubspot"
+method = "POST"
+path_regex = "^/(engagements/v1/engagements|crm/v3/objects/(notes|note|0-46)/batch/create)$"
+
+[[expect.forbidden_calls]]
+service = "hubspot"
+method = "POST"
+path_regex = "/batch/update$"
+
+[[expect.forbidden_calls]]
+service = "hubspot"
+method = "PATCH"
+path_regex = "^/engagements/v1/engagements/6100000[1-4]$"
+
+[[solution.call]]
+endpoint = "hubspot"
+tool = "hubspot-create-engagement"
+arguments = { type = "NOTE", ownerId = 81234501, timestamp = 1793282400000, associations = { dealIds = [9100104], contactIds = [512005] }, metadata = { body = "Call with Bill Lumbergh: security review passed; procurement needs a revised SOW by Nov 14." } }

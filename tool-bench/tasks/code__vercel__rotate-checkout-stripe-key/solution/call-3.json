@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"vercel-create-environment-variables","arguments":{"environmentVariables":[{"key":"STRIPE_SECRET_KEY","target":["production"],"type":"sensitive","value":"sk_live_51NvCheckoutRot8Hq2"}],"projectId":"checkout-api-next"}}}

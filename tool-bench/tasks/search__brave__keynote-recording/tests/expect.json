@@ -1,0 +1,24 @@
+{
+  "state": [],
+  "required_calls": [
+    {
+      "service": "brave",
+      "method": "GET",
+      "path": null,
+      "path_regex": "^/res/v1/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [],
+  "answer": {
+    "contains": [
+      "Lindqvist",
+      "47:12",
+      "Zt4mQeL1x9c"
+    ],
+    "regex": null
+  }
+}

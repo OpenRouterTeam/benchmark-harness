@@ -1,0 +1,22 @@
+[
+  {
+    "id": "PBSCHKO",
+    "name": "Online Checkout",
+    "description": "Customers can pay for their cart.",
+    "point_of_contact": "commerce-leads@lumenlabs.dev",
+    "team": {
+      "id": "PTCOMRC",
+      "type": "team_reference"
+    }
+  },
+  {
+    "id": "PBSPAYM",
+    "name": "Payments Processing",
+    "description": "Card payments are authorized and captured.",
+    "point_of_contact": "payments-leads@lumenlabs.dev",
+    "team": {
+      "id": "PTPAYMT",
+      "type": "team_reference"
+    }
+  }
+]

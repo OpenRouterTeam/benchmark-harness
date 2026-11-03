@@ -1,0 +1,610 @@
+[
+  {
+    "_key": "checkout-prod",
+    "folderUid": "f-prod",
+    "created": "2026-04-26T15:30:00Z",
+    "updated": "2026-10-20T15:30:00Z",
+    "createdBy": "admin",
+    "updatedBy": "j.alvarez",
+    "dashboard": {
+      "id": 101,
+      "uid": "checkout-prod",
+      "title": "Checkout Service",
+      "tags": [
+        "checkout",
+        "prod",
+        "slo"
+      ],
+      "timezone": "utc",
+      "schemaVersion": 39,
+      "version": 7,
+      "editable": true,
+      "graphTooltip": 1,
+      "time": {
+        "from": "now-6h",
+        "to": "now"
+      },
+      "refresh": "30s",
+      "panels": [
+        {
+          "id": 1,
+          "type": "timeseries",
+          "title": "Request rate",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prom-prod"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 0
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prom-prod"
+              },
+              "expr": "sum by (status) (rate(http_requests_total{service=\"checkout\"}[5m]))",
+              "legendFormat": "{{status}}",
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "reqps"
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "type": "timeseries",
+          "title": "5xx error ratio",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prom-prod"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 0
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prom-prod"
+              },
+              "expr": "sum(rate(http_requests_total{service=\"checkout\",status=~\"5..\"}[5m])) / sum(rate(http_requests_total{service=\"checkout\"}[5m]))",
+              "legendFormat": "errors",
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit"
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          }
+        },
+        {
+          "id": 3,
+          "type": "timeseries",
+          "title": "p99 latency",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prom-prod"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prom-prod"
+              },
+              "expr": "histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{service=\"checkout\"}[5m])))",
+              "legendFormat": "p99",
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          }
+        },
+        {
+          "id": 4,
+          "type": "timeseries",
+          "title": "Pod memory",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prom-prod"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prom-prod"
+              },
+              "expr": "sum by (pod) (container_memory_working_set_bytes{container=\"checkout\"})",
+              "legendFormat": "{{pod}}",
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          }
+        }
+      ],
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "grafana",
+              "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
+      },
+      "templating": {
+        "list": []
+      },
+      "links": [],
+      "fiscalYearStartMonth": 0,
+      "liveNow": false,
+      "weekStart": ""
+    }
+  },
+  {
+    "_key": "orders-db",
+    "folderUid": "f-platform",
+    "created": "2026-04-26T15:30:00Z",
+    "updated": "2026-10-20T15:30:00Z",
+    "createdBy": "admin",
+    "updatedBy": "j.alvarez",
+    "dashboard": {
+      "id": 110,
+      "uid": "orders-db",
+      "title": "Orders DB",
+      "tags": [
+        "postgres",
+        "prod"
+      ],
+      "timezone": "utc",
+      "schemaVersion": 39,
+      "version": 4,
+      "editable": true,
+      "graphTooltip": 1,
+      "time": {
+        "from": "now-6h",
+        "to": "now"
+      },
+      "refresh": "30s",
+      "panels": [
+        {
+          "id": 1,
+          "type": "timeseries",
+          "title": "Replication lag",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prom-prod"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 0
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prom-prod"
+              },
+              "expr": "max by (instance) (pg_replication_lag_seconds{cluster=\"orders-db\"})",
+              "legendFormat": "{{instance}}",
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          }
+        }
+      ],
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "grafana",
+              "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
+      },
+      "templating": {
+        "list": []
+      },
+      "links": [],
+      "fiscalYearStartMonth": 0,
+      "liveNow": false,
+      "weekStart": ""
+    }
+  },
+  {
+    "_key": "payments-db-prod",
+    "folderUid": "f-prod",
+    "created": "2026-04-26T15:30:00Z",
+    "updated": "2026-10-20T15:30:00Z",
+    "createdBy": "admin",
+    "updatedBy": "j.alvarez",
+    "dashboard": {
+      "id": 120,
+      "uid": "payments-db-prod",
+      "title": "Payments DB",
+      "tags": [
+        "postgres",
+        "payments",
+        "prod"
+      ],
+      "timezone": "utc",
+      "schemaVersion": 39,
+      "version": 4,
+      "editable": true,
+      "graphTooltip": 1,
+      "time": {
+        "from": "now-6h",
+        "to": "now"
+      },
+      "refresh": "30s",
+      "panels": [
+        {
+          "id": 1,
+          "type": "timeseries",
+          "title": "Replication lag",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prom-prod"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 0
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prom-prod"
+              },
+              "expr": "max by (instance) (pg_replication_lag_seconds{cluster=\"payments-prod-db\"})",
+              "legendFormat": "{{instance}}",
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          }
+        }
+      ],
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "grafana",
+              "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
+      },
+      "templating": {
+        "list": []
+      },
+      "links": [],
+      "fiscalYearStartMonth": 0,
+      "liveNow": false,
+      "weekStart": ""
+    }
+  },
+  {
+    "_key": "payments-db-staging",
+    "folderUid": "f-staging",
+    "created": "2026-04-26T15:30:00Z",
+    "updated": "2026-10-20T15:30:00Z",
+    "createdBy": "admin",
+    "updatedBy": "j.alvarez",
+    "dashboard": {
+      "id": 121,
+      "uid": "payments-db-staging",
+      "title": "Payments DB (staging)",
+      "tags": [
+        "postgres",
+        "payments",
+        "staging"
+      ],
+      "timezone": "utc",
+      "schemaVersion": 39,
+      "version": 4,
+      "editable": true,
+      "graphTooltip": 1,
+      "time": {
+        "from": "now-6h",
+        "to": "now"
+      },
+      "refresh": "30s",
+      "panels": [
+        {
+          "id": 1,
+          "type": "timeseries",
+          "title": "Replication lag",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prom-staging"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 0
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prom-staging"
+              },
+              "expr": "max by (instance) (pg_replication_lag_seconds{cluster=\"payments-staging-db\"})",
+              "legendFormat": "{{instance}}",
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          }
+        }
+      ],
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "grafana",
+              "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
+      },
+      "templating": {
+        "list": []
+      },
+      "links": [],
+      "fiscalYearStartMonth": 0,
+      "liveNow": false,
+      "weekStart": ""
+    }
+  },
+  {
+    "_key": "payments-db-legacy",
+    "folderUid": "f-archive",
+    "created": "2026-04-26T15:30:00Z",
+    "updated": "2026-10-20T15:30:00Z",
+    "createdBy": "admin",
+    "updatedBy": "j.alvarez",
+    "dashboard": {
+      "id": 122,
+      "uid": "payments-db-legacy",
+      "title": "Payments DB (pg14, legacy)",
+      "tags": [
+        "postgres",
+        "payments",
+        "deprecated"
+      ],
+      "timezone": "utc",
+      "schemaVersion": 39,
+      "version": 4,
+      "editable": true,
+      "graphTooltip": 1,
+      "time": {
+        "from": "now-6h",
+        "to": "now"
+      },
+      "refresh": "30s",
+      "panels": [
+        {
+          "id": 1,
+          "type": "timeseries",
+          "title": "Replication lag",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prom-prod"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 0
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prom-prod"
+              },
+              "expr": "max by (instance) (pg_replication_lag_seconds{cluster=\"payments-prod-db\"})",
+              "legendFormat": "{{instance}}",
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          }
+        }
+      ],
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "grafana",
+              "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
+      },
+      "templating": {
+        "list": []
+      },
+      "links": [],
+      "fiscalYearStartMonth": 0,
+      "liveNow": false,
+      "weekStart": ""
+    }
+  }
+]

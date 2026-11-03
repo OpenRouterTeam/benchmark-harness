@@ -1,0 +1,839 @@
+[
+  {
+    "_key": "kube-system/coredns",
+    "metadata": {
+      "name": "coredns",
+      "namespace": "kube-system",
+      "uid": "6801ad47-277d-4c9c-a457-259d27997b8c",
+      "resourceVersion": "41204",
+      "creationTimestamp": "2025-10-19T08:40:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "coredns",
+        "k8s-app": "kube-dns"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 2,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "coredns"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "coredns",
+            "k8s-app": "kube-dns"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "coredns",
+              "image": "registry.k8s.io/coredns/coredns:v1.12.0",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "70Mi"
+                },
+                "limits": {
+                  "memory": "170Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 53,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      },
+      "strategy": {
+        "type": "RollingUpdate",
+        "rollingUpdate": {
+          "maxUnavailable": "25%",
+          "maxSurge": "25%"
+        }
+      },
+      "revisionHistoryLimit": 10,
+      "progressDeadlineSeconds": 600
+    },
+    "status": {
+      "observedGeneration": 1,
+      "replicas": 2,
+      "updatedReplicas": 2,
+      "readyReplicas": 2,
+      "availableReplicas": 2,
+      "conditions": [
+        {
+          "type": "Available",
+          "status": "True",
+          "lastUpdateTime": "2026-11-01T08:40:00Z",
+          "lastTransitionTime": "2026-11-01T08:40:00Z",
+          "reason": "MinimumReplicasAvailable",
+          "message": "Deployment has minimum availability."
+        },
+        {
+          "type": "Progressing",
+          "status": "True",
+          "lastUpdateTime": "2026-11-01T08:40:00Z",
+          "lastTransitionTime": "2025-10-19T08:40:00Z",
+          "reason": "NewReplicaSetAvailable",
+          "message": "ReplicaSet \"coredns-fq7th5455q\" has successfully progressed."
+        }
+      ]
+    }
+  },
+  {
+    "_key": "kube-system/metrics-server",
+    "metadata": {
+      "name": "metrics-server",
+      "namespace": "kube-system",
+      "uid": "b4e14320-6831-4fb5-a784-a60602739ef0",
+      "resourceVersion": "41272",
+      "creationTimestamp": "2025-10-19T08:40:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "metrics-server",
+        "k8s-app": "metrics-server"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 1,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "metrics-server"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "metrics-server",
+            "k8s-app": "metrics-server"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "metrics-server",
+              "image": "registry.k8s.io/metrics-server/metrics-server:v0.7.2",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "200Mi"
+                },
+                "limits": {
+                  "memory": "400Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 10250,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      },
+      "strategy": {
+        "type": "RollingUpdate",
+        "rollingUpdate": {
+          "maxUnavailable": "25%",
+          "maxSurge": "25%"
+        }
+      },
+      "revisionHistoryLimit": 10,
+      "progressDeadlineSeconds": 600
+    },
+    "status": {
+      "observedGeneration": 1,
+      "replicas": 1,
+      "updatedReplicas": 1,
+      "readyReplicas": 1,
+      "availableReplicas": 1,
+      "conditions": [
+        {
+          "type": "Available",
+          "status": "True",
+          "lastUpdateTime": "2026-11-01T08:40:00Z",
+          "lastTransitionTime": "2026-11-01T08:40:00Z",
+          "reason": "MinimumReplicasAvailable",
+          "message": "Deployment has minimum availability."
+        },
+        {
+          "type": "Progressing",
+          "status": "True",
+          "lastUpdateTime": "2026-11-01T08:40:00Z",
+          "lastTransitionTime": "2025-10-19T08:40:00Z",
+          "reason": "NewReplicaSetAvailable",
+          "message": "ReplicaSet \"metrics-server-52pzb89fg\" has successfully progressed."
+        }
+      ]
+    }
+  },
+  {
+    "_key": "payments/payments-api",
+    "metadata": {
+      "name": "payments-api",
+      "namespace": "payments",
+      "uid": "c5ceb222-e1e8-40b8-a1bf-f2fa3dcd72dc",
+      "resourceVersion": "41425",
+      "creationTimestamp": "2026-09-04T08:40:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "payments-api",
+        "team": "payments"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 3,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "payments-api"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "payments-api",
+            "team": "payments"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "payments-api",
+              "image": "ghcr.io/octo-corp/payments-api:2.14.1",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "256Mi"
+                },
+                "limits": {
+                  "memory": "512Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 8080,
+                  "protocol": "TCP"
+                }
+              ],
+              "env": [
+                {
+                  "name": "LEDGER_URL",
+                  "value": "http://ledger-worker.payments.svc:8080"
+                },
+                {
+                  "name": "LOG_LEVEL",
+                  "value": "info"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      },
+      "strategy": {
+        "type": "RollingUpdate",
+        "rollingUpdate": {
+          "maxUnavailable": "25%",
+          "maxSurge": "25%"
+        }
+      },
+      "revisionHistoryLimit": 10,
+      "progressDeadlineSeconds": 600
+    },
+    "status": {
+      "observedGeneration": 1,
+      "replicas": 3,
+      "updatedReplicas": 3,
+      "readyReplicas": 3,
+      "availableReplicas": 3,
+      "conditions": [
+        {
+          "type": "Available",
+          "status": "True",
+          "lastUpdateTime": "2026-11-01T08:40:00Z",
+          "lastTransitionTime": "2026-11-01T08:40:00Z",
+          "reason": "MinimumReplicasAvailable",
+          "message": "Deployment has minimum availability."
+        },
+        {
+          "type": "Progressing",
+          "status": "True",
+          "lastUpdateTime": "2026-11-01T08:40:00Z",
+          "lastTransitionTime": "2026-09-04T08:40:00Z",
+          "reason": "NewReplicaSetAvailable",
+          "message": "ReplicaSet \"payments-api-86zf47v9z\" has successfully progressed."
+        }
+      ]
+    }
+  },
+  {
+    "_key": "payments/ledger-worker",
+    "metadata": {
+      "name": "ledger-worker",
+      "namespace": "payments",
+      "uid": "2a09055a-4199-4a88-a7d0-86e10953dc05",
+      "resourceVersion": "41510",
+      "creationTimestamp": "2026-09-04T08:40:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "ledger-worker",
+        "team": "payments"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/revision": "7"
+      },
+      "generation": 7
+    },
+    "spec": {
+      "replicas": 2,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "ledger-worker"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "ledger-worker",
+            "team": "payments"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "ledger-worker",
+              "image": "ghcr.io/octo-corp/ledger-worker:1.9.0",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "128Mi"
+                },
+                "limits": {
+                  "memory": "256Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 8080,
+                  "protocol": "TCP"
+                }
+              ],
+              "env": [
+                {
+                  "name": "LEDGER_DB_HOST",
+                  "value": "ledger-db.payments.svc"
+                },
+                {
+                  "name": "LEDGER_DB_USER",
+                  "value": "ledger"
+                },
+                {
+                  "name": "KAFKA_BROKERS",
+                  "value": "kafka-0.kafka.data.svc:9092"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      },
+      "strategy": {
+        "type": "RollingUpdate",
+        "rollingUpdate": {
+          "maxUnavailable": "25%",
+          "maxSurge": "25%"
+        }
+      },
+      "revisionHistoryLimit": 10,
+      "progressDeadlineSeconds": 600
+    },
+    "status": {
+      "observedGeneration": 7,
+      "replicas": 2,
+      "updatedReplicas": 2,
+      "readyReplicas": 1,
+      "availableReplicas": 1,
+      "unavailableReplicas": 1,
+      "conditions": [
+        {
+          "type": "Available",
+          "status": "True",
+          "lastUpdateTime": "2026-11-01T08:40:00Z",
+          "lastTransitionTime": "2026-11-01T08:40:00Z",
+          "reason": "MinimumReplicasAvailable",
+          "message": "Deployment has minimum availability."
+        },
+        {
+          "type": "Progressing",
+          "status": "True",
+          "lastUpdateTime": "2026-11-01T08:40:00Z",
+          "lastTransitionTime": "2026-09-04T08:40:00Z",
+          "reason": "NewReplicaSetAvailable",
+          "message": "ReplicaSet \"ledger-worker-zx4mrndj8b\" has successfully progressed."
+        }
+      ]
+    }
+  },
+  {
+    "_key": "payments/refund-scheduler",
+    "metadata": {
+      "name": "refund-scheduler",
+      "namespace": "payments",
+      "uid": "511ab889-670b-47cc-aea0-39b8dcd73e5e",
+      "resourceVersion": "41578",
+      "creationTimestamp": "2026-09-04T08:40:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "refund-scheduler",
+        "team": "payments"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 1,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "refund-scheduler"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "refund-scheduler",
+            "team": "payments"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "refund-scheduler",
+              "image": "ghcr.io/octo-corp/refund-scheduler:0.6.3",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "128Mi"
+                },
+                "limits": {
+                  "memory": "256Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File"
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      },
+      "strategy": {
+        "type": "RollingUpdate",
+        "rollingUpdate": {
+          "maxUnavailable": "25%",
+          "maxSurge": "25%"
+        }
+      },
+      "revisionHistoryLimit": 10,
+      "progressDeadlineSeconds": 600
+    },
+    "status": {
+      "observedGeneration": 1,
+      "replicas": 1,
+      "updatedReplicas": 1,
+      "readyReplicas": 1,
+      "availableReplicas": 1,
+      "conditions": [
+        {
+          "type": "Available",
+          "status": "True",
+          "lastUpdateTime": "2026-11-01T08:40:00Z",
+          "lastTransitionTime": "2026-11-01T08:40:00Z",
+          "reason": "MinimumReplicasAvailable",
+          "message": "Deployment has minimum availability."
+        },
+        {
+          "type": "Progressing",
+          "status": "True",
+          "lastUpdateTime": "2026-11-01T08:40:00Z",
+          "lastTransitionTime": "2026-09-04T08:40:00Z",
+          "reason": "NewReplicaSetAvailable",
+          "message": "ReplicaSet \"refund-scheduler-jrh52sks4\" has successfully progressed."
+        }
+      ]
+    }
+  },
+  {
+    "_key": "payments-staging/ledger-worker",
+    "metadata": {
+      "name": "ledger-worker",
+      "namespace": "payments-staging",
+      "uid": "db4917ef-35c3-4eae-a831-d323aa3b4b98",
+      "resourceVersion": "41663",
+      "creationTimestamp": "2026-09-04T08:40:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "ledger-worker",
+        "team": "payments"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/revision": "12"
+      },
+      "generation": 12
+    },
+    "spec": {
+      "replicas": 1,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "ledger-worker"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "ledger-worker",
+            "team": "payments"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "ledger-worker",
+              "image": "ghcr.io/octo-corp/ledger-worker:1.10.0-rc.2",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "128Mi"
+                },
+                "limits": {
+                  "memory": "256Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 8080,
+                  "protocol": "TCP"
+                }
+              ],
+              "env": [
+                {
+                  "name": "LEDGER_DB_HOST",
+                  "value": "ledger-db.payments-staging.svc"
+                },
+                {
+                  "name": "LEDGER_DB_USER",
+                  "value": "ledger"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      },
+      "strategy": {
+        "type": "RollingUpdate",
+        "rollingUpdate": {
+          "maxUnavailable": "25%",
+          "maxSurge": "25%"
+        }
+      },
+      "revisionHistoryLimit": 10,
+      "progressDeadlineSeconds": 600
+    },
+    "status": {
+      "observedGeneration": 12,
+      "replicas": 1,
+      "updatedReplicas": 1,
+      "readyReplicas": 0,
+      "availableReplicas": 0,
+      "unavailableReplicas": 1,
+      "conditions": [
+        {
+          "type": "Available",
+          "status": "False",
+          "lastUpdateTime": "2026-11-01T08:40:00Z",
+          "lastTransitionTime": "2026-11-01T08:40:00Z",
+          "reason": "MinimumReplicasUnavailable",
+          "message": "Deployment does not have minimum availability."
+        },
+        {
+          "type": "Progressing",
+          "status": "True",
+          "lastUpdateTime": "2026-11-01T08:40:00Z",
+          "lastTransitionTime": "2026-09-04T08:40:00Z",
+          "reason": "NewReplicaSetAvailable",
+          "message": "ReplicaSet \"ledger-worker-c64m9bbw8\" has successfully progressed."
+        }
+      ]
+    }
+  },
+  {
+    "_key": "payments-staging/payments-api",
+    "metadata": {
+      "name": "payments-api",
+      "namespace": "payments-staging",
+      "uid": "3171364d-c3b0-49f3-ab8f-595106efb47c",
+      "resourceVersion": "41714",
+      "creationTimestamp": "2026-09-04T08:40:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "payments-api",
+        "team": "payments"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 1,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "payments-api"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "payments-api",
+            "team": "payments"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "payments-api",
+              "image": "ghcr.io/octo-corp/payments-api:2.15.0-rc.1",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "128Mi"
+                },
+                "limits": {
+                  "memory": "512Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 8080,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      },
+      "strategy": {
+        "type": "RollingUpdate",
+        "rollingUpdate": {
+          "maxUnavailable": "25%",
+          "maxSurge": "25%"
+        }
+      },
+      "revisionHistoryLimit": 10,
+      "progressDeadlineSeconds": 600
+    },
+    "status": {
+      "observedGeneration": 1,
+      "replicas": 1,
+      "updatedReplicas": 1,
+      "readyReplicas": 1,
+      "availableReplicas": 1,
+      "conditions": [
+        {
+          "type": "Available",
+          "status": "True",
+          "lastUpdateTime": "2026-11-01T08:40:00Z",
+          "lastTransitionTime": "2026-11-01T08:40:00Z",
+          "reason": "MinimumReplicasAvailable",
+          "message": "Deployment has minimum availability."
+        },
+        {
+          "type": "Progressing",
+          "status": "True",
+          "lastUpdateTime": "2026-11-01T08:40:00Z",
+          "lastTransitionTime": "2026-09-04T08:40:00Z",
+          "reason": "NewReplicaSetAvailable",
+          "message": "ReplicaSet \"payments-api-jlmdhmtwc4\" has successfully progressed."
+        }
+      ]
+    }
+  },
+  {
+    "_key": "checkout/checkout-web",
+    "metadata": {
+      "name": "checkout-web",
+      "namespace": "checkout",
+      "uid": "6da0e11e-8416-42af-a5ab-6cc5e6e351dd",
+      "resourceVersion": "41765",
+      "creationTimestamp": "2026-09-04T08:40:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "checkout-web",
+        "team": "checkout"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 2,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "checkout-web"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "checkout-web",
+            "team": "checkout"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "checkout-web",
+              "image": "ghcr.io/octo-corp/checkout-web:5.2.0",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "128Mi"
+                },
+                "limits": {
+                  "memory": "512Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 3000,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      },
+      "strategy": {
+        "type": "RollingUpdate",
+        "rollingUpdate": {
+          "maxUnavailable": "25%",
+          "maxSurge": "25%"
+        }
+      },
+      "revisionHistoryLimit": 10,
+      "progressDeadlineSeconds": 600
+    },
+    "status": {
+      "observedGeneration": 1,
+      "replicas": 2,
+      "updatedReplicas": 2,
+      "readyReplicas": 2,
+      "availableReplicas": 2,
+      "conditions": [
+        {
+          "type": "Available",
+          "status": "True",
+          "lastUpdateTime": "2026-11-01T08:40:00Z",
+          "lastTransitionTime": "2026-11-01T08:40:00Z",
+          "reason": "MinimumReplicasAvailable",
+          "message": "Deployment has minimum availability."
+        },
+        {
+          "type": "Progressing",
+          "status": "True",
+          "lastUpdateTime": "2026-11-01T08:40:00Z",
+          "lastTransitionTime": "2026-09-04T08:40:00Z",
+          "reason": "NewReplicaSetAvailable",
+          "message": "ReplicaSet \"checkout-web-9725xrrfc\" has successfully progressed."
+        }
+      ]
+    }
+  }
+]

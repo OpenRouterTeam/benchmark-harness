@@ -1,0 +1,65 @@
+[
+  {
+    "id": "PSTS001",
+    "description": "investigating",
+    "post_type": "incident",
+    "status_page": {
+      "id": "PSTPG01",
+      "type": "status_page"
+    }
+  },
+  {
+    "id": "PSTS002",
+    "description": "identified",
+    "post_type": "incident",
+    "status_page": {
+      "id": "PSTPG01",
+      "type": "status_page"
+    }
+  },
+  {
+    "id": "PSTS003",
+    "description": "monitoring",
+    "post_type": "incident",
+    "status_page": {
+      "id": "PSTPG01",
+      "type": "status_page"
+    }
+  },
+  {
+    "id": "PSTS004",
+    "description": "resolved",
+    "post_type": "incident",
+    "status_page": {
+      "id": "PSTPG01",
+      "type": "status_page"
+    }
+  },
+  {
+    "id": "PSTS005",
+    "description": "scheduled",
+    "post_type": "maintenance",
+    "status_page": {
+      "id": "PSTPG01",
+      "type": "status_page"
+    }
+  },
+  {
+    "id": "PSTS006",
+    "description": "in progress",
+    "post_type": "maintenance",
+    "status_page": {
+      "id": "PSTPG01",
+      "type": "status_page"
+    }
+  },
+  {
+    "id": "PSTS007",
+    "description": "completed",
+    "post_type": "maintenance",
+    "status_page": {
+      "id": "PSTPG01",
+      "type": "status_page"
+    }
+  }
+]

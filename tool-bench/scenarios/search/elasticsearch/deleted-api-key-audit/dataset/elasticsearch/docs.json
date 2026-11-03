@@ -1,0 +1,101 @@
+[
+  {
+    "_key": "audit-security-2026.10/a1",
+    "@timestamp": "2026-10-28T10:02:11Z",
+    "event_action": "api_key.create",
+    "event_outcome": "success",
+    "actor": "r.chen",
+    "actor_ip": "10.8.3.21",
+    "target_type": "api_key",
+    "target_name": "ci-deploy-bot",
+    "details": "Created API key ci-deploy-bot with scope deploy:write"
+  },
+  {
+    "_key": "audit-security-2026.10/a2",
+    "@timestamp": "2026-10-29T09:15:40Z",
+    "event_action": "user.login",
+    "event_outcome": "success",
+    "actor": "m.okafor",
+    "actor_ip": "10.8.4.77",
+    "target_type": "user",
+    "target_name": "m.okafor",
+    "details": "Interactive login via SSO"
+  },
+  {
+    "_key": "audit-security-2026.10/a3",
+    "@timestamp": "2026-10-29T14:05:02Z",
+    "event_action": "api_key.delete",
+    "event_outcome": "failure",
+    "actor": "j.doe",
+    "actor_ip": "10.8.9.14",
+    "target_type": "api_key",
+    "target_name": "ci-deploy-bot",
+    "details": "Delete API key ci-deploy-bot denied: missing permission keys:admin"
+  },
+  {
+    "_key": "audit-security-2026.10/a4",
+    "@timestamp": "2026-10-29T16:42:57Z",
+    "event_action": "api_key.delete",
+    "event_outcome": "success",
+    "actor": "m.okafor",
+    "actor_ip": "10.8.4.77",
+    "target_type": "api_key",
+    "target_name": "ci-deploy-bot",
+    "details": "Deleted API key ci-deploy-bot"
+  },
+  {
+    "_key": "audit-security-2026.10/a5",
+    "@timestamp": "2026-10-29T16:44:10Z",
+    "event_action": "api_key.create",
+    "event_outcome": "success",
+    "actor": "m.okafor",
+    "actor_ip": "10.8.4.77",
+    "target_type": "api_key",
+    "target_name": "ci-deploy-bot-v2",
+    "details": "Created API key ci-deploy-bot-v2 with scope deploy:write"
+  },
+  {
+    "_key": "audit-security-2026.10/a6",
+    "@timestamp": "2026-10-29T17:30:00Z",
+    "event_action": "api_key.delete",
+    "event_outcome": "success",
+    "actor": "r.chen",
+    "actor_ip": "10.8.3.21",
+    "target_type": "api_key",
+    "target_name": "ci-deploy-bot-staging",
+    "details": "Deleted API key ci-deploy-bot-staging"
+  },
+  {
+    "_key": "audit-security-2026.10/a7",
+    "@timestamp": "2026-10-30T08:01:00Z",
+    "event_action": "user.login",
+    "event_outcome": "success",
+    "actor": "j.doe",
+    "actor_ip": "10.8.9.14",
+    "target_type": "user",
+    "target_name": "j.doe",
+    "details": "Interactive login via SSO"
+  },
+  {
+    "_key": "audit-security-legacy/l1",
+    "@timestamp": "2026-08-12T11:00:00Z",
+    "event_action": "api_key.delete",
+    "event_outcome": "success",
+    "actor": "a.santos",
+    "actor_ip": "10.2.0.5",
+    "target_type": "api_key",
+    "target_name": "ci-deploy-bot",
+    "details": "Deleted API key ci-deploy-bot (legacy cluster)"
+  },
+  {
+    "_key": "audit-security-legacy/l2",
+    "@timestamp": "2026-08-12T11:05:00Z",
+    "event_action": "api_key.create",
+    "event_outcome": "success",
+    "actor": "a.santos",
+    "actor_ip": "10.2.0.5",
+    "target_type": "api_key",
+    "target_name": "ci-deploy-bot",
+    "details": "Created API key ci-deploy-bot (legacy cluster)"
+  }
+]

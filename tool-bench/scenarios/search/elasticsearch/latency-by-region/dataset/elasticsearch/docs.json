@@ -1,0 +1,272 @@
+[
+  {
+    "_key": "requests-checkout-2026.10/r0000",
+    "@timestamp": "2026-10-30T09:00:00Z",
+    "region": "eu-west-1",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 380,
+    "customer_tier": "free"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0001",
+    "@timestamp": "2026-10-30T10:07:00Z",
+    "region": "eu-west-1",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 395,
+    "customer_tier": "pro"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0002",
+    "@timestamp": "2026-10-30T11:14:00Z",
+    "region": "eu-west-1",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 410,
+    "customer_tier": "enterprise"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0003",
+    "@timestamp": "2026-10-30T12:21:00Z",
+    "region": "eu-west-1",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 420,
+    "customer_tier": "free"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0004",
+    "@timestamp": "2026-10-30T13:28:00Z",
+    "region": "eu-west-1",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 430,
+    "customer_tier": "pro"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0005",
+    "@timestamp": "2026-10-30T14:35:00Z",
+    "region": "eu-west-1",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 440,
+    "customer_tier": "enterprise"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0006",
+    "@timestamp": "2026-10-30T09:42:00Z",
+    "region": "ap-southeast-2",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 290,
+    "customer_tier": "free"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0007",
+    "@timestamp": "2026-10-30T10:49:00Z",
+    "region": "ap-southeast-2",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 300,
+    "customer_tier": "pro"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0008",
+    "@timestamp": "2026-10-30T11:56:00Z",
+    "region": "ap-southeast-2",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 305,
+    "customer_tier": "enterprise"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0009",
+    "@timestamp": "2026-10-30T12:03:00Z",
+    "region": "ap-southeast-2",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 310,
+    "customer_tier": "free"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0010",
+    "@timestamp": "2026-10-30T13:10:00Z",
+    "region": "ap-southeast-2",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 320,
+    "customer_tier": "pro"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0011",
+    "@timestamp": "2026-10-30T09:17:00Z",
+    "region": "us-east-1",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 190,
+    "customer_tier": "enterprise"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0012",
+    "@timestamp": "2026-10-30T10:24:00Z",
+    "region": "us-east-1",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 200,
+    "customer_tier": "free"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0013",
+    "@timestamp": "2026-10-30T11:31:00Z",
+    "region": "us-east-1",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 205,
+    "customer_tier": "pro"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0014",
+    "@timestamp": "2026-10-30T12:38:00Z",
+    "region": "us-east-1",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 210,
+    "customer_tier": "enterprise"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0015",
+    "@timestamp": "2026-10-30T13:45:00Z",
+    "region": "us-east-1",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 215,
+    "customer_tier": "free"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0016",
+    "@timestamp": "2026-10-30T14:52:00Z",
+    "region": "us-east-1",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 220,
+    "customer_tier": "pro"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0017",
+    "@timestamp": "2026-10-30T15:59:00Z",
+    "region": "us-east-1",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 230,
+    "customer_tier": "enterprise"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0018",
+    "@timestamp": "2026-10-30T11:15:00Z",
+    "region": "us-east-1",
+    "endpoint": "/checkout/submit",
+    "status_code": 504,
+    "duration_ms": 30000,
+    "customer_tier": "pro"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0019",
+    "@timestamp": "2026-10-30T12:15:00Z",
+    "region": "us-east-1",
+    "endpoint": "/checkout/submit",
+    "status_code": 504,
+    "duration_ms": 30000,
+    "customer_tier": "pro"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0020",
+    "@timestamp": "2026-10-30T13:15:00Z",
+    "region": "us-east-1",
+    "endpoint": "/checkout/submit",
+    "status_code": 504,
+    "duration_ms": 29870,
+    "customer_tier": "pro"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0021",
+    "@timestamp": "2026-10-29T10:00:00Z",
+    "region": "ap-southeast-2",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 900,
+    "customer_tier": "free"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0022",
+    "@timestamp": "2026-10-29T11:00:00Z",
+    "region": "ap-southeast-2",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 950,
+    "customer_tier": "free"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0023",
+    "@timestamp": "2026-10-29T12:00:00Z",
+    "region": "ap-southeast-2",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 1000,
+    "customer_tier": "free"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0024",
+    "@timestamp": "2026-10-30T12:30:00Z",
+    "region": "ap-southeast-2",
+    "endpoint": "/checkout/export-invoices",
+    "status_code": 200,
+    "duration_ms": 1200,
+    "customer_tier": "enterprise"
+  },
+  {
+    "_key": "requests-checkout-2026.10/r0025",
+    "@timestamp": "2026-10-30T13:30:00Z",
+    "region": "ap-southeast-2",
+    "endpoint": "/checkout/export-invoices",
+    "status_code": 200,
+    "duration_ms": 1300,
+    "customer_tier": "enterprise"
+  },
+  {
+    "_key": "requests-checkout-2026.09/s0",
+    "@timestamp": "2026-09-30T10:00:00Z",
+    "region": "eu-west-1",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 150,
+    "customer_tier": "pro"
+  },
+  {
+    "_key": "requests-checkout-2026.09/s1",
+    "@timestamp": "2026-09-30T10:01:00Z",
+    "region": "eu-west-1",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 150,
+    "customer_tier": "pro"
+  },
+  {
+    "_key": "requests-checkout-2026.09/s2",
+    "@timestamp": "2026-09-30T10:02:00Z",
+    "region": "eu-west-1",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 150,
+    "customer_tier": "pro"
+  },
+  {
+    "_key": "requests-checkout-2026.09/s3",
+    "@timestamp": "2026-09-30T10:03:00Z",
+    "region": "eu-west-1",
+    "endpoint": "/checkout/submit",
+    "status_code": 200,
+    "duration_ms": 150,
+    "customer_tier": "pro"
+  }
+]

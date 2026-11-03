@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"hubspot-batch-update-objects","arguments":{"inputs":[{"id":"512001","properties":{"company":"Pied Piper","email":"dana.whitfield@piedpiper.com","jobtitle":"Director of Data Platform"}}],"objectType":"contacts"}}}

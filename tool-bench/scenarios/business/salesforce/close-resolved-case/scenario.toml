@@ -1,0 +1,50 @@
+[scenario]
+id = "business/salesforce/close-resolved-case"
+title = "Close a resolved support case for the right customer"
+now = "2026-05-12T15:00:00Z"
+seed = "business-salesforce-close-resolved-case"
+services = ["salesforce"]
+tags = ["write", "single-service", "salesforce", "disambiguation"]
+timeout_sec = 900
+
+# Target: case 00001041 "Label printer sync failing after warehouse upgrade" (Bluefin Logistics).
+[[expect.state]]
+pointer = "/services/salesforce/Case/5005g00000spz8MAAQ/Status"
+equals = "Closed"
+
+[[expect.state]]
+pointer = "/services/salesforce/Case/5005g00000spz8MAAQ/Reason"
+equals = "Performance"
+
+[[expect.state]]
+pointer = "/services/salesforce/Case/5005g00000spz8MAAQ/IsClosed"
+equals = true
+
+# Look-alike at Bluefin Marine Supply stays open.
+[[expect.state]]
+pointer = "/services/salesforce/Case/5005g00000DXqN3AAL/Status"
+equals = "Working"
+
+# Bluefin Logistics' other open case stays open.
+[[expect.state]]
+pointer = "/services/salesforce/Case/5005g000004FwGBAA0/Status"
+equals = "New"
+
+[[expect.required_calls]]
+service = "salesforce"
+method = "PATCH"
+path_regex = "^/services/data/v[0-9.]+/(composite/sobjects|sobjects/Case/5005g00000spz8M(AAQ)?)$"
+
+[[expect.forbidden_calls]]
+service = "salesforce"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "salesforce"
+tool = "salesforce_query_records"
+arguments = { objectName = "Case", fields = ["Id", "CaseNumber", "Subject", "Status", "Account.Name"], whereClause = "Account.Name = 'Bluefin Logistics' AND IsClosed = false" }
+
+[[solution.call]]
+endpoint = "salesforce"
+tool = "salesforce_dml_records"
+arguments = { operation = "update", objectName = "Case", records = [{ Id = "5005g00000spz8MAAQ", Status = "Closed", Reason = "Performance" }] }

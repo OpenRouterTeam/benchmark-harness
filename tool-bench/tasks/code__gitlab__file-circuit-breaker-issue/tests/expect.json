@@ -1,0 +1,105 @@
+{
+  "state": [
+    {
+      "pointer": "/services/gitlab/issues/northwind~1payments~1checkout-api#58/title",
+      "equals": "Add circuit breaker around fraud-score service calls",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/gitlab/issues/northwind~1payments~1checkout-api#58/description",
+      "equals": null,
+      "exists": null,
+      "contains": "fraud-score",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/gitlab/issues/northwind~1payments~1checkout-api#58/labels",
+      "equals": null,
+      "exists": null,
+      "contains": "backend",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/gitlab/issues/northwind~1payments~1checkout-api#58/labels",
+      "equals": null,
+      "exists": null,
+      "contains": "reliability",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/gitlab/issues/northwind~1payments~1checkout-api#58/milestone_id",
+      "equals": 7104,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/gitlab/issues/northwind~1payments~1checkout-api#58/assignees",
+      "equals": [
+        "mei.chen"
+      ],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/gitlab/issues/northwind~1payments~1checkout-api#59",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/gitlab/labels/northwind~1payments~1checkout-api~0reliability",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "gitlab",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/api/v4/projects/[^/]+/issues$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "gitlab",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "gitlab",
+      "method": "PUT",
+      "path": null,
+      "path_regex": "^/api/v4/projects/[^/]+/issues/(51|53|54|56|57)$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

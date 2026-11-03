@@ -1,0 +1,139 @@
+[
+  {
+    "id": "x7k-9p2-mq4",
+    "title": "Checkout Service Overview",
+    "description": "service:checkout-api,team:payments",
+    "author_handle": "priya.raman@octo-corp.example",
+    "author_name": "Priya Raman",
+    "layout_type": "ordered",
+    "url": "/dashboard/x7k-9p2-mq4/checkout-service-overview",
+    "is_read_only": false,
+    "template_variables": [
+      {
+        "name": "env",
+        "prefix": "env",
+        "available_values": [],
+        "default": "prod"
+      }
+    ],
+    "widgets": [
+      {
+        "id": 1414350930101,
+        "definition": {
+          "title": "p95 latency",
+          "type": "timeseries",
+          "show_legend": true,
+          "requests": [
+            {
+              "q": "avg:checkout.api.latency.p95{$env,service:checkout-api}",
+              "display_type": "line"
+            }
+          ]
+        },
+        "layout": {
+          "x": 0,
+          "y": 0,
+          "width": 6,
+          "height": 3
+        }
+      },
+      {
+        "id": 1414350930102,
+        "definition": {
+          "type": "note",
+          "content": "Runbook: https://wiki.octo-corp.example/checkout",
+          "background_color": "yellow",
+          "font_size": "14",
+          "text_align": "left",
+          "show_tick": false,
+          "tick_pos": "50%",
+          "tick_edge": "left",
+          "has_padding": true
+        }
+      }
+    ],
+    "notify_list": [],
+    "created_at": "2026-02-10T09:00:00.000000+00:00",
+    "modified_at": "2026-10-20T12:30:00.000000+00:00",
+    "reflow_type": "auto",
+    "tags": [
+      "team:payments"
+    ],
+    "restricted_roles": [],
+    "is_shared": true,
+    "deleted_at": null
+  },
+  {
+    "id": "b2c-4rt-8zz",
+    "title": "Platform Hosts",
+    "description": "team:platform",
+    "author_handle": "priya.raman@octo-corp.example",
+    "author_name": "Priya Raman",
+    "layout_type": "ordered",
+    "url": "/dashboard/b2c-4rt-8zz/platform-hosts",
+    "is_read_only": false,
+    "template_variables": [
+      {
+        "name": "env",
+        "prefix": "env",
+        "available_values": [],
+        "default": "prod"
+      }
+    ],
+    "widgets": [
+      {
+        "id": 1414350930102,
+        "definition": {
+          "type": "note",
+          "content": "Runbook: https://wiki.octo-corp.example/checkout",
+          "background_color": "yellow",
+          "font_size": "14",
+          "text_align": "left",
+          "show_tick": false,
+          "tick_pos": "50%",
+          "tick_edge": "left",
+          "has_padding": true
+        }
+      }
+    ],
+    "notify_list": [],
+    "created_at": "2026-02-10T09:00:00.000000+00:00",
+    "modified_at": "2026-10-20T12:30:00.000000+00:00",
+    "reflow_type": "auto",
+    "tags": [
+      "team:payments"
+    ],
+    "restricted_roles": [],
+    "is_shared": false,
+    "deleted_at": null
+  },
+  {
+    "id": "old-123-del",
+    "title": "Legacy Checkout (old)",
+    "description": "deprecated",
+    "author_handle": "priya.raman@octo-corp.example",
+    "author_name": "Priya Raman",
+    "layout_type": "ordered",
+    "url": "/dashboard/old-123-del/legacy-checkout-(old)",
+    "is_read_only": false,
+    "template_variables": [
+      {
+        "name": "env",
+        "prefix": "env",
+        "available_values": [],
+        "default": "prod"
+      }
+    ],
+    "widgets": [],
+    "notify_list": [],
+    "created_at": "2026-02-10T09:00:00.000000+00:00",
+    "modified_at": "2026-10-20T12:30:00.000000+00:00",
+    "reflow_type": "auto",
+    "tags": [
+      "team:payments"
+    ],
+    "restricted_roles": [],
+    "is_shared": false,
+    "deleted_at": "2026-09-01T00:00:00.000000+00:00"
+  }
+]

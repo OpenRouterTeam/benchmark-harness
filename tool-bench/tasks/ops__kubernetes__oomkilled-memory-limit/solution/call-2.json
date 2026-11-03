@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"resources_create_or_update","arguments":{"resource":"apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: report-builder\n  namespace: analytics\nspec:\n  template:\n    spec:\n      containers:\n        - name: report-builder\n          resources:\n            limits:\n              memory: 1Gi\n"}}}

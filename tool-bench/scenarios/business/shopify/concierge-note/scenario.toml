@@ -1,0 +1,55 @@
+[scenario]
+id = "business/shopify/concierge-note"
+title = "Add a delivery note to the right customer's unshipped order"
+now = "2026-05-18T14:00:00Z"
+seed = "business-shopify-concierge-note"
+services = ["shopify"]
+tags = ["single-service", "write", "shopify", "disambiguation"]
+timeout_sec = 900
+
+# Two customers are named Sam Ortiz. The one at sam.ortiz@fastmail.com (7301) has a
+# fulfilled order #1051 (5551) and one unshipped order #1063 (5563) - the target. The other
+# Sam Ortiz (sortiz@gmail.com) has an unshipped order #1060 (5560) with its own note.
+[[expect.state]]
+pointer = "/services/shopify/orders/5563/note"
+contains = "Leave with building concierge"
+
+[[expect.state]]
+pointer = "/services/shopify/orders/5560/note"
+equals = "Gift wrap please"
+
+[[expect.required_calls]]
+service = "shopify"
+method = "POST"
+body = { variables = { input = { id = "gid://shopify/Order/5563" } } }
+
+[[expect.forbidden_calls]]
+service = "shopify"
+body = { variables = { input = { id = "gid://shopify/Order/5560" } } }
+
+[[expect.forbidden_calls]]
+service = "shopify"
+body = { variables = { input = { id = "gid://shopify/Order/5551" } } }
+
+[[expect.forbidden_calls]]
+service = "shopify"
+body = { variables = { input = { id = "gid://shopify/Order/5564" } } }
+
+[[expect.forbidden_calls]]
+service = "shopify"
+body = { variables = { input = { id = "gid://shopify/Order/5558" } } }
+
+[[solution.call]]
+endpoint = "shopify"
+tool = "get-customers"
+arguments = { searchQuery = "email:sam.ortiz@fastmail.com" }
+
+[[solution.call]]
+endpoint = "shopify"
+tool = "get-customer-orders"
+arguments = { customerId = "7301" }
+
+[[solution.call]]
+endpoint = "shopify"
+tool = "update-order"
+arguments = { id = "gid://shopify/Order/5563", note = "Leave with building concierge" }

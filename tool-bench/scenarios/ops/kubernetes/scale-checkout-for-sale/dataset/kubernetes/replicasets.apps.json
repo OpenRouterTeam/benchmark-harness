@@ -1,0 +1,803 @@
+[
+  {
+    "_key": "kube-system/coredns-fq7th5455q",
+    "metadata": {
+      "name": "coredns-fq7th5455q",
+      "namespace": "kube-system",
+      "uid": "84caa95f-f60b-42fa-a34a-e0eb02cc9359",
+      "resourceVersion": "41221",
+      "creationTimestamp": "2026-11-25T13:05:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "coredns",
+        "k8s-app": "kube-dns",
+        "pod-template-hash": "fq7th5455q"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/desired-replicas": "2",
+        "deployment.kubernetes.io/max-replicas": "3",
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "name": "coredns",
+          "uid": "6801ad47-277d-4c9c-a457-259d27997b8c",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ],
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 2,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "coredns",
+          "pod-template-hash": "fq7th5455q"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "coredns",
+            "k8s-app": "kube-dns",
+            "pod-template-hash": "fq7th5455q"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "coredns",
+              "image": "registry.k8s.io/coredns/coredns:v1.12.0",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "70Mi"
+                },
+                "limits": {
+                  "memory": "170Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 53,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      }
+    },
+    "status": {
+      "replicas": 2,
+      "fullyLabeledReplicas": 2,
+      "readyReplicas": 2,
+      "availableReplicas": 2,
+      "observedGeneration": 1
+    }
+  },
+  {
+    "_key": "kube-system/metrics-server-52pzb89fg",
+    "metadata": {
+      "name": "metrics-server-52pzb89fg",
+      "namespace": "kube-system",
+      "uid": "3241fb1e-517d-47c7-a900-5fae1102a27f",
+      "resourceVersion": "41289",
+      "creationTimestamp": "2026-11-25T13:05:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "metrics-server",
+        "k8s-app": "metrics-server",
+        "pod-template-hash": "52pzb89fg"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/desired-replicas": "1",
+        "deployment.kubernetes.io/max-replicas": "2",
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "name": "metrics-server",
+          "uid": "b4e14320-6831-4fb5-a784-a60602739ef0",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ],
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 1,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "metrics-server",
+          "pod-template-hash": "52pzb89fg"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "metrics-server",
+            "k8s-app": "metrics-server",
+            "pod-template-hash": "52pzb89fg"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "metrics-server",
+              "image": "registry.k8s.io/metrics-server/metrics-server:v0.7.2",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "200Mi"
+                },
+                "limits": {
+                  "memory": "400Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 10250,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      }
+    },
+    "status": {
+      "replicas": 1,
+      "fullyLabeledReplicas": 1,
+      "readyReplicas": 1,
+      "availableReplicas": 1,
+      "observedGeneration": 1
+    }
+  },
+  {
+    "_key": "shop-prod/checkout-tscdrh8t48",
+    "metadata": {
+      "name": "checkout-tscdrh8t48",
+      "namespace": "shop-prod",
+      "uid": "77a7ad33-adb2-4b6e-a56f-6c5b2e50cb7f",
+      "resourceVersion": "41442",
+      "creationTimestamp": "2026-11-25T13:05:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "checkout",
+        "team": "shop",
+        "pod-template-hash": "tscdrh8t48"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/desired-replicas": "3",
+        "deployment.kubernetes.io/max-replicas": "4",
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "name": "checkout",
+          "uid": "67feaa03-727f-434e-ad4f-1a87c645e3ba",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ],
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 3,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "checkout",
+          "pod-template-hash": "tscdrh8t48"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "checkout",
+            "team": "shop",
+            "pod-template-hash": "tscdrh8t48"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "checkout",
+              "image": "ghcr.io/octo-corp/checkout:4.18.2",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "256Mi"
+                },
+                "limits": {
+                  "memory": "512Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 8080,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      }
+    },
+    "status": {
+      "replicas": 3,
+      "fullyLabeledReplicas": 3,
+      "readyReplicas": 3,
+      "availableReplicas": 3,
+      "observedGeneration": 1
+    }
+  },
+  {
+    "_key": "shop-prod/checkout-worker-qmw92xpzvg",
+    "metadata": {
+      "name": "checkout-worker-qmw92xpzvg",
+      "namespace": "shop-prod",
+      "uid": "2aa28b65-c9ed-492d-a4ba-bfe6d0ab8f1a",
+      "resourceVersion": "41544",
+      "creationTimestamp": "2026-11-25T13:05:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "checkout-worker",
+        "team": "shop",
+        "pod-template-hash": "qmw92xpzvg"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/desired-replicas": "2",
+        "deployment.kubernetes.io/max-replicas": "3",
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "name": "checkout-worker",
+          "uid": "15c2883f-79c0-478a-a596-320b1f0ecfb4",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ],
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 2,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "checkout-worker",
+          "pod-template-hash": "qmw92xpzvg"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "checkout-worker",
+            "team": "shop",
+            "pod-template-hash": "qmw92xpzvg"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "checkout-worker",
+              "image": "ghcr.io/octo-corp/checkout-worker:4.18.2",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "256Mi"
+                },
+                "limits": {
+                  "memory": "512Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 8080,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      }
+    },
+    "status": {
+      "replicas": 2,
+      "fullyLabeledReplicas": 2,
+      "readyReplicas": 2,
+      "availableReplicas": 2,
+      "observedGeneration": 1
+    }
+  },
+  {
+    "_key": "shop-prod/cart-w7sftqsz9",
+    "metadata": {
+      "name": "cart-w7sftqsz9",
+      "namespace": "shop-prod",
+      "uid": "7e3cb375-424b-40f5-a76c-cec62cb02819",
+      "resourceVersion": "41629",
+      "creationTimestamp": "2026-11-25T13:05:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "cart",
+        "team": "shop",
+        "pod-template-hash": "w7sftqsz9"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/desired-replicas": "3",
+        "deployment.kubernetes.io/max-replicas": "4",
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "name": "cart",
+          "uid": "36b0f6e8-a696-4a7f-ad3d-b73e2929d535",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ],
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 3,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "cart",
+          "pod-template-hash": "w7sftqsz9"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "cart",
+            "team": "shop",
+            "pod-template-hash": "w7sftqsz9"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "cart",
+              "image": "ghcr.io/octo-corp/cart:3.4.0",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "256Mi"
+                },
+                "limits": {
+                  "memory": "512Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 8080,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      }
+    },
+    "status": {
+      "replicas": 3,
+      "fullyLabeledReplicas": 3,
+      "readyReplicas": 3,
+      "availableReplicas": 3,
+      "observedGeneration": 1
+    }
+  },
+  {
+    "_key": "shop-prod/catalog-4gwznbr4fb",
+    "metadata": {
+      "name": "catalog-4gwznbr4fb",
+      "namespace": "shop-prod",
+      "uid": "21c0a64e-fc42-4376-a703-0627489906b7",
+      "resourceVersion": "41731",
+      "creationTimestamp": "2026-11-25T13:05:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "catalog",
+        "team": "shop",
+        "pod-template-hash": "4gwznbr4fb"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/desired-replicas": "4",
+        "deployment.kubernetes.io/max-replicas": "5",
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "name": "catalog",
+          "uid": "2e3c70ce-9bd9-4712-aa8b-69fbe4d1d0c8",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ],
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 4,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "catalog",
+          "pod-template-hash": "4gwznbr4fb"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "catalog",
+            "team": "shop",
+            "pod-template-hash": "4gwznbr4fb"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "catalog",
+              "image": "ghcr.io/octo-corp/catalog:7.1.1",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "256Mi"
+                },
+                "limits": {
+                  "memory": "1Gi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 8080,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      }
+    },
+    "status": {
+      "replicas": 4,
+      "fullyLabeledReplicas": 4,
+      "readyReplicas": 4,
+      "availableReplicas": 4,
+      "observedGeneration": 1
+    }
+  },
+  {
+    "_key": "shop-staging/checkout-776spq2b8h",
+    "metadata": {
+      "name": "checkout-776spq2b8h",
+      "namespace": "shop-staging",
+      "uid": "b4e5e33e-fe4a-42e0-a385-47f01522ad07",
+      "resourceVersion": "41850",
+      "creationTimestamp": "2026-11-25T13:05:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "checkout",
+        "team": "shop",
+        "pod-template-hash": "776spq2b8h"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/desired-replicas": "1",
+        "deployment.kubernetes.io/max-replicas": "2",
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "name": "checkout",
+          "uid": "ce3d223a-7a1b-425c-a66b-eb1d43db6049",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ],
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 1,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "checkout",
+          "pod-template-hash": "776spq2b8h"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "checkout",
+            "team": "shop",
+            "pod-template-hash": "776spq2b8h"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "checkout",
+              "image": "ghcr.io/octo-corp/checkout:4.19.0-rc.1",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "256Mi"
+                },
+                "limits": {
+                  "memory": "512Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 8080,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      }
+    },
+    "status": {
+      "replicas": 1,
+      "fullyLabeledReplicas": 1,
+      "readyReplicas": 1,
+      "availableReplicas": 1,
+      "observedGeneration": 1
+    }
+  },
+  {
+    "_key": "shop-staging/cart-74lxsst29",
+    "metadata": {
+      "name": "cart-74lxsst29",
+      "namespace": "shop-staging",
+      "uid": "c6173c8f-4c83-4f55-a6b2-5146334ba426",
+      "resourceVersion": "41918",
+      "creationTimestamp": "2026-11-25T13:05:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "cart",
+        "team": "shop",
+        "pod-template-hash": "74lxsst29"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/desired-replicas": "1",
+        "deployment.kubernetes.io/max-replicas": "2",
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "name": "cart",
+          "uid": "8395cb56-0b22-40d6-a771-b379776a5b59",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ],
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 1,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "cart",
+          "pod-template-hash": "74lxsst29"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "cart",
+            "team": "shop",
+            "pod-template-hash": "74lxsst29"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "cart",
+              "image": "ghcr.io/octo-corp/cart:3.5.0-rc.2",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "256Mi"
+                },
+                "limits": {
+                  "memory": "512Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 8080,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      }
+    },
+    "status": {
+      "replicas": 1,
+      "fullyLabeledReplicas": 1,
+      "readyReplicas": 1,
+      "availableReplicas": 1,
+      "observedGeneration": 1
+    }
+  },
+  {
+    "_key": "payments/payments-api-86zf47v9z",
+    "metadata": {
+      "name": "payments-api-86zf47v9z",
+      "namespace": "payments",
+      "uid": "5f98bee6-8f71-4d58-a153-472f30fdc7e6",
+      "resourceVersion": "41986",
+      "creationTimestamp": "2026-11-25T13:05:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "payments-api",
+        "team": "shop",
+        "pod-template-hash": "86zf47v9z"
+      },
+      "annotations": {
+        "deployment.kubernetes.io/desired-replicas": "3",
+        "deployment.kubernetes.io/max-replicas": "4",
+        "deployment.kubernetes.io/revision": "1"
+      },
+      "ownerReferences": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "name": "payments-api",
+          "uid": "c5ceb222-e1e8-40b8-a1bf-f2fa3dcd72dc",
+          "controller": true,
+          "blockOwnerDeletion": true
+        }
+      ],
+      "generation": 1
+    },
+    "spec": {
+      "replicas": 3,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/name": "payments-api",
+          "pod-template-hash": "86zf47v9z"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "payments-api",
+            "team": "shop",
+            "pod-template-hash": "86zf47v9z"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "payments-api",
+              "image": "ghcr.io/octo-corp/payments-api:2.14.1",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "256Mi"
+                },
+                "limits": {
+                  "memory": "512Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 8080,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "schedulerName": "default-scheduler",
+          "securityContext": {}
+        }
+      }
+    },
+    "status": {
+      "replicas": 3,
+      "fullyLabeledReplicas": 3,
+      "readyReplicas": 3,
+      "availableReplicas": 3,
+      "observedGeneration": 1
+    }
+  }
+]

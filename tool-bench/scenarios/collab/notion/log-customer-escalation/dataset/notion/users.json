@@ -1,0 +1,79 @@
+[
+  {
+    "object": "user",
+    "id": "79efe920-c85f-42d9-af64-17a9c2eff3d0",
+    "name": "Casey Morgan",
+    "avatar_url": null,
+    "type": "person",
+    "person": {
+      "email": "casey.morgan@octo-corp.example"
+    }
+  },
+  {
+    "object": "user",
+    "id": "e54f8584-6db0-4f68-92b8-7f3948f40914",
+    "name": "Lena Fischer",
+    "avatar_url": null,
+    "type": "person",
+    "person": {
+      "email": "lena.fischer@octo-corp.example"
+    }
+  },
+  {
+    "object": "user",
+    "id": "6b44d0f4-f0cb-4ffc-b437-2029e42a7808",
+    "name": "Priya Natarajan",
+    "avatar_url": null,
+    "type": "person",
+    "person": {
+      "email": "priya.natarajan@octo-corp.example"
+    }
+  },
+  {
+    "object": "user",
+    "id": "5e35fa9e-6c7e-4817-908a-1dc55ae57c7b",
+    "name": "Sam Ortiz",
+    "avatar_url": null,
+    "type": "person",
+    "person": {
+      "email": "sam.ortiz@octo-corp.example"
+    }
+  },
+  {
+    "object": "user",
+    "id": "4b05be48-1d9c-4553-9fe0-55107efd3c9a",
+    "name": "Marcus Webb",
+    "avatar_url": null,
+    "type": "person",
+    "person": {
+      "email": "marcus.webb@octo-corp.example"
+    }
+  },
+  {
+    "object": "user",
+    "id": "6a5aa3fe-744c-41b8-ab6d-2e0cc2ef706a",
+    "name": "Alex Kim",
+    "avatar_url": null,
+    "type": "person",
+    "person": {
+      "email": "alex.kim@octo-corp.example"
+    }
+  },
+  {
+    "object": "user",
+    "id": "6f454e70-9a0c-4b03-8805-737bc62cb792",
+    "name": "Ops Assistant",
+    "avatar_url": null,
+    "type": "bot",
+    "bot": {
+      "owner": {
+        "type": "workspace",
+        "workspace": true
+      },
+      "workspace_name": "Octo Corp",
+      "workspace_limits": {
+        "max_file_upload_size_in_bytes": 5368709120
+      }
+    }
+  }
+]

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"create_merge_request_discussion_note","arguments":{"body":"Yes, the changelog entry for the 4.2.0 bump was added in commit 24f172e5.","discussion_id":"d7e8c986532452a2290d7e7255e2b2cae36e36ce","merge_request_iid":"88","project_id":"northwind/billing/billing-service"}}}

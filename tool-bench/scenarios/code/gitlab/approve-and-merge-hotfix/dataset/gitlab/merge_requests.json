@@ -1,0 +1,114 @@
+[
+  {
+    "_key": "northwind/payments/ledger!41",
+    "id": 9041,
+    "iid": 41,
+    "title": "Fix double-posting of refunds on retry",
+    "description": "Refund webhooks are retried by the PSP; without an idempotency check we post the same refund twice.\n\nCloses #118",
+    "state": "opened",
+    "source_branch": "hotfix/double-post-refunds",
+    "target_branch": "main",
+    "author": "priya.raman",
+    "assignees": [
+      "priya.raman"
+    ],
+    "reviewers": [
+      "sam.okafor"
+    ],
+    "labels": [
+      "bug",
+      "hotfix"
+    ],
+    "sha": "fa48931e67e0f23ec1147679ea8fd4fe8aa7b18b",
+    "created_at": "2026-04-02T06:45:00.000Z",
+    "updated_at": "2026-04-02T08:30:00.000Z",
+    "approvals_required": 1,
+    "approved_by": [],
+    "should_remove_source_branch": null,
+    "commits": [
+      "fa48931e67e0f23ec1147679ea8fd4fe8aa7b18b"
+    ]
+  },
+  {
+    "_key": "northwind/payments/ledger!42",
+    "id": 9042,
+    "iid": 42,
+    "title": "Fix double-posting in payouts export",
+    "description": "Export job emits duplicated rows when a payout spans midnight.",
+    "state": "opened",
+    "source_branch": "fix/payout-export-dupes",
+    "target_branch": "main",
+    "author": "lena.fischer",
+    "assignees": [
+      "lena.fischer"
+    ],
+    "reviewers": [
+      "sam.okafor"
+    ],
+    "labels": [
+      "bug"
+    ],
+    "sha": "acce1b3f4d5baf31587c585a55e9754af8d8174b",
+    "created_at": "2026-04-01T11:05:00.000Z",
+    "updated_at": "2026-04-01T12:00:00.000Z",
+    "approvals_required": 1,
+    "approved_by": [],
+    "commits": [
+      "acce1b3f4d5baf31587c585a55e9754af8d8174b"
+    ]
+  },
+  {
+    "_key": "northwind/payments/ledger!39",
+    "id": 9039,
+    "iid": 39,
+    "title": "Draft: Split posting package",
+    "description": "",
+    "state": "opened",
+    "draft": true,
+    "source_branch": "refactor/posting",
+    "target_branch": "main",
+    "author": "sam.okafor",
+    "assignees": [
+      "sam.okafor"
+    ],
+    "reviewers": [],
+    "labels": [],
+    "sha": "9932a4ff93982c8d81c6e4f87b7904edfd58731e",
+    "created_at": "2026-03-28T11:05:00.000Z",
+    "updated_at": "2026-03-28T11:05:00.000Z",
+    "approvals_required": 1,
+    "approved_by": [],
+    "commits": [
+      "9932a4ff93982c8d81c6e4f87b7904edfd58731e"
+    ]
+  },
+  {
+    "_key": "northwind/payments/ledger!37",
+    "id": 9037,
+    "iid": 37,
+    "title": "Fix double-posting of chargebacks",
+    "description": "",
+    "state": "merged",
+    "source_branch": "fix/chargeback-dupes",
+    "target_branch": "main",
+    "author": "priya.raman",
+    "assignees": [],
+    "reviewers": [
+      "sam.okafor"
+    ],
+    "labels": [
+      "bug"
+    ],
+    "sha": "0fee0a65cf907dc1e51c207feb2fe0f8c86d663c",
+    "merge_commit_sha": "287777730c0a39bc691ebf8815c412ae6c9c2a62",
+    "merged_by": "sam.okafor",
+    "merged_at": "2026-03-20T10:00:00.000Z",
+    "created_at": "2026-03-19T10:00:00.000Z",
+    "updated_at": "2026-03-20T10:00:00.000Z",
+    "approved_by": [
+      "sam.okafor"
+    ],
+    "changes": [],
+    "commits": []
+  }
+]

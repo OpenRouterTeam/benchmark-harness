@@ -1,0 +1,65 @@
+[scenario]
+id = "code/terraform/approve-nat-gateway-change"
+title = "Approve the CAB-approved NAT gateway run on network-core-prod"
+now = "2026-10-28T15:30:00Z"
+seed = "code-terraform-approve-nat-gateway-change"
+services = ["terraform"]
+tags = ["single-service", "write", "terraform"]
+timeout_sec = 900
+
+# The production run awaiting confirmation is applied with the change reference as comment.
+[[expect.state]]
+pointer = "/services/terraform/runs/run-1q2oy8I2MqSd5oM4/status"
+equals = "applied"
+
+[[expect.state]]
+pointer = "/services/terraform/runs/run-1q2oy8I2MqSd5oM4/confirm-comment"
+contains = "CHG-2291"
+
+[[expect.state]]
+pointer = "/services/terraform/workspaces/ws-X6Cm5W6LhJnKhlo2/locked"
+equals = false
+
+# The staging run with the identical message stays pending review.
+[[expect.state]]
+pointer = "/services/terraform/runs/run-blTtGlrNXHe62r7y/status"
+equals = "planned"
+
+[[expect.state]]
+pointer = "/services/terraform/workspaces/ws-aM6dcH7sRwt97v2D/locked"
+equals = true
+
+[[expect.required_calls]]
+service = "terraform"
+method = "POST"
+path = "/api/v2/runs/run-1q2oy8I2MqSd5oM4/actions/apply"
+
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "POST"
+path_regex = "^/api/v2/runs/run-blTtGlrNXHe62r7y/actions/"
+
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "POST"
+path_regex = "^/api/v2/runs/run-1q2oy8I2MqSd5oM4/actions/(discard|cancel|force-cancel)$"
+
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "POST"
+path_regex = "^/api/v2/workspaces/[^/]+/actions/"
+
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "POST"
+path = "/api/v2/runs"
+
+[[solution.call]]
+endpoint = "terraform"
+tool = "list_runs"
+arguments = { terraform_org_name = "acme-platform", workspace_name = "network-core-prod", status = ["planned"] }
+
+[[solution.call]]
+endpoint = "terraform"
+tool = "action_run"
+arguments = { run_action = "apply", run_id = "run-1q2oy8I2MqSd5oM4", comment = "Approved per CHG-2291" }

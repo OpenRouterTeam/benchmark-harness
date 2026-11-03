@@ -1,0 +1,80 @@
+[scenario]
+id = "code/argocd/roll-back-billing-worker"
+title = "Roll production billing-worker back to v1.42.0 by pinning its target revision"
+now = "2026-10-29T14:05:00Z"
+seed = "code-argocd-roll-back-billing-worker"
+services = ["argocd"]
+tags = ["single-service", "write", "argocd"]
+timeout_sec = 900
+
+# billing-worker auto-syncs main (v1.43.0, crash-looping). Pinning targetRevision to the
+# v1.42.0 tag with auto-sync kept on makes the controller sync b0826e9 (v1.42.0).
+# Argo CD refuses a one-off sync to another revision while auto-sync is enabled.
+[[expect.state]]
+pointer = "/services/argocd/applications/argocd~1billing-worker/spec/source/targetRevision"
+equals = "v1.42.0"
+
+[[expect.state]]
+pointer = "/services/argocd/applications/argocd~1billing-worker/spec/syncPolicy/automated"
+exists = true
+
+[[expect.state]]
+pointer = "/services/argocd/applications/argocd~1billing-worker/status/sync/status"
+equals = "Synced"
+
+[[expect.state]]
+pointer = "/services/argocd/applications/argocd~1billing-worker/status/operationState/syncResult/revision"
+equals = "b0826e986c9c73e0088c6ecb2a14458d247d2205"
+
+[[expect.state]]
+pointer = "/services/argocd/applications/argocd~1billing-worker/status/health/status"
+equals = "Healthy"
+
+# The other billing apps stay on main.
+[[expect.state]]
+pointer = "/services/argocd/applications/argocd~1billing-worker-staging/spec/source/targetRevision"
+equals = "main"
+
+[[expect.state]]
+pointer = "/services/argocd/applications/argocd~1billing-api/spec/source/targetRevision"
+equals = "main"
+
+[[expect.required_calls]]
+service = "argocd"
+method = "PUT"
+path = "/api/v1/applications/billing-worker"
+
+[[expect.forbidden_calls]]
+service = "argocd"
+method = "DELETE"
+
+[[expect.forbidden_calls]]
+service = "argocd"
+method = "PUT"
+path_regex = "^/api/v1/applications/billing-(api|worker-staging)$"
+
+[[solution.call]]
+endpoint = "argocd"
+tool = "get_application"
+arguments = { applicationName = "billing-worker" }
+
+[[solution.call]]
+endpoint = "argocd"
+tool = "update_application"
+
+[solution.call.arguments]
+applicationName = "billing-worker"
+
+[solution.call.arguments.application.metadata]
+name = "billing-worker"
+namespace = "argocd"
+
+[solution.call.arguments.application.spec]
+project = "billing"
+source = { repoURL = "https://github.com/lumen-retail/billing-worker-deploy.git", path = "overlays/production", targetRevision = "v1.42.0" }
+destination = { server = "https://prod-use1.k8s.lumen.internal", namespace = "billing" }
+
+[solution.call.arguments.application.spec.syncPolicy]
+syncOptions = ["CreateNamespace=true", "ApplyOutOfSyncOnly=true"]
+automated = { prune = true, selfHeal = true }
+retry = { limit = 5, backoff = { duration = "5s", factor = 2, maxDuration = "3m0s" } }

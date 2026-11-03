@@ -1,0 +1,3 @@
+Hannah from Northwind Bakery has an open support ticket saying their card was charged twice for wholesale order #1077. Please sort it out: check the payments in Stripe, and if it really was charged twice, refund the duplicate (the second charge that went through) in full, with the refund reason recorded as a duplicate. Keep the original charge for the order, and every other payment, as it is.
+
+Then reply to Hannah on that ticket (a public reply) letting her know it's been refunded, including the Stripe refund ID so she can reference it, and mark the ticket as solved. Don't touch any other tickets.

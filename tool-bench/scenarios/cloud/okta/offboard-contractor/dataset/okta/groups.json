@@ -1,0 +1,170 @@
+[
+  {
+    "id": "00g1evrybdy0000000x1",
+    "created": "2024-01-08T17:02:11.000Z",
+    "lastUpdated": "2024-01-08T17:02:11.000Z",
+    "lastMembershipUpdated": "2026-03-10T15:00:00.000Z",
+    "objectClass": [
+      "okta:user_group"
+    ],
+    "type": "BUILT_IN",
+    "profile": {
+      "name": "Everyone",
+      "description": "All users in your organization"
+    }
+  },
+  {
+    "id": "00g2engnrng7Qz4Kp0x7",
+    "created": "2024-01-09T15:00:00.000Z",
+    "lastUpdated": "2024-01-09T15:00:00.000Z",
+    "lastMembershipUpdated": "2026-03-10T15:00:00.000Z",
+    "objectClass": [
+      "okta:user_group"
+    ],
+    "type": "OKTA_GROUP",
+    "profile": {
+      "name": "Engineering",
+      "description": "All engineering staff"
+    }
+  },
+  {
+    "id": "00g2pltfrm7Gh8Ij9x7",
+    "created": "2024-08-12T15:00:00.000Z",
+    "lastUpdated": "2024-08-12T15:00:00.000Z",
+    "lastMembershipUpdated": "2026-03-10T15:00:00.000Z",
+    "objectClass": [
+      "okta:user_group"
+    ],
+    "type": "OKTA_GROUP",
+    "profile": {
+      "name": "Platform Engineering",
+      "description": "Platform and SRE team (on-call rotation)"
+    }
+  },
+  {
+    "id": "00g2fnance5Lm8Rt1x7",
+    "created": "2024-01-09T15:01:00.000Z",
+    "lastUpdated": "2024-01-09T15:01:00.000Z",
+    "lastMembershipUpdated": "2026-03-10T15:00:00.000Z",
+    "objectClass": [
+      "okta:user_group"
+    ],
+    "type": "OKTA_GROUP",
+    "profile": {
+      "name": "Finance",
+      "description": "Finance and accounting"
+    }
+  },
+  {
+    "id": "00g2sales03Nv6Yw2x7",
+    "created": "2024-01-09T15:02:00.000Z",
+    "lastUpdated": "2024-01-09T15:02:00.000Z",
+    "lastMembershipUpdated": "2026-03-10T15:00:00.000Z",
+    "objectClass": [
+      "okta:user_group"
+    ],
+    "type": "OKTA_GROUP",
+    "profile": {
+      "name": "Sales",
+      "description": "Sales team"
+    }
+  },
+  {
+    "id": "00g2scrty09Hb3Jd4x7",
+    "created": "2024-01-09T15:03:00.000Z",
+    "lastUpdated": "2024-01-09T15:03:00.000Z",
+    "lastMembershipUpdated": "2026-03-10T15:00:00.000Z",
+    "objectClass": [
+      "okta:user_group"
+    ],
+    "type": "OKTA_GROUP",
+    "profile": {
+      "name": "Security",
+      "description": "Security team"
+    }
+  },
+  {
+    "id": "00g2spprt12Ac5Ef6x7",
+    "created": "2024-01-09T15:04:00.000Z",
+    "lastUpdated": "2024-01-09T15:04:00.000Z",
+    "lastMembershipUpdated": "2026-03-10T15:00:00.000Z",
+    "objectClass": [
+      "okta:user_group"
+    ],
+    "type": "OKTA_GROUP",
+    "profile": {
+      "name": "Support Agents",
+      "description": "Customer support agents with Zendesk access"
+    }
+  },
+  {
+    "id": "00g2cntrct4Kl1Mn2x7",
+    "created": "2024-02-01T15:00:00.000Z",
+    "lastUpdated": "2024-02-01T15:00:00.000Z",
+    "lastMembershipUpdated": "2026-03-10T15:00:00.000Z",
+    "objectClass": [
+      "okta:user_group"
+    ],
+    "type": "OKTA_GROUP",
+    "profile": {
+      "name": "Contractors",
+      "description": "All external contractors"
+    }
+  },
+  {
+    "id": "00g2cntrsf6Op3Qr4x7",
+    "created": "2025-10-20T16:00:00.000Z",
+    "lastUpdated": "2025-10-20T16:00:00.000Z",
+    "lastMembershipUpdated": "2026-03-10T15:00:00.000Z",
+    "objectClass": [
+      "okta:user_group"
+    ],
+    "type": "OKTA_GROUP",
+    "profile": {
+      "name": "Contractors - Salesforce",
+      "description": "Contractors with Salesforce access"
+    }
+  },
+  {
+    "id": "00g2sfusrs8St5Uv6x7",
+    "created": "2024-03-01T15:00:00.000Z",
+    "lastUpdated": "2024-03-01T15:00:00.000Z",
+    "lastMembershipUpdated": "2026-03-10T15:00:00.000Z",
+    "objectClass": [
+      "okta:user_group"
+    ],
+    "type": "OKTA_GROUP",
+    "profile": {
+      "name": "Salesforce Users",
+      "description": "Employees with Salesforce access"
+    }
+  },
+  {
+    "id": "00g2oktadm1Wx7Yz8x7",
+    "created": "2024-01-08T17:05:00.000Z",
+    "lastUpdated": "2024-01-08T17:05:00.000Z",
+    "lastMembershipUpdated": "2026-03-10T15:00:00.000Z",
+    "objectClass": [
+      "okta:user_group"
+    ],
+    "type": "OKTA_GROUP",
+    "profile": {
+      "name": "Okta Admins",
+      "description": "Okta super administrators"
+    }
+  },
+  {
+    "id": "00g2sfimpt3Ab9Cd0x7",
+    "created": "2024-03-01T15:10:00.000Z",
+    "lastUpdated": "2024-03-01T15:10:00.000Z",
+    "lastMembershipUpdated": "2026-03-10T15:00:00.000Z",
+    "objectClass": [
+      "okta:windows_security_principal"
+    ],
+    "type": "APP_GROUP",
+    "profile": {
+      "name": "salesforce-imported-profiles",
+      "description": "Imported from Salesforce"
+    }
+  }
+]

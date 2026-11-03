@@ -1,0 +1,87 @@
+{
+  "state": [
+    {
+      "pointer": "/services/pagerduty/overrides/PSPLTPR~11/user/id",
+      "equals": "PJ0RLEE",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/pagerduty/overrides/PSPLTPR~11/start",
+      "equals": "2026-10-31T09:00:00Z",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/pagerduty/overrides/PSPLTPR~11/end",
+      "equals": "2026-10-31T17:00:00Z",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/pagerduty/overrides/PSPLTPR~12",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/pagerduty/overrides/PSPLTSC~11",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/pagerduty/overrides/PSDPLPR~11",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "pagerduty",
+      "method": "POST",
+      "path": "/schedules/PSPLTPR/overrides",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "pagerduty",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "pagerduty",
+      "method": "PUT",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

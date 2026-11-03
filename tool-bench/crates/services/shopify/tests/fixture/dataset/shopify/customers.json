@@ -1,0 +1,32 @@
+[
+  {
+    "id": 7001,
+    "firstName": "Jordan",
+    "lastName": "Lee",
+    "email": "jordan.lee@example.com",
+    "phone": "+14155550101",
+    "createdAt": "2025-11-02T10:00:00Z",
+    "tags": ["newsletter"],
+    "note": null,
+    "addresses": [
+      {"id": 31, "firstName": "Jordan", "lastName": "Lee", "address1": "12 Pine St", "city": "Portland", "province": "Oregon", "provinceCode": "OR", "zip": "97205", "country": "United States", "countryCode": "US", "phone": "+14155550101"}
+    ]
+  },
+  {
+    "id": 7002,
+    "firstName": "Sam",
+    "lastName": "Ortiz",
+    "email": "sam.ortiz@fastmail.com",
+    "createdAt": "2025-12-12T10:00:00Z",
+    "tags": [],
+    "addresses": []
+  },
+  {
+    "id": 7003,
+    "firstName": "Sam",
+    "lastName": "Ortiz",
+    "email": "sortiz@gmail.com",
+    "createdAt": "2026-01-20T10:00:00Z",
+    "tags": ["wholesale"]
+  }
+]

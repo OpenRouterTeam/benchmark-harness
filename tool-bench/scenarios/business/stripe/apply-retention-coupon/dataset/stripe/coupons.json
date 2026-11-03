@@ -1,0 +1,90 @@
+[
+  {
+    "id": "RETAIN20-3M",
+    "object": "coupon",
+    "amount_off": null,
+    "created": 1764547200,
+    "currency": null,
+    "duration": "repeating",
+    "duration_in_months": 3,
+    "max_redemptions": null,
+    "metadata": {
+      "owner": "customer-success"
+    },
+    "name": "Retention - 20% off for 3 months",
+    "percent_off": 20.0,
+    "redeem_by": null,
+    "times_redeemed": 4,
+    "valid": true
+  },
+  {
+    "id": "RETAIN20-12M",
+    "object": "coupon",
+    "amount_off": null,
+    "created": 1764547200,
+    "currency": null,
+    "duration": "repeating",
+    "duration_in_months": 12,
+    "max_redemptions": null,
+    "metadata": {
+      "owner": "customer-success"
+    },
+    "name": "Retention - 20% off for 12 months",
+    "percent_off": 20.0,
+    "redeem_by": null,
+    "times_redeemed": 1,
+    "valid": true
+  },
+  {
+    "id": "RETAIN25-3M",
+    "object": "coupon",
+    "amount_off": null,
+    "created": 1748736000,
+    "currency": null,
+    "duration": "repeating",
+    "duration_in_months": 3,
+    "max_redemptions": 10,
+    "metadata": {
+      "owner": "customer-success"
+    },
+    "name": "Retention - 25% off for 3 months (2025)",
+    "percent_off": 25.0,
+    "redeem_by": 1767225599,
+    "times_redeemed": 7,
+    "valid": false
+  },
+  {
+    "id": "SPRING20",
+    "object": "coupon",
+    "amount_off": null,
+    "created": 1772323200,
+    "currency": null,
+    "duration": "once",
+    "duration_in_months": null,
+    "max_redemptions": 500,
+    "metadata": {
+      "campaign": "spring-2026"
+    },
+    "name": "Spring promo - 20% off first invoice",
+    "percent_off": 20.0,
+    "redeem_by": 1777593599,
+    "times_redeemed": 38,
+    "valid": true
+  },
+  {
+    "id": "ANNUAL50",
+    "object": "coupon",
+    "amount_off": 5000,
+    "created": 1764547200,
+    "currency": "usd",
+    "duration": "once",
+    "duration_in_months": null,
+    "max_redemptions": null,
+    "metadata": {},
+    "name": "$50 off annual upgrade",
+    "percent_off": null,
+    "redeem_by": null,
+    "times_redeemed": 12,
+    "valid": true
+  }
+]

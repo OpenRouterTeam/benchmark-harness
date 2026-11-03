@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"vercel-create-environment-variables","arguments":{"environmentVariables":[{"key":"NEXT_PUBLIC_ENABLE_GIFT_CARDS","target":["preview","development"],"type":"plain","value":"true"},{"key":"PAYMENTS_API_URL","target":["preview"],"type":"plain","value":"https://sandbox.pay.acme-shop.com"}],"projectId":"storefront"}}}

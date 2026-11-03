@@ -1,0 +1,8 @@
+[
+  {
+    "id": "f1e2d3c4b5a697887766554433221100",
+    "zone_id": "a1b2c3d4e5f60718293a4b5c6d7e8f90",
+    "pattern": "api.octo-corp.com/*",
+    "script": "api-gateway"
+  }
+]

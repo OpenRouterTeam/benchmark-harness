@@ -1,0 +1,104 @@
+{
+  "state": [
+    {
+      "pointer": "/services/google/calendar_events/445b671f493e8a06958e4ff0dd/summary",
+      "equals": null,
+      "exists": null,
+      "contains": "Q1 planning sync",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/google/calendar_events/445b671f493e8a06958e4ff0dd/calendarId",
+      "equals": "ops@octo-corp.example",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/google/calendar_events/445b671f493e8a06958e4ff0dd/start/dateTime",
+      "equals": "2026-11-03T14:00:00-05:00",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/google/calendar_events/445b671f493e8a06958e4ff0dd/end/dateTime",
+      "equals": "2026-11-03T14:45:00-05:00",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/google/calendar_events/445b671f493e8a06958e4ff0dd/attendees",
+      "equals": null,
+      "exists": null,
+      "contains": {
+        "email": "priya.natarajan@octo-corp.example"
+      },
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/google/calendar_events/445b671f493e8a06958e4ff0dd/attendees",
+      "equals": null,
+      "exists": null,
+      "contains": {
+        "email": "marcus.webb@octo-corp.example"
+      },
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/google/calendar_events/445b671f493e8a06958e4ff0dd/conferenceData/conferenceSolution/key/type",
+      "equals": "hangoutsMeet",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/google/calendar_events/ae2a3372cbeee330eecbe86872/start/dateTime",
+      "equals": "2026-08-04T14:00:00-04:00",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "google",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "action": "create"
+        },
+        "name": "manage_event"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "google",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "send_gmail_message"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

@@ -1,0 +1,17 @@
+[
+  {
+    "_key": "viewer",
+    "login": "mona",
+    "id": 583231,
+    "node_id": "MDQ6VXNlcjU4MzIzMQ==",
+    "type": "User",
+    "site_admin": false,
+    "name": "Mona Lisa",
+    "company": "Octo Org",
+    "email": "mona@octo-org.example",
+    "location": "Lisbon",
+    "bio": "Platform engineer",
+    "created_at": "2019-01-01T00:00:00Z",
+    "updated_at": "2026-10-01T12:00:00Z"
+  }
+]

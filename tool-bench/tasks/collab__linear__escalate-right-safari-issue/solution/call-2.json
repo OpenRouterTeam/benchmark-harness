@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"linear_createComment","arguments":{"body":"Escalated to Urgent: Acme Retail raised this through support, it is blocking their enterprise checkouts. Assigned to Alex Kim.","issueId":"WEB-51"}}}

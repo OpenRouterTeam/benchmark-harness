@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"pause_project","arguments":{"project_id":"wgtplxkqrzvnmbcdhfye"}}}

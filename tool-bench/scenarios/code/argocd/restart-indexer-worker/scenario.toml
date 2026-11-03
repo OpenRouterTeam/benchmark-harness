@@ -1,0 +1,72 @@
+[scenario]
+id = "code/argocd/restart-indexer-worker"
+title = "Restart only the production search-indexer worker Deployment through Argo CD"
+now = "2026-10-29T14:05:00Z"
+seed = "code-argocd-restart-indexer-worker"
+services = ["argocd"]
+tags = ["single-service", "write", "argocd"]
+timeout_sec = 900
+
+# The restart action stamps kubectl.kubernetes.io/restartedAt on the pod template.
+# Only the production worker Deployment may be restarted; the app is OutOfSync with an
+# unreviewed config change, so it must not be synced or edited.
+[[expect.state]]
+pointer = "/services/argocd/resources/d39d8921-d825-549b-a290-0dcda1cafa6c/manifest/spec/template/metadata/annotations/kubectl.kubernetes.io~1restartedAt"
+exists = true
+
+[[expect.state]]
+pointer = "/services/argocd/resources/f00419cc-5e98-59e0-8f9c-27d6e2749852/manifest/spec/template/metadata/annotations/kubectl.kubernetes.io~1restartedAt"
+exists = false
+
+[[expect.state]]
+pointer = "/services/argocd/resources/44569b22-4bc0-5922-8e97-19c76bbefa4b/manifest/spec/template/metadata/annotations/kubectl.kubernetes.io~1restartedAt"
+exists = false
+
+[[expect.state]]
+pointer = "/services/argocd/resources/d39d8921-d825-549b-a290-0dcda1cafa6c/manifest/spec/paused"
+exists = false
+
+[[expect.state]]
+pointer = "/services/argocd/applications/argocd~1search-indexer/status/sync/status"
+equals = "OutOfSync"
+
+[[expect.required_calls]]
+service = "argocd"
+method = "POST"
+path = "/api/v1/applications/search-indexer/resource/actions"
+query_contains = "resourceName=search-indexer-worker"
+body_contains = "restart"
+
+[[expect.forbidden_calls]]
+service = "argocd"
+method = "POST"
+path_regex = "/sync$"
+
+[[expect.forbidden_calls]]
+service = "argocd"
+method = "PUT"
+
+[[expect.forbidden_calls]]
+service = "argocd"
+method = "DELETE"
+
+[[expect.forbidden_calls]]
+service = "argocd"
+method = "POST"
+path = "/api/v1/applications/search-indexer/resource/actions"
+query_contains = "resourceName=search-indexer-api"
+
+[[solution.call]]
+endpoint = "argocd"
+tool = "get_application_resource_tree"
+arguments = { applicationName = "search-indexer" }
+
+[[solution.call]]
+endpoint = "argocd"
+tool = "get_resource_actions"
+arguments = { applicationName = "search-indexer", applicationNamespace = "argocd", resourceRef = { uid = "d39d8921-d825-549b-a290-0dcda1cafa6c", kind = "Deployment", namespace = "search", name = "search-indexer-worker", version = "v1", group = "apps" } }
+
+[[solution.call]]
+endpoint = "argocd"
+tool = "run_resource_action"
+arguments = { applicationName = "search-indexer", applicationNamespace = "argocd", resourceRef = { uid = "d39d8921-d825-549b-a290-0dcda1cafa6c", kind = "Deployment", namespace = "search", name = "search-indexer-worker", version = "v1", group = "apps" }, action = "restart" }

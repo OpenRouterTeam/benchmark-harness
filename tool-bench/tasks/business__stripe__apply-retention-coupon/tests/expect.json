@@ -1,0 +1,144 @@
+{
+  "state": [
+    {
+      "pointer": "/services/stripe/discounts/sub_7fWxXdMb0rsO3dgqzvcplQuy:RETAIN20-3M/subscription",
+      "equals": "sub_7fWxXdMb0rsO3dgqzvcplQuy",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/subscriptions/sub_7fWxXdMb0rsO3dgqzvcplQuy/discounts/0",
+      "equals": null,
+      "exists": true,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/subscriptions/sub_7fWxXdMb0rsO3dgqzvcplQuy/discounts/1",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/subscriptions/sub_7fWxXdMb0rsO3dgqzvcplQuy/status",
+      "equals": "active",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/subscriptions/sub_rgXMKqDnvuQz0FKgeUQUpWDn/discounts",
+      "equals": [],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/subscriptions/sub_2BwOc3Og08AwUPGK5akzzYWH/discounts",
+      "equals": [],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/subscriptions/sub_QVurYL97NwETo29YW2uWzNau/discounts",
+      "equals": [],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "stripe_api_operation_id": "PostSubscriptionsSubscriptionExposedId"
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "stripe_api_operation_id": "PostCoupons"
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "stripe_api_operation_id": "DeleteSubscriptionsSubscriptionExposedId"
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "parameters": {
+            "id": "sub_2BwOc3Og08AwUPGK5akzzYWH"
+          }
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "parameters": {
+            "subscription_exposed_id": "sub_2BwOc3Og08AwUPGK5akzzYWH"
+          }
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

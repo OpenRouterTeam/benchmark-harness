@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"count","arguments":{"collection":"customers","connectionId":"preconfigured","database":"crm","query":{"email":{"$regex":"@qa\\.octoshop\\.test$"}}}}}

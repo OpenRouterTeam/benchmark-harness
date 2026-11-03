@@ -1,0 +1,61 @@
+{
+  "state": [
+    {
+      "pointer": "/services/jira/issues/PAY-124/fields/assignee",
+      "equals": "lena.fischer",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/jira/issues/PAY-124/fields/status",
+      "equals": "In Progress",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/jira/pages/100002/version",
+      "equals": 4,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/jira/pages/200002/version",
+      "equals": 1,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "jira",
+      "method": "GET",
+      "path": null,
+      "path_regex": "^/wiki/rest/api/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "jira",
+      "method": "PUT",
+      "path": null,
+      "path_regex": "^/wiki/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

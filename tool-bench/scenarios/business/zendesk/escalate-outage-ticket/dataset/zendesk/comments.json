@@ -1,0 +1,20 @@
+[
+  {"_key": "6201/1", "id": 41000620101, "author_id": 9010402, "public": true, "audit_id": 41000620100, "created_at": "2026-09-30T15:05:00Z",
+   "body": "Our order sync is failing; every call to /v2/orders returns 502 Bad Gateway.\n\nBen Foster\nIT, Northwind Traders", "attachments": []},
+  {"_key": "6201/2", "id": 41000620102, "author_id": 9010002, "public": true, "audit_id": 41000620103, "created_at": "2026-10-01T09:40:00Z",
+   "body": "Hi Ben, a load balancer in eu-west was misconfigured; it's fixed and your sync has caught up.", "attachments": []},
+  {"_key": "6225/1", "id": 41000622501, "author_id": 9010401, "public": true, "audit_id": 41000622500, "created_at": "2026-10-15T07:30:00Z",
+   "body": "The patient portal can't reach your API this morning, we're getting 502s on every request.\n\nDr. Amara Osei\nCMIO, Northwind Health", "attachments": []},
+  {"_key": "6225/2", "id": 41000622502, "author_id": 9010003, "public": true, "audit_id": 41000622503, "created_at": "2026-10-16T11:20:00Z",
+   "body": "Hi Dr. Osei, this was caused by an expired certificate on our side (INC-4390). It was renewed and the API is healthy again.", "attachments": []},
+  {"_key": "6230/1", "id": 41000623001, "author_id": 9010401, "public": true, "audit_id": 41000623000, "created_at": "2026-10-30T12:41:00Z",
+   "body": "It's happening again: since about 12:30 UTC every patient portal API call returns 502. Front desks can't check patients in.\n\nDr. Amara Osei\nCMIO, Northwind Health", "attachments": []},
+  {"_key": "6230/2", "id": 41000623002, "author_id": 9010003, "public": true, "audit_id": 41000623003, "created_at": "2026-10-30T12:58:00Z",
+   "body": "Hi Dr. Osei, thanks for letting us know. We're looking into it now and will update you shortly.\n\nRita", "attachments": []},
+  {"_key": "6232/1", "id": 41000623201, "author_id": 9010403, "public": true, "audit_id": 41000623200, "created_at": "2026-10-30T09:02:00Z",
+   "body": "Our AP team can't process the October invoice without PO 77-1042 on it. Can you reissue it?\n\nKenji Watanabe\nAccounts Payable, Northwind Health", "attachments": []},
+  {"_key": "6233/1", "id": 41000623301, "author_id": 9010404, "public": true, "audit_id": 41000623300, "created_at": "2026-10-30T11:15:00Z",
+   "body": "Your webhook deliveries to our endpoint keep retrying; the delivery log shows 502 from our proxy.\n\nFatima Al-Sayed\nCedar Pharmacy", "attachments": []},
+  {"_key": "6233/2", "id": 41000623302, "author_id": 9010002, "public": true, "audit_id": 41000623303, "created_at": "2026-10-30T11:50:00Z",
+   "body": "Hi Fatima, the 502 is coming from your reverse proxy, not from us. Could you check its upstream timeout?", "attachments": []}
+]

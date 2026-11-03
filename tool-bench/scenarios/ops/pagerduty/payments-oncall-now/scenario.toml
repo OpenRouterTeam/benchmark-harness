@@ -1,0 +1,46 @@
+[scenario]
+id = "ops/pagerduty/payments-oncall-now"
+title = "Find who is on call for Payments right now"
+now = "2026-10-30T14:00:00Z"
+seed = "ops-pagerduty-payments-oncall-now"
+services = ["pagerduty"]
+tags = ["lookup", "single-service", "pagerduty", "disambiguation"]
+timeout_sec = 900
+
+# Riya Patel is scheduled on Payments Primary this week, but Priya Raman has an override
+# covering today; level 2 is Marcus Chen. "Payments Gateway (Legacy)" (Jordan Alvarez)
+# and "Payouts" (Riya Patel) are look-alike policies.
+[expect.answer]
+contains = ["Priya Raman", "Marcus Chen"]
+
+# Analytics queries are read-only POSTs; anything else that POSTs writes.
+[[expect.forbidden_calls]]
+service = "pagerduty"
+method = "POST"
+path_regex = "^/(incidents|schedules|v3|services|teams|users|webhook_subscriptions|alert_grouping_settings|incident_workflows|status_pages)"
+
+[[expect.forbidden_calls]]
+service = "pagerduty"
+method = "PUT"
+
+[[expect.forbidden_calls]]
+service = "pagerduty"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "pagerduty"
+tool = "list_escalation_policies"
+arguments = { query = "Payments" }
+
+[[solution.call]]
+endpoint = "pagerduty"
+tool = "list_oncalls"
+arguments = { escalation_policy_ids = ["PEPPAY1"] }
+
+[solution]
+answer = """
+On call right now for the Payments escalation policy:
+
+- Level 1 (first responder): Priya Raman (covering Riya Patel via a schedule override until 2026-10-31 06:00 UTC)
+- Level 2 (next in line): Marcus Chen
+"""

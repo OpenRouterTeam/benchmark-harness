@@ -1,0 +1,66 @@
+[scenario]
+id = "business/multi/hubspot-largest-deal-salesforce-owner"
+title = "Find who owns the account behind the largest open deal and its open support cases"
+now = "2026-10-29T14:00:00Z"
+seed = "business-multi-hubspot-largest-deal-salesforce-owner"
+services = ["hubspot", "salesforce"]
+tags = ["lookup", "multi-service", "hubspot", "salesforce", "disambiguation"]
+timeout_sec = 1200
+
+# HubSpot: the largest open deal is "Northwind Logistics – Fleet Telemetry" (412,000,
+# contractsent). Distractors there: Northwind Traders (530,000, closed won), Vandelay
+# (640,000, closed lost), an archived 900,000 duplicate, Hooli (three open deals, 450,000 total).
+# Salesforce: account "Northwind Logistics" is owned by Daniel Okafor (HubSpot's deal owner is
+# Elena Sokolova). Its open cases are 00002107 (Working) and 00002113 (Escalated); 00002101 is
+# closed. Look-alike accounts Northwind Traders (00002109) and Northwind Freight Brokers
+# (00002111) have open cases of their own.
+[expect.answer]
+contains = ["Northwind Logistics", "Daniel Okafor", "00002107", "00002113"]
+
+[[expect.forbidden_calls]]
+service = "hubspot"
+method = "POST"
+path_regex = "/batch/(create|update)$"
+
+[[expect.forbidden_calls]]
+service = "hubspot"
+method = "PATCH"
+
+[[expect.forbidden_calls]]
+service = "salesforce"
+method = "PATCH"
+
+[[expect.forbidden_calls]]
+service = "salesforce"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "hubspot"
+tool = "hubspot-search-objects"
+arguments = { objectType = "deals", filterGroups = [{ filters = [{ propertyName = "dealstage", operator = "NOT_IN", values = ["closedwon", "closedlost"] }] }], sorts = [{ propertyName = "amount", direction = "DESCENDING" }], properties = ["dealname", "amount", "dealstage"], limit = 1 }
+
+[[solution.call]]
+endpoint = "hubspot"
+tool = "hubspot-list-associations"
+arguments = { objectType = "deals", objectId = "9100106", toObjectType = "companies" }
+
+[[solution.call]]
+endpoint = "salesforce"
+tool = "salesforce_query_records"
+arguments = { objectName = "Account", fields = ["Id", "Name", "Owner.Name"], whereClause = "Name = 'Northwind Logistics'" }
+
+[[solution.call]]
+endpoint = "salesforce"
+tool = "salesforce_query_records"
+arguments = { objectName = "Case", fields = ["CaseNumber", "Subject", "Status", "Priority"], whereClause = "Account.Name = 'Northwind Logistics' AND IsClosed = false" }
+
+[solution]
+answer = """
+Largest open deal in HubSpot: "Northwind Logistics – Fleet Telemetry", $412,000 (Contract Sent), company Northwind Logistics.
+
+In Salesforce the Northwind Logistics account is owned by Daniel Okafor.
+
+Open support cases on the account:
+- 00002107 – Driver app shows stale ETAs after route change (Working, High)
+- 00002113 – SSO login fails for depot supervisors (Escalated, Medium)
+"""

@@ -1,0 +1,142 @@
+[
+  {
+    "id": "pm_PrRmOutlk0000000000001",
+    "object": "payment_method",
+    "billing_details": {
+      "address": {
+        "city": null,
+        "country": "US",
+        "line1": null,
+        "line2": null,
+        "postal_code": null,
+        "state": null
+      },
+      "email": "priya.raman@outlook.com",
+      "name": "Priya Raman",
+      "phone": null,
+      "tax_id": null
+    },
+    "card": {
+      "brand": "visa",
+      "checks": {
+        "address_line1_check": null,
+        "address_postal_code_check": "pass",
+        "cvc_check": "pass"
+      },
+      "country": "US",
+      "exp_month": 9,
+      "exp_year": 2029,
+      "fingerprint": "PrRmOutlk0000000",
+      "funding": "credit",
+      "last4": "4242"
+    },
+    "created": 1763563200,
+    "customer": "cus_PrRmOutlk01Ab",
+    "type": "card"
+  },
+  {
+    "id": "pm_PrRmDsgn00000000000001",
+    "object": "payment_method",
+    "billing_details": {
+      "address": {
+        "city": null,
+        "country": "US",
+        "line1": null,
+        "line2": null,
+        "postal_code": null,
+        "state": null
+      },
+      "email": "priya@ramandesign.studio",
+      "name": "Priya Raman",
+      "phone": null,
+      "tax_id": null
+    },
+    "card": {
+      "brand": "visa",
+      "checks": {
+        "address_line1_check": null,
+        "address_postal_code_check": "pass",
+        "cvc_check": "pass"
+      },
+      "country": "US",
+      "exp_month": 9,
+      "exp_year": 2029,
+      "fingerprint": "PrRmDsgn00000000",
+      "funding": "credit",
+      "last4": "5100"
+    },
+    "created": 1767866400,
+    "customer": "cus_PrRmDsgn001Ab",
+    "type": "card"
+  },
+  {
+    "id": "pm_TmAchb000000000000001",
+    "object": "payment_method",
+    "billing_details": {
+      "address": {
+        "city": null,
+        "country": "US",
+        "line1": null,
+        "line2": null,
+        "postal_code": null,
+        "state": null
+      },
+      "email": "tom.achebe@yahoo.com",
+      "name": "Tom Achebe",
+      "phone": null,
+      "tax_id": null
+    },
+    "card": {
+      "brand": "visa",
+      "checks": {
+        "address_line1_check": null,
+        "address_postal_code_check": "pass",
+        "cvc_check": "pass"
+      },
+      "country": "US",
+      "exp_month": 9,
+      "exp_year": 2029,
+      "fingerprint": "TmAchb0000000000",
+      "funding": "credit",
+      "last4": "0005"
+    },
+    "created": 1765800600,
+    "customer": "cus_TmAchb0001Ab",
+    "type": "card"
+  },
+  {
+    "id": "pm_MrcBll000000000000001",
+    "object": "payment_method",
+    "billing_details": {
+      "address": {
+        "city": null,
+        "country": "US",
+        "line1": null,
+        "line2": null,
+        "postal_code": null,
+        "state": null
+      },
+      "email": "marcus.bell@gmail.com",
+      "name": "Marcus Bell",
+      "phone": null,
+      "tax_id": null
+    },
+    "card": {
+      "brand": "visa",
+      "checks": {
+        "address_line1_check": null,
+        "address_postal_code_check": "pass",
+        "cvc_check": "pass"
+      },
+      "country": "US",
+      "exp_month": 9,
+      "exp_year": 2029,
+      "fingerprint": "MrcBll0000000000",
+      "funding": "credit",
+      "last4": "1117"
+    },
+    "created": 1762164600,
+    "customer": "cus_MrcBll0001Ab",
+    "type": "card"
+  }
+]

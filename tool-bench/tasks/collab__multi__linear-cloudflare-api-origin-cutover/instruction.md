@@ -1,0 +1,1 @@
+There's an open ticket on the Platform team in Linear asking for the DNS change that moves our production API to origin-3. Please make that change in Cloudflare exactly as the ticket asks, then leave a comment on the ticket saying what you changed and move it to Done.

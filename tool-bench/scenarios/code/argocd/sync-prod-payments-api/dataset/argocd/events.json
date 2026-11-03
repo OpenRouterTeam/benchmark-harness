@@ -1,0 +1,122 @@
+[
+  {
+    "_key": "4e1e4484-1dcd-5118-ae71-715081894d3e",
+    "metadata": {
+      "name": "payments-api.e7b04dfbb4704982",
+      "namespace": "payments",
+      "uid": "4e1e4484-1dcd-5118-ae71-715081894d3e",
+      "resourceVersion": "42819",
+      "creationTimestamp": "2026-10-20T10:10:05Z"
+    },
+    "involvedObject": {
+      "kind": "Application",
+      "namespace": "payments",
+      "name": "payments-api",
+      "uid": "760a89bb-a32d-589f-b840-7735b9b99290",
+      "apiVersion": "argoproj.io/v1alpha1",
+      "resourceVersion": "42649"
+    },
+    "reason": "OperationCompleted",
+    "message": "Sync operation to aa59f08385fb84287ad815b3091ecb99d811bc62 succeeded",
+    "source": {
+      "component": "argocd-application-controller"
+    },
+    "firstTimestamp": "2026-10-20T10:10:05Z",
+    "lastTimestamp": "2026-10-20T10:10:05Z",
+    "count": 1,
+    "type": "Normal",
+    "eventTime": null,
+    "reportingComponent": "argocd-application-controller",
+    "reportingInstance": ""
+  },
+  {
+    "_key": "41b9a90f-9c6b-5aa3-87e7-87874824f200",
+    "metadata": {
+      "name": "payments-api.4c07e41c65a82608",
+      "namespace": "payments",
+      "uid": "41b9a90f-9c6b-5aa3-87e7-87874824f200",
+      "resourceVersion": "42836",
+      "creationTimestamp": "2026-10-29T13:15:00Z"
+    },
+    "involvedObject": {
+      "kind": "Application",
+      "namespace": "payments",
+      "name": "payments-api",
+      "uid": "760a89bb-a32d-589f-b840-7735b9b99290",
+      "apiVersion": "argoproj.io/v1alpha1",
+      "resourceVersion": "42649"
+    },
+    "reason": "ResourceUpdated",
+    "message": "Updated sync status: Synced -> OutOfSync",
+    "source": {
+      "component": "argocd-application-controller"
+    },
+    "firstTimestamp": "2026-10-29T13:15:00Z",
+    "lastTimestamp": "2026-10-29T13:15:00Z",
+    "count": 1,
+    "type": "Normal",
+    "eventTime": null,
+    "reportingComponent": "argocd-application-controller",
+    "reportingInstance": ""
+  },
+  {
+    "_key": "f1c46ede-93a9-5358-8c40-98a62fadd6fd",
+    "metadata": {
+      "name": "payments-api.a4270dc9812b018c",
+      "namespace": "payments-staging",
+      "uid": "f1c46ede-93a9-5358-8c40-98a62fadd6fd",
+      "resourceVersion": "42972",
+      "creationTimestamp": "2026-10-20T10:10:05Z"
+    },
+    "involvedObject": {
+      "kind": "Application",
+      "namespace": "payments-staging",
+      "name": "payments-api",
+      "uid": "3f23dd56-7593-5606-ac26-b0d6324d6b6b",
+      "apiVersion": "argoproj.io/v1alpha1",
+      "resourceVersion": "42853"
+    },
+    "reason": "OperationCompleted",
+    "message": "Sync operation to aa59f08385fb84287ad815b3091ecb99d811bc62 succeeded",
+    "source": {
+      "component": "argocd-application-controller"
+    },
+    "firstTimestamp": "2026-10-20T10:10:05Z",
+    "lastTimestamp": "2026-10-20T10:10:05Z",
+    "count": 1,
+    "type": "Normal",
+    "eventTime": null,
+    "reportingComponent": "argocd-application-controller",
+    "reportingInstance": ""
+  },
+  {
+    "_key": "4019fc12-b9e9-58a1-a61c-bd92081f10f3",
+    "metadata": {
+      "name": "payments-api.1813e3f8cde6b79a",
+      "namespace": "payments-staging",
+      "uid": "4019fc12-b9e9-58a1-a61c-bd92081f10f3",
+      "resourceVersion": "42989",
+      "creationTimestamp": "2026-10-29T13:15:00Z"
+    },
+    "involvedObject": {
+      "kind": "Application",
+      "namespace": "payments-staging",
+      "name": "payments-api",
+      "uid": "3f23dd56-7593-5606-ac26-b0d6324d6b6b",
+      "apiVersion": "argoproj.io/v1alpha1",
+      "resourceVersion": "42853"
+    },
+    "reason": "ResourceUpdated",
+    "message": "Updated sync status: Synced -> OutOfSync",
+    "source": {
+      "component": "argocd-application-controller"
+    },
+    "firstTimestamp": "2026-10-29T13:15:00Z",
+    "lastTimestamp": "2026-10-29T13:15:00Z",
+    "count": 1,
+    "type": "Normal",
+    "eventTime": null,
+    "reportingComponent": "argocd-application-controller",
+    "reportingInstance": ""
+  }
+]

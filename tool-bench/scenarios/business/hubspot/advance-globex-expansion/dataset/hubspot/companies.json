@@ -1,0 +1,173 @@
+[
+  {
+    "id": "18234001",
+    "properties": {
+      "name": "Globex Corporation",
+      "domain": "globex.com",
+      "website": "https://www.globex.com",
+      "city": "Springfield",
+      "state": "OR",
+      "country": "United States",
+      "numberofemployees": "4200",
+      "lifecyclestage": "customer",
+      "hubspot_owner_id": "81234502",
+      "createdate": "2025-01-10T09:20:10.330Z",
+      "hs_lastmodifieddate": "2026-09-20T16:45:02.117Z"
+    },
+    "createdAt": "2025-01-10T09:20:10.330Z",
+    "updatedAt": "2026-09-20T16:45:02.117Z",
+    "archived": false
+  },
+  {
+    "id": "18234002",
+    "properties": {
+      "name": "Initech",
+      "domain": "initech.com",
+      "website": "https://www.initech.com",
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "numberofemployees": "850",
+      "lifecyclestage": "opportunity",
+      "hubspot_owner_id": "81234501",
+      "createdate": "2025-02-11T09:21:11.331Z",
+      "hs_lastmodifieddate": "2026-09-21T16:45:02.117Z"
+    },
+    "createdAt": "2025-02-11T09:21:11.331Z",
+    "updatedAt": "2026-09-21T16:45:02.117Z",
+    "archived": false
+  },
+  {
+    "id": "18234003",
+    "properties": {
+      "name": "Hooli",
+      "domain": "hooli.com",
+      "website": "https://www.hooli.com",
+      "city": "Palo Alto",
+      "state": "CA",
+      "country": "United States",
+      "numberofemployees": "12000",
+      "lifecyclestage": "opportunity",
+      "hubspot_owner_id": "81234502",
+      "createdate": "2025-03-12T09:22:12.332Z",
+      "hs_lastmodifieddate": "2026-09-22T16:45:02.117Z"
+    },
+    "createdAt": "2025-03-12T09:22:12.332Z",
+    "updatedAt": "2026-09-22T16:45:02.117Z",
+    "archived": false
+  },
+  {
+    "id": "18234004",
+    "properties": {
+      "name": "Pied Piper",
+      "domain": "piedpiper.com",
+      "website": "https://www.piedpiper.com",
+      "city": "Palo Alto",
+      "state": "CA",
+      "country": "United States",
+      "numberofemployees": "60",
+      "lifecyclestage": "customer",
+      "hubspot_owner_id": "81234503",
+      "createdate": "2025-04-13T09:23:13.333Z",
+      "hs_lastmodifieddate": "2026-09-23T16:45:02.117Z"
+    },
+    "createdAt": "2025-04-13T09:23:13.333Z",
+    "updatedAt": "2026-09-23T16:45:02.117Z",
+    "archived": false
+  },
+  {
+    "id": "18234005",
+    "properties": {
+      "name": "Pied Piper Pizza",
+      "domain": "piedpiperpizza.com",
+      "website": "https://www.piedpiperpizza.com",
+      "city": "Hamelin",
+      "state": "NY",
+      "country": "United States",
+      "numberofemployees": "25",
+      "lifecyclestage": "opportunity",
+      "hubspot_owner_id": "81234504",
+      "createdate": "2025-05-14T09:24:14.334Z",
+      "hs_lastmodifieddate": "2026-09-24T16:45:02.117Z"
+    },
+    "createdAt": "2025-05-14T09:24:14.334Z",
+    "updatedAt": "2026-09-24T16:45:02.117Z",
+    "archived": false
+  },
+  {
+    "id": "18234006",
+    "properties": {
+      "name": "Northwind Logistics",
+      "domain": "northwindlogistics.com",
+      "website": "https://www.northwindlogistics.com",
+      "city": "Seattle",
+      "state": "WA",
+      "country": "United States",
+      "numberofemployees": "1900",
+      "lifecyclestage": "opportunity",
+      "hubspot_owner_id": "81234503",
+      "createdate": "2025-06-15T09:25:15.335Z",
+      "hs_lastmodifieddate": "2026-09-25T16:45:02.117Z"
+    },
+    "createdAt": "2025-06-15T09:25:15.335Z",
+    "updatedAt": "2026-09-25T16:45:02.117Z",
+    "archived": false
+  },
+  {
+    "id": "18234007",
+    "properties": {
+      "name": "Northwind Traders",
+      "domain": "northwindtraders.com",
+      "website": "https://www.northwindtraders.com",
+      "city": "Redmond",
+      "state": "WA",
+      "country": "United States",
+      "numberofemployees": "300",
+      "lifecyclestage": "customer",
+      "hubspot_owner_id": "81234503",
+      "createdate": "2025-07-16T09:20:10.336Z",
+      "hs_lastmodifieddate": "2026-09-26T16:45:02.117Z"
+    },
+    "createdAt": "2025-07-16T09:20:10.336Z",
+    "updatedAt": "2026-09-26T16:45:02.117Z",
+    "archived": false
+  },
+  {
+    "id": "18234008",
+    "properties": {
+      "name": "Umbrella Health",
+      "domain": "umbrellahealth.com",
+      "website": "https://www.umbrellahealth.com",
+      "city": "Raccoon City",
+      "state": "MO",
+      "country": "United States",
+      "numberofemployees": "5400",
+      "lifecyclestage": "opportunity",
+      "hubspot_owner_id": "81234501",
+      "createdate": "2025-08-17T09:21:11.337Z",
+      "hs_lastmodifieddate": "2026-09-27T16:45:02.117Z"
+    },
+    "createdAt": "2025-08-17T09:21:11.337Z",
+    "updatedAt": "2026-09-27T16:45:02.117Z",
+    "archived": false
+  },
+  {
+    "id": "18234009",
+    "properties": {
+      "name": "Vandelay Industries",
+      "domain": "vandelay.com",
+      "website": "https://www.vandelay.com",
+      "city": "New York",
+      "state": "NY",
+      "country": "United States",
+      "numberofemployees": "140",
+      "lifecyclestage": "opportunity",
+      "hubspot_owner_id": "81234502",
+      "createdate": "2025-09-18T09:22:12.338Z",
+      "hs_lastmodifieddate": "2026-09-28T16:45:02.117Z"
+    },
+    "createdAt": "2025-09-18T09:22:12.338Z",
+    "updatedAt": "2026-09-28T16:45:02.117Z",
+    "archived": false
+  }
+]

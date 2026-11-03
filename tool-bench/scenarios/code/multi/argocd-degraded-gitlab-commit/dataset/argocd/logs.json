@@ -1,0 +1,66 @@
+[
+  {
+    "_key": "checkout-web-6c9d7f5b8-4kfzp/checkout-web",
+    "podName": "checkout-web-6c9d7f5b8-4kfzp",
+    "namespace": "storefront",
+    "container": "checkout-web",
+    "lines": [
+      {
+        "timeStamp": "2026-10-29T14:01:12Z",
+        "content": "{\"level\":\"info\",\"msg\":\"GET /checkout/cart 200\",\"duration_ms\":41}"
+      },
+      {
+        "timeStamp": "2026-10-29T14:01:13Z",
+        "content": "{\"level\":\"info\",\"msg\":\"POST /checkout/session 201\",\"duration_ms\":118}"
+      }
+    ]
+  },
+  {
+    "_key": "checkout-web-6c9d7f5b8-9wd2r/checkout-web",
+    "podName": "checkout-web-6c9d7f5b8-9wd2r",
+    "namespace": "storefront",
+    "container": "checkout-web",
+    "lines": [
+      {
+        "timeStamp": "2026-10-29T14:01:12Z",
+        "content": "{\"level\":\"info\",\"msg\":\"GET /checkout/cart 200\",\"duration_ms\":41}"
+      },
+      {
+        "timeStamp": "2026-10-29T14:01:13Z",
+        "content": "{\"level\":\"info\",\"msg\":\"POST /checkout/session 201\",\"duration_ms\":118}"
+      }
+    ]
+  },
+  {
+    "_key": "checkout-web-6c9d7f5b8-tn6vb/checkout-web",
+    "podName": "checkout-web-6c9d7f5b8-tn6vb",
+    "namespace": "storefront",
+    "container": "checkout-web",
+    "lines": [
+      {
+        "timeStamp": "2026-10-29T14:01:12Z",
+        "content": "{\"level\":\"info\",\"msg\":\"GET /checkout/cart 200\",\"duration_ms\":41}"
+      },
+      {
+        "timeStamp": "2026-10-29T14:01:13Z",
+        "content": "{\"level\":\"info\",\"msg\":\"POST /checkout/session 201\",\"duration_ms\":118}"
+      }
+    ]
+  },
+  {
+    "_key": "checkout-web-58c4d9f7b-hx8pl/checkout-web",
+    "podName": "checkout-web-58c4d9f7b-hx8pl",
+    "namespace": "storefront",
+    "container": "checkout-web",
+    "lines": [
+      {
+        "timeStamp": "2026-10-29T14:00:01Z",
+        "content": "{\"level\":\"info\",\"msg\":\"starting checkout-web\",\"version\":\"2.14.0-rc2\"}"
+      },
+      {
+        "timeStamp": "2026-10-29T14:00:02Z",
+        "content": "{\"level\":\"fatal\",\"msg\":\"config: required variable STRIPE_WEBHOOK_SECRET is not set\"}"
+      }
+    ]
+  }
+]

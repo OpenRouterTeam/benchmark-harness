@@ -1,0 +1,101 @@
+[
+  {
+    "_key": "octo-org/deploy-pipeline",
+    "id": 1298001,
+    "name": "deploy-pipeline",
+    "full_name": "octo-org/deploy-pipeline",
+    "owner": "octo-org",
+    "private": true,
+    "visibility": "private",
+    "description": "CI/CD workflows and deploy tooling",
+    "language": "Shell",
+    "topics": [
+      "ci",
+      "deploy"
+    ],
+    "default_branch": "main",
+    "archived": false,
+    "created_at": "2023-05-01T00:00:00Z",
+    "updated_at": "2026-10-29T17:40:00Z",
+    "pushed_at": "2026-10-29T17:40:00Z",
+    "stargazers_count": 2,
+    "forks_count": 0,
+    "has_issues": true,
+    "has_discussions": false,
+    "collaborators": [
+      {
+        "login": "mona",
+        "permission": "admin"
+      },
+      {
+        "login": "mokafor",
+        "permission": "write"
+      },
+      {
+        "login": "sam",
+        "permission": "write"
+      },
+      {
+        "login": "rchen",
+        "permission": "write"
+      },
+      {
+        "login": "jdoe",
+        "permission": "write"
+      },
+      {
+        "login": "asantos",
+        "permission": "write"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/web",
+    "id": 1298002,
+    "name": "web",
+    "full_name": "octo-org/web",
+    "owner": "octo-org",
+    "private": true,
+    "visibility": "private",
+    "description": "Customer web app",
+    "language": "TypeScript",
+    "topics": [
+      "web"
+    ],
+    "default_branch": "main",
+    "archived": false,
+    "created_at": "2023-05-01T00:00:00Z",
+    "updated_at": "2026-10-28T12:00:00Z",
+    "pushed_at": "2026-10-28T12:00:00Z",
+    "stargazers_count": 2,
+    "forks_count": 0,
+    "has_issues": true,
+    "has_discussions": false,
+    "collaborators": [
+      {
+        "login": "mona",
+        "permission": "admin"
+      },
+      {
+        "login": "mokafor",
+        "permission": "write"
+      },
+      {
+        "login": "sam",
+        "permission": "write"
+      },
+      {
+        "login": "rchen",
+        "permission": "write"
+      },
+      {
+        "login": "jdoe",
+        "permission": "write"
+      },
+      {
+        "login": "asantos",
+        "permission": "write"
+      }
+    ]
+  }
+]

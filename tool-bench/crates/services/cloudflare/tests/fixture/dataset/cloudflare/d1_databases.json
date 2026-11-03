@@ -1,0 +1,10 @@
+[
+  {
+    "_key": "5d1a0b7c-3e2f-4a9b-8c7d-6e5f4a3b2c1d",
+    "uuid": "5d1a0b7c-3e2f-4a9b-8c7d-6e5f4a3b2c1d",
+    "account_id": "0123456789abcdef0123456789abcdef",
+    "name": "orders",
+    "version": "production",
+    "created_at": "2025-05-05T12:00:00.000Z"
+  }
+]

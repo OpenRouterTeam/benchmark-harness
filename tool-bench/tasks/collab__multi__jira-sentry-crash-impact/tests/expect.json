@@ -1,0 +1,64 @@
+{
+  "state": [],
+  "required_calls": [
+    {
+      "service": "jira",
+      "method": "GET",
+      "path": null,
+      "path_regex": "^/rest/api/2/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "sentry",
+      "method": "PUT",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "sentry",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "jira",
+      "method": "PUT",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "jira",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/rest/api/2/issue/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": {
+    "contains": [
+      "STOREFRONT-WEB-8D",
+      "5.3.0"
+    ],
+    "regex": "1,?318[\\s\\S]*2,?172|2,?172[\\s\\S]*1,?318"
+  }
+}

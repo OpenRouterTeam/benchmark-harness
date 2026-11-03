@@ -1,0 +1,53 @@
+[
+  {
+    "id": "price_SupMonthly0000000000001",
+    "object": "price",
+    "active": true,
+    "created": 1748736000,
+    "currency": "usd",
+    "lookup_key": "supply_club_monthly_box",
+    "nickname": "Supply Club Monthly Box",
+    "product": "prod_SupMonthly01Ab",
+    "recurring": {
+      "interval": "month",
+      "interval_count": 1,
+      "usage_type": "licensed"
+    },
+    "type": "recurring",
+    "unit_amount": 3900
+  },
+  {
+    "id": "price_SupQuartly000000000001",
+    "object": "price",
+    "active": true,
+    "created": 1748736000,
+    "currency": "usd",
+    "lookup_key": "supply_club_quarterly_box",
+    "nickname": "Supply Club Quarterly Box",
+    "product": "prod_SupQuartr01Ab",
+    "recurring": {
+      "interval": "month",
+      "interval_count": 3,
+      "usage_type": "licensed"
+    },
+    "type": "recurring",
+    "unit_amount": 9900
+  },
+  {
+    "id": "price_GiftMonthly00000000001",
+    "object": "price",
+    "active": true,
+    "created": 1748736000,
+    "currency": "usd",
+    "lookup_key": "supply_club_gift_subscription",
+    "nickname": "Supply Club Gift Subscription",
+    "product": "prod_GiftSubsc01Ab",
+    "recurring": {
+      "interval": "month",
+      "interval_count": 1,
+      "usage_type": "licensed"
+    },
+    "type": "recurring",
+    "unit_amount": 3900
+  }
+]

@@ -1,0 +1,177 @@
+[
+  {
+    "id": "pm_zeAyn20ZbKlnBpDjwE6fD9CS",
+    "object": "payment_method",
+    "billing_details": {
+      "address": {
+        "city": null,
+        "country": "US",
+        "line1": null,
+        "line2": null,
+        "postal_code": null,
+        "state": null
+      },
+      "email": "owner@northwindbakery.com",
+      "name": "Northwind Bakery",
+      "phone": null,
+      "tax_id": null
+    },
+    "card": {
+      "brand": "visa",
+      "checks": {
+        "address_line1_check": null,
+        "address_postal_code_check": "pass",
+        "cvc_check": "pass"
+      },
+      "country": "US",
+      "exp_month": 8,
+      "exp_year": 2028,
+      "fingerprint": "jDpBnlKbZ02nyAez",
+      "funding": "credit",
+      "last4": "1881"
+    },
+    "created": 1756744800,
+    "customer": "cus_DxFNB3AWMttAAW",
+    "type": "card"
+  },
+  {
+    "id": "pm_MAn6J7Kap4iWj5z05Rx49yK7",
+    "object": "payment_method",
+    "billing_details": {
+      "address": {
+        "city": null,
+        "country": "US",
+        "line1": null,
+        "line2": null,
+        "postal_code": null,
+        "state": null
+      },
+      "email": "ap@northwindtraders.com",
+      "name": "Northwind Traders",
+      "phone": null,
+      "tax_id": null
+    },
+    "card": {
+      "brand": "amex",
+      "checks": {
+        "address_line1_check": null,
+        "address_postal_code_check": "pass",
+        "cvc_check": "pass"
+      },
+      "country": "US",
+      "exp_month": 8,
+      "exp_year": 2028,
+      "fingerprint": "0z5jWi4paK7J6nAM",
+      "funding": "credit",
+      "last4": "8431"
+    },
+    "created": 1760476200,
+    "customer": "cus_SrLnvgXU7HZLPE",
+    "type": "card"
+  },
+  {
+    "id": "pm_wMkRfKaZQETyDgWBFEhkDcVl",
+    "object": "payment_method",
+    "billing_details": {
+      "address": {
+        "city": null,
+        "country": "US",
+        "line1": null,
+        "line2": null,
+        "postal_code": null,
+        "state": null
+      },
+      "email": "hello@gristmilllane.cafe",
+      "name": "Gristmill Lane Cafe",
+      "phone": null,
+      "tax_id": null
+    },
+    "card": {
+      "brand": "mastercard",
+      "checks": {
+        "address_line1_check": null,
+        "address_postal_code_check": "pass",
+        "cvc_check": "pass"
+      },
+      "country": "US",
+      "exp_month": 8,
+      "exp_year": 2028,
+      "fingerprint": "BWgDyTEQZaKfRkMw",
+      "funding": "credit",
+      "last4": "4444"
+    },
+    "created": 1764700200,
+    "customer": "cus_E0kbbr95wjjWWy",
+    "type": "card"
+  },
+  {
+    "id": "pm_Ac9TnR2wXk5LmQ8vBz3HyJ6e",
+    "object": "payment_method",
+    "billing_details": {
+      "address": {
+        "city": null,
+        "country": "US",
+        "line1": null,
+        "line2": null,
+        "postal_code": null,
+        "state": null
+      },
+      "email": "priya.shah@acme.io",
+      "name": "Priya Shah",
+      "phone": null,
+      "tax_id": null
+    },
+    "card": {
+      "brand": "visa",
+      "checks": {
+        "address_line1_check": null,
+        "address_postal_code_check": "pass",
+        "cvc_check": "pass"
+      },
+      "country": "US",
+      "exp_month": 8,
+      "exp_year": 2028,
+      "fingerprint": "BWgDyTEQZaKfRkMw",
+      "funding": "credit",
+      "last4": "4242"
+    },
+    "created": 1772462049,
+    "customer": "cus_Rk4PshAcm3Xy9Q",
+    "type": "card"
+  },
+  {
+    "id": "pm_Fs3WqK7nYp1RtM4xLc9GbV2d",
+    "object": "payment_method",
+    "billing_details": {
+      "address": {
+        "city": null,
+        "country": "US",
+        "line1": null,
+        "line2": null,
+        "postal_code": null,
+        "state": null
+      },
+      "email": "priya.shah@fastmail.com",
+      "name": "Priya Shah",
+      "phone": null,
+      "tax_id": null
+    },
+    "card": {
+      "brand": "mastercard",
+      "checks": {
+        "address_line1_check": null,
+        "address_postal_code_check": "pass",
+        "cvc_check": "pass"
+      },
+      "country": "US",
+      "exp_month": 8,
+      "exp_year": 2028,
+      "fingerprint": "BWgDyTEQZaKfRkMw",
+      "funding": "credit",
+      "last4": "5100"
+    },
+    "created": 1770463696,
+    "customer": "cus_Fm8PshFst2Lw5T",
+    "type": "card"
+  }
+]

@@ -1,0 +1,17 @@
+[
+  {
+    "_key": "octo-org/payments-api#7",
+    "number": 7,
+    "state": "open",
+    "rule": {
+      "id": "go/unused-function",
+      "title": "Unused function",
+      "severity": "note",
+      "category": "maintainability"
+    },
+    "location": {
+      "path": "internal/charge/charge.go",
+      "start_line": 3
+    }
+  }
+]

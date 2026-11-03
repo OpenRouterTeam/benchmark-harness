@@ -1,0 +1,26 @@
+[scenario]
+id = "search/exa/find-vp-engineering-profile"
+title = "Find the right person's LinkedIn profile among namesakes"
+now = "2026-10-27T15:45:00Z"
+seed = "search-exa-find-vp-engineering-profile"
+services = ["exa"]
+tags = ["lookup", "single-service", "exa", "disambiguation"]
+timeout_sec = 900
+
+# Right profile: priya-raman-tessellate. Distractors: a former Tessellate Bio director (now
+# CTO elsewhere), a data scientist at Tessellate Analytics, and a Boston cardiologist.
+[expect.answer]
+contains = ["linkedin.com/in/priya-raman-tessellate"]
+
+[[expect.required_calls]]
+service = "exa"
+method = "POST"
+path_regex = "^/(search|contents)$"
+
+[solution]
+answer = "Priya Raman, VP of Engineering at Tessellate Bio (Boston): https://www.linkedin.com/in/priya-raman-tessellate\n"
+
+[[solution.call]]
+endpoint = "exa"
+tool = "people_search_exa"
+arguments = { query = "Priya Raman VP of Engineering Tessellate Bio Boston" }

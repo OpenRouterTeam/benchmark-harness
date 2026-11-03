@@ -1,0 +1,23 @@
+[
+  {
+    "id": "6cc70560-1e43-56e4-9bb5-6c718fe724ed",
+    "projectId": "e3c09e4d-1537-5f94-8bf9-aa46108fc659",
+    "name": "Partner beta",
+    "description": null,
+    "targetDate": "2026-10-20",
+    "sortOrder": 0,
+    "status": "done",
+    "createdAt": "2026-09-01T15:00:00.000Z",
+    "updatedAt": "2026-10-20T15:00:00.000Z"
+  },
+  {
+    "id": "62f799c8-4626-5aab-b3e2-c870d7a810bf",
+    "projectId": "e3c09e4d-1537-5f94-8bf9-aa46108fc659",
+    "name": "General availability",
+    "description": "All partners on v2",
+    "targetDate": "2026-11-12",
+    "sortOrder": 1000,
+    "createdAt": "2026-09-01T15:00:00.000Z",
+    "updatedAt": "2026-10-20T15:00:00.000Z"
+  }
+]

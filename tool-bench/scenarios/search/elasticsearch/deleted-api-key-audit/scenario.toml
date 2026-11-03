@@ -1,0 +1,32 @@
+[scenario]
+id = "search/elasticsearch/deleted-api-key-audit"
+title = "Find who deleted an API key in the audit logs"
+now = "2026-10-30T09:30:00Z"
+seed = "search-elasticsearch-deleted-api-key-audit"
+services = ["elasticsearch"]
+tags = ["lookup", "single-service", "elasticsearch", "disambiguation"]
+timeout_sec = 900
+
+# m.okafor at 2026-10-29T16:42:57Z. Distractors: j.doe's denied attempt, r.chen deleting
+# ci-deploy-bot-staging, and a.santos deleting a same-named key in the legacy index in August.
+[expect.answer]
+contains = ["m.okafor"]
+regex = '16:42'
+
+[[expect.required_calls]]
+service = "elasticsearch"
+method = "POST"
+path_regex = "(_search|_query)$"
+
+[solution]
+answer = "m.okafor deleted the API key ci-deploy-bot on 2026-10-29 at 16:42:57 UTC (from 10.8.4.77), then created ci-deploy-bot-v2 at 16:44. An earlier delete attempt by j.doe at 14:05 was denied.\n"
+
+[[solution.call]]
+endpoint = "elasticsearch"
+tool = "list_indices"
+arguments = { index_pattern = "audit-*" }
+
+[[solution.call]]
+endpoint = "elasticsearch"
+tool = "esql"
+arguments = { query = "FROM audit-security-2026.10 | WHERE target_name == \"ci-deploy-bot\" AND event_action == \"api_key.delete\" | SORT @timestamp | KEEP @timestamp, actor, event_outcome, details" }

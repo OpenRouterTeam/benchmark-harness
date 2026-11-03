@@ -1,0 +1,4 @@
+- Sentry issue: STOREFRONT-WEB-7Q, "TypeError: Cannot read properties of undefined (reading 'map')" in CartDrawer (2,600 events, unresolved)
+- First seen in release: storefront@5.2.0 (single commit 9f1c2ab, "feat(cart): slide-out cart drawer")
+- Pull request: lumen-labs/storefront #57 "Slide-out cart drawer"
+- Author: Sofia Alvarez (@sofia)

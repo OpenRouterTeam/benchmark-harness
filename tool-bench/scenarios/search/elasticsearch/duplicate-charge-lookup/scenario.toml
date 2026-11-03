@@ -1,0 +1,32 @@
+[scenario]
+id = "search/elasticsearch/duplicate-charge-lookup"
+title = "Find a customer's duplicate charge in the orders index"
+now = "2026-10-30T10:00:00Z"
+seed = "search-elasticsearch-duplicate-charge-lookup"
+services = ["elasticsearch"]
+tags = ["lookup", "single-service", "elasticsearch", "disambiguation"]
+timeout_sec = 900
+
+# Duplicates: ORD-109002 and ORD-109003 (86.40 USD, 28 s apart). Distractors: Jordan Leigh's
+# own pair, j.lee@example.com's 86.40 order, and Jordan Lee's other orders.
+[expect.answer]
+contains = ["ORD-109002", "ORD-109003"]
+regex = '86[.,]4'
+
+[[expect.required_calls]]
+service = "elasticsearch"
+method = "POST"
+path_regex = "(_search|_query)$"
+
+[solution]
+answer = "The double charge is ORD-109002 and ORD-109003 (both 86.40 USD, placed 2026-10-23 at 20:41:09 and 20:41:37 UTC, 3 items each, separate payment intents).\n"
+
+[[solution.call]]
+endpoint = "elasticsearch"
+tool = "list_indices"
+arguments = { index_pattern = "orders-*" }
+
+[[solution.call]]
+endpoint = "elasticsearch"
+tool = "search"
+arguments = { index = "orders-2026", query_body = { query = { term = { customer_email = "jordan.lee@example.com" } }, sort = [{ created_at = "asc" }], size = 20 } }

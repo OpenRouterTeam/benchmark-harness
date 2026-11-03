@@ -1,0 +1,34 @@
+[
+  {
+    "id": "PSPU001",
+    "post": {
+      "id": "PSPPST1",
+      "type": "status_page_post"
+    },
+    "message": "We are investigating elevated error rates for some customers during checkout.",
+    "reviewed_status": "approved",
+    "status": {
+      "id": "PSTS001",
+      "type": "status_page_status"
+    },
+    "severity": {
+      "id": "PSEV002",
+      "type": "status_page_severity"
+    },
+    "impacted_services": [
+      {
+        "service": {
+          "id": "PSPS001",
+          "type": "status_page_service"
+        },
+        "impact": {
+          "id": "PIMP003",
+          "type": "status_page_impact"
+        }
+      }
+    ],
+    "update_frequency_ms": 1800000,
+    "notify_subscribers": true,
+    "reported_at": "2026-10-20T12:55:00Z"
+  }
+]

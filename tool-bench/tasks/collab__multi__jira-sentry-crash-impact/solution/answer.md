@@ -1,0 +1,1 @@
+The product grid bug WEB-56 links Sentry issue STOREFRONT-WEB-8D (TypeError: Cannot read properties of undefined (reading 'map') in ProductGrid). It has 2,172 events and 1,318 affected users, and was first seen in release storefront@5.3.0.

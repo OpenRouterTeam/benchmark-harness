@@ -1,0 +1,46 @@
+[
+  {
+    "_key": "octo-org/platform",
+    "id": 61,
+    "name": "Platform",
+    "slug": "platform",
+    "description": "CI/CD and developer tooling",
+    "privacy": "closed",
+    "members": [
+      "mokafor",
+      "rchen",
+      "mona"
+    ],
+    "repos": [
+      "octo-org/deploy-pipeline"
+    ]
+  },
+  {
+    "_key": "octo-org/web",
+    "id": 62,
+    "name": "Web",
+    "slug": "web",
+    "description": "Customer web app",
+    "privacy": "closed",
+    "members": [
+      "sam",
+      "jdoe"
+    ],
+    "repos": [
+      "octo-org/web"
+    ]
+  },
+  {
+    "_key": "octo-org/security",
+    "id": 63,
+    "name": "Security",
+    "slug": "security",
+    "description": "AppSec and key management",
+    "privacy": "closed",
+    "members": [
+      "jdoe",
+      "asantos"
+    ],
+    "repos": []
+  }
+]

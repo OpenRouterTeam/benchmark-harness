@@ -1,0 +1,48 @@
+[
+  {
+    "_key": "b73eaab2b7b7af66a64d59e777aaae2334f0a62e",
+    "repoURL": "https://github.com/lumen-retail/storefront-deploy.git",
+    "sha": "b73eaab2b7b7af66a64d59e777aaae2334f0a62e",
+    "refs": [
+      "v2.13.4"
+    ],
+    "message": "checkout-web: release 2.13.4",
+    "author": "ci-bot",
+    "date": "2026-10-20T16:02:11Z"
+  },
+  {
+    "_key": "cbd3f1734780d1588d9e6348448a9829c2fd04e2",
+    "repoURL": "https://github.com/lumen-retail/storefront-deploy.git",
+    "sha": "cbd3f1734780d1588d9e6348448a9829c2fd04e2",
+    "refs": [
+      "staging-2.14.0-rc2"
+    ],
+    "message": "checkout-web(staging): bump to 2.14.0-rc2",
+    "author": "maria.okafor",
+    "date": "2026-10-27T11:40:03Z"
+  },
+  {
+    "_key": "a23f2a7b21f788c07d95ceaeb529e54b7ae3dbcd",
+    "repoURL": "https://github.com/lumen-retail/storefront-deploy.git",
+    "sha": "a23f2a7b21f788c07d95ceaeb529e54b7ae3dbcd",
+    "refs": [
+      "main",
+      "HEAD"
+    ],
+    "message": "checkout-web(prod): promote 2.14.0-rc3",
+    "author": "deploy-bot",
+    "date": "2026-10-29T12:51:47Z"
+  },
+  {
+    "_key": "81d23ec5610e9347011c94d21b56467543097e3e",
+    "repoURL": "https://github.com/lumen-retail/platform-deploy.git",
+    "sha": "81d23ec5610e9347011c94d21b56467543097e3e",
+    "refs": [
+      "main",
+      "HEAD"
+    ],
+    "message": "ingress-nginx: chart 4.11.3",
+    "author": "sam.lindqvist",
+    "date": "2026-10-15T09:12:00Z"
+  }
+]

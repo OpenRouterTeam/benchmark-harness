@@ -1,0 +1,33 @@
+[
+  {
+    "id": "10000",
+    "name": "To Do",
+    "statusCategory": "new",
+    "initial": true,
+    "description": ""
+  },
+  {
+    "id": "3",
+    "name": "In Progress",
+    "statusCategory": "indeterminate",
+    "description": "This issue is being actively worked on at the moment by the assignee."
+  },
+  {
+    "id": "10001",
+    "name": "In Review",
+    "statusCategory": "indeterminate",
+    "description": ""
+  },
+  {
+    "id": "10002",
+    "name": "Done",
+    "statusCategory": "done",
+    "description": ""
+  },
+  {
+    "id": "10003",
+    "name": "Won't Do",
+    "statusCategory": "done",
+    "description": ""
+  }
+]

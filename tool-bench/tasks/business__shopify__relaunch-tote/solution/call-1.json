@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"manage-product-variants","arguments":{"productId":"gid://shopify/Product/8201","variants":[{"id":"gid://shopify/ProductVariant/4201","price":"42.00"}]}}}

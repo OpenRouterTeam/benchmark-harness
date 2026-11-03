@@ -1,0 +1,498 @@
+[
+  {
+    "id": "prj_3dw2VoUa166qmaLV3P6dm828isAX",
+    "name": "storefront",
+    "accountId": "team_9vXcR2kLmQ4tZ8wN3pHf6sJd",
+    "framework": "nextjs",
+    "nodeVersion": "22.x",
+    "buildCommand": "pnpm run build",
+    "devCommand": null,
+    "installCommand": null,
+    "outputDirectory": null,
+    "rootDirectory": null,
+    "publicSource": null,
+    "serverlessFunctionRegion": "iad1",
+    "directoryListing": false,
+    "autoExposeSystemEnvs": true,
+    "gitForkProtection": true,
+    "sourceFilesOutsideRootDirectory": true,
+    "live": false,
+    "passwordProtection": null,
+    "link": {
+      "type": "github",
+      "org": "acme-shop",
+      "repo": "storefront",
+      "repoId": 712004311,
+      "productionBranch": "main",
+      "createdAt": 1677754800000,
+      "updatedAt": 1677754800000,
+      "deployHooks": [],
+      "gitCredentialId": "cred_3FI93r9xPKhgCyRK8KN4",
+      "sourceless": true
+    },
+    "createdAt": 1677754800000,
+    "updatedAt": 1793179860000,
+    "env": [
+      {
+        "type": "plain",
+        "value": "https://api.acme-shop.com",
+        "target": [
+          "production"
+        ],
+        "configurationId": null,
+        "comment": "",
+        "id": "1St5w4u2gKT5xGSg",
+        "key": "NEXT_PUBLIC_API_URL",
+        "createdAt": 1767603600000,
+        "updatedAt": 1767603600000,
+        "createdBy": "Kx8wQ2mZr4TnV7pLc3HdYb5e",
+        "updatedBy": null
+      },
+      {
+        "type": "plain",
+        "value": "https://api-staging.acme-shop.com",
+        "target": [
+          "preview",
+          "development"
+        ],
+        "configurationId": null,
+        "comment": "",
+        "id": "7Dq53m0gX5RDzj4I",
+        "key": "NEXT_PUBLIC_API_URL",
+        "createdAt": 1767603600000,
+        "updatedAt": 1767603600000,
+        "createdBy": "Kx8wQ2mZr4TnV7pLc3HdYb5e",
+        "updatedBy": null
+      },
+      {
+        "type": "plain",
+        "value": "https://pay.acme-shop.com",
+        "target": [
+          "production"
+        ],
+        "configurationId": null,
+        "comment": "",
+        "id": "9oK7J2kVMUskD5Tg",
+        "key": "PAYMENTS_API_URL",
+        "createdAt": 1767603600000,
+        "updatedAt": 1767603600000,
+        "createdBy": "Kx8wQ2mZr4TnV7pLc3HdYb5e",
+        "updatedBy": null
+      },
+      {
+        "type": "plain",
+        "value": "pk_live_51NvAcmeShopPk0x9f2",
+        "target": [
+          "production"
+        ],
+        "configurationId": null,
+        "comment": "",
+        "id": "2TM5C5nZd8DXUSRS",
+        "key": "STRIPE_PUBLISHABLE_KEY",
+        "createdAt": 1767603600000,
+        "updatedAt": 1767603600000,
+        "createdBy": "Kx8wQ2mZr4TnV7pLc3HdYb5e",
+        "updatedBy": null
+      },
+      {
+        "type": "plain",
+        "value": "pk_test_51NvAcmeShopPk0test",
+        "target": [
+          "preview",
+          "development"
+        ],
+        "configurationId": null,
+        "comment": "",
+        "id": "e80l069npK274Gdf",
+        "key": "STRIPE_PUBLISHABLE_KEY",
+        "createdAt": 1767603600000,
+        "updatedAt": 1767603600000,
+        "createdBy": "Kx8wQ2mZr4TnV7pLc3HdYb5e",
+        "updatedBy": null
+      },
+      {
+        "type": "encrypted",
+        "value": "rv_5d1b0e7a93c24f",
+        "target": [
+          "production",
+          "preview"
+        ],
+        "configurationId": null,
+        "comment": "",
+        "id": "REWgnxdH0CKFrt0s",
+        "key": "REVALIDATE_SECRET",
+        "createdAt": 1767603600000,
+        "updatedAt": 1767603600000,
+        "createdBy": "Kx8wQ2mZr4TnV7pLc3HdYb5e",
+        "updatedBy": null
+      }
+    ]
+  },
+  {
+    "id": "prj_ysFUnRJiXZGcxlQubrXGJqx7GadE",
+    "name": "storefront-admin",
+    "accountId": "team_9vXcR2kLmQ4tZ8wN3pHf6sJd",
+    "framework": "nextjs",
+    "nodeVersion": "22.x",
+    "buildCommand": null,
+    "devCommand": null,
+    "installCommand": null,
+    "outputDirectory": null,
+    "rootDirectory": null,
+    "publicSource": null,
+    "serverlessFunctionRegion": "iad1",
+    "directoryListing": false,
+    "autoExposeSystemEnvs": true,
+    "gitForkProtection": true,
+    "sourceFilesOutsideRootDirectory": true,
+    "live": false,
+    "passwordProtection": null,
+    "link": {
+      "type": "github",
+      "org": "acme-shop",
+      "repo": "storefront-admin",
+      "repoId": 712004388,
+      "productionBranch": "main",
+      "createdAt": 1684488600000,
+      "updatedAt": 1684488600000,
+      "deployHooks": [],
+      "gitCredentialId": "cred_zYXrO3FpJkhstlHITnRj",
+      "sourceless": true
+    },
+    "createdAt": 1684488600000,
+    "updatedAt": 1793186400000,
+    "env": [
+      {
+        "type": "plain",
+        "value": "https://api.acme-shop.com",
+        "target": [
+          "production"
+        ],
+        "configurationId": null,
+        "comment": "",
+        "id": "Pf7KuIn9PKflYq1y",
+        "key": "NEXT_PUBLIC_API_URL",
+        "createdAt": 1767603600000,
+        "updatedAt": 1767603600000,
+        "createdBy": "Kx8wQ2mZr4TnV7pLc3HdYb5e",
+        "updatedBy": null
+      },
+      {
+        "type": "plain",
+        "value": "https://api-staging.acme-shop.com",
+        "target": [
+          "preview",
+          "development"
+        ],
+        "configurationId": null,
+        "comment": "",
+        "id": "ScjBS3NJolmwfmmt",
+        "key": "NEXT_PUBLIC_API_URL",
+        "createdAt": 1767603600000,
+        "updatedAt": 1767603600000,
+        "createdBy": "Kx8wQ2mZr4TnV7pLc3HdYb5e",
+        "updatedBy": null
+      },
+      {
+        "type": "sensitive",
+        "value": "adm_77c2e9f01b5a",
+        "target": [
+          "production",
+          "preview"
+        ],
+        "configurationId": null,
+        "comment": "",
+        "id": "IYd772gKpGpWSFJS",
+        "key": "ADMIN_SESSION_SECRET",
+        "createdAt": 1767603600000,
+        "updatedAt": 1767603600000,
+        "createdBy": "Kx8wQ2mZr4TnV7pLc3HdYb5e",
+        "updatedBy": null
+      }
+    ]
+  },
+  {
+    "id": "prj_Tt5m7wZLjgqPCBUfmEh1nWJN9ZIW",
+    "name": "checkout-api",
+    "accountId": "team_9vXcR2kLmQ4tZ8wN3pHf6sJd",
+    "framework": "express",
+    "nodeVersion": "22.x",
+    "buildCommand": null,
+    "devCommand": null,
+    "installCommand": null,
+    "outputDirectory": null,
+    "rootDirectory": null,
+    "publicSource": null,
+    "serverlessFunctionRegion": "iad1",
+    "directoryListing": false,
+    "autoExposeSystemEnvs": true,
+    "gitForkProtection": true,
+    "sourceFilesOutsideRootDirectory": true,
+    "live": false,
+    "passwordProtection": null,
+    "link": {
+      "type": "github",
+      "org": "acme-shop",
+      "repo": "checkout-api",
+      "repoId": 690113207,
+      "productionBranch": "main",
+      "createdAt": 1667916000000,
+      "updatedAt": 1667916000000,
+      "deployHooks": [],
+      "gitCredentialId": "cred_qXyvkwLZNxo77GwG80I0",
+      "sourceless": true
+    },
+    "createdAt": 1667916000000,
+    "updatedAt": 1782981300000,
+    "env": [
+      {
+        "type": "encrypted",
+        "value": "sk_live_51NvLegacyCheckout4r8Q",
+        "target": [
+          "production"
+        ],
+        "configurationId": null,
+        "comment": "",
+        "id": "baSV4X7vGlB0HBwv",
+        "key": "STRIPE_SECRET_KEY",
+        "createdAt": 1667917800000,
+        "updatedAt": 1667917800000,
+        "createdBy": "Kx8wQ2mZr4TnV7pLc3HdYb5e",
+        "updatedBy": null
+      },
+      {
+        "type": "encrypted",
+        "value": "sk_test_51NvLegacyCheckoutT3st",
+        "target": [
+          "preview",
+          "development"
+        ],
+        "configurationId": null,
+        "comment": "",
+        "id": "drI0TO1GYY7PduIl",
+        "key": "STRIPE_SECRET_KEY",
+        "createdAt": 1667917800000,
+        "updatedAt": 1667917800000,
+        "createdBy": "Kx8wQ2mZr4TnV7pLc3HdYb5e",
+        "updatedBy": null
+      },
+      {
+        "type": "encrypted",
+        "value": "postgres://checkout:legacy@db-legacy.acme-shop.internal:5432/checkout",
+        "target": [
+          "production"
+        ],
+        "configurationId": null,
+        "comment": "",
+        "id": "RXZ2lCT5vqb1FH1z",
+        "key": "DATABASE_URL",
+        "createdAt": 1667917800000,
+        "updatedAt": 1667917800000,
+        "createdBy": "Kx8wQ2mZr4TnV7pLc3HdYb5e",
+        "updatedBy": null
+      }
+    ]
+  },
+  {
+    "id": "prj_9NauQLxYvOeIyWZWq6mqvavv9xuH",
+    "name": "checkout-api-next",
+    "accountId": "team_9vXcR2kLmQ4tZ8wN3pHf6sJd",
+    "framework": "hono",
+    "nodeVersion": "22.x",
+    "buildCommand": null,
+    "devCommand": null,
+    "installCommand": null,
+    "outputDirectory": null,
+    "rootDirectory": null,
+    "publicSource": null,
+    "serverlessFunctionRegion": "iad1",
+    "directoryListing": false,
+    "autoExposeSystemEnvs": true,
+    "gitForkProtection": true,
+    "sourceFilesOutsideRootDirectory": true,
+    "live": false,
+    "passwordProtection": null,
+    "link": {
+      "type": "github",
+      "org": "acme-shop",
+      "repo": "checkout-api-next",
+      "repoId": 801552930,
+      "productionBranch": "main",
+      "createdAt": 1770729600000,
+      "updatedAt": 1770729600000,
+      "deployHooks": [],
+      "gitCredentialId": "cred_IUZBaaAMkbNxKOD1AyT3",
+      "sourceless": true
+    },
+    "createdAt": 1770729600000,
+    "updatedAt": 1792518000000,
+    "env": [
+      {
+        "type": "sensitive",
+        "value": "sk_live_51NvCheckoutNext9wLk",
+        "target": [
+          "production"
+        ],
+        "configurationId": null,
+        "comment": "",
+        "id": "rN1Dlb7NzGIlkNJD",
+        "key": "STRIPE_SECRET_KEY",
+        "createdAt": 1770730800000,
+        "updatedAt": 1770730800000,
+        "createdBy": "Kx8wQ2mZr4TnV7pLc3HdYb5e",
+        "updatedBy": null
+      },
+      {
+        "type": "encrypted",
+        "value": "sk_test_51NvCheckoutNextTst2",
+        "target": [
+          "preview",
+          "development"
+        ],
+        "configurationId": null,
+        "comment": "",
+        "id": "JSGgKKujZeGcSdw8",
+        "key": "STRIPE_SECRET_KEY",
+        "createdAt": 1770730800000,
+        "updatedAt": 1770730800000,
+        "createdBy": "Kx8wQ2mZr4TnV7pLc3HdYb5e",
+        "updatedBy": null
+      },
+      {
+        "type": "sensitive",
+        "value": "whsec_Next4f0c1e9b2a",
+        "target": [
+          "production"
+        ],
+        "configurationId": null,
+        "comment": "",
+        "id": "739DcUI7kk9upYZc",
+        "key": "STRIPE_WEBHOOK_SECRET",
+        "createdAt": 1770730800000,
+        "updatedAt": 1770730800000,
+        "createdBy": "Kx8wQ2mZr4TnV7pLc3HdYb5e",
+        "updatedBy": null
+      },
+      {
+        "type": "encrypted",
+        "value": "postgres://checkout:next@db.acme-shop.internal:5432/checkout",
+        "target": [
+          "production"
+        ],
+        "configurationId": null,
+        "comment": "",
+        "id": "paIyuc6HuEJlhDeg",
+        "key": "DATABASE_URL",
+        "createdAt": 1770730800000,
+        "updatedAt": 1770730800000,
+        "createdBy": "Kx8wQ2mZr4TnV7pLc3HdYb5e",
+        "updatedBy": null
+      },
+      {
+        "type": "plain",
+        "value": "info",
+        "target": [
+          "production",
+          "preview",
+          "development"
+        ],
+        "configurationId": null,
+        "comment": "",
+        "id": "SGDeb139UDHGVnnK",
+        "key": "LOG_LEVEL",
+        "createdAt": 1770730800000,
+        "updatedAt": 1770730800000,
+        "createdBy": "Kx8wQ2mZr4TnV7pLc3HdYb5e",
+        "updatedBy": null
+      }
+    ]
+  },
+  {
+    "id": "prj_8uh4fJyvBcj41eSFaHbqW7k91M3h",
+    "name": "docs",
+    "accountId": "team_9vXcR2kLmQ4tZ8wN3pHf6sJd",
+    "framework": "docusaurus-2",
+    "nodeVersion": "22.x",
+    "buildCommand": null,
+    "devCommand": null,
+    "installCommand": null,
+    "outputDirectory": null,
+    "rootDirectory": null,
+    "publicSource": null,
+    "serverlessFunctionRegion": "iad1",
+    "directoryListing": false,
+    "autoExposeSystemEnvs": true,
+    "gitForkProtection": true,
+    "sourceFilesOutsideRootDirectory": true,
+    "live": false,
+    "passwordProtection": null,
+    "link": {
+      "type": "github",
+      "org": "acme-shop",
+      "repo": "docs",
+      "repoId": 702338114,
+      "productionBranch": "main",
+      "createdAt": 1680336000000,
+      "updatedAt": 1680336000000,
+      "deployHooks": [],
+      "gitCredentialId": "cred_eZU4d8Cb2YI1AAL8inJw",
+      "sourceless": true
+    },
+    "createdAt": 1680336000000,
+    "updatedAt": 1790769300000,
+    "env": [
+      {
+        "type": "plain",
+        "value": "K7QW2E9XZP",
+        "target": [
+          "production",
+          "preview",
+          "development"
+        ],
+        "configurationId": null,
+        "comment": "",
+        "id": "7hFq7H3WMR05NgSN",
+        "key": "ALGOLIA_APP_ID",
+        "createdAt": 1767603600000,
+        "updatedAt": 1767603600000,
+        "createdBy": "Kx8wQ2mZr4TnV7pLc3HdYb5e",
+        "updatedBy": null
+      }
+    ]
+  },
+  {
+    "id": "prj_cYqqV3c0yOwoGVuQy0J5prXvCcoI",
+    "name": "storefront-experiments",
+    "accountId": "team_2bHq7YtR5mWx9cKp4LnZ8vFe",
+    "framework": "vite",
+    "nodeVersion": "22.x",
+    "buildCommand": null,
+    "devCommand": null,
+    "installCommand": null,
+    "outputDirectory": null,
+    "rootDirectory": null,
+    "publicSource": null,
+    "serverlessFunctionRegion": "iad1",
+    "directoryListing": false,
+    "autoExposeSystemEnvs": true,
+    "gitForkProtection": true,
+    "sourceFilesOutsideRootDirectory": true,
+    "live": false,
+    "passwordProtection": null,
+    "link": {
+      "type": "github",
+      "org": "acme-labs",
+      "repo": "storefront-experiments",
+      "repoId": 822001455,
+      "productionBranch": "main",
+      "createdAt": 1738576800000,
+      "updatedAt": 1738576800000,
+      "deployHooks": [],
+      "gitCredentialId": "cred_8tI7nCdxWgxzoSqyZlid",
+      "sourceless": true
+    },
+    "createdAt": 1738576800000,
+    "updatedAt": 1791817200000,
+    "env": []
+  }
+]

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_job_logs","arguments":{"failed_only":true,"owner":"octo-org","repo":"payments-api","return_content":true,"run_id":9005,"tail_lines":50}}}

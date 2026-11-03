@@ -1,0 +1,83 @@
+[
+  {
+    "_key": "default",
+    "metadata": {
+      "name": "default",
+      "namespace": "argocd",
+      "uid": "31c4f0fe-906e-571a-8028-a665ef57a368",
+      "resourceVersion": "42224",
+      "generation": 1,
+      "creationTimestamp": "2025-05-20T09:00:00Z"
+    },
+    "spec": {
+      "sourceRepos": [
+        "*"
+      ],
+      "destinations": [
+        {
+          "server": "*",
+          "namespace": "*"
+        }
+      ],
+      "clusterResourceWhitelist": [
+        {
+          "group": "*",
+          "kind": "*"
+        }
+      ]
+    },
+    "status": {}
+  },
+  {
+    "_key": "billing",
+    "metadata": {
+      "name": "billing",
+      "namespace": "argocd",
+      "uid": "38a3e0b5-61b1-5454-841a-857ad7026643",
+      "resourceVersion": "42241",
+      "generation": 3,
+      "creationTimestamp": "2025-06-02T10:00:00Z"
+    },
+    "spec": {
+      "description": "Invoicing and payments ledger",
+      "sourceRepos": [
+        "https://github.com/lumen-retail/*"
+      ],
+      "destinations": [
+        {
+          "server": "https://prod-use1.k8s.lumen.internal",
+          "namespace": "billing"
+        },
+        {
+          "server": "https://staging-use1.k8s.lumen.internal",
+          "namespace": "billing"
+        }
+      ],
+      "clusterResourceWhitelist": [
+        {
+          "group": "",
+          "kind": "Namespace"
+        }
+      ],
+      "namespaceResourceWhitelist": [
+        {
+          "group": "*",
+          "kind": "*"
+        }
+      ],
+      "roles": [
+        {
+          "name": "deployers",
+          "description": "CI deployers for billing",
+          "policies": [
+            "p, proj:billing:deployers, applications, sync, billing/*, allow"
+          ],
+          "groups": [
+            "lumen-retail:platform"
+          ]
+        }
+      ]
+    },
+    "status": {}
+  }
+]

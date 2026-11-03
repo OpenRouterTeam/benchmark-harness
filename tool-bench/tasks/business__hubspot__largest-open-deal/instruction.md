@@ -1,0 +1,1 @@
+I'm prepping for tomorrow's pipeline review. In our CRM, which company has the single biggest deal that's still open (not won or lost yet), and how much is that deal worth? Write the company name and the deal amount to `/app/answer.md`.

@@ -1,0 +1,7 @@
+[
+  {"id": 6201, "subject": "API returning 502 errors", "status": "solved", "priority": "high", "type": "incident", "requester_id": 9010402, "assignee_id": 9010002, "created_at": "2026-09-30T15:05:00Z", "updated_at": "2026-10-01T09:40:00Z", "tags": ["api"]},
+  {"id": 6225, "subject": "502 errors from the patient portal API", "status": "solved", "priority": "high", "type": "incident", "requester_id": 9010401, "assignee_id": 9010003, "created_at": "2026-10-15T07:30:00Z", "updated_at": "2026-10-16T11:20:00Z", "tags": ["api", "patient_portal"]},
+  {"id": 6230, "subject": "Patient portal API calls failing with 502", "status": "open", "priority": "normal", "type": "incident", "requester_id": 9010401, "assignee_id": 9010003, "created_at": "2026-10-30T12:41:00Z", "updated_at": "2026-10-30T12:58:00Z", "tags": ["api", "patient_portal"]},
+  {"id": 6232, "subject": "October invoice is missing our PO number", "status": "open", "priority": "low", "type": "question", "requester_id": 9010403, "assignee_id": 9010002, "created_at": "2026-10-30T09:02:00Z", "updated_at": "2026-10-30T09:02:00Z", "tags": ["billing"]},
+  {"id": 6233, "subject": "Webhook deliveries retrying with 502", "status": "open", "priority": "normal", "type": "problem", "requester_id": 9010404, "assignee_id": 9010002, "created_at": "2026-10-30T11:15:00Z", "updated_at": "2026-10-30T11:50:00Z", "tags": ["webhooks"]}
+]

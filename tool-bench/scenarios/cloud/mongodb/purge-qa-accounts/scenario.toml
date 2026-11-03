@@ -1,0 +1,88 @@
+[scenario]
+id = "cloud/mongodb/purge-qa-accounts"
+title = "Delete QA test accounts from the production CRM"
+now = "2026-03-14T09:00:00Z"
+seed = "cloud-mongodb-purge-qa-accounts"
+services = ["mongodb"]
+tags = ["write", "single-service", "mongodb"]
+timeout_sec = 900
+
+# QA accounts (@qa.octoshop.test) in crm.customers: ...02, ...05, ...08, ...0a.
+# Must survive: real customers, qa.team@octoshop.com, ben@qa.octoshop.tech, lena.qa@gmail.com,
+# and the crm_staging copies.
+[[expect.state]]
+pointer = "/services/mongodb/db.crm.customers/65e3c0000000000000000002"
+exists = false
+
+[[expect.state]]
+pointer = "/services/mongodb/db.crm.customers/65e3c0000000000000000005"
+exists = false
+
+[[expect.state]]
+pointer = "/services/mongodb/db.crm.customers/65e3c0000000000000000008"
+exists = false
+
+[[expect.state]]
+pointer = "/services/mongodb/db.crm.customers/65e3c000000000000000000a"
+exists = false
+
+[[expect.state]]
+pointer = "/services/mongodb/db.crm.customers/65e3c0000000000000000001/email"
+equals = "ines.duarte@example.com"
+
+[[expect.state]]
+pointer = "/services/mongodb/db.crm.customers/65e3c0000000000000000003/email"
+equals = "raj.patel@example.in"
+
+[[expect.state]]
+pointer = "/services/mongodb/db.crm.customers/65e3c0000000000000000004/email"
+equals = "qa.team@octoshop.com"
+
+[[expect.state]]
+pointer = "/services/mongodb/db.crm.customers/65e3c0000000000000000006/email"
+equals = "ben@qa.octoshop.tech"
+
+[[expect.state]]
+pointer = "/services/mongodb/db.crm.customers/65e3c0000000000000000007/email"
+equals = "lena.qa@gmail.com"
+
+[[expect.state]]
+pointer = "/services/mongodb/db.crm.customers/65e3c0000000000000000009/email"
+equals = "omar.haddad@example.ae"
+
+[[expect.state]]
+pointer = "/services/mongodb/db.crm.customers/65e3c000000000000000000b/email"
+equals = "sofia.rossi@example.it"
+
+[[expect.state]]
+pointer = "/services/mongodb/db.crm_staging.customers/65e3d0000000000000000002/email"
+equals = "smoke01@qa.octoshop.test"
+
+[[expect.state]]
+pointer = "/services/mongodb/db.crm_staging.customers/65e3d0000000000000000005/email"
+equals = "checkout-bot@qa.octoshop.test"
+
+[[expect.required_calls]]
+service = "mongodb"
+path = "/_mcp/tools/call"
+body = { name = "delete-many", arguments = { database = "crm", collection = "customers" } }
+
+[[expect.forbidden_calls]]
+service = "mongodb"
+path = "/_mcp/tools/call"
+body = { name = "drop-collection" }
+
+[[expect.forbidden_calls]]
+service = "mongodb"
+path = "/_mcp/tools/call"
+body = { name = "drop-database" }
+
+[[solution.call]]
+endpoint = "mongodb"
+tool = "count"
+arguments = { connectionId = "preconfigured", database = "crm", collection = "customers", query = { email = { "$regex" = "@qa\\.octoshop\\.test$" } } }
+
+[[solution.call]]
+endpoint = "mongodb"
+tool = "delete-many"
+arguments = { connectionId = "preconfigured", database = "crm", collection = "customers", filter = { email = { "$regex" = "@qa\\.octoshop\\.test$" } } }

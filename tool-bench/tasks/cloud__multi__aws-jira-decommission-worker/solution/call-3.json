@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"call_aws","arguments":{"cli_command":["aws ec2 stop-instances --instance-ids i-07b9d1f3a5c8e2046","aws ec2 create-tags --resources i-07b9d1f3a5c8e2046 --tags Key=DecommissionTicket,Value=OPS-34"]}}}

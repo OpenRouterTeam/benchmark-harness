@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"salesforce_query_records","arguments":{"fields":["Id","Name","Title"],"objectName":"User","whereClause":"Id = '0055g00000MZfGEAA1'"}}}

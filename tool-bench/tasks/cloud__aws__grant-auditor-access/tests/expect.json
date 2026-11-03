@@ -1,0 +1,110 @@
+{
+  "state": [
+    {
+      "pointer": "/services/aws/users/priya.raman-audit/AttachedPolicies",
+      "equals": [
+        "arn:aws:iam::aws:policy/SecurityAudit"
+      ],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/aws/groups/auditors/Members",
+      "equals": [
+        "lnovak",
+        "priya.raman-audit"
+      ],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/aws/users/praman/AttachedPolicies",
+      "equals": [
+        "arn:aws:iam::481562039417:policy/DataLakeAnalyst"
+      ],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/aws/groups/data-analysts/Members",
+      "equals": [
+        "praman"
+      ],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/aws/groups/auditors/AttachedPolicies",
+      "equals": [
+        "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess"
+      ],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "aws",
+      "method": "POST",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "Action=AttachUserPolicy",
+      "min_count": 1
+    },
+    {
+      "service": "aws",
+      "method": "POST",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "Action=AddUserToGroup",
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "aws",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "Action=DeleteUser",
+      "min_count": 1
+    },
+    {
+      "service": "aws",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "Action=CreateAccessKey",
+      "min_count": 1
+    },
+    {
+      "service": "aws",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "Action=CreateLoginProfile",
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

@@ -1,0 +1,6 @@
+[
+  {"id": "prod_FernwayPro0001", "name": "Fernway Pro", "description": "Scheduling for growing teams", "created": 1740787200, "default_price": "price_ProMonthly00000000000001", "metadata": {"family": "core"}},
+  {"id": "prod_FernwaySeat001", "name": "Additional seats", "created": 1740787200},
+  {"id": "prod_Analytics00001", "name": "Analytics add-on", "created": 1740787200},
+  {"id": "prod_Onboarding0001", "name": "Onboarding package", "created": 1740787200, "active": false}
+]

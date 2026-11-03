@@ -1,0 +1,68 @@
+{
+  "state": [
+    {
+      "pointer": "/services/exa/research/r_01k4fOjR4gU5lXF1HsNUQMnA/model",
+      "equals": "exa-research-pro",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "exa",
+      "method": "POST",
+      "path": "/research/v1",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "model": "exa-research-pro"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "exa",
+      "method": "GET",
+      "path": null,
+      "path_regex": "^/research/v1/r_",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "exa",
+      "method": "POST",
+      "path": "/research/v1",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "model": "exa-research-fast"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "exa",
+      "method": "POST",
+      "path": "/research/v1",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "model": "exa-research"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": {
+    "contains": [
+      "VoltHaven"
+    ],
+    "regex": "6[,.]?900"
+  }
+}

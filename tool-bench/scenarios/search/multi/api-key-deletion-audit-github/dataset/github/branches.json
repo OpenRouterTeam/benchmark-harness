@@ -1,0 +1,26 @@
+[
+  {
+    "_key": "octo-org/deploy-pipeline:main",
+    "name": "main",
+    "sha": "0ca221cb11e86d14527dbc7a7cc7a97394c0cbf1",
+    "protected": true
+  },
+  {
+    "_key": "octo-org/deploy-pipeline:mokafor/rotate-deploy-key",
+    "name": "mokafor/rotate-deploy-key",
+    "sha": "a5783b9e952dd944fce5be938599fda68abda16c",
+    "protected": false
+  },
+  {
+    "_key": "octo-org/deploy-pipeline:sam/runner-image",
+    "name": "sam/runner-image",
+    "sha": "ec8b97b2e744011860e1190bb0bad208b2aa3e8a",
+    "protected": false
+  },
+  {
+    "_key": "octo-org/web:main",
+    "name": "main",
+    "sha": "2ac411aee61f877572e1a16f610d076709f44af1",
+    "protected": true
+  }
+]

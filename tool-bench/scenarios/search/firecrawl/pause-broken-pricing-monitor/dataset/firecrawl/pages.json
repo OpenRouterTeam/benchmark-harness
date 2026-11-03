@@ -1,0 +1,26 @@
+[
+  {
+    "_key": "https://www.tailspintoys.com/plans",
+    "title": "Plans | Tailspin Toys",
+    "language": "en",
+    "markdown": "# Plans\n\n## Solo\n\n$8.99/month - one child profile\n\n## Family\n\n$16.99/month - up to five child profiles, offline downloads\n\n## Classroom\n\n$49/month - up to 30 students, teacher dashboard"
+  },
+  {
+    "_key": "https://www.tailspintoys.com",
+    "title": "Tailspin Toys | Learning games for kids",
+    "language": "en",
+    "markdown": "# Learning games kids love\n\n[See plans](https://www.tailspintoys.com/plans)"
+  },
+  {
+    "_key": "https://www.tailspintoys.eu/pricing",
+    "title": "Preise | Tailspin Toys",
+    "language": "de",
+    "markdown": "# Preise\n\n- Solo: 8,99 €/Monat\n- Family: 15,99 €/Monat\n- Classroom: 45 €/Monat"
+  },
+  {
+    "_key": "https://careers.wingtiptoys.com",
+    "title": "Careers | Wingtip Toys",
+    "language": "en",
+    "markdown": "# Careers at Wingtip Toys\n\n- Game Designer (Seattle)\n- QA Engineer (Remote)"
+  }
+]

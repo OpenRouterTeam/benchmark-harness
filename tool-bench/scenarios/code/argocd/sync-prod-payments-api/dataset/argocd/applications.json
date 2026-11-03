@@ -1,0 +1,453 @@
+[
+  {
+    "_key": "payments/payments-api",
+    "metadata": {
+      "name": "payments-api",
+      "namespace": "payments",
+      "uid": "760a89bb-a32d-589f-b840-7735b9b99290",
+      "resourceVersion": "42649",
+      "generation": 5,
+      "creationTimestamp": "2025-10-01T09:00:00Z",
+      "labels": {
+        "team": "payments",
+        "env": "production"
+      },
+      "finalizers": [
+        "resources-finalizer.argocd.argoproj.io"
+      ]
+    },
+    "spec": {
+      "source": {
+        "repoURL": "https://github.com/lumen-retail/payments-api-deploy.git",
+        "path": "overlays/production",
+        "targetRevision": "main"
+      },
+      "destination": {
+        "server": "https://prod-use1.k8s.lumen.internal",
+        "namespace": "payments"
+      },
+      "project": "payments",
+      "syncPolicy": {
+        "syncOptions": [
+          "CreateNamespace=true",
+          "ApplyOutOfSyncOnly=true"
+        ],
+        "retry": {
+          "limit": 5,
+          "backoff": {
+            "duration": "5s",
+            "factor": 2,
+            "maxDuration": "3m0s"
+          }
+        }
+      }
+    },
+    "status": {
+      "sync": {
+        "status": "OutOfSync",
+        "comparedTo": {
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/payments-api-deploy.git",
+            "path": "overlays/production",
+            "targetRevision": "main"
+          },
+          "destination": {
+            "server": "https://prod-use1.k8s.lumen.internal",
+            "namespace": "payments"
+          }
+        },
+        "revision": "fe01f33d2a5392fa17c1c35f25d294d24075c28b"
+      },
+      "health": {
+        "status": "Healthy"
+      },
+      "history": [
+        {
+          "revision": "ef675a8571b401c60d06a7ff8fced859eeba3751",
+          "deployedAt": "2026-10-09T10:10:00Z",
+          "id": 0,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/payments-api-deploy.git",
+            "path": "overlays/production",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-09T10:10:00Z",
+          "initiatedBy": {
+            "username": "admin"
+          }
+        },
+        {
+          "revision": "aa59f08385fb84287ad815b3091ecb99d811bc62",
+          "deployedAt": "2026-10-20T10:10:00Z",
+          "id": 1,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/payments-api-deploy.git",
+            "path": "overlays/production",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-20T10:10:00Z",
+          "initiatedBy": {
+            "username": "admin"
+          }
+        }
+      ],
+      "reconciledAt": "2026-10-29T14:10:00Z",
+      "operationState": {
+        "operation": {
+          "sync": {
+            "revision": "aa59f08385fb84287ad815b3091ecb99d811bc62",
+            "syncOptions": [
+              "CreateNamespace=true",
+              "ApplyOutOfSyncOnly=true"
+            ]
+          },
+          "initiatedBy": {
+            "username": "admin"
+          },
+          "retry": {
+            "limit": 5
+          }
+        },
+        "phase": "Succeeded",
+        "message": "successfully synced (all tasks run)",
+        "syncResult": {
+          "resources": [
+            {
+              "group": "apps",
+              "version": "v1",
+              "kind": "Deployment",
+              "namespace": "payments",
+              "name": "payments-api",
+              "status": "Synced",
+              "message": "deployment.apps/payments-api configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            },
+            {
+              "group": "",
+              "version": "v1",
+              "kind": "Service",
+              "namespace": "payments",
+              "name": "payments-api",
+              "status": "Synced",
+              "message": "service/payments-api configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            },
+            {
+              "group": "",
+              "version": "v1",
+              "kind": "ConfigMap",
+              "namespace": "payments",
+              "name": "payments-api-config",
+              "status": "Synced",
+              "message": "configmap/payments-api-config configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            }
+          ],
+          "revision": "aa59f08385fb84287ad815b3091ecb99d811bc62",
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/payments-api-deploy.git",
+            "path": "overlays/production",
+            "targetRevision": "main"
+          }
+        },
+        "startedAt": "2026-10-20T10:10:00Z",
+        "finishedAt": "2026-10-20T10:10:00Z"
+      },
+      "sourceType": "Kustomize",
+      "controllerNamespace": "argocd"
+    }
+  },
+  {
+    "_key": "payments-staging/payments-api",
+    "metadata": {
+      "name": "payments-api",
+      "namespace": "payments-staging",
+      "uid": "3f23dd56-7593-5606-ac26-b0d6324d6b6b",
+      "resourceVersion": "42853",
+      "generation": 5,
+      "creationTimestamp": "2025-10-01T09:05:00Z",
+      "labels": {
+        "team": "payments",
+        "env": "staging"
+      },
+      "finalizers": [
+        "resources-finalizer.argocd.argoproj.io"
+      ]
+    },
+    "spec": {
+      "source": {
+        "repoURL": "https://github.com/lumen-retail/payments-api-deploy.git",
+        "path": "overlays/staging",
+        "targetRevision": "main"
+      },
+      "destination": {
+        "server": "https://staging-use1.k8s.lumen.internal",
+        "namespace": "payments"
+      },
+      "project": "payments-staging",
+      "syncPolicy": {
+        "syncOptions": [
+          "CreateNamespace=true",
+          "ApplyOutOfSyncOnly=true"
+        ],
+        "retry": {
+          "limit": 5,
+          "backoff": {
+            "duration": "5s",
+            "factor": 2,
+            "maxDuration": "3m0s"
+          }
+        }
+      }
+    },
+    "status": {
+      "sync": {
+        "status": "OutOfSync",
+        "comparedTo": {
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/payments-api-deploy.git",
+            "path": "overlays/staging",
+            "targetRevision": "main"
+          },
+          "destination": {
+            "server": "https://staging-use1.k8s.lumen.internal",
+            "namespace": "payments"
+          }
+        },
+        "revision": "fe01f33d2a5392fa17c1c35f25d294d24075c28b"
+      },
+      "health": {
+        "status": "Healthy"
+      },
+      "history": [
+        {
+          "revision": "ef675a8571b401c60d06a7ff8fced859eeba3751",
+          "deployedAt": "2026-10-09T10:10:00Z",
+          "id": 0,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/payments-api-deploy.git",
+            "path": "overlays/staging",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-09T10:10:00Z",
+          "initiatedBy": {
+            "username": "admin"
+          }
+        },
+        {
+          "revision": "aa59f08385fb84287ad815b3091ecb99d811bc62",
+          "deployedAt": "2026-10-20T10:10:00Z",
+          "id": 1,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/payments-api-deploy.git",
+            "path": "overlays/staging",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-20T10:10:00Z",
+          "initiatedBy": {
+            "username": "admin"
+          }
+        }
+      ],
+      "reconciledAt": "2026-10-29T14:10:00Z",
+      "operationState": {
+        "operation": {
+          "sync": {
+            "revision": "aa59f08385fb84287ad815b3091ecb99d811bc62",
+            "syncOptions": [
+              "CreateNamespace=true",
+              "ApplyOutOfSyncOnly=true"
+            ]
+          },
+          "initiatedBy": {
+            "username": "admin"
+          },
+          "retry": {
+            "limit": 5
+          }
+        },
+        "phase": "Succeeded",
+        "message": "successfully synced (all tasks run)",
+        "syncResult": {
+          "resources": [
+            {
+              "group": "apps",
+              "version": "v1",
+              "kind": "Deployment",
+              "namespace": "payments",
+              "name": "payments-api",
+              "status": "Synced",
+              "message": "deployment.apps/payments-api configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            },
+            {
+              "group": "",
+              "version": "v1",
+              "kind": "Service",
+              "namespace": "payments",
+              "name": "payments-api",
+              "status": "Synced",
+              "message": "service/payments-api configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            },
+            {
+              "group": "",
+              "version": "v1",
+              "kind": "ConfigMap",
+              "namespace": "payments",
+              "name": "payments-api-config",
+              "status": "Synced",
+              "message": "configmap/payments-api-config configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            }
+          ],
+          "revision": "aa59f08385fb84287ad815b3091ecb99d811bc62",
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/payments-api-deploy.git",
+            "path": "overlays/staging",
+            "targetRevision": "main"
+          }
+        },
+        "startedAt": "2026-10-20T10:10:00Z",
+        "finishedAt": "2026-10-20T10:10:00Z"
+      },
+      "sourceType": "Kustomize",
+      "controllerNamespace": "argocd"
+    }
+  },
+  {
+    "_key": "argocd/payments-gateway",
+    "metadata": {
+      "name": "payments-gateway",
+      "namespace": "argocd",
+      "uid": "f05e9830-2058-5bc0-ad82-2ae9b077306e",
+      "resourceVersion": "43006",
+      "generation": 4,
+      "creationTimestamp": "2025-10-01T09:10:00Z",
+      "labels": {
+        "team": "payments",
+        "env": "production"
+      },
+      "finalizers": [
+        "resources-finalizer.argocd.argoproj.io"
+      ]
+    },
+    "spec": {
+      "source": {
+        "repoURL": "https://github.com/lumen-retail/payments-gateway-deploy.git",
+        "path": "overlays/production",
+        "targetRevision": "main"
+      },
+      "destination": {
+        "server": "https://prod-use1.k8s.lumen.internal",
+        "namespace": "payments"
+      },
+      "project": "payments",
+      "syncPolicy": {
+        "automated": {
+          "prune": true,
+          "selfHeal": true
+        },
+        "syncOptions": [
+          "CreateNamespace=true",
+          "ApplyOutOfSyncOnly=true"
+        ],
+        "retry": {
+          "limit": 5,
+          "backoff": {
+            "duration": "5s",
+            "factor": 2,
+            "maxDuration": "3m0s"
+          }
+        }
+      }
+    },
+    "status": {
+      "sync": {
+        "status": "Synced",
+        "comparedTo": {
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/payments-gateway-deploy.git",
+            "path": "overlays/production",
+            "targetRevision": "main"
+          },
+          "destination": {
+            "server": "https://prod-use1.k8s.lumen.internal",
+            "namespace": "payments"
+          }
+        },
+        "revision": "3eb61107c6bc6af45be9c2b4b685f2e6247ed3b1"
+      },
+      "health": {
+        "status": "Healthy"
+      },
+      "history": [
+        {
+          "revision": "3eb61107c6bc6af45be9c2b4b685f2e6247ed3b1",
+          "deployedAt": "2026-10-25T10:05:00Z",
+          "id": 0,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/payments-gateway-deploy.git",
+            "path": "overlays/production",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-25T10:05:00Z",
+          "initiatedBy": {
+            "automated": true
+          }
+        }
+      ],
+      "reconciledAt": "2026-10-29T14:10:00Z",
+      "operationState": {
+        "operation": {
+          "sync": {
+            "revision": "3eb61107c6bc6af45be9c2b4b685f2e6247ed3b1",
+            "syncOptions": [
+              "CreateNamespace=true",
+              "ApplyOutOfSyncOnly=true"
+            ]
+          },
+          "initiatedBy": {
+            "automated": true
+          },
+          "retry": {
+            "limit": 5
+          }
+        },
+        "phase": "Succeeded",
+        "message": "successfully synced (all tasks run)",
+        "syncResult": {
+          "resources": [
+            {
+              "group": "apps",
+              "version": "v1",
+              "kind": "Deployment",
+              "namespace": "payments",
+              "name": "payments-gateway",
+              "status": "Synced",
+              "message": "deployment.apps/payments-gateway configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            }
+          ],
+          "revision": "3eb61107c6bc6af45be9c2b4b685f2e6247ed3b1",
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/payments-gateway-deploy.git",
+            "path": "overlays/production",
+            "targetRevision": "main"
+          }
+        },
+        "startedAt": "2026-10-25T10:05:00Z",
+        "finishedAt": "2026-10-25T10:05:00Z"
+      },
+      "sourceType": "Kustomize",
+      "controllerNamespace": "argocd"
+    }
+  }
+]

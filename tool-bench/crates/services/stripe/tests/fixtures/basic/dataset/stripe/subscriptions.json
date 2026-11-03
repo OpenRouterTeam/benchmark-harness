@@ -1,0 +1,35 @@
+[
+  {
+    "id": "sub_HarborPro000000000000001",
+    "customer": "cus_HarborPine0001",
+    "created": 1740787200,
+    "start_date": 1740787200,
+    "billing_cycle_anchor": 1740787200,
+    "default_payment_method": "pm_HarborVisa00000000000001",
+    "items": {"data": [
+      {"id": "si_HarborPro00001", "price": "price_ProMonthly00000000000001", "quantity": 1, "created": 1740787200, "current_period_start": 1772323200, "current_period_end": 1775001600},
+      {"id": "si_HarborSeats001", "price": "price_SeatMonthly0000000000001", "quantity": 6, "created": 1740787200, "current_period_start": 1772323200, "current_period_end": 1775001600}
+    ]},
+    "latest_invoice": "in_HarborMar000000000000001",
+    "metadata": {"plan": "pro"}
+  },
+  {
+    "id": "sub_HarborOld000000000000002",
+    "customer": "cus_HarborPine0001",
+    "created": 1740787200,
+    "status": "canceled",
+    "canceled_at": 1756684800,
+    "ended_at": 1756684800,
+    "items": {"data": [
+      {"id": "si_HarborOld00001", "price": "price_SeatMonthly0000000000001", "quantity": 2, "current_period_start": 1756684800, "current_period_end": 1756684800}
+    ]}
+  },
+  {
+    "id": "sub_LumenAnalytic0000000003",
+    "customer": "cus_LumenData00003",
+    "created": 1762905600,
+    "items": {"data": [
+      {"id": "si_LumenAnalyt001", "price": "price_AnalyticsYear00000000001", "quantity": 1, "current_period_start": 1762905600, "current_period_end": 1794441600}
+    ]}
+  }
+]

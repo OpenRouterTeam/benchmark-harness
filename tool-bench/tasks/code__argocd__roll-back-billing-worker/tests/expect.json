@@ -1,0 +1,95 @@
+{
+  "state": [
+    {
+      "pointer": "/services/argocd/applications/argocd~1billing-worker/spec/source/targetRevision",
+      "equals": "v1.42.0",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/argocd/applications/argocd~1billing-worker/spec/syncPolicy/automated",
+      "equals": null,
+      "exists": true,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/argocd/applications/argocd~1billing-worker/status/sync/status",
+      "equals": "Synced",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/argocd/applications/argocd~1billing-worker/status/operationState/syncResult/revision",
+      "equals": "b0826e986c9c73e0088c6ecb2a14458d247d2205",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/argocd/applications/argocd~1billing-worker/status/health/status",
+      "equals": "Healthy",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/argocd/applications/argocd~1billing-worker-staging/spec/source/targetRevision",
+      "equals": "main",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/argocd/applications/argocd~1billing-api/spec/source/targetRevision",
+      "equals": "main",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "argocd",
+      "method": "PUT",
+      "path": "/api/v1/applications/billing-worker",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "argocd",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "argocd",
+      "method": "PUT",
+      "path": null,
+      "path_regex": "^/api/v1/applications/billing-(api|worker-staging)$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

@@ -1,0 +1,210 @@
+[
+  {
+    "id": "PALR001",
+    "summary": "[Datadog] checkout-api p95 latency 2.8s > 2s (us-east-1)",
+    "status": "triggered",
+    "alert_key": "checkout-api/p95-latency/us-east-1",
+    "severity": "critical",
+    "created_at": "2026-10-30T12:40:00Z",
+    "service": {
+      "id": "PSVCHKA",
+      "type": "service_reference"
+    },
+    "incident": {
+      "id": "Q7CHKAP15PCT1D",
+      "type": "incident_reference"
+    },
+    "suppressed": false,
+    "integration": {
+      "id": "PINTDD1",
+      "type": "inbound_integration_reference",
+      "summary": "Datadog"
+    },
+    "body": {
+      "type": "alert_body",
+      "contexts": [],
+      "details": {
+        "monitor": "checkout-api p95 latency",
+        "value": "2.8s",
+        "region": "us-east-1"
+      }
+    }
+  },
+  {
+    "id": "PALR002",
+    "summary": "[Datadog] checkout-api CPU 97% across shop-prod/checkout pods",
+    "status": "triggered",
+    "alert_key": "checkout-api/cpu",
+    "severity": "critical",
+    "created_at": "2026-10-30T12:42:00Z",
+    "service": {
+      "id": "PSVCHKA",
+      "type": "service_reference"
+    },
+    "incident": {
+      "id": "Q7CHKAP15PCT1D",
+      "type": "incident_reference"
+    },
+    "suppressed": false,
+    "integration": {
+      "id": "PINTDD1",
+      "type": "inbound_integration_reference",
+      "summary": "Datadog"
+    },
+    "body": {
+      "type": "alert_body",
+      "contexts": [],
+      "details": {
+        "monitor": "checkout-api CPU saturation",
+        "value": "97%",
+        "namespace": "shop-prod"
+      }
+    }
+  },
+  {
+    "id": "PALR003",
+    "summary": "[Datadog] checkout-api-staging p95 latency 3.4s > 2s",
+    "status": "triggered",
+    "alert_key": "checkout-api-staging/p95-latency",
+    "severity": "warning",
+    "created_at": "2026-10-30T13:05:00Z",
+    "service": {
+      "id": "PSVCHKS",
+      "type": "service_reference"
+    },
+    "incident": {
+      "id": "Q8CHKSTG5PCT2F",
+      "type": "incident_reference"
+    },
+    "suppressed": false,
+    "integration": {
+      "id": "PINTDD1",
+      "type": "inbound_integration_reference",
+      "summary": "Datadog"
+    },
+    "body": {
+      "type": "alert_body",
+      "contexts": [],
+      "details": {
+        "monitor": "checkout-api p95 latency (staging)",
+        "value": "3.4s",
+        "namespace": "shop-staging"
+      }
+    }
+  },
+  {
+    "id": "PALR004",
+    "summary": "[Datadog] orders-db-replica-2 replication lag 412s > 300s",
+    "status": "triggered",
+    "alert_key": "orders-db/replica-2/lag",
+    "severity": "critical",
+    "created_at": "2026-10-30T13:12:00Z",
+    "service": {
+      "id": "PSVORDB",
+      "type": "service_reference"
+    },
+    "incident": {
+      "id": "Q3K8ORDBLAG2RX",
+      "type": "incident_reference"
+    },
+    "suppressed": false,
+    "integration": {
+      "id": "PINTDD1",
+      "type": "inbound_integration_reference",
+      "summary": "Datadog"
+    },
+    "body": {
+      "type": "alert_body",
+      "contexts": [],
+      "details": {
+        "host": "orders-db-replica-2",
+        "lag_seconds": 412,
+        "disk_used_pct": 100
+      }
+    }
+  },
+  {
+    "id": "PALR005",
+    "summary": "[Datadog] inventory-db-replica-1 replication lag 318s > 300s",
+    "status": "triggered",
+    "alert_key": "inventory-db/replica-1/lag",
+    "severity": "error",
+    "created_at": "2026-10-30T13:20:00Z",
+    "service": {
+      "id": "PSVINVD",
+      "type": "service_reference"
+    },
+    "incident": {
+      "id": "Q1INVDBLAG7QWE",
+      "type": "incident_reference"
+    },
+    "suppressed": false,
+    "integration": {
+      "id": "PINTDD1",
+      "type": "inbound_integration_reference",
+      "summary": "Datadog"
+    },
+    "body": {
+      "type": "alert_body",
+      "contexts": [],
+      "details": {
+        "host": "inventory-db-replica-1",
+        "lag_seconds": 318
+      }
+    }
+  },
+  {
+    "id": "PALR006",
+    "summary": "[Datadog] payments-api decline rate 9.3% > 8%",
+    "status": "triggered",
+    "alert_key": "payments-api/decline-rate",
+    "severity": "critical",
+    "created_at": "2026-10-30T13:48:00Z",
+    "service": {
+      "id": "PSVPAYA",
+      "type": "service_reference"
+    },
+    "incident": {
+      "id": "Q4PAYDECL1NE5H",
+      "type": "incident_reference"
+    },
+    "suppressed": false,
+    "integration": {
+      "id": "PINTDD1",
+      "type": "inbound_integration_reference",
+      "summary": "Datadog"
+    },
+    "body": {
+      "type": "alert_body",
+      "contexts": [],
+      "details": {}
+    }
+  },
+  {
+    "id": "PALR007",
+    "summary": "[Datadog] checkout-api error rate 5.8% > 5% (us-east-1)",
+    "status": "resolved",
+    "alert_key": "checkout-api/error-rate/us-east-1",
+    "severity": "critical",
+    "created_at": "2026-10-22T18:00:00Z",
+    "service": {
+      "id": "PSVCHKA",
+      "type": "service_reference"
+    },
+    "incident": {
+      "id": "QA6CHKAPIOLD0D",
+      "type": "incident_reference"
+    },
+    "suppressed": false,
+    "integration": {
+      "id": "PINTDD1",
+      "type": "inbound_integration_reference",
+      "summary": "Datadog"
+    },
+    "body": {
+      "type": "alert_body",
+      "contexts": [],
+      "details": {}
+    }
+  }
+]

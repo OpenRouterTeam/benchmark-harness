@@ -1,0 +1,115 @@
+[scenario]
+id = "collab/multi/google-refund-damaged-order"
+title = "Refund a damaged order from a Gmail complaint: Supabase order, Stripe refund, Gmail reply"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-multi-google-refund-damaged-order"
+services = ["google", "supabase", "stripe"]
+tags = ["write", "multi-service", "google", "gmail", "supabase", "stripe", "disambiguation"]
+timeout_sec = 1200
+
+# The complaint (thread c41e7a2b9d03f615) is from priya.shah@acme.io = customer 1107, whose
+# October 20 order is 5024 ($62.00, ch_Hk5TzQ9wNc2RbV6mXa8LuE4P). Look-alikes: the other
+# Priya Shah (priya.shah@fastmail.com, 1042) also has a $62.00 order on October 20 (5025,
+# ch_Gd7W…), and 1107's earlier order 5023 ($249.00, ch_Vq2m…).
+[[expect.state]]
+pointer = "/services/stripe/charges/ch_Hk5TzQ9wNc2RbV6mXa8LuE4P/amount_refunded"
+equals = 6200
+
+[[expect.state]]
+pointer = "/services/stripe/charges/ch_Hk5TzQ9wNc2RbV6mXa8LuE4P/refunded"
+equals = true
+
+[[expect.state]]
+pointer = "/services/stripe/charges/ch_Gd7WnY3kPs9QtF2hZr5MbC8X/amount_refunded"
+equals = 0
+
+[[expect.state]]
+pointer = "/services/stripe/charges/ch_Vq2mLx8RtB4nKe7YpW1sHd3J/amount_refunded"
+equals = 0
+
+[[expect.state]]
+pointer = "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5024/status"
+equals = "refunded"
+
+[[expect.state]]
+pointer = "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5024/total"
+equals = 62.0
+
+[[expect.state]]
+pointer = "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5025/status"
+equals = "shipped"
+
+[[expect.state]]
+pointer = "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5023/status"
+equals = "shipped"
+
+[[expect.state]]
+pointer = "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5007/status"
+equals = "paid"
+
+[[expect.state]]
+pointer = "/services/google/gmail_messages"
+any = { labelIds = ["SENT"], threadId = "c41e7a2b9d03f615", headers = { To = "priya.shah@acme.io" }, body_text = "62" }
+
+[[expect.required_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { stripe_api_operation_id = "PostRefunds" } }
+
+[[expect.required_calls]]
+service = "google"
+path = "/_mcp/tools/call"
+body = { name = "send_gmail_message" }
+
+[[expect.forbidden_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { stripe_api_operation_id = "PostRefunds", parameters = { charge = "ch_Gd7WnY3kPs9QtF2hZr5MbC8X" } } }
+
+[[expect.forbidden_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { stripe_api_operation_id = "PostRefunds", parameters = { payment_intent = "pi_Nq7VxT2kLm9RcW4bZh6YpD1s" } } }
+
+[[expect.forbidden_calls]]
+service = "google"
+path = "/_mcp/tools/call"
+body = { name = "send_gmail_message", arguments = { to = "priya.shah@fastmail.com" } }
+
+[[solution.call]]
+endpoint = "google-workspace"
+tool = "search_gmail_messages"
+arguments = { query = "from:priya.shah refund" }
+
+[[solution.call]]
+endpoint = "google-workspace"
+tool = "get_gmail_message_content"
+arguments = { message_id = "c41e7a2b9d03f615" }
+
+[[solution.call]]
+endpoint = "supabase"
+tool = "list_projects"
+arguments = {}
+
+[[solution.call]]
+endpoint = "supabase"
+tool = "execute_sql"
+arguments = { project_id = "qmvbxtzkplrnwdhyfaco", query = "select o.id, o.status, o.total, o.created_at, o.stripe_charge_id from public.orders o join public.customers c on c.id = o.customer_id where c.email = 'priya.shah@acme.io' order by o.created_at" }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_write"
+arguments = { stripe_api_operation_id = "PostRefunds", parameters = { charge = "ch_Hk5TzQ9wNc2RbV6mXa8LuE4P", reason = "requested_by_customer" }, stripe_context = "acct_1FwY8bQk2LmN4pRs", livemode = false }
+
+[[solution.call]]
+endpoint = "supabase"
+tool = "execute_sql"
+arguments = { project_id = "qmvbxtzkplrnwdhyfaco", query = "update public.orders set status = 'refunded' where id = 5024 returning id, status" }
+
+[[solution.call]]
+endpoint = "google-workspace"
+tool = "send_gmail_message"
+arguments = { to = "priya.shah@acme.io", thread_id = "c41e7a2b9d03f615", in_reply_to = "<CAJ7pS2x9Lw4q@mail.acme.io>", subject = "Re: Desk lamp arrived broken - refund please", body = "Hi Priya,\n\nSorry the lamp arrived damaged. We've refunded order #5024 in full ($62.00) to your Visa ending 4242; it should appear within 5-10 business days.\n\nBest,\nOcto Shop team" }

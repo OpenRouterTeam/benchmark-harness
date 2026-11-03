@@ -1,0 +1,244 @@
+[
+  {
+    "id": "PEPPLAT",
+    "name": "Platform",
+    "description": "Pages Platform primary, then secondary.",
+    "num_loops": 1,
+    "teams": [
+      {
+        "id": "PTPLATF",
+        "type": "team_reference"
+      }
+    ],
+    "escalation_rules": [
+      {
+        "id": "PR1PL01",
+        "escalation_delay_in_minutes": 15,
+        "targets": [
+          {
+            "id": "PSPLTPR",
+            "type": "schedule_reference"
+          }
+        ]
+      },
+      {
+        "id": "PR1PL02",
+        "escalation_delay_in_minutes": 15,
+        "targets": [
+          {
+            "id": "PSPLTSC",
+            "type": "schedule_reference"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "PEPDPLT",
+    "name": "Data Platform",
+    "description": "Batch pipelines and the warehouse.",
+    "num_loops": 0,
+    "teams": [
+      {
+        "id": "PTPLATF",
+        "type": "team_reference"
+      }
+    ],
+    "escalation_rules": [
+      {
+        "id": "PR1DP01",
+        "escalation_delay_in_minutes": 30,
+        "targets": [
+          {
+            "id": "PSDPLPR",
+            "type": "schedule_reference"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "PEPPAY1",
+    "name": "Payments",
+    "description": "Payments primary on-call, then the Payments engineering manager.",
+    "num_loops": 2,
+    "teams": [
+      {
+        "id": "PTPAYMT",
+        "type": "team_reference"
+      }
+    ],
+    "escalation_rules": [
+      {
+        "id": "PR1PA01",
+        "escalation_delay_in_minutes": 10,
+        "targets": [
+          {
+            "id": "PSPAYPR",
+            "type": "schedule_reference"
+          }
+        ]
+      },
+      {
+        "id": "PR1PA02",
+        "escalation_delay_in_minutes": 20,
+        "targets": [
+          {
+            "id": "PMCHEN7",
+            "type": "user_reference"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "PEPPAYL",
+    "name": "Payments Gateway (Legacy)",
+    "description": "Legacy gateway; single responder.",
+    "num_loops": 0,
+    "teams": [
+      {
+        "id": "PTPAYMT",
+        "type": "team_reference"
+      }
+    ],
+    "escalation_rules": [
+      {
+        "id": "PR1PG01",
+        "escalation_delay_in_minutes": 30,
+        "targets": [
+          {
+            "id": "PSPAYGW",
+            "type": "schedule_reference"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "PEPPOUT",
+    "name": "Payouts",
+    "description": "Payout batch processing.",
+    "num_loops": 0,
+    "teams": [
+      {
+        "id": "PTPAYMT",
+        "type": "team_reference"
+      }
+    ],
+    "escalation_rules": [
+      {
+        "id": "PR1PO01",
+        "escalation_delay_in_minutes": 30,
+        "targets": [
+          {
+            "id": "PR1YPTL",
+            "type": "user_reference"
+          }
+        ]
+      },
+      {
+        "id": "PR1PO02",
+        "escalation_delay_in_minutes": 30,
+        "targets": [
+          {
+            "id": "PJ0RALV",
+            "type": "user_reference"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "PEPDBRE",
+    "name": "Database Reliability",
+    "description": "Production databases: DBRE primary, then the DBRE lead.",
+    "num_loops": 1,
+    "teams": [
+      {
+        "id": "PTDBREL",
+        "type": "team_reference"
+      }
+    ],
+    "escalation_rules": [
+      {
+        "id": "PR1DB01",
+        "escalation_delay_in_minutes": 10,
+        "targets": [
+          {
+            "id": "PSDBRPR",
+            "type": "schedule_reference"
+          }
+        ]
+      },
+      {
+        "id": "PR1DB02",
+        "escalation_delay_in_minutes": 15,
+        "targets": [
+          {
+            "id": "PS4MOKF",
+            "type": "user_reference"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "PEPDBST",
+    "name": "Database Reliability - Staging",
+    "description": "Staging databases (business hours only).",
+    "num_loops": 0,
+    "teams": [
+      {
+        "id": "PTDBREL",
+        "type": "team_reference"
+      }
+    ],
+    "escalation_rules": [
+      {
+        "id": "PR1DS01",
+        "escalation_delay_in_minutes": 60,
+        "targets": [
+          {
+            "id": "PSDBRST",
+            "type": "schedule_reference"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "PEPCOMM",
+    "name": "Commerce",
+    "description": "Checkout and storefront.",
+    "num_loops": 1,
+    "teams": [
+      {
+        "id": "PTCOMRC",
+        "type": "team_reference"
+      }
+    ],
+    "escalation_rules": [
+      {
+        "id": "PR1CO01",
+        "escalation_delay_in_minutes": 10,
+        "targets": [
+          {
+            "id": "PSCOMPR",
+            "type": "schedule_reference"
+          }
+        ]
+      },
+      {
+        "id": "PR1CO02",
+        "escalation_delay_in_minutes": 20,
+        "targets": [
+          {
+            "id": "PLWEBR5",
+            "type": "user_reference"
+          }
+        ]
+      }
+    ]
+  }
+]

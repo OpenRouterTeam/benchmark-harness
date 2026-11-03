@@ -1,0 +1,1 @@
+Bluefin Logistics' support case about their label printers not syncing since the warehouse upgrade is resolved: engineering shipped the fix and Grace Tanaka confirmed this morning that labels are printing again. Please close that case in Salesforce and set the case reason to Performance. Leave their other cases as they are.

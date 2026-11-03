@@ -1,0 +1,90 @@
+[scenario]
+id = "search/multi/es-duplicate-charge-stripe-refund"
+title = "Find a customer's double charge in the orders index and refund the duplicate in Stripe"
+now = "2026-10-30T10:00:00Z"
+seed = "search-multi-es-duplicate-charge-stripe-refund"
+services = ["elasticsearch", "stripe"]
+tags = ["write", "multi-service", "elasticsearch", "stripe", "disambiguation"]
+timeout_sec = 900
+
+# The orders index has the Stripe charge id of every order. Jordan Lee's double charge is
+# ORD-109002 (original, ch_3Qb2Kj…) and ORD-109003 (duplicate, ch_3Qb2Mj…), 86.40 USD 28 s
+# apart. Look-alikes: Jordan Leigh's 129.99 pair, J. Lee's (j.lee@example.com) 86.40 order
+# the same evening, and Jordan Lee's own already-refunded ORD-109311.
+
+[[expect.state]]
+pointer = "/services/stripe/charges/ch_3Qb2MjLee109003aQs9uD/refunded"
+equals = true
+
+[[expect.state]]
+pointer = "/services/stripe/charges/ch_3Qb2MjLee109003aQs9uD/amount_refunded"
+equals = 8640
+
+[[expect.state]]
+pointer = "/services/stripe/refunds"
+any = { charge = "ch_3Qb2MjLee109003aQs9uD", reason = "duplicate" }
+
+[[expect.state]]
+pointer = "/services/stripe/charges/ch_3Qb2KjLee109002aPo7tB/amount_refunded"
+equals = 0
+
+[[expect.state]]
+pointer = "/services/stripe/charges/ch_3Qb3AjLe2109010aRu1vF/amount_refunded"
+equals = 0
+
+[[expect.state]]
+pointer = "/services/stripe/charges/ch_3Qa7CgLgh108815aMw3pX/amount_refunded"
+equals = 0
+
+[[expect.state]]
+pointer = "/services/stripe/charges/ch_3Qa7DgLgh108816aNe8rS/amount_refunded"
+equals = 0
+
+[[expect.required_calls]]
+service = "elasticsearch"
+method = "POST"
+path_regex = "(_search|_query)$"
+
+[[expect.required_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { stripe_api_operation_id = "PostRefunds" } }
+
+[[expect.forbidden_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { stripe_api_operation_id = "PostRefunds", parameters = { charge = "ch_3Qb2KjLee109002aPo7tB" } } }
+
+[[expect.forbidden_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { stripe_api_operation_id = "PostRefunds", parameters = { payment_intent = "pi_3Qb2KjLee109002bWx2yC" } } }
+
+[[expect.forbidden_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { stripe_api_operation_id = "PostRefunds", parameters = { charge = "ch_3Qb3AjLe2109010aRu1vF" } } }
+
+[[solution.call]]
+endpoint = "elasticsearch"
+tool = "list_indices"
+arguments = { index_pattern = "orders-*" }
+
+[[solution.call]]
+endpoint = "elasticsearch"
+tool = "search"
+arguments = { index = "orders-2026", query_body = { query = { term = { customer_email = "jordan.lee@example.com" } }, sort = [{ created_at = "asc" }], size = 20 } }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_read"
+arguments = { stripe_api_operation_id = "GetChargesCharge", parameters = { charge = "ch_3Qb2MjLee109003aQs9uD" }, stripe_context = "acct_1LkSpG8rT4vWq2Nx", livemode = false }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_write"
+arguments = { stripe_api_operation_id = "PostRefunds", parameters = { charge = "ch_3Qb2MjLee109003aQs9uD", reason = "duplicate" }, stripe_context = "acct_1LkSpG8rT4vWq2Nx", livemode = false }

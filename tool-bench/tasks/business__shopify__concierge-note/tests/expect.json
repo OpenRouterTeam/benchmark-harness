@@ -1,0 +1,105 @@
+{
+  "state": [
+    {
+      "pointer": "/services/shopify/orders/5563/note",
+      "equals": null,
+      "exists": null,
+      "contains": "Leave with building concierge",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/shopify/orders/5560/note",
+      "equals": "Gift wrap please",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "shopify",
+      "method": "POST",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "variables": {
+          "input": {
+            "id": "gid://shopify/Order/5563"
+          }
+        }
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "shopify",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "variables": {
+          "input": {
+            "id": "gid://shopify/Order/5560"
+          }
+        }
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "shopify",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "variables": {
+          "input": {
+            "id": "gid://shopify/Order/5551"
+          }
+        }
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "shopify",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "variables": {
+          "input": {
+            "id": "gid://shopify/Order/5564"
+          }
+        }
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "shopify",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "variables": {
+          "input": {
+            "id": "gid://shopify/Order/5558"
+          }
+        }
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

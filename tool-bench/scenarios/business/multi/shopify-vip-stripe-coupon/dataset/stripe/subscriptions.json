@@ -1,0 +1,162 @@
+[
+  {
+    "id": "sub_PrRmOutlkMonthly0000001",
+    "object": "subscription",
+    "billing_cycle_anchor": 1763802000,
+    "cancel_at_period_end": false,
+    "collection_method": "charge_automatically",
+    "created": 1763802000,
+    "currency": "usd",
+    "customer": "cus_PrRmOutlk01Ab",
+    "default_payment_method": "pm_PrRmOutlk0000000000001",
+    "description": null,
+    "discounts": [],
+    "items": {
+      "object": "list",
+      "data": [
+        {
+          "id": "si_PrRmOutlkM01",
+          "object": "subscription_item",
+          "created": 1763802000,
+          "current_period_end": 1782118800,
+          "current_period_start": 1779440400,
+          "metadata": {},
+          "price": "price_SupMonthly0000000000001",
+          "quantity": 1,
+          "subscription": "sub_PrRmOutlkMonthly0000001"
+        }
+      ]
+    },
+    "metadata": {},
+    "start_date": 1763802000,
+    "status": "active"
+  },
+  {
+    "id": "sub_PrRmOutlkGift00000000001",
+    "object": "subscription",
+    "billing_cycle_anchor": 1770714000,
+    "cancel_at_period_end": false,
+    "collection_method": "charge_automatically",
+    "created": 1770714000,
+    "currency": "usd",
+    "customer": "cus_PrRmOutlk01Ab",
+    "default_payment_method": "pm_PrRmOutlk0000000000001",
+    "description": null,
+    "discounts": [],
+    "items": {
+      "object": "list",
+      "data": [
+        {
+          "id": "si_PrRmOutlkG01",
+          "object": "subscription_item",
+          "created": 1770714000,
+          "current_period_end": 1781082000,
+          "current_period_start": 1778403600,
+          "metadata": {},
+          "price": "price_GiftMonthly00000000001",
+          "quantity": 1,
+          "subscription": "sub_PrRmOutlkGift00000000001"
+        }
+      ]
+    },
+    "metadata": {},
+    "start_date": 1770714000,
+    "status": "active"
+  },
+  {
+    "id": "sub_PrRmDsgnMonthly00000001",
+    "object": "subscription",
+    "billing_cycle_anchor": 1767866400,
+    "cancel_at_period_end": false,
+    "collection_method": "charge_automatically",
+    "created": 1767866400,
+    "currency": "usd",
+    "customer": "cus_PrRmDsgn001Ab",
+    "default_payment_method": "pm_PrRmDsgn00000000000001",
+    "description": null,
+    "discounts": [],
+    "items": {
+      "object": "list",
+      "data": [
+        {
+          "id": "si_PrRmDsgnM01",
+          "object": "subscription_item",
+          "created": 1767866400,
+          "current_period_end": 1780912800,
+          "current_period_start": 1778234400,
+          "metadata": {},
+          "price": "price_SupMonthly0000000000001",
+          "quantity": 1,
+          "subscription": "sub_PrRmDsgnMonthly00000001"
+        }
+      ]
+    },
+    "metadata": {},
+    "start_date": 1767866400,
+    "status": "active"
+  },
+  {
+    "id": "sub_TmAchbQuarterly00000001",
+    "object": "subscription",
+    "billing_cycle_anchor": 1766232000,
+    "cancel_at_period_end": false,
+    "collection_method": "charge_automatically",
+    "created": 1766232000,
+    "currency": "usd",
+    "customer": "cus_TmAchb0001Ab",
+    "default_payment_method": "pm_TmAchb000000000000001",
+    "description": null,
+    "discounts": [],
+    "items": {
+      "object": "list",
+      "data": [
+        {
+          "id": "si_TmAchbQ01",
+          "object": "subscription_item",
+          "created": 1766232000,
+          "current_period_end": 1781956800,
+          "current_period_start": 1774008000,
+          "metadata": {},
+          "price": "price_SupQuartly000000000001",
+          "quantity": 1,
+          "subscription": "sub_TmAchbQuarterly00000001"
+        }
+      ]
+    },
+    "metadata": {},
+    "start_date": 1766232000,
+    "status": "active"
+  },
+  {
+    "id": "sub_MrcBllMonthly0000000001",
+    "object": "subscription",
+    "billing_cycle_anchor": 1762336800,
+    "cancel_at_period_end": false,
+    "collection_method": "charge_automatically",
+    "created": 1762336800,
+    "currency": "usd",
+    "customer": "cus_MrcBll0001Ab",
+    "default_payment_method": "pm_MrcBll000000000000001",
+    "description": null,
+    "discounts": [],
+    "items": {
+      "object": "list",
+      "data": [
+        {
+          "id": "si_MrcBllM01",
+          "object": "subscription_item",
+          "created": 1762336800,
+          "current_period_end": 1780653600,
+          "current_period_start": 1777975200,
+          "metadata": {},
+          "price": "price_SupMonthly0000000000001",
+          "quantity": 1,
+          "subscription": "sub_MrcBllMonthly0000000001"
+        }
+      ]
+    },
+    "metadata": {},
+    "start_date": 1762336800,
+    "status": "active"
+  }
+]

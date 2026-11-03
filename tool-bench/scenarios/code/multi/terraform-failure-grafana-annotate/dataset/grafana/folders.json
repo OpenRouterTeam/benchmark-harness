@@ -1,0 +1,46 @@
+[
+  {
+    "_key": "f-prod",
+    "id": 3,
+    "uid": "f-prod",
+    "title": "Production",
+    "created": "2026-02-10T09:00:00Z",
+    "updated": "2026-02-10T09:00:00Z",
+    "createdBy": "admin",
+    "updatedBy": "admin",
+    "version": 1
+  },
+  {
+    "_key": "f-staging",
+    "id": 4,
+    "uid": "f-staging",
+    "title": "Staging",
+    "created": "2026-02-10T09:00:00Z",
+    "updated": "2026-02-10T09:00:00Z",
+    "createdBy": "admin",
+    "updatedBy": "admin",
+    "version": 1
+  },
+  {
+    "_key": "f-platform",
+    "id": 5,
+    "uid": "f-platform",
+    "title": "Platform",
+    "created": "2026-02-10T09:00:00Z",
+    "updated": "2026-02-10T09:00:00Z",
+    "createdBy": "admin",
+    "updatedBy": "admin",
+    "version": 1
+  },
+  {
+    "_key": "f-archive",
+    "id": 6,
+    "uid": "f-archive",
+    "title": "Archive",
+    "created": "2026-02-10T09:00:00Z",
+    "updated": "2026-02-10T09:00:00Z",
+    "createdBy": "admin",
+    "updatedBy": "admin",
+    "version": 1
+  }
+]

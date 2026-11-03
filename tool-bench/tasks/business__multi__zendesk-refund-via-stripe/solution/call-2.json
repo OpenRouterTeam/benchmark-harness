@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"stripe_api_read","arguments":{"livemode":false,"parameters":{"query":"email:\"owner@northwindbakery.com\""},"stripe_api_operation_id":"GetCustomersSearch","stripe_context":"acct_1FwY8bQk2LmN4pRs"}}}

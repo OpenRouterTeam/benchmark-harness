@@ -1,0 +1,42 @@
+[scenario]
+id = "code/gitlab/diagnose-failed-pipeline"
+title = "Find why the latest failed main pipeline of checkout-api failed"
+now = "2026-04-02T09:00:00Z"
+seed = "code-gitlab-diagnose-failed-pipeline"
+services = ["gitlab"]
+tags = ["single-service", "lookup", "gitlab"]
+timeout_sec = 900
+
+[expect.answer]
+contains = ["5520", "integration-tests", "refund_reason"]
+
+[[expect.forbidden_calls]]
+service = "gitlab"
+method = "POST"
+path_regex = "^/api/v4/"
+
+[[expect.forbidden_calls]]
+service = "gitlab"
+method = "PUT"
+
+[[expect.forbidden_calls]]
+service = "gitlab"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "gitlab"
+tool = "list_pipelines"
+arguments = { project_id = "northwind/payments/checkout-api", ref = "main", status = "failed" }
+
+[[solution.call]]
+endpoint = "gitlab"
+tool = "list_pipeline_jobs"
+arguments = { project_id = "northwind/payments/checkout-api", pipeline_id = "5520", scope = "failed" }
+
+[[solution.call]]
+endpoint = "gitlab"
+tool = "get_pipeline_job_output"
+arguments = { project_id = "northwind/payments/checkout-api", job_id = "88409", pattern = "FAILED" }
+
+[solution]
+answer = "Pipeline 5520 (main, commit 'Record refund reason on partial refunds') failed in the integration-tests job (also failed on retry): test_partial_refund_records_reason hit psycopg.errors.UndefinedColumn because column \"refund_reason\" of relation \"refunds\" does not exist; the code writes refund_reason but no migration adds that column."

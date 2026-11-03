@@ -1,0 +1,30 @@
+[scenario]
+id = "search/tavily/vendor-rate-limit"
+title = "Find a vendor's current API rate limit for the Business plan"
+now = "2026-10-29T15:00:00Z"
+seed = "search-tavily-vendor-rate-limit"
+services = ["tavily"]
+tags = ["lookup", "single-service", "tavily"]
+timeout_sec = 900
+
+# v3 docs say 1,200/min; the deprecated v2 page and a review say 600, a forum post 900.
+[expect.answer]
+regex = "1[,. ]?200"
+
+[[expect.required_calls]]
+service = "tavily"
+method = "POST"
+path_regex = "^/(search|extract|crawl|map|research)$"
+
+[solution]
+answer = "The Business plan is limited to 1,200 requests per minute (burst 200), per workspace. Source: Quillstream API v3 docs, https://docs.quillstream.io/api/rate-limits (updated 2026-09-14). The 600/min figure is from the deprecated v2 docs.\n"
+
+[[solution.call]]
+endpoint = "tavily"
+tool = "tavily_search"
+arguments = { query = "Quillstream API rate limit Business plan requests per minute" }
+
+[[solution.call]]
+endpoint = "tavily"
+tool = "tavily_extract"
+arguments = { urls = ["https://docs.quillstream.io/api/rate-limits"] }

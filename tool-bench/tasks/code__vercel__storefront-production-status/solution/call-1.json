@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"vercel-get-deployment","arguments":{"idOrUrl":"dpl_1KT70nyZgoWTlCSRmxLe0svxe4Xx"}}}

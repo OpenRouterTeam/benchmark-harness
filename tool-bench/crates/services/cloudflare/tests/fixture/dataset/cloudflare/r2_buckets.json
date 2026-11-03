@@ -1,0 +1,20 @@
+[
+  {
+    "_key": "0123456789abcdef0123456789abcdef/assets-prod",
+    "account_id": "0123456789abcdef0123456789abcdef",
+    "name": "assets-prod",
+    "creation_date": "2024-04-02T10:00:00.000Z",
+    "location": "enam",
+    "storage_class": "Standard",
+    "object_count": 1200
+  },
+  {
+    "_key": "0123456789abcdef0123456789abcdef/tmp-exports",
+    "account_id": "0123456789abcdef0123456789abcdef",
+    "name": "tmp-exports",
+    "creation_date": "2025-08-19T10:00:00.000Z",
+    "location": "weur",
+    "storage_class": "InfrequentAccess",
+    "object_count": 0
+  }
+]

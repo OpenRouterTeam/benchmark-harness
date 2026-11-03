@@ -1,0 +1,61 @@
+[
+  {
+    "_key": "octo-org/7:1001",
+    "id": 1001,
+    "name": "Title",
+    "data_type": "TITLE"
+  },
+  {
+    "_key": "octo-org/7:1002",
+    "id": 1002,
+    "name": "Status",
+    "data_type": "SINGLE_SELECT",
+    "options": [
+      {
+        "id": "f75ad846",
+        "name": "Todo",
+        "color": "GREEN"
+      },
+      {
+        "id": "47fc9ee4",
+        "name": "In Progress",
+        "color": "YELLOW"
+      },
+      {
+        "id": "98236657",
+        "name": "Done",
+        "color": "PURPLE"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/7:1003",
+    "id": 1003,
+    "name": "Estimate",
+    "data_type": "NUMBER"
+  },
+  {
+    "_key": "octo-org/7:1004",
+    "id": 1004,
+    "name": "Sprint",
+    "data_type": "ITERATION",
+    "configuration": {
+      "duration": 14,
+      "start_day": 1,
+      "iterations": [
+        {
+          "id": "it-1",
+          "title": "Sprint 5",
+          "start_date": "2026-03-02",
+          "duration": 14
+        },
+        {
+          "id": "it-2",
+          "title": "Sprint 6",
+          "start_date": "2026-03-16",
+          "duration": 14
+        }
+      ]
+    }
+  }
+]

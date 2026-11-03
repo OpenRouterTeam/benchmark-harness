@@ -1,0 +1,9 @@
+{
+  "state": [],
+  "required_calls": [],
+  "forbidden_calls": [],
+  "answer": {
+    "contains": [],
+    "regex": "(?is)(\\$\\s?79\\b.*\\b12\\b|\\b12\\b.*\\$\\s?79\\b)"
+  }
+}

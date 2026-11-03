@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"search","arguments":{"index":"orders-2026","query_body":{"query":{"term":{"customer_email":"jordan.lee@example.com"}},"size":20,"sort":[{"created_at":"asc"}]}}}}

@@ -1,0 +1,29 @@
+[
+  {
+    "id": "0192e3f4a5b67c8d",
+    "trace": "a3f9c1e27b4d4f0e9c8b7a6d5e4f3c2b",
+    "project": "checkout-api",
+    "timestamp": "2026-10-20T14:48:00Z",
+    "severity": "error",
+    "message": "db pool exhausted: 20/20 connections checked out, waited 5.0s",
+    "environment": "production"
+  },
+  {
+    "id": "0192e3f4a5b67c8e",
+    "trace": "a3f9c1e27b4d4f0e9c8b7a6d5e4f3c2b",
+    "project": "checkout-api",
+    "timestamp": "2026-10-20T14:48:00Z",
+    "severity": "warning",
+    "message": "order creation failed, returning 503",
+    "environment": "production"
+  },
+  {
+    "id": "0192e3f4a5b67c90",
+    "trace": null,
+    "project": "payments-worker",
+    "timestamp": "2026-10-20T08:36:00Z",
+    "severity": "info",
+    "message": "worker pool_size=40 pre_ping=true",
+    "environment": "production"
+  }
+]

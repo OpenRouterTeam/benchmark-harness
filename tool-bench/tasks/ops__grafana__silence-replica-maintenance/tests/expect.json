@@ -1,0 +1,93 @@
+{
+  "state": [
+    {
+      "pointer": "/services/grafana/silences/eb498c8c-12e2-8b09-a878-b3d26d162c7f/matchers",
+      "equals": null,
+      "exists": null,
+      "contains": {
+        "isEqual": true,
+        "name": "alertname",
+        "value": "PostgresReplicationLag"
+      },
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/grafana/silences/eb498c8c-12e2-8b09-a878-b3d26d162c7f/matchers",
+      "equals": null,
+      "exists": null,
+      "contains": {
+        "isEqual": true,
+        "name": "instance",
+        "value": "pg-replica-2"
+      },
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/grafana/silences/eb498c8c-12e2-8b09-a878-b3d26d162c7f/startsAt",
+      "equals": "2026-11-13T02:00:00Z",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/grafana/silences/eb498c8c-12e2-8b09-a878-b3d26d162c7f/endsAt",
+      "equals": "2026-11-13T04:00:00Z",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/grafana/silences/eb498c8c-12e2-8b09-a878-b3d26d162c7f/comment",
+      "equals": null,
+      "exists": null,
+      "contains": "CHG-7781",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/grafana/silences/8d2e4f6a-1b3c-4d5e-9f0a-7b8c9d0e1f2a/endsAt",
+      "equals": "2026-11-13T11:30:00Z",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/grafana/silences/3c1f2b7e-9a44-4c1e-8d0b-6f1a2e3b4c5d/comment",
+      "equals": "Volume resize CHG-7702",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "grafana",
+      "method": "POST",
+      "path": "/api/alertmanager/grafana/api/v2/silences",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "grafana",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

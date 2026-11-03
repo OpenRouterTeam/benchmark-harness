@@ -1,0 +1,20 @@
+{
+  "state": [],
+  "required_calls": [
+    {
+      "service": "tavily",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/(search|extract|crawl|map|research)$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [],
+  "answer": {
+    "contains": [],
+    "regex": "1[,. ]?200"
+  }
+}

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"mute_host","arguments":{"end":1793383200,"hostname":"checkout-api-prod-1b","message":"Draining for replacement - connection reset errors (INC-2291)"}}}

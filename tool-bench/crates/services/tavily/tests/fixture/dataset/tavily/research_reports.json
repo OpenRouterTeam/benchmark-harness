@@ -1,0 +1,8 @@
+[
+  {
+    "id": "acme-funding",
+    "match": ["acme", "funding|raise"],
+    "content": "# Acme funding history\n\nSeries C: $80M (October 2026).\n",
+    "sources": [{ "title": "Acme raises Series C", "url": "https://news.example.com/acme-raises" }]
+  }
+]

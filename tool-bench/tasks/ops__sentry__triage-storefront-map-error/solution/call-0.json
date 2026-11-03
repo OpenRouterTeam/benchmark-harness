@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"search_issues","arguments":{"organizationSlug":"lumen-labs","projectSlugOrId":"storefront-web","query":"is:unresolved firstRelease:storefront@5.3.0 TypeError"}}}

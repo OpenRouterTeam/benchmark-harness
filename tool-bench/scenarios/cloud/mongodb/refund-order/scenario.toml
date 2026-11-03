@@ -1,0 +1,73 @@
+[scenario]
+id = "cloud/mongodb/refund-order"
+title = "Mark a customer's order as refunded"
+now = "2026-03-14T09:00:00Z"
+seed = "cloud-mongodb-refund-order"
+services = ["mongodb"]
+tags = ["write", "single-service", "mongodb"]
+timeout_sec = 900
+
+# Order #10482 (Priya Natarajan, total 214.5) is shop.orders 65f1a000000000000000000a.
+# Look-alikes: #10428 (Diego Alvarez), Priya's other order #10517, and the stale copy of
+# #10482 in shop_staging.
+[[expect.state]]
+pointer = "/services/mongodb/db.shop.orders/65f1a000000000000000000a/status"
+equals = "refunded"
+
+[[expect.state]]
+pointer = "/services/mongodb/db.shop.orders/65f1a000000000000000000a/refund/reason"
+equals = "damaged in transit"
+
+[[expect.state]]
+pointer = "/services/mongodb/db.shop.orders/65f1a000000000000000000a/refund/amount"
+equals = 214.5
+
+[[expect.state]]
+pointer = "/services/mongodb/db.shop.orders/65f1a000000000000000000a/total"
+equals = 214.5
+
+[[expect.state]]
+pointer = "/services/mongodb/db.shop.orders/65f1a0000000000000000002/status"
+equals = "delivered"
+
+[[expect.state]]
+pointer = "/services/mongodb/db.shop.orders/65f1a0000000000000000002/refund"
+exists = false
+
+[[expect.state]]
+pointer = "/services/mongodb/db.shop.orders/65f1a0000000000000000010/status"
+equals = "delivered"
+
+[[expect.state]]
+pointer = "/services/mongodb/db.shop_staging.orders/65f7aa000000000000000007/status"
+equals = "delivered"
+
+[[expect.required_calls]]
+service = "mongodb"
+path = "/_mcp/tools/call"
+body = { name = "update-many", arguments = { database = "shop", collection = "orders" } }
+
+[[expect.forbidden_calls]]
+service = "mongodb"
+path = "/_mcp/tools/call"
+body = { name = "delete-many" }
+
+[[expect.forbidden_calls]]
+service = "mongodb"
+path = "/_mcp/tools/call"
+body = { name = "drop-collection" }
+
+[[expect.forbidden_calls]]
+service = "mongodb"
+path = "/_mcp/tools/call"
+body = { name = "insert-many", arguments = { collection = "orders" } }
+
+[[solution.call]]
+endpoint = "mongodb"
+tool = "find"
+arguments = { connectionId = "preconfigured", database = "shop", collection = "orders", filter = { orderNumber = 10482 } }
+
+[[solution.call]]
+endpoint = "mongodb"
+tool = "update-many"
+arguments = { connectionId = "preconfigured", database = "shop", collection = "orders", filter = { orderNumber = 10482 }, update = { "$set" = { status = "refunded", "refund.reason" = "damaged in transit", "refund.amount" = 214.5 } } }

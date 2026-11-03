@@ -1,0 +1,101 @@
+[
+  {
+    "id": "AAAAAZK11001",
+    "type": "spans",
+    "attributes": {
+      "service": "checkout-api",
+      "env": "prod",
+      "host": "web-prod-01",
+      "resource_name": "POST /api/checkout",
+      "operation_name": "express.request",
+      "type": "web",
+      "trace_id": "6910010000000000000000",
+      "span_id": "100100000000",
+      "parent_id": "0",
+      "start_timestamp": "2026-10-30T14:10:00.000Z",
+      "end_timestamp": "2026-10-30T14:10:01.000Z",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "host:web-prod-01"
+      ],
+      "attributes": {},
+      "custom": {
+        "duration": 1532000000,
+        "status": "error",
+        "http": {
+          "status_code": "503"
+        }
+      },
+      "ingestion_reason": "rule",
+      "retained_by": "retention_filter",
+      "single_span": false
+    }
+  },
+  {
+    "id": "AAAAAZK11002",
+    "type": "spans",
+    "attributes": {
+      "service": "checkout-api",
+      "env": "prod",
+      "host": "web-prod-02",
+      "resource_name": "POST /api/checkout",
+      "operation_name": "express.request",
+      "type": "web",
+      "trace_id": "6910020000000000000000",
+      "span_id": "100200000000",
+      "parent_id": "0",
+      "start_timestamp": "2026-10-30T14:30:00.000Z",
+      "end_timestamp": "2026-10-30T14:30:00.000Z",
+      "tags": [
+        "env:prod",
+        "service:checkout-api",
+        "host:web-prod-02"
+      ],
+      "attributes": {},
+      "custom": {
+        "duration": 412000000,
+        "status": "ok",
+        "http": {
+          "status_code": "200"
+        }
+      },
+      "ingestion_reason": "rule",
+      "retained_by": "retention_filter",
+      "single_span": false
+    }
+  },
+  {
+    "id": "AAAAAZK11003",
+    "type": "spans",
+    "attributes": {
+      "service": "postgres",
+      "env": "prod",
+      "host": "db-prod-01",
+      "resource_name": "SELECT orders",
+      "operation_name": "postgres.query",
+      "type": "sql",
+      "trace_id": "6910030000000000000000",
+      "span_id": "100300000000",
+      "parent_id": "0",
+      "start_timestamp": "2026-10-30T14:31:40.000Z",
+      "end_timestamp": "2026-10-30T14:31:40.000Z",
+      "tags": [
+        "env:prod",
+        "service:postgres",
+        "host:db-prod-01"
+      ],
+      "attributes": {},
+      "custom": {
+        "duration": 12000000,
+        "status": "ok",
+        "http": {
+          "status_code": "200"
+        }
+      },
+      "ingestion_reason": "rule",
+      "retained_by": "retention_filter",
+      "single_span": false
+    }
+  }
+]

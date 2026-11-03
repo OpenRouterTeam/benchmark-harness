@@ -1,0 +1,124 @@
+[
+  {
+    "_key": "analytics/report-builder-t2h6vx4p7r-q8j52.116e29002543af43",
+    "metadata": {
+      "name": "report-builder-t2h6vx4p7r-q8j52.116e29002543af43",
+      "namespace": "analytics",
+      "uid": "dc6e7f33-0fb5-44d2-a0be-c3a84849aa37",
+      "resourceVersion": "41646",
+      "creationTimestamp": "2026-10-21T02:05:00Z"
+    },
+    "involvedObject": {
+      "kind": "Pod",
+      "namespace": "analytics",
+      "name": "report-builder-t2h6vx4p7r-q8j52",
+      "uid": "94559a30-d563-45bd-ad95-6d6152d81e81",
+      "apiVersion": "v1",
+      "fieldPath": "spec.containers{report-builder}"
+    },
+    "reason": "BackOff",
+    "message": "Back-off restarting failed container report-builder in pod report-builder-t2h6vx4p7r-q8j52_analytics(94559a30-d563-45bd-ad95-6d6152d81e81)",
+    "source": {
+      "component": "kubelet",
+      "host": "ip-10-0-1-21.ec2.internal"
+    },
+    "firstTimestamp": "2026-10-21T02:05:00Z",
+    "lastTimestamp": "2026-10-21T03:13:00Z",
+    "count": 19,
+    "type": "Warning",
+    "eventTime": null,
+    "reportingComponent": "kubelet",
+    "reportingInstance": "ip-10-0-1-21.ec2.internal"
+  },
+  {
+    "_key": "analytics/report-builder-t2h6vx4p7r-r8vfm.fb2e5bfed6ecca00",
+    "metadata": {
+      "name": "report-builder-t2h6vx4p7r-r8vfm.fb2e5bfed6ecca00",
+      "namespace": "analytics",
+      "uid": "c3e8824c-9a8c-406e-ab44-4e964a9529b7",
+      "resourceVersion": "41663",
+      "creationTimestamp": "2026-10-21T02:05:00Z"
+    },
+    "involvedObject": {
+      "kind": "Pod",
+      "namespace": "analytics",
+      "name": "report-builder-t2h6vx4p7r-r8vfm",
+      "uid": "0258d78f-f416-4a2e-a9e1-fba8eb960d4c",
+      "apiVersion": "v1",
+      "fieldPath": "spec.containers{report-builder}"
+    },
+    "reason": "BackOff",
+    "message": "Back-off restarting failed container report-builder in pod report-builder-t2h6vx4p7r-r8vfm_analytics(0258d78f-f416-4a2e-a9e1-fba8eb960d4c)",
+    "source": {
+      "component": "kubelet",
+      "host": "ip-10-0-1-21.ec2.internal"
+    },
+    "firstTimestamp": "2026-10-21T02:05:00Z",
+    "lastTimestamp": "2026-10-21T03:13:00Z",
+    "count": 19,
+    "type": "Warning",
+    "eventTime": null,
+    "reportingComponent": "kubelet",
+    "reportingInstance": "ip-10-0-1-21.ec2.internal"
+  },
+  {
+    "_key": "default/ip-10-0-1-21.ec2.internal.3d41d4a8b0821f75",
+    "metadata": {
+      "name": "ip-10-0-1-21.ec2.internal.3d41d4a8b0821f75",
+      "namespace": "default",
+      "uid": "08e8f8ea-6ec3-471c-a03e-6a178ac0bf85",
+      "resourceVersion": "41680",
+      "creationTimestamp": "2026-10-21T02:10:00Z"
+    },
+    "involvedObject": {
+      "kind": "Node",
+      "namespace": "default",
+      "name": "ip-10-0-1-21.ec2.internal",
+      "uid": "229c8d4d-978f-475d-a30d-e4caa5e3dcde",
+      "apiVersion": "v1"
+    },
+    "reason": "SystemOOM",
+    "message": "System OOM encountered, victim process: report-builder, pid: 48121",
+    "source": {
+      "component": "kubelet",
+      "host": "ip-10-0-1-21.ec2.internal"
+    },
+    "firstTimestamp": "2026-10-21T02:10:00Z",
+    "lastTimestamp": "2026-10-21T03:09:00Z",
+    "count": 4,
+    "type": "Warning",
+    "eventTime": null,
+    "reportingComponent": "kubelet",
+    "reportingInstance": "ip-10-0-1-21.ec2.internal"
+  },
+  {
+    "_key": "analytics/report-api-vdx9jp68d-x7xnk.c1f4034820a9b3df",
+    "metadata": {
+      "name": "report-api-vdx9jp68d-x7xnk.c1f4034820a9b3df",
+      "namespace": "analytics",
+      "uid": "f933e19f-d005-417d-a79e-d63415a9d283",
+      "resourceVersion": "41697",
+      "creationTimestamp": "2026-10-19T03:15:00Z"
+    },
+    "involvedObject": {
+      "kind": "Pod",
+      "namespace": "analytics",
+      "name": "report-api-vdx9jp68d-x7xnk",
+      "uid": "244ccf5a-00c7-42d1-a027-c1d8e4bb8fd7",
+      "apiVersion": "v1"
+    },
+    "reason": "Pulled",
+    "message": "Container image \"ghcr.io/lumen-labs/report-api:3.2.0\" already present on machine",
+    "source": {
+      "component": "kubelet",
+      "host": "ip-10-0-1-21.ec2.internal"
+    },
+    "firstTimestamp": "2026-10-19T03:15:00Z",
+    "lastTimestamp": "2026-10-19T03:15:00Z",
+    "count": 1,
+    "type": "Normal",
+    "eventTime": null,
+    "reportingComponent": "kubelet",
+    "reportingInstance": "ip-10-0-1-21.ec2.internal"
+  }
+]

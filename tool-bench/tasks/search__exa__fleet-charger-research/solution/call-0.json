@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"deep_researcher_start","arguments":{"instructions":"Research the market for bidirectional (V2G) chargers for commercial fleet depots in Germany: the main vendors, their market share, and typical unit prices.","model":"exa-research-pro"}}}

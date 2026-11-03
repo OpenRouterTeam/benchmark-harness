@@ -1,0 +1,290 @@
+[
+  {
+    "id": 280748352,
+    "version": "storefront@5.2.0",
+    "projects": [
+      "storefront-web"
+    ],
+    "dateCreated": "2026-10-02T16:00:00Z",
+    "dateReleased": "2026-10-02T18:00:00Z",
+    "commits": [
+      {
+        "id": "9f1c2ab7e0d4c3b2a1908f7e6d5c4b3a2f1e0d9c",
+        "message": "feat(cart): slide-out cart drawer",
+        "dateCreated": "2026-10-02T10:00:00Z",
+        "author": {
+          "name": "Sofia Alvarez",
+          "email": "sofia@lumenlabs.dev"
+        }
+      }
+    ],
+    "deploys": [
+      {
+        "id": "7048352",
+        "environment": "production",
+        "name": null,
+        "url": null,
+        "dateStarted": "2026-10-02T17:48:00Z",
+        "dateFinished": "2026-10-02T18:00:00Z"
+      }
+    ],
+    "_key": "storefront@5.2.0"
+  },
+  {
+    "id": 830052374,
+    "version": "storefront@5.3.0",
+    "projects": [
+      "storefront-web"
+    ],
+    "dateCreated": "2026-10-15T14:00:00Z",
+    "dateReleased": "2026-10-15T16:00:00Z",
+    "commits": [
+      {
+        "id": "4ab3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5",
+        "message": "feat(catalog): server-driven product grid",
+        "dateCreated": "2026-10-15T08:00:00Z",
+        "author": {
+          "name": "Kenji Watanabe",
+          "email": "kenji@lumenlabs.dev"
+        }
+      },
+      {
+        "id": "7e6d5c4b3a2f1e0d9c8b7a6f5e4d3c2b1a0f9e8d",
+        "message": "chore: bump react-query to 5.59",
+        "dateCreated": "2026-10-15T07:00:00Z",
+        "author": {
+          "name": "Priya Raman",
+          "email": "priya@lumenlabs.dev"
+        }
+      }
+    ],
+    "deploys": [
+      {
+        "id": "7052374",
+        "environment": "production",
+        "name": null,
+        "url": null,
+        "dateStarted": "2026-10-15T15:48:00Z",
+        "dateFinished": "2026-10-15T16:00:00Z"
+      }
+    ],
+    "_key": "storefront@5.3.0"
+  },
+  {
+    "id": 424695891,
+    "version": "storefront@5.3.1",
+    "projects": [
+      "storefront-web"
+    ],
+    "dateCreated": "2026-10-18T14:00:00Z",
+    "dateReleased": "2026-10-18T16:00:00Z",
+    "commits": [
+      {
+        "id": "1d2c3b4a5f6e7d8c9b0a1f2e3d4c5b6a7f8e9d0c",
+        "message": "fix(checkout): guard empty promo code",
+        "dateCreated": "2026-10-18T08:00:00Z",
+        "author": {
+          "name": "Sofia Alvarez",
+          "email": "sofia@lumenlabs.dev"
+        }
+      }
+    ],
+    "deploys": [
+      {
+        "id": "7095891",
+        "environment": "production",
+        "name": null,
+        "url": null,
+        "dateStarted": "2026-10-18T15:48:00Z",
+        "dateFinished": "2026-10-18T16:00:00Z"
+      }
+    ],
+    "_key": "storefront@5.3.1"
+  },
+  {
+    "id": 244457785,
+    "version": "admin@2.8.0",
+    "projects": [
+      "admin-dashboard"
+    ],
+    "dateCreated": "2026-10-15T12:00:00Z",
+    "dateReleased": "2026-10-15T15:00:00Z",
+    "commits": [
+      {
+        "id": "aa11bb22cc33dd44ee55ff6600778899aabbccdd",
+        "message": "feat(orders): bulk refund table",
+        "dateCreated": "2026-10-15T06:00:00Z",
+        "author": {
+          "name": "Sofia Alvarez",
+          "email": "sofia@lumenlabs.dev"
+        }
+      }
+    ],
+    "deploys": [
+      {
+        "id": "7057785",
+        "environment": "production",
+        "name": null,
+        "url": null,
+        "dateStarted": "2026-10-15T14:48:00Z",
+        "dateFinished": "2026-10-15T15:00:00Z"
+      }
+    ],
+    "_key": "admin@2.8.0"
+  },
+  {
+    "id": 423093884,
+    "version": "checkout-api@2026.10.14",
+    "projects": [
+      "checkout-api"
+    ],
+    "dateCreated": "2026-10-14T08:00:00Z",
+    "dateReleased": "2026-10-14T10:00:00Z",
+    "commits": [
+      {
+        "id": "b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9",
+        "message": "feat: split shipping address validation",
+        "dateCreated": "2026-10-14T02:00:00Z",
+        "author": {
+          "name": "Marcus Chen",
+          "email": "marcus@lumenlabs.dev"
+        }
+      }
+    ],
+    "deploys": [
+      {
+        "id": "7093884",
+        "environment": "production",
+        "name": null,
+        "url": null,
+        "dateStarted": "2026-10-14T09:48:00Z",
+        "dateFinished": "2026-10-14T10:00:00Z"
+      }
+    ],
+    "_key": "checkout-api@2026.10.14"
+  },
+  {
+    "id": 598436312,
+    "version": "checkout-api@2026.10.19",
+    "projects": [
+      "checkout-api"
+    ],
+    "dateCreated": "2026-10-19T10:00:00Z",
+    "dateReleased": "2026-10-19T12:00:00Z",
+    "commits": [
+      {
+        "id": "c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0",
+        "message": "perf: reuse DB connections across requests",
+        "dateCreated": "2026-10-19T04:00:00Z",
+        "author": {
+          "name": "Marcus Chen",
+          "email": "marcus@lumenlabs.dev"
+        }
+      }
+    ],
+    "deploys": [
+      {
+        "id": "7036312",
+        "environment": "production",
+        "name": null,
+        "url": null,
+        "dateStarted": "2026-10-19T11:48:00Z",
+        "dateFinished": "2026-10-19T12:00:00Z"
+      }
+    ],
+    "_key": "checkout-api@2026.10.19"
+  },
+  {
+    "id": 481208695,
+    "version": "payments-worker@1.14.2",
+    "projects": [
+      "payments-worker"
+    ],
+    "dateCreated": "2026-10-09T20:00:00Z",
+    "dateReleased": "2026-10-09T22:00:00Z",
+    "commits": [
+      {
+        "id": "d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3",
+        "message": "fix: retry idempotent capture on 409",
+        "dateCreated": "2026-10-09T14:00:00Z",
+        "author": {
+          "name": "Dmitri Volkov",
+          "email": "dmitri@lumenlabs.dev"
+        }
+      }
+    ],
+    "deploys": [
+      {
+        "id": "7008695",
+        "environment": "production",
+        "name": null,
+        "url": null,
+        "dateStarted": "2026-10-09T21:48:00Z",
+        "dateFinished": "2026-10-09T22:00:00Z"
+      }
+    ],
+    "_key": "payments-worker@1.14.2"
+  },
+  {
+    "id": 159240454,
+    "version": "payments-worker@1.15.0",
+    "projects": [
+      "payments-worker"
+    ],
+    "dateCreated": "2026-10-20T07:00:00Z",
+    "dateReleased": "2026-10-20T09:00:00Z",
+    "commits": [
+      {
+        "id": "e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6",
+        "message": "fix(db): raise pool size to 40 and pre-ping connections",
+        "dateCreated": "2026-10-20T01:00:00Z",
+        "author": {
+          "name": "Dmitri Volkov",
+          "email": "dmitri@lumenlabs.dev"
+        }
+      }
+    ],
+    "deploys": [
+      {
+        "id": "7040454",
+        "environment": "production",
+        "name": null,
+        "url": null,
+        "dateStarted": "2026-10-20T08:48:00Z",
+        "dateFinished": "2026-10-20T09:00:00Z"
+      }
+    ],
+    "_key": "payments-worker@1.15.0"
+  },
+  {
+    "id": 925748218,
+    "version": "ios@3.21.0",
+    "projects": [
+      "ios-app"
+    ],
+    "dateCreated": "2026-10-12T08:00:00Z",
+    "dateReleased": "2026-10-12T18:00:00Z",
+    "commits": [
+      {
+        "id": "f0e1d2c3b4a5968778695a4b3c2d1e0f9e8d7c6b",
+        "message": "feat: Apple Pay express checkout",
+        "dateCreated": "2026-10-12T02:00:00Z",
+        "author": {
+          "name": "Hana Sato",
+          "email": "hana@lumenlabs.dev"
+        }
+      }
+    ],
+    "deploys": [
+      {
+        "id": "7048218",
+        "environment": "production",
+        "name": null,
+        "url": null,
+        "dateStarted": "2026-10-12T17:48:00Z",
+        "dateFinished": "2026-10-12T18:00:00Z"
+      }
+    ],
+    "_key": "ios@3.21.0"
+  }
+]

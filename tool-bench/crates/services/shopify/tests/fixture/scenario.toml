@@ -1,0 +1,6 @@
+[scenario]
+id = "test/shopify/fixture"
+title = "mock-shopify test fixture"
+now = "2026-05-04T15:00:00Z"
+seed = "test-shopify-fixture"
+services = ["shopify"]

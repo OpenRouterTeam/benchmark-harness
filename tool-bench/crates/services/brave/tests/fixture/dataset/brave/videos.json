@@ -1,0 +1,51 @@
+[
+  {
+    "_key": "https://www.youtube.com/watch?v=r8Kq2PgN7aE",
+    "url": "https://www.youtube.com/watch?v=r8Kq2PgN7aE",
+    "title": "Highlights: PGConf Nordic 2026 keynote - Scaling Postgres to 1M writes/s",
+    "description": "Best moments from the PGConf Nordic 2026 opening keynote, re-cut by DB Clips. Full talk on the official PGConf Nordic channel.",
+    "page_age": "2026-10-18T09:00:00",
+    "duration": "12:05",
+    "views": 18342,
+    "creator": "DB Clips",
+    "publisher": "YouTube",
+    "thumbnail": "https://imgs.search.brave.com/video/r8Kq2PgN7aE.jpg"
+  },
+  {
+    "_key": "https://www.youtube.com/watch?v=Zt4mQeL1x9c",
+    "url": "https://www.youtube.com/watch?v=Zt4mQeL1x9c",
+    "title": "Keynote: Scaling Postgres to 1M writes/s - Marta Lindqvist | PGConf Nordic 2026",
+    "description": "Opening keynote of PGConf Nordic 2026 (Copenhagen) by Marta Lindqvist: partitioning, logical replication and write batching at a million writes per second. Full recording.",
+    "page_age": "2026-10-12T14:00:00",
+    "duration": "47:12",
+    "views": 9120,
+    "creator": "PGConf Nordic",
+    "publisher": "YouTube",
+    "tags": ["postgresql", "pgconf", "keynote"],
+    "thumbnail": "https://imgs.search.brave.com/video/Zt4mQeL1x9c.jpg"
+  },
+  {
+    "_key": "https://www.youtube.com/watch?v=Hq7wB3nVt2s",
+    "url": "https://www.youtube.com/watch?v=Hq7wB3nVt2s",
+    "title": "Scaling Postgres to 1M writes/s (meetup version) - Marta Lindqvist",
+    "description": "An early version of the talk given at the Oslo PostgreSQL Meetup in April 2025, recorded by Oslo PostgreSQL Meetup.",
+    "page_age": "2025-04-02T19:00:00",
+    "duration": "28:40",
+    "views": 2311,
+    "creator": "Oslo PostgreSQL Meetup",
+    "publisher": "YouTube",
+    "thumbnail": "https://imgs.search.brave.com/video/Hq7wB3nVt2s.jpg"
+  },
+  {
+    "_key": "https://vimeo.com/987654321",
+    "url": "https://vimeo.com/987654321",
+    "title": "Scaling Postgres writes beyond a single primary - Tom Ekberg (PGDay Paris 2026)",
+    "description": "Tom Ekberg's PGDay Paris 2026 talk on scaling Postgres writes with sharding.",
+    "page_age": "2026-04-20T10:00:00",
+    "duration": "39:55",
+    "views": 4410,
+    "creator": "PGDay Paris",
+    "publisher": "Vimeo",
+    "thumbnail": "https://imgs.search.brave.com/video/vimeo-987654321.jpg"
+  }
+]

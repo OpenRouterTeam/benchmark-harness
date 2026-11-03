@@ -1,0 +1,5 @@
+[scenario]
+id = "test/firecrawl/fixture"
+title = "Firecrawl mock test fixture"
+now = "2026-10-01T12:00:00Z"
+seed = "test-firecrawl-fixture"

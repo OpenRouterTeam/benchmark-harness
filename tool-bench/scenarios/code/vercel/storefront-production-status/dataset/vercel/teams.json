@@ -1,0 +1,32 @@
+[
+  {
+    "id": "team_9vXcR2kLmQ4tZ8wN3pHf6sJd",
+    "slug": "acme-shop",
+    "name": "Acme Shop",
+    "avatar": null,
+    "createdAt": 1676368800000,
+    "creatorId": "Kx8wQ2mZr4TnV7pLc3HdYb5e",
+    "updatedAt": 1780304400000,
+    "membership": {
+      "role": "OWNER",
+      "confirmed": true,
+      "createdAt": 1676368800000,
+      "uid": "Kx8wQ2mZr4TnV7pLc3HdYb5e"
+    }
+  },
+  {
+    "id": "team_2bHq7YtR5mWx9cKp4LnZ8vFe",
+    "slug": "acme-labs",
+    "name": "Acme Labs",
+    "avatar": null,
+    "createdAt": 1737390600000,
+    "creatorId": "Lw3nB8qXv2RkT6yHc9MdZp4a",
+    "updatedAt": 1773230400000,
+    "membership": {
+      "role": "MEMBER",
+      "confirmed": true,
+      "createdAt": 1737446400000,
+      "uid": "Kx8wQ2mZr4TnV7pLc3HdYb5e"
+    }
+  }
+]

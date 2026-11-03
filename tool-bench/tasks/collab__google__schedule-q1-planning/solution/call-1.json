@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_gmail_message_content","arguments":{"message_id":"355ad002b14a79a3"}}}

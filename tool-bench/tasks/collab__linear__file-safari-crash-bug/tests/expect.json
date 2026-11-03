@@ -1,0 +1,95 @@
+{
+  "state": [
+    {
+      "pointer": "/services/linear/issues/WEB-58/title",
+      "equals": "Saved carts tab reloads in a loop on Safari 17",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/issues/WEB-58/teamId",
+      "equals": "6da75b4c-0e7c-5ac7-a415-f09a129582b1",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/issues/WEB-58/priority",
+      "equals": 2,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/issues/WEB-58/labelIds",
+      "equals": null,
+      "exists": null,
+      "contains": "75dbca3d-6368-502e-8e56-0c82837ea691",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/issues/WEB-58/labelIds",
+      "equals": null,
+      "exists": null,
+      "contains": "b528a42a-7d96-511c-ab34-1b8cb0bf0c8d",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/issues/WEB-58/projectId",
+      "equals": "665e6e05-9585-5351-a871-913d9e5b298f",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/issues/WEB-58/assigneeId",
+      "equals": "0bfae6ae-01d0-58d1-a611-7d1973102c45",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/issues/WEB-59",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "linear",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "Saved carts tab reloads in a loop on Safari 17",
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "linear",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "linear_archiveIssue"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

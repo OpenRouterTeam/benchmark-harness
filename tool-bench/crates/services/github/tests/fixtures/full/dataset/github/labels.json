@@ -1,0 +1,66 @@
+[
+  {
+    "_key": "octo-org/payments-api:bug",
+    "id": 100,
+    "name": "bug",
+    "color": "d73a4a",
+    "description": "Something isn't working",
+    "default": true
+  },
+  {
+    "_key": "octo-org/payments-api:enhancement",
+    "id": 101,
+    "name": "enhancement",
+    "color": "a2eeef",
+    "description": "New feature or request",
+    "default": true
+  },
+  {
+    "_key": "octo-org/payments-api:documentation",
+    "id": 102,
+    "name": "documentation",
+    "color": "0075ca",
+    "description": "Improvements or additions to documentation",
+    "default": true
+  },
+  {
+    "_key": "octo-org/payments-api:good first issue",
+    "id": 103,
+    "name": "good first issue",
+    "color": "7057ff",
+    "description": "Good for newcomers",
+    "default": false
+  },
+  {
+    "_key": "octo-org/app:bug",
+    "id": 120,
+    "name": "bug",
+    "color": "d73a4a",
+    "description": "Something isn't working",
+    "default": true
+  },
+  {
+    "_key": "octo-org/app:enhancement",
+    "id": 121,
+    "name": "enhancement",
+    "color": "a2eeef",
+    "description": "New feature or request",
+    "default": true
+  },
+  {
+    "_key": "octo-org/app:documentation",
+    "id": 122,
+    "name": "documentation",
+    "color": "0075ca",
+    "description": "Improvements or additions to documentation",
+    "default": true
+  },
+  {
+    "_key": "octo-org/app:good first issue",
+    "id": 123,
+    "name": "good first issue",
+    "color": "7057ff",
+    "description": "Good for newcomers",
+    "default": false
+  }
+]

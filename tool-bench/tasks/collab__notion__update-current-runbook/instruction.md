@@ -1,0 +1,1 @@
+Marcus is moving to the platform rotation, so the escalation contact in our current on-call runbook in Notion needs to change: replace "Marcus Webb, +1 555-0100" with "Sam Ortiz, +1 555-0142". Leave older or deleted copies of the runbook alone.

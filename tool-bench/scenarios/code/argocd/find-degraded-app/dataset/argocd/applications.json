@@ -1,0 +1,719 @@
+[
+  {
+    "_key": "argocd/checkout-web",
+    "metadata": {
+      "name": "checkout-web",
+      "namespace": "argocd",
+      "uid": "16e65a6a-b98c-5a8f-95f5-4425d5655901",
+      "resourceVersion": "41017",
+      "generation": 5,
+      "creationTimestamp": "2025-11-03T10:15:00Z",
+      "labels": {
+        "team": "storefront",
+        "env": "production",
+        "tier": "frontend"
+      },
+      "finalizers": [
+        "resources-finalizer.argocd.argoproj.io"
+      ]
+    },
+    "spec": {
+      "source": {
+        "repoURL": "https://github.com/lumen-retail/storefront-deploy.git",
+        "path": "apps/checkout-web/overlays/production",
+        "targetRevision": "main"
+      },
+      "destination": {
+        "server": "https://prod-use1.k8s.lumen.internal",
+        "namespace": "storefront"
+      },
+      "project": "storefront",
+      "syncPolicy": {
+        "automated": {
+          "prune": true,
+          "selfHeal": true
+        },
+        "syncOptions": [
+          "CreateNamespace=true",
+          "ApplyOutOfSyncOnly=true"
+        ],
+        "retry": {
+          "limit": 5,
+          "backoff": {
+            "duration": "5s",
+            "factor": 2,
+            "maxDuration": "3m0s"
+          }
+        }
+      }
+    },
+    "status": {
+      "sync": {
+        "status": "Synced",
+        "comparedTo": {
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/storefront-deploy.git",
+            "path": "apps/checkout-web/overlays/production",
+            "targetRevision": "main"
+          },
+          "destination": {
+            "server": "https://prod-use1.k8s.lumen.internal",
+            "namespace": "storefront"
+          }
+        },
+        "revision": "a23f2a7b21f788c07d95ceaeb529e54b7ae3dbcd"
+      },
+      "health": {
+        "status": "Degraded"
+      },
+      "history": [
+        {
+          "revision": "b73eaab2b7b7af66a64d59e777aaae2334f0a62e",
+          "deployedAt": "2026-10-20T16:10:41Z",
+          "id": 0,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/storefront-deploy.git",
+            "path": "apps/checkout-web/overlays/production",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-20T16:10:41Z",
+          "initiatedBy": {
+            "automated": true
+          }
+        },
+        {
+          "revision": "a23f2a7b21f788c07d95ceaeb529e54b7ae3dbcd",
+          "deployedAt": "2026-10-29T12:53:02Z",
+          "id": 1,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/storefront-deploy.git",
+            "path": "apps/checkout-web/overlays/production",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-29T12:53:02Z",
+          "initiatedBy": {
+            "automated": true
+          }
+        }
+      ],
+      "reconciledAt": "2026-10-29T14:04:12Z",
+      "operationState": {
+        "operation": {
+          "sync": {
+            "revision": "a23f2a7b21f788c07d95ceaeb529e54b7ae3dbcd",
+            "syncOptions": [
+              "CreateNamespace=true",
+              "ApplyOutOfSyncOnly=true"
+            ]
+          },
+          "initiatedBy": {
+            "automated": true
+          },
+          "retry": {
+            "limit": 5
+          }
+        },
+        "phase": "Succeeded",
+        "message": "successfully synced (all tasks run)",
+        "syncResult": {
+          "resources": [
+            {
+              "group": "apps",
+              "version": "v1",
+              "kind": "Deployment",
+              "namespace": "storefront",
+              "name": "checkout-web",
+              "status": "Synced",
+              "message": "deployment.apps/checkout-web configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            },
+            {
+              "group": "",
+              "version": "v1",
+              "kind": "Service",
+              "namespace": "storefront",
+              "name": "checkout-web",
+              "status": "Synced",
+              "message": "service/checkout-web configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            },
+            {
+              "group": "",
+              "version": "v1",
+              "kind": "ConfigMap",
+              "namespace": "storefront",
+              "name": "checkout-web-config",
+              "status": "Synced",
+              "message": "configmap/checkout-web-config configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            },
+            {
+              "group": "networking.k8s.io",
+              "version": "v1",
+              "kind": "Ingress",
+              "namespace": "storefront",
+              "name": "checkout-web",
+              "status": "Synced",
+              "message": "ingress.networking.k8s.io/checkout-web configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            }
+          ],
+          "revision": "a23f2a7b21f788c07d95ceaeb529e54b7ae3dbcd",
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/storefront-deploy.git",
+            "path": "apps/checkout-web/overlays/production",
+            "targetRevision": "main"
+          }
+        },
+        "startedAt": "2026-10-29T12:53:02Z",
+        "finishedAt": "2026-10-29T12:53:02Z"
+      },
+      "sourceType": "Kustomize",
+      "controllerNamespace": "argocd"
+    }
+  },
+  {
+    "_key": "argocd/checkout-web-staging",
+    "metadata": {
+      "name": "checkout-web-staging",
+      "namespace": "argocd",
+      "uid": "f108812d-f76d-55e4-8c02-045ad0ba4a70",
+      "resourceVersion": "41391",
+      "generation": 4,
+      "creationTimestamp": "2025-11-03T10:20:00Z",
+      "labels": {
+        "team": "storefront",
+        "env": "staging",
+        "tier": "frontend"
+      },
+      "finalizers": [
+        "resources-finalizer.argocd.argoproj.io"
+      ]
+    },
+    "spec": {
+      "source": {
+        "repoURL": "https://github.com/lumen-retail/storefront-deploy.git",
+        "path": "apps/checkout-web/overlays/staging",
+        "targetRevision": "staging-2.14.0-rc2"
+      },
+      "destination": {
+        "server": "https://staging-use1.k8s.lumen.internal",
+        "namespace": "storefront"
+      },
+      "project": "storefront",
+      "syncPolicy": {
+        "automated": {
+          "prune": true,
+          "selfHeal": true
+        },
+        "syncOptions": [
+          "CreateNamespace=true",
+          "ApplyOutOfSyncOnly=true"
+        ],
+        "retry": {
+          "limit": 5,
+          "backoff": {
+            "duration": "5s",
+            "factor": 2,
+            "maxDuration": "3m0s"
+          }
+        }
+      }
+    },
+    "status": {
+      "sync": {
+        "status": "Synced",
+        "comparedTo": {
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/storefront-deploy.git",
+            "path": "apps/checkout-web/overlays/staging",
+            "targetRevision": "staging-2.14.0-rc2"
+          },
+          "destination": {
+            "server": "https://staging-use1.k8s.lumen.internal",
+            "namespace": "storefront"
+          }
+        },
+        "revision": "cbd3f1734780d1588d9e6348448a9829c2fd04e2"
+      },
+      "health": {
+        "status": "Degraded"
+      },
+      "history": [
+        {
+          "revision": "cbd3f1734780d1588d9e6348448a9829c2fd04e2",
+          "deployedAt": "2026-10-27T11:45:30Z",
+          "id": 0,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/storefront-deploy.git",
+            "path": "apps/checkout-web/overlays/staging",
+            "targetRevision": "staging-2.14.0-rc2"
+          },
+          "deployStartedAt": "2026-10-27T11:45:30Z",
+          "initiatedBy": {
+            "automated": true
+          }
+        }
+      ],
+      "reconciledAt": "2026-10-29T14:04:12Z",
+      "operationState": {
+        "operation": {
+          "sync": {
+            "revision": "cbd3f1734780d1588d9e6348448a9829c2fd04e2",
+            "syncOptions": [
+              "CreateNamespace=true",
+              "ApplyOutOfSyncOnly=true"
+            ]
+          },
+          "initiatedBy": {
+            "automated": true
+          },
+          "retry": {
+            "limit": 5
+          }
+        },
+        "phase": "Succeeded",
+        "message": "successfully synced (all tasks run)",
+        "syncResult": {
+          "resources": [
+            {
+              "group": "apps",
+              "version": "v1",
+              "kind": "Deployment",
+              "namespace": "storefront",
+              "name": "checkout-web",
+              "status": "Synced",
+              "message": "deployment.apps/checkout-web configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            },
+            {
+              "group": "",
+              "version": "v1",
+              "kind": "Service",
+              "namespace": "storefront",
+              "name": "checkout-web",
+              "status": "Synced",
+              "message": "service/checkout-web configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            }
+          ],
+          "revision": "cbd3f1734780d1588d9e6348448a9829c2fd04e2",
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/storefront-deploy.git",
+            "path": "apps/checkout-web/overlays/staging",
+            "targetRevision": "staging-2.14.0-rc2"
+          }
+        },
+        "startedAt": "2026-10-27T11:45:30Z",
+        "finishedAt": "2026-10-27T11:45:30Z"
+      },
+      "sourceType": "Kustomize",
+      "controllerNamespace": "argocd"
+    }
+  },
+  {
+    "_key": "argocd/catalog-api",
+    "metadata": {
+      "name": "catalog-api",
+      "namespace": "argocd",
+      "uid": "9a4935dc-5d48-5b19-8ae3-78490867e7e9",
+      "resourceVersion": "41493",
+      "generation": 4,
+      "creationTimestamp": "2025-11-03T10:25:00Z",
+      "labels": {
+        "team": "storefront",
+        "env": "production",
+        "tier": "backend"
+      },
+      "finalizers": [
+        "resources-finalizer.argocd.argoproj.io"
+      ]
+    },
+    "spec": {
+      "source": {
+        "repoURL": "https://github.com/lumen-retail/storefront-deploy.git",
+        "path": "apps/catalog-api/overlays/production",
+        "targetRevision": "main"
+      },
+      "destination": {
+        "server": "https://prod-use1.k8s.lumen.internal",
+        "namespace": "storefront"
+      },
+      "project": "storefront",
+      "syncPolicy": {
+        "automated": {
+          "prune": true,
+          "selfHeal": true
+        },
+        "syncOptions": [
+          "CreateNamespace=true",
+          "ApplyOutOfSyncOnly=true"
+        ],
+        "retry": {
+          "limit": 5,
+          "backoff": {
+            "duration": "5s",
+            "factor": 2,
+            "maxDuration": "3m0s"
+          }
+        }
+      }
+    },
+    "status": {
+      "sync": {
+        "status": "Synced",
+        "comparedTo": {
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/storefront-deploy.git",
+            "path": "apps/catalog-api/overlays/production",
+            "targetRevision": "main"
+          },
+          "destination": {
+            "server": "https://prod-use1.k8s.lumen.internal",
+            "namespace": "storefront"
+          }
+        },
+        "revision": "a23f2a7b21f788c07d95ceaeb529e54b7ae3dbcd"
+      },
+      "health": {
+        "status": "Healthy"
+      },
+      "history": [
+        {
+          "revision": "a23f2a7b21f788c07d95ceaeb529e54b7ae3dbcd",
+          "deployedAt": "2026-10-29T12:53:02Z",
+          "id": 0,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/storefront-deploy.git",
+            "path": "apps/catalog-api/overlays/production",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-29T12:53:02Z",
+          "initiatedBy": {
+            "automated": true
+          }
+        }
+      ],
+      "reconciledAt": "2026-10-29T14:04:12Z",
+      "operationState": {
+        "operation": {
+          "sync": {
+            "revision": "a23f2a7b21f788c07d95ceaeb529e54b7ae3dbcd",
+            "syncOptions": [
+              "CreateNamespace=true",
+              "ApplyOutOfSyncOnly=true"
+            ]
+          },
+          "initiatedBy": {
+            "automated": true
+          },
+          "retry": {
+            "limit": 5
+          }
+        },
+        "phase": "Succeeded",
+        "message": "successfully synced (all tasks run)",
+        "syncResult": {
+          "resources": [
+            {
+              "group": "apps",
+              "version": "v1",
+              "kind": "Deployment",
+              "namespace": "storefront",
+              "name": "catalog-api",
+              "status": "Synced",
+              "message": "deployment.apps/catalog-api configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            },
+            {
+              "group": "",
+              "version": "v1",
+              "kind": "Service",
+              "namespace": "storefront",
+              "name": "catalog-api",
+              "status": "Synced",
+              "message": "service/catalog-api configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            }
+          ],
+          "revision": "a23f2a7b21f788c07d95ceaeb529e54b7ae3dbcd",
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/storefront-deploy.git",
+            "path": "apps/catalog-api/overlays/production",
+            "targetRevision": "main"
+          }
+        },
+        "startedAt": "2026-10-29T12:53:02Z",
+        "finishedAt": "2026-10-29T12:53:02Z"
+      },
+      "sourceType": "Kustomize",
+      "controllerNamespace": "argocd"
+    }
+  },
+  {
+    "_key": "argocd/order-events-consumer",
+    "metadata": {
+      "name": "order-events-consumer",
+      "namespace": "argocd",
+      "uid": "0e467124-3e7a-55ea-ae9c-1e6f0f7f2482",
+      "resourceVersion": "41595",
+      "generation": 4,
+      "creationTimestamp": "2026-02-11T15:00:00Z",
+      "labels": {
+        "team": "storefront",
+        "env": "production",
+        "tier": "backend"
+      },
+      "finalizers": [
+        "resources-finalizer.argocd.argoproj.io"
+      ]
+    },
+    "spec": {
+      "source": {
+        "repoURL": "https://github.com/lumen-retail/storefront-deploy.git",
+        "path": "apps/order-events-consumer/overlays/production",
+        "targetRevision": "main"
+      },
+      "destination": {
+        "server": "https://prod-use1.k8s.lumen.internal",
+        "namespace": "storefront"
+      },
+      "project": "storefront",
+      "syncPolicy": {
+        "automated": {
+          "prune": true,
+          "selfHeal": true
+        },
+        "syncOptions": [
+          "CreateNamespace=true",
+          "ApplyOutOfSyncOnly=true"
+        ],
+        "retry": {
+          "limit": 5,
+          "backoff": {
+            "duration": "5s",
+            "factor": 2,
+            "maxDuration": "3m0s"
+          }
+        }
+      }
+    },
+    "status": {
+      "sync": {
+        "status": "Synced",
+        "comparedTo": {
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/storefront-deploy.git",
+            "path": "apps/order-events-consumer/overlays/production",
+            "targetRevision": "main"
+          },
+          "destination": {
+            "server": "https://prod-use1.k8s.lumen.internal",
+            "namespace": "storefront"
+          }
+        },
+        "revision": "a23f2a7b21f788c07d95ceaeb529e54b7ae3dbcd"
+      },
+      "health": {
+        "status": "Progressing"
+      },
+      "history": [
+        {
+          "revision": "a23f2a7b21f788c07d95ceaeb529e54b7ae3dbcd",
+          "deployedAt": "2026-10-29T12:53:02Z",
+          "id": 0,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/storefront-deploy.git",
+            "path": "apps/order-events-consumer/overlays/production",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-29T12:53:02Z",
+          "initiatedBy": {
+            "automated": true
+          }
+        }
+      ],
+      "reconciledAt": "2026-10-29T14:04:12Z",
+      "operationState": {
+        "operation": {
+          "sync": {
+            "revision": "a23f2a7b21f788c07d95ceaeb529e54b7ae3dbcd",
+            "syncOptions": [
+              "CreateNamespace=true",
+              "ApplyOutOfSyncOnly=true"
+            ]
+          },
+          "initiatedBy": {
+            "automated": true
+          },
+          "retry": {
+            "limit": 5
+          }
+        },
+        "phase": "Succeeded",
+        "message": "successfully synced (all tasks run)",
+        "syncResult": {
+          "resources": [
+            {
+              "group": "apps",
+              "version": "v1",
+              "kind": "Deployment",
+              "namespace": "storefront",
+              "name": "order-events-consumer",
+              "status": "Synced",
+              "message": "deployment.apps/order-events-consumer configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            }
+          ],
+          "revision": "a23f2a7b21f788c07d95ceaeb529e54b7ae3dbcd",
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/storefront-deploy.git",
+            "path": "apps/order-events-consumer/overlays/production",
+            "targetRevision": "main"
+          }
+        },
+        "startedAt": "2026-10-29T12:53:02Z",
+        "finishedAt": "2026-10-29T12:53:02Z"
+      },
+      "sourceType": "Kustomize",
+      "controllerNamespace": "argocd"
+    }
+  },
+  {
+    "_key": "argocd/ingress-nginx",
+    "metadata": {
+      "name": "ingress-nginx",
+      "namespace": "argocd",
+      "uid": "b741c139-8530-5004-b779-1256e504b844",
+      "resourceVersion": "41714",
+      "generation": 4,
+      "creationTimestamp": "2025-06-02T11:00:00Z",
+      "labels": {
+        "team": "platform"
+      },
+      "finalizers": [
+        "resources-finalizer.argocd.argoproj.io"
+      ]
+    },
+    "spec": {
+      "source": {
+        "repoURL": "https://github.com/lumen-retail/platform-deploy.git",
+        "path": "ingress-nginx",
+        "targetRevision": "main"
+      },
+      "destination": {
+        "server": "https://kubernetes.default.svc",
+        "namespace": "ingress-nginx"
+      },
+      "project": "platform",
+      "syncPolicy": {
+        "automated": {
+          "prune": true,
+          "selfHeal": true
+        },
+        "syncOptions": [
+          "CreateNamespace=true",
+          "ApplyOutOfSyncOnly=true"
+        ],
+        "retry": {
+          "limit": 5,
+          "backoff": {
+            "duration": "5s",
+            "factor": 2,
+            "maxDuration": "3m0s"
+          }
+        }
+      }
+    },
+    "status": {
+      "sync": {
+        "status": "Synced",
+        "comparedTo": {
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/platform-deploy.git",
+            "path": "ingress-nginx",
+            "targetRevision": "main"
+          },
+          "destination": {
+            "server": "https://kubernetes.default.svc",
+            "namespace": "ingress-nginx"
+          }
+        },
+        "revision": "81d23ec5610e9347011c94d21b56467543097e3e"
+      },
+      "health": {
+        "status": "Healthy"
+      },
+      "history": [
+        {
+          "revision": "81d23ec5610e9347011c94d21b56467543097e3e",
+          "deployedAt": "2026-10-15T09:20:00Z",
+          "id": 0,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/platform-deploy.git",
+            "path": "ingress-nginx",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-15T09:20:00Z",
+          "initiatedBy": {
+            "automated": true
+          }
+        }
+      ],
+      "reconciledAt": "2026-10-29T14:04:12Z",
+      "operationState": {
+        "operation": {
+          "sync": {
+            "revision": "81d23ec5610e9347011c94d21b56467543097e3e",
+            "syncOptions": [
+              "CreateNamespace=true",
+              "ApplyOutOfSyncOnly=true"
+            ]
+          },
+          "initiatedBy": {
+            "automated": true
+          },
+          "retry": {
+            "limit": 5
+          }
+        },
+        "phase": "Succeeded",
+        "message": "successfully synced (all tasks run)",
+        "syncResult": {
+          "resources": [
+            {
+              "group": "apps",
+              "version": "v1",
+              "kind": "Deployment",
+              "namespace": "ingress-nginx",
+              "name": "ingress-nginx-controller",
+              "status": "Synced",
+              "message": "deployment.apps/ingress-nginx-controller configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            }
+          ],
+          "revision": "81d23ec5610e9347011c94d21b56467543097e3e",
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/platform-deploy.git",
+            "path": "ingress-nginx",
+            "targetRevision": "main"
+          }
+        },
+        "startedAt": "2026-10-15T09:20:00Z",
+        "finishedAt": "2026-10-15T09:20:00Z"
+      },
+      "sourceType": "Kustomize",
+      "controllerNamespace": "argocd"
+    }
+  }
+]

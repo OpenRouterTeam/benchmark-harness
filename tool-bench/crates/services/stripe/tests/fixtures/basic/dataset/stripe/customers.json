@@ -1,0 +1,33 @@
+[
+  {
+    "id": "cus_HarborPine0001",
+    "name": "Harbor & Pine Coffee Co.",
+    "email": "ap@harborpine.coffee",
+    "phone": "+15035550142",
+    "created": 1740787200,
+    "currency": "usd",
+    "invoice_prefix": "HPC1F0A2",
+    "next_invoice_sequence": 13,
+    "invoice_settings": {"custom_fields": null, "default_payment_method": "pm_HarborVisa00000000000001", "footer": null, "rendering_options": null},
+    "metadata": {"tier": "gold", "crm_id": "HP-2231"}
+  },
+  {
+    "id": "cus_Northwind00002",
+    "name": "Northwind Bakery",
+    "email": "owner@northwindbakery.com",
+    "created": 1756684800,
+    "currency": "usd",
+    "invoice_prefix": "NWB77C10",
+    "metadata": {}
+  },
+  {
+    "id": "cus_LumenData00003",
+    "name": "Lumen Analytics",
+    "email": "finance@lumenanalytics.io",
+    "created": 1762905600,
+    "currency": "usd",
+    "invoice_prefix": "LUM0D3E4",
+    "metadata": {"tier": "silver"}
+  },
+  {"id": "cus_DeletedCo00004", "object": "customer", "deleted": true}
+]

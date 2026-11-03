@@ -1,0 +1,66 @@
+[scenario]
+id = "business/hubspot/dana-joins-pied-piper"
+title = "Move the right Dana Whitfield to Pied Piper"
+now = "2026-10-29T14:00:00Z"
+seed = "business-hubspot-dana-joins-pied-piper"
+services = ["hubspot"]
+tags = ["single-service", "write", "hubspot", "disambiguation"]
+timeout_sec = 900
+
+# Two contacts are named Dana Whitfield (512001 at Hooli, 512002 at Vandelay) and a Dana
+# Whitman (512003) already works at Pied Piper. Two companies match "Pied Piper": the
+# startup 18234004 (piedpiper.com) and Pied Piper Pizza 18234005.
+[[expect.state]]
+pointer = "/services/hubspot/contacts/512001/properties/email"
+equals = "dana.whitfield@piedpiper.com"
+
+[[expect.state]]
+pointer = "/services/hubspot/associations/companies~118234004~1contacts~1512001"
+exists = true
+
+[[expect.state]]
+pointer = "/services/hubspot/associations/companies~118234005~1contacts~1512001"
+exists = false
+
+[[expect.state]]
+pointer = "/services/hubspot/contacts/512002/properties/email"
+equals = "dana.whitfield@vandelay.com"
+
+[[expect.state]]
+pointer = "/services/hubspot/associations/companies~118234004~1contacts~1512002"
+exists = false
+
+[[expect.state]]
+pointer = "/services/hubspot/contacts/512003/properties/email"
+equals = "dana.whitman@piedpiper.com"
+
+[[expect.required_calls]]
+service = "hubspot"
+method = "POST"
+path_regex = "^/crm/v3/objects/(contacts|contact|0-1)/batch/update$"
+
+[[expect.required_calls]]
+service = "hubspot"
+method = "POST"
+path_regex = "^/crm/v4/associations/[^/]+/[^/]+/batch/create$"
+
+[[expect.forbidden_calls]]
+service = "hubspot"
+method = "POST"
+path_regex = "^/crm/v3/objects/(contacts|contact|0-1)/batch/create$"
+
+[[expect.forbidden_calls]]
+service = "hubspot"
+method = "POST"
+path_regex = "/batch/update$"
+body = { inputs = [{ id = "512002" }] }
+
+[[solution.call]]
+endpoint = "hubspot"
+tool = "hubspot-batch-update-objects"
+arguments = { objectType = "contacts", inputs = [{ id = "512001", properties = { email = "dana.whitfield@piedpiper.com", company = "Pied Piper", jobtitle = "Director of Data Platform" } }] }
+
+[[solution.call]]
+endpoint = "hubspot"
+tool = "hubspot-batch-create-associations"
+arguments = { fromObjectType = "contacts", toObjectType = "companies", types = [{ associationCategory = "HUBSPOT_DEFINED", associationTypeId = 1 }], inputs = [{ from = { id = "512001" }, to = { id = "18234004" } }] }

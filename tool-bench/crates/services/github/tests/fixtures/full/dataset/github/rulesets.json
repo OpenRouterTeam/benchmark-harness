@@ -1,0 +1,55 @@
+[
+  {
+    "_key": "1",
+    "id": 1,
+    "scope": "repo",
+    "source": "octo-org/payments-api",
+    "name": "Protect main",
+    "target": "branch",
+    "enforcement": "active",
+    "conditions": {
+      "ref_name": {
+        "include": [
+          "~DEFAULT_BRANCH"
+        ],
+        "exclude": []
+      }
+    },
+    "rules": [
+      {
+        "type": "pull_request",
+        "parameters": {
+          "required_approving_review_count": 1
+        }
+      },
+      {
+        "type": "non_fast_forward"
+      }
+    ],
+    "created_at": "2026-02-20T00:00:00Z",
+    "updated_at": "2026-02-20T00:00:00Z"
+  },
+  {
+    "_key": "2",
+    "id": 2,
+    "scope": "org",
+    "source": "octo-org",
+    "name": "Signed release tags",
+    "target": "tag",
+    "enforcement": "evaluate",
+    "conditions": {
+      "ref_name": {
+        "include": [
+          "refs/tags/v*"
+        ]
+      }
+    },
+    "rules": [
+      {
+        "type": "required_signatures"
+      }
+    ],
+    "created_at": "2026-01-01T00:00:00Z",
+    "updated_at": "2026-01-01T00:00:00Z"
+  }
+]

@@ -1,0 +1,81 @@
+{
+  "state": [
+    {
+      "pointer": "/services/github/pulls/octo-org~1web#57/merged",
+      "equals": true,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/github/pulls/octo-org~1web#57/merge_method",
+      "equals": "squash",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/github/pulls/octo-org~1web#58/state",
+      "equals": "open",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/github/pulls/octo-org~1web#55/state",
+      "equals": "open",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "github",
+      "method": "POST",
+      "path": "/api/graphql",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "\"event\":\"APPROVE\"",
+      "min_count": 1
+    },
+    {
+      "service": "github",
+      "method": "PUT",
+      "path": "/api/v3/repos/octo-org/web/pulls/57/merge",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "github",
+      "method": "PUT",
+      "path": null,
+      "path_regex": "^/api/v3/repos/octo-org/web/pulls/(55|58)/merge$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "github",
+      "method": "PATCH",
+      "path": null,
+      "path_regex": "^/api/v3/repos/octo-org/web/pulls/(55|58)$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

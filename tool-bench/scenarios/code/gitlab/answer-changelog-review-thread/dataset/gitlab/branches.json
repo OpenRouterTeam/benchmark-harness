@@ -1,0 +1,26 @@
+[
+  {
+    "_key": "northwind/billing/billing-service:main",
+    "name": "main",
+    "commit": "e5a5473faad7005e5069d00a05c9dc967cad6409",
+    "base": null
+  },
+  {
+    "_key": "northwind/billing/billing-service:deps/payments-sdk-4.2",
+    "name": "deps/payments-sdk-4.2",
+    "commit": "24f172e5f801f520765fdc1dcfa16dc929323edf",
+    "base": "main"
+  },
+  {
+    "_key": "northwind/mobile/checkout-ios:main",
+    "name": "main",
+    "commit": "30f3d4f7c1ed4226b439bcd8088a9102845e9ecd",
+    "base": null
+  },
+  {
+    "_key": "northwind/mobile/checkout-ios:deps/payments-sdk-4.2",
+    "name": "deps/payments-sdk-4.2",
+    "commit": "5a495e0c21f0d992b6fceaf9aa742b374ba6cb70",
+    "base": "main"
+  }
+]

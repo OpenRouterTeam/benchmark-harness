@@ -1,0 +1,71 @@
+[
+  {
+    "_key": "perf/checkout-loadtest-script",
+    "metadata": {
+      "name": "checkout-loadtest-script",
+      "namespace": "perf",
+      "uid": "f1798984-e756-4e6d-a00c-ec77a721e4f1",
+      "resourceVersion": "41646",
+      "creationTimestamp": "2026-11-02T16:20:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "k6-test",
+        "app.kubernetes.io/instance": "checkout-loadtest",
+        "app.kubernetes.io/managed-by": "Helm",
+        "helm.sh/chart": "k6-test-0.4.2"
+      },
+      "annotations": {
+        "meta.helm.sh/release-name": "checkout-loadtest",
+        "meta.helm.sh/release-namespace": "perf"
+      }
+    },
+    "data": {
+      "script.js": "import http from 'k6/http';\nexport const options = { vus: 400, duration: '45m' };\nexport default function () { http.post('http://checkout-web.checkout.svc:3000/api/checkout', JSON.stringify({ cart: 'load-test' })); }\n"
+    }
+  },
+  {
+    "_key": "perf/search-loadtest-script",
+    "metadata": {
+      "name": "search-loadtest-script",
+      "namespace": "perf",
+      "uid": "d499b377-9dfb-49ee-aa30-5a0edc6fc61f",
+      "resourceVersion": "41714",
+      "creationTimestamp": "2026-11-02T16:20:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "k6-test",
+        "app.kubernetes.io/instance": "search-loadtest",
+        "app.kubernetes.io/managed-by": "Helm",
+        "helm.sh/chart": "k6-test-0.4.2"
+      },
+      "annotations": {
+        "meta.helm.sh/release-name": "search-loadtest",
+        "meta.helm.sh/release-namespace": "perf"
+      }
+    },
+    "data": {
+      "script.js": "import http from 'k6/http';\nexport const options = { vus: 150, duration: '3h' };\nexport default function () { http.get('http://search-api.search.svc:8080/v2/search?q=boots'); }\n"
+    }
+  },
+  {
+    "_key": "perf-staging/checkout-loadtest-script",
+    "metadata": {
+      "name": "checkout-loadtest-script",
+      "namespace": "perf-staging",
+      "uid": "a5233487-1665-46b6-a889-824729f7d129",
+      "resourceVersion": "41765",
+      "creationTimestamp": "2026-11-02T16:20:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "k6-test",
+        "app.kubernetes.io/instance": "checkout-loadtest",
+        "app.kubernetes.io/managed-by": "Helm",
+        "helm.sh/chart": "k6-test-0.4.1"
+      },
+      "annotations": {
+        "meta.helm.sh/release-name": "checkout-loadtest",
+        "meta.helm.sh/release-namespace": "perf-staging"
+      }
+    },
+    "data": {
+      "script.js": "import http from 'k6/http';\nexport const options = { vus: 20, duration: '45m' };\nexport default function () { http.post('http://checkout-web.checkout-staging.svc:3000/api/checkout', JSON.stringify({ cart: 'load-test' })); }\n"
+    }
+  }
+]

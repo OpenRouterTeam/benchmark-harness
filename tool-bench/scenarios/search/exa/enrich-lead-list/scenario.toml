@@ -1,0 +1,53 @@
+[scenario]
+id = "search/exa/enrich-lead-list"
+title = "Enrich a lead list with an Exa Agent run"
+now = "2026-10-29T13:20:00Z"
+seed = "search-exa-enrich-lead-list"
+services = ["exa"]
+tags = ["write", "single-service", "exa"]
+timeout_sec = 900
+
+# The first agent run created in this world gets this ID (deterministic per seed).
+[[expect.state]]
+pointer = "/services/exa/agent_runs/agent_run_scs3OiJHAdhPsWK7P8UasA97/status"
+equals = "completed"
+
+# One run covering all three companies (in the query or as input rows).
+[[expect.required_calls]]
+service = "exa"
+method = "POST"
+path = "/agent/runs"
+body_contains = "Corvane Robotics"
+
+[[expect.required_calls]]
+service = "exa"
+method = "POST"
+path = "/agent/runs"
+body_contains = "Lumetric Health"
+
+[[expect.required_calls]]
+service = "exa"
+method = "POST"
+path = "/agent/runs"
+body_contains = "Bramblewood Foods"
+
+# A single job: no second run.
+[[expect.state]]
+pointer = "/services/exa/agent_runs/agent_run_erVFsP6IfBuF1zdebjP5n3PX"
+exists = false
+
+[[expect.forbidden_calls]]
+service = "exa"
+method = "DELETE"
+
+[expect.answer]
+contains = ["Pittsburgh", "Austin", "Leeds", "340"]
+regex = '(?s)(1[,. ]?150.*2[,. ]?600|2[,. ]?600.*1[,. ]?150)'
+
+[solution]
+answer = "| Company | HQ city | Employees |\n|---|---|---|\n| Corvane Robotics | Pittsburgh, PA | ~340 |\n| Lumetric Health | Austin, TX | ~1,150 |\n| Bramblewood Foods | Leeds, UK | ~2,600 |\n"
+
+[[solution.call]]
+endpoint = "exa"
+tool = "agent_run"
+arguments = { query = "For each company in the input, find its headquarters city and approximate employee headcount, with a source URL.", input = { data = [{ companyName = "Corvane Robotics" }, { companyName = "Lumetric Health" }, { companyName = "Bramblewood Foods" }] } }

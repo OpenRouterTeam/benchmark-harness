@@ -1,0 +1,12 @@
+[
+  {
+    "_key": "401",
+    "id": 401,
+    "project": "acme/platform/api",
+    "url": "https://ci-bridge.acme.dev/hooks/gitlab",
+    "name": "ci-bridge",
+    "push_events": true,
+    "merge_requests_events": true,
+    "created_at": "2025-05-01T00:00:00.000Z"
+  }
+]

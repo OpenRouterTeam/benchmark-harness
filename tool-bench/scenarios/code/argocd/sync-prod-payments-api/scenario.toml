@@ -1,0 +1,67 @@
+[scenario]
+id = "code/argocd/sync-prod-payments-api"
+title = "Sync the production payments-api (not its staging twin) with pruning"
+now = "2026-10-29T14:15:00Z"
+seed = "code-argocd-sync-prod-payments-api"
+services = ["argocd"]
+tags = ["single-service", "write", "argocd", "disambiguation"]
+timeout_sec = 900
+
+# Two Applications are named payments-api: payments/payments-api (project payments,
+# prod-us-east-1) and payments-staging/payments-api (staging cluster, under a QA freeze).
+# Neither lives in the default argocd namespace, so the namespace must be given.
+# Only a sync with prune deletes the legacy ConfigMap and brings production to Synced.
+[[expect.state]]
+pointer = "/services/argocd/applications/payments~1payments-api/status/sync/status"
+equals = "Synced"
+
+[[expect.state]]
+pointer = "/services/argocd/applications/payments~1payments-api/status/operationState/syncResult/revision"
+equals = "fe01f33d2a5392fa17c1c35f25d294d24075c28b"
+
+[[expect.state]]
+pointer = "/services/argocd/resources/41db962d-0f81-5de8-8dc3-ced47c1d11fc"
+exists = false
+
+# Staging untouched: still OutOfSync on 3.17.2, legacy ConfigMap still there.
+[[expect.state]]
+pointer = "/services/argocd/applications/payments-staging~1payments-api/status/sync/status"
+equals = "OutOfSync"
+
+[[expect.state]]
+pointer = "/services/argocd/applications/payments-staging~1payments-api/status/operationState/syncResult/revision"
+equals = "aa59f08385fb84287ad815b3091ecb99d811bc62"
+
+[[expect.state]]
+pointer = "/services/argocd/resources/675645aa-e28d-5292-a17c-94c47c5d9f17"
+exists = true
+
+[[expect.required_calls]]
+service = "argocd"
+method = "POST"
+path = "/api/v1/applications/payments-api/sync"
+body = { appNamespace = "payments" }
+
+[[expect.forbidden_calls]]
+service = "argocd"
+method = "POST"
+path = "/api/v1/applications/payments-api/sync"
+body = { appNamespace = "payments-staging" }
+
+[[expect.forbidden_calls]]
+service = "argocd"
+method = "DELETE"
+
+[[expect.forbidden_calls]]
+service = "argocd"
+method = "PUT"
+
+[[solution.call]]
+endpoint = "argocd"
+tool = "list_applications"
+arguments = { search = "payments-api" }
+
+[[solution.call]]
+endpoint = "argocd"
+tool = "sync_application"
+arguments = { applicationName = "payments-api", applicationNamespace = "payments", prune = true }

@@ -1,0 +1,246 @@
+[
+  {
+    "id": "sub_tDvBk5uMfpeEd4Dzi9zgshZh",
+    "object": "subscription",
+    "billing_cycle_anchor": 1741108920,
+    "cancel_at_period_end": false,
+    "collection_method": "charge_automatically",
+    "created": 1741108920,
+    "currency": "usd",
+    "customer": "cus_mxxxdqMeoA1GEc",
+    "default_payment_method": "pm_9Q1NGqNl9OSZ2TNMxHIIdyhV",
+    "description": null,
+    "discounts": [],
+    "items": {
+      "object": "list",
+      "data": [
+        {
+          "id": "si_jPNZWxpzP187fN",
+          "object": "subscription_item",
+          "created": 1741108920,
+          "current_period_end": 1775323320,
+          "current_period_start": 1772644920,
+          "metadata": {},
+          "price": "price_h2UUKkyxi0yKxW9ARCV4SGy7",
+          "quantity": 1,
+          "subscription": "sub_tDvBk5uMfpeEd4Dzi9zgshZh"
+        },
+        {
+          "id": "si_MnesrP8po2cvm7",
+          "object": "subscription_item",
+          "created": 1741108920,
+          "current_period_end": 1775323320,
+          "current_period_start": 1772644920,
+          "metadata": {},
+          "price": "price_Juky1Gcvmydaqtb2Milst0QO",
+          "quantity": 6,
+          "subscription": "sub_tDvBk5uMfpeEd4Dzi9zgshZh"
+        }
+      ]
+    },
+    "metadata": {},
+    "start_date": 1741108920,
+    "status": "active"
+  },
+  {
+    "id": "sub_7IQ99vICK9hye0kHJVCiiyOV",
+    "object": "subscription",
+    "billing_cycle_anchor": 1763661600,
+    "cancel_at_period_end": false,
+    "collection_method": "charge_automatically",
+    "created": 1763661600,
+    "currency": "usd",
+    "customer": "cus_mxxxdqMeoA1GEc",
+    "default_payment_method": "pm_9Q1NGqNl9OSZ2TNMxHIIdyhV",
+    "description": null,
+    "discounts": [],
+    "items": {
+      "object": "list",
+      "data": [
+        {
+          "id": "si_wftjqPsfmB6vIM",
+          "object": "subscription_item",
+          "created": 1763661600,
+          "current_period_end": 1795197600,
+          "current_period_start": 1763661600,
+          "metadata": {},
+          "price": "price_Fco47w3JW6xNqrPtsNH7Qaxm",
+          "quantity": 1,
+          "subscription": "sub_7IQ99vICK9hye0kHJVCiiyOV"
+        }
+      ]
+    },
+    "metadata": {},
+    "start_date": 1763661600,
+    "status": "active"
+  },
+  {
+    "id": "sub_b7z8qYk1uH80A2Qk5ti8j9gf",
+    "object": "subscription",
+    "billing_cycle_anchor": 1741108920,
+    "cancel_at_period_end": false,
+    "canceled_at": 1756566720,
+    "collection_method": "charge_automatically",
+    "created": 1741108920,
+    "currency": "usd",
+    "customer": "cus_mxxxdqMeoA1GEc",
+    "default_payment_method": null,
+    "description": null,
+    "discounts": [],
+    "ended_at": 1757006520,
+    "items": {
+      "object": "list",
+      "data": [
+        {
+          "id": "si_8hGIvUjaqeSS90",
+          "object": "subscription_item",
+          "created": 1741108920,
+          "current_period_end": 1757006520,
+          "current_period_start": 1754328120,
+          "metadata": {},
+          "price": "price_k9GAJDsMyuEBblDQ7HWxly8D",
+          "quantity": 1,
+          "subscription": "sub_b7z8qYk1uH80A2Qk5ti8j9gf"
+        }
+      ]
+    },
+    "metadata": {},
+    "start_date": 1741108920,
+    "status": "canceled",
+    "cancellation_details": {
+      "comment": "Upgraded to Team",
+      "feedback": "other",
+      "reason": "cancellation_requested"
+    }
+  },
+  {
+    "id": "sub_vWdnUHZwIshHKfyV0uOHHgqq",
+    "object": "subscription",
+    "billing_cycle_anchor": 1773257400,
+    "cancel_at_period_end": false,
+    "collection_method": "charge_automatically",
+    "created": 1773257400,
+    "currency": "usd",
+    "customer": "cus_mxxxdqMeoA1GEc",
+    "default_payment_method": "pm_9Q1NGqNl9OSZ2TNMxHIIdyhV",
+    "description": null,
+    "discounts": [],
+    "items": {
+      "object": "list",
+      "data": [
+        {
+          "id": "si_xBuzdUeLF9scKb",
+          "object": "subscription_item",
+          "created": 1773257400,
+          "current_period_end": 1774467000,
+          "current_period_start": 1773257400,
+          "metadata": {},
+          "price": "price_pmUKBVFOU0WO2xEiXQfY6D2D",
+          "quantity": 1,
+          "subscription": "sub_vWdnUHZwIshHKfyV0uOHHgqq"
+        }
+      ]
+    },
+    "metadata": {},
+    "start_date": 1773257400,
+    "status": "trialing",
+    "trial_start": 1773257400,
+    "trial_end": 1774467000
+  },
+  {
+    "id": "sub_QwASAxgrwL8PYrBHDaLGbGKU",
+    "object": "subscription",
+    "billing_cycle_anchor": 1747685100,
+    "cancel_at_period_end": false,
+    "collection_method": "charge_automatically",
+    "created": 1747685100,
+    "currency": "usd",
+    "customer": "cus_KLuZbdeYbCuh62",
+    "default_payment_method": "pm_lxD6mxZLsornhnWpBxC569Uv",
+    "description": null,
+    "discounts": [],
+    "items": {
+      "object": "list",
+      "data": [
+        {
+          "id": "si_esYET4Zgr80QBq",
+          "object": "subscription_item",
+          "created": 1747685100,
+          "current_period_end": 1779221100,
+          "current_period_start": 1747685100,
+          "metadata": {},
+          "price": "price_O58DdL3SVnHOYNJ1zAbKEwgp",
+          "quantity": 1,
+          "subscription": "sub_QwASAxgrwL8PYrBHDaLGbGKU"
+        }
+      ]
+    },
+    "metadata": {},
+    "start_date": 1747685100,
+    "status": "active"
+  },
+  {
+    "id": "sub_Hntx2VEoYNpCHWG691p9J8y0",
+    "object": "subscription",
+    "billing_cycle_anchor": 1751468400,
+    "cancel_at_period_end": false,
+    "collection_method": "charge_automatically",
+    "created": 1751468400,
+    "currency": "usd",
+    "customer": "cus_KLuZbdeYbCuh62",
+    "default_payment_method": "pm_lxD6mxZLsornhnWpBxC569Uv",
+    "description": null,
+    "discounts": [],
+    "items": {
+      "object": "list",
+      "data": [
+        {
+          "id": "si_awgzR9TfAZhskn",
+          "object": "subscription_item",
+          "created": 1751468400,
+          "current_period_end": 1775142000,
+          "current_period_start": 1772463600,
+          "metadata": {},
+          "price": "price_Juky1Gcvmydaqtb2Milst0QO",
+          "quantity": 3,
+          "subscription": "sub_Hntx2VEoYNpCHWG691p9J8y0"
+        }
+      ]
+    },
+    "metadata": {},
+    "start_date": 1751468400,
+    "status": "active"
+  },
+  {
+    "id": "sub_ZDUhwKJt9NcupN0p1uOaJnEA",
+    "object": "subscription",
+    "billing_cycle_anchor": 1756744800,
+    "cancel_at_period_end": false,
+    "collection_method": "charge_automatically",
+    "created": 1756744800,
+    "currency": "usd",
+    "customer": "cus_9QBU7Zcqm1FH2Y",
+    "default_payment_method": "pm_xRmpvcm2h55TSXJwVyafhKdC",
+    "description": null,
+    "discounts": [],
+    "items": {
+      "object": "list",
+      "data": [
+        {
+          "id": "si_RG12B5eBcMLT6a",
+          "object": "subscription_item",
+          "created": 1756744800,
+          "current_period_end": 1775061600,
+          "current_period_start": 1772383200,
+          "metadata": {},
+          "price": "price_k9GAJDsMyuEBblDQ7HWxly8D",
+          "quantity": 1,
+          "subscription": "sub_ZDUhwKJt9NcupN0p1uOaJnEA"
+        }
+      ]
+    },
+    "metadata": {},
+    "start_date": 1756744800,
+    "status": "active"
+  }
+]

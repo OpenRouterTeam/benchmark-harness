@@ -1,0 +1,30 @@
+[
+  {
+    "id": "5b2d7a1f0e3c8b6d4f9a2e1c7b0d3f58",
+    "zone_id": "023e105f4ecef8ad9ca31a8372d0c353",
+    "zone_name": "octo-corp.com",
+    "name": "api.octo-corp.com",
+    "type": "A",
+    "content": "198.51.100.21",
+    "proxied": true,
+    "ttl": 1,
+    "comment": "orders API origin",
+    "tags": ["team:api"],
+    "created_on": "2022-03-01T10:00:00.000000Z",
+    "modified_on": "2026-09-30T08:05:00.000000Z"
+  },
+  {
+    "id": "7e3a9d5c1b8f4e2a0d6c3b9f5e1a7d4c",
+    "zone_id": "e9a7c5b3d1f0e8c6a4b2d0f9e7c5a3b1",
+    "zone_name": "octo-corp.dev",
+    "name": "api.octo-corp.dev",
+    "type": "A",
+    "content": "198.51.100.71",
+    "proxied": true,
+    "ttl": 1,
+    "comment": "staging orders API origin",
+    "tags": ["team:api"],
+    "created_on": "2022-03-01T10:00:00.000000Z",
+    "modified_on": "2026-08-12T09:00:00.000000Z"
+  }
+]

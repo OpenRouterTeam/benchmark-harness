@@ -1,0 +1,101 @@
+[scenario]
+id = "ops/multi/datadog-latency-argocd-rollback"
+title = "Trace a prod latency regression in Datadog to an Argo CD release and roll it back"
+now = "2026-10-29T14:05:00Z"
+seed = "ops-multi-datadog-latency-argocd-rollback"
+services = ["datadog", "argocd"]
+tags = ["write", "multi-service", "datadog", "argocd", "disambiguation"]
+timeout_sec = 1200
+
+# Prod billing-api p95 jumps from ~180 ms to ~900 ms at 09:05, right after v2.9.0 was deployed
+# at 09:02 (v2.9.1 at 12:10 did not help; billing-worker's 10:44 deploy is unrelated; the
+# staging spike 11:00-11:30 is a load test). Correct rollback: pin prod to v2.8.0 (f4befdc).
+# Traps: pinning v2.9.0 (the release before the latest), touching billing-api-staging.
+
+[[expect.state]]
+pointer = "/services/argocd/applications/argocd~1billing-api/spec/source/targetRevision"
+equals = "v2.8.0"
+
+[[expect.state]]
+pointer = "/services/argocd/applications/argocd~1billing-api/spec/syncPolicy/automated"
+exists = true
+
+[[expect.state]]
+pointer = "/services/argocd/applications/argocd~1billing-api/status/sync/status"
+equals = "Synced"
+
+[[expect.state]]
+pointer = "/services/argocd/applications/argocd~1billing-api/status/operationState/syncResult/revision"
+equals = "f4befdc6efa7504dc43d29f4de52c0f1529f52d2"
+
+[[expect.state]]
+pointer = "/services/argocd/applications/argocd~1billing-api-staging/spec/source/targetRevision"
+equals = "main"
+
+[[expect.state]]
+pointer = "/services/argocd/applications/argocd~1billing-api-staging/status/sync/revision"
+equals = "5ab7f03e2c9d18b46e0f7a3c1d2b95e8f46a0c13"
+
+[[expect.state]]
+pointer = "/services/argocd/applications/argocd~1billing-worker/spec/source/targetRevision"
+equals = "main"
+
+[[expect.required_calls]]
+service = "datadog"
+method = "GET"
+path = "/api/v1/query"
+
+[[expect.required_calls]]
+service = "argocd"
+method = "PUT"
+path = "/api/v1/applications/billing-api"
+
+[[expect.forbidden_calls]]
+service = "argocd"
+method = "DELETE"
+
+[[expect.forbidden_calls]]
+service = "argocd"
+method = "PUT"
+path_regex = "^/api/v1/applications/billing-(api-staging|worker)$"
+
+[[expect.forbidden_calls]]
+service = "argocd"
+method = "POST"
+path_regex = "^/api/v1/applications/billing-(api-staging|worker)/sync$"
+
+[[solution.call]]
+endpoint = "datadog"
+tool = "get_monitors"
+arguments = { tags = ["service:billing-api"] }
+
+[[solution.call]]
+endpoint = "datadog"
+tool = "query_metrics"
+arguments = { from = 1793253600, to = 1793282400, query = "avg:billing.api.latency.p95{env:prod,service:billing-api}" }
+
+[[solution.call]]
+endpoint = "argocd"
+tool = "get_application"
+arguments = { applicationName = "billing-api" }
+
+[[solution.call]]
+endpoint = "argocd"
+tool = "update_application"
+
+[solution.call.arguments]
+applicationName = "billing-api"
+
+[solution.call.arguments.application.metadata]
+name = "billing-api"
+namespace = "argocd"
+
+[solution.call.arguments.application.spec]
+project = "billing"
+source = { repoURL = "https://github.com/lumen-retail/billing-api-deploy.git", path = "overlays/production", targetRevision = "v2.8.0" }
+destination = { server = "https://prod-use1.k8s.lumen.internal", namespace = "billing" }
+
+[solution.call.arguments.application.spec.syncPolicy]
+syncOptions = ["CreateNamespace=true", "ApplyOutOfSyncOnly=true"]
+automated = { prune = true, selfHeal = true }
+retry = { limit = 5, backoff = { duration = "5s", factor = 2, maxDuration = "3m0s" } }

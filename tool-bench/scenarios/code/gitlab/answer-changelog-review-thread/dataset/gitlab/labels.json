@@ -1,0 +1,9 @@
+[
+  {
+    "_key": "northwind/billing/billing-service~dependencies",
+    "id": 1501,
+    "name": "dependencies",
+    "color": "#0366d6",
+    "description": "Dependency updates"
+  }
+]

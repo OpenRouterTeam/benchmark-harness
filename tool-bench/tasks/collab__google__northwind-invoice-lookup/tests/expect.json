@@ -1,0 +1,36 @@
+{
+  "state": [],
+  "required_calls": [],
+  "forbidden_calls": [
+    {
+      "service": "google",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "send_gmail_message"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "google",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "draft_gmail_message"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": {
+    "contains": [
+      "PO-48213"
+    ],
+    "regex": "12,?480"
+  }
+}

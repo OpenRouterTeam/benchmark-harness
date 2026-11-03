@@ -1,0 +1,101 @@
+{
+  "state": [
+    {
+      "pointer": "/services/vercel/env_by_target/prj_3dw2VoUa166qmaLV3P6dm828isAX/preview/NEXT_PUBLIC_ENABLE_GIFT_CARDS",
+      "equals": "true",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/vercel/env_by_target/prj_3dw2VoUa166qmaLV3P6dm828isAX/development/NEXT_PUBLIC_ENABLE_GIFT_CARDS",
+      "equals": "true",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/vercel/env_by_target/prj_3dw2VoUa166qmaLV3P6dm828isAX/production/NEXT_PUBLIC_ENABLE_GIFT_CARDS",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/vercel/env_by_target/prj_3dw2VoUa166qmaLV3P6dm828isAX/preview/PAYMENTS_API_URL",
+      "equals": "https://sandbox.pay.acme-shop.com",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/vercel/env_by_target/prj_3dw2VoUa166qmaLV3P6dm828isAX/development/PAYMENTS_API_URL",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/vercel/env_by_target/prj_3dw2VoUa166qmaLV3P6dm828isAX/production/PAYMENTS_API_URL",
+      "equals": "https://pay.acme-shop.com",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/vercel/env_by_target/prj_ysFUnRJiXZGcxlQubrXGJqx7GadE/preview/NEXT_PUBLIC_ENABLE_GIFT_CARDS",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "vercel",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "vercel-create-environment-variables"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "vercel",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "vercel-remove-environment-variable"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "vercel",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "vercel-delete-project"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

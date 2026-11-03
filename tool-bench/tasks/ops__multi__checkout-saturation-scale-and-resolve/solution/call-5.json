@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"manage_incidents","arguments":{"manage_request":{"incident_ids":["Q7CHKAP15PCT1D"],"status":"resolved"}}}}

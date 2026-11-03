@@ -1,0 +1,111 @@
+{
+  "state": [
+    {
+      "pointer": "/services/kubernetes/helm_releases/perf~1checkout-loadtest.v2",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/kubernetes/helm_releases/perf~1checkout-loadtest.v1",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/kubernetes/jobs.batch/perf~1checkout-loadtest",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/kubernetes/configmaps/perf~1checkout-loadtest-script",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/kubernetes/helm_releases/perf-staging~1checkout-loadtest.v1/info/status",
+      "equals": "deployed",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/kubernetes/helm_releases/perf~1search-loadtest.v1/info/status",
+      "equals": "deployed",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/kubernetes/helm_releases/perf~1k6-operator.v3/info/status",
+      "equals": "deployed",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/kubernetes/jobs.batch/perf-staging~1checkout-loadtest/metadata/name",
+      "equals": "checkout-loadtest",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/kubernetes/deployments.apps/perf~1k6-operator-controller-manager/spec/replicas",
+      "equals": 1,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "kubernetes",
+      "method": "DELETE",
+      "path": "/api/v1/namespaces/perf/secrets/sh.helm.release.v1.checkout-loadtest.v2",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "kubernetes",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": "^/(api|apis/[^/]+)/v1/namespaces/perf-staging/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "kubernetes",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": "search-loadtest|k6-operator",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

@@ -1,0 +1,17 @@
+[
+  {
+    "_key": "prj_3dw2VoUa166qmaLV3P6dm828isAX/staging",
+    "id": "env_Vnud6xLaCqdca2n2Bwn6kiTuMcNR",
+    "slug": "staging",
+    "type": "preview",
+    "description": "Pre-release QA environment",
+    "branchMatcher": {
+      "type": "equals",
+      "pattern": "staging"
+    },
+    "domains": [],
+    "currentDeploymentAliases": [],
+    "createdAt": 1756720800000,
+    "updatedAt": 1756720800000
+  }
+]

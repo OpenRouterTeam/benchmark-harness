@@ -1,0 +1,55 @@
+[scenario]
+id = "collab/linear/pull-issue-into-cycle"
+title = "Pull the webhook-secret rotation issue into the current Payments cycle"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-linear-pull-issue-into-cycle"
+services = ["linear"]
+tags = ["write", "single-service", "linear"]
+timeout_sec = 900
+
+# PAY-121 moves into cycle 42 (the active Payments cycle, not completed 41 or upcoming 43)
+# and to In Progress. The look-alike PAY-120 ("rotate API keys", Done) stays untouched.
+[[expect.state]]
+pointer = "/services/linear/issues/PAY-121/cycleId"
+equals = "627fb4e1-47ac-567a-99cd-3e236709e3b0"
+
+[[expect.state]]
+pointer = "/services/linear/issues/PAY-121/stateId"
+equals = "41688e9c-05a3-5fce-be65-9c7049e13037"
+
+[[expect.state]]
+pointer = "/services/linear/issues/PAY-120/cycleId"
+equals = "954f7df0-17ca-5a9a-835d-528b021a4997"
+
+[[expect.state]]
+pointer = "/services/linear/issues/PAY-120/stateId"
+equals = "464b7d47-51c4-50ce-aa96-03bed89ef6af"
+
+[[expect.required_calls]]
+service = "linear"
+path = "/_mcp/tools/call"
+
+[[expect.forbidden_calls]]
+service = "linear"
+path = "/_mcp/tools/call"
+body = { name = "linear_archiveIssue" }
+
+[[expect.forbidden_calls]]
+service = "linear"
+path = "/_mcp/tools/call"
+body = { name = "linear_completeCycle" }
+
+[[solution.call]]
+endpoint = "linear"
+tool = "linear_getActiveCycle"
+arguments = { teamId = "5854633b-d1e9-52b6-b3c7-d309bfb881cb" }
+
+[[solution.call]]
+endpoint = "linear"
+tool = "linear_addIssueToCycle"
+arguments = { issueId = "PAY-121", cycleId = "627fb4e1-47ac-567a-99cd-3e236709e3b0" }
+
+[[solution.call]]
+endpoint = "linear"
+tool = "linear_updateIssue"
+arguments = { id = "PAY-121", stateId = "41688e9c-05a3-5fce-be65-9c7049e13037" }

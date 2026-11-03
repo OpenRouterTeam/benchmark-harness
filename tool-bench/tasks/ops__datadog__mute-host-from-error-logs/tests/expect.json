@@ -1,0 +1,111 @@
+{
+  "state": [
+    {
+      "pointer": "/services/datadog/hosts/checkout-api-prod-1b/is_muted",
+      "equals": true,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/datadog/hosts/checkout-api-prod-1b/mute_timeout",
+      "equals": 1793383200,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/datadog/host_mutes/checkout-api-prod-1b/message",
+      "equals": null,
+      "exists": null,
+      "contains": "INC-2291",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/datadog/hosts/checkout-api-prod-1a/is_muted",
+      "equals": false,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/datadog/hosts/checkout-api-prod-1c/is_muted",
+      "equals": false,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/datadog/hosts/checkout-api-staging-1b/is_muted",
+      "equals": false,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/datadog/hosts/checkout-worker-prod-1b/is_muted",
+      "equals": false,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/datadog/hosts/payments-api-prod-1a/is_muted",
+      "equals": true,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/datadog/hosts/payments-api-prod-1a/mute_timeout",
+      "equals": 1793379600,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "datadog",
+      "method": "POST",
+      "path": "/api/v1/host/checkout-api-prod-1b/mute",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "datadog",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/api/v1/host/[^/]+/unmute$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "datadog",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/api/v1/host/(checkout-api-prod-1a|checkout-api-prod-1c|checkout-api-staging-1b|checkout-worker-prod-1b|payments-api-prod-1a)/mute$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

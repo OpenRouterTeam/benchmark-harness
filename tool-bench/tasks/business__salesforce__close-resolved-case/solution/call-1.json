@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"salesforce_dml_records","arguments":{"objectName":"Case","operation":"update","records":[{"Id":"5005g00000spz8MAAQ","Reason":"Performance","Status":"Closed"}]}}}

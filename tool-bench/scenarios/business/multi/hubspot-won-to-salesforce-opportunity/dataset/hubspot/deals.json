@@ -1,0 +1,241 @@
+[
+  {
+    "id": "9100101",
+    "properties": {
+      "dealname": "Globex – Platform Expansion 2027",
+      "amount": "96000",
+      "dealstage": "presentationscheduled",
+      "pipeline": "default",
+      "closedate": "2026-12-15T17:00:00.000Z",
+      "hubspot_owner_id": "81234502",
+      "dealtype": "existingbusiness",
+      "createdate": "2026-01-20T13:30:40.200Z",
+      "hs_lastmodifieddate": "2026-10-10T08:15:30.600Z"
+    },
+    "createdAt": "2026-01-20T13:30:40.200Z",
+    "updatedAt": "2026-10-10T08:15:30.600Z",
+    "archived": false
+  },
+  {
+    "id": "9100102",
+    "properties": {
+      "dealname": "Globex – Support Renewal 2026",
+      "amount": "48000",
+      "dealstage": "closedwon",
+      "pipeline": "default",
+      "closedate": "2026-03-31T17:00:00.000Z",
+      "hubspot_owner_id": "81234502",
+      "dealtype": "existingbusiness",
+      "createdate": "2026-02-21T13:31:41.201Z",
+      "hs_lastmodifieddate": "2026-10-11T08:15:31.601Z"
+    },
+    "createdAt": "2026-02-21T13:31:41.201Z",
+    "updatedAt": "2026-10-11T08:15:31.601Z",
+    "archived": false
+  },
+  {
+    "id": "9100103",
+    "properties": {
+      "dealname": "Globex – Platform Expansion 2026",
+      "amount": "120000",
+      "dealstage": "closedlost",
+      "pipeline": "default",
+      "closedate": "2025-11-28T17:00:00.000Z",
+      "hubspot_owner_id": "81234502",
+      "dealtype": "existingbusiness",
+      "createdate": "2026-03-22T13:32:42.202Z",
+      "hs_lastmodifieddate": "2026-10-12T08:15:32.602Z"
+    },
+    "createdAt": "2026-03-22T13:32:42.202Z",
+    "updatedAt": "2026-10-12T08:15:32.602Z",
+    "archived": false
+  },
+  {
+    "id": "9100104",
+    "properties": {
+      "dealname": "Initech – Data Warehouse Migration",
+      "amount": "176500",
+      "dealstage": "closedwon",
+      "pipeline": "default",
+      "closedate": "2026-10-28T17:00:00.000Z",
+      "hubspot_owner_id": "81234501",
+      "dealtype": "newbusiness",
+      "createdate": "2026-04-23T13:33:43.203Z",
+      "hs_lastmodifieddate": "2026-10-28T18:02:11.000Z"
+    },
+    "createdAt": "2026-04-23T13:33:43.203Z",
+    "updatedAt": "2026-10-28T18:02:11.000Z",
+    "archived": false
+  },
+  {
+    "id": "9100105",
+    "properties": {
+      "dealname": "Initech – Data Warehouse Migration (Phase 0 Assessment)",
+      "amount": "22000",
+      "dealstage": "closedwon",
+      "pipeline": "default",
+      "closedate": "2026-06-12T17:00:00.000Z",
+      "hubspot_owner_id": "81234501",
+      "dealtype": "newbusiness",
+      "createdate": "2026-05-24T13:34:44.204Z",
+      "hs_lastmodifieddate": "2026-10-14T08:15:34.604Z"
+    },
+    "createdAt": "2026-05-24T13:34:44.204Z",
+    "updatedAt": "2026-10-14T08:15:34.604Z",
+    "archived": false
+  },
+  {
+    "id": "9100106",
+    "properties": {
+      "dealname": "Northwind Logistics – Fleet Telemetry",
+      "amount": "412000",
+      "dealstage": "contractsent",
+      "pipeline": "default",
+      "closedate": "2026-11-14T17:00:00.000Z",
+      "hubspot_owner_id": "81234503",
+      "dealtype": "newbusiness",
+      "createdate": "2026-06-25T13:35:45.205Z",
+      "hs_lastmodifieddate": "2026-10-15T08:15:35.605Z"
+    },
+    "createdAt": "2026-06-25T13:35:45.205Z",
+    "updatedAt": "2026-10-15T08:15:35.605Z",
+    "archived": false
+  },
+  {
+    "id": "9100107",
+    "properties": {
+      "dealname": "Northwind Traders – POS Analytics",
+      "amount": "530000",
+      "dealstage": "closedwon",
+      "pipeline": "default",
+      "closedate": "2026-08-29T17:00:00.000Z",
+      "hubspot_owner_id": "81234503",
+      "dealtype": "newbusiness",
+      "createdate": "2026-07-26T13:30:40.206Z",
+      "hs_lastmodifieddate": "2026-10-16T08:15:36.606Z"
+    },
+    "createdAt": "2026-07-26T13:30:40.206Z",
+    "updatedAt": "2026-10-16T08:15:36.606Z",
+    "archived": false
+  },
+  {
+    "id": "9100108",
+    "properties": {
+      "dealname": "Umbrella Health – Clinical Dashboards",
+      "amount": "275000",
+      "dealstage": "qualifiedtobuy",
+      "pipeline": "default",
+      "closedate": "2027-01-31T17:00:00.000Z",
+      "hubspot_owner_id": "81234501",
+      "dealtype": "newbusiness",
+      "createdate": "2026-08-27T13:31:41.207Z",
+      "hs_lastmodifieddate": "2026-10-17T08:15:37.607Z"
+    },
+    "createdAt": "2026-08-27T13:31:41.207Z",
+    "updatedAt": "2026-10-17T08:15:37.607Z",
+    "archived": false
+  },
+  {
+    "id": "9100109",
+    "properties": {
+      "dealname": "Vandelay – Import Analytics Suite",
+      "amount": "640000",
+      "dealstage": "closedlost",
+      "pipeline": "default",
+      "closedate": "2026-09-15T17:00:00.000Z",
+      "hubspot_owner_id": "81234502",
+      "dealtype": "newbusiness",
+      "createdate": "2026-09-20T13:32:42.208Z",
+      "hs_lastmodifieddate": "2026-10-18T08:15:38.608Z"
+    },
+    "createdAt": "2026-09-20T13:32:42.208Z",
+    "updatedAt": "2026-10-18T08:15:38.608Z",
+    "archived": false
+  },
+  {
+    "id": "9100110",
+    "properties": {
+      "dealname": "Hooli – Search Insights Add-on",
+      "amount": "180000",
+      "dealstage": "appointmentscheduled",
+      "pipeline": "default",
+      "closedate": "2027-02-26T17:00:00.000Z",
+      "hubspot_owner_id": "81234502",
+      "dealtype": "newbusiness",
+      "createdate": "2026-01-21T13:33:43.209Z",
+      "hs_lastmodifieddate": "2026-10-10T08:15:39.609Z"
+    },
+    "createdAt": "2026-01-21T13:33:43.209Z",
+    "updatedAt": "2026-10-10T08:15:39.609Z",
+    "archived": false
+  },
+  {
+    "id": "9100111",
+    "properties": {
+      "dealname": "Hooli – Nucleus Migration",
+      "amount": "150000",
+      "dealstage": "qualifiedtobuy",
+      "pipeline": "default",
+      "closedate": "2027-03-31T17:00:00.000Z",
+      "hubspot_owner_id": "81234502",
+      "dealtype": "newbusiness",
+      "createdate": "2026-02-22T13:34:44.210Z",
+      "hs_lastmodifieddate": "2026-10-11T08:15:30.610Z"
+    },
+    "createdAt": "2026-02-22T13:34:44.210Z",
+    "updatedAt": "2026-10-11T08:15:30.610Z",
+    "archived": false
+  },
+  {
+    "id": "9100112",
+    "properties": {
+      "dealname": "Hooli – Exec Dashboards",
+      "amount": "120000",
+      "dealstage": "presentationscheduled",
+      "pipeline": "default",
+      "closedate": "2026-12-18T17:00:00.000Z",
+      "hubspot_owner_id": "81234504",
+      "dealtype": "newbusiness",
+      "createdate": "2026-03-23T13:35:45.211Z",
+      "hs_lastmodifieddate": "2026-10-12T08:15:31.611Z"
+    },
+    "createdAt": "2026-03-23T13:35:45.211Z",
+    "updatedAt": "2026-10-12T08:15:31.611Z",
+    "archived": false
+  },
+  {
+    "id": "9100113",
+    "properties": {
+      "dealname": "Pied Piper – Compression Analytics",
+      "amount": "64000",
+      "dealstage": "qualifiedtobuy",
+      "pipeline": "default",
+      "closedate": "2027-01-15T17:00:00.000Z",
+      "hubspot_owner_id": "81234503",
+      "dealtype": "newbusiness",
+      "createdate": "2026-04-24T13:30:40.212Z",
+      "hs_lastmodifieddate": "2026-10-13T08:15:32.612Z"
+    },
+    "createdAt": "2026-04-24T13:30:40.212Z",
+    "updatedAt": "2026-10-13T08:15:32.612Z",
+    "archived": false
+  },
+  {
+    "id": "9100114",
+    "properties": {
+      "dealname": "Umbrella Health – Enterprise Rollout (duplicate)",
+      "amount": "900000",
+      "dealstage": "decisionmakerboughtin",
+      "pipeline": "default",
+      "closedate": "2026-12-31T17:00:00.000Z",
+      "hubspot_owner_id": "81234501",
+      "dealtype": "newbusiness",
+      "createdate": "2026-05-25T13:31:41.213Z",
+      "hs_lastmodifieddate": "2026-10-14T08:15:33.613Z"
+    },
+    "createdAt": "2026-05-25T13:31:41.213Z",
+    "updatedAt": "2026-10-14T08:15:33.613Z",
+    "archived": true,
+    "archivedAt": "2026-10-02T12:00:00.000Z"
+  }
+]

@@ -1,0 +1,103 @@
+{
+  "state": [
+    {
+      "pointer": "/services/hubspot/contacts/512001/properties/email",
+      "equals": "dana.whitfield@piedpiper.com",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/hubspot/associations/companies~118234004~1contacts~1512001",
+      "equals": null,
+      "exists": true,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/hubspot/associations/companies~118234005~1contacts~1512001",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/hubspot/contacts/512002/properties/email",
+      "equals": "dana.whitfield@vandelay.com",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/hubspot/associations/companies~118234004~1contacts~1512002",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/hubspot/contacts/512003/properties/email",
+      "equals": "dana.whitman@piedpiper.com",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "hubspot",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/crm/v3/objects/(contacts|contact|0-1)/batch/update$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "hubspot",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/crm/v4/associations/[^/]+/[^/]+/batch/create$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "hubspot",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/crm/v3/objects/(contacts|contact|0-1)/batch/create$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "hubspot",
+      "method": "POST",
+      "path": null,
+      "path_regex": "/batch/update$",
+      "query_contains": null,
+      "body": {
+        "inputs": [
+          {
+            "id": "512002"
+          }
+        ]
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

@@ -1,0 +1,191 @@
+[
+  {
+    "id": 7101,
+    "firstName": "Priya",
+    "lastName": "Raman",
+    "email": "priya.raman@outlook.com",
+    "phone": "+16175550142",
+    "createdAt": "2025-08-14T16:20:00Z",
+    "updatedAt": "2025-08-14T16:20:00Z",
+    "tags": [
+      "newsletter"
+    ],
+    "note": null,
+    "taxExempt": false,
+    "state": "ENABLED",
+    "addresses": [
+      {
+        "firstName": "Priya",
+        "lastName": "Raman",
+        "address1": "88 Beacon St",
+        "city": "Boston",
+        "province": "Massachusetts",
+        "provinceCode": "MA",
+        "zip": "02108",
+        "country": "United States",
+        "countryCode": "US",
+        "phone": null
+      }
+    ],
+    "metafields": []
+  },
+  {
+    "id": 7102,
+    "firstName": "Marcus",
+    "lastName": "Bell",
+    "email": "marcus.bell@gmail.com",
+    "phone": null,
+    "createdAt": "2025-07-02T09:05:00Z",
+    "updatedAt": "2025-07-02T09:05:00Z",
+    "tags": [
+      "wholesale"
+    ],
+    "note": null,
+    "taxExempt": false,
+    "state": "ENABLED",
+    "addresses": [
+      {
+        "firstName": "Marcus",
+        "lastName": "Bell",
+        "address1": "410 Elm Ave",
+        "city": "Chicago",
+        "province": "Illinois",
+        "provinceCode": "IL",
+        "zip": "60614",
+        "country": "United States",
+        "countryCode": "US",
+        "phone": null
+      }
+    ],
+    "metafields": []
+  },
+  {
+    "id": 7103,
+    "firstName": "Elena",
+    "lastName": "Novak",
+    "email": "elena.novak@protonmail.com",
+    "phone": null,
+    "createdAt": "2025-09-21T12:00:00Z",
+    "updatedAt": "2025-09-21T12:00:00Z",
+    "tags": [],
+    "note": null,
+    "taxExempt": false,
+    "state": "ENABLED",
+    "addresses": [
+      {
+        "firstName": "Elena",
+        "lastName": "Novak",
+        "address1": "17 Hayes St",
+        "city": "San Francisco",
+        "province": "California",
+        "provinceCode": "CA",
+        "zip": "94102",
+        "country": "United States",
+        "countryCode": "US",
+        "phone": null
+      }
+    ],
+    "metafields": []
+  },
+  {
+    "id": 7104,
+    "firstName": "Tom",
+    "lastName": "Achebe",
+    "email": "tom.achebe@yahoo.com",
+    "phone": "+12125550188",
+    "createdAt": "2025-10-03T18:45:00Z",
+    "updatedAt": "2025-10-03T18:45:00Z",
+    "tags": [],
+    "note": null,
+    "taxExempt": false,
+    "state": "ENABLED",
+    "addresses": [
+      {
+        "firstName": "Tom",
+        "lastName": "Achebe",
+        "address1": "250 W 57th St",
+        "city": "New York",
+        "province": "New York",
+        "provinceCode": "NY",
+        "zip": "10019",
+        "country": "United States",
+        "countryCode": "US",
+        "phone": null
+      }
+    ],
+    "metafields": []
+  },
+  {
+    "id": 7105,
+    "firstName": "Grace",
+    "lastName": "Kim",
+    "email": "grace.kim@icloud.com",
+    "phone": null,
+    "createdAt": "2025-11-11T11:11:00Z",
+    "updatedAt": "2025-11-11T11:11:00Z",
+    "tags": [
+      "newsletter"
+    ],
+    "note": null,
+    "taxExempt": false,
+    "state": "ENABLED",
+    "addresses": [
+      {
+        "firstName": "Grace",
+        "lastName": "Kim",
+        "address1": "901 Pike St",
+        "city": "Seattle",
+        "province": "Washington",
+        "provinceCode": "WA",
+        "zip": "98101",
+        "country": "United States",
+        "countryCode": "US",
+        "phone": null
+      }
+    ],
+    "metafields": []
+  },
+  {
+    "id": 7106,
+    "firstName": "Luis",
+    "lastName": "Ortega",
+    "email": "luis.ortega@gmail.com",
+    "phone": null,
+    "createdAt": "2026-02-02T08:30:00Z",
+    "updatedAt": "2026-02-02T08:30:00Z",
+    "tags": [],
+    "note": null,
+    "taxExempt": false,
+    "state": "ENABLED",
+    "addresses": [],
+    "metafields": []
+  },
+  {
+    "id": 7107,
+    "firstName": "Hannah",
+    "lastName": "Wright",
+    "email": "hannah.wright@fastmail.com",
+    "phone": null,
+    "createdAt": "2025-12-01T15:00:00Z",
+    "updatedAt": "2025-12-01T15:00:00Z",
+    "tags": [],
+    "note": null,
+    "taxExempt": false,
+    "state": "ENABLED",
+    "addresses": [
+      {
+        "firstName": "Hannah",
+        "lastName": "Wright",
+        "address1": "3 Congress Ave",
+        "city": "Austin",
+        "province": "Texas",
+        "provinceCode": "TX",
+        "zip": "78701",
+        "country": "United States",
+        "countryCode": "US",
+        "phone": null
+      }
+    ],
+    "metafields": []
+  }
+]

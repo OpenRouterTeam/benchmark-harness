@@ -1,0 +1,58 @@
+{
+  "state": [
+    {
+      "pointer": "/services/tavily/research/0d62b10e-d2f9-8a7b-bb2f-c55f8e77d7f9/model",
+      "equals": "mini",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "tavily",
+      "method": "POST",
+      "path": "/research",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "model": "mini"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "tavily",
+      "method": "POST",
+      "path": "/research",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "model": "pro"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "tavily",
+      "method": "POST",
+      "path": "/research",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "model": "auto"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": {
+    "contains": [
+      "FrostLink"
+    ],
+    "regex": "4[.,]20"
+  }
+}

@@ -1,0 +1,89 @@
+[scenario]
+id = "business/shopify/tag-vip-latest-order"
+title = "Mark a customer as VIP and flag their latest order"
+now = "2026-05-18T14:00:00Z"
+seed = "business-shopify-tag-vip-latest-order"
+services = ["shopify"]
+tags = ["single-service", "write", "shopify"]
+timeout_sec = 900
+
+# Marcus Bell (7202) keeps his existing tags and gains VIP.
+[[expect.state]]
+pointer = "/services/shopify/customers/7202/tags"
+contains = "VIP"
+
+[[expect.state]]
+pointer = "/services/shopify/customers/7202/tags"
+contains = "newsletter"
+
+[[expect.state]]
+pointer = "/services/shopify/customers/7202/tags"
+contains = "wholesale"
+
+# His most recent order is #1034 (5234), which keeps its "gift" tag.
+[[expect.state]]
+pointer = "/services/shopify/orders/5234/tags"
+contains = "VIP"
+
+[[expect.state]]
+pointer = "/services/shopify/orders/5234/tags"
+contains = "gift"
+
+# Older orders and look-alikes stay as they were.
+[[expect.state]]
+pointer = "/services/shopify/orders/5221/tags"
+equals = ["wholesale"]
+
+[[expect.state]]
+pointer = "/services/shopify/orders/5227/tags"
+equals = []
+
+[[expect.state]]
+pointer = "/services/shopify/orders/5235/tags"
+equals = []
+
+[[expect.state]]
+pointer = "/services/shopify/customers/7203/tags"
+equals = ["newsletter"]
+
+[[expect.required_calls]]
+service = "shopify"
+method = "POST"
+body_contains = "customerUpdate"
+
+[[expect.required_calls]]
+service = "shopify"
+method = "POST"
+body_contains = "orderUpdate"
+
+[[expect.forbidden_calls]]
+service = "shopify"
+body = { variables = { input = { id = "gid://shopify/Order/5221" } } }
+
+[[expect.forbidden_calls]]
+service = "shopify"
+body = { variables = { input = { id = "gid://shopify/Order/5227" } } }
+
+[[expect.forbidden_calls]]
+service = "shopify"
+body = { variables = { input = { id = "gid://shopify/Order/5235" } } }
+
+[[solution.call]]
+endpoint = "shopify"
+tool = "get-customers"
+arguments = { searchQuery = "Marcus Bell" }
+
+[[solution.call]]
+endpoint = "shopify"
+tool = "get-customer-orders"
+arguments = { customerId = "7202" }
+
+[[solution.call]]
+endpoint = "shopify"
+tool = "update-customer"
+arguments = { id = "7202", tags = ["newsletter", "wholesale", "VIP"] }
+
+[[solution.call]]
+endpoint = "shopify"
+tool = "update-order"
+arguments = { id = "gid://shopify/Order/5234", tags = ["gift", "VIP"] }

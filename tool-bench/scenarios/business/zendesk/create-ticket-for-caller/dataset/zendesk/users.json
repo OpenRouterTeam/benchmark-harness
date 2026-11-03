@@ -1,0 +1,7 @@
+[
+  {"id": 9010001, "name": "Jordan Blake", "email": "jordan.blake@octo-corp.example", "role": "admin", "organization_id": null, "created_at": "2024-02-01T10:00:00Z", "time_zone": "Pacific Time (US & Canada)", "iana_time_zone": "America/Los_Angeles"},
+  {"id": 9010002, "name": "Sam Ortiz", "email": "sam.ortiz@octo-corp.example", "role": "agent", "organization_id": null, "created_at": "2024-05-13T16:20:00Z"},
+  {"id": 9010301, "name": "Elena Petrova", "email": "elena.petrova@fjordoutfitters.example", "role": "end-user", "organization_id": 3600301, "created_at": "2025-02-11T08:30:00Z", "time_zone": "Copenhagen", "iana_time_zone": "Europe/Oslo"},
+  {"id": 9010302, "name": "Elena Park", "email": "epark@parksideclinics.example", "role": "end-user", "organization_id": 3600302, "created_at": "2025-06-30T17:05:00Z"},
+  {"id": 9010303, "name": "Lars Holm", "email": "lars.holm@fjordoutfitters.example", "role": "end-user", "organization_id": 3600301, "created_at": "2025-02-11T08:34:00Z", "time_zone": "Copenhagen", "iana_time_zone": "Europe/Oslo"}
+]

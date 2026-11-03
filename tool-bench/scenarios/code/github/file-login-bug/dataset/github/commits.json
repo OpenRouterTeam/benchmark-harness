@@ -1,0 +1,69 @@
+[
+  {
+    "_key": "octo-org/app@106a214a02f5c1938f6579ec74725402524b0291",
+    "sha": "106a214a02f5c1938f6579ec74725402524b0291",
+    "message": "Initial app scaffold",
+    "author": {
+      "name": "Jane Doe",
+      "email": "jane.doe@octo-org.example",
+      "date": "2026-02-01T10:00:00Z"
+    },
+    "committer": {
+      "name": "Jane Doe",
+      "email": "jane.doe@octo-org.example",
+      "date": "2026-02-01T10:00:00Z"
+    },
+    "author_login": "jdoe",
+    "committer_login": "jdoe",
+    "parents": [],
+    "files": [
+      {
+        "filename": "package.json",
+        "status": "added",
+        "content": "{\n  \"name\": \"app\",\n  \"version\": \"1.4.0\",\n  \"private\": true\n}\n"
+      },
+      {
+        "filename": "src/login/LoginPage.tsx",
+        "status": "added",
+        "content": "export function LoginPage() {\n  return <form method=\"post\" action=\"/session\">...</form>;\n}\n"
+      },
+      {
+        "filename": "src/settings/SettingsPage.tsx",
+        "status": "added",
+        "content": "export function SettingsPage() {\n  return <div>Settings</div>;\n}\n"
+      },
+      {
+        "filename": "README.md",
+        "status": "added",
+        "content": "# app\n\nCustomer-facing web app.\n"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/app@84eb90dd07af54388164757ed0b2bf2a9cac1adf",
+    "sha": "84eb90dd07af54388164757ed0b2bf2a9cac1adf",
+    "message": "Deploy 412: move session cookies to the new auth gateway",
+    "author": {
+      "name": "Lin Chen",
+      "email": "lin.chen@octo-org.example",
+      "date": "2026-03-14T07:30:00Z"
+    },
+    "committer": {
+      "name": "Lin Chen",
+      "email": "lin.chen@octo-org.example",
+      "date": "2026-03-14T07:30:00Z"
+    },
+    "author_login": "lin",
+    "committer_login": "lin",
+    "parents": [
+      "106a214a02f5c1938f6579ec74725402524b0291"
+    ],
+    "files": [
+      {
+        "filename": "src/login/session.ts",
+        "status": "added",
+        "content": "export const AUTH_GATEWAY = process.env.AUTH_GATEWAY_URL;\nexport async function createSession(form: FormData) {\n  return fetch(`${AUTH_GATEWAY}/session`, { method: 'POST', body: form });\n}\n"
+      }
+    ]
+  }
+]

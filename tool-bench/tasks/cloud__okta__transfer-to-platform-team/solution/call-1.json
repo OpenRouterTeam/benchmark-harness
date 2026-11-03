@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"update_user","arguments":{"profile":{"department":"Platform Engineering","title":"Site Reliability Engineer"},"user_id":"00u1mrgnzlz6Wx3Yz4x7"}}}

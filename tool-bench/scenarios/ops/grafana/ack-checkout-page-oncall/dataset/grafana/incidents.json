@@ -1,0 +1,80 @@
+[
+  {
+    "_key": "212",
+    "incidentID": "212",
+    "severity": "minor",
+    "severityID": "sev-minor",
+    "labels": [
+      {
+        "key": "",
+        "label": "checkout",
+        "description": "",
+        "colorHex": "#5794F2"
+      }
+    ],
+    "isDrill": false,
+    "incidentType": "internal",
+    "createdTime": "2026-11-08T15:30:00Z",
+    "modifiedTime": "2026-11-08T16:30:00Z",
+    "createdByUser": {
+      "userID": "grafana-incident:user-3",
+      "name": "Jordan Alvarez",
+      "photoURL": ""
+    },
+    "closedTime": "2026-11-08T16:30:00Z",
+    "durationSeconds": 3600,
+    "status": "resolved",
+    "title": "Checkout latency spike after cache eviction",
+    "overviewURL": "/a/grafana-irm-app/incidents/212/checkout-latency-spike",
+    "slug": "checkout-latency-spike",
+    "incidentMembership": {
+      "assignments": [],
+      "totalAssignments": 0,
+      "totalParticipants": 3
+    },
+    "summary": "Redis eviction storm raised p99 to 2.4s for 40 minutes.",
+    "incidentStart": "2026-11-08T15:30:00Z",
+    "incidentEnd": "2026-11-08T16:30:00Z",
+    "version": 6,
+    "fieldValues": []
+  },
+  {
+    "_key": "214",
+    "incidentID": "214",
+    "severity": "major",
+    "severityID": "sev-major",
+    "labels": [
+      {
+        "key": "",
+        "label": "payments",
+        "description": "",
+        "colorHex": "#F2495C"
+      }
+    ],
+    "isDrill": true,
+    "incidentType": "internal",
+    "createdTime": "2026-11-11T15:30:00Z",
+    "modifiedTime": "2026-11-11T16:00:00Z",
+    "createdByUser": {
+      "userID": "grafana-incident:user-5",
+      "name": "Priya Okafor",
+      "photoURL": ""
+    },
+    "closedTime": "2026-11-11T16:00:00Z",
+    "durationSeconds": 1800,
+    "status": "resolved",
+    "title": "Game day: payments provider failover",
+    "overviewURL": "/a/grafana-irm-app/incidents/214/game-day",
+    "slug": "game-day",
+    "incidentMembership": {
+      "assignments": [],
+      "totalAssignments": 0,
+      "totalParticipants": 6
+    },
+    "summary": "",
+    "incidentStart": "2026-11-11T15:30:00Z",
+    "incidentEnd": "2026-11-11T16:00:00Z",
+    "version": 3,
+    "fieldValues": []
+  }
+]

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"jira_search","arguments":{"fields":"summary,status,description","jql":"project = OPS AND assignee = currentUser() AND statusCategory != Done"}}}

@@ -1,0 +1,50 @@
+[
+  {
+    "_key": "1",
+    "id": 1,
+    "repo": "octo-org/web",
+    "sha": "6ea035e584d56c79cc252b6a34973828261a108b",
+    "state": "success",
+    "context": "ci/build",
+    "description": "Build passed",
+    "target_url": "https://github.octo-corp.com/octo-org/web/actions/runs/9501",
+    "creator": "octocat",
+    "created_at": "2026-03-12T06:18:00Z"
+  },
+  {
+    "_key": "2",
+    "id": 2,
+    "repo": "octo-org/web",
+    "sha": "6ea035e584d56c79cc252b6a34973828261a108b",
+    "state": "success",
+    "context": "ci/test",
+    "description": "312 tests passed",
+    "target_url": "https://github.octo-corp.com/octo-org/web/actions/runs/9501",
+    "creator": "octocat",
+    "created_at": "2026-03-12T06:19:00Z"
+  },
+  {
+    "_key": "3",
+    "id": 3,
+    "repo": "octo-org/web",
+    "sha": "0d2f21da868f4125f15d529dc12b95fee09dd50a",
+    "state": "success",
+    "context": "ci/build",
+    "description": "Build passed",
+    "target_url": "https://github.octo-corp.com/octo-org/web/actions/runs/9502",
+    "creator": "octocat",
+    "created_at": "2026-03-12T06:22:00Z"
+  },
+  {
+    "_key": "4",
+    "id": 4,
+    "repo": "octo-org/web",
+    "sha": "0d2f21da868f4125f15d529dc12b95fee09dd50a",
+    "state": "failure",
+    "context": "ci/test",
+    "description": "4 tests failed",
+    "target_url": "https://github.octo-corp.com/octo-org/web/actions/runs/9502",
+    "creator": "octocat",
+    "created_at": "2026-03-12T06:24:00Z"
+  }
+]

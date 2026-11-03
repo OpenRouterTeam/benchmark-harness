@@ -1,0 +1,165 @@
+{
+  "state": [
+    {
+      "pointer": "/services/cloudflare/dns_records/5b2d7a1f0e3c8b6d4f9a2e1c7b0d3f58/content",
+      "equals": "198.51.100.45",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/cloudflare/dns_records/5b2d7a1f0e3c8b6d4f9a2e1c7b0d3f58/type",
+      "equals": "A",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/cloudflare/dns_records/5b2d7a1f0e3c8b6d4f9a2e1c7b0d3f58/name",
+      "equals": "api.octo-corp.com",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/cloudflare/dns_records/5b2d7a1f0e3c8b6d4f9a2e1c7b0d3f58/proxied",
+      "equals": true,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/cloudflare/dns_records/e41a6d0c9b2f7e5a3c8d1b6f4a9e2c07/content",
+      "equals": "203.0.113.12",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/cloudflare/dns_records/372e67954025e0ba6aaa6d586b9e0b59/content",
+      "equals": "198.51.100.20",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/issues/PLAT-241/stateId",
+      "equals": "4ed11568-6dd0-5b94-bf4e-ba05dd563850",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/comments",
+      "equals": null,
+      "exists": null,
+      "contains": null,
+      "any": {
+        "body": "198.51.100.45"
+      },
+      "key_prefix": "PLAT-241#"
+    },
+    {
+      "pointer": "/services/linear/issues/PLAT-238/stateId",
+      "equals": "99afb074-55c3-5598-a54a-aeacf48ea5ff",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/comments/PLAT-238#1",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "cloudflare",
+      "method": null,
+      "path": null,
+      "path_regex": "^/client/v4/zones/023e105f4ecef8ad9ca31a8372d0c353/dns_records/5b2d7a1f0e3c8b6d4f9a2e1c7b0d3f58$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": "198.51.100.45",
+      "min_count": 1
+    },
+    {
+      "service": "linear",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "linear_createComment"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "cloudflare",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": "/dns_records",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "cloudflare",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/client/v4/zones/[^/]+/dns_records$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "cloudflare",
+      "method": "PATCH",
+      "path": null,
+      "path_regex": "^/client/v4/zones/e9a7c5b3d1f0e8c6a4b2d0f9e7c5a3b1/dns_records/e41a6d0c9b2f7e5a3c8d1b6f4a9e2c07$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "cloudflare",
+      "method": "PUT",
+      "path": null,
+      "path_regex": "^/client/v4/zones/e9a7c5b3d1f0e8c6a4b2d0f9e7c5a3b1/dns_records/e41a6d0c9b2f7e5a3c8d1b6f4a9e2c07$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "linear",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "linear_archiveIssue"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

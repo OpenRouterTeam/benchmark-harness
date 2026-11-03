@@ -1,0 +1,42 @@
+[
+  {
+    "_key": "maria.okafor",
+    "id": 51,
+    "username": "maria.okafor",
+    "name": "Maria Okafor",
+    "email": "maria.okafor@lumen-retail.com",
+    "state": "active",
+    "job_title": "Frontend Lead",
+    "created_at": "2023-02-01T09:00:00.000Z"
+  },
+  {
+    "_key": "sam.lindqvist",
+    "id": 52,
+    "username": "sam.lindqvist",
+    "name": "Sam Lindqvist",
+    "email": "sam.lindqvist@lumen-retail.com",
+    "state": "active",
+    "job_title": "Platform Engineer",
+    "created_at": "2023-03-01T09:00:00.000Z"
+  },
+  {
+    "_key": "jon.berg",
+    "id": 53,
+    "username": "jon.berg",
+    "name": "Jon Berg",
+    "email": "jon.berg@lumen-retail.com",
+    "state": "active",
+    "job_title": "Frontend Engineer",
+    "created_at": "2024-01-09T09:00:00.000Z"
+  },
+  {
+    "_key": "deploy-bot",
+    "id": 90,
+    "username": "deploy-bot",
+    "name": "Deploy Bot",
+    "email": "deploy-bot@lumen-retail.com",
+    "state": "active",
+    "bot": true,
+    "created_at": "2022-01-01T09:00:00.000Z"
+  }
+]

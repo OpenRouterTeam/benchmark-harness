@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"slack_search_public_and_private","arguments":{"keywords":["observability"],"natural_language_query":"Which observability vendor did we pick and when does the contract start?"}}}

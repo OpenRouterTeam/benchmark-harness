@@ -1,0 +1,22 @@
+[
+  {
+    "id": "acct_1OctoGd7Rq2LmN4p",
+    "business_profile": {
+      "mcc": "5969",
+      "name": "Octo Goods",
+      "support_email": "hello@octo-goods.example",
+      "support_phone": null,
+      "support_address": null,
+      "url": "https://octo-goods.example"
+    },
+    "created": 1748736000,
+    "email": "ops@octo-goods.example",
+    "livemode": false,
+    "settings": {
+      "dashboard": {
+        "display_name": "Octo Goods",
+        "timezone": "America/New_York"
+      }
+    }
+  }
+]

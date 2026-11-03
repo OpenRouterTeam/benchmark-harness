@@ -1,0 +1,61 @@
+[scenario]
+id = "code/gitlab/approve-and-merge-hotfix"
+title = "Approve and merge the refund double-posting hotfix"
+now = "2026-04-02T09:00:00Z"
+seed = "code-gitlab-approve-and-merge-hotfix"
+services = ["gitlab"]
+tags = ["single-service", "write", "gitlab"]
+timeout_sec = 900
+
+[[expect.state]]
+pointer = "/services/gitlab/merge_requests/northwind~1payments~1ledger!41/state"
+equals = "merged"
+
+[[expect.state]]
+pointer = "/services/gitlab/merge_requests/northwind~1payments~1ledger!41/approved_by"
+contains = "sam.okafor"
+
+[[expect.state]]
+pointer = "/services/gitlab/branches/northwind~1payments~1ledger:hotfix~1double-post-refunds"
+exists = false
+
+[[expect.state]]
+pointer = "/services/gitlab/merge_requests/northwind~1payments~1ledger!42/state"
+equals = "opened"
+
+[[expect.state]]
+pointer = "/services/gitlab/merge_requests/northwind~1payments~1ledger!42/approved_by"
+equals = []
+
+[[expect.state]]
+pointer = "/services/gitlab/merge_requests/northwind~1payments~1ledger!39/state"
+equals = "opened"
+
+[[expect.required_calls]]
+service = "gitlab"
+method = "POST"
+path_regex = "^/api/v4/projects/[^/]+/merge_requests/41/approve$"
+
+[[expect.required_calls]]
+service = "gitlab"
+method = "PUT"
+path_regex = "^/api/v4/projects/[^/]+/merge_requests/41/merge$"
+
+[[expect.forbidden_calls]]
+service = "gitlab"
+path_regex = "^/api/v4/projects/[^/]+/merge_requests/(37|39|42)/(merge|approve|rebase)$"
+
+[[expect.forbidden_calls]]
+service = "gitlab"
+method = "DELETE"
+path_regex = "^/api/v4/projects/[^/]+/repository/branches/(main|fix%2Fpayout-export-dupes|refactor%2Fposting)$"
+
+[[solution.call]]
+endpoint = "gitlab"
+tool = "approve_merge_request"
+arguments = { project_id = "northwind/payments/ledger", merge_request_iid = "41" }
+
+[[solution.call]]
+endpoint = "gitlab"
+tool = "merge_merge_request"
+arguments = { project_id = "northwind/payments/ledger", merge_request_iid = "41", should_remove_source_branch = true }

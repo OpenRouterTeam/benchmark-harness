@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_plan_details","arguments":{"plan_id":"plan-W6mMDz8dMca2TBnD"}}}

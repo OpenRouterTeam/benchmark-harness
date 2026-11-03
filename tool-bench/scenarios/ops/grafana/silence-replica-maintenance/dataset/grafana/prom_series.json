@@ -1,0 +1,1034 @@
+[
+  {
+    "_key": "prom-prod/161",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "up",
+      "job": "checkout",
+      "namespace": "shop-prod",
+      "instance": "checkout.shop-prod.svc:8080"
+    },
+    "value": 1.0
+  },
+  {
+    "_key": "prom-prod/162",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "up",
+      "job": "cart",
+      "namespace": "shop-prod",
+      "instance": "cart.shop-prod.svc:8080"
+    },
+    "value": 1.0
+  },
+  {
+    "_key": "prom-prod/163",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "up",
+      "job": "catalog",
+      "namespace": "shop-prod",
+      "instance": "catalog.shop-prod.svc:8080"
+    },
+    "value": 1.0
+  },
+  {
+    "_key": "prom-prod/164",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "up",
+      "job": "payments-api",
+      "namespace": "shop-prod",
+      "instance": "payments-api.shop-prod.svc:8080"
+    },
+    "value": 1.0
+  },
+  {
+    "_key": "prom-prod/165",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "pg_replication_lag_seconds",
+      "instance": "pg-replica-1",
+      "cluster": "orders-db",
+      "env": "prod"
+    },
+    "value": 0.4
+  },
+  {
+    "_key": "prom-prod/166",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "pg_replication_lag_seconds",
+      "instance": "pg-replica-2",
+      "cluster": "orders-db",
+      "env": "prod"
+    },
+    "value": 47.0
+  },
+  {
+    "_key": "prom-staging/167",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "up",
+      "job": "checkout",
+      "namespace": "shop-staging",
+      "instance": "checkout.shop-staging.svc:8080"
+    },
+    "value": 1.0
+  },
+  {
+    "_key": "prom-staging/168",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "up",
+      "job": "cart",
+      "namespace": "shop-staging",
+      "instance": "cart.shop-staging.svc:8080"
+    },
+    "value": 1.0
+  },
+  {
+    "_key": "prom-staging/169",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "up",
+      "job": "catalog",
+      "namespace": "shop-staging",
+      "instance": "catalog.shop-staging.svc:8080"
+    },
+    "value": 1.0
+  },
+  {
+    "_key": "prom-staging/170",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "up",
+      "job": "payments-api",
+      "namespace": "shop-staging",
+      "instance": "payments-api.shop-staging.svc:8080"
+    },
+    "value": 1.0
+  },
+  {
+    "_key": "prom-staging/171",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "pg_replication_lag_seconds",
+      "instance": "pg-replica-1",
+      "cluster": "orders-db",
+      "env": "staging"
+    },
+    "value": 0.4
+  },
+  {
+    "_key": "prom-staging/172",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "pg_replication_lag_seconds",
+      "instance": "pg-replica-2",
+      "cluster": "orders-db",
+      "env": "staging"
+    },
+    "value": 0.2
+  },
+  {
+    "_key": "prom-prod/173",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_requests_total",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-xk2lp",
+      "method": "POST",
+      "route": "/api/checkout",
+      "status": "200"
+    },
+    "value": 10679040,
+    "rate": 41.2
+  },
+  {
+    "_key": "prom-prod/174",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_requests_total",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-xk2lp",
+      "method": "POST",
+      "route": "/api/checkout",
+      "status": "500"
+    },
+    "value": 751680,
+    "rate": 2.9
+  },
+  {
+    "_key": "prom-prod/175",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_requests_total",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-xk2lp",
+      "method": "POST",
+      "route": "/api/checkout",
+      "status": "502"
+    },
+    "value": 155520,
+    "rate": 0.6
+  },
+  {
+    "_key": "prom-prod/176",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_requests_total",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-m8vqt",
+      "method": "POST",
+      "route": "/api/checkout",
+      "status": "200"
+    },
+    "value": 11352960,
+    "rate": 43.8
+  },
+  {
+    "_key": "prom-prod/177",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_requests_total",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-m8vqt",
+      "method": "POST",
+      "route": "/api/checkout",
+      "status": "500"
+    },
+    "value": 54432,
+    "rate": 0.21
+  },
+  {
+    "_key": "prom-prod/178",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_requests_total",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-m8vqt",
+      "method": "POST",
+      "route": "/api/checkout",
+      "status": "502"
+    },
+    "value": 12960,
+    "rate": 0.05
+  },
+  {
+    "_key": "prom-prod/179",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_requests_total",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-r2hzn",
+      "method": "POST",
+      "route": "/api/checkout",
+      "status": "200"
+    },
+    "value": 11016000,
+    "rate": 42.5
+  },
+  {
+    "_key": "prom-prod/180",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_requests_total",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-r2hzn",
+      "method": "POST",
+      "route": "/api/checkout",
+      "status": "500"
+    },
+    "value": 46656,
+    "rate": 0.18
+  },
+  {
+    "_key": "prom-prod/181",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_requests_total",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-r2hzn",
+      "method": "POST",
+      "route": "/api/checkout",
+      "status": "502"
+    },
+    "value": 10368,
+    "rate": 0.04
+  },
+  {
+    "_key": "prom-staging/182",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_requests_total",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-zq4wd",
+      "method": "POST",
+      "route": "/api/checkout",
+      "status": "200"
+    },
+    "value": 803520,
+    "rate": 3.1
+  },
+  {
+    "_key": "prom-staging/183",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_requests_total",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-zq4wd",
+      "method": "POST",
+      "route": "/api/checkout",
+      "status": "500"
+    },
+    "value": 1088640,
+    "rate": 4.2
+  },
+  {
+    "_key": "prom-staging/184",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_requests_total",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-zq4wd",
+      "method": "POST",
+      "route": "/api/checkout",
+      "status": "502"
+    },
+    "value": 77760,
+    "rate": 0.3
+  },
+  {
+    "_key": "prom-staging/185",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_requests_total",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-b7nkc",
+      "method": "POST",
+      "route": "/api/checkout",
+      "status": "200"
+    },
+    "value": 751680,
+    "rate": 2.9
+  },
+  {
+    "_key": "prom-staging/186",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_requests_total",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-b7nkc",
+      "method": "POST",
+      "route": "/api/checkout",
+      "status": "500"
+    },
+    "value": 103680,
+    "rate": 0.4
+  },
+  {
+    "_key": "prom-staging/187",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_requests_total",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-b7nkc",
+      "method": "POST",
+      "route": "/api/checkout",
+      "status": "502"
+    },
+    "value": 25920,
+    "rate": 0.1
+  },
+  {
+    "_key": "prom-prod/188",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-xk2lp",
+      "le": "0.05"
+    },
+    "value": 1558656,
+    "rate": 18.04
+  },
+  {
+    "_key": "prom-prod/189",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-xk2lp",
+      "le": "0.1"
+    },
+    "value": 2509056,
+    "rate": 29.04
+  },
+  {
+    "_key": "prom-prod/190",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-xk2lp",
+      "le": "0.25"
+    },
+    "value": 3155328,
+    "rate": 36.52
+  },
+  {
+    "_key": "prom-prod/191",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-xk2lp",
+      "le": "0.5"
+    },
+    "value": 3535488,
+    "rate": 40.92
+  },
+  {
+    "_key": "prom-prod/192",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-xk2lp",
+      "le": "1"
+    },
+    "value": 3706560,
+    "rate": 42.9
+  },
+  {
+    "_key": "prom-prod/193",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-xk2lp",
+      "le": "2.5"
+    },
+    "value": 3782592,
+    "rate": 43.78
+  },
+  {
+    "_key": "prom-prod/194",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-xk2lp",
+      "le": "+Inf"
+    },
+    "value": 3801600,
+    "rate": 44.0
+  },
+  {
+    "_key": "prom-prod/195",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_count",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-xk2lp"
+    },
+    "value": 3801600,
+    "rate": 44.0
+  },
+  {
+    "_key": "prom-prod/196",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_sum",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-xk2lp"
+    },
+    "value": 798336,
+    "rate": 9.24
+  },
+  {
+    "_key": "prom-prod/197",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "container_memory_working_set_bytes",
+      "namespace": "shop-prod",
+      "pod": "checkout-7b9d6c5f4-xk2lp",
+      "container": "checkout"
+    },
+    "value": 612368384
+  },
+  {
+    "_key": "prom-prod/198",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-m8vqt",
+      "le": "0.05"
+    },
+    "value": 2356992,
+    "rate": 27.28
+  },
+  {
+    "_key": "prom-prod/199",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-m8vqt",
+      "le": "0.1"
+    },
+    "value": 3269376,
+    "rate": 37.84
+  },
+  {
+    "_key": "prom-prod/200",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-m8vqt",
+      "le": "0.25"
+    },
+    "value": 3611520,
+    "rate": 41.8
+  },
+  {
+    "_key": "prom-prod/201",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-m8vqt",
+      "le": "0.5"
+    },
+    "value": 3744576,
+    "rate": 43.34
+  },
+  {
+    "_key": "prom-prod/202",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-m8vqt",
+      "le": "1"
+    },
+    "value": 3786394,
+    "rate": 43.824
+  },
+  {
+    "_key": "prom-prod/203",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-m8vqt",
+      "le": "2.5"
+    },
+    "value": 3801600,
+    "rate": 44.0
+  },
+  {
+    "_key": "prom-prod/204",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-m8vqt",
+      "le": "+Inf"
+    },
+    "value": 3801600,
+    "rate": 44.0
+  },
+  {
+    "_key": "prom-prod/205",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_count",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-m8vqt"
+    },
+    "value": 3801600,
+    "rate": 44.0
+  },
+  {
+    "_key": "prom-prod/206",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_sum",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-m8vqt"
+    },
+    "value": 798336,
+    "rate": 9.24
+  },
+  {
+    "_key": "prom-prod/207",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "container_memory_working_set_bytes",
+      "namespace": "shop-prod",
+      "pod": "checkout-7b9d6c5f4-m8vqt",
+      "container": "checkout"
+    },
+    "value": 488247296
+  },
+  {
+    "_key": "prom-prod/208",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-r2hzn",
+      "le": "0.05"
+    },
+    "value": 2356992,
+    "rate": 27.28
+  },
+  {
+    "_key": "prom-prod/209",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-r2hzn",
+      "le": "0.1"
+    },
+    "value": 3269376,
+    "rate": 37.84
+  },
+  {
+    "_key": "prom-prod/210",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-r2hzn",
+      "le": "0.25"
+    },
+    "value": 3611520,
+    "rate": 41.8
+  },
+  {
+    "_key": "prom-prod/211",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-r2hzn",
+      "le": "0.5"
+    },
+    "value": 3744576,
+    "rate": 43.34
+  },
+  {
+    "_key": "prom-prod/212",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-r2hzn",
+      "le": "1"
+    },
+    "value": 3786394,
+    "rate": 43.824
+  },
+  {
+    "_key": "prom-prod/213",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-r2hzn",
+      "le": "2.5"
+    },
+    "value": 3801600,
+    "rate": 44.0
+  },
+  {
+    "_key": "prom-prod/214",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-r2hzn",
+      "le": "+Inf"
+    },
+    "value": 3801600,
+    "rate": 44.0
+  },
+  {
+    "_key": "prom-prod/215",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_count",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-r2hzn"
+    },
+    "value": 3801600,
+    "rate": 44.0
+  },
+  {
+    "_key": "prom-prod/216",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_request_duration_seconds_sum",
+      "namespace": "shop-prod",
+      "service": "checkout",
+      "pod": "checkout-7b9d6c5f4-r2hzn"
+    },
+    "value": 798336,
+    "rate": 9.24
+  },
+  {
+    "_key": "prom-prod/217",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "container_memory_working_set_bytes",
+      "namespace": "shop-prod",
+      "pod": "checkout-7b9d6c5f4-r2hzn",
+      "container": "checkout"
+    },
+    "value": 501219328
+  },
+  {
+    "_key": "prom-staging/218",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-zq4wd",
+      "le": "0.05"
+    },
+    "value": 109106,
+    "rate": 1.2628
+  },
+  {
+    "_key": "prom-staging/219",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-zq4wd",
+      "le": "0.1"
+    },
+    "value": 175634,
+    "rate": 2.0328
+  },
+  {
+    "_key": "prom-staging/220",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-zq4wd",
+      "le": "0.25"
+    },
+    "value": 220873,
+    "rate": 2.5564
+  },
+  {
+    "_key": "prom-staging/221",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-zq4wd",
+      "le": "0.5"
+    },
+    "value": 247484,
+    "rate": 2.8644
+  },
+  {
+    "_key": "prom-staging/222",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-zq4wd",
+      "le": "1"
+    },
+    "value": 259459,
+    "rate": 3.003
+  },
+  {
+    "_key": "prom-staging/223",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-zq4wd",
+      "le": "2.5"
+    },
+    "value": 264781,
+    "rate": 3.0646
+  },
+  {
+    "_key": "prom-staging/224",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-zq4wd",
+      "le": "+Inf"
+    },
+    "value": 266112,
+    "rate": 3.08
+  },
+  {
+    "_key": "prom-staging/225",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_request_duration_seconds_count",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-zq4wd"
+    },
+    "value": 266112,
+    "rate": 3.08
+  },
+  {
+    "_key": "prom-staging/226",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_request_duration_seconds_sum",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-zq4wd"
+    },
+    "value": 55884,
+    "rate": 0.6468
+  },
+  {
+    "_key": "prom-staging/227",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "container_memory_working_set_bytes",
+      "namespace": "shop-staging",
+      "pod": "checkout-5f6d7c8b9-zq4wd",
+      "container": "checkout"
+    },
+    "value": 612368384
+  },
+  {
+    "_key": "prom-staging/228",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-b7nkc",
+      "le": "0.05"
+    },
+    "value": 164989,
+    "rate": 1.9096
+  },
+  {
+    "_key": "prom-staging/229",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-b7nkc",
+      "le": "0.1"
+    },
+    "value": 228856,
+    "rate": 2.6488
+  },
+  {
+    "_key": "prom-staging/230",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-b7nkc",
+      "le": "0.25"
+    },
+    "value": 252806,
+    "rate": 2.926
+  },
+  {
+    "_key": "prom-staging/231",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-b7nkc",
+      "le": "0.5"
+    },
+    "value": 262120,
+    "rate": 3.0338
+  },
+  {
+    "_key": "prom-staging/232",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-b7nkc",
+      "le": "1"
+    },
+    "value": 265048,
+    "rate": 3.0677
+  },
+  {
+    "_key": "prom-staging/233",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-b7nkc",
+      "le": "2.5"
+    },
+    "value": 266112,
+    "rate": 3.08
+  },
+  {
+    "_key": "prom-staging/234",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_request_duration_seconds_bucket",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-b7nkc",
+      "le": "+Inf"
+    },
+    "value": 266112,
+    "rate": 3.08
+  },
+  {
+    "_key": "prom-staging/235",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_request_duration_seconds_count",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-b7nkc"
+    },
+    "value": 266112,
+    "rate": 3.08
+  },
+  {
+    "_key": "prom-staging/236",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "http_request_duration_seconds_sum",
+      "namespace": "shop-staging",
+      "service": "checkout",
+      "pod": "checkout-5f6d7c8b9-b7nkc"
+    },
+    "value": 55884,
+    "rate": 0.6468
+  },
+  {
+    "_key": "prom-staging/237",
+    "datasource": "prom-staging",
+    "labels": {
+      "__name__": "container_memory_working_set_bytes",
+      "namespace": "shop-staging",
+      "pod": "checkout-5f6d7c8b9-b7nkc",
+      "container": "checkout"
+    },
+    "value": 488247296
+  },
+  {
+    "_key": "prom-prod/238",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_requests_total",
+      "namespace": "shop-prod",
+      "service": "cart",
+      "pod": "cart-6c7d8e9f0-a1b2c",
+      "method": "GET",
+      "route": "/",
+      "status": "200"
+    },
+    "value": 8035200,
+    "rate": 31.0
+  },
+  {
+    "_key": "prom-prod/239",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_requests_total",
+      "namespace": "shop-prod",
+      "service": "catalog",
+      "pod": "catalog-6c7d8e9f0-a1b2c",
+      "method": "GET",
+      "route": "/",
+      "status": "200"
+    },
+    "value": 22809600,
+    "rate": 88.0
+  },
+  {
+    "_key": "prom-prod/240",
+    "datasource": "prom-prod",
+    "labels": {
+      "__name__": "http_requests_total",
+      "namespace": "payments",
+      "service": "payments-api",
+      "pod": "payments-api-6c7d8e9f0-a1b2c",
+      "method": "GET",
+      "route": "/",
+      "status": "200"
+    },
+    "value": 10238400,
+    "rate": 39.5
+  }
+]

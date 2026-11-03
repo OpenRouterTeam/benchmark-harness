@@ -1,0 +1,94 @@
+[
+  {
+    "_key": "northwind/payments/checkout-api@b48962136ebcc2245c9a567b745107c7ccf38f2f",
+    "id": "b48962136ebcc2245c9a567b745107c7ccf38f2f",
+    "title": "Cache fraud scores for 60s",
+    "message": "Cache fraud scores for 60s\n",
+    "author_name": "Priya Raman",
+    "author_email": "priya.raman@northwind.io",
+    "authored_date": "2026-03-31T15:10:00.000Z",
+    "committed_date": "2026-03-31T15:10:00.000Z",
+    "parent_ids": [],
+    "branch": "main"
+  },
+  {
+    "_key": "northwind/payments/checkout-api@4926181886df36629e7d55b7b70ea0c3376d3f4f",
+    "id": "4926181886df36629e7d55b7b70ea0c3376d3f4f",
+    "title": "Bump stripe-python to 9.4.0",
+    "message": "Bump stripe-python to 9.4.0\n",
+    "author_name": "Renovate Bot",
+    "author_email": "renovate@northwind.io",
+    "authored_date": "2026-04-01T09:00:00.000Z",
+    "committed_date": "2026-04-01T09:00:00.000Z",
+    "parent_ids": [
+      "b48962136ebcc2245c9a567b745107c7ccf38f2f"
+    ],
+    "branch": "main"
+  },
+  {
+    "_key": "northwind/payments/checkout-api@15861d77e15bd024968dadadb0eb84ad84c0d8b2",
+    "id": "15861d77e15bd024968dadadb0eb84ad84c0d8b2",
+    "title": "Record refund reason on partial refunds",
+    "message": "Record refund reason on partial refunds\n",
+    "author_name": "Sam Okafor",
+    "author_email": "sam.okafor@northwind.io",
+    "authored_date": "2026-04-02T07:38:00.000Z",
+    "committed_date": "2026-04-02T07:38:00.000Z",
+    "parent_ids": [
+      "4926181886df36629e7d55b7b70ea0c3376d3f4f"
+    ],
+    "branch": "main"
+  },
+  {
+    "_key": "northwind/payments/checkout-api@55465f704c5d8af2389908476fece8a7845e9676",
+    "id": "55465f704c5d8af2389908476fece8a7845e9676",
+    "title": "Round partial refunds half-even",
+    "message": "Round partial refunds half-even\n",
+    "author_name": "Priya Raman",
+    "author_email": "priya.raman@northwind.io",
+    "authored_date": "2026-04-02T08:02:00.000Z",
+    "committed_date": "2026-04-02T08:02:00.000Z",
+    "parent_ids": [
+      "15861d77e15bd024968dadadb0eb84ad84c0d8b2"
+    ],
+    "branch": "fix/rounding"
+  },
+  {
+    "_key": "northwind/payments/checkout-api@f2fb3d300b5ec0dffcd10819b740f7870476a3b1",
+    "id": "f2fb3d300b5ec0dffcd10819b740f7870476a3b1",
+    "title": "Apple Pay: add merchant validation endpoint",
+    "message": "Apple Pay: add merchant validation endpoint\n",
+    "author_name": "Mei Chen",
+    "author_email": "mei.chen@northwind.io",
+    "authored_date": "2026-04-02T08:15:00.000Z",
+    "committed_date": "2026-04-02T08:15:00.000Z",
+    "parent_ids": [
+      "15861d77e15bd024968dadadb0eb84ad84c0d8b2"
+    ],
+    "branch": "feat/apple-pay"
+  },
+  {
+    "_key": "northwind/payments/ledger@3ea3467069845475e233b6d2bbfb2c3f200a367b",
+    "id": "3ea3467069845475e233b6d2bbfb2c3f200a367b",
+    "title": "Reconcile payouts nightly",
+    "message": "Reconcile payouts nightly\n",
+    "author_name": "Priya Raman",
+    "author_email": "priya.raman@northwind.io",
+    "authored_date": "2026-04-01T16:00:00.000Z",
+    "committed_date": "2026-04-01T16:00:00.000Z",
+    "parent_ids": [],
+    "branch": "main"
+  },
+  {
+    "_key": "northwind/mobile/checkout-ios@c7f72c0e6eddc20ff9c16d2fd5d12d87fece59f9",
+    "id": "c7f72c0e6eddc20ff9c16d2fd5d12d87fece59f9",
+    "title": "Checkout: show Apple Pay button",
+    "message": "Checkout: show Apple Pay button\n",
+    "author_name": "Mei Lin",
+    "author_email": "mei.lin@northwind.io",
+    "authored_date": "2026-04-02T07:55:00.000Z",
+    "committed_date": "2026-04-02T07:55:00.000Z",
+    "parent_ids": [],
+    "branch": "main"
+  }
+]

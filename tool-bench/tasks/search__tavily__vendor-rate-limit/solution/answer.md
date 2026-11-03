@@ -1,0 +1,1 @@
+The Business plan is limited to 1,200 requests per minute (burst 200), per workspace. Source: Quillstream API v3 docs, https://docs.quillstream.io/api/rate-limits (updated 2026-09-14). The 600/min figure is from the deprecated v2 docs.

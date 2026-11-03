@@ -1,0 +1,28 @@
+[
+ {
+  "id": "tws-fgDQ35vmDuxWxUJh",
+  "team": "team-110HsB6R1OTMZRGX",
+  "workspace": "ws-vJd7W10B1cG75Uxp",
+  "access": "write",
+  "runs": "apply",
+  "variables": "write",
+  "state-versions": "write",
+  "sentinel-mocks": "read",
+  "workspace-locking": true,
+  "run-tasks": false,
+  "policy-overrides": false
+ },
+ {
+  "id": "tws-COIs57KkVj2EKzPu",
+  "team": "team-110HsB6R1OTMZRGX",
+  "workspace": "ws-gIbdcZTYOZS7TluO",
+  "access": "admin",
+  "runs": "apply",
+  "variables": "write",
+  "state-versions": "write",
+  "sentinel-mocks": "read",
+  "workspace-locking": true,
+  "run-tasks": true,
+  "policy-overrides": false
+ }
+]

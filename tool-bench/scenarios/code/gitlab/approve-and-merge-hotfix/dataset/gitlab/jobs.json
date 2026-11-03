@@ -1,0 +1,37 @@
+[
+  {
+    "_key": "91301",
+    "id": 91301,
+    "project": "northwind/payments/ledger",
+    "pipeline_id": 6110,
+    "name": "go-test",
+    "stage": "test",
+    "status": "success",
+    "ref": "hotfix/double-post-refunds",
+    "created_at": "2026-04-02T06:46:00.000Z",
+    "started_at": "2026-04-02T06:46:10.000Z",
+    "finished_at": "2026-04-02T06:58:00.000Z",
+    "duration": 700.0,
+    "user": "priya.raman",
+    "runner_id": 7,
+    "trace": "$ go test ./...\nok  \tnorthwind/ledger/posting\t2.114s\nJob succeeded\n"
+  },
+  {
+    "_key": "91290",
+    "id": 91290,
+    "project": "northwind/payments/ledger",
+    "pipeline_id": 6108,
+    "name": "go-test",
+    "stage": "test",
+    "status": "failed",
+    "ref": "fix/payout-export-dupes",
+    "created_at": "2026-04-01T11:06:00.000Z",
+    "started_at": "2026-04-01T11:06:10.000Z",
+    "finished_at": "2026-04-01T11:15:00.000Z",
+    "duration": 530.0,
+    "user": "lena.fischer",
+    "runner_id": 7,
+    "trace": "$ go test ./...\n--- FAIL: TestExportDedupe (0.41s)\nFAIL\nERROR: Job failed: exit code 1\n",
+    "failure_reason": "script_failure"
+  }
+]

@@ -1,0 +1,17 @@
+[
+  {
+    "_key": "viewer",
+    "login": "hana",
+    "id": 7100,
+    "node_id": "MDQ6VXNlcjcxMDA=",
+    "type": "User",
+    "site_admin": false,
+    "name": "Hana Sato",
+    "company": "Lumen Labs",
+    "email": "hana@lumenlabs.dev",
+    "location": "Osaka",
+    "bio": "SRE",
+    "created_at": "2023-02-06T09:00:00Z",
+    "updated_at": "2026-10-01T09:00:00Z"
+  }
+]

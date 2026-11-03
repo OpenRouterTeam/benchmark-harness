@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_sentry_resource","arguments":{"organizationSlug":"lumen-labs","resourceId":"6184421045","resourceType":"issue"}}}

@@ -1,0 +1,47 @@
+
+        query GetProducts($first: Int!, $query: String) {
+          products(first: $first, query: $query) {
+            edges {
+              node {
+                id
+                title
+                description
+                handle
+                status
+                createdAt
+                updatedAt
+                totalInventory
+                priceRangeV2 {
+                  minVariantPrice {
+                    amount
+                    currencyCode
+                  }
+                  maxVariantPrice {
+                    amount
+                    currencyCode
+                  }
+                }
+                images(first: 1) {
+                  edges {
+                    node {
+                      url
+                      altText
+                    }
+                  }
+                }
+                variants(first: 5) {
+                  edges {
+                    node {
+                      id
+                      title
+                      price
+                      inventoryQuantity
+                      sku
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      

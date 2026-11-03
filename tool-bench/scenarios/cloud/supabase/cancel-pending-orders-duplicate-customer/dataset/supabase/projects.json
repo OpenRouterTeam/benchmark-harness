@@ -1,0 +1,66 @@
+[
+  {
+    "id": "qmvbxtzkplrnwdhyfaco",
+    "ref": "qmvbxtzkplrnwdhyfaco",
+    "organization_id": "northwind-labs",
+    "organization_slug": "northwind-labs",
+    "name": "storefront-prod",
+    "region": "us-east-1",
+    "created_at": "2025-09-02T14:21:07.413Z",
+    "status": "ACTIVE_HEALTHY",
+    "database": {
+      "host": "db.qmvbxtzkplrnwdhyfaco.supabase.co",
+      "version": "17.4.1.064",
+      "postgres_engine": "17",
+      "release_channel": "ga"
+    }
+  },
+  {
+    "id": "hzrkcwpxnqdlmvbtejsa",
+    "ref": "hzrkcwpxnqdlmvbtejsa",
+    "organization_id": "northwind-labs",
+    "organization_slug": "northwind-labs",
+    "name": "storefront-staging",
+    "region": "us-east-1",
+    "created_at": "2025-09-03T08:02:51.006Z",
+    "status": "ACTIVE_HEALTHY",
+    "database": {
+      "host": "db.hzrkcwpxnqdlmvbtejsa.supabase.co",
+      "version": "17.4.1.064",
+      "postgres_engine": "17",
+      "release_channel": "ga"
+    }
+  },
+  {
+    "id": "bdnfrjskvlqmzpxtwcgh",
+    "ref": "bdnfrjskvlqmzpxtwcgh",
+    "organization_id": "northwind-marketing",
+    "organization_slug": "northwind-marketing",
+    "name": "marketing-site",
+    "region": "us-east-1",
+    "created_at": "2026-01-12T10:44:19.871Z",
+    "status": "ACTIVE_HEALTHY",
+    "database": {
+      "host": "db.bdnfrjskvlqmzpxtwcgh.supabase.co",
+      "version": "17.4.1.064",
+      "postgres_engine": "17",
+      "release_channel": "ga"
+    }
+  },
+  {
+    "id": "wgtplxkqrzvnmbcdhfye",
+    "ref": "wgtplxkqrzvnmbcdhfye",
+    "organization_id": "northwind-marketing",
+    "organization_slug": "northwind-marketing",
+    "name": "marketing-site-legacy",
+    "region": "us-east-1",
+    "created_at": "2024-06-18T16:05:33.220Z",
+    "status": "ACTIVE_HEALTHY",
+    "database": {
+      "host": "db.wgtplxkqrzvnmbcdhfye.supabase.co",
+      "version": "17.4.1.064",
+      "postgres_engine": "17",
+      "release_channel": "ga"
+    }
+  }
+]

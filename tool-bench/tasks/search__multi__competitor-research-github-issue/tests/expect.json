@@ -1,0 +1,102 @@
+{
+  "state": [
+    {
+      "pointer": "/services/github/issues",
+      "equals": null,
+      "exists": null,
+      "contains": null,
+      "any": {
+        "body": "349",
+        "labels": [
+          "pricing",
+          "lumenrail"
+        ],
+        "state": "open",
+        "title": "Lumenrail"
+      },
+      "key_prefix": "octo-org/competitive-intel#"
+    },
+    {
+      "pointer": "/services/github/issues",
+      "equals": null,
+      "exists": null,
+      "contains": null,
+      "any": {
+        "body": "50",
+        "title": "Scale"
+      },
+      "key_prefix": "octo-org/competitive-intel#"
+    },
+    {
+      "pointer": "/services/github/issues/octo-org~1competitive-intel#3/state",
+      "equals": "closed",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/github/issues/octo-org~1competitive-intel-2024#42",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "exa",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/(search|contents)$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "github",
+      "method": "POST",
+      "path": "/api/v3/repos/octo-org/competitive-intel/issues",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "github",
+      "method": "PATCH",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "github",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/api/v3/repos/[^/]+/[^/]+/issues/[0-9]+/comments$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "github",
+      "method": "POST",
+      "path": "/api/v3/repos/octo-org/competitive-intel-2024/issues",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

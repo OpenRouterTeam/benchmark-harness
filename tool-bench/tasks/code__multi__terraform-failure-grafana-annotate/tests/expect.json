@@ -1,0 +1,135 @@
+{
+  "state": [
+    {
+      "pointer": "/services/grafana/annotations/53/dashboardUID",
+      "equals": "payments-db-prod",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/grafana/annotations/53/time",
+      "equals": 1793193129000,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/grafana/annotations/53/text",
+      "equals": null,
+      "exists": null,
+      "contains": "run-Gy4tBHGggKx49nbH",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/grafana/annotations/53/text",
+      "equals": null,
+      "exists": null,
+      "contains": "InvalidParameterCombination",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/grafana/annotations/53/tags",
+      "equals": null,
+      "exists": null,
+      "contains": "terraform",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/grafana/annotations/53/tags",
+      "equals": null,
+      "exists": null,
+      "contains": "payments",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/grafana/annotations/54",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/terraform/runs/run-Gy4tBHGggKx49nbH/status",
+      "equals": "errored",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "grafana",
+      "method": "POST",
+      "path": "/api/annotations",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "dashboardUID": "payments-db-prod"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "grafana",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "grafana",
+      "method": "POST",
+      "path": "/api/dashboards/db",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "terraform",
+      "method": "POST",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "terraform",
+      "method": "PATCH",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "terraform",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

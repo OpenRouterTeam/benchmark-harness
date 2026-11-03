@@ -1,0 +1,16 @@
+[
+  {
+    "_key": "PVTV_kwDOAAA1",
+    "database_id": 1,
+    "project": "octo-org/7",
+    "number": 1,
+    "name": "Board",
+    "layout": "BOARD_LAYOUT",
+    "filter": "is:open",
+    "visible_fields": [
+      1001,
+      1002
+    ],
+    "created_at": "2026-01-02T00:00:00Z"
+  }
+]

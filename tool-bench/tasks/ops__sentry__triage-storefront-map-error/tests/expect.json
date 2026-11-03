@@ -1,0 +1,87 @@
+{
+  "state": [
+    {
+      "pointer": "/services/sentry/issues/STOREFRONT-WEB-8D/status",
+      "equals": "resolved",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/sentry/issues/STOREFRONT-WEB-8D/statusDetails/inNextRelease",
+      "equals": true,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/sentry/issues/STOREFRONT-WEB-8D/assignedTo/type",
+      "equals": "team",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/sentry/issues/STOREFRONT-WEB-8D/assignedTo/name",
+      "equals": "frontend-web",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/sentry/issues/STOREFRONT-WEB-7Q/status",
+      "equals": "unresolved",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/sentry/issues/ADMIN-DASHBOARD-2M/status",
+      "equals": "unresolved",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "sentry",
+      "method": "PUT",
+      "path": null,
+      "path_regex": "(?i)^/api/0/organizations/lumen-labs/issues/(STOREFRONT-WEB-8D|6184421045)/$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "sentry",
+      "method": "PUT",
+      "path": null,
+      "path_regex": "(?i)/issues/(STOREFRONT-WEB-7Q|6184420122|ADMIN-DASHBOARD-2M|6184421050)/$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "sentry",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

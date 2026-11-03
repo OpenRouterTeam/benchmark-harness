@@ -1,0 +1,1 @@
+PR #42's latest CI run (CI #61, run 9005) failed in the `unit-tests` job. The failing test is `TestRetryBackoffCapsAtMaxDelay` in internal/webhook (backoff_test.go:17): "expected delay 30s, got 32s" - the new cap in Backoff() only applies above maxDelay+2s, so attempt 6 returns 32s instead of 30s. Lint and integration tests passed.

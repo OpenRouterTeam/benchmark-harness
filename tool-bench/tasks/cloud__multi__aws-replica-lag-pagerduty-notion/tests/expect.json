@@ -1,0 +1,170 @@
+{
+  "state": [
+    {
+      "pointer": "/services/pagerduty/notes",
+      "equals": null,
+      "exists": null,
+      "contains": null,
+      "any": {
+        "content": "orders-db-replica-2-replica-lag"
+      },
+      "key_prefix": "Q3K8ORDBLAG2RX/"
+    },
+    {
+      "pointer": "/services/pagerduty/incidents/Q3K8ORDBLAG2RX/status",
+      "equals": "triggered",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/pagerduty/notes/Q1INVDBLAG7QWE~11",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/pagerduty/notes/Q5DBSTG9LAGT3N~11",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/notion/pages",
+      "equals": null,
+      "exists": null,
+      "contains": null,
+      "any": {
+        "in_trash": false,
+        "parent": {
+          "data_source_id": "7d2e3f4a-5b6c-4d7e-9f80-a1b2c3d4e5f6"
+        },
+        "properties": {
+          "Alarm": {
+            "rich_text": [
+              {
+                "plain_text": "orders-db-replica-2-replica-lag"
+              }
+            ]
+          },
+          "Incident": {
+            "rich_text": [
+              {
+                "plain_text": "4812"
+              }
+            ]
+          },
+          "Severity": {
+            "select": {
+              "name": "SEV2"
+            }
+          },
+          "Started": {
+            "date": {
+              "start": "2026-10-30"
+            }
+          },
+          "Status": {
+            "status": {
+              "name": "Draft"
+            }
+          },
+          "Title": {
+            "title": [
+              {
+                "plain_text": "orders-db-replica-2 replication lag"
+              }
+            ]
+          }
+        }
+      },
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/notion/pages/8e3f4a5b-6c7d-4e8f-a091-b2c3d4e5f607/properties/Title/title/0/plain_text",
+      "equals": "orders-db-replica-1 replication lag",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/notion/pages/8e3f4a5b-6c7d-4e8f-a091-b2c3d4e5f607/in_trash",
+      "equals": false,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "pagerduty",
+      "method": "POST",
+      "path": "/incidents/Q3K8ORDBLAG2RX/notes",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "notion",
+      "method": "POST",
+      "path": "/v1/pages",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "pagerduty",
+      "method": "PUT",
+      "path": null,
+      "path_regex": "^/incidents",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "notion",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "aws",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "Action=SetAlarmState",
+      "min_count": 1
+    },
+    {
+      "service": "aws",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "\"StateReason\"",
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

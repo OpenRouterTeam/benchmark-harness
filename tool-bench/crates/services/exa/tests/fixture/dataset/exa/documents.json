@@ -1,0 +1,49 @@
+[
+  {
+    "_key": "https://docs.driftwood.dev/python/v4/configuration",
+    "url": "https://docs.driftwood.dev/python/v4/configuration",
+    "title": "Client configuration | Driftwood Python SDK v4",
+    "publishedDate": "2026-08-19",
+    "text": "Client configuration (Python SDK v4). Pass options to driftwood.Client(...). The timeout_seconds option sets the request timeout for every API call; it defaults to 30 seconds. max_retries defaults to 3 and retries use exponential backoff. base_url overrides the API host. In v4 the old request_timeout option was removed; use timeout_seconds instead.",
+    "keywords": "python sdk client timeout option default configuration"
+  },
+  {
+    "_key": "https://docs.driftwood.dev/python/v3/configuration",
+    "url": "https://docs.driftwood.dev/python/v3/configuration",
+    "title": "Client configuration | Driftwood Python SDK v3 (legacy)",
+    "publishedDate": "2024-02-02",
+    "text": "Client configuration (Python SDK v3, legacy). The request_timeout option sets the request timeout in seconds and defaults to 60. retries defaults to 2. This version is no longer maintained; see the v4 documentation.",
+    "keywords": "python sdk client timeout option default configuration"
+  },
+  {
+    "_key": "https://docs.driftwood.dev/node/v4/configuration",
+    "url": "https://docs.driftwood.dev/node/v4/configuration",
+    "title": "Client configuration | Driftwood Node.js SDK v4",
+    "publishedDate": "2026-08-19",
+    "text": "Client configuration (Node.js SDK v4). new Driftwood({ timeoutMs }) sets the request timeout in milliseconds; the default is 120000 (120 seconds). maxRetries defaults to 3.",
+    "keywords": "node sdk client timeout option default configuration"
+  },
+  {
+    "_key": "https://github.com/driftwood-io/driftwood-python",
+    "url": "https://github.com/driftwood-io/driftwood-python",
+    "title": "driftwood-io/driftwood-python: Official Python SDK for the Driftwood API",
+    "category": "github",
+    "publishedDate": "2026-09-30",
+    "text": "Official Python SDK for the Driftwood API. Install with pip install driftwood>=4. Quick start: client = driftwood.Client(api_key=\"...\", timeout_seconds=10). See the configuration docs for all client options and their defaults.",
+    "keywords": "python sdk timeout",
+    "subpages": [
+      "https://docs.driftwood.dev/python/v4/configuration",
+      "https://docs.driftwood.dev/node/v4/configuration"
+    ],
+    "image": "https://opengraph.githubassets.com/driftwood-python.png"
+  },
+  {
+    "_key": "https://stackoverflow.com/questions/78123456/driftwood-python-client-times-out",
+    "url": "https://stackoverflow.com/questions/78123456/driftwood-python-client-times-out",
+    "title": "Driftwood Python client times out after 60 seconds - Stack Overflow",
+    "author": "devops_dan",
+    "publishedDate": "2024-06-11",
+    "text": "My Driftwood Python client times out after 60 seconds on large exports. Answer: set request_timeout when creating the client, e.g. Client(request_timeout=300). The default request timeout is 60 seconds.",
+    "keywords": "python sdk timeout default"
+  }
+]

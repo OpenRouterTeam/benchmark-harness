@@ -1,0 +1,69 @@
+[
+  {
+    "_key": "arxiv:1706.03762",
+    "paperId": "arxiv:1706.03762",
+    "primaryId": "arxiv:1706.03762",
+    "ids": {
+      "arxiv": [
+        "1706.03762"
+      ],
+      "doi": [
+        "10.48550/arXiv.1706.03762"
+      ]
+    },
+    "title": "Attention Is All You Need",
+    "abstract": "We propose the Transformer, based solely on attention mechanisms.",
+    "authors": [
+      {
+        "name": "Ashish Vaswani",
+        "affiliation": "Google Brain"
+      },
+      {
+        "name": "Noam Shazeer"
+      }
+    ],
+    "categories": [
+      "cs.CL",
+      "cs.LG"
+    ],
+    "createdDate": "2017-06-12",
+    "updateDate": "2023-08-02",
+    "passages": [
+      {
+        "text": "The Transformer uses multi-head attention with h = 8 heads.",
+        "section": "Model"
+      },
+      {
+        "text": "We trained on WMT 2014 English-German.",
+        "section": "Training"
+      }
+    ],
+    "related": {
+      "similar": [
+        "arxiv:1810.04805"
+      ],
+      "citers": [
+        "arxiv:1810.04805"
+      ],
+      "references": []
+    }
+  },
+  {
+    "_key": "arxiv:1810.04805",
+    "paperId": "arxiv:1810.04805",
+    "primaryId": "arxiv:1810.04805",
+    "ids": {
+      "arxiv": [
+        "1810.04805"
+      ]
+    },
+    "title": "BERT: Pre-training of Deep Bidirectional Transformers",
+    "abstract": "We introduce BERT, a bidirectional transformer encoder.",
+    "authors": "Jacob Devlin, Ming-Wei Chang",
+    "categories": [
+      "cs.CL"
+    ],
+    "createdDate": "2018-10-11",
+    "updateDate": "2019-05-24"
+  }
+]

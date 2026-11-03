@@ -1,0 +1,33 @@
+[scenario]
+id = "search/elasticsearch/latency-by-region"
+title = "Average checkout latency per region from request logs"
+now = "2026-10-30T18:00:00Z"
+seed = "search-elasticsearch-latency-by-region"
+services = ["elasticsearch"]
+tags = ["lookup", "single-service", "elasticsearch"]
+timeout_sec = 900
+
+# Successful /checkout/submit today: eu-west-1 412.5, ap-southeast-2 305, us-east-1 210.
+# Distractors: us-east-1 504 timeouts (~30s), ap-southeast-2's slow requests yesterday and on
+# another endpoint, and a September index.
+[expect.answer]
+contains = ["eu-west-1"]
+regex = '412[.,]5'
+
+[[expect.required_calls]]
+service = "elasticsearch"
+method = "POST"
+path_regex = "(_search|_query)$"
+
+[solution]
+answer = "Slowest region: eu-west-1, average 412.5 ms for successful /checkout/submit requests on 2026-10-30 (ap-southeast-2: 305 ms, us-east-1: 210 ms).\n"
+
+[[solution.call]]
+endpoint = "elasticsearch"
+tool = "get_mappings"
+arguments = { index = "requests-checkout-2026.10" }
+
+[[solution.call]]
+endpoint = "elasticsearch"
+tool = "esql"
+arguments = { query = "FROM requests-checkout-2026.10 | WHERE endpoint == \"/checkout/submit\" AND status_code < 400 AND @timestamp >= \"2026-10-30T00:00:00Z\" | STATS avg_ms = AVG(duration_ms), requests = COUNT(*) BY region | SORT avg_ms DESC" }

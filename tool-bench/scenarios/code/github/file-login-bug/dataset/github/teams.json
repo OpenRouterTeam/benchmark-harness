@@ -1,0 +1,48 @@
+[
+  {
+    "_key": "octo-org/backend",
+    "id": 41,
+    "name": "Backend",
+    "slug": "backend",
+    "description": "Payments and billing services",
+    "privacy": "closed",
+    "members": [
+      "priya",
+      "sam",
+      "mona"
+    ],
+    "repos": [
+      "octo-org/payments-api",
+      "octo-org/billing-worker"
+    ]
+  },
+  {
+    "_key": "octo-org/frontend",
+    "id": 42,
+    "name": "Frontend",
+    "slug": "frontend",
+    "description": "Web app",
+    "privacy": "closed",
+    "members": [
+      "jdoe",
+      "lin"
+    ],
+    "repos": [
+      "octo-org/web",
+      "octo-org/app"
+    ]
+  },
+  {
+    "_key": "octo-org/sre",
+    "id": 43,
+    "name": "SRE",
+    "slug": "sre",
+    "description": "On-call and infrastructure",
+    "privacy": "closed",
+    "members": [
+      "mona",
+      "octocat"
+    ],
+    "repos": []
+  }
+]

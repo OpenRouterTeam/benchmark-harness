@@ -1,0 +1,1 @@
+Priya's hotfix for the refunds being posted twice when the payment provider retries its webhook is ready: it's been reviewed and its pipeline is green. It's in the `northwind/payments/ledger` project on our GitLab. Please approve that merge request, merge it into `main`, and remove its source branch. Leave the other open merge requests in that project alone.

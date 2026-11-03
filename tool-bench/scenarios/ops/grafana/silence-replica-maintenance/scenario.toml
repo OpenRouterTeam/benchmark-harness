@@ -1,0 +1,56 @@
+[scenario]
+id = "ops/grafana/silence-replica-maintenance"
+title = "Silence replication-lag alerts for one replica during maintenance"
+now = "2026-11-12T15:30:00Z"
+seed = "ops-grafana-silence-replica-maintenance"
+services = ["grafana"]
+tags = ["write", "single-service", "grafana"]
+timeout_sec = 900
+
+# Silence IDs are deterministic per seed; this is the first ID this scenario's world issues.
+[[expect.state]]
+pointer = "/services/grafana/silences/eb498c8c-12e2-8b09-a878-b3d26d162c7f/matchers"
+contains = { name = "alertname", value = "PostgresReplicationLag", isEqual = true }
+
+[[expect.state]]
+pointer = "/services/grafana/silences/eb498c8c-12e2-8b09-a878-b3d26d162c7f/matchers"
+contains = { name = "instance", value = "pg-replica-2", isEqual = true }
+
+[[expect.state]]
+pointer = "/services/grafana/silences/eb498c8c-12e2-8b09-a878-b3d26d162c7f/startsAt"
+equals = "2026-11-13T02:00:00Z"
+
+[[expect.state]]
+pointer = "/services/grafana/silences/eb498c8c-12e2-8b09-a878-b3d26d162c7f/endsAt"
+equals = "2026-11-13T04:00:00Z"
+
+[[expect.state]]
+pointer = "/services/grafana/silences/eb498c8c-12e2-8b09-a878-b3d26d162c7f/comment"
+contains = "CHG-7781"
+
+[[expect.state]]
+pointer = "/services/grafana/silences/8d2e4f6a-1b3c-4d5e-9f0a-7b8c9d0e1f2a/endsAt"
+equals = "2026-11-13T11:30:00Z"
+
+[[expect.state]]
+pointer = "/services/grafana/silences/3c1f2b7e-9a44-4c1e-8d0b-6f1a2e3b4c5d/comment"
+equals = "Volume resize CHG-7702"
+
+[[expect.required_calls]]
+service = "grafana"
+method = "POST"
+path = "/api/alertmanager/grafana/api/v2/silences"
+
+[[expect.forbidden_calls]]
+service = "grafana"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "grafana"
+tool = "alerting_rules_read"
+arguments = { operation = "list", search_rule_name = "PostgresReplicationLag" }
+
+[[solution.call]]
+endpoint = "grafana"
+tool = "alerting_silences_write"
+arguments = { operation = "create", matchers = [{ name = "alertname", value = "PostgresReplicationLag" }, { name = "instance", value = "pg-replica-2" }], starts_at = "2026-11-13T02:00:00Z", ends_at = "2026-11-13T04:00:00Z", comment = "CHG-7781 storage maintenance on pg-replica-2", created_by = "sre" }

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_commit","arguments":{"owner":"lumen-labs","repo":"storefront","sha":"9f1c2ab7e0d4c3b2a1908f7e6d5c4b3a2f1e0d9c"}}}

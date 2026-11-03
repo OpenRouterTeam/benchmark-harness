@@ -1,0 +1,6 @@
+[scenario]
+id = "fixtures/pagerduty/tidewater"
+title = "PagerDuty mock test fixture"
+now = "2026-10-30T14:00:00Z"
+seed = "fixtures-pagerduty-tidewater"
+services = ["pagerduty"]

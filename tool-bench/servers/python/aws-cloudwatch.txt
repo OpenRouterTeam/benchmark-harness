@@ -1,0 +1,169 @@
+annotated-doc==0.0.5
+    # via typer
+annotated-types==0.8.0
+    # via pydantic
+anyio==4.15.1
+    # via
+    #   httpx2
+    #   mcp
+    #   sse-starlette
+    #   starlette
+attrs==26.1.0
+    # via
+    #   jsonschema
+    #   referencing
+awslabs-cloudwatch-mcp-server==0.3.1
+    # via -r /tmp/req-aws-cloudwatch.in
+boto3==1.43.123
+    # via awslabs-cloudwatch-mcp-server
+botocore==1.43.123
+    # via
+    #   boto3
+    #   s3transfer
+certifi==2026.10.23
+    # via requests
+cffi==2.1.1
+    # via cryptography
+charset-normalizer==3.5.2
+    # via requests
+click==8.5.0
+    # via uvicorn
+cryptography==50.0.2
+    # via pyjwt
+formulaic==1.2.2
+    # via statsmodels
+h11==0.16.0
+    # via
+    #   httpcore2
+    #   uvicorn
+httpcore2==2.16.0
+    # via httpx2
+httpx2==2.16.0
+    # via mcp
+idna==3.20
+    # via
+    #   anyio
+    #   httpx2
+    #   requests
+interface-meta==2.0.1
+    # via formulaic
+jmespath==1.1.0
+    # via
+    #   boto3
+    #   botocore
+jsonschema==4.26.0
+    # via mcp
+jsonschema-specifications==2025.9.1
+    # via jsonschema
+loguru==0.7.3
+    # via awslabs-cloudwatch-mcp-server
+markdown-it-py==4.2.0
+    # via rich
+mcp==2.3.0
+    # via awslabs-cloudwatch-mcp-server
+mcp-types==2.3.0
+    # via mcp
+mdurl==0.1.2
+    # via markdown-it-py
+narwhals==2.28.0
+    # via formulaic
+numpy==2.5.4
+    # via
+    #   awslabs-cloudwatch-mcp-server
+    #   formulaic
+    #   pandas
+    #   patsy
+    #   scipy
+    #   statsmodels
+opentelemetry-api==1.45.2
+    # via mcp
+packaging==26.3
+    # via
+    #   patsy
+    #   statsmodels
+pandas==3.1.0
+    # via
+    #   awslabs-cloudwatch-mcp-server
+    #   formulaic
+    #   statsmodels
+patsy==1.0.3
+    # via statsmodels
+pycparser==3.12
+    # via cffi
+pydantic==2.14.2
+    # via
+    #   awslabs-cloudwatch-mcp-server
+    #   mcp
+    #   mcp-types
+pydantic-core==2.50.2
+    # via pydantic
+pygments==2.21.0
+    # via rich
+pyjwt==2.15.1
+    # via mcp
+python-dateutil==2.9.0.post0
+    # via
+    #   botocore
+    #   pandas
+python-dotenv==1.2.4
+    # via mcp
+python-multipart==0.0.32
+    # via mcp
+referencing==0.37.0
+    # via
+    #   jsonschema
+    #   jsonschema-specifications
+requests==2.34.2
+    # via awslabs-cloudwatch-mcp-server
+rich==15.0.0
+    # via typer
+rpds-py==2026.9.1
+    # via
+    #   jsonschema
+    #   referencing
+s3transfer==0.19.3
+    # via boto3
+scipy==1.18.1
+    # via
+    #   formulaic
+    #   statsmodels
+shellingham==1.5.4
+    # via typer
+six==1.17.0
+    # via python-dateutil
+sse-starlette==3.6.0
+    # via mcp
+starlette==1.10.0
+    # via
+    #   mcp
+    #   sse-starlette
+statsmodels==0.15.0
+    # via awslabs-cloudwatch-mcp-server
+truststore==0.10.5
+    # via
+    #   httpcore2
+    #   httpx2
+typer==0.27.3
+    # via mcp
+typing-extensions==4.16.0
+    # via
+    #   anyio
+    #   formulaic
+    #   mcp
+    #   mcp-types
+    #   opentelemetry-api
+    #   pydantic
+    #   pydantic-core
+    #   typing-inspection
+typing-inspection==0.4.4
+    # via
+    #   mcp
+    #   pydantic
+urllib3==2.8.0
+    # via
+    #   botocore
+    #   requests
+uvicorn==0.54.0
+    # via mcp
+wrapt==2.5.2
+    # via formulaic

@@ -1,0 +1,221 @@
+[
+  {
+    "id": "a1f0c2d4-1b2c-5d6e-8f90-0a1b2c3d4e01",
+    "type": "incidents",
+    "attributes": {
+      "public_id": 412,
+      "title": "Checkout API elevated 5xx",
+      "severity": "SEV-2",
+      "state": "active",
+      "customer_impacted": true,
+      "customer_impact_scope": "Checkout failures for a subset of users",
+      "created": "2026-10-30T14:00:00Z",
+      "modified": "2026-10-30T14:10:00Z",
+      "detected": "2026-10-30T14:00:00Z",
+      "resolved": null,
+      "time_to_detect": 0,
+      "time_to_repair": null,
+      "time_to_resolve": null,
+      "fields": {
+        "severity": {
+          "type": "dropdown",
+          "value": "SEV-2"
+        },
+        "state": {
+          "type": "dropdown",
+          "value": "active"
+        },
+        "services": {
+          "type": "autocomplete",
+          "value": [
+            "checkout-api"
+          ]
+        },
+        "teams": {
+          "type": "autocomplete",
+          "value": [
+            "payments"
+          ]
+        },
+        "summary": {
+          "type": "textbox",
+          "value": null
+        }
+      },
+      "visibility": "organization",
+      "is_test": false
+    },
+    "relationships": {
+      "commander_user": {
+        "data": {
+          "id": "3b3c4e1a-8d2f-11ef-9c1a-da7ad0900002",
+          "type": "users"
+        }
+      },
+      "created_by_user": {
+        "data": {
+          "id": "3b3c4e1a-8d2f-11ef-9c1a-da7ad0900002",
+          "type": "users"
+        }
+      },
+      "last_modified_by_user": {
+        "data": {
+          "id": "3b3c4e1a-8d2f-11ef-9c1a-da7ad0900002",
+          "type": "users"
+        }
+      },
+      "integrations": {
+        "data": []
+      },
+      "attachments": {
+        "data": []
+      }
+    }
+  },
+  {
+    "id": "a1f0c2d4-1b2c-5d6e-8f90-0a1b2c3d4e02",
+    "type": "incidents",
+    "attributes": {
+      "public_id": 411,
+      "title": "Search latency regression",
+      "severity": "SEV-3",
+      "state": "resolved",
+      "customer_impacted": false,
+      "customer_impact_scope": null,
+      "created": "2026-10-28T15:00:00Z",
+      "modified": "2026-10-28T16:30:00Z",
+      "detected": "2026-10-28T15:00:00Z",
+      "resolved": "2026-10-28T16:30:00Z",
+      "time_to_detect": 0,
+      "time_to_repair": 5400,
+      "time_to_resolve": 5400,
+      "fields": {
+        "severity": {
+          "type": "dropdown",
+          "value": "SEV-3"
+        },
+        "state": {
+          "type": "dropdown",
+          "value": "resolved"
+        },
+        "services": {
+          "type": "autocomplete",
+          "value": [
+            "checkout-api"
+          ]
+        },
+        "teams": {
+          "type": "autocomplete",
+          "value": [
+            "payments"
+          ]
+        },
+        "summary": {
+          "type": "textbox",
+          "value": null
+        }
+      },
+      "visibility": "organization",
+      "is_test": false
+    },
+    "relationships": {
+      "commander_user": {
+        "data": {
+          "id": "5f1d2c3b-8d2f-11ef-9c1a-da7ad0900003",
+          "type": "users"
+        }
+      },
+      "created_by_user": {
+        "data": {
+          "id": "3b3c4e1a-8d2f-11ef-9c1a-da7ad0900002",
+          "type": "users"
+        }
+      },
+      "last_modified_by_user": {
+        "data": {
+          "id": "3b3c4e1a-8d2f-11ef-9c1a-da7ad0900002",
+          "type": "users"
+        }
+      },
+      "integrations": {
+        "data": []
+      },
+      "attachments": {
+        "data": []
+      }
+    }
+  },
+  {
+    "id": "a1f0c2d4-1b2c-5d6e-8f90-0a1b2c3d4e03",
+    "type": "incidents",
+    "attributes": {
+      "public_id": 410,
+      "title": "Delayed email notifications",
+      "severity": "SEV-4",
+      "state": "stable",
+      "customer_impacted": false,
+      "customer_impact_scope": null,
+      "created": "2026-10-27T15:00:00Z",
+      "modified": "2026-10-27T15:10:00Z",
+      "detected": "2026-10-27T15:00:00Z",
+      "resolved": null,
+      "time_to_detect": 0,
+      "time_to_repair": null,
+      "time_to_resolve": null,
+      "fields": {
+        "severity": {
+          "type": "dropdown",
+          "value": "SEV-4"
+        },
+        "state": {
+          "type": "dropdown",
+          "value": "stable"
+        },
+        "services": {
+          "type": "autocomplete",
+          "value": [
+            "checkout-api"
+          ]
+        },
+        "teams": {
+          "type": "autocomplete",
+          "value": [
+            "payments"
+          ]
+        },
+        "summary": {
+          "type": "textbox",
+          "value": null
+        }
+      },
+      "visibility": "organization",
+      "is_test": false
+    },
+    "relationships": {
+      "commander_user": {
+        "data": {
+          "id": "5f1d2c3b-8d2f-11ef-9c1a-da7ad0900003",
+          "type": "users"
+        }
+      },
+      "created_by_user": {
+        "data": {
+          "id": "3b3c4e1a-8d2f-11ef-9c1a-da7ad0900002",
+          "type": "users"
+        }
+      },
+      "last_modified_by_user": {
+        "data": {
+          "id": "3b3c4e1a-8d2f-11ef-9c1a-da7ad0900002",
+          "type": "users"
+        }
+      },
+      "integrations": {
+        "data": []
+      },
+      "attachments": {
+        "data": []
+      }
+    }
+  }
+]

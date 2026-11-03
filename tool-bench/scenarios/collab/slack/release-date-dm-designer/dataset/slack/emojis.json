@@ -1,0 +1,27 @@
+[
+  {
+    "_key": "shipit",
+    "name": "shipit",
+    "alias_for": "squirrel"
+  },
+  {
+    "_key": "squirrel",
+    "name": "squirrel",
+    "url": "https://emoji.slack-edge.com/T0OCTOCORP/squirrel/1a2b3c.png"
+  },
+  {
+    "_key": "partyparrot",
+    "name": "partyparrot",
+    "url": "https://emoji.slack-edge.com/T0OCTOCORP/partyparrot/9f8e7d.gif"
+  },
+  {
+    "_key": "lgtm",
+    "name": "lgtm",
+    "url": "https://emoji.slack-edge.com/T0OCTOCORP/lgtm/44aa21.png"
+  },
+  {
+    "_key": "postgres",
+    "name": "postgres",
+    "url": "https://emoji.slack-edge.com/T0OCTOCORP/postgres/77cc10.png"
+  }
+]

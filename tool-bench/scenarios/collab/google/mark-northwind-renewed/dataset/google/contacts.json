@@ -1,0 +1,117 @@
+[
+  {
+    "id": "c1001",
+    "resourceName": "people/c1001",
+    "names": [
+      {
+        "givenName": "Priya",
+        "familyName": "Natarajan",
+        "displayName": "Priya Natarajan"
+      }
+    ],
+    "emailAddresses": [
+      {
+        "value": "priya.natarajan@octo-corp.example",
+        "type": "work"
+      }
+    ],
+    "organizations": [
+      {
+        "name": "Octo Corp",
+        "title": "Product Lead"
+      }
+    ]
+  },
+  {
+    "id": "c1002",
+    "resourceName": "people/c1002",
+    "names": [
+      {
+        "givenName": "Marcus",
+        "familyName": "Webb",
+        "displayName": "Marcus Webb"
+      }
+    ],
+    "emailAddresses": [
+      {
+        "value": "marcus.webb@octo-corp.example",
+        "type": "work"
+      }
+    ],
+    "organizations": [
+      {
+        "name": "Octo Corp",
+        "title": "Engineering Manager"
+      }
+    ]
+  },
+  {
+    "id": "c1003",
+    "resourceName": "people/c1003",
+    "names": [
+      {
+        "givenName": "Dana",
+        "familyName": "Whitfield",
+        "displayName": "Dana Whitfield"
+      }
+    ],
+    "emailAddresses": [
+      {
+        "value": "dana.whitfield@contoso.example",
+        "type": "work"
+      }
+    ],
+    "organizations": [
+      {
+        "name": "Contoso",
+        "title": "Vendor Risk Analyst"
+      }
+    ]
+  },
+  {
+    "id": "c1004",
+    "resourceName": "people/c1004",
+    "names": [
+      {
+        "givenName": "Dana",
+        "familyName": "Whitman",
+        "displayName": "Dana Whitman"
+      }
+    ],
+    "emailAddresses": [
+      {
+        "value": "dana.whitman@octo-corp.example",
+        "type": "work"
+      }
+    ],
+    "organizations": [
+      {
+        "name": "Octo Corp",
+        "title": "Finance"
+      }
+    ]
+  },
+  {
+    "id": "c1005",
+    "resourceName": "people/c1005",
+    "names": [
+      {
+        "givenName": "Lena",
+        "familyName": "Fischer",
+        "displayName": "Lena Fischer"
+      }
+    ],
+    "emailAddresses": [
+      {
+        "value": "lena.fischer@octo-corp.example",
+        "type": "work"
+      }
+    ],
+    "organizations": [
+      {
+        "name": "Octo Corp",
+        "title": "Procurement"
+      }
+    ]
+  }
+]

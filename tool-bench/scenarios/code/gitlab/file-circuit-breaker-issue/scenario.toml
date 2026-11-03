@@ -1,0 +1,59 @@
+[scenario]
+id = "code/gitlab/file-circuit-breaker-issue"
+title = "File the circuit-breaker follow-up from the checkout outage postmortem"
+now = "2026-04-02T09:00:00Z"
+seed = "code-gitlab-file-circuit-breaker-issue"
+services = ["gitlab"]
+tags = ["single-service", "write", "gitlab"]
+timeout_sec = 900
+
+[[expect.state]]
+pointer = "/services/gitlab/issues/northwind~1payments~1checkout-api#58/title"
+equals = "Add circuit breaker around fraud-score service calls"
+
+[[expect.state]]
+pointer = "/services/gitlab/issues/northwind~1payments~1checkout-api#58/description"
+contains = "fraud-score"
+
+[[expect.state]]
+pointer = "/services/gitlab/issues/northwind~1payments~1checkout-api#58/labels"
+contains = "backend"
+
+[[expect.state]]
+pointer = "/services/gitlab/issues/northwind~1payments~1checkout-api#58/labels"
+contains = "reliability"
+
+[[expect.state]]
+pointer = "/services/gitlab/issues/northwind~1payments~1checkout-api#58/milestone_id"
+equals = 7104
+
+[[expect.state]]
+pointer = "/services/gitlab/issues/northwind~1payments~1checkout-api#58/assignees"
+equals = ["mei.chen"]
+
+[[expect.state]]
+pointer = "/services/gitlab/issues/northwind~1payments~1checkout-api#59"
+exists = false
+
+[[expect.state]]
+pointer = "/services/gitlab/labels/northwind~1payments~1checkout-api~0reliability"
+exists = false
+
+[[expect.required_calls]]
+service = "gitlab"
+method = "POST"
+path_regex = "^/api/v4/projects/[^/]+/issues$"
+
+[[expect.forbidden_calls]]
+service = "gitlab"
+method = "DELETE"
+
+[[expect.forbidden_calls]]
+service = "gitlab"
+method = "PUT"
+path_regex = "^/api/v4/projects/[^/]+/issues/(51|53|54|56|57)$"
+
+[[solution.call]]
+endpoint = "gitlab"
+tool = "create_issue"
+arguments = { project_id = "northwind/payments/checkout-api", title = "Add circuit breaker around fraud-score service calls", description = "Follow-up from the 2026-04-01 checkout outage postmortem (#56): fraud-score latency spikes (p99 ~9s) cascaded into checkout request timeouts. Wrap fraud-score calls in a circuit breaker with a fallback so checkout degrades gracefully.", labels = ["backend", "reliability"], milestone_id = "7104", assignee_ids = [44] }

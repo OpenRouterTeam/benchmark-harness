@@ -1,0 +1,504 @@
+# tool-bench service catalog: the single source of truth for every service.
+#
+# [[service]]
+#   name        mock API / dataset name (crates/services/<name>)
+#   group       search | code | ops | cloud | business | collab
+#   mode        real      vendor/community server pointed at the world by an env/flag
+#               real-tls  same, but the client only talks HTTPS to a fixed hostname
+#                         (world serves those hostnames on 443 with its local CA)
+#               replica   our replica-mcp serving a captured tool list verbatim
+#   world_port  plain-HTTP port of the mock API inside the world container
+#   hosts       hostnames the world answers on 443 for this service
+#
+# [[service.endpoint]]  one MCP server URL given to the agent (http://tools:<mcp_port>/mcp)
+#   id          MCP server name the agent sees (Claude Code shows tools as mcp__<id>__<tool>)
+#   runtime     npm | pypi | go | cargo | git-npm | git-pypi | replica
+#   package / version   exact pin
+#   command / args / env  stdio launch inside the tools container
+#   snapshot    (replica) captured tool list served verbatim
+#   source      (replica) where the captured tool list came from
+#
+# Placeholders in args/env: {world} = http://world:<world_port>, {world_host} = world:<world_port>,
+# {config} = /etc/tool-bench/<service name>.
+# Every toolset/feature flag is switched on; options that change the tool list at runtime or
+# add non-determinism are pinned off (spec section 4).
+
+# ───────────────────────────── Search & web ─────────────────────────────
+
+[[service]]
+name = "firecrawl"
+group = "search"
+mode = "real"
+world_port = 8102
+hosts = []
+[[service.endpoint]]
+id = "firecrawl"
+mcp_port = 7102
+runtime = "npm"
+package = "firecrawl-mcp"
+version = "3.36.0"
+command = "firecrawl-mcp"
+env = { FIRECRAWL_API_URL = "{world}", FIRECRAWL_API_KEY = "fc-toolbench0000000000000000000000" }
+
+[[service]]
+name = "brave"
+group = "search"
+mode = "real-tls"
+world_port = 8103
+hosts = ["api.search.brave.com"]
+[[service.endpoint]]
+id = "brave-search"
+mcp_port = 7103
+runtime = "npm"
+package = "@brave/brave-search-mcp-server"
+version = "2.1.4"
+command = "brave-search-mcp-server"
+args = ["--transport", "stdio"]
+env = { BRAVE_API_KEY = "BSA-toolbench", BRAVE_MCP_TRANSPORT = "stdio" }
+
+[[service]]
+name = "exa"
+group = "search"
+# exa-mcp-server 3.4.2 bundles exa-js with the base URL fixed to https://api.exa.ai and
+# never reads EXA_API_BASE_URL, so the world serves that hostname over TLS.
+mode = "real-tls"
+world_port = 8104
+hosts = ["api.exa.ai"]
+[[service.endpoint]]
+id = "exa"
+mcp_port = 7104
+runtime = "npm"
+package = "exa-mcp-server"
+version = "3.4.2"
+command = "exa-mcp-server"
+env = { EXA_API_KEY = "exa-toolbench", EXA_API_BASE_URL = "{world}", ENABLED_TOOLS = "web_search_exa,web_search_advanced_exa,web_fetch_exa,crawling_exa,deep_search_exa,deep_researcher_start,deep_researcher_check,get_code_context_exa,company_research_exa,linkedin_search_exa,people_search_exa,agent_run" }
+
+[[service]]
+name = "tavily"
+group = "search"
+mode = "real-tls"
+world_port = 8105
+hosts = ["api.tavily.com"]
+[[service.endpoint]]
+id = "tavily"
+mcp_port = 7105
+runtime = "npm"
+package = "tavily-mcp"
+version = "0.2.22"
+command = "tavily-mcp"
+env = { TAVILY_API_KEY = "tvly-toolbench" }
+
+[[service]]
+name = "elasticsearch"
+group = "search"
+mode = "real"
+world_port = 8106
+hosts = []
+[[service.endpoint]]
+id = "elasticsearch"
+mcp_port = 7106
+runtime = "cargo"
+package = "https://github.com/elastic/mcp-server-elasticsearch"
+version = "v0.4.6"
+command = "elasticsearch-core-mcp-server"
+args = ["stdio"]
+# rmcp lists tools in HashMap order, which changes between runs.
+sort_tools = true
+env = { ES_URL = "{world}", ES_API_KEY = "es-toolbench" }
+
+# ──────────────────────────── Code & delivery ───────────────────────────
+
+[[service]]
+name = "github"
+group = "code"
+mode = "real-tls"
+world_port = 8101
+hosts = ["github.octo-corp.com", "api.github.com"]
+[[service.endpoint]]
+id = "github"
+mcp_port = 7101
+runtime = "go"
+package = "github.com/github/github-mcp-server/v2/cmd/github-mcp-server"
+version = "v2.0.3"
+command = "github-mcp-server"
+args = ["stdio", "--toolsets", "all"]
+env = { GITHUB_PERSONAL_ACCESS_TOKEN = "ghp_toolbench000000000000000000000000000", GITHUB_HOST = "https://github.octo-corp.com" }
+
+[[service]]
+name = "gitlab"
+group = "code"
+mode = "real"
+world_port = 8107
+hosts = []
+[[service.endpoint]]
+id = "gitlab"
+mcp_port = 7107
+runtime = "npm"
+package = "@zereight/mcp-gitlab"
+version = "2.3.16"
+command = "mcp-gitlab"
+env = { GITLAB_PERSONAL_ACCESS_TOKEN = "glpat-toolbench", GITLAB_API_URL = "{world}/api/v4", GITLAB_GRAPHQL_URL = "{world}/api/graphql", GITLAB_TOOLSETS = "all" }
+
+[[service]]
+name = "argocd"
+group = "code"
+mode = "real"
+world_port = 8108
+hosts = []
+[[service.endpoint]]
+id = "argocd"
+mcp_port = 7108
+runtime = "npm"
+package = "argocd-mcp"
+version = "0.9.0"
+command = "argocd-mcp"
+args = ["stdio"]
+env = { ARGOCD_BASE_URL = "{world}", ARGOCD_API_TOKEN = "argocd-toolbench" }
+
+[[service]]
+name = "terraform"
+group = "code"
+mode = "real-tls"
+world_port = 8109
+hosts = ["registry.terraform.io"]
+[[service.endpoint]]
+id = "terraform"
+mcp_port = 7109
+runtime = "go"
+package = "github.com/hashicorp/terraform-mcp-server/cmd/terraform-mcp-server"
+version = "v1.4.1"
+command = "terraform-mcp-server"
+args = ["stdio", "--toolsets", "all"]
+env = { TFE_ADDRESS = "{world}", TFE_TOKEN = "toolbench.atlasv1.token", ENABLE_TF_OPERATIONS = "true" }
+
+[[service]]
+name = "vercel"
+group = "code"
+mode = "replica"
+world_port = 8110
+hosts = []
+[[service.endpoint]]
+id = "vercel"
+mcp_port = 7110
+runtime = "replica"
+snapshot = "servers/snapshots/vercel.json"
+source = "nganiet/mcp-vercel (community; official mcp.vercel.com is remote-only and closed)"
+
+# ──────────────────────────── Ops & health ──────────────────────────────
+
+[[service]]
+name = "pagerduty"
+group = "ops"
+mode = "real"
+world_port = 8111
+hosts = []
+[[service.endpoint]]
+id = "pagerduty"
+mcp_port = 7111
+runtime = "pypi"
+package = "pagerduty-mcp"
+version = "1.1.0"
+command = "pagerduty-mcp"
+args = ["--enable-write-tools"]
+env = { PAGERDUTY_USER_API_KEY = "u+toolbench", PAGERDUTY_API_HOST = "{world}" }
+
+[[service]]
+name = "datadog"
+group = "ops"
+mode = "real-tls"
+world_port = 8112
+hosts = ["api.datadoghq.com"]
+[[service.endpoint]]
+id = "datadog"
+mcp_port = 7112
+runtime = "npm"
+package = "@winor30/mcp-server-datadog"
+version = "1.8.0"
+command = "mcp-server-datadog"
+env = { DATADOG_API_KEY = "dd-api-toolbench", DATADOG_APP_KEY = "dd-app-toolbench", DATADOG_SITE = "datadoghq.com" }
+
+[[service]]
+name = "sentry"
+group = "ops"
+mode = "real"
+world_port = 8113
+hosts = []
+[[service.endpoint]]
+id = "sentry"
+mcp_port = 7113
+runtime = "npm"
+package = "@sentry/mcp-server"
+version = "0.42.0"
+command = "sentry-mcp"
+args = ["--access-token=sntrys_toolbench", "--host={world_host}", "--insecure-http", "--all-skills"]
+env = {}
+
+[[service]]
+name = "grafana"
+group = "ops"
+mode = "real"
+world_port = 8114
+hosts = []
+[[service.endpoint]]
+id = "grafana"
+mcp_port = 7114
+runtime = "go"
+package = "github.com/grafana/mcp-grafana/v2/cmd/mcp-grafana"
+version = "v2.1.1"
+command = "mcp-grafana"
+args = ["--transport", "stdio", "--usage-stats=disabled"]
+env = { GRAFANA_URL = "{world}", GRAFANA_SERVICE_ACCOUNT_TOKEN = "glsa_toolbench" }
+
+[[service]]
+name = "kubernetes"
+group = "ops"
+mode = "real"
+world_port = 8115
+hosts = []
+[[service.endpoint]]
+id = "kubernetes"
+mcp_port = 7115
+runtime = "npm"
+package = "kubernetes-mcp-server"
+version = "0.1.1"
+command = "kubernetes-mcp-server"
+args = ["--config", "{config}/config.toml"]
+env = { KUBECONFIG = "{config}/kubeconfig" }
+
+# ─────────────────────────── Cloud & platform ───────────────────────────
+
+[[service]]
+name = "aws"
+group = "cloud"
+mode = "real"
+world_port = 8116
+# aws-api-mcp-server downloads the service reference index from here before it starts.
+hosts = ["servicereference.us-east-1.amazonaws.com"]
+[[service.endpoint]]
+id = "aws-api"
+mcp_port = 7116
+runtime = "pypi"
+package = "awslabs.aws-api-mcp-server"
+version = "1.6.0"
+command = "awslabs.aws-api-mcp-server"
+env = { AWS_ENDPOINT_URL = "{world}", AWS_ACCESS_KEY_ID = "AKIATOOLBENCH0000000", AWS_SECRET_ACCESS_KEY = "toolbench", AWS_REGION = "us-east-1", ENDPOINT_SUGGEST_AWS_COMMANDS = "{world}/suggest-aws-commands" }
+[[service.endpoint]]
+id = "aws-cloudwatch"
+mcp_port = 7131
+runtime = "pypi"
+package = "awslabs.cloudwatch-mcp-server"
+version = "0.3.1"
+command = "awslabs.cloudwatch-mcp-server"
+env = { AWS_ENDPOINT_URL = "{world}", AWS_ACCESS_KEY_ID = "AKIATOOLBENCH0000000", AWS_SECRET_ACCESS_KEY = "toolbench", AWS_REGION = "us-east-1", AWS_DEFAULT_REGION = "us-east-1" }
+[[service.endpoint]]
+id = "aws-iam"
+mcp_port = 7132
+runtime = "pypi"
+package = "awslabs.iam-mcp-server"
+version = "1.1.2"
+command = "awslabs.iam-mcp-server"
+args = ["--allow-write"]
+env = { AWS_ENDPOINT_URL = "{world}", AWS_ACCESS_KEY_ID = "AKIATOOLBENCH0000000", AWS_SECRET_ACCESS_KEY = "toolbench", AWS_REGION = "us-east-1", AWS_DEFAULT_REGION = "us-east-1" }
+
+[[service]]
+name = "cloudflare"
+group = "cloud"
+mode = "replica"
+world_port = 8117
+hosts = []
+[[service.endpoint]]
+id = "cloudflare"
+mcp_port = 7117
+runtime = "replica"
+snapshot = "servers/snapshots/cloudflare.json"
+source = "cloudflare/mcp (Code Mode: docs, search, execute, whoami), definitions from source"
+
+[[service]]
+name = "supabase"
+group = "cloud"
+mode = "real"
+world_port = 8118
+# submit_feedback/delete_feedback call Supabase's own feedback project over HTTPS.
+hosts = ["xguihxuzqibwxjnimxev.supabase.co"]
+[[service.endpoint]]
+id = "supabase"
+mcp_port = 7118
+runtime = "npm"
+package = "@supabase/mcp-server-supabase"
+version = "0.15.0"
+command = "mcp-server-supabase"
+args = ["--access-token=sbp_toolbench", "--api-url={world}", "--content-api-url={world}/docs/api/graphql", "--features=account,docs,database,debugging,development,functions,branching,storage,notebooks,feedback"]
+env = {}
+
+[[service]]
+name = "mongodb"
+group = "cloud"
+mode = "replica"
+world_port = 8119
+hosts = []
+[[service.endpoint]]
+id = "mongodb"
+mcp_port = 7119
+runtime = "replica"
+snapshot = "servers/snapshots/mongodb.json"
+source = "mongodb-mcp-server 3.2.2 (vendor), captured with Atlas API credentials set so Atlas tools register"
+
+[[service]]
+name = "okta"
+group = "cloud"
+mode = "real-tls"
+world_port = 8120
+hosts = ["octo-corp.okta.com"]
+[[service.endpoint]]
+id = "okta"
+mcp_port = 7120
+runtime = "pypi"
+package = "okta-mcp-server"
+version = "1.1.7"
+command = "okta-mcp-server"
+env = { PYTHON_KEYRING_BACKEND = "keyrings.alt.file.PlaintextKeyring", OKTA_ORG_URL = "https://octo-corp.okta.com", OKTA_CLIENT_ID = "0oatoolbench", OKTA_SCOPES = "okta.users.read okta.users.manage okta.groups.read okta.groups.manage okta.apps.read okta.apps.manage okta.policies.read okta.policies.manage okta.logs.read okta.userTypes.read okta.deviceAssurance.read okta.deviceAssurance.manage okta.brands.read okta.brands.manage okta.domains.read okta.domains.manage okta.emailDomains.read okta.emailDomains.manage okta.templates.read okta.templates.manage" }
+
+# ───────────────────────────── Business ops ─────────────────────────────
+
+[[service]]
+name = "stripe"
+group = "business"
+mode = "replica"
+world_port = 8121
+hosts = []
+[[service.endpoint]]
+id = "stripe"
+mcp_port = 7121
+runtime = "replica"
+snapshot = "servers/snapshots/stripe.json"
+source = "Kiln-AI/stripe_world tests/surface/real_tool_schemas.json (capture of mcp.stripe.com, 2026-09-22)"
+
+[[service]]
+name = "salesforce"
+group = "business"
+mode = "real"
+world_port = 8122
+hosts = []
+[[service.endpoint]]
+id = "salesforce"
+mcp_port = 7122
+runtime = "npm"
+package = "@tsmztech/mcp-server-salesforce"
+version = "0.0.8"
+command = "salesforce-connector"
+env = { SALESFORCE_CONNECTION_TYPE = "Access_Token", SALESFORCE_ACCESS_TOKEN = "00Dtoolbench!AQ0AQtoolbench", SALESFORCE_INSTANCE_URL = "{world}" }
+
+[[service]]
+name = "hubspot"
+group = "business"
+mode = "real"
+world_port = 8123
+hosts = []
+[[service.endpoint]]
+id = "hubspot"
+mcp_port = 7123
+runtime = "npm"
+package = "@hubspot/mcp-server"
+version = "0.4.0"
+command = "mcp-hubspot"
+env = { PRIVATE_APP_ACCESS_TOKEN = "pat-na1-toolbench", BASE_URL_OVERRIDE = "{world}" }
+
+[[service]]
+name = "zendesk"
+group = "business"
+mode = "replica"
+world_port = 8124
+hosts = []
+[[service.endpoint]]
+id = "zendesk"
+mcp_port = 7124
+runtime = "replica"
+snapshot = "servers/snapshots/zendesk.json"
+source = "reminia/zendesk-mcp-server @806d1ca (community; no vendor server)"
+
+[[service]]
+name = "shopify"
+group = "business"
+mode = "real-tls"
+world_port = 8125
+hosts = ["octo-corp.myshopify.com"]
+[[service.endpoint]]
+id = "shopify"
+mcp_port = 7125
+runtime = "npm"
+package = "shopify-mcp"
+version = "1.0.8"
+command = "shopify-mcp"
+args = ["--accessToken=shpat_toolbench", "--domain=octo-corp.myshopify.com"]
+env = {}
+
+# ───────────────────────────── Collaboration ────────────────────────────
+
+[[service]]
+name = "slack"
+group = "collab"
+mode = "replica"
+world_port = 8126
+hosts = []
+[[service.endpoint]]
+id = "slack"
+mcp_port = 7126
+runtime = "replica"
+snapshot = "servers/snapshots/slack.json"
+source = "official remote mcp.slack.com tool definitions captured 2026-10-30; caller ids replaced"
+
+[[service]]
+name = "linear"
+group = "collab"
+mode = "replica"
+world_port = 8127
+hosts = []
+[[service.endpoint]]
+id = "linear"
+mcp_port = 7127
+runtime = "replica"
+snapshot = "servers/snapshots/linear.json"
+source = "@tacticlaunch/mcp-linear 1.4.5 (community) - interim until official mcp.linear.app capture (D5)"
+
+[[service]]
+name = "jira"
+group = "collab"
+mode = "real"
+world_port = 8128
+hosts = []
+[[service.endpoint]]
+id = "atlassian"
+mcp_port = 7128
+runtime = "pypi"
+package = "mcp-atlassian"
+version = "0.23.1"
+command = "mcp-atlassian"
+env = { JIRA_URL = "{world}", JIRA_PERSONAL_TOKEN = "jira-toolbench", CONFLUENCE_URL = "{world}/wiki", CONFLUENCE_PERSONAL_TOKEN = "confluence-toolbench", TOOLSETS = "all" }
+
+[[service]]
+name = "notion"
+group = "collab"
+mode = "real"
+world_port = 8129
+hosts = []
+[[service.endpoint]]
+id = "notion"
+mcp_port = 7129
+runtime = "npm"
+package = "@notionhq/notion-mcp-server"
+version = "2.6.1"
+command = "notion-mcp-server"
+env = { NOTION_TOKEN = "ntn_toolbench", BASE_URL = "{world}" }
+
+[[service]]
+name = "google"
+group = "collab"
+mode = "replica"
+world_port = 8130
+hosts = []
+[[service.endpoint]]
+id = "google-workspace"
+mcp_port = 7130
+runtime = "replica"
+snapshot = "servers/snapshots/google-workspace.json"
+source = "taylorwilsdon/google_workspace_mcp 2.2.1 (community), --tool-tier complete, all services"

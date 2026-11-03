@@ -1,0 +1,36 @@
+[scenario]
+id = "ops/grafana/top-5xx-checkout-pod"
+title = "Find the production checkout pod with the most 5xx errors"
+now = "2026-11-12T15:30:00Z"
+seed = "ops-grafana-top-5xx-checkout-pod"
+services = ["grafana"]
+tags = ["lookup", "single-service", "grafana", "disambiguation"]
+timeout_sec = 900
+
+[expect.answer]
+contains = ["checkout-7b9d6c5f4-xk2lp"]
+
+[[expect.required_calls]]
+service = "grafana"
+path_regex = "^/api/datasources/(uid/prom-prod/resources|proxy/uid/prom-prod)/api/v1/query(_range)?$"
+
+[[expect.forbidden_calls]]
+service = "grafana"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "grafana"
+tool = "list_datasources"
+arguments = { type = "prometheus" }
+
+[[solution.call]]
+endpoint = "grafana"
+tool = "query_prometheus"
+arguments = { datasourceUid = "prom-prod", expr = "sum by (pod) (rate(http_requests_total{namespace=\"shop-prod\", service=\"checkout\", status=~\"5..\"}[5m]))", queryType = "instant", endTime = "now" }
+
+[solution]
+answer = """
+In production (Prometheus (prod), namespace shop-prod) the checkout pod with the highest 5xx rate is
+**checkout-7b9d6c5f4-xk2lp** at about 3.5 errors/s (2.9/s HTTP 500 plus 0.6/s HTTP 502).
+The other two production pods are at roughly 0.22-0.26 errors/s.
+"""

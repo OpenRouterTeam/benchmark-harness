@@ -1,0 +1,162 @@
+[
+  {
+    "id": 1001,
+    "email": "ana.ruiz@example.com",
+    "full_name": "Ana Ruiz",
+    "country": "ES",
+    "created_at": "2025-10-03T09:12:44+00:00",
+    "referral_code": null
+  },
+  {
+    "id": 1002,
+    "email": "ben.okafor@example.com",
+    "full_name": "Ben Okafor",
+    "country": "NG",
+    "created_at": "2025-10-11T17:40:02+00:00",
+    "referral_code": null
+  },
+  {
+    "id": 1003,
+    "email": "chloe.martin@example.fr",
+    "full_name": "Chloe Martin",
+    "country": "FR",
+    "created_at": "2025-11-02T08:05:19+00:00",
+    "referral_code": null
+  },
+  {
+    "id": 1004,
+    "email": "dev.patel@example.in",
+    "full_name": "Dev Patel",
+    "country": "IN",
+    "created_at": "2025-11-20T13:31:55+00:00",
+    "referral_code": null
+  },
+  {
+    "id": 1005,
+    "email": "emma.larsen@example.dk",
+    "full_name": "Emma Larsen",
+    "country": "DK",
+    "created_at": "2025-12-01T10:10:10+00:00",
+    "referral_code": null
+  },
+  {
+    "id": 1006,
+    "email": "felix.wagner@example.de",
+    "full_name": "Felix Wagner",
+    "country": "DE",
+    "created_at": "2025-12-14T19:22:31+00:00",
+    "referral_code": null
+  },
+  {
+    "id": 1007,
+    "email": "grace.kim@example.kr",
+    "full_name": "Grace Kim",
+    "country": "KR",
+    "created_at": "2026-01-05T06:45:00+00:00",
+    "referral_code": null
+  },
+  {
+    "id": 1008,
+    "email": "hugo.silva@example.br",
+    "full_name": "Hugo Silva",
+    "country": "BR",
+    "created_at": "2026-01-19T21:03:47+00:00",
+    "referral_code": null
+  },
+  {
+    "id": 1042,
+    "email": "priya.shah@fastmail.com",
+    "full_name": "Priya Shah",
+    "country": "GB",
+    "created_at": "2026-02-07T11:28:16+00:00",
+    "referral_code": null
+  },
+  {
+    "id": 1107,
+    "email": "priya.shah@acme.io",
+    "full_name": "Priya Shah",
+    "country": "US",
+    "created_at": "2026-03-02T15:54:09+00:00",
+    "referral_code": null
+  },
+  {
+    "id": 1110,
+    "email": "priya.shahani@example.com",
+    "full_name": "Priya Shahani",
+    "country": "CA",
+    "created_at": "2026-03-09T12:00:41+00:00",
+    "referral_code": null
+  },
+  {
+    "id": 1198,
+    "email": "ana.costa@example.pt",
+    "full_name": "Ana Costa",
+    "country": "PT",
+    "created_at": "2025-10-22T10:00:00+00:00",
+    "referral_code": "FALL25"
+  },
+  {
+    "id": 1201,
+    "email": "mina.park@example.kr",
+    "full_name": "Mina Park",
+    "country": "KR",
+    "created_at": "2026-10-19T15:12:40+00:00",
+    "referral_code": "FALL26"
+  },
+  {
+    "id": 1202,
+    "email": "luis.ortega@example.mx",
+    "full_name": "Luis Ortega",
+    "country": "MX",
+    "created_at": "2026-10-20T09:41:05+00:00",
+    "referral_code": "FALL26"
+  },
+  {
+    "id": 1203,
+    "email": "qa+ref1@octo-shop.com",
+    "full_name": "QA Referral Test",
+    "country": "US",
+    "created_at": "2026-10-20T11:00:00+00:00",
+    "referral_code": "FALL26"
+  },
+  {
+    "id": 1204,
+    "email": "ivy.chen@example.com",
+    "full_name": "Ivy Chen",
+    "country": "US",
+    "created_at": "2026-10-21T18:22:31+00:00",
+    "referral_code": "FALL25"
+  },
+  {
+    "id": 1205,
+    "email": "omar.haddad@example.ae",
+    "full_name": "Omar Haddad",
+    "country": "AE",
+    "created_at": "2026-10-23T07:05:13+00:00",
+    "referral_code": "FALL26"
+  },
+  {
+    "id": 1206,
+    "email": "zoe.becker@example.de",
+    "full_name": "Zoe Becker",
+    "country": "DE",
+    "created_at": "2026-10-24T12:30:00+00:00",
+    "referral_code": null
+  },
+  {
+    "id": 1207,
+    "email": "ravi.menon@example.in",
+    "full_name": "Ravi Menon",
+    "country": "IN",
+    "created_at": "2026-10-27T16:48:59+00:00",
+    "referral_code": "FALL26"
+  },
+  {
+    "id": 1208,
+    "email": "qa+ref2@octo-shop.com",
+    "full_name": "QA Referral Test 2",
+    "country": "US",
+    "created_at": "2026-10-27T17:00:00+00:00",
+    "referral_code": "FALL26"
+  }
+]

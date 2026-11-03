@@ -1,0 +1,317 @@
+[
+  {
+    "id": "00p4pwcntr2Uv9Wx0x7",
+    "status": "ACTIVE",
+    "name": "Contractors Password Policy",
+    "description": "Password requirements for external contractors",
+    "priority": 1,
+    "system": false,
+    "conditions": {
+      "people": {
+        "groups": {
+          "include": [
+            "00g2cntrct4Kl1Mn2x7"
+          ]
+        }
+      },
+      "authProvider": {
+        "provider": "OKTA"
+      }
+    },
+    "created": "2024-01-08T17:02:11.000Z",
+    "lastUpdated": "2025-06-02T14:00:00.000Z",
+    "type": "PASSWORD",
+    "settings": {
+      "password": {
+        "complexity": {
+          "minLength": 10,
+          "minLowerCase": 1,
+          "minUpperCase": 1,
+          "minNumber": 1,
+          "minSymbol": 0,
+          "excludeUsername": true,
+          "dictionary": {
+            "common": {
+              "exclude": true
+            }
+          },
+          "excludeAttributes": [
+            "firstName",
+            "lastName"
+          ]
+        },
+        "age": {
+          "maxAgeDays": 60,
+          "expireWarnDays": 7,
+          "minAgeMinutes": 0,
+          "historyCount": 6
+        },
+        "lockout": {
+          "maxAttempts": 5,
+          "autoUnlockMinutes": 30,
+          "userLockoutNotificationChannels": [
+            "EMAIL"
+          ],
+          "showLockoutFailures": true
+        }
+      },
+      "recovery": {
+        "factors": {
+          "recovery_question": {
+            "status": "INACTIVE"
+          },
+          "okta_email": {
+            "status": "ACTIVE",
+            "properties": {
+              "recoveryToken": {
+                "tokenLifetimeMinutes": 60
+              }
+            }
+          },
+          "okta_sms": {
+            "status": "INACTIVE"
+          },
+          "okta_call": {
+            "status": "INACTIVE"
+          }
+        }
+      },
+      "delegation": {
+        "options": {
+          "skipUnlock": false
+        }
+      }
+    }
+  },
+  {
+    "id": "00p4pwempl4Yz1Ab2x7",
+    "status": "ACTIVE",
+    "name": "Employees Password Policy",
+    "description": "Password requirements for Octo Corp employees",
+    "priority": 2,
+    "system": false,
+    "conditions": {
+      "people": {
+        "groups": {
+          "include": [
+            "00g1evrybdy0000000x1"
+          ]
+        }
+      },
+      "authProvider": {
+        "provider": "OKTA"
+      }
+    },
+    "created": "2024-01-08T17:02:11.000Z",
+    "lastUpdated": "2025-06-02T14:00:00.000Z",
+    "type": "PASSWORD",
+    "settings": {
+      "password": {
+        "complexity": {
+          "minLength": 12,
+          "minLowerCase": 1,
+          "minUpperCase": 1,
+          "minNumber": 1,
+          "minSymbol": 1,
+          "excludeUsername": true,
+          "dictionary": {
+            "common": {
+              "exclude": true
+            }
+          },
+          "excludeAttributes": [
+            "firstName",
+            "lastName"
+          ]
+        },
+        "age": {
+          "maxAgeDays": 90,
+          "expireWarnDays": 7,
+          "minAgeMinutes": 0,
+          "historyCount": 8
+        },
+        "lockout": {
+          "maxAttempts": 10,
+          "autoUnlockMinutes": 30,
+          "userLockoutNotificationChannels": [
+            "EMAIL"
+          ],
+          "showLockoutFailures": true
+        }
+      },
+      "recovery": {
+        "factors": {
+          "recovery_question": {
+            "status": "INACTIVE"
+          },
+          "okta_email": {
+            "status": "ACTIVE",
+            "properties": {
+              "recoveryToken": {
+                "tokenLifetimeMinutes": 60
+              }
+            }
+          },
+          "okta_sms": {
+            "status": "INACTIVE"
+          },
+          "okta_call": {
+            "status": "INACTIVE"
+          }
+        }
+      },
+      "delegation": {
+        "options": {
+          "skipUnlock": false
+        }
+      }
+    }
+  },
+  {
+    "id": "00p4pwdflt0Pq7Rs8tx7",
+    "status": "ACTIVE",
+    "name": "Default Policy",
+    "description": "The default policy applies in all situations if no other policy applies.",
+    "priority": 3,
+    "system": true,
+    "conditions": {
+      "people": {
+        "groups": {
+          "include": [
+            "00g1evrybdy0000000x1"
+          ]
+        }
+      },
+      "authProvider": {
+        "provider": "OKTA"
+      }
+    },
+    "created": "2024-01-08T17:02:11.000Z",
+    "lastUpdated": "2025-06-02T14:00:00.000Z",
+    "type": "PASSWORD",
+    "settings": {
+      "password": {
+        "complexity": {
+          "minLength": 8,
+          "minLowerCase": 1,
+          "minUpperCase": 1,
+          "minNumber": 1,
+          "minSymbol": 0,
+          "excludeUsername": true,
+          "dictionary": {
+            "common": {
+              "exclude": true
+            }
+          },
+          "excludeAttributes": [
+            "firstName",
+            "lastName"
+          ]
+        },
+        "age": {
+          "maxAgeDays": 0,
+          "expireWarnDays": 0,
+          "minAgeMinutes": 0,
+          "historyCount": 4
+        },
+        "lockout": {
+          "maxAttempts": 10,
+          "autoUnlockMinutes": 30,
+          "userLockoutNotificationChannels": [
+            "EMAIL"
+          ],
+          "showLockoutFailures": true
+        }
+      },
+      "recovery": {
+        "factors": {
+          "recovery_question": {
+            "status": "INACTIVE"
+          },
+          "okta_email": {
+            "status": "ACTIVE",
+            "properties": {
+              "recoveryToken": {
+                "tokenLifetimeMinutes": 60
+              }
+            }
+          },
+          "okta_sms": {
+            "status": "INACTIVE"
+          },
+          "okta_call": {
+            "status": "INACTIVE"
+          }
+        }
+      },
+      "delegation": {
+        "options": {
+          "skipUnlock": false
+        }
+      }
+    }
+  },
+  {
+    "id": "00p4sodflt6Cd3Ef4x7",
+    "status": "ACTIVE",
+    "name": "Default Policy",
+    "description": "The default policy applies in all situations if no other policy applies.",
+    "priority": 1,
+    "system": true,
+    "conditions": {
+      "people": {
+        "groups": {
+          "include": [
+            "00g1evrybdy0000000x1"
+          ]
+        }
+      }
+    },
+    "created": "2024-01-08T17:02:11.000Z",
+    "lastUpdated": "2024-01-08T17:02:11.000Z",
+    "type": "OKTA_SIGN_ON"
+  },
+  {
+    "id": "00p4mfdflt8Gh5Ij6x7",
+    "status": "ACTIVE",
+    "name": "Default Policy",
+    "description": "The default policy applies in all situations if no other policy applies.",
+    "priority": 1,
+    "system": true,
+    "conditions": {
+      "people": {
+        "groups": {
+          "include": [
+            "00g1evrybdy0000000x1"
+          ]
+        }
+      }
+    },
+    "created": "2024-01-08T17:02:11.000Z",
+    "lastUpdated": "2024-01-08T17:02:11.000Z",
+    "type": "MFA_ENROLL",
+    "settings": {
+      "type": "AUTHENTICATORS",
+      "authenticators": [
+        {
+          "key": "okta_verify",
+          "enroll": {
+            "self": "REQUIRED"
+          }
+        },
+        {
+          "key": "okta_password",
+          "enroll": {
+            "self": "REQUIRED"
+          }
+        },
+        {
+          "key": "okta_email",
+          "enroll": {
+            "self": "NOT_ALLOWED"
+          }
+        }
+      ]
+    }
+  }
+]

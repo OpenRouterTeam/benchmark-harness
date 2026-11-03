@@ -1,0 +1,77 @@
+[
+  {
+    "_key": "audit-security-2026.10",
+    "mappings": {
+      "properties": {
+        "@timestamp": {
+          "type": "date"
+        },
+        "event_action": {
+          "type": "keyword"
+        },
+        "event_outcome": {
+          "type": "keyword"
+        },
+        "actor": {
+          "type": "keyword"
+        },
+        "actor_ip": {
+          "type": "ip"
+        },
+        "target_type": {
+          "type": "keyword"
+        },
+        "target_name": {
+          "type": "keyword"
+        },
+        "details": {
+          "type": "text"
+        }
+      }
+    },
+    "health": "green",
+    "status": "open",
+    "pri": 1,
+    "rep": 1,
+    "uuid": "j3Ym9zScA6dH1jQ4lUrV9I",
+    "aliases": [
+      "audit-security"
+    ]
+  },
+  {
+    "_key": "audit-security-legacy",
+    "mappings": {
+      "properties": {
+        "@timestamp": {
+          "type": "date"
+        },
+        "event_action": {
+          "type": "keyword"
+        },
+        "event_outcome": {
+          "type": "keyword"
+        },
+        "actor": {
+          "type": "keyword"
+        },
+        "actor_ip": {
+          "type": "ip"
+        },
+        "target_type": {
+          "type": "keyword"
+        },
+        "target_name": {
+          "type": "keyword"
+        },
+        "details": {
+          "type": "text"
+        }
+      }
+    },
+    "health": "green",
+    "status": "open",
+    "pri": 1,
+    "rep": 1,
+    "uuid": "k6Zn2aTdB9eI4kR7mVsW0J"
+  }
+]

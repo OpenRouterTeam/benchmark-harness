@@ -1,0 +1,28 @@
+[scenario]
+id = "business/salesforce/open-pipeline-by-rep"
+title = "Find the rep with the largest open pipeline closing this quarter"
+now = "2026-05-12T15:00:00Z"
+seed = "business-salesforce-open-pipeline-by-rep"
+services = ["salesforce"]
+tags = ["lookup", "single-service", "salesforce"]
+timeout_sec = 900
+
+# Priya Raman: 120,000 + 85,000 + 47,500 open in Q2 2026.
+# Distractors: counting closed deals makes Sofia Alvarez the leader (415,000), ignoring the
+# quarter makes Marcus Bell the leader (450,000).
+[expect.answer]
+contains = ["Priya Raman"]
+regex = "252,?500"
+
+[[solution.call]]
+endpoint = "salesforce"
+tool = "salesforce_aggregate_query"
+arguments = { objectName = "Opportunity", selectFields = ["OwnerId", "SUM(Amount) openPipeline", "COUNT(Id) openDeals"], groupByFields = ["OwnerId"], whereClause = "IsClosed = false AND CloseDate = THIS_QUARTER", orderBy = "SUM(Amount) DESC" }
+
+[[solution.call]]
+endpoint = "salesforce"
+tool = "salesforce_query_records"
+arguments = { objectName = "User", fields = ["Id", "Name", "Title"], whereClause = "Id = '0055g00000MZfGEAA1'" }
+
+[solution]
+answer = "Priya Raman has the largest open pipeline closing this quarter (Q2 2026): $252,500 across 3 open opportunities.\n"

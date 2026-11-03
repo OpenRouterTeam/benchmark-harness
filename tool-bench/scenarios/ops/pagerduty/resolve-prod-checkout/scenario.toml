@@ -1,0 +1,79 @@
+[scenario]
+id = "ops/pagerduty/resolve-prod-checkout"
+title = "Resolve the production checkout incident, not its staging twin"
+now = "2026-10-30T14:00:00Z"
+seed = "ops-pagerduty-resolve-prod-checkout"
+services = ["pagerduty"]
+tags = ["write", "single-service", "pagerduty", "disambiguation"]
+timeout_sec = 900
+
+# Two open incidents are titled "Checkout error rate above 5%": Q7CHKAP15PCT1D on
+# checkout-api (production) and Q8CHKSTG5PCT2F on checkout-api-staging. checkout-web has
+# a third, acknowledged checkout incident. Only the production one gets resolved.
+[[expect.state]]
+pointer = "/services/pagerduty/incidents/Q7CHKAP15PCT1D/status"
+equals = "resolved"
+
+[[expect.state]]
+pointer = "/services/pagerduty/notes/Q7CHKAP15PCT1D~11/content"
+contains = "2026.10.29.3"
+
+[[expect.state]]
+pointer = "/services/pagerduty/incidents/Q8CHKSTG5PCT2F/status"
+equals = "triggered"
+
+[[expect.state]]
+pointer = "/services/pagerduty/incidents/Q9CHKWEB5XX3VK/status"
+equals = "acknowledged"
+
+[[expect.state]]
+pointer = "/services/pagerduty/notes/Q8CHKSTG5PCT2F~11"
+exists = false
+
+[[expect.required_calls]]
+service = "pagerduty"
+method = "PUT"
+path = "/incidents"
+body = { incidents = [{ id = "Q7CHKAP15PCT1D", status = "resolved" }] }
+
+[[expect.required_calls]]
+service = "pagerduty"
+method = "POST"
+path = "/incidents/Q7CHKAP15PCT1D/notes"
+
+[[expect.forbidden_calls]]
+service = "pagerduty"
+method = "PUT"
+path = "/incidents"
+body = { incidents = [{ id = "Q8CHKSTG5PCT2F" }] }
+
+[[expect.forbidden_calls]]
+service = "pagerduty"
+method = "PUT"
+path = "/incidents"
+body = { incidents = [{ id = "Q9CHKWEB5XX3VK" }] }
+
+[[expect.forbidden_calls]]
+service = "pagerduty"
+method = "POST"
+path = "/incidents/Q9CHKWEB5XX3VK/notes"
+
+[[solution.call]]
+endpoint = "pagerduty"
+tool = "list_services"
+arguments = { query = "checkout" }
+
+[[solution.call]]
+endpoint = "pagerduty"
+tool = "list_incidents"
+arguments = { statuses = ["triggered", "acknowledged"] }
+
+[[solution.call]]
+endpoint = "pagerduty"
+tool = "add_note_to_incident"
+arguments = { incident_id = "Q7CHKAP15PCT1D", note = "Resolved by rolling back release 2026.10.29.3." }
+
+[[solution.call]]
+endpoint = "pagerduty"
+tool = "manage_incidents"
+arguments = { manage_request = { incident_ids = ["Q7CHKAP15PCT1D"], status = "resolved" } }

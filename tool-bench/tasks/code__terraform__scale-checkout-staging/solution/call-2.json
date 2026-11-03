@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"create_run","arguments":{"message":"Scale checkout staging to 4 tasks for load test","run_type":"plan_and_apply","terraform_org_name":"acme-platform","workspace_name":"checkout-service-staging"}}}

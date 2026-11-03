@@ -1,0 +1,14 @@
+[
+  {"_key": "5287/1", "id": 42000528701, "author_id": 9020301, "public": true, "audit_id": 42000528700, "created_at": "2026-09-30T08:40:00Z",
+   "body": "Hi, the Quillstream connector fails at the OAuth step with 'invalid_client'. Can you help?\n\nPriya Shah\nHarbor Freightworks", "attachments": []},
+  {"_key": "5287/2", "id": 42000528702, "author_id": 9020003, "public": true, "audit_id": 42000528703, "created_at": "2026-10-01T10:15:00Z",
+   "body": "Hi Priya, the client secret had been rotated on the Quillstream side. Re-authorizing fixed it. Closing this one out.\n\nRita", "attachments": []},
+  {"_key": "5298/1", "id": 42000529801, "author_id": 9020303, "public": true, "audit_id": 42000529800, "created_at": "2026-10-27T14:02:00Z",
+   "body": "Our Quillpad sync gets throttled every morning. What is Quillpad's rate limit on the Pro plan?\n\nPriya Sharma\nKettle & Co", "attachments": []},
+  {"_key": "5301/1", "id": 42000530101, "author_id": 9020302, "public": true, "audit_id": 42000530100, "created_at": "2026-10-28T09:20:00Z",
+   "body": "Is it possible to connect a second Quillstream workspace to the same account?\n\nTomas", "attachments": []},
+  {"_key": "5302/1", "id": 42000530201, "author_id": 9020301, "public": true, "audit_id": 42000530200, "created_at": "2026-10-29T11:47:00Z",
+   "body": "Hello,\n\nSince this morning our Quillstream sync fails with 429 Too Many Requests. We're on Quillstream's Business plan. How many requests per minute does Quillstream actually allow on Business? We want to tune our sync schedule so we stay under it.\n\nThanks,\nPriya Shah\nHarbor Freightworks", "attachments": []},
+  {"_key": "5302/2", "id": 42000530202, "author_id": 9020003, "public": false, "audit_id": 42000530203, "created_at": "2026-10-29T12:05:00Z",
+   "body": "Our connector is fine, they're hitting Quillstream's own limit. Someone needs to check the current number in Quillstream's docs before we reply. Careful, their v2 docs are still online.", "attachments": []}
+]

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"resources_scale","arguments":{"apiVersion":"apps/v1","kind":"Deployment","name":"checkout","namespace":"shop-prod","scale":8}}}

@@ -1,0 +1,95 @@
+[
+  {
+    "id": "loc4CQWMJWLD4VBEBZ62XQLJTGK6YCJEEJDNA3BTZZQ=",
+    "title": "Juniper & Rye Catering",
+    "url": "https://juniperandrye.com",
+    "categories": ["Caterer", "Event planning"],
+    "postal_address": {
+      "country": "US",
+      "postalCode": "97214",
+      "streetAddress": "1120 SE Morrison St",
+      "addressLocality": "Portland",
+      "addressRegion": "OR",
+      "displayAddress": "1120 SE Morrison St, Portland, OR 97214"
+    },
+    "coordinates": [45.5172, -122.6539],
+    "contact": { "telephone": "+1 503-555-0142" },
+    "opening_hours": {
+      "current_day": [{ "abbr_name": "Mon", "full_name": "Monday", "opens": "08:00", "closes": "17:00" }],
+      "days": [
+        [{ "abbr_name": "Mon", "full_name": "Monday", "opens": "08:00", "closes": "17:00" }],
+        [{ "abbr_name": "Tue", "full_name": "Tuesday", "opens": "08:00", "closes": "17:00" }],
+        [{ "abbr_name": "Wed", "full_name": "Wednesday", "opens": "08:00", "closes": "17:00" }],
+        [{ "abbr_name": "Thu", "full_name": "Thursday", "opens": "08:00", "closes": "17:00" }],
+        [{ "abbr_name": "Fri", "full_name": "Friday", "opens": "08:00", "closes": "18:00" }],
+        [{ "abbr_name": "Sat", "full_name": "Saturday", "opens": "09:00", "closes": "14:00" }]
+      ]
+    },
+    "rating": { "ratingValue": 4.7, "bestRating": 5, "reviewCount": 212 },
+    "price_range": "$$",
+    "timezone": "America/Los_Angeles",
+    "keywords": "Oregon corporate catering lunch",
+    "description": "Juniper & Rye Catering is a Portland, Oregon caterer on SE Morrison Street known for seasonal Pacific Northwest menus, corporate lunches and event catering. It is closed on Sundays."
+  },
+  {
+    "id": "locXR7ZK2M5Q4WTJ3H6YB8D1NFVEUCSAGLPO0IMKQ8=",
+    "title": "Juniper & Rye Catering Co.",
+    "url": "https://juniperryecatering.me",
+    "categories": ["Caterer"],
+    "postal_address": {
+      "country": "US",
+      "postalCode": "04101",
+      "streetAddress": "48 Fore St",
+      "addressLocality": "Portland",
+      "addressRegion": "ME",
+      "displayAddress": "48 Fore St, Portland, ME 04101"
+    },
+    "coordinates": [43.6573, -70.2487],
+    "contact": { "telephone": "+1 207-555-0198" },
+    "opening_hours": {
+      "current_day": [{ "abbr_name": "Mon", "full_name": "Monday", "opens": "09:00", "closes": "17:00" }],
+      "days": [
+        [{ "abbr_name": "Mon", "full_name": "Monday", "opens": "09:00", "closes": "17:00" }],
+        [{ "abbr_name": "Tue", "full_name": "Tuesday", "opens": "09:00", "closes": "17:00" }],
+        [{ "abbr_name": "Wed", "full_name": "Wednesday", "opens": "09:00", "closes": "17:00" }],
+        [{ "abbr_name": "Thu", "full_name": "Thursday", "opens": "09:00", "closes": "17:00" }],
+        [{ "abbr_name": "Fri", "full_name": "Friday", "opens": "09:00", "closes": "17:00" }],
+        [{ "abbr_name": "Sat", "full_name": "Saturday", "opens": "10:00", "closes": "16:00" }]
+      ]
+    },
+    "rating": { "ratingValue": 4.5, "bestRating": 5, "reviewCount": 87 },
+    "price_range": "$$$",
+    "timezone": "America/New_York",
+    "keywords": "Maine seafood catering",
+    "description": "Juniper & Rye Catering Co. is a caterer in Portland, Maine's Old Port specialising in seafood and wedding catering."
+  },
+  {
+    "id": "locB3N8V1C6X9Z2L5K7J4H0G2F8D6S3A1QWERTYUIO=",
+    "title": "Juniper Rye Bakery",
+    "url": "https://juniperryebakery.com",
+    "categories": ["Bakery", "Cafe"],
+    "postal_address": {
+      "country": "US",
+      "postalCode": "97209",
+      "streetAddress": "730 NW 11th Ave",
+      "addressLocality": "Portland",
+      "addressRegion": "OR",
+      "displayAddress": "730 NW 11th Ave, Portland, OR 97209"
+    },
+    "coordinates": [45.5281, -122.6825],
+    "contact": { "telephone": "+1 503-555-0177" },
+    "opening_hours": {
+      "current_day": [{ "abbr_name": "Mon", "full_name": "Monday", "opens": "07:00", "closes": "15:00" }],
+      "days": [
+        [{ "abbr_name": "Mon", "full_name": "Monday", "opens": "07:00", "closes": "15:00" }],
+        [{ "abbr_name": "Sat", "full_name": "Saturday", "opens": "07:00", "closes": "15:00" }],
+        [{ "abbr_name": "Sun", "full_name": "Sunday", "opens": "08:00", "closes": "13:00" }]
+      ]
+    },
+    "rating": { "ratingValue": 4.8, "bestRating": 5, "reviewCount": 640 },
+    "price_range": "$",
+    "timezone": "America/Los_Angeles",
+    "keywords": "Oregon bakery catering pastries",
+    "description": "Juniper Rye Bakery is a Pearl District bakery in Portland, Oregon that also takes small pastry catering orders."
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "_key": "qmvbxtzkplrnwdhyfaco",
+    "fileSizeLimit": 524288000,
+    "features": {
+      "imageTransformation": {
+        "enabled": true
+      },
+      "s3Protocol": {
+        "enabled": true
+      }
+    }
+  }
+]

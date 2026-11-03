@@ -1,0 +1,63 @@
+{
+  "state": [
+    {
+      "pointer": "/services/sentry/issues/PAYMENTS-WORKER-1K/status",
+      "equals": "resolved",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/sentry/issues/CHECKOUT-API-3F/status",
+      "equals": "unresolved",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/sentry/issues/PAYMENTS-WORKER-1H/status",
+      "equals": "unresolved",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "sentry",
+      "method": "PUT",
+      "path": null,
+      "path_regex": "(?i)^/api/0/organizations/lumen-labs/issues/(PAYMENTS-WORKER-1K|6184417730)/$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "sentry",
+      "method": "PUT",
+      "path": null,
+      "path_regex": "(?i)/issues/(CHECKOUT-API-3F|6184420311|PAYMENTS-WORKER-1H|6184417704)/$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "sentry",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

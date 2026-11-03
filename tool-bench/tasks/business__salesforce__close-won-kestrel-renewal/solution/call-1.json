@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"salesforce_dml_records","arguments":{"objectName":"Opportunity","operation":"update","records":[{"CloseDate":"2026-05-12","Id":"0065g000006FoSrAAK","StageName":"Closed Won"}]}}}

@@ -1,0 +1,20 @@
+[
+  {
+    "_key": "acme/platform/api:main",
+    "name": "main",
+    "commit": "c0ffee0000000000000000000000000000000001",
+    "base": null
+  },
+  {
+    "_key": "acme/platform/api:fix/rate-limiter",
+    "name": "fix/rate-limiter",
+    "commit": "9f1c2e7a4b5d6c8e0f1a2b3c4d5e6f708192a3b4",
+    "base": "main"
+  },
+  {
+    "_key": "acme/platform/web:main",
+    "name": "main",
+    "commit": "aa00000000000000000000000000000000000001",
+    "base": null
+  }
+]

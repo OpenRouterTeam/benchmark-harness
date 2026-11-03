@@ -1,0 +1,12 @@
+[
+  {
+    "_key": "deployment",
+    "hosts": [
+      "octo-prod-shard-00-00.x7kq2.mongodb.net",
+      "octo-prod-shard-00-01.x7kq2.mongodb.net",
+      "octo-prod-shard-00-02.x7kq2.mongodb.net"
+    ],
+    "version": "8.0.15",
+    "clientIp": "198.51.100.23"
+  }
+]

@@ -1,0 +1,41 @@
+[
+  {
+    "_key": "f1",
+    "uuid": "6f2a1c3e-0b4d-4e5f-9a8b-7c6d5e4f3a2b",
+    "name": "Affected service",
+    "slug": "affected-service",
+    "color": "#5794F2",
+    "icon": "apps",
+    "description": "Primary service impacted",
+    "type": "single-select",
+    "required": false,
+    "immutable": false,
+    "domainName": "incidents",
+    "selectoptions": [
+      {
+        "uuid": "c1",
+        "value": "checkout",
+        "label": "checkout",
+        "color": "",
+        "icon": "",
+        "description": "",
+        "source": "",
+        "externalID": ""
+      },
+      {
+        "uuid": "c2",
+        "value": "payments",
+        "label": "payments",
+        "color": "",
+        "icon": "",
+        "description": "",
+        "source": "",
+        "externalID": ""
+      }
+    ],
+    "source": "",
+    "externalID": "",
+    "archived": false,
+    "version": 1
+  }
+]

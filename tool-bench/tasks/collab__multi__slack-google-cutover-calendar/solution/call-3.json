@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"slack_read_user_profile","arguments":{"user_id":"U03PRIYAN4T"}}}

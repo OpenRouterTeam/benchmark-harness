@@ -1,0 +1,60 @@
+[scenario]
+id = "cloud/mongodb/pause-idle-staging-cluster"
+title = "Pause an idle Atlas staging cluster in the right project"
+now = "2026-03-14T09:00:00Z"
+seed = "cloud-mongodb-pause-idle-staging-cluster"
+services = ["mongodb"]
+tags = ["write", "single-service", "mongodb", "disambiguation"]
+timeout_sec = 900
+
+# Two clusters are named "analytics-staging": the idle one in octo-shop-staging
+# (65c0ffee...0002) and a busy one in octo-payments-staging (65c0ffee...0003).
+[[expect.state]]
+pointer = "/services/mongodb/clusters/65c0ffee0000000000000002~1analytics-staging/paused"
+equals = true
+
+[[expect.state]]
+pointer = "/services/mongodb/clusters/65c0ffee0000000000000003~1analytics-staging/paused"
+equals = false
+
+[[expect.state]]
+pointer = "/services/mongodb/clusters/65c0ffee0000000000000002~1shop-staging/paused"
+equals = false
+
+[[expect.state]]
+pointer = "/services/mongodb/clusters/65c0ffee0000000000000001~1analytics-prod/paused"
+equals = false
+
+[[expect.state]]
+pointer = "/services/mongodb/clusters/65c0ffee0000000000000002~1analytics-staging/replicationSpecs/0/regionConfigs/0/electableSpecs/instanceSize"
+equals = "M10"
+
+[[expect.required_calls]]
+service = "mongodb"
+path = "/_mcp/tools/call"
+body = { name = "atlas-pause-resume-cluster", arguments = { projectId = "65c0ffee0000000000000002", clusterName = "analytics-staging", action = "PAUSE" } }
+
+[[expect.forbidden_calls]]
+service = "mongodb"
+path = "/_mcp/tools/call"
+body = { name = "atlas-pause-resume-cluster", arguments = { projectId = "65c0ffee0000000000000003" } }
+
+[[expect.forbidden_calls]]
+service = "mongodb"
+path = "/_mcp/tools/call"
+body = { name = "atlas-upgrade-cluster" }
+
+[[solution.call]]
+endpoint = "mongodb"
+tool = "atlas-list-projects"
+arguments = { orgId = "65a1b2c3d4e5f60718293a4b" }
+
+[[solution.call]]
+endpoint = "mongodb"
+tool = "atlas-list-clusters"
+arguments = { projectId = "65c0ffee0000000000000002" }
+
+[[solution.call]]
+endpoint = "mongodb"
+tool = "atlas-pause-resume-cluster"
+arguments = { projectId = "65c0ffee0000000000000002", clusterName = "analytics-staging", action = "PAUSE" }

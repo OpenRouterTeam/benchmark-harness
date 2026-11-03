@@ -1,0 +1,68 @@
+[
+  {
+    "_key": "northwind/payments/ledger@b53cc05521bb890c3b594541739cfebb76fc1117",
+    "id": "b53cc05521bb890c3b594541739cfebb76fc1117",
+    "title": "Reconcile payouts nightly",
+    "message": "Reconcile payouts nightly\n",
+    "author_name": "Priya Raman",
+    "author_email": "priya.raman@northwind.io",
+    "authored_date": "2026-04-01T16:00:00.000Z",
+    "committed_date": "2026-04-01T16:00:00.000Z",
+    "parent_ids": [],
+    "branch": "main"
+  },
+  {
+    "_key": "northwind/payments/ledger@fa48931e67e0f23ec1147679ea8fd4fe8aa7b18b",
+    "id": "fa48931e67e0f23ec1147679ea8fd4fe8aa7b18b",
+    "title": "Make refund posting idempotent on retry",
+    "message": "Make refund posting idempotent on retry\n",
+    "author_name": "Priya Raman",
+    "author_email": "priya.raman@northwind.io",
+    "authored_date": "2026-04-02T06:40:00.000Z",
+    "committed_date": "2026-04-02T06:40:00.000Z",
+    "parent_ids": [
+      "b53cc05521bb890c3b594541739cfebb76fc1117"
+    ],
+    "branch": "hotfix/double-post-refunds",
+    "diffs": [
+      {
+        "old_path": "posting/refunds.go",
+        "new_path": "posting/refunds.go",
+        "a_mode": "100644",
+        "b_mode": "100644",
+        "new_file": false,
+        "renamed_file": false,
+        "deleted_file": false,
+        "diff": "@@ -14,6 +14,9 @@ func PostRefund(tx *sql.Tx, r Refund) error {\n+\tif exists, err := alreadyPosted(tx, r.IdempotencyKey); err != nil || exists {\n+\t\treturn err\n+\t}\n \t_, err := tx.Exec(insertRefundEntry, r.ID, r.AmountCents)\n \treturn err\n }\n"
+      }
+    ]
+  },
+  {
+    "_key": "northwind/payments/ledger@acce1b3f4d5baf31587c585a55e9754af8d8174b",
+    "id": "acce1b3f4d5baf31587c585a55e9754af8d8174b",
+    "title": "Dedupe payout export rows",
+    "message": "Dedupe payout export rows\n",
+    "author_name": "Lena Fischer",
+    "author_email": "lena.fischer@northwind.io",
+    "authored_date": "2026-04-01T11:00:00.000Z",
+    "committed_date": "2026-04-01T11:00:00.000Z",
+    "parent_ids": [
+      "b53cc05521bb890c3b594541739cfebb76fc1117"
+    ],
+    "branch": "fix/payout-export-dupes"
+  },
+  {
+    "_key": "northwind/payments/ledger@9932a4ff93982c8d81c6e4f87b7904edfd58731e",
+    "id": "9932a4ff93982c8d81c6e4f87b7904edfd58731e",
+    "title": "WIP: split posting package",
+    "message": "WIP: split posting package\n",
+    "author_name": "Sam Okafor",
+    "author_email": "sam.okafor@northwind.io",
+    "authored_date": "2026-03-28T11:00:00.000Z",
+    "committed_date": "2026-03-28T11:00:00.000Z",
+    "parent_ids": [
+      "b53cc05521bb890c3b594541739cfebb76fc1117"
+    ],
+    "branch": "refactor/posting"
+  }
+]

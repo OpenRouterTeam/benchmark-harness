@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"read_sheet_values","arguments":{"range_name":"Renewals!A1:E10","spreadsheet_id":"1p91PmGrfYlol_BkGN9Op8j9dWzibNwgg"}}}

@@ -1,0 +1,62 @@
+[scenario]
+id = "code/terraform/payments-db-upgrade-failure"
+title = "Find out why the latest payments-api-prod run failed"
+now = "2026-10-28T15:30:00Z"
+seed = "code-terraform-payments-db-upgrade-failure"
+services = ["terraform"]
+tags = ["single-service", "lookup", "terraform"]
+timeout_sec = 900
+
+# The latest prod run errored during apply (not plan): the error is only in the apply log.
+# Distractors: an older prod run that errored at plan time, and a staging run that errored
+# with a different RDS error.
+[expect.answer]
+contains = [
+  "run-Gy4tBHGggKx49nbH",
+  "aws_db_instance.payments",
+  "InvalidParameterCombination",
+  "1 to add, 1 to change, 0 to destroy",
+]
+
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "POST"
+
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "PATCH"
+
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "terraform"
+tool = "list_runs"
+arguments = { terraform_org_name = "acme-platform", workspace_name = "payments-api-prod" }
+
+[[solution.call]]
+endpoint = "terraform"
+tool = "get_run_details"
+arguments = { run_id = "run-Gy4tBHGggKx49nbH" }
+
+[[solution.call]]
+endpoint = "terraform"
+tool = "get_apply_logs"
+arguments = { apply_id = "apply-OttY2qKt1DNXCd1P" }
+
+[[solution.call]]
+endpoint = "terraform"
+tool = "get_plan_details"
+arguments = { plan_id = "plan-W6mMDz8dMca2TBnD" }
+
+[solution]
+answer = """
+Latest run on payments-api-prod: run-Gy4tBHGggKx49nbH ("Upgrade payments DB to Postgres 16"), status errored.
+
+The plan succeeded (Plan: 1 to add, 1 to change, 0 to destroy); the apply failed on aws_db_instance.payments
+after creating aws_db_parameter_group.payments_pg16:
+
+  api error InvalidParameterCombination: Cannot upgrade postgres from 14.12 to 16.4. You must set
+  AllowMajorVersionUpgrade to true when upgrading to a new major version.
+"""

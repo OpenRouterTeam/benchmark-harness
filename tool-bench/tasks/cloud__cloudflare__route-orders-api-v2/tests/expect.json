@@ -1,0 +1,103 @@
+{
+  "state": [
+    {
+      "pointer": "/services/cloudflare/workers_routes/5af521d08a8f83440981f48ff71d8553/pattern",
+      "equals": "api.octo-corp.com/v2/*",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/cloudflare/workers_routes/5af521d08a8f83440981f48ff71d8553/script",
+      "equals": "orders-api-v2",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/cloudflare/workers_routes/5af521d08a8f83440981f48ff71d8553/zone_id",
+      "equals": "023e105f4ecef8ad9ca31a8372d0c353",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/cloudflare/workers_routes/9a4c1e7b3d0f5a8c2e6b9d1f4a7c0e3b/script",
+      "equals": "orders-api",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/cloudflare/workers_routes/9a4c1e7b3d0f5a8c2e6b9d1f4a7c0e3b/pattern",
+      "equals": "api.octo-corp.com/*",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/cloudflare/workers_routes/0b5d2f8c4e1a6b9d3f7c0e2a5b8d1f4c/script",
+      "equals": "orders-api",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/cloudflare/workers_routes/0b5d2f8c4e1a6b9d3f7c0e2a5b8d1f4c/pattern",
+      "equals": "api.octo-corp.com/v1/*",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/cloudflare/workers_routes/2d7f4b0e6a3c8d1f5b9e2a4c7d0f3b6e/script",
+      "equals": "orders-api-v2-staging",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "cloudflare",
+      "method": "POST",
+      "path": "/client/v4/zones/023e105f4ecef8ad9ca31a8372d0c353/workers/routes",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "cloudflare",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": "/workers/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "cloudflare",
+      "method": "PUT",
+      "path": null,
+      "path_regex": "/workers/scripts/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

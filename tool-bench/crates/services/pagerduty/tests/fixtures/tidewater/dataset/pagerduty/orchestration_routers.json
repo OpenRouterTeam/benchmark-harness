@@ -1,0 +1,54 @@
+[
+  {
+    "_key": "PEO0001",
+    "sets": [
+      {
+        "id": "start",
+        "rules": [
+          {
+            "id": "8f2a1c3d",
+            "label": "Checkout alerts",
+            "conditions": [
+              {
+                "expression": "event.custom_details.service matches part 'checkout'"
+              }
+            ],
+            "actions": {
+              "route_to": "PSVCHKA"
+            },
+            "disabled": false
+          },
+          {
+            "id": "1b7e9d2c",
+            "label": "Payments alerts",
+            "conditions": [
+              {
+                "expression": "event.source matches part 'payments'"
+              }
+            ],
+            "actions": {
+              "route_to": "PSVPAYA"
+            },
+            "disabled": false
+          }
+        ]
+      }
+    ],
+    "catch_all": {
+      "actions": {
+        "route_to": "unrouted"
+      }
+    },
+    "created_at": "2025-06-02T10:00:00Z",
+    "created_by": {
+      "id": "PA1EXKM",
+      "type": "user_reference"
+    },
+    "updated_at": "2026-09-15T08:30:00Z",
+    "updated_by": {
+      "id": "PA1EXKM",
+      "type": "user_reference"
+    },
+    "version": "9c41f0aa"
+  }
+]

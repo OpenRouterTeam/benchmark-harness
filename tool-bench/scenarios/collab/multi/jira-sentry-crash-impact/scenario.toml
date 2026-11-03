@@ -1,0 +1,56 @@
+[scenario]
+id = "collab/multi/jira-sentry-crash-impact"
+title = "Report the Sentry impact of the product-grid crash linked from a Jira bug"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-multi-jira-sentry-crash-impact"
+services = ["jira", "sentry"]
+tags = ["lookup", "multi-service", "jira", "sentry", "disambiguation"]
+timeout_sec = 1200
+
+# WEB-56 (open) links https://lumen-labs.sentry.io/issues/6184421045/ = STOREFRONT-WEB-8D:
+# 2172 events, 1318 users, first release storefront@5.3.0. Look-alikes with the same
+# TypeError title: STOREFRONT-WEB-7Q (CartDrawer, 2600 events / 1904 users, linked from the
+# Done bug WEB-49) and ADMIN-DASHBOARD-2M (96 / 14).
+[expect.answer]
+contains = ["STOREFRONT-WEB-8D", "5.3.0"]
+regex = '1,?318[\s\S]*2,?172|2,?172[\s\S]*1,?318'
+
+[[expect.required_calls]]
+service = "jira"
+method = "GET"
+path_regex = "^/rest/api/2/"
+
+[[expect.forbidden_calls]]
+service = "sentry"
+method = "PUT"
+
+[[expect.forbidden_calls]]
+service = "sentry"
+method = "DELETE"
+
+[[expect.forbidden_calls]]
+service = "jira"
+method = "PUT"
+
+[[expect.forbidden_calls]]
+service = "jira"
+method = "POST"
+path_regex = "^/rest/api/2/issue/"
+
+[[solution.call]]
+endpoint = "atlassian"
+tool = "jira_search"
+arguments = { jql = "project = WEB AND summary ~ \"grid\" AND statusCategory != Done", fields = "summary,status,assignee,description" }
+
+[[solution.call]]
+endpoint = "atlassian"
+tool = "jira_get_issue"
+arguments = { issue_key = "WEB-56" }
+
+[[solution.call]]
+endpoint = "sentry"
+tool = "get_sentry_resource"
+arguments = { resourceType = "issue", resourceId = "6184421045", organizationSlug = "lumen-labs" }
+
+[solution]
+answer = "The product grid bug WEB-56 links Sentry issue STOREFRONT-WEB-8D (TypeError: Cannot read properties of undefined (reading 'map') in ProductGrid). It has 2,172 events and 1,318 affected users, and was first seen in release storefront@5.3.0.\n"

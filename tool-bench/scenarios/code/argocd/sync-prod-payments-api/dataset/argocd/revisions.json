@@ -1,0 +1,60 @@
+[
+  {
+    "_key": "ef675a8571b401c60d06a7ff8fced859eeba3751",
+    "repoURL": "https://github.com/lumen-retail/payments-api-deploy.git",
+    "sha": "ef675a8571b401c60d06a7ff8fced859eeba3751",
+    "refs": [
+      "v3.17.0"
+    ],
+    "message": "release 3.17.0",
+    "author": "ci-bot",
+    "date": "2026-10-09T10:00:00Z",
+    "health": {
+      "status": "Healthy"
+    }
+  },
+  {
+    "_key": "aa59f08385fb84287ad815b3091ecb99d811bc62",
+    "repoURL": "https://github.com/lumen-retail/payments-api-deploy.git",
+    "sha": "aa59f08385fb84287ad815b3091ecb99d811bc62",
+    "refs": [
+      "v3.17.2"
+    ],
+    "message": "release 3.17.2",
+    "author": "ci-bot",
+    "date": "2026-10-20T10:00:00Z",
+    "health": {
+      "status": "Healthy"
+    }
+  },
+  {
+    "_key": "fe01f33d2a5392fa17c1c35f25d294d24075c28b",
+    "repoURL": "https://github.com/lumen-retail/payments-api-deploy.git",
+    "sha": "fe01f33d2a5392fa17c1c35f25d294d24075c28b",
+    "refs": [
+      "main",
+      "HEAD"
+    ],
+    "message": "Merge pull request #881 from lumen-retail/drop-legacy-webhooks: payments-api 3.18.0, remove legacy webhook config",
+    "author": "nina.berg",
+    "date": "2026-10-29T13:12:00Z",
+    "health": {
+      "status": "Healthy"
+    }
+  },
+  {
+    "_key": "3eb61107c6bc6af45be9c2b4b685f2e6247ed3b1",
+    "repoURL": "https://github.com/lumen-retail/payments-gateway-deploy.git",
+    "sha": "3eb61107c6bc6af45be9c2b4b685f2e6247ed3b1",
+    "refs": [
+      "main",
+      "HEAD"
+    ],
+    "message": "payments-gateway 1.4.2",
+    "author": "ci-bot",
+    "date": "2026-10-25T10:00:00Z",
+    "health": {
+      "status": "Healthy"
+    }
+  }
+]

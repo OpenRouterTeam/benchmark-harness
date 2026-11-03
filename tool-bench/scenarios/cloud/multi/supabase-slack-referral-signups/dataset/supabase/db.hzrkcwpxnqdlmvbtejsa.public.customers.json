@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "email": "qa+ana@northwind.test",
+    "full_name": "QA Ana",
+    "country": "ES",
+    "created_at": "2026-01-10T09:00:00+00:00",
+    "referral_code": null
+  },
+  {
+    "id": 2,
+    "email": "qa+grace@northwind.test",
+    "full_name": "QA Grace",
+    "country": "KR",
+    "created_at": "2026-01-10T09:05:00+00:00",
+    "referral_code": null
+  },
+  {
+    "id": 3,
+    "email": "priya.shah@fastmail.com",
+    "full_name": "Priya Shah",
+    "country": "GB",
+    "created_at": "2026-02-07T11:30:00+00:00",
+    "referral_code": null
+  },
+  {
+    "id": 4,
+    "email": "loadtest@northwind.test",
+    "full_name": "Load Test Bot",
+    "country": null,
+    "created_at": "2026-02-15T00:00:00+00:00",
+    "referral_code": null
+  },
+  {
+    "id": 91,
+    "email": "loadtest1@octo-shop.dev",
+    "full_name": "Load Test 1",
+    "country": "US",
+    "created_at": "2026-10-18T01:00:00+00:00",
+    "referral_code": "FALL26"
+  },
+  {
+    "id": 92,
+    "email": "loadtest2@octo-shop.dev",
+    "full_name": "Load Test 2",
+    "country": "US",
+    "created_at": "2026-10-18T02:00:00+00:00",
+    "referral_code": "FALL26"
+  },
+  {
+    "id": 93,
+    "email": "loadtest3@octo-shop.dev",
+    "full_name": "Load Test 3",
+    "country": "US",
+    "created_at": "2026-10-18T03:00:00+00:00",
+    "referral_code": "FALL26"
+  },
+  {
+    "id": 94,
+    "email": "loadtest4@octo-shop.dev",
+    "full_name": "Load Test 4",
+    "country": "US",
+    "created_at": "2026-10-18T04:00:00+00:00",
+    "referral_code": "FALL26"
+  },
+  {
+    "id": 95,
+    "email": "loadtest5@octo-shop.dev",
+    "full_name": "Load Test 5",
+    "country": "US",
+    "created_at": "2026-10-18T05:00:00+00:00",
+    "referral_code": "FALL26"
+  },
+  {
+    "id": 96,
+    "email": "loadtest6@octo-shop.dev",
+    "full_name": "Load Test 6",
+    "country": "US",
+    "created_at": "2026-10-18T06:00:00+00:00",
+    "referral_code": "FALL26"
+  }
+]

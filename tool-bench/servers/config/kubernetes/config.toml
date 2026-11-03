@@ -1,0 +1,3 @@
+# kubernetes-mcp-server 0.1.1: every toolset on, pointed at the world's mock API server.
+kubeconfig = "/etc/tool-bench/kubernetes/kubeconfig"
+toolsets = ["config", "core", "helm", "kcp", "kiali", "kubevirt", "netobserv", "observability/logs", "observability/metrics", "observability/otelcol", "observability/traces", "tekton"]

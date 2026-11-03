@@ -1,0 +1,51 @@
+[
+  {
+    "id": "3100201",
+    "name": "Riley Park",
+    "email": "riley@acme-shop.com",
+    "username": "riley.park",
+    "role": "owner",
+    "teams": [
+      "storefront",
+      "payments-web"
+    ],
+    "dateJoined": "2023-04-03T09:12:44Z",
+    "lastLogin": "2026-10-28T08:41:02Z"
+  },
+  {
+    "id": "3100207",
+    "name": "Mateo Alvarez",
+    "email": "mateo@acme-shop.com",
+    "username": "mateo.alvarez",
+    "role": "member",
+    "teams": [
+      "payments-web"
+    ],
+    "dateJoined": "2023-06-01T11:03:51Z",
+    "lastLogin": "2026-10-28T09:22:40Z"
+  },
+  {
+    "id": "3100212",
+    "name": "Ines Duarte",
+    "email": "ines@acme-shop.com",
+    "username": "ines.duarte",
+    "role": "member",
+    "teams": [
+      "storefront"
+    ],
+    "dateJoined": "2024-01-22T10:45:12Z",
+    "lastLogin": "2026-10-27T16:10:33Z"
+  },
+  {
+    "id": "3100219",
+    "name": "Kofi Mensah",
+    "email": "kofi@acme-shop.com",
+    "username": "kofi.mensah",
+    "role": "member",
+    "teams": [
+      "backoffice"
+    ],
+    "dateJoined": "2024-05-14T16:30:00Z",
+    "lastLogin": "2026-10-28T07:01:09Z"
+  }
+]

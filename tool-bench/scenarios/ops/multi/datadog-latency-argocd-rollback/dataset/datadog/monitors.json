@@ -1,0 +1,90 @@
+[
+  {
+    "id": 7201,
+    "org_id": 321813,
+    "type": "query alert",
+    "name": "Billing API p95 latency above 600ms",
+    "message": "Billing API p95 latency above 600ms on {{host.name}}. Runbook: https://wiki.lumen-retail.example/runbooks/billing-api-latency @slack-billing-alerts",
+    "tags": [
+      "service:billing-api",
+      "env:prod",
+      "team:billing"
+    ],
+    "query": "avg(last_5m):avg:billing.api.latency.p95{env:prod,service:billing-api} > 600",
+    "options": {
+      "thresholds": {
+        "critical": 600.0,
+        "warning": 450.0
+      },
+      "notify_no_data": false,
+      "notify_audit": false,
+      "include_tags": true,
+      "new_group_delay": 60,
+      "require_full_window": false,
+      "renotify_interval": 0,
+      "silenced": {}
+    },
+    "multi": false,
+    "created": "2026-03-02T10:11:12.000000+00:00",
+    "created_at": 1772446272000,
+    "modified": "2026-10-01T08:00:00.000000+00:00",
+    "deleted": null,
+    "restricted_roles": null,
+    "priority": 2,
+    "overall_state_modified": "2026-10-29T09:10:00+00:00",
+    "overall_state": "Alert",
+    "creator": {
+      "name": "Tom\u00e1s Ferreira",
+      "handle": "tomas.ferreira@lumen-retail.example",
+      "email": "tomas.ferreira@lumen-retail.example",
+      "id": 1445411
+    },
+    "state": {
+      "groups": {}
+    }
+  },
+  {
+    "id": 7202,
+    "org_id": 321813,
+    "type": "query alert",
+    "name": "Billing API p95 latency above 600ms (staging)",
+    "message": "Billing API p95 latency above 600ms (staging) on {{host.name}}. Runbook: https://wiki.lumen-retail.example/runbooks/billing-api-latency @slack-billing-alerts",
+    "tags": [
+      "service:billing-api",
+      "env:staging",
+      "team:billing"
+    ],
+    "query": "avg(last_5m):avg:billing.api.latency.p95{env:staging,service:billing-api} > 600",
+    "options": {
+      "thresholds": {
+        "critical": 600.0,
+        "warning": 450.0
+      },
+      "notify_no_data": false,
+      "notify_audit": false,
+      "include_tags": true,
+      "new_group_delay": 60,
+      "require_full_window": false,
+      "renotify_interval": 0,
+      "silenced": {}
+    },
+    "multi": false,
+    "created": "2026-03-02T10:11:12.000000+00:00",
+    "created_at": 1772446272000,
+    "modified": "2026-10-01T08:00:00.000000+00:00",
+    "deleted": null,
+    "restricted_roles": null,
+    "priority": 2,
+    "overall_state_modified": "2026-10-29T11:35:00+00:00",
+    "overall_state": "OK",
+    "creator": {
+      "name": "Tom\u00e1s Ferreira",
+      "handle": "tomas.ferreira@lumen-retail.example",
+      "email": "tomas.ferreira@lumen-retail.example",
+      "id": 1445411
+    },
+    "state": {
+      "groups": {}
+    }
+  }
+]

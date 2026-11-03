@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"tavily_research","arguments":{"input":"Compare the current pricing plans (plan names, monthly prices and what each plan includes) of the invoicing tools Tallybook, Billfold and Sumwise.","model":"pro"}}}

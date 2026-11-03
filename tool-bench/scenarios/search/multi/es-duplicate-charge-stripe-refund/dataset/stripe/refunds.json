@@ -1,0 +1,15 @@
+[
+  {
+    "id": "re_3Qc9XjLee109311rFd2kQ",
+    "object": "refund",
+    "amount": 1999,
+    "balance_transaction": "txn_3Qc9XjLee109311rTx3",
+    "charge": "ch_3Qc9XjLee109311aSv3wH",
+    "created": 1792934400,
+    "currency": "usd",
+    "metadata": {},
+    "payment_intent": "pi_3Qc9XjLee109311bZb8cI",
+    "reason": "requested_by_customer",
+    "status": "succeeded"
+  }
+]

@@ -1,0 +1,156 @@
+[
+  {
+    "_key": "66cfb93b-38d6-5b07-9f9b-29b61f34a151",
+    "metadata": {
+      "name": "billing-worker-69f8d7c5b-bq7wz.b38f281d5d43e041",
+      "namespace": "billing",
+      "uid": "66cfb93b-38d6-5b07-9f9b-29b61f34a151",
+      "resourceVersion": "41952",
+      "creationTimestamp": "2026-10-29T08:36:00Z"
+    },
+    "involvedObject": {
+      "kind": "Pod",
+      "namespace": "billing",
+      "name": "billing-worker-69f8d7c5b-bq7wz",
+      "uid": "87a2754d-a803-5e95-920b-79c741172bad",
+      "apiVersion": "v1",
+      "resourceVersion": "41901",
+      "fieldPath": "spec.containers{billing-worker}"
+    },
+    "reason": "BackOff",
+    "message": "Back-off restarting failed container billing-worker in pod billing-worker-69f8d7c5b-bq7wz_billing",
+    "source": {
+      "component": "kubelet",
+      "host": "ip-10-42-17-203.ec2.internal"
+    },
+    "firstTimestamp": "2026-10-29T08:36:00Z",
+    "lastTimestamp": "2026-10-29T13:58:05Z",
+    "count": 640,
+    "type": "Warning",
+    "eventTime": null,
+    "reportingComponent": "kubelet",
+    "reportingInstance": "ip-10-42-17-203.ec2.internal"
+  },
+  {
+    "_key": "93af35d6-50a2-56f3-83b6-150e007fc0a6",
+    "metadata": {
+      "name": "billing-worker-69f8d7c5b-c4n8x.7caaeff5a9d6e8fd",
+      "namespace": "billing",
+      "uid": "93af35d6-50a2-56f3-83b6-150e007fc0a6",
+      "resourceVersion": "41969",
+      "creationTimestamp": "2026-10-29T08:36:00Z"
+    },
+    "involvedObject": {
+      "kind": "Pod",
+      "namespace": "billing",
+      "name": "billing-worker-69f8d7c5b-c4n8x",
+      "uid": "dd58a839-be0a-5b67-8d16-c7d7e4f4e143",
+      "apiVersion": "v1",
+      "resourceVersion": "41918",
+      "fieldPath": "spec.containers{billing-worker}"
+    },
+    "reason": "BackOff",
+    "message": "Back-off restarting failed container billing-worker in pod billing-worker-69f8d7c5b-c4n8x_billing",
+    "source": {
+      "component": "kubelet",
+      "host": "ip-10-42-17-203.ec2.internal"
+    },
+    "firstTimestamp": "2026-10-29T08:36:00Z",
+    "lastTimestamp": "2026-10-29T13:58:05Z",
+    "count": 640,
+    "type": "Warning",
+    "eventTime": null,
+    "reportingComponent": "kubelet",
+    "reportingInstance": "ip-10-42-17-203.ec2.internal"
+  },
+  {
+    "_key": "24a57ceb-7afc-54dc-9264-d04911206c91",
+    "metadata": {
+      "name": "billing-worker.4f12fac637f2e574",
+      "namespace": "argocd",
+      "uid": "24a57ceb-7afc-54dc-9264-d04911206c91",
+      "resourceVersion": "41986",
+      "creationTimestamp": "2026-10-29T08:34:00Z"
+    },
+    "involvedObject": {
+      "kind": "Application",
+      "namespace": "argocd",
+      "name": "billing-worker",
+      "uid": "09c15e70-3ad4-5d65-a57b-d0303e667668",
+      "apiVersion": "argoproj.io/v1alpha1",
+      "resourceVersion": "41850"
+    },
+    "reason": "OperationStarted",
+    "message": "initiated automated sync to 'cf30c03f33e63617efbbbb2da615dff59a7cb010'",
+    "source": {
+      "component": "argocd-application-controller"
+    },
+    "firstTimestamp": "2026-10-29T08:34:00Z",
+    "lastTimestamp": "2026-10-29T08:34:00Z",
+    "count": 1,
+    "type": "Normal",
+    "eventTime": null,
+    "reportingComponent": "argocd-application-controller",
+    "reportingInstance": ""
+  },
+  {
+    "_key": "6065edc0-c012-5fae-9e91-c272c08d7e8f",
+    "metadata": {
+      "name": "billing-worker.cbdfc934158f9c4f",
+      "namespace": "argocd",
+      "uid": "6065edc0-c012-5fae-9e91-c272c08d7e8f",
+      "resourceVersion": "42003",
+      "creationTimestamp": "2026-10-29T08:34:05Z"
+    },
+    "involvedObject": {
+      "kind": "Application",
+      "namespace": "argocd",
+      "name": "billing-worker",
+      "uid": "09c15e70-3ad4-5d65-a57b-d0303e667668",
+      "apiVersion": "argoproj.io/v1alpha1",
+      "resourceVersion": "41850"
+    },
+    "reason": "OperationCompleted",
+    "message": "Sync operation to cf30c03f33e63617efbbbb2da615dff59a7cb010 succeeded",
+    "source": {
+      "component": "argocd-application-controller"
+    },
+    "firstTimestamp": "2026-10-29T08:34:05Z",
+    "lastTimestamp": "2026-10-29T08:34:05Z",
+    "count": 1,
+    "type": "Normal",
+    "eventTime": null,
+    "reportingComponent": "argocd-application-controller",
+    "reportingInstance": ""
+  },
+  {
+    "_key": "63001183-0d43-5373-b832-7b3cd0a225a5",
+    "metadata": {
+      "name": "billing-worker.a6b578fc70844f06",
+      "namespace": "argocd",
+      "uid": "63001183-0d43-5373-b832-7b3cd0a225a5",
+      "resourceVersion": "42020",
+      "creationTimestamp": "2026-10-29T08:44:10Z"
+    },
+    "involvedObject": {
+      "kind": "Application",
+      "namespace": "argocd",
+      "name": "billing-worker",
+      "uid": "09c15e70-3ad4-5d65-a57b-d0303e667668",
+      "apiVersion": "argoproj.io/v1alpha1",
+      "resourceVersion": "41850"
+    },
+    "reason": "ResourceUpdated",
+    "message": "Updated health status: Progressing -> Degraded",
+    "source": {
+      "component": "argocd-application-controller"
+    },
+    "firstTimestamp": "2026-10-29T08:44:10Z",
+    "lastTimestamp": "2026-10-29T08:44:10Z",
+    "count": 1,
+    "type": "Normal",
+    "eventTime": null,
+    "reportingComponent": "argocd-application-controller",
+    "reportingInstance": ""
+  }
+]

@@ -1,0 +1,176 @@
+{
+  "state": [
+    {
+      "pointer": "/services/stripe/charges/ch_Hk5TzQ9wNc2RbV6mXa8LuE4P/amount_refunded",
+      "equals": 6200,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/charges/ch_Hk5TzQ9wNc2RbV6mXa8LuE4P/refunded",
+      "equals": true,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/charges/ch_Gd7WnY3kPs9QtF2hZr5MbC8X/amount_refunded",
+      "equals": 0,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/charges/ch_Vq2mLx8RtB4nKe7YpW1sHd3J/amount_refunded",
+      "equals": 0,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5024/status",
+      "equals": "refunded",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5024/total",
+      "equals": 62.0,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5025/status",
+      "equals": "shipped",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5023/status",
+      "equals": "shipped",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5007/status",
+      "equals": "paid",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/google/gmail_messages",
+      "equals": null,
+      "exists": null,
+      "contains": null,
+      "any": {
+        "body_text": "62",
+        "headers": {
+          "To": "priya.shah@acme.io"
+        },
+        "labelIds": [
+          "SENT"
+        ],
+        "threadId": "c41e7a2b9d03f615"
+      },
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "stripe_api_operation_id": "PostRefunds"
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "google",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "send_gmail_message"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "parameters": {
+            "charge": "ch_Gd7WnY3kPs9QtF2hZr5MbC8X"
+          },
+          "stripe_api_operation_id": "PostRefunds"
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "parameters": {
+            "payment_intent": "pi_Nq7VxT2kLm9RcW4bZh6YpD1s"
+          },
+          "stripe_api_operation_id": "PostRefunds"
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "google",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "to": "priya.shah@fastmail.com"
+        },
+        "name": "send_gmail_message"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

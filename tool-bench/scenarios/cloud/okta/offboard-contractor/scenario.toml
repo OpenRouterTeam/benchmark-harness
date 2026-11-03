@@ -1,0 +1,81 @@
+[scenario]
+id = "cloud/okta/offboard-contractor"
+title = "Offboard the right Alex Kim when a contract ends"
+now = "2026-03-14T09:00:00Z"
+seed = "cloud-okta-offboard-contractor"
+services = ["okta"]
+tags = ["write", "single-service", "okta", "disambiguation"]
+timeout_sec = 900
+
+# Two users named Alex Kim: the Northwind Consulting contractor 00u1alxkmct4St1Uv2x7
+# (alex.kim@northwind-consulting.example) and the employee 00u1alxkmem2Op9Qr0x7 in
+# Engineering. Contractors - Salesforce = 00g2cntrsf6Op3Qr4x7.
+[[expect.state]]
+pointer = "/services/okta/users/00u1alxkmct4St1Uv2x7/status"
+equals = "DEPROVISIONED"
+
+[[expect.state]]
+pointer = "/services/okta/group_members/00g2cntrsf6Op3Qr4x7~100u1alxkmct4St1Uv2x7"
+exists = false
+
+# Deactivated, not deleted.
+[[expect.state]]
+pointer = "/services/okta/users/00u1alxkmct4St1Uv2x7/profile/login"
+equals = "alex.kim@northwind-consulting.example"
+
+# The employee Alex Kim is untouched.
+[[expect.state]]
+pointer = "/services/okta/users/00u1alxkmem2Op9Qr0x7/status"
+equals = "ACTIVE"
+
+[[expect.state]]
+pointer = "/services/okta/group_members/00g2sfusrs8St5Uv6x7~100u1alxkmem2Op9Qr0x7"
+exists = true
+
+[[expect.state]]
+pointer = "/services/okta/group_members/00g2engnrng7Qz4Kp0x7~100u1alxkmem2Op9Qr0x7"
+exists = true
+
+[[expect.required_calls]]
+service = "okta"
+method = "POST"
+path = "/api/v1/users/00u1alxkmct4St1Uv2x7/lifecycle/deactivate"
+
+[[expect.required_calls]]
+service = "okta"
+method = "DELETE"
+path = "/api/v1/groups/00g2cntrsf6Op3Qr4x7/users/00u1alxkmct4St1Uv2x7"
+
+[[expect.forbidden_calls]]
+service = "okta"
+path_regex = "^/api/v1/users/(00u1alxkmem2Op9Qr0x7|alex\\.kim@octo-corp\\.example)/lifecycle/"
+
+[[expect.forbidden_calls]]
+service = "okta"
+method = "DELETE"
+path_regex = "^/api/v1/users/"
+
+[[expect.forbidden_calls]]
+service = "okta"
+method = "DELETE"
+path_regex = "^/api/v1/groups/[^/]+/users/00u1alxkmem2Op9Qr0x7$"
+
+[[solution.call]]
+endpoint = "okta"
+tool = "list_users"
+arguments = { search = 'profile.lastName eq "Kim"' }
+
+[[solution.call]]
+endpoint = "okta"
+tool = "deactivate_user"
+arguments = { user_id = "00u1alxkmct4St1Uv2x7" }
+
+[[solution.call]]
+endpoint = "okta"
+tool = "list_user_groups"
+arguments = { user_id = "00u1alxkmct4St1Uv2x7" }
+
+[[solution.call]]
+endpoint = "okta"
+tool = "remove_user_from_group"
+arguments = { group_id = "00g2cntrsf6Op3Qr4x7", user_id = "00u1alxkmct4St1Uv2x7" }

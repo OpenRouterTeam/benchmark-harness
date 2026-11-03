@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"slack_search_public","arguments":{"keywords":["4.12","moved"],"natural_language_query":"When is the web 4.12 release now?"}}}

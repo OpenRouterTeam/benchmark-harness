@@ -1,0 +1,35 @@
+[
+  {
+    "_key": "team",
+    "remainingCredits": 41250,
+    "planCredits": 50000,
+    "billingPeriodStart": "2026-09-15T00:00:00Z",
+    "billingPeriodEnd": "2026-10-15T00:00:00Z",
+    "history": [
+      {
+        "startDate": "2026-08-01",
+        "endDate": "2026-08-31",
+        "creditsUsed": 9120,
+        "endpoints": {
+          "scrape": 6000,
+          "search": 3120
+        },
+        "apiKeys": {
+          "default": 9120
+        }
+      },
+      {
+        "startDate": "2026-09-01",
+        "endDate": null,
+        "creditsUsed": 8750,
+        "endpoints": {
+          "scrape": 8000,
+          "crawl": 750
+        },
+        "apiKeys": {
+          "default": 8750
+        }
+      }
+    ]
+  }
+]

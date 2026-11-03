@@ -1,0 +1,18 @@
+[
+  {
+    "_key": "TCK4M2P8",
+    "id": "TCK4M2P8",
+    "name": "Checkout",
+    "email": "checkout-team@octo-corp.com",
+    "avatar_url": "/avatar/c3664458aca7fd53a8521add1bf3135c",
+    "is_sharing_resources_to_all": false
+  },
+  {
+    "_key": "TSR8N3Q1",
+    "id": "TSR8N3Q1",
+    "name": "SRE",
+    "email": "sre@octo-corp.com",
+    "avatar_url": "/avatar/3fc242fba34d68923532e7da320e6677",
+    "is_sharing_resources_to_all": false
+  }
+]

@@ -1,0 +1,15 @@
+[
+  {
+    "_key": "7",
+    "id": 7,
+    "description": "northwind-k8s-runner-3",
+    "name": "gitlab-runner",
+    "is_shared": true,
+    "runner_type": "instance_type",
+    "status": "online",
+    "tag_list": [
+      "k8s",
+      "linux"
+    ]
+  }
+]

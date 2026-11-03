@@ -1,0 +1,98 @@
+[
+  {
+    "active": false,
+    "active_child": null,
+    "canceled": null,
+    "creator_id": 1445400,
+    "disabled": false,
+    "downtime_type": 2,
+    "end": 1792814400,
+    "id": 2318841,
+    "message": "Replica rebuild pg-prod-replica-1 CHG-4987",
+    "monitor_id": 7301,
+    "monitor_tags": [
+      "*"
+    ],
+    "mute_first_recovery_notification": false,
+    "notify_end_states": [
+      "alert",
+      "no data",
+      "warn"
+    ],
+    "notify_end_types": [
+      "expired"
+    ],
+    "parent_id": null,
+    "recurrence": null,
+    "scope": [
+      "host:pg-prod-replica-1"
+    ],
+    "start": 1792807200,
+    "timezone": "UTC",
+    "updater_id": null
+  },
+  {
+    "active": false,
+    "active_child": null,
+    "canceled": null,
+    "creator_id": 1445400,
+    "disabled": false,
+    "downtime_type": 0,
+    "end": 1793390400,
+    "id": 2318849,
+    "message": "Staging Postgres 16 upgrade CHG-5003",
+    "monitor_id": null,
+    "monitor_tags": [
+      "*"
+    ],
+    "mute_first_recovery_notification": false,
+    "notify_end_states": [
+      "alert",
+      "no data",
+      "warn"
+    ],
+    "notify_end_types": [
+      "expired"
+    ],
+    "parent_id": null,
+    "recurrence": null,
+    "scope": [
+      "env:staging"
+    ],
+    "start": 1793361600,
+    "timezone": "UTC",
+    "updater_id": null
+  },
+  {
+    "active": false,
+    "active_child": null,
+    "canceled": null,
+    "creator_id": 1445400,
+    "disabled": false,
+    "downtime_type": 2,
+    "end": 1794022200,
+    "id": 2318856,
+    "message": "Primary minor version upgrade CHG-5020",
+    "monitor_id": 7303,
+    "monitor_tags": [
+      "*"
+    ],
+    "mute_first_recovery_notification": false,
+    "notify_end_states": [
+      "alert",
+      "no data",
+      "warn"
+    ],
+    "notify_end_types": [
+      "expired"
+    ],
+    "parent_id": null,
+    "recurrence": null,
+    "scope": [
+      "host:pg-prod-primary-1"
+    ],
+    "start": 1794020400,
+    "timezone": "UTC",
+    "updater_id": null
+  }
+]

@@ -1,0 +1,52 @@
+[
+  {
+    "_key": "https://www.northwind-analytics.com/pricing",
+    "title": "Pricing | Northwind Analytics",
+    "description": "Simple plans for product teams of every size. Save 20% with annual billing.",
+    "language": "en",
+    "cachedAt": "2026-10-27T08:12:44Z",
+    "markdown": "# Pricing\n\nSimple plans for product teams of every size. Prices in USD. Save 20% with annual billing.\n\n## Starter\n\n**$29/month** billed annually ($35 billed monthly)\n\n- 3 seats\n- 1M tracked events per month\n- 90-day data retention\n\n## Team\n\n**$79/month** billed annually ($99 billed monthly)\n\n- 12 seats included, additional seats $8/seat/month\n- 10M tracked events per month\n- Funnels, retention and cohort reports\n- 13-month data retention\n\n## Business\n\n**$249/month** billed annually ($299 billed monthly)\n\n- 40 seats included\n- 50M tracked events per month\n- SSO (SAML) and audit logs\n\n## Enterprise\n\nCustom pricing. Unlimited seats, dedicated support and a 99.95% uptime SLA. [Contact sales](https://www.northwind-analytics.com/contact-sales)\n\n---\n\nPrices updated September 1, 2026. See the [changelog](https://www.northwind-analytics.com/changelog) for details.",
+    "json": {
+      "plans": [
+        { "name": "Starter", "annualMonthlyPriceUsd": 29, "monthlyPriceUsd": 35, "seats": 3 },
+        { "name": "Team", "annualMonthlyPriceUsd": 79, "monthlyPriceUsd": 99, "seats": 12 },
+        { "name": "Business", "annualMonthlyPriceUsd": 249, "monthlyPriceUsd": 299, "seats": 40 },
+        { "name": "Enterprise", "annualMonthlyPriceUsd": null, "monthlyPriceUsd": null, "seats": null }
+      ]
+    }
+  },
+  {
+    "_key": "https://www.northwind-analytics.com",
+    "title": "Northwind Analytics | Product analytics for fast-moving teams",
+    "description": "Understand how customers use your product with funnels, retention and cohorts.",
+    "language": "en",
+    "markdown": "# Product analytics for fast-moving teams\n\nNorthwind Analytics shows you how customers use your product: funnels, retention, cohorts and session insights in one place.\n\n[See pricing](https://www.northwind-analytics.com/pricing) · [Read the blog](https://www.northwind-analytics.com/blog) · [Contact sales](https://www.northwind-analytics.com/contact-sales)\n\nTrusted by 4,000+ product teams."
+  },
+  {
+    "_key": "https://www.northwind-analytics.com/blog/2025-pricing-update",
+    "title": "Our 2025 pricing update | Northwind Analytics Blog",
+    "description": "New plans for 2025: Starter, Team and Business.",
+    "language": "en",
+    "markdown": "# Our 2025 pricing update\n\n*February 3, 2025*\n\nStarting today we're simplifying our plans. The new **Team** plan is **$69/month** billed annually and includes **10 seats**. Starter stays at $25/month with 3 seats, and Business is $199/month with 30 seats.\n\nExisting customers keep their current price until renewal."
+  },
+  {
+    "_key": "https://www.northwind-analytics.com/changelog",
+    "title": "Changelog | Northwind Analytics",
+    "language": "en",
+    "markdown": "# Changelog\n\n## September 1, 2026\n\n- Pricing: Team now includes 12 seats (up from 10). Annual and monthly prices updated.\n- Business now includes 40 seats.\n\n## June 12, 2026\n\n- Cohort comparison reports are generally available."
+  },
+  {
+    "_key": "https://www.g2.com/products/northwind-analytics/pricing",
+    "title": "Northwind Analytics Pricing 2026 | G2",
+    "description": "Compare Northwind Analytics pricing plans and editions.",
+    "language": "en",
+    "markdown": "# Northwind Analytics Pricing\n\nPricing information supplied by the vendor. Last updated March 2025.\n\n| Edition | Price |\n|---|---|\n| Starter | $25 per month (3 users) |\n| Team | $69 per month (10 users) |\n| Business | $199 per month (30 users) |\n\nUser reviews: 4.5 / 5 (312 reviews)"
+  },
+  {
+    "_key": "https://www.northwindtraders.com/pricing",
+    "title": "Wholesale Pricing | Northwind Traders",
+    "description": "Volume pricing for specialty foods and beverages.",
+    "language": "en",
+    "markdown": "# Wholesale pricing\n\nNorthwind Traders offers tiered pricing for restaurants and retailers.\n\n- **Team** accounts (up to 5 buyers): 8% volume discount\n- **Business** accounts: 12% volume discount, net-30 terms\n\nCall 1-800-555-0199 to open an account."
+  }
+]

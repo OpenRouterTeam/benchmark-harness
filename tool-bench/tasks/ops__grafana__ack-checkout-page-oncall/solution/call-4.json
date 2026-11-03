@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_current_oncall_users","arguments":{"scheduleId":"SCK1PRIM"}}}

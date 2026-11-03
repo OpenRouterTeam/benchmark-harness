@@ -1,0 +1,50 @@
+
+          mutation productOptionsCreate(
+            $productId: ID!
+            $options: [OptionCreateInput!]!
+          ) {
+            productOptionsCreate(
+              productId: $productId
+              options: $options
+              variantStrategy: LEAVE_AS_IS
+            ) {
+              product {
+                ...ProductOptionsFields
+              }
+              userErrors {
+                field
+                message
+                code
+              }
+            }
+          }
+          
+  fragment ProductOptionsFields on Product {
+    id
+    title
+    options {
+      id
+      name
+      position
+      optionValues {
+        id
+        name
+        hasVariants
+      }
+    }
+    variants(first: 20) {
+      edges {
+        node {
+          id
+          title
+          price
+          selectedOptions {
+            name
+            value
+          }
+        }
+      }
+    }
+  }
+
+        

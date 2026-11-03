@@ -1,0 +1,48 @@
+[scenario]
+id = "cloud/aws/find-unencrypted-bucket"
+title = "Find the S3 bucket without default encryption"
+now = "2026-03-14T09:00:00Z"
+seed = "cloud-aws-find-unencrypted-bucket"
+services = ["aws"]
+tags = ["lookup", "single-service", "aws"]
+timeout_sec = 900
+
+# Exactly the bucket name: "northwind-legacy-exports-2019" (encrypted) does not match.
+[expect.answer]
+regex = '^\W*northwind-legacy-exports\W*$'
+
+[[expect.required_calls]]
+service = "aws"
+method = "GET"
+path = "/northwind-legacy-exports"
+query_contains = "encryption"
+
+# Read-only task: no bucket configuration changes.
+[[expect.forbidden_calls]]
+service = "aws"
+method = "PUT"
+
+[[expect.forbidden_calls]]
+service = "aws"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "aws-api"
+tool = "call_aws"
+arguments = { cli_command = "aws s3api list-buckets" }
+
+[[solution.call]]
+endpoint = "aws-api"
+tool = "call_aws"
+arguments = { cli_command = [
+  "aws s3api get-bucket-encryption --bucket northwind-app-assets",
+  "aws s3api get-bucket-encryption --bucket northwind-cloudtrail-logs",
+  "aws s3api get-bucket-encryption --bucket northwind-data-lake-raw",
+  "aws s3api get-bucket-encryption --bucket northwind-legacy-exports",
+  "aws s3api get-bucket-encryption --bucket northwind-legacy-exports-2019",
+  "aws s3api get-bucket-encryption --bucket northwind-terraform-state",
+  "aws s3api get-bucket-encryption --bucket northwind-eu-backups",
+] }
+
+[solution]
+answer = "northwind-legacy-exports\n"

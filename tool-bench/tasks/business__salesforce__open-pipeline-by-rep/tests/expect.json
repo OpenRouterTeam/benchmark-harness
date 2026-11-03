@@ -1,0 +1,11 @@
+{
+  "state": [],
+  "required_calls": [],
+  "forbidden_calls": [],
+  "answer": {
+    "contains": [
+      "Priya Raman"
+    ],
+    "regex": "252,?500"
+  }
+}

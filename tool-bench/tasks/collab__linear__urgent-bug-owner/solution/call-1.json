@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"linear_getProjectIssues","arguments":{"includeCompleted":false,"projectId":"e3c09e4d-1537-5f94-8bf9-aa46108fc659"}}}

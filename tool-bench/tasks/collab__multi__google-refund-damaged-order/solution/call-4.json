@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"stripe_api_write","arguments":{"livemode":false,"parameters":{"charge":"ch_Hk5TzQ9wNc2RbV6mXa8LuE4P","reason":"requested_by_customer"},"stripe_api_operation_id":"PostRefunds","stripe_context":"acct_1FwY8bQk2LmN4pRs"}}}

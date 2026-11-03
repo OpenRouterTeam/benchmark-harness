@@ -1,0 +1,6 @@
+[scenario]
+id = "fixtures/gitlab/basic"
+title = "GitLab mock test fixture"
+now = "2026-03-14T09:00:00Z"
+seed = "fixture-gitlab-basic"
+services = ["gitlab"]

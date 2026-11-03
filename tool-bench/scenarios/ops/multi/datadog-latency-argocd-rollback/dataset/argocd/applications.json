@@ -1,0 +1,520 @@
+[
+  {
+    "_key": "argocd/billing-api",
+    "metadata": {
+      "name": "billing-api",
+      "namespace": "argocd",
+      "uid": "0e671e54-d115-5cd8-9513-542333a806b1",
+      "resourceVersion": "42037",
+      "generation": 4,
+      "creationTimestamp": "2025-08-14T09:20:00Z",
+      "labels": {
+        "team": "billing",
+        "env": "production"
+      },
+      "finalizers": [
+        "resources-finalizer.argocd.argoproj.io"
+      ]
+    },
+    "spec": {
+      "source": {
+        "repoURL": "https://github.com/lumen-retail/billing-api-deploy.git",
+        "path": "overlays/production",
+        "targetRevision": "main"
+      },
+      "destination": {
+        "server": "https://prod-use1.k8s.lumen.internal",
+        "namespace": "billing"
+      },
+      "project": "billing",
+      "syncPolicy": {
+        "automated": {
+          "prune": true,
+          "selfHeal": true
+        },
+        "syncOptions": [
+          "CreateNamespace=true",
+          "ApplyOutOfSyncOnly=true"
+        ],
+        "retry": {
+          "limit": 5,
+          "backoff": {
+            "duration": "5s",
+            "factor": 2,
+            "maxDuration": "3m0s"
+          }
+        }
+      }
+    },
+    "status": {
+      "sync": {
+        "status": "Synced",
+        "comparedTo": {
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/billing-api-deploy.git",
+            "path": "overlays/production",
+            "targetRevision": "main"
+          },
+          "destination": {
+            "server": "https://prod-use1.k8s.lumen.internal",
+            "namespace": "billing"
+          }
+        },
+        "revision": "5ab7f03e2c9d18b46e0f7a3c1d2b95e8f46a0c13"
+      },
+      "health": {
+        "status": "Healthy"
+      },
+      "history": [
+        {
+          "revision": "2d61be0a94c3f7e85b1d06a2c4f9e83b7a51d6e0",
+          "deployedAt": "2026-10-08T10:04:00Z",
+          "id": 0,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/billing-api-deploy.git",
+            "path": "overlays/production",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-08T10:04:00Z",
+          "initiatedBy": {
+            "automated": true
+          }
+        },
+        {
+          "revision": "f4befdc6efa7504dc43d29f4de52c0f1529f52d2",
+          "deployedAt": "2026-10-22T10:06:00Z",
+          "id": 1,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/billing-api-deploy.git",
+            "path": "overlays/production",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-22T10:06:00Z",
+          "initiatedBy": {
+            "automated": true
+          }
+        },
+        {
+          "revision": "9c2e41d7b85a03f6e1d4c8b7a925e06f3b17d4ac",
+          "deployedAt": "2026-10-29T09:02:00Z",
+          "id": 2,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/billing-api-deploy.git",
+            "path": "overlays/production",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-29T09:02:00Z",
+          "initiatedBy": {
+            "automated": true
+          }
+        },
+        {
+          "revision": "5ab7f03e2c9d18b46e0f7a3c1d2b95e8f46a0c13",
+          "deployedAt": "2026-10-29T12:10:00Z",
+          "id": 3,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/billing-api-deploy.git",
+            "path": "overlays/production",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-29T12:10:00Z",
+          "initiatedBy": {
+            "automated": true
+          }
+        }
+      ],
+      "reconciledAt": "2026-10-29T14:01:00Z",
+      "operationState": {
+        "operation": {
+          "sync": {
+            "revision": "5ab7f03e2c9d18b46e0f7a3c1d2b95e8f46a0c13",
+            "syncOptions": [
+              "CreateNamespace=true",
+              "ApplyOutOfSyncOnly=true"
+            ]
+          },
+          "initiatedBy": {
+            "automated": true
+          },
+          "retry": {
+            "limit": 5
+          }
+        },
+        "phase": "Succeeded",
+        "message": "successfully synced (all tasks run)",
+        "syncResult": {
+          "resources": [
+            {
+              "group": "apps",
+              "version": "v1",
+              "kind": "Deployment",
+              "namespace": "billing",
+              "name": "billing-api",
+              "status": "Synced",
+              "message": "deployment.apps/billing-api configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            },
+            {
+              "group": "",
+              "version": "v1",
+              "kind": "Service",
+              "namespace": "billing",
+              "name": "billing-api",
+              "status": "Synced",
+              "message": "service/billing-api configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            }
+          ],
+          "revision": "5ab7f03e2c9d18b46e0f7a3c1d2b95e8f46a0c13",
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/billing-api-deploy.git",
+            "path": "overlays/production",
+            "targetRevision": "main"
+          }
+        },
+        "startedAt": "2026-10-29T12:10:00Z",
+        "finishedAt": "2026-10-29T12:10:00Z"
+      },
+      "sourceType": "Kustomize",
+      "controllerNamespace": "argocd"
+    }
+  },
+  {
+    "_key": "argocd/billing-api-staging",
+    "metadata": {
+      "name": "billing-api-staging",
+      "namespace": "argocd",
+      "uid": "4f1a7c3e-2b8d-5e90-a1c6-7d3e9b2f0a14",
+      "resourceVersion": "42190",
+      "generation": 4,
+      "creationTimestamp": "2025-08-14T09:20:00Z",
+      "labels": {
+        "team": "billing",
+        "env": "staging"
+      },
+      "finalizers": [
+        "resources-finalizer.argocd.argoproj.io"
+      ]
+    },
+    "spec": {
+      "source": {
+        "repoURL": "https://github.com/lumen-retail/billing-api-deploy.git",
+        "path": "overlays/staging",
+        "targetRevision": "main"
+      },
+      "destination": {
+        "server": "https://staging-use1.k8s.lumen.internal",
+        "namespace": "billing"
+      },
+      "project": "billing",
+      "syncPolicy": {
+        "automated": {
+          "prune": true,
+          "selfHeal": true
+        },
+        "syncOptions": [
+          "CreateNamespace=true",
+          "ApplyOutOfSyncOnly=true"
+        ],
+        "retry": {
+          "limit": 5,
+          "backoff": {
+            "duration": "5s",
+            "factor": 2,
+            "maxDuration": "3m0s"
+          }
+        }
+      }
+    },
+    "status": {
+      "sync": {
+        "status": "Synced",
+        "comparedTo": {
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/billing-api-deploy.git",
+            "path": "overlays/staging",
+            "targetRevision": "main"
+          },
+          "destination": {
+            "server": "https://staging-use1.k8s.lumen.internal",
+            "namespace": "billing"
+          }
+        },
+        "revision": "5ab7f03e2c9d18b46e0f7a3c1d2b95e8f46a0c13"
+      },
+      "health": {
+        "status": "Healthy"
+      },
+      "history": [
+        {
+          "revision": "f4befdc6efa7504dc43d29f4de52c0f1529f52d2",
+          "deployedAt": "2026-10-22T09:40:00Z",
+          "id": 0,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/billing-api-deploy.git",
+            "path": "overlays/staging",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-22T09:40:00Z",
+          "initiatedBy": {
+            "automated": true
+          }
+        },
+        {
+          "revision": "9c2e41d7b85a03f6e1d4c8b7a925e06f3b17d4ac",
+          "deployedAt": "2026-10-29T08:58:00Z",
+          "id": 1,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/billing-api-deploy.git",
+            "path": "overlays/staging",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-29T08:58:00Z",
+          "initiatedBy": {
+            "automated": true
+          }
+        },
+        {
+          "revision": "5ab7f03e2c9d18b46e0f7a3c1d2b95e8f46a0c13",
+          "deployedAt": "2026-10-29T12:06:00Z",
+          "id": 2,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/billing-api-deploy.git",
+            "path": "overlays/staging",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-29T12:06:00Z",
+          "initiatedBy": {
+            "automated": true
+          }
+        }
+      ],
+      "reconciledAt": "2026-10-29T14:01:00Z",
+      "operationState": {
+        "operation": {
+          "sync": {
+            "revision": "5ab7f03e2c9d18b46e0f7a3c1d2b95e8f46a0c13",
+            "syncOptions": [
+              "CreateNamespace=true",
+              "ApplyOutOfSyncOnly=true"
+            ]
+          },
+          "initiatedBy": {
+            "automated": true
+          },
+          "retry": {
+            "limit": 5
+          }
+        },
+        "phase": "Succeeded",
+        "message": "successfully synced (all tasks run)",
+        "syncResult": {
+          "resources": [
+            {
+              "group": "apps",
+              "version": "v1",
+              "kind": "Deployment",
+              "namespace": "billing",
+              "name": "billing-api",
+              "status": "Synced",
+              "message": "deployment.apps/billing-api configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            },
+            {
+              "group": "",
+              "version": "v1",
+              "kind": "Service",
+              "namespace": "billing",
+              "name": "billing-api",
+              "status": "Synced",
+              "message": "service/billing-api configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            }
+          ],
+          "revision": "5ab7f03e2c9d18b46e0f7a3c1d2b95e8f46a0c13",
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/billing-api-deploy.git",
+            "path": "overlays/staging",
+            "targetRevision": "main"
+          }
+        },
+        "startedAt": "2026-10-29T12:06:00Z",
+        "finishedAt": "2026-10-29T12:06:00Z"
+      },
+      "sourceType": "Kustomize",
+      "controllerNamespace": "argocd"
+    }
+  },
+  {
+    "_key": "argocd/billing-worker",
+    "metadata": {
+      "name": "billing-worker",
+      "namespace": "argocd",
+      "uid": "09c15e70-3ad4-5d65-a57b-d0303e667668",
+      "resourceVersion": "41850",
+      "generation": 6,
+      "creationTimestamp": "2025-08-14T09:30:00Z",
+      "labels": {
+        "team": "billing",
+        "env": "production"
+      },
+      "finalizers": [
+        "resources-finalizer.argocd.argoproj.io"
+      ]
+    },
+    "spec": {
+      "source": {
+        "repoURL": "https://github.com/lumen-retail/billing-worker-deploy.git",
+        "path": "overlays/production",
+        "targetRevision": "main"
+      },
+      "destination": {
+        "server": "https://prod-use1.k8s.lumen.internal",
+        "namespace": "billing"
+      },
+      "project": "billing",
+      "syncPolicy": {
+        "automated": {
+          "prune": true,
+          "selfHeal": true
+        },
+        "syncOptions": [
+          "CreateNamespace=true",
+          "ApplyOutOfSyncOnly=true"
+        ],
+        "retry": {
+          "limit": 5,
+          "backoff": {
+            "duration": "5s",
+            "factor": 2,
+            "maxDuration": "3m0s"
+          }
+        }
+      }
+    },
+    "status": {
+      "sync": {
+        "status": "Synced",
+        "comparedTo": {
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/billing-worker-deploy.git",
+            "path": "overlays/production",
+            "targetRevision": "main"
+          },
+          "destination": {
+            "server": "https://prod-use1.k8s.lumen.internal",
+            "namespace": "billing"
+          }
+        },
+        "revision": "cf30c03f33e63617efbbbb2da615dff59a7cb010"
+      },
+      "health": {
+        "status": "Healthy"
+      },
+      "history": [
+        {
+          "revision": "0f79cae54d68dcd626d5d7d4306d904d33ee1de2",
+          "deployedAt": "2026-10-06T10:05:00Z",
+          "id": 0,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/billing-worker-deploy.git",
+            "path": "overlays/production",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-06T10:05:00Z",
+          "initiatedBy": {
+            "automated": true
+          }
+        },
+        {
+          "revision": "b0826e986c9c73e0088c6ecb2a14458d247d2205",
+          "deployedAt": "2026-10-16T10:04:00Z",
+          "id": 1,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/billing-worker-deploy.git",
+            "path": "overlays/production",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-16T10:04:00Z",
+          "initiatedBy": {
+            "automated": true
+          }
+        },
+        {
+          "revision": "cf30c03f33e63617efbbbb2da615dff59a7cb010",
+          "deployedAt": "2026-10-29T10:44:00Z",
+          "id": 2,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/billing-worker-deploy.git",
+            "path": "overlays/production",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-29T10:44:00Z",
+          "initiatedBy": {
+            "automated": true
+          }
+        }
+      ],
+      "reconciledAt": "2026-10-29T14:01:00Z",
+      "operationState": {
+        "operation": {
+          "sync": {
+            "revision": "cf30c03f33e63617efbbbb2da615dff59a7cb010",
+            "syncOptions": [
+              "CreateNamespace=true",
+              "ApplyOutOfSyncOnly=true"
+            ]
+          },
+          "initiatedBy": {
+            "automated": true
+          },
+          "retry": {
+            "limit": 5
+          }
+        },
+        "phase": "Succeeded",
+        "message": "successfully synced (all tasks run)",
+        "syncResult": {
+          "resources": [
+            {
+              "group": "apps",
+              "version": "v1",
+              "kind": "Deployment",
+              "namespace": "billing",
+              "name": "billing-worker",
+              "status": "Synced",
+              "message": "deployment.apps/billing-worker configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            },
+            {
+              "group": "",
+              "version": "v1",
+              "kind": "ConfigMap",
+              "namespace": "billing",
+              "name": "billing-worker-config",
+              "status": "Synced",
+              "message": "configmap/billing-worker-config configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            }
+          ],
+          "revision": "cf30c03f33e63617efbbbb2da615dff59a7cb010",
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/billing-worker-deploy.git",
+            "path": "overlays/production",
+            "targetRevision": "main"
+          }
+        },
+        "startedAt": "2026-10-29T10:44:00Z",
+        "finishedAt": "2026-10-29T10:44:00Z"
+      },
+      "sourceType": "Kustomize",
+      "controllerNamespace": "argocd"
+    }
+  }
+]

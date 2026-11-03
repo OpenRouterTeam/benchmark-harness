@@ -1,0 +1,69 @@
+{
+  "state": [
+    {
+      "pointer": "/services/notion/pages/afa8e804-d2ac-4ee2-80e2-e18ed4c05865/properties/Status/status/name",
+      "equals": "Delayed",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/notion/pages/afa8e804-d2ac-4ee2-80e2-e18ed4c05865/properties/Launch date/date/start",
+      "equals": "2026-11-10",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/notion/pages/e63c9184-7acf-45e0-881d-666e2972532e/properties/Status/status/name",
+      "equals": "Done",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/notion/pages/e63c9184-7acf-45e0-881d-666e2972532e/properties/Launch date/date/start",
+      "equals": "2026-10-06",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/notion/pages/afa8e804-d2ac-4ee2-80e2-e18ed4c05865/in_trash",
+      "equals": false,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "notion",
+      "method": "PATCH",
+      "path": null,
+      "path_regex": "^/v1/pages/afa8e804-?d2ac-?4ee2-?80e2-?e18ed4c05865$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "notion",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

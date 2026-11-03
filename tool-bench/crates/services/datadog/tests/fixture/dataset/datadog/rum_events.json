@@ -1,0 +1,153 @@
+[
+  {
+    "id": "AgAAAZK1rr0001",
+    "type": "rum",
+    "attributes": {
+      "service": "shop-web",
+      "timestamp": "2026-10-30T14:50:00.000Z",
+      "tags": [
+        "env:prod",
+        "service:shop-web"
+      ],
+      "attributes": {
+        "type": "view",
+        "application": {
+          "id": "6a2f5b0e-6c9d-4f1e-9a7b-2c1d0e9f8a71",
+          "name": "shop-web"
+        },
+        "session": {
+          "id": "s-111",
+          "type": "user"
+        },
+        "view": {
+          "name": "/checkout",
+          "url": "https://shop.octo-corp.example/checkout",
+          "load_time": 2400000000,
+          "first_contentful_paint": 900000000,
+          "largest_contentful_paint": 2100000000
+        }
+      }
+    }
+  },
+  {
+    "id": "AgAAAZK1rr0002",
+    "type": "rum",
+    "attributes": {
+      "service": "shop-web",
+      "timestamp": "2026-10-30T14:50:10.000Z",
+      "tags": [
+        "env:prod",
+        "service:shop-web"
+      ],
+      "attributes": {
+        "type": "resource",
+        "application": {
+          "id": "6a2f5b0e-6c9d-4f1e-9a7b-2c1d0e9f8a71",
+          "name": "shop-web"
+        },
+        "session": {
+          "id": "s-111",
+          "type": "user"
+        },
+        "view": {
+          "name": "/checkout",
+          "url": "https://shop.octo-corp.example/checkout"
+        },
+        "resource": {
+          "url": "https://api.octo-corp.example/api/checkout",
+          "duration": 1500000000,
+          "status_code": 503
+        }
+      }
+    }
+  },
+  {
+    "id": "AgAAAZK1rr0003",
+    "type": "rum",
+    "attributes": {
+      "service": "shop-web",
+      "timestamp": "2026-10-30T14:50:20.000Z",
+      "tags": [
+        "env:prod",
+        "service:shop-web"
+      ],
+      "attributes": {
+        "type": "error",
+        "application": {
+          "id": "6a2f5b0e-6c9d-4f1e-9a7b-2c1d0e9f8a71",
+          "name": "shop-web"
+        },
+        "session": {
+          "id": "s-111",
+          "type": "user"
+        },
+        "view": {
+          "name": "/checkout",
+          "url": "https://shop.octo-corp.example/checkout"
+        },
+        "error": {
+          "message": "Checkout failed: 503",
+          "source": "network"
+        }
+      }
+    }
+  },
+  {
+    "id": "AgAAAZK1rr0004",
+    "type": "rum",
+    "attributes": {
+      "service": "shop-web",
+      "timestamp": "2026-10-30T14:55:00.000Z",
+      "tags": [
+        "env:prod",
+        "service:shop-web"
+      ],
+      "attributes": {
+        "type": "view",
+        "application": {
+          "id": "6a2f5b0e-6c9d-4f1e-9a7b-2c1d0e9f8a71",
+          "name": "shop-web"
+        },
+        "session": {
+          "id": "s-222",
+          "type": "user"
+        },
+        "view": {
+          "name": "/cart",
+          "url": "https://shop.octo-corp.example/cart",
+          "load_time": 1200000000,
+          "first_contentful_paint": 500000000,
+          "largest_contentful_paint": 1000000000
+        }
+      }
+    }
+  },
+  {
+    "id": "AgAAAZK1rr0005",
+    "type": "rum",
+    "attributes": {
+      "service": "shop-ios",
+      "timestamp": "2026-10-30T14:56:40.000Z",
+      "tags": [
+        "env:prod",
+        "service:shop-ios"
+      ],
+      "attributes": {
+        "type": "view",
+        "application": {
+          "id": "0b9e8d7c-1a2b-4c3d-8e9f-a0b1c2d3e4f5",
+          "name": "shop-ios"
+        },
+        "session": {
+          "id": "s-333",
+          "type": "user"
+        },
+        "view": {
+          "name": "CheckoutView",
+          "url": "CheckoutView",
+          "load_time": 800000000
+        }
+      }
+    }
+  }
+]

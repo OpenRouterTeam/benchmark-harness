@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"API-get-block-children","arguments":{"block_id":"7c41530e-e886-4046-9cb4-2f49e6957f99"}}}

@@ -1,0 +1,12 @@
+[
+  {
+    "_key": "4011",
+    "id": 4011,
+    "hook_id": 401,
+    "url": "https://ci-bridge.acme.dev/hooks/gitlab",
+    "trigger": "push_hooks",
+    "response_status": "500",
+    "response_body": "upstream timeout",
+    "execution_duration": 10.2
+  }
+]

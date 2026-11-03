@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"hubspot-list-associations","arguments":{"objectId":"9100106","objectType":"deals","toObjectType":"companies"}}}

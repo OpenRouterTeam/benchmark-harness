@@ -1,0 +1,26 @@
+[scenario]
+id = "search/brave/keynote-recording"
+title = "Find the full official recording of a conference keynote among look-alike videos"
+now = "2026-10-30T08:45:00Z"
+seed = "search-brave-keynote-recording"
+services = ["brave"]
+tags = ["lookup", "single-service", "brave", "disambiguation"]
+timeout_sec = 900
+
+# Right video: Zt4mQeL1x9c, 47:12, Marta Lindqvist. Distractors: a 12:05 highlights re-cut,
+# the 28:40 2025 meetup version, and a different speaker's similar talk (39:55).
+[expect.answer]
+contains = ["Lindqvist", "47:12", "Zt4mQeL1x9c"]
+
+[[expect.required_calls]]
+service = "brave"
+method = "GET"
+path_regex = "^/res/v1/"
+
+[solution]
+answer = "Speaker: Marta Lindqvist. Duration: 47:12. Full official recording (PGConf Nordic channel): https://www.youtube.com/watch?v=Zt4mQeL1x9c\n"
+
+[[solution.call]]
+endpoint = "brave-search"
+tool = "brave_video_search"
+arguments = { query = "Scaling Postgres to 1M writes/s keynote PGConf Nordic 2026" }

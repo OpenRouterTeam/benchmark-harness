@@ -1,0 +1,248 @@
+[
+  {
+    "_key": "perf/checkout-loadtest",
+    "metadata": {
+      "name": "checkout-loadtest",
+      "namespace": "perf",
+      "uid": "36ab8166-a60d-4b26-aa60-9615c207b3d0",
+      "resourceVersion": "41561",
+      "creationTimestamp": "2026-11-03T14:20:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "k6-test",
+        "app.kubernetes.io/instance": "checkout-loadtest",
+        "app.kubernetes.io/managed-by": "Helm",
+        "helm.sh/chart": "k6-test-0.4.2"
+      },
+      "annotations": {
+        "meta.helm.sh/release-name": "checkout-loadtest",
+        "meta.helm.sh/release-namespace": "perf"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "parallelism": 4,
+      "completions": 4,
+      "backoffLimit": 0,
+      "completionMode": "NonIndexed",
+      "suspend": false,
+      "selector": {
+        "matchLabels": {
+          "batch.kubernetes.io/controller-uid": "36ab8166-a60d-4b26-aa60-9615c207b3d0"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "k6-test",
+            "app.kubernetes.io/instance": "checkout-loadtest",
+            "app.kubernetes.io/managed-by": "Helm",
+            "helm.sh/chart": "k6-test-0.4.2",
+            "batch.kubernetes.io/job-name": "checkout-loadtest"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "k6",
+              "image": "grafana/k6:0.52.0",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "500m",
+                  "memory": "512Mi"
+                },
+                "limits": {
+                  "memory": "1Gi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File"
+            }
+          ],
+          "restartPolicy": "Never"
+        }
+      }
+    },
+    "status": {
+      "startTime": "2026-11-03T14:20:00Z",
+      "completionTime": "2026-11-03T15:00:00Z",
+      "succeeded": 4,
+      "ready": 0,
+      "terminating": 0,
+      "uncountedTerminatedPods": {},
+      "conditions": [
+        {
+          "type": "SuccessCriteriaMet",
+          "status": "True",
+          "lastProbeTime": "2026-11-03T15:00:00Z",
+          "lastTransitionTime": "2026-11-03T15:00:00Z"
+        },
+        {
+          "type": "Complete",
+          "status": "True",
+          "lastProbeTime": "2026-11-03T15:00:00Z",
+          "lastTransitionTime": "2026-11-03T15:00:00Z"
+        }
+      ]
+    }
+  },
+  {
+    "_key": "perf/search-loadtest",
+    "metadata": {
+      "name": "search-loadtest",
+      "namespace": "perf",
+      "uid": "fb2ba320-86fa-42c1-af63-797259101ab2",
+      "resourceVersion": "41663",
+      "creationTimestamp": "2026-11-04T15:20:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "k6-test",
+        "app.kubernetes.io/instance": "search-loadtest",
+        "app.kubernetes.io/managed-by": "Helm",
+        "helm.sh/chart": "k6-test-0.4.2"
+      },
+      "annotations": {
+        "meta.helm.sh/release-name": "search-loadtest",
+        "meta.helm.sh/release-namespace": "perf"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "parallelism": 2,
+      "completions": 2,
+      "backoffLimit": 0,
+      "completionMode": "NonIndexed",
+      "suspend": false,
+      "selector": {
+        "matchLabels": {
+          "batch.kubernetes.io/controller-uid": "fb2ba320-86fa-42c1-af63-797259101ab2"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "k6-test",
+            "app.kubernetes.io/instance": "search-loadtest",
+            "app.kubernetes.io/managed-by": "Helm",
+            "helm.sh/chart": "k6-test-0.4.2",
+            "batch.kubernetes.io/job-name": "search-loadtest"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "k6",
+              "image": "grafana/k6:0.52.0",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "500m",
+                  "memory": "512Mi"
+                },
+                "limits": {
+                  "memory": "1Gi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File"
+            }
+          ],
+          "restartPolicy": "Never"
+        }
+      }
+    },
+    "status": {
+      "startTime": "2026-11-04T15:20:00Z",
+      "active": 2,
+      "ready": 2,
+      "terminating": 0,
+      "uncountedTerminatedPods": {}
+    }
+  },
+  {
+    "_key": "perf-staging/checkout-loadtest",
+    "metadata": {
+      "name": "checkout-loadtest",
+      "namespace": "perf-staging",
+      "uid": "bf15af0f-4f35-4302-aea9-55f5949a5a15",
+      "resourceVersion": "41731",
+      "creationTimestamp": "2026-11-03T14:20:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "k6-test",
+        "app.kubernetes.io/instance": "checkout-loadtest",
+        "app.kubernetes.io/managed-by": "Helm",
+        "helm.sh/chart": "k6-test-0.4.1"
+      },
+      "annotations": {
+        "meta.helm.sh/release-name": "checkout-loadtest",
+        "meta.helm.sh/release-namespace": "perf-staging"
+      },
+      "generation": 1
+    },
+    "spec": {
+      "parallelism": 1,
+      "completions": 1,
+      "backoffLimit": 0,
+      "completionMode": "NonIndexed",
+      "suspend": false,
+      "selector": {
+        "matchLabels": {
+          "batch.kubernetes.io/controller-uid": "bf15af0f-4f35-4302-aea9-55f5949a5a15"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/name": "k6-test",
+            "app.kubernetes.io/instance": "checkout-loadtest",
+            "app.kubernetes.io/managed-by": "Helm",
+            "helm.sh/chart": "k6-test-0.4.1",
+            "batch.kubernetes.io/job-name": "checkout-loadtest"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "k6",
+              "image": "grafana/k6:0.52.0",
+              "imagePullPolicy": "IfNotPresent",
+              "resources": {
+                "requests": {
+                  "cpu": "500m",
+                  "memory": "512Mi"
+                },
+                "limits": {
+                  "memory": "1Gi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File"
+            }
+          ],
+          "restartPolicy": "Never"
+        }
+      }
+    },
+    "status": {
+      "startTime": "2026-11-03T14:20:00Z",
+      "completionTime": "2026-11-03T15:00:00Z",
+      "succeeded": 1,
+      "ready": 0,
+      "terminating": 0,
+      "uncountedTerminatedPods": {},
+      "conditions": [
+        {
+          "type": "SuccessCriteriaMet",
+          "status": "True",
+          "lastProbeTime": "2026-11-03T15:00:00Z",
+          "lastTransitionTime": "2026-11-03T15:00:00Z"
+        },
+        {
+          "type": "Complete",
+          "status": "True",
+          "lastProbeTime": "2026-11-03T15:00:00Z",
+          "lastTransitionTime": "2026-11-03T15:00:00Z"
+        }
+      ]
+    }
+  }
+]

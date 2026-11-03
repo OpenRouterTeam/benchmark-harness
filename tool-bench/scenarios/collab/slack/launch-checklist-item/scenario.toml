@@ -1,0 +1,42 @@
+[scenario]
+id = "collab/slack/launch-checklist-item"
+title = "Add an item to the Payments v2 launch checklist list"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-slack-launch-checklist-item"
+services = ["slack"]
+tags = ["write", "single-service", "slack"]
+timeout_sec = 900
+
+# A new record in the v2 list with every field set; the archived v1 list (which already has
+# a similar-looking item) is untouched, and no columns are changed.
+[[expect.state]]
+pointer = "/services/slack/lists/F0PAYV2LST1/records"
+contains = { fields = { Col0TASK0001 = "Rotate webhook signing secrets", Col0OWNR0002 = ["U03PRIYAN4T"], Col0STAT0003 = ["in_progress"], Col0DUED0004 = "2026-11-05" } }
+
+[[expect.state]]
+pointer = "/services/slack/lists/F0PAYV1LST9/records/2"
+exists = false
+
+[[expect.state]]
+pointer = "/services/slack/lists/F0PAYV2LST1/columns/4"
+exists = false
+
+[[expect.required_calls]]
+service = "slack"
+path = "/_mcp/tools/call"
+body = { name = "slack_add_list_record" }
+
+[[expect.forbidden_calls]]
+service = "slack"
+path = "/_mcp/tools/call"
+body = { name = "slack_update_list" }
+
+[[solution.call]]
+endpoint = "slack"
+tool = "slack_read_list"
+arguments = { list_title = "Payments v2 launch checklist", schema_only = true }
+
+[[solution.call]]
+endpoint = "slack"
+tool = "slack_add_list_record"
+arguments = { list_id = "F0PAYV2LST1", columns = { Task = "Rotate webhook signing secrets", Owner = "U03PRIYAN4T", Status = "In progress", "Due date" = "2026-11-05" } }

@@ -1,0 +1,37 @@
+[scenario]
+id = "business/hubspot/largest-open-deal"
+title = "Find the company with the largest open deal"
+now = "2026-10-29T14:00:00Z"
+seed = "business-hubspot-largest-open-deal"
+services = ["hubspot"]
+tags = ["single-service", "lookup", "hubspot"]
+timeout_sec = 900
+
+# Northwind Logistics' Fleet Telemetry deal (412,000, Contract Sent) is the largest open
+# deal. Distractors: Northwind Traders (530,000, closed won), Vandelay (640,000, closed
+# lost), an archived 900,000 duplicate, and Hooli, whose three open deals sum to 450,000.
+[expect.answer]
+contains = ["Northwind Logistics"]
+regex = "412,?000"
+
+[[expect.forbidden_calls]]
+service = "hubspot"
+method = "POST"
+path_regex = "/batch/(create|update)$"
+
+[[expect.forbidden_calls]]
+service = "hubspot"
+method = "PATCH"
+
+[solution]
+answer = "Northwind Logistics has the largest open deal: \"Northwind Logistics – Fleet Telemetry\", worth $412,000 (stage: Contract Sent)."
+
+[[solution.call]]
+endpoint = "hubspot"
+tool = "hubspot-search-objects"
+arguments = { objectType = "deals", filterGroups = [{ filters = [{ propertyName = "dealstage", operator = "NOT_IN", values = ["closedwon", "closedlost"] }] }], sorts = [{ propertyName = "amount", direction = "DESCENDING" }], properties = ["dealname", "amount", "dealstage"], limit = 1 }
+
+[[solution.call]]
+endpoint = "hubspot"
+tool = "hubspot-list-associations"
+arguments = { objectType = "deals", objectId = "9100106", toObjectType = "companies" }

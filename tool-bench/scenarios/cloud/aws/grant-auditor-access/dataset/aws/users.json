@@ -1,0 +1,40 @@
+[
+  {
+    "_key": "platform-ops", "UserName": "platform-ops", "UserId": "AIDAXB4NW7PLATF0RM01", "Path": "/automation/",
+    "Arn": "arn:aws:iam::481562039417:user/automation/platform-ops", "CreateDate": "2021-04-12T10:00:00Z",
+    "AttachedPolicies": ["arn:aws:iam::aws:policy/AdministratorAccess"], "InlinePolicies": {},
+    "Tags": [{ "Key": "owner", "Value": "platform" }]
+  },
+  {
+    "_key": "jchen", "UserName": "jchen", "UserId": "AIDAXB4NW7JCHEN00002", "Path": "/",
+    "Arn": "arn:aws:iam::481562039417:user/jchen", "CreateDate": "2022-09-01T14:22:31Z", "PasswordLastUsed": "2026-03-13T16:40:12Z",
+    "AttachedPolicies": ["arn:aws:iam::aws:policy/PowerUserAccess"], "InlinePolicies": {},
+    "Tags": [{ "Key": "department", "Value": "engineering" }],
+    "LoginProfile": { "CreateDate": "2022-09-01T14:25:00Z", "PasswordResetRequired": false }
+  },
+  {
+    "_key": "lnovak", "UserName": "lnovak", "UserId": "AIDAXB4NW7LNOVAK0003", "Path": "/",
+    "Arn": "arn:aws:iam::481562039417:user/lnovak", "CreateDate": "2023-02-20T09:15:00Z", "PasswordLastUsed": "2026-03-11T08:02:55Z",
+    "AttachedPolicies": [], "InlinePolicies": {},
+    "Tags": [{ "Key": "department", "Value": "finance" }, { "Key": "role", "Value": "internal-audit" }],
+    "LoginProfile": { "CreateDate": "2023-02-20T09:16:00Z", "PasswordResetRequired": false }
+  },
+  {
+    "_key": "praman", "UserName": "praman", "UserId": "AIDAXB4NW7PRAMAN0004", "Path": "/",
+    "Arn": "arn:aws:iam::481562039417:user/praman", "CreateDate": "2024-07-08T12:00:00Z", "PasswordLastUsed": "2026-03-12T17:30:41Z",
+    "AttachedPolicies": ["arn:aws:iam::481562039417:policy/DataLakeAnalyst"], "InlinePolicies": {},
+    "Tags": [{ "Key": "department", "Value": "data" }, { "Key": "full-name", "Value": "Priya Raman" }],
+    "LoginProfile": { "CreateDate": "2024-07-08T12:01:00Z", "PasswordResetRequired": false }
+  },
+  {
+    "_key": "priya.raman-audit", "UserName": "priya.raman-audit", "UserId": "AIDAXB4NW7PRAUDIT005", "Path": "/external/",
+    "Arn": "arn:aws:iam::481562039417:user/external/priya.raman-audit", "CreateDate": "2026-03-13T15:48:20Z",
+    "AttachedPolicies": [], "InlinePolicies": {},
+    "Tags": [{ "Key": "company", "Value": "Kessler & Vance LLP" }, { "Key": "full-name", "Value": "Priya Raman" }, { "Key": "engagement", "Value": "FY2025 SOC 2 audit" }]
+  },
+  {
+    "_key": "svc-backup", "UserName": "svc-backup", "UserId": "AIDAXB4NW7SVCBKP0006", "Path": "/service/",
+    "Arn": "arn:aws:iam::481562039417:user/service/svc-backup", "CreateDate": "2020-11-30T03:00:00Z",
+    "AttachedPolicies": [], "InlinePolicies": { "backup-write": { "Version": "2012-10-17", "Statement": [{ "Effect": "Allow", "Action": ["s3:PutObject", "s3:GetObject"], "Resource": "arn:aws:s3:::northwind-backups/*" }] } }
+  }
+]

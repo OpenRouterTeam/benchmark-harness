@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"update_issue","arguments":{"assignedTo":"team:payments-web","issueId":"STOREFRONT-5R","organizationSlug":"acme-shop"}}}

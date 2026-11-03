@@ -1,0 +1,79 @@
+{
+  "state": [
+    {
+      "pointer": "/services/hubspot/notes/61000005/properties/hs_note_body",
+      "equals": null,
+      "exists": null,
+      "contains": "security review passed",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/hubspot/notes/61000005/properties/hs_note_body",
+      "equals": null,
+      "exists": null,
+      "contains": "revised SOW by Nov 14",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/hubspot/associations/deals~19100104~1notes~161000005",
+      "equals": null,
+      "exists": true,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/hubspot/associations/deals~19100105~1notes~161000005",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/hubspot/notes/61000006",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "hubspot",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/(engagements/v1/engagements|crm/v3/objects/(notes|note|0-46)/batch/create)$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "hubspot",
+      "method": "POST",
+      "path": null,
+      "path_regex": "/batch/update$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "hubspot",
+      "method": "PATCH",
+      "path": null,
+      "path_regex": "^/engagements/v1/engagements/6100000[1-4]$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

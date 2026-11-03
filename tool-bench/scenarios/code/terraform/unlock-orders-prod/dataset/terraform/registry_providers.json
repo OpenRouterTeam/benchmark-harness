@@ -1,0 +1,58 @@
+[
+ {
+  "id": "prov-AEj2S4wZk0G5XfC2",
+  "organization": "acme-platform",
+  "namespace": "acme-platform",
+  "name": "internaldns",
+  "registry-name": "private",
+  "created-at": "2025-05-05T10:00:00Z",
+  "updated-at": "2026-08-19T10:00:00Z",
+  "versions": [
+   {
+    "id": "provver-EByZdDIgVfHBFyy4",
+    "version": "1.3.1",
+    "key-id": "34365D9472D7468F",
+    "protocols": [
+     "5.0"
+    ],
+    "created-at": "2026-08-19T10:00:00Z",
+    "updated-at": "2026-08-19T10:00:00Z",
+    "platforms": [
+     {
+      "id": "provpltfrm-DxH3UFBjOoOAeDo8",
+      "os": "linux",
+      "arch": "amd64",
+      "filename": "terraform-provider-internaldns_1.3.1_linux_amd64.zip",
+      "shasum": "592e0c7e49459eafe11a306918f51f5526308a1cb9b79e1f9219f2f0e95d29f8"
+     },
+     {
+      "id": "provpltfrm-TEPAMGzTDS4u21a5",
+      "os": "darwin",
+      "arch": "arm64",
+      "filename": "terraform-provider-internaldns_1.3.1_darwin_arm64.zip",
+      "shasum": "65234f8b5017a9a421a18fd0a75887ab5d2296d28c45de1f893fe4878596390b"
+     }
+    ]
+   },
+   {
+    "id": "provver-aw6v5AVB981GmjWo",
+    "version": "1.2.0",
+    "key-id": "34365D9472D7468F",
+    "protocols": [
+     "5.0"
+    ],
+    "created-at": "2025-11-02T10:00:00Z",
+    "updated-at": "2025-11-02T10:00:00Z",
+    "platforms": [
+     {
+      "id": "provpltfrm-fqgg6FqaP6RrUmku",
+      "os": "linux",
+      "arch": "amd64",
+      "filename": "terraform-provider-internaldns_1.2.0_linux_amd64.zip",
+      "shasum": "9575bb458fbe0dc1bbb4a0d559fdb4ad10774ee44a5dd43d56651d4e2321a768"
+     }
+    ]
+   }
+  ]
+ }
+]

@@ -1,0 +1,496 @@
+[
+  {
+    "id": "Q0AP1GW5XX9LMZ",
+    "incident_number": 4809,
+    "title": "api-gateway 5xx rate above 2%",
+    "status": "acknowledged",
+    "urgency": "high",
+    "created_at": "2026-10-30T09:30:00Z",
+    "service": {
+      "id": "PSVAPIG",
+      "type": "service_reference"
+    },
+    "escalation_policy": {
+      "id": "PEPPLAT",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTPLATF",
+        "type": "team_reference"
+      }
+    ],
+    "assignments": [
+      {
+        "at": "2026-10-30T09:30:00Z",
+        "assignee": {
+          "id": "PA1EXKM",
+          "type": "user_reference"
+        }
+      }
+    ],
+    "acknowledgements": [
+      {
+        "at": "2026-10-30T09:34:00Z",
+        "acknowledger": {
+          "id": "PA1EXKM",
+          "type": "user_reference"
+        }
+      }
+    ],
+    "last_status_change_at": "2026-10-30T09:34:00Z",
+    "resolved_at": null,
+    "priority": null,
+    "last_status_change_by": {
+      "id": "PA1EXKM",
+      "type": "user_reference"
+    },
+    "updated_at": "2026-10-30T09:34:00Z"
+  },
+  {
+    "id": "Q3K8ORDBLAG2RX",
+    "incident_number": 4812,
+    "title": "Replication lag above 300s on orders-db-replica-2",
+    "status": "triggered",
+    "urgency": "high",
+    "created_at": "2026-10-30T13:12:00Z",
+    "service": {
+      "id": "PSVORDB",
+      "type": "service_reference"
+    },
+    "escalation_policy": {
+      "id": "PEPPLAT",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTPLATF",
+        "type": "team_reference"
+      }
+    ],
+    "assignments": [
+      {
+        "at": "2026-10-30T13:12:00Z",
+        "assignee": {
+          "id": "PA1EXKM",
+          "type": "user_reference"
+        }
+      }
+    ],
+    "acknowledgements": [],
+    "last_status_change_at": "2026-10-30T13:12:00Z",
+    "resolved_at": null,
+    "priority": null,
+    "updated_at": "2026-10-30T13:12:00Z"
+  },
+  {
+    "id": "Q1INVDBLAG7QWE",
+    "incident_number": 4813,
+    "title": "Replication lag above 300s on inventory-db-replica-1",
+    "status": "triggered",
+    "urgency": "high",
+    "created_at": "2026-10-30T13:20:00Z",
+    "service": {
+      "id": "PSVINVD",
+      "type": "service_reference"
+    },
+    "escalation_policy": {
+      "id": "PEPPLAT",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTPLATF",
+        "type": "team_reference"
+      }
+    ],
+    "assignments": [
+      {
+        "at": "2026-10-30T13:20:00Z",
+        "assignee": {
+          "id": "PA1EXKM",
+          "type": "user_reference"
+        }
+      }
+    ],
+    "acknowledgements": [],
+    "last_status_change_at": "2026-10-30T13:20:00Z",
+    "resolved_at": null,
+    "priority": null,
+    "updated_at": "2026-10-30T13:20:00Z"
+  },
+  {
+    "id": "Q2ORDBOLD4KZPA",
+    "incident_number": 4761,
+    "title": "Replication lag above 300s on orders-db-replica-1",
+    "status": "resolved",
+    "urgency": "high",
+    "created_at": "2026-10-23T02:10:00Z",
+    "service": {
+      "id": "PSVORDB",
+      "type": "service_reference"
+    },
+    "escalation_policy": {
+      "id": "PEPPLAT",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTPLATF",
+        "type": "team_reference"
+      }
+    ],
+    "assignments": [],
+    "acknowledgements": [
+      {
+        "at": "2026-10-23T02:14:00Z",
+        "acknowledger": {
+          "id": "PJ0RLEE",
+          "type": "user_reference"
+        }
+      }
+    ],
+    "last_status_change_at": "2026-10-23T03:05:00Z",
+    "resolved_at": "2026-10-23T03:05:00Z",
+    "priority": null,
+    "last_status_change_by": {
+      "id": "PJ0RLEE",
+      "type": "user_reference"
+    },
+    "updated_at": "2026-10-23T03:05:00Z"
+  },
+  {
+    "id": "Q5DBSTG9LAGT3N",
+    "incident_number": 4806,
+    "title": "Replication lag above 300s on orders-db-staging",
+    "status": "triggered",
+    "urgency": "low",
+    "created_at": "2026-10-30T08:02:00Z",
+    "service": {
+      "id": "PSVDBST",
+      "type": "service_reference"
+    },
+    "escalation_policy": {
+      "id": "PEPDBST",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTDBREL",
+        "type": "team_reference"
+      }
+    ],
+    "assignments": [
+      {
+        "at": "2026-10-30T08:02:00Z",
+        "assignee": {
+          "id": "PS4MOKF",
+          "type": "user_reference"
+        }
+      }
+    ],
+    "acknowledgements": [],
+    "last_status_change_at": "2026-10-30T08:02:00Z",
+    "resolved_at": null,
+    "priority": null,
+    "updated_at": "2026-10-30T08:02:00Z"
+  },
+  {
+    "id": "Q4PAYDECL1NE5H",
+    "incident_number": 4814,
+    "title": "Card decline rate above 8% on payments-api",
+    "status": "triggered",
+    "urgency": "high",
+    "created_at": "2026-10-30T13:48:00Z",
+    "service": {
+      "id": "PSVPAYA",
+      "type": "service_reference"
+    },
+    "escalation_policy": {
+      "id": "PEPPAY1",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTPAYMT",
+        "type": "team_reference"
+      }
+    ],
+    "assignments": [
+      {
+        "at": "2026-10-30T13:48:00Z",
+        "assignee": {
+          "id": "PPR1YAR",
+          "type": "user_reference"
+        }
+      }
+    ],
+    "acknowledgements": [],
+    "last_status_change_at": "2026-10-30T13:48:00Z",
+    "resolved_at": null,
+    "priority": {
+      "id": "PPRIO02",
+      "type": "priority_reference"
+    },
+    "updated_at": "2026-10-30T13:48:00Z"
+  },
+  {
+    "id": "Q6PAYGWTLS8C2J",
+    "incident_number": 4790,
+    "title": "TLS certificate for gateway.tidewater.io expires in 7 days",
+    "status": "acknowledged",
+    "urgency": "low",
+    "created_at": "2026-10-28T15:00:00Z",
+    "service": {
+      "id": "PSVPAYG",
+      "type": "service_reference"
+    },
+    "escalation_policy": {
+      "id": "PEPPAYL",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTPAYMT",
+        "type": "team_reference"
+      }
+    ],
+    "assignments": [
+      {
+        "at": "2026-10-28T15:00:00Z",
+        "assignee": {
+          "id": "PJ0RALV",
+          "type": "user_reference"
+        }
+      }
+    ],
+    "acknowledgements": [
+      {
+        "at": "2026-10-28T15:20:00Z",
+        "acknowledger": {
+          "id": "PJ0RALV",
+          "type": "user_reference"
+        }
+      }
+    ],
+    "last_status_change_at": "2026-10-28T15:20:00Z",
+    "resolved_at": null,
+    "priority": null,
+    "last_status_change_by": {
+      "id": "PJ0RALV",
+      "type": "user_reference"
+    },
+    "updated_at": "2026-10-28T15:20:00Z"
+  },
+  {
+    "id": "Q7CHKAP15PCT1D",
+    "incident_number": 4810,
+    "title": "Checkout API saturated: p95 latency above 2s",
+    "status": "triggered",
+    "urgency": "high",
+    "created_at": "2026-10-30T12:40:00Z",
+    "service": {
+      "id": "PSVCHKA",
+      "type": "service_reference"
+    },
+    "escalation_policy": {
+      "id": "PEPCOMM",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTCOMRC",
+        "type": "team_reference"
+      }
+    ],
+    "assignments": [
+      {
+        "at": "2026-10-30T12:40:00Z",
+        "assignee": {
+          "id": "PTBRWN8",
+          "type": "user_reference"
+        }
+      }
+    ],
+    "acknowledgements": [],
+    "last_status_change_at": "2026-10-30T12:40:00Z",
+    "resolved_at": null,
+    "priority": {
+      "id": "PPRIO01",
+      "type": "priority_reference"
+    },
+    "updated_at": "2026-10-30T12:40:00Z",
+    "body": {
+      "type": "incident_body",
+      "details": "p95 on POST /v2/checkout is 2.8s (SLO 800ms). All 3 checkout pods in shop-prod are pinned at ~97% CPU since the 12:30 traffic spike.\nRunbook RB-CHK-07 (checkout saturation): scale the checkout Deployment in shop-prod to 9 replicas, then confirm p95 recovers. Do not scale checkout-worker; it is queue-driven."
+    }
+  },
+  {
+    "id": "Q8CHKSTG5PCT2F",
+    "incident_number": 4811,
+    "title": "Checkout API saturated: p95 latency above 2s",
+    "status": "triggered",
+    "urgency": "low",
+    "created_at": "2026-10-30T13:05:00Z",
+    "service": {
+      "id": "PSVCHKS",
+      "type": "service_reference"
+    },
+    "escalation_policy": {
+      "id": "PEPCOMM",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTCOMRC",
+        "type": "team_reference"
+      }
+    ],
+    "assignments": [
+      {
+        "at": "2026-10-30T13:05:00Z",
+        "assignee": {
+          "id": "PTBRWN8",
+          "type": "user_reference"
+        }
+      }
+    ],
+    "acknowledgements": [],
+    "last_status_change_at": "2026-10-30T13:05:00Z",
+    "resolved_at": null,
+    "priority": null,
+    "updated_at": "2026-10-30T13:05:00Z",
+    "body": {
+      "type": "incident_body",
+      "details": "p95 on POST /v2/checkout is 3.4s in staging while the perf team runs the k6 soak test against the single checkout pod in shop-staging.\nRunbook RB-CHK-07 (checkout saturation): scale the checkout Deployment in shop-staging to 3 replicas."
+    }
+  },
+  {
+    "id": "Q9CHKWEB5XX3VK",
+    "incident_number": 4808,
+    "title": "Checkout page 5xx responses elevated",
+    "status": "acknowledged",
+    "urgency": "high",
+    "created_at": "2026-10-30T12:45:00Z",
+    "service": {
+      "id": "PSVCHKW",
+      "type": "service_reference"
+    },
+    "escalation_policy": {
+      "id": "PEPCOMM",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTCOMRC",
+        "type": "team_reference"
+      }
+    ],
+    "assignments": [
+      {
+        "at": "2026-10-30T12:45:00Z",
+        "assignee": {
+          "id": "PLWEBR5",
+          "type": "user_reference"
+        }
+      }
+    ],
+    "acknowledgements": [
+      {
+        "at": "2026-10-30T12:47:00Z",
+        "acknowledger": {
+          "id": "PLWEBR5",
+          "type": "user_reference"
+        }
+      }
+    ],
+    "last_status_change_at": "2026-10-30T12:47:00Z",
+    "resolved_at": null,
+    "priority": null,
+    "last_status_change_by": {
+      "id": "PLWEBR5",
+      "type": "user_reference"
+    },
+    "updated_at": "2026-10-30T12:47:00Z"
+  },
+  {
+    "id": "QA6CHKAPIOLD0D",
+    "incident_number": 4752,
+    "title": "Checkout error rate above 5%",
+    "status": "resolved",
+    "urgency": "high",
+    "created_at": "2026-10-22T18:00:00Z",
+    "service": {
+      "id": "PSVCHKA",
+      "type": "service_reference"
+    },
+    "escalation_policy": {
+      "id": "PEPCOMM",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTCOMRC",
+        "type": "team_reference"
+      }
+    ],
+    "assignments": [],
+    "acknowledgements": [
+      {
+        "at": "2026-10-22T18:03:00Z",
+        "acknowledger": {
+          "id": "PLWEBR5",
+          "type": "user_reference"
+        }
+      }
+    ],
+    "last_status_change_at": "2026-10-22T18:42:00Z",
+    "resolved_at": "2026-10-22T18:42:00Z",
+    "priority": null,
+    "last_status_change_by": {
+      "id": "PLWEBR5",
+      "type": "user_reference"
+    },
+    "updated_at": "2026-10-22T18:42:00Z"
+  },
+  {
+    "id": "QB2CHKAPIOLD9S",
+    "incident_number": 4655,
+    "title": "Checkout error rate above 5% after deploy",
+    "status": "resolved",
+    "urgency": "high",
+    "created_at": "2026-10-14T10:05:00Z",
+    "service": {
+      "id": "PSVCHKA",
+      "type": "service_reference"
+    },
+    "escalation_policy": {
+      "id": "PEPCOMM",
+      "type": "escalation_policy_reference"
+    },
+    "teams": [
+      {
+        "id": "PTCOMRC",
+        "type": "team_reference"
+      }
+    ],
+    "assignments": [],
+    "acknowledgements": [
+      {
+        "at": "2026-10-14T10:09:00Z",
+        "acknowledger": {
+          "id": "PTBRWN8",
+          "type": "user_reference"
+        }
+      }
+    ],
+    "last_status_change_at": "2026-10-14T11:15:00Z",
+    "resolved_at": "2026-10-14T11:15:00Z",
+    "priority": null,
+    "last_status_change_by": {
+      "id": "PTBRWN8",
+      "type": "user_reference"
+    },
+    "updated_at": "2026-10-14T11:15:00Z"
+  }
+]

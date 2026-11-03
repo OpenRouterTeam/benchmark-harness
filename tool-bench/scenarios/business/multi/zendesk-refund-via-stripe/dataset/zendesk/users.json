@@ -1,0 +1,7 @@
+[
+  {"id": 9020001, "name": "Priya Nair", "email": "priya.nair@fernway.io", "role": "admin", "organization_id": null, "created_at": "2025-03-01T09:00:00Z", "time_zone": "Pacific Time (US & Canada)", "iana_time_zone": "America/Los_Angeles"},
+  {"id": 9020002, "name": "Tom Reyes", "email": "tom.reyes@fernway.io", "role": "agent", "organization_id": null, "created_at": "2025-06-10T09:00:00Z"},
+  {"id": 9020101, "name": "Hannah Okafor", "email": "owner@northwindbakery.com", "role": "end-user", "organization_id": 3700101, "created_at": "2025-09-01T16:10:00Z"},
+  {"id": 9020102, "name": "Derek Lund", "email": "ap@northwindtraders.com", "role": "end-user", "organization_id": 3700102, "created_at": "2025-10-14T21:20:00Z"},
+  {"id": 9020103, "name": "Lena Brooks", "email": "hello@gristmilllane.cafe", "role": "end-user", "organization_id": 3700103, "created_at": "2025-12-02T18:40:00Z"}
+]

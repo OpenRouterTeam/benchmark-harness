@@ -1,0 +1,165 @@
+[
+  {
+    "_key": "C01GENERAL0/1793019600.010203",
+    "channel": "C01GENERAL0",
+    "ts": "1793019600.010203",
+    "user": "U01DWHIT5FA",
+    "text": "Reminder: all-hands moves to Thursday 11:00 CT this week. Agenda in the doc pinned here.",
+    "reactions": [
+      {
+        "name": "+1",
+        "users": [
+          "U04ARIVERA9",
+          "U03PRIYAN4T",
+          "U05SORTIZ6M"
+        ],
+        "count": 3
+      }
+    ]
+  },
+  {
+    "_key": "C01GENERAL0/1793209269.662010",
+    "channel": "C01GENERAL0",
+    "ts": "1793209269.662010",
+    "user": "U05SORTIZ6M",
+    "text": "Heads up: I heard we chose Honeycomb for observability? Anyone know if that's final?"
+  },
+  {
+    "_key": "C01GENERAL0/1793210130.090112",
+    "channel": "C01GENERAL0",
+    "ts": "1793210130.090112",
+    "user": "U02MWEBB8XH",
+    "text": "Not final yet when I last checked - see the eval thread in #infra.",
+    "thread_ts": "1793209269.662010"
+  },
+  {
+    "_key": "C04INCID7NS/1792811520.551000",
+    "channel": "C04INCID7NS",
+    "ts": "1792811520.551000",
+    "user": "U08DEPLOYB0",
+    "text": "INC-2291 declared: elevated 5xx on checkout-api (sev2). Commander: <@U05SORTIZ6M>",
+    "bot_id": "B08DEPLOY"
+  },
+  {
+    "_key": "C04INCID7NS/1792816800.002200",
+    "channel": "C04INCID7NS",
+    "ts": "1792816800.002200",
+    "user": "U05SORTIZ6M",
+    "text": "INC-2291 resolved. Root cause: connection pool exhaustion after the 4.11.3 deploy. Postmortem Friday.",
+    "reactions": [
+      {
+        "name": "white_check_mark",
+        "users": [
+          "U02MWEBB8XH"
+        ],
+        "count": 1
+      }
+    ]
+  },
+  {
+    "_key": "C07DESIGN8Y/1792778400.000301",
+    "channel": "C07DESIGN8Y",
+    "ts": "1792778400.000301",
+    "user": "U06AKIM3D2Q",
+    "text": "Crit tomorrow: new checkout empty states + the 4.12 release notes screenshots."
+  },
+  {
+    "_key": "C02RELARCH5/1772636400.000011",
+    "channel": "C02RELARCH5",
+    "ts": "1772636400.000011",
+    "user": "U04ARIVERA9",
+    "text": "web 4.2 release moved to 2025-03-18 because of the SDK regression."
+  },
+  {
+    "_key": "C06RELEASE1/1792501200.002222",
+    "channel": "C06RELEASE1",
+    "ts": "1792501200.002222",
+    "user": "U04ARIVERA9",
+    "text": "web 4.12 release planned for Tuesday 2026-11-03. Code freeze 2026-10-30."
+  },
+  {
+    "_key": "C06RELEASE1/1793110360.774310",
+    "channel": "C06RELEASE1",
+    "ts": "1793110360.774310",
+    "user": "U04ARIVERA9",
+    "text": "Update: web 4.12 release is moved from 2026-11-03 to Tuesday 2026-11-10 because of the payments SDK regression (PAY-881). Code freeze moves to 2026-11-06.",
+    "reactions": [
+      {
+        "name": "eyes",
+        "users": [
+          "U03PRIYAN4T",
+          "U07LFISCH2R"
+        ],
+        "count": 2
+      }
+    ]
+  },
+  {
+    "_key": "C06RELEASE1/1793111400.000140",
+    "channel": "C06RELEASE1",
+    "ts": "1793111400.000140",
+    "user": "U03PRIYAN4T",
+    "text": "Thanks. The fix for PAY-881 should land Monday.",
+    "thread_ts": "1793110360.774310"
+  },
+  {
+    "_key": "C06RELEASE1/1793113260.000009",
+    "channel": "C06RELEASE1",
+    "ts": "1793113260.000009",
+    "user": "U08DEPLOYB0",
+    "text": "Deploy 4.12.0-rc2 to staging: success",
+    "bot_id": "B08DEPLOY"
+  },
+  {
+    "_key": "C06RELEASE1/1793203200.003131",
+    "channel": "C06RELEASE1",
+    "ts": "1793203200.003131",
+    "user": "U06AKIM3D2Q",
+    "text": "Do we have a final date yet for 4.12? I need it for the release-notes screenshots handoff."
+  },
+  {
+    "_key": "D09KIMDM4X1/1792090800.000077",
+    "channel": "D09KIMDM4X1",
+    "ts": "1792090800.000077",
+    "user": "U06AKIM3D2Q",
+    "text": "Hey Casey, can you ping me when the 4.12 date is settled? Thanks!"
+  },
+  {
+    "_key": "D0RIVDM2KQ8/1792242000.000088",
+    "channel": "D0RIVDM2KQ8",
+    "ts": "1792242000.000088",
+    "user": "U04ARIVERA9",
+    "text": "Can you review the on-call handbook PR when you get a chance?"
+  },
+  {
+    "_key": "C03INFRA9QX/1791990131.120442",
+    "channel": "C03INFRA9QX",
+    "ts": "1791990131.120442",
+    "user": "U02MWEBB8XH",
+    "text": "Observability vendor evaluation kicking off: Datadog vs Grafana Cloud vs Honeycomb. Scorecard in the canvas. Decision by Oct 27.",
+    "reactions": [
+      {
+        "name": "eyes",
+        "users": [
+          "U05SORTIZ6M",
+          "U04ARIVERA9"
+        ],
+        "count": 2
+      }
+    ]
+  },
+  {
+    "_key": "C0ITOPS5LF2/1792926000.004410",
+    "channel": "C0ITOPS5LF2",
+    "ts": "1792926000.004410",
+    "user": "U01DWHIT5FA",
+    "text": "Reminder: post an offboarding notice here once accounts are deactivated, so the app owners can follow up on licences."
+  },
+  {
+    "_key": "C0ITOPS5LF2/1793181600.000520",
+    "channel": "C0ITOPS5LF2",
+    "ts": "1793181600.000520",
+    "user": "U02MWEBB8XH",
+    "text": "FYI Lena Fischer (Product) has her last day on Wednesday 2026-10-28. Can someone handle her offboarding Thursday morning?"
+  }
+]

@@ -1,0 +1,1 @@
+Acme Retail just escalated the Safari bug where the checkout button stops responding. In Linear, find the open issue that's actually being worked on for this, bump it to Urgent, assign it to Alex Kim, and leave a comment saying the escalation came from Acme Retail. Don't touch any duplicates or already-fixed issues.

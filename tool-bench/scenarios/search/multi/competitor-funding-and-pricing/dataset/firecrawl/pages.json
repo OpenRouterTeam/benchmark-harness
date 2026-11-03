@@ -1,0 +1,45 @@
+[
+  {
+    "_key": "https://www.norvikanalytics.com/pricing",
+    "title": "Pricing | Norvik Analytics",
+    "description": "Demand forecasting plans for retailers. Save with annual billing.",
+    "language": "en",
+    "cachedAt": "2026-10-28T06:40:12Z",
+    "markdown": "# Pricing\n\nDemand forecasting for retailers of every size. Prices in USD.\n\n## Starter\n\n**$290/month** billed annually ($350 billed monthly)\n\n- Up to 5 stores\n- Weekly forecasts\n- Email support\n\n## Growth\n\n**$890/month** billed annually ($1,090 billed monthly)\n\n- Up to 50 stores\n- Daily store- and SKU-level forecasts\n- Promotions and weather signals\n- Shared Slack support channel\n\n## Enterprise\n\nCustom pricing for unlimited stores, on-premise connectors and a dedicated forecasting analyst. [Talk to sales](https://www.norvikanalytics.com/contact)\n\n---\n\nPrices updated October 1, 2026.",
+    "json": {
+      "plans": [
+        { "name": "Starter", "annualMonthlyPriceUsd": 290, "monthlyPriceUsd": 350, "stores": 5 },
+        { "name": "Growth", "annualMonthlyPriceUsd": 890, "monthlyPriceUsd": 1090, "stores": 50 },
+        { "name": "Enterprise", "annualMonthlyPriceUsd": null, "monthlyPriceUsd": null, "stores": null }
+      ]
+    }
+  },
+  {
+    "_key": "https://www.norvikanalytics.com",
+    "title": "Norvik Analytics | Demand forecasting for retailers",
+    "description": "Forecast demand per store and SKU, and cut stock-outs and overstock.",
+    "language": "en",
+    "markdown": "# Demand forecasting for retailers\n\nNorvik Analytics forecasts demand per store and SKU so you can cut stock-outs and overstock.\n\n[See pricing](https://www.norvikanalytics.com/pricing) · [Blog](https://www.norvikanalytics.com/blog) · [About us](https://www.norvikanalytics.com/about)\n\nTrusted by 600+ retailers across the Nordics."
+  },
+  {
+    "_key": "https://www.norvikanalytics.com/blog/new-plans-2025",
+    "title": "Introducing our new plans | Norvik Analytics Blog",
+    "description": "Starter and Growth plans for 2025.",
+    "language": "en",
+    "markdown": "# Introducing our new plans\n\n*March 4, 2025*\n\nFrom today, Norvik Analytics comes in two plans. **Starter** is $240/month billed annually for up to 5 stores, and **Growth** is **$690/month** billed annually for up to 30 stores.\n\nExisting customers keep their price until renewal."
+  },
+  {
+    "_key": "https://www.capterra.com/p/248811/norvik-analytics/pricing",
+    "title": "Norvik Analytics Pricing 2026 | Capterra",
+    "description": "Compare Norvik Analytics pricing plans.",
+    "language": "en",
+    "markdown": "# Norvik Analytics Pricing\n\nPricing supplied by the vendor. Last updated April 2025.\n\n| Plan | Price |\n|---|---|\n| Starter | $240 per month |\n| Growth | $690 per month |\n| Enterprise | Contact vendor |\n\nUser reviews: 4.6 / 5 (48 reviews)"
+  },
+  {
+    "_key": "https://www.norviklabs.se/pricing",
+    "title": "Robot fleet pricing | Norvik Labs",
+    "description": "Warehouse robot leasing.",
+    "language": "en",
+    "markdown": "# Robot fleet pricing\n\nNorvik Labs leases autonomous warehouse robots.\n\n- **Starter fleet**: from $1,900 per robot per month\n- **Growth fleet** (10+ robots): from $1,650 per robot per month\n\nContact us for a site survey."
+  }
+]

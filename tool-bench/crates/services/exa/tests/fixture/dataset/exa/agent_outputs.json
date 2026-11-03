@@ -1,0 +1,23 @@
+[
+  {
+    "id": "enrich-three-leads",
+    "match": ["corvane", "lumetric", "bramblewood"],
+    "output": {
+      "content": "Enriched 3 companies.\n\n| Company | HQ city | Employees (approx.) | Source |\n|---|---|---|---|\n| Corvane Robotics | Pittsburgh, PA, USA | 340 | https://www.corvanerobotics.com/about |\n| Lumetric Health | Austin, TX, USA | 1,150 | https://lumetrichealth.com/company |\n| Bramblewood Foods | Leeds, United Kingdom | 2,600 | https://www.bramblewoodfoods.co.uk/our-story |\n",
+      "structured": {
+        "companies": [
+          { "companyName": "Corvane Robotics", "hqCity": "Pittsburgh", "employees": 340, "evidenceUrl": "https://www.corvanerobotics.com/about" },
+          { "companyName": "Lumetric Health", "hqCity": "Austin", "employees": 1150, "evidenceUrl": "https://lumetrichealth.com/company" },
+          { "companyName": "Bramblewood Foods", "hqCity": "Leeds", "employees": 2600, "evidenceUrl": "https://www.bramblewoodfoods.co.uk/our-story" }
+        ]
+      }
+    }
+  },
+  {
+    "id": "enrich-corvane-only",
+    "match": ["corvane"],
+    "output": {
+      "content": "Corvane Robotics is headquartered in Pittsburgh, PA and has about 340 employees (source: https://www.corvanerobotics.com/about)."
+    }
+  }
+]

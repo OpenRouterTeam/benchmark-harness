@@ -1,0 +1,40 @@
+[
+  {
+    "_key": "cp-email",
+    "uid": "cp-email",
+    "name": "grafana-default-email",
+    "type": "email",
+    "settings": {
+      "addresses": "sre@octo-corp.com",
+      "singleEmail": false
+    },
+    "disableResolveMessage": false,
+    "provenance": ""
+  },
+  {
+    "_key": "cp-pagerduty",
+    "uid": "cp-pagerduty",
+    "name": "sre-pagerduty",
+    "type": "pagerduty",
+    "settings": {
+      "integrationKey": "[REDACTED]",
+      "severity": "critical",
+      "class": "grafana"
+    },
+    "disableResolveMessage": false,
+    "provenance": ""
+  },
+  {
+    "_key": "cp-checkout-slack",
+    "uid": "cp-checkout-slack",
+    "name": "checkout-slack",
+    "type": "slack",
+    "settings": {
+      "recipient": "#checkout-alerts",
+      "url": "[REDACTED]",
+      "username": "Grafana"
+    },
+    "disableResolveMessage": false,
+    "provenance": ""
+  }
+]

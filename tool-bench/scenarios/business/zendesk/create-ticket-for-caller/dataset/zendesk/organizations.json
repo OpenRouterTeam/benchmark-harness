@@ -1,0 +1,4 @@
+[
+  {"id": 3600301, "name": "Fjord Outfitters", "domain_names": ["fjordoutfitters.example"], "created_at": "2025-02-11T08:25:00Z", "tags": ["retail", "enterprise"]},
+  {"id": 3600302, "name": "Parkside Clinics", "domain_names": ["parksideclinics.example"], "created_at": "2025-06-30T17:00:00Z", "tags": ["healthcare"]}
+]

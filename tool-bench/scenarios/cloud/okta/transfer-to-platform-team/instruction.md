@@ -1,0 +1,1 @@
+Maria Gonzalez is moving from Customer Support to the Platform Engineering team today, as a Site Reliability Engineer. Please update her in Okta: set her title to "Site Reliability Engineer" and her department to "Platform Engineering", add her to the Platform Engineering group, and take her out of the Support Agents group. Leave the rest of her account as it is.

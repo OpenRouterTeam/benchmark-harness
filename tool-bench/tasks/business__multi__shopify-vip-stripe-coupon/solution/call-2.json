@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"stripe_api_read","arguments":{"livemode":false,"parameters":{"query":"email:\"priya.raman@outlook.com\""},"stripe_api_operation_id":"GetCustomersSearch","stripe_context":"acct_1OctoGd7Rq2LmN4p"}}}

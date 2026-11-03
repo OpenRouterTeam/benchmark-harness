@@ -1,0 +1,57 @@
+[scenario]
+id = "code/gitlab/answer-changelog-review-thread"
+title = "Answer and resolve the changelog review thread on the right SDK bump MR"
+now = "2026-04-02T09:00:00Z"
+seed = "code-gitlab-answer-changelog-review-thread"
+services = ["gitlab"]
+tags = ["single-service", "write", "gitlab", "disambiguation"]
+timeout_sec = 900
+
+# The reply is checked by its request, not by a note id: other writes an agent makes first
+# (e.g. approving, which adds a system note) would shift the next id.
+[[expect.required_calls]]
+service = "gitlab"
+method = "POST"
+path_regex = "/merge_requests/88/discussions/d7e8c986532452a2290d7e7255e2b2cae36e36ce/notes$"
+body_contains = "24f172e5"
+
+[[expect.state]]
+pointer = "/services/gitlab/notes/81503/resolved"
+equals = true
+
+[[expect.state]]
+pointer = "/services/gitlab/notes/81502/resolved"
+equals = false
+
+[[expect.state]]
+pointer = "/services/gitlab/notes/81601/resolved"
+equals = false
+
+[[expect.state]]
+pointer = "/services/gitlab/merge_requests/northwind~1billing~1billing-service!88/state"
+equals = "opened"
+
+[[expect.forbidden_calls]]
+service = "gitlab"
+method = "POST"
+path_regex = "^/api/v4/projects/(northwind%2Fmobile%2Fcheckout-ios|204)/"
+
+[[expect.forbidden_calls]]
+service = "gitlab"
+method = "PUT"
+path_regex = "^/api/v4/projects/(northwind%2Fmobile%2Fcheckout-ios|204)/"
+
+[[expect.forbidden_calls]]
+service = "gitlab"
+method = "PUT"
+path_regex = "^/api/v4/projects/[^/]+/merge_requests/88/merge$"
+
+[[solution.call]]
+endpoint = "gitlab"
+tool = "create_merge_request_discussion_note"
+arguments = { project_id = "northwind/billing/billing-service", merge_request_iid = "88", discussion_id = "d7e8c986532452a2290d7e7255e2b2cae36e36ce", body = "Yes, the changelog entry for the 4.2.0 bump was added in commit 24f172e5." }
+
+[[solution.call]]
+endpoint = "gitlab"
+tool = "resolve_merge_request_thread"
+arguments = { project_id = "northwind/billing/billing-service", merge_request_iid = "88", discussion_id = "d7e8c986532452a2290d7e7255e2b2cae36e36ce", resolved = true }

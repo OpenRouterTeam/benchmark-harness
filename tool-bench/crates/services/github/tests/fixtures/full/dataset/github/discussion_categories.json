@@ -1,0 +1,18 @@
+[
+  {
+    "_key": "octo-org/app:q-a",
+    "node_id": "DIC_kwDOQA01",
+    "name": "Q&A",
+    "slug": "q-a",
+    "emoji": ":pray:",
+    "description": "Ask the team",
+    "is_answerable": true
+  },
+  {
+    "_key": "octo-org/app:announcements",
+    "node_id": "DIC_kwDOQA02",
+    "name": "Announcements",
+    "slug": "announcements",
+    "is_answerable": false
+  }
+]

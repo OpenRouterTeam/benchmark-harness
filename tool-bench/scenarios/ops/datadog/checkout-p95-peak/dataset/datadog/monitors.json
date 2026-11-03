@@ -1,0 +1,132 @@
+[
+  {
+    "id": 6101,
+    "org_id": 321813,
+    "type": "query alert",
+    "name": "Checkout API p95 latency above 1.5s",
+    "message": "Checkout API p95 latency above 1.5s on {{host.name}}. Runbook: https://wiki.octo-corp.example/runbooks/6101 @slack-ops-alerts",
+    "tags": [
+      "service:checkout-api",
+      "env:prod",
+      "team:payments"
+    ],
+    "query": "avg(last_5m):avg:checkout.api.latency.p95{env:prod,service:checkout-api} > 1500",
+    "options": {
+      "thresholds": {
+        "critical": 1500.0,
+        "warning": 1200.0
+      },
+      "notify_no_data": false,
+      "notify_audit": false,
+      "include_tags": true,
+      "new_group_delay": 60,
+      "require_full_window": false,
+      "renotify_interval": 0,
+      "silenced": {}
+    },
+    "multi": false,
+    "created": "2026-03-02T10:11:12.000000+00:00",
+    "created_at": 1772446272000,
+    "modified": "2026-10-01T08:00:00.000000+00:00",
+    "deleted": null,
+    "restricted_roles": null,
+    "priority": 2,
+    "overall_state_modified": "2026-10-29T14:20:00+00:00",
+    "overall_state": "OK",
+    "creator": {
+      "name": "Priya Raman",
+      "handle": "priya.raman@octo-corp.example",
+      "email": "priya.raman@octo-corp.example",
+      "id": 1445400
+    },
+    "state": {
+      "groups": {}
+    }
+  },
+  {
+    "id": 6102,
+    "org_id": 321813,
+    "type": "query alert",
+    "name": "Checkout API p95 latency above 1.5s (staging)",
+    "message": "Checkout API p95 latency above 1.5s (staging) on {{host.name}}. Runbook: https://wiki.octo-corp.example/runbooks/6102 @slack-ops-alerts",
+    "tags": [
+      "service:checkout-api",
+      "env:staging",
+      "team:payments"
+    ],
+    "query": "avg(last_5m):avg:checkout.api.latency.p95{env:staging,service:checkout-api} > 1500",
+    "options": {
+      "thresholds": {
+        "critical": 1500.0
+      },
+      "notify_no_data": false,
+      "notify_audit": false,
+      "include_tags": true,
+      "new_group_delay": 60,
+      "require_full_window": false,
+      "renotify_interval": 0,
+      "silenced": {}
+    },
+    "multi": false,
+    "created": "2026-03-02T10:11:12.000000+00:00",
+    "created_at": 1772446272000,
+    "modified": "2026-10-01T08:00:00.000000+00:00",
+    "deleted": null,
+    "restricted_roles": null,
+    "priority": 2,
+    "overall_state_modified": "2026-10-29T14:20:00+00:00",
+    "overall_state": "OK",
+    "creator": {
+      "name": "Priya Raman",
+      "handle": "priya.raman@octo-corp.example",
+      "email": "priya.raman@octo-corp.example",
+      "id": 1445400
+    },
+    "state": {
+      "groups": {}
+    }
+  },
+  {
+    "id": 6103,
+    "org_id": 321813,
+    "type": "query alert",
+    "name": "Cart API p95 latency above 1.5s",
+    "message": "Cart API p95 latency above 1.5s on {{host.name}}. Runbook: https://wiki.octo-corp.example/runbooks/6103 @slack-ops-alerts",
+    "tags": [
+      "service:cart-api",
+      "env:prod",
+      "team:storefront"
+    ],
+    "query": "avg(last_5m):avg:cart.api.latency.p95{env:prod,service:cart-api} > 1500",
+    "options": {
+      "thresholds": {
+        "critical": 1500.0
+      },
+      "notify_no_data": false,
+      "notify_audit": false,
+      "include_tags": true,
+      "new_group_delay": 60,
+      "require_full_window": false,
+      "renotify_interval": 0,
+      "silenced": {}
+    },
+    "multi": false,
+    "created": "2026-03-02T10:11:12.000000+00:00",
+    "created_at": 1772446272000,
+    "modified": "2026-10-01T08:00:00.000000+00:00",
+    "deleted": null,
+    "restricted_roles": null,
+    "priority": 2,
+    "overall_state_modified": "2026-10-29T14:20:00+00:00",
+    "overall_state": "OK",
+    "creator": {
+      "name": "Priya Raman",
+      "handle": "priya.raman@octo-corp.example",
+      "email": "priya.raman@octo-corp.example",
+      "id": 1445400
+    },
+    "state": {
+      "groups": {}
+    }
+  }
+]

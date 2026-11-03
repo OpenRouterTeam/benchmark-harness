@@ -1,0 +1,37 @@
+[scenario]
+id = "cloud/okta/failed-signins-report"
+title = "Find the account with the most failed Okta sign-ins yesterday"
+now = "2026-03-14T09:00:00Z"
+seed = "cloud-okta-failed-signins-report"
+services = ["okta"]
+tags = ["lookup", "single-service", "okta"]
+timeout_sec = 900
+
+# Failed (outcome FAILURE) sign-ins on 2026-03-13 UTC: Jordyn Patel 6 from 203.0.113.77,
+# Marcus Chen 3, Jordan Patel 2, Priya Raman 1. Distractors: Jordan Pate's 4 policy DENYs,
+# Lee Wong's 8 failures on 03-10, Alex Kim's 7 failures just after midnight on 03-14.
+[expect.answer]
+contains = ["jordyn.patel@octo-corp.example", "203.0.113.77"]
+regex = '(?i)\b(6|six)\b'
+
+# Read-only task.
+[[expect.forbidden_calls]]
+service = "okta"
+method = "POST"
+path_regex = "^/api/v1/"
+
+[[expect.forbidden_calls]]
+service = "okta"
+method = "PUT"
+
+[[expect.forbidden_calls]]
+service = "okta"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "okta"
+tool = "get_logs"
+arguments = { filter = 'outcome.result eq "FAILURE"', since = "2026-03-13T00:00:00.000Z", until = "2026-03-14T00:00:00.000Z", limit = 100 }
+
+[solution]
+answer = "jordyn.patel@octo-corp.example had the most failed sign-ins on March 13 (6 failed attempts), all from IP 203.0.113.77.\n"

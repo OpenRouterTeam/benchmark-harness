@@ -1,0 +1,97 @@
+{
+  "state": [
+    {
+      "pointer": "/services/grafana/annotations/42/dashboardUID",
+      "equals": "checkout-prod",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/grafana/annotations/42/time",
+      "equals": 1794492300000,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/grafana/annotations/42/text",
+      "equals": null,
+      "exists": null,
+      "contains": "4.19.0",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/grafana/annotations/42/tags",
+      "equals": null,
+      "exists": null,
+      "contains": "deploy",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/grafana/annotations/42/tags",
+      "equals": null,
+      "exists": null,
+      "contains": "checkout",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/grafana/annotations/43",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/grafana/annotations/39/text",
+      "equals": "Deploy checkout v4.19.0 to staging",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "grafana",
+      "method": "POST",
+      "path": "/api/annotations",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "dashboardUID": "checkout-prod"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "grafana",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "grafana",
+      "method": "POST",
+      "path": "/api/dashboards/db",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

@@ -1,0 +1,78 @@
+[
+  {
+    "_key": "payments/ledger-worker-zx4mrndj8b-dwvg9",
+    "metadata": {
+      "name": "ledger-worker-zx4mrndj8b-dwvg9",
+      "namespace": "payments",
+      "creationTimestamp": "2026-10-30T14:00:00Z",
+      "labels": {}
+    },
+    "window": "15.012s",
+    "containers": [
+      {
+        "name": "ledger-worker",
+        "usage": {
+          "cpu": "38m",
+          "memory": "91Mi"
+        }
+      }
+    ]
+  },
+  {
+    "_key": "payments/payments-api-86zf47v9z-fhnrw",
+    "metadata": {
+      "name": "payments-api-86zf47v9z-fhnrw",
+      "namespace": "payments",
+      "creationTimestamp": "2026-10-30T14:00:00Z",
+      "labels": {}
+    },
+    "window": "15.012s",
+    "containers": [
+      {
+        "name": "payments-api",
+        "usage": {
+          "cpu": "112m",
+          "memory": "301Mi"
+        }
+      }
+    ]
+  },
+  {
+    "_key": "payments/payments-api-86zf47v9z-r9xzx",
+    "metadata": {
+      "name": "payments-api-86zf47v9z-r9xzx",
+      "namespace": "payments",
+      "creationTimestamp": "2026-10-30T14:00:00Z",
+      "labels": {}
+    },
+    "window": "15.012s",
+    "containers": [
+      {
+        "name": "payments-api",
+        "usage": {
+          "cpu": "112m",
+          "memory": "301Mi"
+        }
+      }
+    ]
+  },
+  {
+    "_key": "payments/payments-api-86zf47v9z-q8wj4",
+    "metadata": {
+      "name": "payments-api-86zf47v9z-q8wj4",
+      "namespace": "payments",
+      "creationTimestamp": "2026-10-30T14:00:00Z",
+      "labels": {}
+    },
+    "window": "15.012s",
+    "containers": [
+      {
+        "name": "payments-api",
+        "usage": {
+          "cpu": "112m",
+          "memory": "301Mi"
+        }
+      }
+    ]
+  }
+]

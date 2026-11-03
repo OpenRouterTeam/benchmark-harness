@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"salesforce_aggregate_query","arguments":{"groupByFields":["OwnerId"],"objectName":"Opportunity","orderBy":"SUM(Amount) DESC","selectFields":["OwnerId","SUM(Amount) openPipeline","COUNT(Id) openDeals"],"whereClause":"IsClosed = false AND CloseDate = THIS_QUARTER"}}}

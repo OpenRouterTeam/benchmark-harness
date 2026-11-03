@@ -1,0 +1,45 @@
+[
+  {
+    "id": "ch_NorthwindFeb000000000001",
+    "amount": 12000,
+    "created": 1770714000,
+    "customer": "cus_Northwind00002",
+    "description": "Order #1041",
+    "payment_intent": "pi_NorthwindFeb000000000001",
+    "payment_method": "pm_NorthwindMc0000000000002",
+    "payment_method_details": {"card": {"brand": "mastercard", "last4": "4444", "exp_month": 2, "exp_year": 2027}, "type": "card"},
+    "balance_transaction": "txn_NorthwindFeb00000000001"
+  },
+  {
+    "id": "ch_NorthwindMarA00000000002",
+    "amount": 48000,
+    "created": 1773134040,
+    "customer": "cus_Northwind00002",
+    "description": "Order #1077",
+    "payment_intent": "pi_NorthwindMarA00000000002",
+    "payment_method": "pm_NorthwindMc0000000000002",
+    "payment_method_details": {"card": {"brand": "mastercard", "last4": "4444", "exp_month": 2, "exp_year": 2027}, "type": "card"},
+    "balance_transaction": "txn_NorthwindMarA0000000002"
+  },
+  {
+    "id": "ch_HarborDisputed0000000003",
+    "amount": 9900,
+    "created": 1773273600,
+    "customer": "cus_HarborPine0001",
+    "description": "Espresso machine service",
+    "disputed": true,
+    "payment_intent": null,
+    "payment_method": "pm_HarborVisa00000000000001",
+    "payment_method_details": {"card": {"brand": "visa", "last4": "4242", "exp_month": 8, "exp_year": 2028}, "type": "card"}
+  },
+  {
+    "id": "ch_LumenPartial00000000004",
+    "amount": 30000,
+    "amount_refunded": 10000,
+    "created": 1773532800,
+    "customer": "cus_LumenData00003",
+    "description": "Data export add-on",
+    "metadata": {"order_id": "LUM-88"},
+    "payment_method_details": {"card": {"brand": "amex", "last4": "0005", "exp_month": 5, "exp_year": 2029}, "type": "card"}
+  }
+]

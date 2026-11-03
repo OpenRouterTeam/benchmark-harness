@@ -1,0 +1,16 @@
+[
+  {
+    "_key": "acme/platform/api/-/Runbook",
+    "slug": "Runbook",
+    "title": "Runbook",
+    "format": "markdown",
+    "content": "# Runbook\n\nRestart with `kubectl rollout restart deploy/api`.\n"
+  },
+  {
+    "_key": "acme/-/Onboarding",
+    "slug": "Onboarding",
+    "title": "Onboarding",
+    "format": "markdown",
+    "content": "Welcome to Acme engineering."
+  }
+]

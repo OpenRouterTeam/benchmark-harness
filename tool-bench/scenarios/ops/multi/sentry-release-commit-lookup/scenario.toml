@@ -1,0 +1,68 @@
+[scenario]
+id = "ops/multi/sentry-release-commit-lookup"
+title = "Trace the noisiest storefront Sentry error to the pull request that introduced it"
+now = "2026-10-20T16:00:00Z"
+seed = "ops-multi-sentry-release-commit-lookup"
+services = ["sentry", "github"]
+tags = ["lookup", "multi-service", "sentry", "github", "disambiguation"]
+timeout_sec = 900
+
+# Sentry: STOREFRONT-WEB-7Q (2,600 events, CartDrawer) first seen in storefront@5.2.0, whose
+# only commit is 9f1c2ab "feat(cart): slide-out cart drawer" by Sofia Alvarez. Look-alike:
+# STOREFRONT-WEB-8D (same "reading 'map'" TypeError, 2,172 events, ProductGrid) from
+# storefront@5.3.0 (Kenji's #63). GitHub: the drawer commit is the squash merge of PR #57
+# (author sofia); PR #70 by marcus is an open, unmerged fix attempt.
+[expect.answer]
+contains = ["STOREFRONT-WEB-7Q", "storefront@5.2.0", "Sofia"]
+regex = "(?i)(#|pull/|PR\\s*|pull request\\s*)57\\b"
+
+[[expect.required_calls]]
+service = "github"
+
+[[expect.forbidden_calls]]
+service = "sentry"
+method = "PUT"
+
+[[expect.forbidden_calls]]
+service = "sentry"
+method = "DELETE"
+
+[[expect.forbidden_calls]]
+service = "github"
+method = "POST"
+
+[[expect.forbidden_calls]]
+service = "github"
+method = "PATCH"
+
+[[expect.forbidden_calls]]
+service = "github"
+method = "PUT"
+
+[[solution.call]]
+endpoint = "sentry"
+tool = "search_issues"
+arguments = { organizationSlug = "lumen-labs", projectSlugOrId = "storefront-web", query = "is:unresolved", sort = "freq", limit = 5 }
+
+[[solution.call]]
+endpoint = "github"
+tool = "list_commits"
+arguments = { owner = "lumen-labs", repo = "storefront", perPage = 10 }
+
+[[solution.call]]
+endpoint = "github"
+tool = "get_commit"
+arguments = { owner = "lumen-labs", repo = "storefront", sha = "9f1c2ab7e0d4c3b2a1908f7e6d5c4b3a2f1e0d9c" }
+
+[[solution.call]]
+endpoint = "github"
+tool = "pull_request_read"
+arguments = { method = "get", owner = "lumen-labs", repo = "storefront", pullNumber = 57 }
+
+[solution]
+answer = """
+- Sentry issue: STOREFRONT-WEB-7Q, "TypeError: Cannot read properties of undefined (reading 'map')" in CartDrawer (2,600 events, unresolved)
+- First seen in release: storefront@5.2.0 (single commit 9f1c2ab, "feat(cart): slide-out cart drawer")
+- Pull request: lumen-labs/storefront #57 "Slide-out cart drawer"
+- Author: Sofia Alvarez (@sofia)
+"""

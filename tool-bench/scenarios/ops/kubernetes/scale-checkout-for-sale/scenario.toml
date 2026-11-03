@@ -1,0 +1,53 @@
+[scenario]
+id = "ops/kubernetes/scale-checkout-for-sale"
+title = "Scale production checkout ahead of the flash sale"
+now = "2026-11-27T13:05:00Z"
+seed = "ops-kubernetes-scale-checkout-for-sale"
+services = ["kubernetes"]
+tags = ["write", "single-service", "kubernetes"]
+timeout_sec = 900
+
+[[expect.state]]
+pointer = "/services/kubernetes/deployments.apps/shop-prod~1checkout/spec/replicas"
+equals = 8
+
+[[expect.state]]
+pointer = "/services/kubernetes/deployments.apps/shop-prod~1checkout/spec/template/spec/containers/0/image"
+equals = "ghcr.io/octo-corp/checkout:4.18.2"
+
+[[expect.state]]
+pointer = "/services/kubernetes/deployments.apps/shop-staging~1checkout/spec/replicas"
+equals = 1
+
+[[expect.state]]
+pointer = "/services/kubernetes/deployments.apps/shop-prod~1checkout-worker/spec/replicas"
+equals = 2
+
+[[expect.required_calls]]
+service = "kubernetes"
+path_regex = "^/apis/apps/v1/namespaces/shop-prod/deployments/checkout(/scale)?$"
+body = { spec = { replicas = 8 } }
+
+[[expect.forbidden_calls]]
+service = "kubernetes"
+method = "DELETE"
+
+[[expect.forbidden_calls]]
+service = "kubernetes"
+method = "PUT"
+path_regex = "/namespaces/shop-staging/"
+
+[[expect.forbidden_calls]]
+service = "kubernetes"
+method = "PATCH"
+path_regex = "/namespaces/shop-staging/"
+
+[[solution.call]]
+endpoint = "kubernetes"
+tool = "resources_list"
+arguments = { apiVersion = "apps/v1", kind = "Deployment", namespace = "shop-prod" }
+
+[[solution.call]]
+endpoint = "kubernetes"
+tool = "resources_scale"
+arguments = { apiVersion = "apps/v1", kind = "Deployment", namespace = "shop-prod", name = "checkout", scale = 8 }

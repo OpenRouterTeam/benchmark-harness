@@ -1,0 +1,119 @@
+[
+  {
+    "_key": "tempo-prod/4bf92f3577b34da6a3ce929d0e0e1280",
+    "datasource": "tempo-prod",
+    "traceID": "4bf92f3577b34da6a3ce929d0e0e1280",
+    "start": "2026-11-12T14:50:00Z",
+    "spans": [
+      {
+        "spanID": "00f067aa0ba902b0",
+        "parentSpanID": "",
+        "name": "POST /api/checkout",
+        "service": "checkout",
+        "offsetMs": 0,
+        "durationMs": 3120,
+        "status": "error",
+        "kind": "server",
+        "attributes": {
+          "http.method": "POST",
+          "http.route": "/api/checkout",
+          "http.status_code": 502,
+          "k8s.pod.name": "checkout-7b9d6c5f4-xk2lp"
+        }
+      },
+      {
+        "spanID": "53995c3f42cd8ad0",
+        "parentSpanID": "00f067aa0ba902b0",
+        "name": "POST /v1/charges",
+        "service": "payments-api",
+        "offsetMs": 12,
+        "durationMs": 3050,
+        "status": "error",
+        "kind": "server",
+        "attributes": {
+          "http.method": "POST",
+          "http.status_code": 502,
+          "payment.provider": "adyen"
+        }
+      }
+    ]
+  },
+  {
+    "_key": "tempo-prod/4bf92f3577b34da6a3ce929d0e0e1282",
+    "datasource": "tempo-prod",
+    "traceID": "4bf92f3577b34da6a3ce929d0e0e1282",
+    "start": "2026-11-12T15:00:00Z",
+    "spans": [
+      {
+        "spanID": "00f067aa0ba902b1",
+        "parentSpanID": "",
+        "name": "POST /api/checkout",
+        "service": "checkout",
+        "offsetMs": 0,
+        "durationMs": 240,
+        "status": "ok",
+        "kind": "server",
+        "attributes": {
+          "http.method": "POST",
+          "http.route": "/api/checkout",
+          "http.status_code": 200,
+          "k8s.pod.name": "checkout-7b9d6c5f4-m8vqt"
+        }
+      },
+      {
+        "spanID": "53995c3f42cd8ad1",
+        "parentSpanID": "00f067aa0ba902b1",
+        "name": "POST /v1/charges",
+        "service": "payments-api",
+        "offsetMs": 12,
+        "durationMs": 190,
+        "status": "ok",
+        "kind": "server",
+        "attributes": {
+          "http.method": "POST",
+          "http.status_code": 201,
+          "payment.provider": "adyen"
+        }
+      }
+    ]
+  },
+  {
+    "_key": "tempo-prod/4bf92f3577b34da6a3ce929d0e0e1284",
+    "datasource": "tempo-prod",
+    "traceID": "4bf92f3577b34da6a3ce929d0e0e1284",
+    "start": "2026-11-12T15:10:00Z",
+    "spans": [
+      {
+        "spanID": "00f067aa0ba902b2",
+        "parentSpanID": "",
+        "name": "POST /api/checkout",
+        "service": "checkout",
+        "offsetMs": 0,
+        "durationMs": 240,
+        "status": "ok",
+        "kind": "server",
+        "attributes": {
+          "http.method": "POST",
+          "http.route": "/api/checkout",
+          "http.status_code": 200,
+          "k8s.pod.name": "checkout-7b9d6c5f4-m8vqt"
+        }
+      },
+      {
+        "spanID": "53995c3f42cd8ad2",
+        "parentSpanID": "00f067aa0ba902b2",
+        "name": "POST /v1/charges",
+        "service": "payments-api",
+        "offsetMs": 12,
+        "durationMs": 190,
+        "status": "ok",
+        "kind": "server",
+        "attributes": {
+          "http.method": "POST",
+          "http.status_code": 201,
+          "payment.provider": "adyen"
+        }
+      }
+    ]
+  }
+]

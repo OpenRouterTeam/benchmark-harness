@@ -1,0 +1,38 @@
+[
+  {
+    "_key": "acme/platform/api%1",
+    "id": 401,
+    "iid": 1,
+    "title": "v2.4",
+    "description": "Spring release",
+    "state": "active",
+    "start_date": "2026-03-01",
+    "due_date": "2026-03-31",
+    "created_at": "2026-02-20T09:00:00.000Z",
+    "updated_at": "2026-02-20T09:00:00.000Z"
+  },
+  {
+    "_key": "acme/platform/api%2",
+    "id": 402,
+    "iid": 2,
+    "title": "v2.3",
+    "description": "",
+    "state": "closed",
+    "start_date": "2026-02-01",
+    "due_date": "2026-02-28",
+    "created_at": "2026-01-20T09:00:00.000Z",
+    "updated_at": "2026-03-01T09:00:00.000Z"
+  },
+  {
+    "_key": "acme%1",
+    "id": 450,
+    "iid": 1,
+    "title": "Q1 2026",
+    "description": "Group-wide",
+    "state": "active",
+    "start_date": "2026-01-01",
+    "due_date": "2026-03-31",
+    "created_at": "2025-12-15T09:00:00.000Z",
+    "updated_at": "2025-12-15T09:00:00.000Z"
+  }
+]

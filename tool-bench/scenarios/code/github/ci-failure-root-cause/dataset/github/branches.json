@@ -1,0 +1,21 @@
+[
+  {
+    "_key": "octo-org/payments-api:main",
+    "name": "main",
+    "sha": "c8e958100c97fe624295213b1c3ede0dd48f1ffe",
+    "protected": true,
+    "required_approvals": 1
+  },
+  {
+    "_key": "octo-org/payments-api:fix/refund-rounding",
+    "name": "fix/refund-rounding",
+    "sha": "f5a9fa6357cb33f874404c78fdab122c8b5e5970",
+    "protected": false
+  },
+  {
+    "_key": "octo-org/payments-api:feat/webhook-backoff",
+    "name": "feat/webhook-backoff",
+    "sha": "366a3921f906214726866a47add160bede150a0d",
+    "protected": false
+  }
+]

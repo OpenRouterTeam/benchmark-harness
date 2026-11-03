@@ -1,0 +1,22 @@
+[
+  {
+    "_key": "octo-org/payments-api#39",
+    "id": 7039,
+    "node_id": "I_kwDO9990F22CDDE9",
+    "number": 39,
+    "title": "Webhook retries hammer merchant endpoints",
+    "body": "Redeliveries fire every second with no backoff; one merchant got 3k requests in an hour.",
+    "user": "hubot",
+    "labels": [
+      "bug"
+    ],
+    "assignees": [],
+    "milestone": null,
+    "state": "open",
+    "state_reason": null,
+    "locked": false,
+    "created_at": "2026-03-08T13:00:00Z",
+    "updated_at": "2026-03-08T13:00:00Z",
+    "closed_at": null
+  }
+]

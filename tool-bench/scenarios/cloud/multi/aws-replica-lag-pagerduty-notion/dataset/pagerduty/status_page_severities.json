@@ -1,0 +1,38 @@
+[
+  {
+    "id": "PSEV001",
+    "description": "minor",
+    "post_type": "incident",
+    "status_page": {
+      "id": "PSTPG01",
+      "type": "status_page"
+    }
+  },
+  {
+    "id": "PSEV002",
+    "description": "major",
+    "post_type": "incident",
+    "status_page": {
+      "id": "PSTPG01",
+      "type": "status_page"
+    }
+  },
+  {
+    "id": "PSEV003",
+    "description": "all good",
+    "post_type": "incident",
+    "status_page": {
+      "id": "PSTPG01",
+      "type": "status_page"
+    }
+  },
+  {
+    "id": "PSEV004",
+    "description": "maintenance",
+    "post_type": "maintenance",
+    "status_page": {
+      "id": "PSTPG01",
+      "type": "status_page"
+    }
+  }
+]

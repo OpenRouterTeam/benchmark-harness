@@ -1,0 +1,19 @@
+[
+  {
+    "_key": "07L5g00000jHpTdEAK",
+    "Id": "07L5g00000jHpTdEAK",
+    "LogUserId": "0055g00000yTKUGAA4",
+    "LogLength": 657,
+    "LastModifiedDate": "2026-05-08T16:02:00.000+0000",
+    "Request": "Api",
+    "Operation": "/services/data/v58.0/composite/sobjects",
+    "Application": "Unknown",
+    "Status": "Success",
+    "DurationMilliseconds": 41,
+    "SystemModstamp": "2026-05-08T16:02:00.000+0000",
+    "StartTime": "2026-05-08T16:02:00.000+0000",
+    "Location": "Monitoring",
+    "RequestIdentifier": "TID:8833102",
+    "Body": "58.0 APEX_CODE,DEBUG;APEX_PROFILING,INFO;CALLOUT,INFO;DB,INFO;NBA,INFO;SYSTEM,DEBUG;VALIDATION,INFO;VISUALFORCE,INFO;WAVE,INFO;WORKFLOW,INFO\n16:02:11.0 (1187000)|USER_INFO|[EXTERNAL]|0055g00000yTKUG|avery.chen@ridgeline.io|(GMT-07:00) Mountain Daylight Time (America/Denver)|GMT-07:00\n16:02:11.0 (1300442)|EXECUTION_STARTED\n16:02:11.0 (1413884)|CODE_UNIT_STARTED|[EXTERNAL]|01q5g00000OppTr|OpportunityTrigger on Opportunity trigger event AfterUpdate\n16:02:11.0 (2527326)|USER_DEBUG|[9]|DEBUG|Queued 1 kickoff task(s)\n16:02:11.0 (3640768)|CODE_UNIT_FINISHED|OpportunityTrigger on Opportunity trigger event AfterUpdate\n16:02:11.0 (3754210)|EXECUTION_FINISHED\n"
+  }
+]

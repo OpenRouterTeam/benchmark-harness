@@ -1,0 +1,7 @@
+# Test fixture for mock-github (not a benchmark task).
+[scenario]
+id = "fixtures/github/full"
+title = "mock-github test fixture"
+now = "2026-03-13T10:00:00Z"
+seed = "mock-github-full"
+services = ["github"]

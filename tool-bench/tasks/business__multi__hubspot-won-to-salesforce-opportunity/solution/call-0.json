@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"hubspot-search-objects","arguments":{"objectType":"deals","properties":["dealname","amount","dealstage","closedate"],"query":"Initech"}}}

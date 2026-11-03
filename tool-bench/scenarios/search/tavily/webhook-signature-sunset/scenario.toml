@@ -1,0 +1,31 @@
+[scenario]
+id = "search/tavily/webhook-signature-sunset"
+title = "Find the v1 webhook signature sunset date among look-alike deprecations"
+now = "2026-10-30T09:15:00Z"
+seed = "search-tavily-webhook-signature-sunset"
+services = ["tavily"]
+tags = ["lookup", "single-service", "tavily", "disambiguation"]
+timeout_sec = 900
+
+# Distractors: v1 API keys (2026-12-01), SDK 3.x EOL (2026-11-30), archived v1 page (2026-06-30).
+[expect.answer]
+contains = ["Ferrowave-Signature-V2"]
+regex = '(?i)(2027-01-15|january\s+15(st|th)?,?\s+2027|15(th)?\s+(of\s+)?january,?\s+2027|01/15/2027|15/01/2027|15\.01\.2027)'
+
+[[expect.required_calls]]
+service = "tavily"
+method = "POST"
+path_regex = "^/(search|extract|crawl|map|research)$"
+
+[solution]
+answer = "Ferrowave stops sending v1 webhook signatures (X-Ferrowave-Sig) on January 15, 2027 (2027-01-15). Verify the Ferrowave-Signature-V2 header (HMAC-SHA256 over timestamp and body) instead. Source: https://docs.ferrowave.dev/guides/webhooks/verify-signatures\n"
+
+[[solution.call]]
+endpoint = "tavily"
+tool = "tavily_map"
+arguments = { url = "https://docs.ferrowave.dev", max_depth = 2 }
+
+[[solution.call]]
+endpoint = "tavily"
+tool = "tavily_extract"
+arguments = { urls = ["https://docs.ferrowave.dev/guides/webhooks/verify-signatures", "https://docs.ferrowave.dev/changelog"] }

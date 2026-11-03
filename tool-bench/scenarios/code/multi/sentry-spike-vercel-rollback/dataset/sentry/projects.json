@@ -1,0 +1,35 @@
+[
+  {
+    "id": "4509300001",
+    "slug": "storefront",
+    "name": "storefront",
+    "platform": "javascript-nextjs",
+    "teams": [
+      "storefront"
+    ],
+    "environments": [
+      "production",
+      "preview"
+    ],
+    "dateCreated": "2023-04-03T10:05:13Z",
+    "firstEvent": "2023-04-03T10:31:00Z",
+    "hasReplays": true,
+    "_key": "storefront"
+  },
+  {
+    "id": "4509300002",
+    "slug": "storefront-admin",
+    "name": "storefront-admin",
+    "platform": "javascript-nextjs",
+    "teams": [
+      "backoffice"
+    ],
+    "environments": [
+      "production",
+      "preview"
+    ],
+    "dateCreated": "2024-05-14T16:40:09Z",
+    "firstEvent": "2024-05-14T17:02:47Z",
+    "_key": "storefront-admin"
+  }
+]

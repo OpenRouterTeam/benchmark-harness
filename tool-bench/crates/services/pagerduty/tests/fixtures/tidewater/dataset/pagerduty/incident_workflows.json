@@ -1,0 +1,71 @@
+[
+  {
+    "id": "PWF0001",
+    "name": "Major Incident Kickoff",
+    "description": "Creates a Slack channel, adds the incident commander and posts a status update.",
+    "created_at": "2025-08-12T16:00:00Z",
+    "is_enabled": true,
+    "team": null,
+    "steps": [
+      {
+        "id": "PSTEP01",
+        "name": "Create Slack channel",
+        "description": "Creates #inc-<number>",
+        "action_configuration": {
+          "action_id": "pagerduty.com:slack:create-a-channel:4",
+          "description": "Create a Slack channel",
+          "inputs": [
+            {
+              "name": "Channel Name",
+              "parameter_type": "string",
+              "value": "inc-{{incident.number}}"
+            }
+          ]
+        }
+      },
+      {
+        "id": "PSTEP02",
+        "name": "Add incident commander",
+        "description": "Adds the Incident Commanders escalation policy as responders",
+        "action_configuration": {
+          "action_id": "pagerduty.com:incident-workflows:add-responders:2",
+          "description": "Add responders",
+          "inputs": [
+            {
+              "name": "Escalation Policies",
+              "parameter_type": "string",
+              "value": "PEPPLAT"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "PWF0002",
+    "name": "Notify Payments Stakeholders",
+    "description": "Emails payments-leads with the incident summary.",
+    "created_at": "2025-11-03T12:00:00Z",
+    "is_enabled": true,
+    "team": {
+      "id": "PTPAYMT",
+      "type": "team_reference"
+    },
+    "steps": [
+      {
+        "id": "PSTEP03",
+        "name": "Send email",
+        "action_configuration": {
+          "action_id": "pagerduty.com:incident-workflows:send-email:1",
+          "inputs": [
+            {
+              "name": "To",
+              "parameter_type": "string",
+              "value": "payments-leads@tidewater.io"
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

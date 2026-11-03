@@ -1,0 +1,536 @@
+[
+  {
+    "id": "00u1anamrn0Pq7Rs8tx7",
+    "status": "ACTIVE",
+    "created": "2024-02-05T16:20:11.000Z",
+    "activated": "2024-02-05T16:20:11.000Z",
+    "statusChanged": "2024-02-05T16:20:11.000Z",
+    "lastLogin": "2026-03-14T08:12:40.000Z",
+    "lastUpdated": "2024-02-05T16:20:11.000Z",
+    "passwordChanged": "2024-02-05T16:20:11.000Z",
+    "type": {
+      "id": "oty1toolbench0000001"
+    },
+    "profile": {
+      "firstName": "Ana",
+      "lastName": "Moreno",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "ana.moreno@octo-corp.example",
+      "email": "ana.moreno@octo-corp.example",
+      "displayName": "Ana Moreno",
+      "title": "IT Administrator",
+      "department": "IT",
+      "organization": "Octo Corp",
+      "userType": "Employee",
+      "employeeNumber": "1004"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "ana.moreno@octo-corp.example",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    }
+  },
+  {
+    "id": "00u1jrdnptl2Uv9Wx0x7",
+    "status": "ACTIVE",
+    "created": "2024-06-17T15:02:44.000Z",
+    "activated": "2024-06-17T15:02:44.000Z",
+    "statusChanged": "2024-06-17T15:02:44.000Z",
+    "lastLogin": "2026-03-13T16:55:02.000Z",
+    "lastUpdated": "2024-06-17T15:02:44.000Z",
+    "passwordChanged": "2024-06-17T15:02:44.000Z",
+    "type": {
+      "id": "oty1toolbench0000001"
+    },
+    "profile": {
+      "firstName": "Jordan",
+      "lastName": "Patel",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "jordan.patel@octo-corp.example",
+      "email": "jordan.patel@octo-corp.example",
+      "displayName": "Jordan Patel",
+      "title": "Senior Accountant",
+      "department": "Finance",
+      "organization": "Octo Corp",
+      "userType": "Employee",
+      "employeeNumber": "1187",
+      "manager": "Dana Whitfield"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "jordan.patel@octo-corp.example",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    }
+  },
+  {
+    "id": "00u1jrdnpte4Yz1Ab2x7",
+    "status": "ACTIVE",
+    "created": "2025-01-13T14:40:09.000Z",
+    "activated": "2025-01-13T14:40:09.000Z",
+    "statusChanged": "2025-01-13T14:40:09.000Z",
+    "lastLogin": "2026-03-13T21:10:37.000Z",
+    "lastUpdated": "2025-01-13T14:40:09.000Z",
+    "passwordChanged": "2025-01-13T14:40:09.000Z",
+    "type": {
+      "id": "oty1toolbench0000001"
+    },
+    "profile": {
+      "firstName": "Jordan",
+      "lastName": "Pate",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "jordan.pate@octo-corp.example",
+      "email": "jordan.pate@octo-corp.example",
+      "displayName": "Jordan Pate",
+      "title": "Account Executive",
+      "department": "Sales",
+      "organization": "Octo Corp",
+      "userType": "Employee",
+      "employeeNumber": "1302"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "jordan.pate@octo-corp.example",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    }
+  },
+  {
+    "id": "00u1jrdynpt6Cd3Ef4x7",
+    "status": "ACTIVE",
+    "created": "2024-09-02T13:11:51.000Z",
+    "activated": "2024-09-02T13:11:51.000Z",
+    "statusChanged": "2024-09-02T13:11:51.000Z",
+    "lastLogin": "2026-03-12T10:04:19.000Z",
+    "lastUpdated": "2024-09-02T13:11:51.000Z",
+    "passwordChanged": "2024-09-02T13:11:51.000Z",
+    "type": {
+      "id": "oty1toolbench0000001"
+    },
+    "profile": {
+      "firstName": "Jordyn",
+      "lastName": "Patel",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "jordyn.patel@octo-corp.example",
+      "email": "jordyn.patel@octo-corp.example",
+      "displayName": "Jordyn Patel",
+      "title": "Marketing Manager",
+      "department": "Marketing",
+      "organization": "Octo Corp",
+      "userType": "Employee",
+      "employeeNumber": "1225"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "jordyn.patel@octo-corp.example",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    }
+  },
+  {
+    "id": "00u1pryrmn8Gh5Ij6x7",
+    "status": "ACTIVE",
+    "created": "2024-03-11T17:31:05.000Z",
+    "activated": "2024-03-11T17:31:05.000Z",
+    "statusChanged": "2024-03-11T17:31:05.000Z",
+    "lastLogin": "2026-03-14T07:48:22.000Z",
+    "lastUpdated": "2024-03-11T17:31:05.000Z",
+    "passwordChanged": "2024-03-11T17:31:05.000Z",
+    "type": {
+      "id": "oty1toolbench0000001"
+    },
+    "profile": {
+      "firstName": "Priya",
+      "lastName": "Raman",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "priya.raman@octo-corp.example",
+      "email": "priya.raman@octo-corp.example",
+      "displayName": "Priya Raman",
+      "title": "Security Engineer",
+      "department": "Security",
+      "organization": "Octo Corp",
+      "userType": "Employee",
+      "employeeNumber": "1051"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "priya.raman@octo-corp.example",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    }
+  },
+  {
+    "id": "00u1mrcschn0Kl7Mn8x7",
+    "status": "ACTIVE",
+    "created": "2024-01-22T18:00:31.000Z",
+    "activated": "2024-01-22T18:00:31.000Z",
+    "statusChanged": "2024-01-22T18:00:31.000Z",
+    "lastLogin": "2026-03-13T23:02:14.000Z",
+    "lastUpdated": "2024-01-22T18:00:31.000Z",
+    "passwordChanged": "2024-01-22T18:00:31.000Z",
+    "type": {
+      "id": "oty1toolbench0000001"
+    },
+    "profile": {
+      "firstName": "Marcus",
+      "lastName": "Chen",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "marcus.chen@octo-corp.example",
+      "email": "marcus.chen@octo-corp.example",
+      "displayName": "Marcus Chen",
+      "title": "Staff Software Engineer",
+      "department": "Engineering",
+      "organization": "Octo Corp",
+      "userType": "Employee",
+      "employeeNumber": "1002"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "marcus.chen@octo-corp.example",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    }
+  },
+  {
+    "id": "00u1alxkmem2Op9Qr0x7",
+    "status": "ACTIVE",
+    "created": "2025-04-07T15:15:00.000Z",
+    "activated": "2025-04-07T15:15:00.000Z",
+    "statusChanged": "2025-04-07T15:15:00.000Z",
+    "lastLogin": "2026-03-14T08:30:51.000Z",
+    "lastUpdated": "2025-04-07T15:15:00.000Z",
+    "passwordChanged": "2025-04-07T15:15:00.000Z",
+    "type": {
+      "id": "oty1toolbench0000001"
+    },
+    "profile": {
+      "firstName": "Alex",
+      "lastName": "Kim",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "alex.kim@octo-corp.example",
+      "email": "alex.kim@octo-corp.example",
+      "displayName": "Alex Kim",
+      "title": "Software Engineer",
+      "department": "Engineering",
+      "organization": "Octo Corp",
+      "userType": "Employee",
+      "employeeNumber": "1344",
+      "manager": "Marcus Chen"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "alex.kim@octo-corp.example",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    }
+  },
+  {
+    "id": "00u1alxkmct4St1Uv2x7",
+    "status": "ACTIVE",
+    "created": "2025-10-20T16:45:27.000Z",
+    "activated": "2025-10-20T16:45:27.000Z",
+    "statusChanged": "2025-10-20T16:45:27.000Z",
+    "lastLogin": "2026-03-11T19:22:03.000Z",
+    "lastUpdated": "2025-10-20T16:45:27.000Z",
+    "passwordChanged": "2025-10-20T16:45:27.000Z",
+    "type": {
+      "id": "oty1toolbench0000001"
+    },
+    "profile": {
+      "firstName": "Alex",
+      "lastName": "Kim",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "alex.kim@northwind-consulting.example",
+      "email": "alex.kim@northwind-consulting.example",
+      "displayName": "Alex Kim",
+      "title": "Salesforce Consultant",
+      "department": "Sales Operations",
+      "organization": "Northwind Consulting",
+      "userType": "Contractor",
+      "manager": "Jordan Pate"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "alex.kim@northwind-consulting.example",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    }
+  },
+  {
+    "id": "00u1mrgnzlz6Wx3Yz4x7",
+    "status": "ACTIVE",
+    "created": "2024-05-06T14:25:38.000Z",
+    "activated": "2024-05-06T14:25:38.000Z",
+    "statusChanged": "2024-05-06T14:25:38.000Z",
+    "lastLogin": "2026-03-14T08:01:10.000Z",
+    "lastUpdated": "2024-05-06T14:25:38.000Z",
+    "passwordChanged": "2024-05-06T14:25:38.000Z",
+    "type": {
+      "id": "oty1toolbench0000001"
+    },
+    "profile": {
+      "firstName": "Maria",
+      "lastName": "Gonzalez",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "maria.gonzalez@octo-corp.example",
+      "email": "maria.gonzalez@octo-corp.example",
+      "displayName": "Maria Gonzalez",
+      "title": "Support Team Lead",
+      "department": "Customer Support",
+      "organization": "Octo Corp",
+      "userType": "Employee",
+      "employeeNumber": "1120"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "maria.gonzalez@octo-corp.example",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    }
+  },
+  {
+    "id": "00u1smrvra8Ab5Cd6x7",
+    "status": "STAGED",
+    "created": "2026-03-10T15:00:00.000Z",
+    "activated": null,
+    "statusChanged": null,
+    "lastLogin": null,
+    "lastUpdated": "2026-03-10T15:00:00.000Z",
+    "passwordChanged": null,
+    "type": {
+      "id": "oty1toolbench0000001"
+    },
+    "profile": {
+      "firstName": "Sam",
+      "lastName": "Rivera",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "sam.rivera@octo-corp.example",
+      "email": "sam.rivera@octo-corp.example",
+      "displayName": "Sam Rivera",
+      "title": "Data Analyst",
+      "department": "Finance",
+      "organization": "Octo Corp",
+      "userType": "Employee",
+      "employeeNumber": "1411"
+    },
+    "credentials": {
+      "emails": [
+        {
+          "value": "sam.rivera@octo-corp.example",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    }
+  },
+  {
+    "id": "00u1tylrbrk0Ef7Gh8x7",
+    "status": "DEPROVISIONED",
+    "created": "2024-07-29T15:40:12.000Z",
+    "activated": null,
+    "statusChanged": "2026-02-27T17:45:12.000Z",
+    "lastLogin": "2026-02-20T17:30:44.000Z",
+    "lastUpdated": "2026-02-27T17:45:12.000Z",
+    "passwordChanged": "2024-07-29T15:40:12.000Z",
+    "type": {
+      "id": "oty1toolbench0000001"
+    },
+    "profile": {
+      "firstName": "Taylor",
+      "lastName": "Brooks",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "taylor.brooks@octo-corp.example",
+      "email": "taylor.brooks@octo-corp.example",
+      "displayName": "Taylor Brooks",
+      "title": "Support Engineer",
+      "department": "Customer Support",
+      "organization": "Octo Corp",
+      "userType": "Employee",
+      "employeeNumber": "1199"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "taylor.brooks@octo-corp.example",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    }
+  },
+  {
+    "id": "00u1leewng2Ij9Kl0x7",
+    "status": "SUSPENDED",
+    "created": "2025-02-03T16:10:00.000Z",
+    "activated": "2025-02-03T16:10:00.000Z",
+    "statusChanged": "2026-02-27T17:45:12.000Z",
+    "lastLogin": "2026-03-10T09:12:31.000Z",
+    "lastUpdated": "2026-02-27T17:45:12.000Z",
+    "passwordChanged": "2025-02-03T16:10:00.000Z",
+    "type": {
+      "id": "oty1toolbench0000001"
+    },
+    "profile": {
+      "firstName": "Lee",
+      "lastName": "Wong",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "lee.wong@octo-corp.example",
+      "email": "lee.wong@octo-corp.example",
+      "displayName": "Lee Wong",
+      "title": "Sales Development Rep",
+      "department": "Sales",
+      "organization": "Octo Corp",
+      "userType": "Employee",
+      "employeeNumber": "1310"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "lee.wong@octo-corp.example",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    }
+  },
+  {
+    "id": "00u1chrsdz4Mn1Op2x7",
+    "status": "LOCKED_OUT",
+    "created": "2024-11-18T15:05:59.000Z",
+    "activated": "2024-11-18T15:05:59.000Z",
+    "statusChanged": "2026-02-27T17:45:12.000Z",
+    "lastLogin": "2026-03-12T17:44:08.000Z",
+    "lastUpdated": "2026-02-27T17:45:12.000Z",
+    "passwordChanged": "2024-11-18T15:05:59.000Z",
+    "type": {
+      "id": "oty1toolbench0000001"
+    },
+    "profile": {
+      "firstName": "Chris",
+      "lastName": "Diaz",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "chris.diaz@octo-corp.example",
+      "email": "chris.diaz@octo-corp.example",
+      "displayName": "Chris Diaz",
+      "title": "Financial Analyst",
+      "department": "Finance",
+      "organization": "Octo Corp",
+      "userType": "Employee",
+      "employeeNumber": "1260"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "chris.diaz@octo-corp.example",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    }
+  }
+]

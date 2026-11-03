@@ -1,0 +1,72 @@
+[
+  {
+    "_key": "65e3d0000000000000000001",
+    "_id": {
+      "$oid": "65e3d0000000000000000001"
+    },
+    "name": "Ines Duarte",
+    "email": "ines.duarte@example.com",
+    "status": "active",
+    "marketingOptIn": true,
+    "lifetimeValue": 1240,
+    "createdAt": {
+      "$date": "2025-11-10T12:00:00.000Z"
+    }
+  },
+  {
+    "_key": "65e3d0000000000000000002",
+    "_id": {
+      "$oid": "65e3d0000000000000000002"
+    },
+    "name": "QA Smoke 01",
+    "email": "smoke01@qa.octoshop.test",
+    "status": "active",
+    "marketingOptIn": false,
+    "lifetimeValue": 0,
+    "createdAt": {
+      "$date": "2025-11-11T12:00:00.000Z"
+    }
+  },
+  {
+    "_key": "65e3d0000000000000000003",
+    "_id": {
+      "$oid": "65e3d0000000000000000003"
+    },
+    "name": "Raj Patel",
+    "email": "raj.patel@example.in",
+    "status": "active",
+    "marketingOptIn": true,
+    "lifetimeValue": 310,
+    "createdAt": {
+      "$date": "2025-11-12T12:00:00.000Z"
+    }
+  },
+  {
+    "_key": "65e3d0000000000000000004",
+    "_id": {
+      "$oid": "65e3d0000000000000000004"
+    },
+    "name": "QA Team Inbox",
+    "email": "qa.team@octoshop.com",
+    "status": "active",
+    "marketingOptIn": false,
+    "lifetimeValue": 0,
+    "createdAt": {
+      "$date": "2025-11-13T12:00:00.000Z"
+    }
+  },
+  {
+    "_key": "65e3d0000000000000000005",
+    "_id": {
+      "$oid": "65e3d0000000000000000005"
+    },
+    "name": "QA Checkout Bot",
+    "email": "checkout-bot@qa.octoshop.test",
+    "status": "active",
+    "marketingOptIn": true,
+    "lifetimeValue": 0,
+    "createdAt": {
+      "$date": "2025-11-14T12:00:00.000Z"
+    }
+  }
+]

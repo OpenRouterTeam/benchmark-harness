@@ -1,0 +1,32 @@
+[
+  {
+    "id": "3f6b2a10-5c4e-4d21-9b7a-1e0c2d3f4a01",
+    "name": "Contoso blog",
+    "status": "active",
+    "schedule": { "text": "every 6 hours", "timezone": "UTC", "intervalMinutes": 360 },
+    "goal": "Tell us when Contoso publishes a new product or pricing announcement.",
+    "targets": [{ "type": "scrape", "urls": ["https://blog.contoso.com"] }],
+    "notification": { "email": { "enabled": true, "recipients": ["marketing-intel@contoso.example"], "includeDiffs": false } },
+    "retentionDays": 30,
+    "createdAt": "2026-06-02T10:14:00Z",
+    "updatedAt": "2026-06-02T10:14:00Z",
+    "lastRunAt": "2026-10-28T12:00:00Z",
+    "nextRunAt": "2026-10-28T18:00:00Z",
+    "lastCheckId": "b1d0c9a8-7e6f-4a5b-8c3d-2e1f0a9b8c01"
+  },
+  {
+    "id": "3f6b2a10-5c4e-4d21-9b7a-1e0c2d3f4a02",
+    "name": "Fabrikam careers",
+    "status": "active",
+    "schedule": { "text": "daily at 9am", "timezone": "America/New_York", "intervalMinutes": 1440 },
+    "goal": "Track new engineering and sales job postings at Fabrikam.",
+    "targets": [{ "type": "scrape", "urls": ["https://www.fabrikam.io/careers"] }],
+    "notification": { "email": { "enabled": true, "recipients": ["recruiting@contoso.example"], "includeDiffs": true } },
+    "retentionDays": 30,
+    "createdAt": "2026-08-19T15:40:00Z",
+    "updatedAt": "2026-08-19T15:40:00Z",
+    "lastRunAt": "2026-10-28T13:00:00Z",
+    "nextRunAt": "2026-10-29T13:00:00Z",
+    "lastCheckId": "b1d0c9a8-7e6f-4a5b-8c3d-2e1f0a9b8c02"
+  }
+]

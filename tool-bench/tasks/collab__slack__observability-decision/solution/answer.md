@@ -1,0 +1,1 @@
+We went with Grafana Cloud. Dana confirmed the decision in the #infra evaluation thread on Oct 27: the contract starts on 2026-11-15 for a 3-year term (Datadog stays until the migration completes on 2027-01-31).

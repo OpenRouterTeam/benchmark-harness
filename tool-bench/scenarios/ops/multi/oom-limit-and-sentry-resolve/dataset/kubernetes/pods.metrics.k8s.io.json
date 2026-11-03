@@ -1,0 +1,59 @@
+[
+  {
+    "_key": "analytics/report-builder-t2h6vx4p7r-q8j52",
+    "metadata": {
+      "name": "report-builder-t2h6vx4p7r-q8j52",
+      "namespace": "analytics",
+      "creationTimestamp": "2026-10-21T03:15:00Z",
+      "labels": {}
+    },
+    "window": "15.012s",
+    "containers": [
+      {
+        "name": "report-builder",
+        "usage": {
+          "cpu": "811m",
+          "memory": "497Mi"
+        }
+      }
+    ]
+  },
+  {
+    "_key": "analytics/report-api-vdx9jp68d-x7xnk",
+    "metadata": {
+      "name": "report-api-vdx9jp68d-x7xnk",
+      "namespace": "analytics",
+      "creationTimestamp": "2026-10-21T03:15:00Z",
+      "labels": {}
+    },
+    "window": "15.012s",
+    "containers": [
+      {
+        "name": "report-api",
+        "usage": {
+          "cpu": "45m",
+          "memory": "203Mi"
+        }
+      }
+    ]
+  },
+  {
+    "_key": "analytics/report-api-vdx9jp68d-xchc9",
+    "metadata": {
+      "name": "report-api-vdx9jp68d-xchc9",
+      "namespace": "analytics",
+      "creationTimestamp": "2026-10-21T03:15:00Z",
+      "labels": {}
+    },
+    "window": "15.012s",
+    "containers": [
+      {
+        "name": "report-api",
+        "usage": {
+          "cpu": "45m",
+          "memory": "203Mi"
+        }
+      }
+    ]
+  }
+]

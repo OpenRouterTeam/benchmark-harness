@@ -1,0 +1,77 @@
+[
+  {
+    "id": "prod_W8lxPuCt4CJ11X",
+    "object": "product",
+    "active": true,
+    "created": 1740787200,
+    "description": "Scheduling for small teams",
+    "name": "Fernway Starter",
+    "updated": 1740787200,
+    "default_price": "price_229aUoOgEM9IAGCDnytvTI36"
+  },
+  {
+    "id": "prod_88oTDXZwoggcaT",
+    "object": "product",
+    "active": true,
+    "created": 1740787200,
+    "description": "Scheduling and routing for teams",
+    "name": "Fernway Team",
+    "updated": 1740787200,
+    "default_price": "price_xJF6M1YOlrVAPIvl2v7Qsefv"
+  },
+  {
+    "id": "prod_YEQ6Nl6jJhFKVd",
+    "object": "product",
+    "active": true,
+    "created": 1740787200,
+    "description": "Advanced routing, analytics and SSO",
+    "name": "Fernway Growth",
+    "updated": 1740787200,
+    "default_price": "price_5GYZXawqyO5NhvATJEHMLXXu"
+  },
+  {
+    "id": "prod_dhTlJpaqb0oHy9",
+    "object": "product",
+    "active": true,
+    "created": 1740787200,
+    "description": null,
+    "name": "Additional seats",
+    "updated": 1740787200
+  },
+  {
+    "id": "prod_s80GOzoGdy93kt",
+    "object": "product",
+    "active": true,
+    "created": 1740787200,
+    "description": null,
+    "name": "Analytics add-on",
+    "updated": 1740787200
+  },
+  {
+    "id": "prod_GEpvxRhUX5vK3v",
+    "object": "product",
+    "active": true,
+    "created": 1740787200,
+    "description": "Nightly warehouse exports",
+    "name": "Data Export add-on",
+    "updated": 1740787200
+  },
+  {
+    "id": "prod_8ZIThCxAYIjRpu",
+    "object": "product",
+    "active": true,
+    "created": 1740787200,
+    "description": null,
+    "name": "Additional storage (100 GB)",
+    "updated": 1740787200
+  },
+  {
+    "id": "prod_OAHUzSnEokDjOJ",
+    "object": "product",
+    "active": true,
+    "created": 1740787200,
+    "description": null,
+    "name": "Extra location",
+    "updated": 1740787200
+  }
+]

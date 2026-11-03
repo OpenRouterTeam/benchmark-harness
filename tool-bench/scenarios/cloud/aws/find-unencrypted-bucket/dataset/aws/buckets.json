@@ -1,0 +1,122 @@
+[
+  {
+    "_key": "northwind-app-assets",
+    "Name": "northwind-app-assets",
+    "CreationDate": "2023-05-02T17:21:09Z",
+    "Versioning": "Enabled",
+    "PublicAccessBlock": {
+      "BlockPublicAcls": true,
+      "IgnorePublicAcls": true,
+      "BlockPublicPolicy": true,
+      "RestrictPublicBuckets": true
+    },
+    "Tags": [
+      {
+        "Key": "team",
+        "Value": "web"
+      },
+      {
+        "Key": "env",
+        "Value": "prod"
+      }
+    ]
+  },
+  {
+    "_key": "northwind-cloudtrail-logs",
+    "Name": "northwind-cloudtrail-logs",
+    "CreationDate": "2021-11-08T09:12:44Z",
+    "Encryption": {
+      "SSEAlgorithm": "aws:kms",
+      "KMSMasterKeyID": "arn:aws:kms:us-east-1:481562039417:key/0f6c2a9e-4d1b-4a57-9c1e-2b7e5d3f8a10",
+      "BucketKeyEnabled": true
+    },
+    "Versioning": "Enabled",
+    "PublicAccessBlock": {
+      "BlockPublicAcls": true,
+      "IgnorePublicAcls": true,
+      "BlockPublicPolicy": true,
+      "RestrictPublicBuckets": true
+    },
+    "Tags": [
+      {
+        "Key": "team",
+        "Value": "security"
+      }
+    ]
+  },
+  {
+    "_key": "northwind-data-lake-raw",
+    "Name": "northwind-data-lake-raw",
+    "CreationDate": "2022-02-15T13:40:00Z",
+    "Encryption": {
+      "SSEAlgorithm": "aws:kms",
+      "KMSMasterKeyID": "arn:aws:kms:us-east-1:481562039417:alias/data-lake",
+      "BucketKeyEnabled": true
+    },
+    "Tags": [
+      {
+        "Key": "team",
+        "Value": "data-eng"
+      }
+    ]
+  },
+  {
+    "_key": "northwind-legacy-exports",
+    "Name": "northwind-legacy-exports",
+    "CreationDate": "2017-06-21T08:03:51Z",
+    "Encryption": null,
+    "Tags": [
+      {
+        "Key": "team",
+        "Value": "finance"
+      },
+      {
+        "Key": "note",
+        "Value": "pre-2018 nightly CSV exports"
+      }
+    ]
+  },
+  {
+    "_key": "northwind-legacy-exports-2019",
+    "Name": "northwind-legacy-exports-2019",
+    "CreationDate": "2019-01-07T10:30:12Z",
+    "Encryption": {
+      "SSEAlgorithm": "aws:kms",
+      "KMSMasterKeyID": "arn:aws:kms:us-east-1:481562039417:alias/finance",
+      "BucketKeyEnabled": false
+    },
+    "Tags": [
+      {
+        "Key": "team",
+        "Value": "finance"
+      }
+    ]
+  },
+  {
+    "_key": "northwind-terraform-state",
+    "Name": "northwind-terraform-state",
+    "CreationDate": "2020-09-30T22:05:17Z",
+    "Encryption": {
+      "SSEAlgorithm": "AES256",
+      "BucketKeyEnabled": false
+    },
+    "Versioning": "Enabled",
+    "PublicAccessBlock": {
+      "BlockPublicAcls": true,
+      "IgnorePublicAcls": true,
+      "BlockPublicPolicy": true,
+      "RestrictPublicBuckets": true
+    }
+  },
+  {
+    "_key": "northwind-eu-backups",
+    "Name": "northwind-eu-backups",
+    "CreationDate": "2022-08-19T06:44:02Z",
+    "_region": "eu-west-1",
+    "Encryption": {
+      "SSEAlgorithm": "aws:kms",
+      "KMSMasterKeyID": "arn:aws:kms:eu-west-1:481562039417:alias/backups",
+      "BucketKeyEnabled": true
+    }
+  }
+]

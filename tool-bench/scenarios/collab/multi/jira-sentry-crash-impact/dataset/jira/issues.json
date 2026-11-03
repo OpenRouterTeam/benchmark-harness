@@ -1,0 +1,699 @@
+[
+  {
+    "id": "10100",
+    "key": "PAY-100",
+    "fields": {
+      "project": "PAY",
+      "issuetype": "Epic",
+      "summary": "Payments v2",
+      "description": "Umbrella epic for the Payments v2 launch. Launch plan: see the Confluence page *Payments v2 launch plan*.",
+      "status": "In Progress",
+      "priority": "High",
+      "assignee": "priya.natarajan",
+      "reporter": "priya.natarajan",
+      "creator": "priya.natarajan",
+      "labels": [],
+      "components": [],
+      "fixVersions": [
+        "2026.11"
+      ],
+      "versions": [],
+      "created": "2026-09-01T15:00:00.000+0000",
+      "updated": "2026-10-20T15:00:00.000+0000",
+      "duedate": null,
+      "resolution": null,
+      "resolutiondate": null,
+      "customfield_10102": "Payments v2"
+    },
+    "watchers": [
+      "priya.natarajan"
+    ],
+    "changelog": [],
+    "_key": "PAY-100"
+  },
+  {
+    "id": "10101",
+    "key": "PAY-115",
+    "fields": {
+      "project": "PAY",
+      "issuetype": "Story",
+      "summary": "Card vault tokenization for saved cards",
+      "description": null,
+      "status": "Done",
+      "priority": "High",
+      "assignee": "alex.kim",
+      "reporter": "priya.natarajan",
+      "creator": "priya.natarajan",
+      "labels": [],
+      "components": [
+        "Checkout"
+      ],
+      "fixVersions": [
+        "2026.10"
+      ],
+      "versions": [],
+      "created": "2026-09-15T15:00:00.000+0000",
+      "updated": "2026-10-06T15:00:00.000+0000",
+      "duedate": null,
+      "resolution": "Done",
+      "resolutiondate": "2026-10-06T15:00:00.000+0000",
+      "customfield_10100": "PAY-100",
+      "customfield_10104": [
+        6
+      ],
+      "customfield_10106": 5
+    },
+    "watchers": [
+      "priya.natarajan"
+    ],
+    "changelog": [],
+    "_key": "PAY-115"
+  },
+  {
+    "id": "10102",
+    "key": "PAY-116",
+    "fields": {
+      "project": "PAY",
+      "issuetype": "Task",
+      "summary": "Load test refund API at 3x peak",
+      "description": null,
+      "status": "To Do",
+      "priority": "Medium",
+      "assignee": "sam.ortiz",
+      "reporter": "priya.natarajan",
+      "creator": "priya.natarajan",
+      "labels": [],
+      "components": [
+        "Refunds"
+      ],
+      "fixVersions": [
+        "2026.11"
+      ],
+      "versions": [],
+      "created": "2026-10-14T15:00:00.000+0000",
+      "updated": "2026-10-14T15:00:00.000+0000",
+      "duedate": null,
+      "resolution": null,
+      "resolutiondate": null,
+      "customfield_10100": "PAY-100",
+      "customfield_10104": [
+        7
+      ],
+      "customfield_10106": 3,
+      "timeoriginalestimate": 14400
+    },
+    "watchers": [
+      "priya.natarajan"
+    ],
+    "changelog": [],
+    "_key": "PAY-116"
+  },
+  {
+    "id": "10103",
+    "key": "PAY-117",
+    "fields": {
+      "project": "PAY",
+      "issuetype": "Task",
+      "summary": "Rotate payment gateway API credentials",
+      "description": "Gateway credentials expire on 2026-11-06. New keys must be in the vault before the v2 cutover.",
+      "status": "In Progress",
+      "priority": "High",
+      "assignee": "sam.ortiz",
+      "reporter": "priya.natarajan",
+      "creator": "priya.natarajan",
+      "labels": [],
+      "components": [
+        "Checkout"
+      ],
+      "fixVersions": [
+        "2026.11"
+      ],
+      "versions": [],
+      "created": "2026-10-16T15:00:00.000+0000",
+      "updated": "2026-10-27T15:00:00.000+0000",
+      "duedate": null,
+      "resolution": null,
+      "resolutiondate": null,
+      "customfield_10100": "PAY-100",
+      "customfield_10104": [
+        7
+      ],
+      "customfield_10106": 2
+    },
+    "watchers": [
+      "priya.natarajan"
+    ],
+    "changelog": [],
+    "_key": "PAY-117"
+  },
+  {
+    "id": "10104",
+    "key": "PAY-118",
+    "fields": {
+      "project": "PAY",
+      "issuetype": "Bug",
+      "summary": "Checkout returns 502 when the 3DS challenge times out",
+      "description": null,
+      "status": "In Progress",
+      "priority": "Highest",
+      "assignee": "priya.natarajan",
+      "reporter": "lena.fischer",
+      "creator": "lena.fischer",
+      "labels": [
+        "checkout",
+        "3ds"
+      ],
+      "components": [
+        "Checkout"
+      ],
+      "fixVersions": [
+        "2026.11"
+      ],
+      "versions": [],
+      "created": "2026-10-20T15:00:00.000+0000",
+      "updated": "2026-10-28T15:00:00.000+0000",
+      "duedate": null,
+      "resolution": null,
+      "resolutiondate": null,
+      "customfield_10104": [
+        7
+      ],
+      "customfield_10106": 3
+    },
+    "watchers": [
+      "lena.fischer"
+    ],
+    "changelog": [],
+    "_key": "PAY-118"
+  },
+  {
+    "id": "10105",
+    "key": "PAY-119",
+    "fields": {
+      "project": "PAY",
+      "issuetype": "Story",
+      "summary": "Switch production traffic to the v2 gateway",
+      "description": "Cutover plan: shift 10% / 50% / 100% of traffic. Blocked until the new gateway credentials are live.",
+      "status": "To Do",
+      "priority": "High",
+      "assignee": "alex.kim",
+      "reporter": "priya.natarajan",
+      "creator": "priya.natarajan",
+      "labels": [],
+      "components": [
+        "Checkout"
+      ],
+      "fixVersions": [
+        "2026.11"
+      ],
+      "versions": [],
+      "created": "2026-10-16T15:00:00.000+0000",
+      "updated": "2026-10-26T15:00:00.000+0000",
+      "duedate": null,
+      "resolution": null,
+      "resolutiondate": null,
+      "customfield_10100": "PAY-100",
+      "customfield_10104": [
+        7
+      ],
+      "customfield_10106": 8
+    },
+    "watchers": [
+      "priya.natarajan"
+    ],
+    "changelog": [],
+    "_key": "PAY-119"
+  },
+  {
+    "id": "10106",
+    "key": "PAY-120",
+    "fields": {
+      "project": "PAY",
+      "issuetype": "Bug",
+      "summary": "Duplicate refund emails sent to customers",
+      "description": null,
+      "status": "In Review",
+      "priority": "Medium",
+      "assignee": "alex.kimball",
+      "reporter": "marcus.webb",
+      "creator": "marcus.webb",
+      "labels": [
+        "refunds",
+        "email"
+      ],
+      "components": [
+        "Refunds"
+      ],
+      "fixVersions": [
+        "2026.11"
+      ],
+      "versions": [],
+      "created": "2026-10-19T15:00:00.000+0000",
+      "updated": "2026-10-27T15:00:00.000+0000",
+      "duedate": null,
+      "resolution": null,
+      "resolutiondate": null,
+      "customfield_10104": [
+        7
+      ],
+      "customfield_10106": 2
+    },
+    "watchers": [
+      "marcus.webb"
+    ],
+    "changelog": [],
+    "_key": "PAY-120"
+  },
+  {
+    "id": "10107",
+    "key": "PAY-121",
+    "fields": {
+      "project": "PAY",
+      "issuetype": "Story",
+      "summary": "Retry failed refund webhooks with exponential backoff",
+      "description": "Retries: 1m, 5m, 30m, 2h, 12h. Dead-letter after five attempts.",
+      "status": "In Review",
+      "priority": "High",
+      "assignee": "alex.kim",
+      "reporter": "priya.natarajan",
+      "creator": "priya.natarajan",
+      "labels": [],
+      "components": [
+        "Refunds"
+      ],
+      "fixVersions": [
+        "2026.11"
+      ],
+      "versions": [],
+      "created": "2026-10-09T15:00:00.000+0000",
+      "updated": "2026-10-28T18:00:00.000+0000",
+      "duedate": null,
+      "resolution": null,
+      "resolutiondate": null,
+      "customfield_10100": "PAY-100",
+      "customfield_10104": [
+        7
+      ],
+      "customfield_10106": 5
+    },
+    "watchers": [
+      "priya.natarajan"
+    ],
+    "changelog": [],
+    "_key": "PAY-121"
+  },
+  {
+    "id": "10108",
+    "key": "PAY-122",
+    "fields": {
+      "project": "PAY",
+      "issuetype": "Story",
+      "summary": "Retry failed payout webhooks",
+      "description": "Same backoff as refunds (PAY-121), for payouts.",
+      "status": "To Do",
+      "priority": "Medium",
+      "assignee": null,
+      "reporter": "priya.natarajan",
+      "creator": "priya.natarajan",
+      "labels": [],
+      "components": [
+        "Payouts"
+      ],
+      "fixVersions": [
+        "2026.12"
+      ],
+      "versions": [],
+      "created": "2026-10-22T15:00:00.000+0000",
+      "updated": "2026-10-22T15:00:00.000+0000",
+      "duedate": null,
+      "resolution": null,
+      "resolutiondate": null,
+      "customfield_10104": [
+        8
+      ],
+      "customfield_10106": 5
+    },
+    "watchers": [
+      "priya.natarajan"
+    ],
+    "changelog": [],
+    "_key": "PAY-122"
+  },
+  {
+    "id": "10109",
+    "key": "PAY-123",
+    "fields": {
+      "project": "PAY",
+      "issuetype": "Task",
+      "summary": "Update refund webhook docs for v2",
+      "description": null,
+      "status": "To Do",
+      "priority": "Low",
+      "assignee": "jordan.lee",
+      "reporter": "priya.natarajan",
+      "creator": "priya.natarajan",
+      "labels": [],
+      "components": [
+        "Refunds"
+      ],
+      "fixVersions": [
+        "2026.11"
+      ],
+      "versions": [],
+      "created": "2026-10-23T15:00:00.000+0000",
+      "updated": "2026-10-23T15:00:00.000+0000",
+      "duedate": null,
+      "resolution": null,
+      "resolutiondate": null,
+      "customfield_10100": "PAY-100"
+    },
+    "watchers": [
+      "priya.natarajan"
+    ],
+    "changelog": [],
+    "_key": "PAY-123"
+  },
+  {
+    "id": "10110",
+    "key": "PAY-124",
+    "fields": {
+      "project": "PAY",
+      "issuetype": "Task",
+      "summary": "Go/no-go review for Payments v2 GA",
+      "description": "Hold the go/no-go review with the criteria owner named in the launch plan.",
+      "status": "To Do",
+      "priority": "High",
+      "assignee": null,
+      "reporter": "priya.natarajan",
+      "creator": "priya.natarajan",
+      "labels": [],
+      "components": [],
+      "fixVersions": [
+        "2026.11"
+      ],
+      "versions": [],
+      "created": "2026-10-24T15:00:00.000+0000",
+      "updated": "2026-10-24T15:00:00.000+0000",
+      "duedate": "2026-11-10",
+      "resolution": null,
+      "resolutiondate": null,
+      "customfield_10100": "PAY-100"
+    },
+    "watchers": [
+      "priya.natarajan"
+    ],
+    "changelog": [],
+    "_key": "PAY-124"
+  },
+  {
+    "id": "10111",
+    "key": "PAY-125",
+    "fields": {
+      "project": "PAY",
+      "issuetype": "Sub-task",
+      "summary": "Write refund webhook retry runbook",
+      "description": null,
+      "status": "To Do",
+      "priority": "Medium",
+      "assignee": "sam.ortiz",
+      "reporter": "alex.kim",
+      "creator": "alex.kim",
+      "labels": [],
+      "components": [],
+      "fixVersions": [],
+      "versions": [],
+      "created": "2026-10-25T15:00:00.000+0000",
+      "updated": "2026-10-25T15:00:00.000+0000",
+      "duedate": null,
+      "resolution": null,
+      "resolutiondate": null,
+      "parent": "PAY-121"
+    },
+    "watchers": [
+      "alex.kim"
+    ],
+    "changelog": [],
+    "_key": "PAY-125"
+  },
+  {
+    "id": "10200",
+    "key": "WEB-51",
+    "fields": {
+      "project": "WEB",
+      "issuetype": "Bug",
+      "summary": "Checkout button unresponsive on Safari 17",
+      "description": null,
+      "status": "In Progress",
+      "priority": "High",
+      "assignee": "alex.kim",
+      "reporter": "lena.fischer",
+      "creator": "lena.fischer",
+      "labels": [
+        "safari",
+        "checkout"
+      ],
+      "components": [
+        "Checkout"
+      ],
+      "fixVersions": [
+        "4.2"
+      ],
+      "versions": [],
+      "created": "2026-10-18T15:00:00.000+0000",
+      "updated": "2026-10-27T15:00:00.000+0000",
+      "duedate": null,
+      "resolution": null,
+      "resolutiondate": null
+    },
+    "watchers": [
+      "lena.fischer"
+    ],
+    "changelog": [],
+    "_key": "WEB-51"
+  },
+  {
+    "id": "10201",
+    "key": "WEB-52",
+    "fields": {
+      "project": "WEB",
+      "issuetype": "Story",
+      "summary": "Show saved cards on the payment step",
+      "description": null,
+      "status": "To Do",
+      "priority": "Medium",
+      "assignee": "marcus.webb",
+      "reporter": "lena.fischer",
+      "creator": "lena.fischer",
+      "labels": [],
+      "components": [
+        "Checkout"
+      ],
+      "fixVersions": [
+        "4.2"
+      ],
+      "versions": [],
+      "created": "2026-10-19T15:00:00.000+0000",
+      "updated": "2026-10-19T15:00:00.000+0000",
+      "duedate": null,
+      "resolution": null,
+      "resolutiondate": null
+    },
+    "watchers": [
+      "lena.fischer"
+    ],
+    "changelog": [],
+    "_key": "WEB-52"
+  },
+  {
+    "id": "10202",
+    "key": "WEB-53",
+    "fields": {
+      "project": "WEB",
+      "issuetype": "Bug",
+      "summary": "Apple Pay sheet shows the wrong merchant name",
+      "description": null,
+      "status": "Done",
+      "priority": "Medium",
+      "assignee": "alex.kimball",
+      "reporter": "lena.fischer",
+      "creator": "lena.fischer",
+      "labels": [
+        "ios",
+        "apple-pay"
+      ],
+      "components": [
+        "Checkout"
+      ],
+      "fixVersions": [],
+      "versions": [],
+      "created": "2026-10-02T15:00:00.000+0000",
+      "updated": "2026-10-12T15:00:00.000+0000",
+      "duedate": null,
+      "resolution": "Done",
+      "resolutiondate": "2026-10-12T15:00:00.000+0000"
+    },
+    "watchers": [
+      "lena.fischer"
+    ],
+    "changelog": [],
+    "_key": "WEB-53"
+  },
+  {
+    "id": "10203",
+    "key": "WEB-54",
+    "fields": {
+      "project": "WEB",
+      "issuetype": "Task",
+      "summary": "Remove legacy catalog endpoints",
+      "description": null,
+      "status": "To Do",
+      "priority": "Low",
+      "assignee": null,
+      "reporter": "lena.fischer",
+      "creator": "lena.fischer",
+      "labels": [],
+      "components": [
+        "Catalog"
+      ],
+      "fixVersions": [],
+      "versions": [],
+      "created": "2026-10-21T15:00:00.000+0000",
+      "updated": "2026-10-21T15:00:00.000+0000",
+      "duedate": null,
+      "resolution": null,
+      "resolutiondate": null
+    },
+    "watchers": [
+      "lena.fischer"
+    ],
+    "changelog": [],
+    "_key": "WEB-54"
+  },
+  {
+    "id": "10204",
+    "key": "WEB-55",
+    "fields": {
+      "project": "WEB",
+      "issuetype": "Bug",
+      "summary": "Password reset link expires immediately",
+      "description": null,
+      "status": "Won't Do",
+      "priority": "Low",
+      "assignee": "marcus.webb",
+      "reporter": "jordan.lee",
+      "creator": "jordan.lee",
+      "labels": [],
+      "components": [
+        "Accounts"
+      ],
+      "fixVersions": [],
+      "versions": [],
+      "created": "2026-10-03T15:00:00.000+0000",
+      "updated": "2026-10-09T15:00:00.000+0000",
+      "duedate": null,
+      "resolution": "Won't Do",
+      "resolutiondate": "2026-10-09T15:00:00.000+0000"
+    },
+    "watchers": [
+      "jordan.lee"
+    ],
+    "changelog": [],
+    "_key": "WEB-55"
+  },
+  {
+    "id": "10300",
+    "key": "OPS-31",
+    "fields": {
+      "project": "OPS",
+      "issuetype": "Service Request",
+      "summary": "New laptop for incoming SRE",
+      "description": null,
+      "status": "To Do",
+      "priority": "Medium",
+      "assignee": "sam.ortiz",
+      "reporter": "jordan.lee",
+      "creator": "jordan.lee",
+      "labels": [],
+      "components": [],
+      "fixVersions": [],
+      "versions": [],
+      "created": "2026-10-26T15:00:00.000+0000",
+      "updated": "2026-10-26T15:00:00.000+0000",
+      "duedate": null,
+      "resolution": null,
+      "resolutiondate": null
+    },
+    "watchers": [
+      "jordan.lee"
+    ],
+    "changelog": [],
+    "_key": "OPS-31"
+  },
+  {
+    "id": "10198",
+    "key": "WEB-49",
+    "fields": {
+      "project": "WEB",
+      "issuetype": "Bug",
+      "summary": "Cart drawer crashes when the cart is emptied",
+      "description": "Opening the cart drawer right after removing the last item throws a TypeError and the drawer goes blank.\n\nSentry: https://lumen-labs.sentry.io/issues/6184420122/ (STOREFRONT-WEB-7Q)",
+      "status": "Done",
+      "priority": "Medium",
+      "assignee": "marcus.webb",
+      "reporter": "lena.fischer",
+      "creator": "lena.fischer",
+      "labels": [
+        "sentry"
+      ],
+      "components": [
+        "Catalog"
+      ],
+      "fixVersions": [],
+      "versions": [],
+      "created": "2026-10-03T14:00:00.000+0000",
+      "updated": "2026-10-09T11:00:00.000+0000",
+      "duedate": null,
+      "resolution": "Done",
+      "resolutiondate": "2026-10-09T11:00:00.000+0000"
+    },
+    "watchers": [
+      "lena.fischer"
+    ],
+    "changelog": [],
+    "_key": "WEB-49"
+  },
+  {
+    "id": "10205",
+    "key": "WEB-56",
+    "fields": {
+      "project": "WEB",
+      "issuetype": "Bug",
+      "summary": "Product grid crashes on category pages since storefront 5.3.0",
+      "description": "Category pages render a blank grid for some shoppers since the 5.3.0 deploy. The browser console shows a TypeError in ProductGrid.\n\nSentry: https://lumen-labs.sentry.io/issues/6184421045/",
+      "status": "In Progress",
+      "priority": "High",
+      "assignee": "alex.kim",
+      "reporter": "lena.fischer",
+      "creator": "lena.fischer",
+      "labels": [
+        "sentry",
+        "regression"
+      ],
+      "components": [
+        "Catalog"
+      ],
+      "fixVersions": [],
+      "versions": [],
+      "created": "2026-10-16T09:30:00.000+0000",
+      "updated": "2026-10-27T10:00:00.000+0000",
+      "duedate": null,
+      "resolution": null,
+      "resolutiondate": null
+    },
+    "watchers": [
+      "lena.fischer"
+    ],
+    "changelog": [],
+    "_key": "WEB-56"
+  }
+]

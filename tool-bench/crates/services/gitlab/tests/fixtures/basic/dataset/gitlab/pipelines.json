@@ -1,0 +1,44 @@
+[
+  {
+    "_key": "601",
+    "id": 601,
+    "iid": 41,
+    "project": "acme/platform/api",
+    "ref": "main",
+    "sha": "c0ffee0000000000000000000000000000000001",
+    "status": "failed",
+    "source": "push",
+    "created_at": "2026-03-12T10:00:00.000Z",
+    "updated_at": "2026-03-12T10:09:00.000Z",
+    "started_at": "2026-03-12T10:00:10.000Z",
+    "finished_at": "2026-03-12T10:09:00.000Z",
+    "duration": 530,
+    "user": "raj",
+    "variables": [
+      {
+        "key": "RUST_LOG",
+        "value": "debug",
+        "variable_type": "env_var"
+      }
+    ],
+    "tag": false
+  },
+  {
+    "_key": "602",
+    "id": 602,
+    "iid": 42,
+    "project": "acme/platform/api",
+    "ref": "fix/rate-limiter",
+    "sha": "9f1c2e7a4b5d6c8e0f1a2b3c4d5e6f708192a3b4",
+    "status": "success",
+    "source": "merge_request_event",
+    "merge_request": "acme/platform/api!7",
+    "created_at": "2026-03-12T15:00:00.000Z",
+    "updated_at": "2026-03-12T15:06:00.000Z",
+    "started_at": "2026-03-12T15:00:05.000Z",
+    "finished_at": "2026-03-12T15:06:00.000Z",
+    "duration": 355,
+    "user": "raj",
+    "tag": false
+  }
+]

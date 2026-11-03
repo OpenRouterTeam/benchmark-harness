@@ -1,0 +1,116 @@
+[
+  {
+    "id": 7301,
+    "firstName": "Sam",
+    "lastName": "Ortiz",
+    "email": "sam.ortiz@fastmail.com",
+    "phone": "+16465550123",
+    "createdAt": "2025-09-30T10:00:00Z",
+    "updatedAt": "2025-09-30T10:00:00Z",
+    "tags": [],
+    "note": null,
+    "taxExempt": false,
+    "state": "ENABLED",
+    "addresses": [
+      {
+        "firstName": "Sam",
+        "lastName": "Ortiz",
+        "address1": "225 E 34th St Apt 12B",
+        "city": "New York",
+        "province": "New York",
+        "provinceCode": "NY",
+        "zip": "10016",
+        "country": "United States",
+        "countryCode": "US",
+        "phone": null
+      }
+    ],
+    "metafields": []
+  },
+  {
+    "id": 7302,
+    "firstName": "Sam",
+    "lastName": "Ortiz",
+    "email": "sortiz@gmail.com",
+    "phone": null,
+    "createdAt": "2026-01-14T10:00:00Z",
+    "updatedAt": "2026-01-14T10:00:00Z",
+    "tags": [
+      "wholesale"
+    ],
+    "note": null,
+    "taxExempt": false,
+    "state": "ENABLED",
+    "addresses": [
+      {
+        "firstName": "Sam",
+        "lastName": "Ortiz",
+        "address1": "1450 Collins Ave",
+        "city": "Miami Beach",
+        "province": "Florida",
+        "provinceCode": "FL",
+        "zip": "33139",
+        "country": "United States",
+        "countryCode": "US",
+        "phone": null
+      }
+    ],
+    "metafields": []
+  },
+  {
+    "id": 7303,
+    "firstName": "Samantha",
+    "lastName": "Ortiz-Reyes",
+    "email": "samantha.or@gmail.com",
+    "phone": null,
+    "createdAt": "2026-02-20T10:00:00Z",
+    "updatedAt": "2026-02-20T10:00:00Z",
+    "tags": [],
+    "note": null,
+    "taxExempt": false,
+    "state": "ENABLED",
+    "addresses": [
+      {
+        "firstName": "Samantha",
+        "lastName": "Ortiz-Reyes",
+        "address1": "88 Lincoln Rd",
+        "city": "Boston",
+        "province": "Massachusetts",
+        "provinceCode": "MA",
+        "zip": "02116",
+        "country": "United States",
+        "countryCode": "US",
+        "phone": null
+      }
+    ],
+    "metafields": []
+  },
+  {
+    "id": 7304,
+    "firstName": "Ben",
+    "lastName": "Carter",
+    "email": "ben.carter@outlook.com",
+    "phone": null,
+    "createdAt": "2025-11-20T10:00:00Z",
+    "updatedAt": "2025-11-20T10:00:00Z",
+    "tags": [],
+    "note": null,
+    "taxExempt": false,
+    "state": "ENABLED",
+    "addresses": [
+      {
+        "firstName": "Ben",
+        "lastName": "Carter",
+        "address1": "9 Front St",
+        "city": "Portland",
+        "province": "Maine",
+        "provinceCode": "ME",
+        "zip": "04101",
+        "country": "United States",
+        "countryCode": "US",
+        "phone": null
+      }
+    ],
+    "metafields": []
+  }
+]

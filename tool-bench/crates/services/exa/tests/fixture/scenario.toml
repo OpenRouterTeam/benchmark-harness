@@ -1,0 +1,4 @@
+[scenario]
+id = "test/exa/fixture"
+now = "2026-10-28T10:00:00Z"
+seed = "test-exa"

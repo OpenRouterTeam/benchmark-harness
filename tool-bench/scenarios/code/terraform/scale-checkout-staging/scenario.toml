@@ -1,0 +1,89 @@
+[scenario]
+id = "code/terraform/scale-checkout-staging"
+title = "Scale checkout staging to 4 tasks and queue a reviewable run"
+now = "2026-10-28T15:30:00Z"
+seed = "code-terraform-scale-checkout-staging"
+services = ["terraform"]
+tags = ["single-service", "write", "terraform"]
+timeout_sec = 900
+
+# The existing staging variable is updated in place (prod keeps 6).
+[[expect.state]]
+pointer = "/services/terraform/vars/var-4eRpJG8P0JYsXLTJ/value"
+equals = "4"
+
+[[expect.state]]
+pointer = "/services/terraform/vars/var-FwwYKSi27hH9ISlj/value"
+equals = "6"
+
+# The new run was queued after the change (it planned with desired_count = 4), as a normal
+# plan-and-apply run that is waiting for confirmation rather than auto-applied or plan-only.
+[[expect.state]]
+pointer = "/services/terraform/workspaces/ws-FxCPzmnaeIMOUbSd/latest-run-summary/input-variables/desired_count"
+equals = "4"
+
+[[expect.state]]
+pointer = "/services/terraform/workspaces/ws-FxCPzmnaeIMOUbSd/latest-run-summary/status"
+equals = "planned"
+
+[[expect.state]]
+pointer = "/services/terraform/workspaces/ws-FxCPzmnaeIMOUbSd/latest-run-summary/message"
+contains = "Scale checkout staging to 4 tasks"
+
+[[expect.required_calls]]
+service = "terraform"
+method = "PATCH"
+path = "/api/v2/workspaces/ws-FxCPzmnaeIMOUbSd/vars/var-4eRpJG8P0JYsXLTJ"
+
+[[expect.required_calls]]
+service = "terraform"
+method = "POST"
+path = "/api/v2/runs"
+body_contains = "ws-FxCPzmnaeIMOUbSd"
+
+# Nothing may touch production checkout.
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "POST"
+path = "/api/v2/runs"
+body_contains = "ws-ZQ7RjwWMr2evfIuC"
+
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "PATCH"
+path_regex = "^/api/v2/workspaces/ws-ZQ7RjwWMr2evfIuC"
+
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "POST"
+path_regex = "^/api/v2/workspaces/ws-ZQ7RjwWMr2evfIuC"
+
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "PATCH"
+path = "/api/v2/organizations/acme-platform/workspaces/checkout-service-prod"
+
+# The user wants to review the plan, so no run may be confirmed, discarded or canceled.
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "POST"
+path_regex = "^/api/v2/runs/[^/]+/actions/"
+
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "terraform"
+tool = "list_workspace_variables"
+arguments = { terraform_org_name = "acme-platform", workspace_name = "checkout-service-staging" }
+
+[[solution.call]]
+endpoint = "terraform"
+tool = "update_workspace_variable"
+arguments = { terraform_org_name = "acme-platform", workspace_name = "checkout-service-staging", variable_id = "var-4eRpJG8P0JYsXLTJ", key = "desired_count", value = "4" }
+
+[[solution.call]]
+endpoint = "terraform"
+tool = "create_run"
+arguments = { terraform_org_name = "acme-platform", workspace_name = "checkout-service-staging", run_type = "plan_and_apply", message = "Scale checkout staging to 4 tasks for load test" }

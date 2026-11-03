@@ -1,0 +1,66 @@
+[
+  {
+    "_key": "i-0a3f5c7e9b1d24680",
+    "instanceId": "i-0a3f5c7e9b1d24680", "imageId": "ami-0e2c8caa4b6378d8c", "instanceState": { "code": 16, "name": "running" },
+    "privateDnsName": "ip-10-20-3-41.ec2.internal", "dnsName": "", "reason": "", "keyName": "ops-2024", "amiLaunchIndex": 0,
+    "instanceType": "r6i.xlarge", "launchTime": "2025-11-04T10:22:10Z",
+    "placement": { "availabilityZone": "us-east-1a", "tenancy": "default" }, "monitoring": { "state": "enabled" },
+    "subnetId": "subnet-0a1f3c5e7d9b20461", "vpcId": "vpc-05d2e8a1c3f7b9046", "privateIpAddress": "10.20.3.41",
+    "groupSet": [{ "groupId": "sg-0c4e6a8b1d3f57902", "groupName": "reporting" }],
+    "architecture": "x86_64", "rootDeviceType": "ebs", "rootDeviceName": "/dev/xvda",
+    "blockDeviceMapping": [{ "deviceName": "/dev/xvda", "ebs": { "volumeId": "vol-0a1b2c3d4e5f60718", "status": "attached", "attachTime": "2025-11-04T10:22:12Z", "deleteOnTermination": true } }],
+    "tagSet": [{ "key": "Name", "value": "reporting-worker" }, { "key": "Environment", "value": "prod" }, { "key": "Team", "value": "data-eng" }],
+    "_reservationId": "r-0c1e3a5b7d9f24680"
+  },
+  {
+    "_key": "i-07b9d1f3a5c8e2046",
+    "instanceId": "i-07b9d1f3a5c8e2046", "imageId": "ami-0b5eea76982371e91", "instanceState": { "code": 16, "name": "running" },
+    "privateDnsName": "ip-10-20-3-17.ec2.internal", "dnsName": "", "reason": "", "keyName": "ops-2019", "amiLaunchIndex": 0,
+    "instanceType": "m4.2xlarge", "launchTime": "2019-08-12T15:03:27Z",
+    "placement": { "availabilityZone": "us-east-1a", "tenancy": "default" }, "monitoring": { "state": "disabled" },
+    "subnetId": "subnet-0a1f3c5e7d9b20461", "vpcId": "vpc-05d2e8a1c3f7b9046", "privateIpAddress": "10.20.3.17",
+    "publicIpAddress": "54.210.18.77",
+    "groupSet": [{ "groupId": "sg-0c4e6a8b1d3f57902", "groupName": "reporting" }],
+    "architecture": "x86_64", "rootDeviceType": "ebs", "rootDeviceName": "/dev/xvda",
+    "blockDeviceMapping": [{ "deviceName": "/dev/xvda", "ebs": { "volumeId": "vol-07c9e1a3b5d7f2046", "status": "attached", "attachTime": "2019-08-12T15:03:29Z", "deleteOnTermination": false } }],
+    "tagSet": [{ "key": "Name", "value": "reporting-worker-legacy" }, { "key": "Environment", "value": "prod" }, { "key": "Team", "value": "data-eng" }],
+    "_reservationId": "r-0e7a9c1b3d5f02468"
+  },
+  {
+    "_key": "i-0e4a6c8b2d1f35790",
+    "instanceId": "i-0e4a6c8b2d1f35790", "imageId": "ami-0b5eea76982371e91", "instanceState": { "code": 16, "name": "running" },
+    "privateDnsName": "ip-10-30-3-9.ec2.internal", "dnsName": "", "reason": "", "keyName": "ops-2019", "amiLaunchIndex": 0,
+    "instanceType": "m4.large", "launchTime": "2020-02-03T09:41:55Z",
+    "placement": { "availabilityZone": "us-east-1b", "tenancy": "default" }, "monitoring": { "state": "disabled" },
+    "subnetId": "subnet-0c3e5a7b9d1f24680", "vpcId": "vpc-0a8c6e4f2d1b35790", "privateIpAddress": "10.30.3.9",
+    "groupSet": [{ "groupId": "sg-0f2a4c6e8b1d35790", "groupName": "reporting-staging" }],
+    "architecture": "x86_64", "rootDeviceType": "ebs", "rootDeviceName": "/dev/xvda",
+    "blockDeviceMapping": [{ "deviceName": "/dev/xvda", "ebs": { "volumeId": "vol-0e2a4c6b8d1f35790", "status": "attached", "attachTime": "2020-02-03T09:41:57Z", "deleteOnTermination": true } }],
+    "tagSet": [{ "key": "Name", "value": "reporting-worker-legacy" }, { "key": "Environment", "value": "staging" }, { "key": "Team", "value": "data-eng" }],
+    "_reservationId": "r-0a2c4e6b8d1f35790"
+  },
+  {
+    "_key": "i-0c8e2a4f6b1d39057",
+    "instanceId": "i-0c8e2a4f6b1d39057", "imageId": "ami-0b5eea76982371e91", "instanceState": { "code": 80, "name": "stopped" },
+    "privateDnsName": "ip-10-20-3-88.ec2.internal", "dnsName": "", "reason": "User initiated (2025-12-01 18:00:12 GMT)", "keyName": "ops-2019", "amiLaunchIndex": 0,
+    "instanceType": "m4.xlarge", "launchTime": "2019-03-05T11:00:00Z",
+    "placement": { "availabilityZone": "us-east-1c", "tenancy": "default" }, "monitoring": { "state": "disabled" },
+    "subnetId": "subnet-0d4f6b8a1c3e57902", "vpcId": "vpc-05d2e8a1c3f7b9046", "privateIpAddress": "10.20.3.88",
+    "groupSet": [{ "groupId": "sg-0c4e6a8b1d3f57902", "groupName": "reporting" }],
+    "architecture": "x86_64", "rootDeviceType": "ebs", "rootDeviceName": "/dev/xvda",
+    "tagSet": [{ "key": "Name", "value": "reporting-scheduler-legacy" }, { "key": "Environment", "value": "prod" }, { "key": "Team", "value": "data-eng" }, { "key": "DecommissionTicket", "value": "OPS-4377" }],
+    "_reservationId": "r-0b3d5f7a9c1e24680"
+  },
+  {
+    "_key": "i-04c1a7e2b9d35f018",
+    "instanceId": "i-04c1a7e2b9d35f018", "imageId": "ami-0e2c8caa4b6378d8c", "instanceState": { "code": 16, "name": "running" },
+    "privateDnsName": "ip-10-20-1-14.ec2.internal", "dnsName": "", "reason": "", "keyName": "ops-2024", "amiLaunchIndex": 0,
+    "instanceType": "c6i.xlarge", "launchTime": "2026-01-19T07:12:44Z",
+    "placement": { "availabilityZone": "us-east-1a", "tenancy": "default" }, "monitoring": { "state": "enabled" },
+    "subnetId": "subnet-0a1f3c5e7d9b20461", "vpcId": "vpc-05d2e8a1c3f7b9046", "privateIpAddress": "10.20.1.14",
+    "groupSet": [{ "groupId": "sg-0b7e2d4f6a8c13579", "groupName": "orders-api" }],
+    "architecture": "x86_64", "rootDeviceType": "ebs", "rootDeviceName": "/dev/xvda",
+    "tagSet": [{ "key": "Name", "value": "orders-api" }, { "key": "Environment", "value": "prod" }, { "key": "Team", "value": "commerce" }],
+    "_reservationId": "r-0f3a9c1e5b7d24680"
+  }
+]

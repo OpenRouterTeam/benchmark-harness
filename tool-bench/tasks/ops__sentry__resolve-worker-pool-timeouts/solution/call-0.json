@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"search_issues","arguments":{"organizationSlug":"lumen-labs","projectSlugOrId":"payments-worker","query":"is:unresolved \"could not obtain connection from pool\""}}}

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"cancel_downtime","arguments":{"downtimeId":2207731}}}

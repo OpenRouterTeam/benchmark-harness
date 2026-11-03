@@ -1,0 +1,13 @@
+[
+  {
+    "_key": "GHSA-abcd-1234-wxyz",
+    "ghsa_id": "GHSA-abcd-1234-wxyz",
+    "repo": "octo-org/payments-api",
+    "summary": "Refund amount rounding allows over-refund",
+    "severity": "high",
+    "state": "draft",
+    "author": "priya",
+    "created_at": "2026-03-11T00:00:00Z",
+    "updated_at": "2026-03-11T00:00:00Z"
+  }
+]

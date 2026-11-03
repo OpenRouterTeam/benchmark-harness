@@ -1,0 +1,18 @@
+[
+  {
+    "id": "b255e656-fca8-5094-bce2-45e86e649c72",
+    "slugId": "acme",
+    "name": "Acme Retail",
+    "domains": [
+      "acme-retail.example"
+    ],
+    "externalIds": [
+      "sf-0012"
+    ],
+    "revenue": 240000,
+    "size": 1200,
+    "ownerId": "3dbdd473-1a04-5dda-ad95-4c583313bccd",
+    "createdAt": "2026-02-01T15:00:00.000Z",
+    "updatedAt": "2026-09-01T15:00:00.000Z"
+  }
+]

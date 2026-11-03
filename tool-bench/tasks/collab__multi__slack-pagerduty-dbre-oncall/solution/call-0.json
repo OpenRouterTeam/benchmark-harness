@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"slack_search_public","arguments":{"keywords":["inventory","sync"],"natural_language_query":"inventory sync stalling who is on call"}}}

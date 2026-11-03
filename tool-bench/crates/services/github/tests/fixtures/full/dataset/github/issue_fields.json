@@ -1,0 +1,41 @@
+[
+  {
+    "_key": "octo-org:801",
+    "id": 801,
+    "name": "Priority",
+    "data_type": "single_select",
+    "description": "Triage priority",
+    "visibility": "org_only",
+    "options": [
+      {
+        "id": "1",
+        "name": "P0",
+        "color": "RED"
+      },
+      {
+        "id": "2",
+        "name": "P1",
+        "color": "ORANGE"
+      },
+      {
+        "id": "3",
+        "name": "P2",
+        "color": "YELLOW"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org:802",
+    "id": 802,
+    "name": "Story points",
+    "data_type": "number",
+    "description": "Effort"
+  },
+  {
+    "_key": "octo-org:803",
+    "id": 803,
+    "name": "Due",
+    "data_type": "date",
+    "description": "Target date"
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "_key": "i-04c1a7e2b9d35f018",
+    "instanceId": "i-04c1a7e2b9d35f018", "imageId": "ami-0e2c8caa4b6378d8c", "instanceState": { "code": 16, "name": "running" },
+    "privateDnsName": "ip-10-20-1-14.ec2.internal", "dnsName": "", "reason": "", "keyName": "ops-2024", "amiLaunchIndex": 0,
+    "instanceType": "c6i.xlarge", "launchTime": "2026-01-19T07:12:44Z",
+    "placement": { "availabilityZone": "us-east-1a", "tenancy": "default" }, "monitoring": { "state": "enabled" },
+    "subnetId": "subnet-0a1f3c5e7d9b20461", "vpcId": "vpc-05d2e8a1c3f7b9046", "privateIpAddress": "10.20.1.14",
+    "groupSet": [{ "groupId": "sg-0b7e2d4f6a8c13579", "groupName": "orders-api" }],
+    "architecture": "x86_64", "rootDeviceType": "ebs", "rootDeviceName": "/dev/xvda",
+    "tagSet": [{ "key": "Name", "value": "orders-api" }, { "key": "Environment", "value": "prod" }, { "key": "Team", "value": "commerce" }],
+    "_reservationId": "r-0f3a9c1e5b7d24680"
+  },
+  {
+    "_key": "i-09e5b3d1f7a2c6480",
+    "instanceId": "i-09e5b3d1f7a2c6480", "imageId": "ami-0e2c8caa4b6378d8c", "instanceState": { "code": 16, "name": "running" },
+    "privateDnsName": "ip-10-30-1-22.ec2.internal", "dnsName": "", "reason": "", "keyName": "ops-2024", "amiLaunchIndex": 0,
+    "instanceType": "t3.medium", "launchTime": "2026-02-02T13:40:09Z",
+    "placement": { "availabilityZone": "us-east-1b", "tenancy": "default" }, "monitoring": { "state": "disabled" },
+    "subnetId": "subnet-0c3e5a7b9d1f24680", "vpcId": "vpc-0a8c6e4f2d1b35790", "privateIpAddress": "10.30.1.22",
+    "groupSet": [{ "groupId": "sg-0d9f1b3a5c7e24680", "groupName": "orders-api-staging" }],
+    "architecture": "x86_64", "rootDeviceType": "ebs", "rootDeviceName": "/dev/xvda",
+    "tagSet": [{ "key": "Name", "value": "orders-api" }, { "key": "Environment", "value": "staging" }, { "key": "Team", "value": "commerce" }],
+    "_reservationId": "r-02b4d6f8a1c3e5079"
+  },
+  {
+    "_key": "i-0d72f4a6c8e1b3059",
+    "instanceId": "i-0d72f4a6c8e1b3059", "imageId": "ami-0e2c8caa4b6378d8c", "instanceState": { "code": 16, "name": "running" },
+    "privateDnsName": "ip-10-20-2-31.ec2.internal", "dnsName": "", "reason": "", "keyName": "ops-2024", "amiLaunchIndex": 0,
+    "instanceType": "c6i.large", "launchTime": "2026-01-19T07:15:02Z",
+    "placement": { "availabilityZone": "us-east-1b", "tenancy": "default" }, "monitoring": { "state": "enabled" },
+    "subnetId": "subnet-0b2d4f6a8c1e35790", "vpcId": "vpc-05d2e8a1c3f7b9046", "privateIpAddress": "10.20.2.31",
+    "groupSet": [{ "groupId": "sg-0e1a3c5b7d9f02468", "groupName": "orders-worker" }],
+    "architecture": "x86_64", "rootDeviceType": "ebs", "rootDeviceName": "/dev/xvda",
+    "tagSet": [{ "key": "Name", "value": "orders-worker" }, { "key": "Environment", "value": "prod" }, { "key": "Team", "value": "commerce" }],
+    "_reservationId": "r-0f3a9c1e5b7d24680"
+  }
+]

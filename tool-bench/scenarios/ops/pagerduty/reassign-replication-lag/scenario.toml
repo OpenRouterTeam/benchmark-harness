@@ -1,0 +1,79 @@
+[scenario]
+id = "ops/pagerduty/reassign-replication-lag"
+title = "Hand a replication-lag incident to the on-call DBRE"
+now = "2026-10-30T14:00:00Z"
+seed = "ops-pagerduty-reassign-replication-lag"
+services = ["pagerduty"]
+tags = ["write", "single-service", "pagerduty"]
+timeout_sec = 900
+
+# Target: Q3K8ORDBLAG2RX (orders-db-replica-2). Database Reliability primary today is
+# Dana Nguyen (daily rotation); Sam Okafor is level 2 and also covers the staging policy.
+[[expect.state]]
+pointer = "/services/pagerduty/incidents/Q3K8ORDBLAG2RX/assignments/0/assignee/id"
+equals = "PDNGYN2"
+
+[[expect.state]]
+pointer = "/services/pagerduty/incidents/Q3K8ORDBLAG2RX/assignments/1"
+exists = false
+
+[[expect.state]]
+pointer = "/services/pagerduty/notes/Q3K8ORDBLAG2RX~11/content"
+contains = "replica-2"
+
+# The look-alike inventory-db incident stays with Alex.
+[[expect.state]]
+pointer = "/services/pagerduty/incidents/Q1INVDBLAG7QWE/assignments/0/assignee/id"
+equals = "PA1EXKM"
+
+[[expect.state]]
+pointer = "/services/pagerduty/incidents/Q1INVDBLAG7QWE/status"
+equals = "triggered"
+
+[[expect.required_calls]]
+service = "pagerduty"
+method = "PUT"
+path = "/incidents"
+body = { incidents = [{ id = "Q3K8ORDBLAG2RX" }] }
+
+[[expect.required_calls]]
+service = "pagerduty"
+method = "POST"
+path = "/incidents/Q3K8ORDBLAG2RX/notes"
+
+[[expect.forbidden_calls]]
+service = "pagerduty"
+method = "PUT"
+path = "/incidents"
+body = { incidents = [{ id = "Q3K8ORDBLAG2RX", status = "resolved" }] }
+
+[[expect.forbidden_calls]]
+service = "pagerduty"
+method = "PUT"
+path = "/incidents"
+body = { incidents = [{ id = "Q1INVDBLAG7QWE" }] }
+
+[[expect.forbidden_calls]]
+service = "pagerduty"
+method = "POST"
+path = "/incidents/Q1INVDBLAG7QWE/notes"
+
+[[solution.call]]
+endpoint = "pagerduty"
+tool = "list_incidents"
+arguments = { request_scope = "assigned", statuses = ["triggered"] }
+
+[[solution.call]]
+endpoint = "pagerduty"
+tool = "list_oncalls"
+arguments = { escalation_policy_ids = ["PEPDBRE"] }
+
+[[solution.call]]
+endpoint = "pagerduty"
+tool = "manage_incidents"
+arguments = { manage_request = { incident_ids = ["Q3K8ORDBLAG2RX"], assignement = { id = "PDNGYN2" } } }
+
+[[solution.call]]
+endpoint = "pagerduty"
+tool = "add_note_to_incident"
+arguments = { incident_id = "Q3K8ORDBLAG2RX", note = "Handing off to DBRE: replica-2 disk is at 100%, needs a volume resize." }

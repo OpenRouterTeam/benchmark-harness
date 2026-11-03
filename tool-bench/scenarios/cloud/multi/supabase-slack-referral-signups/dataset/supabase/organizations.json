@@ -1,0 +1,24 @@
+[
+  {
+    "id": "octo-shop",
+    "slug": "octo-shop",
+    "name": "Octo Shop",
+    "plan": "pro",
+    "opt_in_tags": [
+      "AI_SQL_GENERATOR_OPT_IN"
+    ],
+    "allowed_release_channels": [
+      "ga"
+    ]
+  },
+  {
+    "id": "northwind-marketing",
+    "slug": "northwind-marketing",
+    "name": "Northwind Marketing",
+    "plan": "free",
+    "opt_in_tags": [],
+    "allowed_release_channels": [
+      "ga"
+    ]
+  }
+]

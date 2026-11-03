@@ -1,0 +1,112 @@
+[scenario]
+id = "business/multi/hubspot-won-to-salesforce-opportunity"
+title = "Mirror a deal won in HubSpot onto the matching Salesforce opportunity"
+now = "2026-10-29T14:00:00Z"
+seed = "business-multi-hubspot-won-to-salesforce-opportunity"
+services = ["hubspot", "salesforce"]
+tags = ["write", "multi-service", "hubspot", "salesforce", "disambiguation"]
+timeout_sec = 1200
+
+# HubSpot deal 9100104 "Initech – Data Warehouse Migration" moved to closedwon yesterday
+# (closedate 2026-10-28) with a final amount of 176,500 (down from 184,000). The matching
+# Salesforce opportunity is 0065g00000IDWm1AAH on the Initech account, still at
+# Negotiation/Review for 184,000. Look-alikes: the Phase 0 Assessment deal (won in June, in
+# both systems), Initech's open support renewal, and "Initrode - Data Warehouse Migration"
+# (another account, whose amount happens to be 176,500).
+
+[[expect.state]]
+pointer = "/services/salesforce/Opportunity/0065g00000IDWm1AAH/StageName"
+equals = "Closed Won"
+
+[[expect.state]]
+pointer = "/services/salesforce/Opportunity/0065g00000IDWm1AAH/IsWon"
+equals = true
+
+[[expect.state]]
+pointer = "/services/salesforce/Opportunity/0065g00000IDWm1AAH/CloseDate"
+equals = "2026-10-28"
+
+[[expect.state]]
+pointer = "/services/salesforce/Opportunity/0065g00000IRdw1AAD/StageName"
+equals = "Negotiation/Review"
+
+[[expect.state]]
+pointer = "/services/salesforce/Opportunity/0065g00000ISup7AAD/StageName"
+equals = "Proposal/Price Quote"
+
+[[expect.state]]
+pointer = "/services/salesforce/Opportunity/0065g00000IDWp0AAH/CloseDate"
+equals = "2026-06-12"
+
+# The new note is found by content, not by its id (other writes an agent makes first would
+# shift it). It must be tied to deal 9100104 — on create or via a separate association call —
+# and nothing may be written against the look-alike deal 9100105.
+[[expect.state]]
+pointer = "/services/hubspot/notes"
+any = { properties = { hs_note_body = "0065g00000IDWm1" } }
+
+[[expect.required_calls]]
+service = "hubspot"
+method = "POST"
+body_contains = "9100104"
+
+[[expect.forbidden_calls]]
+service = "hubspot"
+method = "POST"
+body_contains = "9100105"
+
+[[expect.state]]
+pointer = "/services/hubspot/deals/9100104/properties/dealstage"
+equals = "closedwon"
+
+[[expect.required_calls]]
+service = "salesforce"
+method = "PATCH"
+path_regex = "^/services/data/v[0-9.]+/(composite/sobjects|sobjects/Opportunity/0065g00000IDWm1(AAH)?)$"
+
+# The amount is checked on the update call rather than in state: the mock stores a string
+# amount ("176500") as a float, so an exact state check would fail some correct agents.
+[[expect.required_calls]]
+service = "salesforce"
+method = "PATCH"
+path_regex = "^/services/data/v[0-9.]+/(composite/sobjects|sobjects/Opportunity/0065g00000IDWm1(AAH)?)$"
+body_contains = "176500"
+
+[[expect.required_calls]]
+service = "hubspot"
+method = "POST"
+path_regex = "^/(engagements/v1/engagements|crm/v3/objects/(notes|note|0-46)/batch/create)$"
+
+[[expect.forbidden_calls]]
+service = "salesforce"
+method = "DELETE"
+
+[[expect.forbidden_calls]]
+service = "salesforce"
+method = "POST"
+path_regex = "^/services/data/v[0-9.]+/(composite/sobjects|sobjects/Opportunity)$"
+
+[[expect.forbidden_calls]]
+service = "hubspot"
+method = "POST"
+path_regex = "^/crm/v3/objects/(deals|deal|0-3)/batch/(update|create)$"
+
+[[solution.call]]
+endpoint = "hubspot"
+tool = "hubspot-search-objects"
+arguments = { objectType = "deals", query = "Initech", properties = ["dealname", "amount", "dealstage", "closedate"] }
+
+[[solution.call]]
+endpoint = "salesforce"
+tool = "salesforce_query_records"
+arguments = { objectName = "Opportunity", fields = ["Id", "Name", "StageName", "Amount", "CloseDate", "Account.Name"], whereClause = "Account.Name = 'Initech'" }
+
+[[solution.call]]
+endpoint = "salesforce"
+tool = "salesforce_dml_records"
+arguments = { operation = "update", objectName = "Opportunity", records = [{ Id = "0065g00000IDWm1AAH", StageName = "Closed Won", Amount = 176500, CloseDate = "2026-10-28" }] }
+
+[[solution.call]]
+endpoint = "hubspot"
+tool = "hubspot-create-engagement"
+arguments = { type = "NOTE", ownerId = 81234501, timestamp = 1793282400000, associations = { dealIds = [9100104] }, metadata = { body = "Synced to Salesforce: opportunity 0065g00000IDWm1AAH marked Closed Won ($176,500, closed 2026-10-28)." } }

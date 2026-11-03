@@ -1,0 +1,62 @@
+[
+  {
+    "_key": "octo-org/app#1",
+    "id": 2001,
+    "node_id": "I_kwDO502FE35EF193",
+    "number": 1,
+    "title": "Crash when saving settings",
+    "body": "Saving the settings page crashes the app on Safari.",
+    "user": "mona",
+    "labels": [
+      "bug"
+    ],
+    "assignees": [],
+    "milestone": null,
+    "state": "open",
+    "state_reason": null,
+    "locked": false,
+    "created_at": "2026-03-02T10:00:00Z",
+    "updated_at": "2026-03-05T16:20:00Z",
+    "closed_at": null
+  },
+  {
+    "_key": "octo-org/app#2",
+    "id": 2002,
+    "node_id": "I_kwDOAE1B006EDB94",
+    "number": 2,
+    "title": "Update README badges",
+    "body": "Badges point at the old CI.",
+    "user": "mona",
+    "labels": [
+      "documentation"
+    ],
+    "assignees": [],
+    "milestone": null,
+    "state": "closed",
+    "state_reason": "completed",
+    "locked": false,
+    "created_at": "2026-03-03T09:30:00Z",
+    "updated_at": "2026-03-04T11:00:00Z",
+    "closed_at": "2026-03-04T11:00:00Z"
+  },
+  {
+    "_key": "octo-org/app#3",
+    "id": 2003,
+    "node_id": "I_kwDO113719291A3F",
+    "number": 3,
+    "title": "Flaky login test",
+    "body": "The login e2e test fails intermittently on CI.",
+    "user": "octocat",
+    "labels": [
+      "auth"
+    ],
+    "assignees": [],
+    "milestone": null,
+    "state": "open",
+    "state_reason": null,
+    "locked": false,
+    "created_at": "2026-03-10T08:15:00Z",
+    "updated_at": "2026-03-10T08:15:00Z",
+    "closed_at": null
+  }
+]

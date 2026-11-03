@@ -1,0 +1,153 @@
+{
+  "state": [
+    {
+      "pointer": "/services/shopify/customers/7202/tags",
+      "equals": null,
+      "exists": null,
+      "contains": "VIP",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/shopify/customers/7202/tags",
+      "equals": null,
+      "exists": null,
+      "contains": "newsletter",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/shopify/customers/7202/tags",
+      "equals": null,
+      "exists": null,
+      "contains": "wholesale",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/shopify/orders/5234/tags",
+      "equals": null,
+      "exists": null,
+      "contains": "VIP",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/shopify/orders/5234/tags",
+      "equals": null,
+      "exists": null,
+      "contains": "gift",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/shopify/orders/5221/tags",
+      "equals": [
+        "wholesale"
+      ],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/shopify/orders/5227/tags",
+      "equals": [],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/shopify/orders/5235/tags",
+      "equals": [],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/shopify/customers/7203/tags",
+      "equals": [
+        "newsletter"
+      ],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "shopify",
+      "method": "POST",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "customerUpdate",
+      "min_count": 1
+    },
+    {
+      "service": "shopify",
+      "method": "POST",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "orderUpdate",
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "shopify",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "variables": {
+          "input": {
+            "id": "gid://shopify/Order/5221"
+          }
+        }
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "shopify",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "variables": {
+          "input": {
+            "id": "gid://shopify/Order/5227"
+          }
+        }
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "shopify",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "variables": {
+          "input": {
+            "id": "gid://shopify/Order/5235"
+          }
+        }
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

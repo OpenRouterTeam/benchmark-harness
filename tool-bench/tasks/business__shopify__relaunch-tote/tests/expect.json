@@ -1,0 +1,131 @@
+{
+  "state": [
+    {
+      "pointer": "/services/shopify/products/8201/variants/0/price",
+      "equals": "42.00",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/shopify/products/8201/variants/0/title",
+      "equals": "Navy",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/shopify/products/8201/variants/1/price",
+      "equals": "48.00",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/shopify/products/8201/variants/2/price",
+      "equals": "48.00",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/shopify/products/8201/status",
+      "equals": "ACTIVE",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/shopify/products/8202/variants/0/price",
+      "equals": "32.00",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/shopify/products/8203/status",
+      "equals": "DRAFT",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/shopify/products/8203/variants/0/price",
+      "equals": "89.00",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/shopify/products/8204/status",
+      "equals": "ARCHIVED",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "shopify",
+      "method": "POST",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "productVariantsBulkUpdate",
+      "min_count": 1
+    },
+    {
+      "service": "shopify",
+      "method": "POST",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "productUpdate(",
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "shopify",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "productDelete",
+      "min_count": 1
+    },
+    {
+      "service": "shopify",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "productVariantsBulkDelete",
+      "min_count": 1
+    },
+    {
+      "service": "shopify",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "productOptionsDelete",
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

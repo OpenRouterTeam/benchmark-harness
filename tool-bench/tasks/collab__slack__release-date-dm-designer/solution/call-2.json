@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"slack_send_message","arguments":{"channel_id":"U06AKIM3D2Q","message":"Hi Alex! The web 4.12 release moved from 2026-11-03 to 2026-11-10 (Tuesday) because of the payments SDK regression. Code freeze is now 2026-11-06."}}}

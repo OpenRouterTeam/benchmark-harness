@@ -1,0 +1,1 @@
+Alex from our design team has been asking when the web 4.12 release is now happening, since they need it for the release-notes screenshots. Look up the current release date in Slack and send Alex a direct message with it (write the date as YYYY-MM-DD). Don't post in any channels.

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"issue_write","arguments":{"body":"The login page has returned HTTP 500 since deploy 412.","method":"create","owner":"octo-org","repo":"app","title":"Login page returns 500"}}}

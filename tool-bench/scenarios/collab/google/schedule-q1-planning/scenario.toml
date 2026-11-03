@@ -1,0 +1,68 @@
+[scenario]
+id = "collab/google/schedule-q1-planning"
+title = "Schedule the Q1 planning sync Priya asked for by email"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-google-schedule-q1-planning"
+services = ["google"]
+tags = ["write", "single-service", "google", "gmail", "calendar"]
+timeout_sec = 900
+
+# Priya's email: "Q1 planning sync", Tuesday 2026-11-03 at 2:00 pm Eastern (EST, -05:00
+# after the DST change), 45 minutes, invite Priya and Marcus, with Google Meet. The
+# August "Q4 planning sync" event is a look-alike that must not change.
+[[expect.state]]
+pointer = "/services/google/calendar_events/445b671f493e8a06958e4ff0dd/summary"
+contains = "Q1 planning sync"
+
+[[expect.state]]
+pointer = "/services/google/calendar_events/445b671f493e8a06958e4ff0dd/calendarId"
+equals = "ops@octo-corp.example"
+
+[[expect.state]]
+pointer = "/services/google/calendar_events/445b671f493e8a06958e4ff0dd/start/dateTime"
+equals = "2026-11-03T14:00:00-05:00"
+
+[[expect.state]]
+pointer = "/services/google/calendar_events/445b671f493e8a06958e4ff0dd/end/dateTime"
+equals = "2026-11-03T14:45:00-05:00"
+
+[[expect.state]]
+pointer = "/services/google/calendar_events/445b671f493e8a06958e4ff0dd/attendees"
+contains = { email = "priya.natarajan@octo-corp.example" }
+
+[[expect.state]]
+pointer = "/services/google/calendar_events/445b671f493e8a06958e4ff0dd/attendees"
+contains = { email = "marcus.webb@octo-corp.example" }
+
+[[expect.state]]
+pointer = "/services/google/calendar_events/445b671f493e8a06958e4ff0dd/conferenceData/conferenceSolution/key/type"
+equals = "hangoutsMeet"
+
+[[expect.state]]
+pointer = "/services/google/calendar_events/ae2a3372cbeee330eecbe86872/start/dateTime"
+equals = "2026-08-04T14:00:00-04:00"
+
+[[expect.required_calls]]
+service = "google"
+path = "/_mcp/tools/call"
+body = { name = "manage_event", arguments = { action = "create" } }
+
+[[expect.forbidden_calls]]
+service = "google"
+path = "/_mcp/tools/call"
+body = { name = "send_gmail_message" }
+
+[[solution.call]]
+endpoint = "google-workspace"
+tool = "search_gmail_messages"
+arguments = { query = "from:priya.natarajan@octo-corp.example planning" }
+
+[[solution.call]]
+endpoint = "google-workspace"
+tool = "get_gmail_message_content"
+arguments = { message_id = "355ad002b14a79a3" }
+
+[[solution.call]]
+endpoint = "google-workspace"
+tool = "manage_event"
+arguments = { action = "create", summary = "Q1 planning sync", start_time = "2026-11-03T14:00:00", end_time = "2026-11-03T14:45:00", timezone = "America/New_York", attendees = ["priya.natarajan@octo-corp.example", "marcus.webb@octo-corp.example"], add_google_meet = true }

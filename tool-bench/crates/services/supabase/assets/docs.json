@@ -1,0 +1,128 @@
+{
+  "documents": [
+    {
+      "__typename": "Guide",
+      "title": "Row Level Security",
+      "href": "https://supabase.com/docs/guides/database/postgres/row-level-security",
+      "content": "Secure your data using Postgres Row Level Security. When you need granular authorization rules, nothing beats Postgres's Row Level Security (RLS). RLS must always be enabled on any tables stored in an exposed schema. By default, this is the public schema.\n\nEnabling Row Level Security\n\nYou can enable RLS for any table using the enable row level security clause:\n\nalter table \"table_name\" enable row level security;\n\nOnce you have enabled RLS, no data will be accessible via the API when using the public anon key, until you create policies.\n\nCreating policies\n\nPolicies are Postgres's rule engine. Each policy is attached to a table, and the policy is executed every time a table is accessed.\n\ncreate policy \"Individuals can view their own todos.\"\non todos for select\nusing ( (select auth.uid()) = user_id );\n\nBypassing Row Level Security\n\nSupabase provides special \"Service\" keys, which can be used to bypass RLS. These should never be used in the browser or exposed to customers.",
+      "subsections": [
+        { "title": "Enabling Row Level Security", "href": "https://supabase.com/docs/guides/database/postgres/row-level-security#enabling-row-level-security", "content": "You can enable RLS for any table using the enable row level security clause: alter table \"table_name\" enable row level security;" },
+        { "title": "Creating policies", "href": "https://supabase.com/docs/guides/database/postgres/row-level-security#creating-policies", "content": "Policies are Postgres's rule engine. create policy \"Individuals can view their own todos.\" on todos for select using ( (select auth.uid()) = user_id );" }
+      ]
+    },
+    {
+      "__typename": "Guide",
+      "title": "Database Migrations",
+      "href": "https://supabase.com/docs/guides/deployment/database-migrations",
+      "content": "How to manage schema migrations for your Supabase project. Database migrations are SQL statements that create, update, or delete your existing database schemas. They are a common way of tracking changes to your database over time.\n\nEach migration is stored with a version (a timestamp such as 20260314090000) and a name. Use the Management API or the CLI (supabase migration new <name>, supabase db push) to apply migrations. Applied migrations are recorded in supabase_migrations.schema_migrations.",
+      "subsections": [
+        { "title": "Creating a migration", "href": "https://supabase.com/docs/guides/deployment/database-migrations#creating-a-migration", "content": "supabase migration new create_employees_table creates a new timestamped migration file in supabase/migrations." }
+      ]
+    },
+    {
+      "__typename": "Guide",
+      "title": "Edge Functions",
+      "href": "https://supabase.com/docs/guides/functions",
+      "content": "Globally distributed TypeScript functions. Edge Functions are server-side TypeScript functions, distributed globally at the edge, close to your users. They can be used for listening to webhooks or integrating your Supabase project with third-parties like Stripe.\n\nEdge Functions are developed using Deno. Deploy with supabase functions deploy <name>. By default, functions require a valid JWT in the Authorization header; pass --no-verify-jwt to allow unauthenticated invocations.",
+      "subsections": [
+        { "title": "Deploying", "href": "https://supabase.com/docs/guides/functions/deploy", "content": "supabase functions deploy hello-world deploys a single function. The entrypoint is index.ts by default." },
+        { "title": "Environment variables", "href": "https://supabase.com/docs/guides/functions/secrets", "content": "Secrets are available to Edge Functions through Deno.env.get('MY_SECRET'). Set them with supabase secrets set MY_SECRET=value." }
+      ]
+    },
+    {
+      "__typename": "Guide",
+      "title": "Storage Buckets",
+      "href": "https://supabase.com/docs/guides/storage/buckets/fundamentals",
+      "content": "Buckets allow you to keep your files organized and determines the Access Model for your assets. Upload restrictions like max file size and allowed content types are also defined at the bucket level. There are two access models for buckets, public and private buckets. Private buckets require a signed URL or an authenticated request with RLS policies on storage.objects.",
+      "subsections": []
+    },
+    {
+      "__typename": "Guide",
+      "title": "Storage file size limits",
+      "href": "https://supabase.com/docs/guides/storage/uploads/file-limits",
+      "content": "You can set the maximum file size for uploads globally in the Storage settings (fileSizeLimit, in bytes) and per bucket. The global limit on the Free plan is 50 MB; on paid plans it can be raised up to 500 GB. Image transformations are available on the Pro plan and above.",
+      "subsections": []
+    },
+    {
+      "__typename": "Guide",
+      "title": "Pausing and restoring projects",
+      "href": "https://supabase.com/docs/guides/platform/project-pausing",
+      "content": "Projects on the Free plan are paused after a week of inactivity. You can also pause a project manually from the dashboard or with the Management API (POST /v1/projects/{ref}/pause). A paused project keeps its data but its database and APIs are offline and it is not billed for compute. Restore it with POST /v1/projects/{ref}/restore; restoring takes a few minutes.",
+      "subsections": []
+    },
+    {
+      "__typename": "Guide",
+      "title": "Branching",
+      "href": "https://supabase.com/docs/guides/deployment/branching",
+      "content": "Use Supabase Branches to test and preview changes. Each branch is a separate environment with its own database, migrations and edge functions. Branches are billed hourly while they exist. Merge a branch to apply its migrations to the production project, reset a branch to re-run migrations, or rebase it to pick up migrations from production.",
+      "subsections": []
+    },
+    {
+      "__typename": "Guide",
+      "title": "Indexes",
+      "href": "https://supabase.com/docs/guides/database/postgres/indexes",
+      "content": "Managing indexes in PostgreSQL. An index makes your Postgres queries faster. Create an index with create index idx_orders_customer_id on orders (customer_id); Foreign key columns are not indexed automatically in Postgres; the Performance Advisor reports unindexed foreign keys.",
+      "subsections": []
+    },
+    {
+      "__typename": "Guide",
+      "title": "API Keys",
+      "href": "https://supabase.com/docs/guides/api/api-keys",
+      "content": "Supabase provides publishable keys (sb_publishable_...) and secret keys (sb_secret_...), plus the legacy JWT-based anon and service_role keys. Publishable and anon keys are safe to use in a browser when Row Level Security is enabled. Never expose secret or service_role keys.",
+      "subsections": []
+    },
+    {
+      "__typename": "Guide",
+      "title": "Logs Explorer",
+      "href": "https://supabase.com/docs/guides/telemetry/logs",
+      "content": "The Logs Explorer exposes logs from each part of the Supabase stack: edge_logs (API gateway), postgres_logs, auth_logs, storage_logs, realtime_logs, function_edge_logs and function_logs. Query them with SQL, filtering by timestamp and source.",
+      "subsections": []
+    },
+    {
+      "__typename": "CLICommandReference",
+      "title": "supabase db push",
+      "href": "https://supabase.com/docs/reference/cli/supabase-db-push",
+      "content": "Pushes all local migrations to a remote database. Requires your local project to be linked to a remote database by running supabase link."
+    },
+    {
+      "__typename": "ManagementApiReference",
+      "title": "Run sql query",
+      "href": "https://supabase.com/docs/reference/api/v1-run-a-query",
+      "content": "POST /v1/projects/{ref}/database/query. Runs a SQL query against the project's database and returns the rows as a JSON array."
+    },
+    {
+      "__typename": "ClientLibraryFunctionReference",
+      "title": "Fetch data: select()",
+      "href": "https://supabase.com/docs/reference/javascript/select",
+      "content": "Perform a SELECT query on the table or view. const { data, error } = await supabase.from('countries').select()",
+      "language": "JAVASCRIPT",
+      "methodName": "select"
+    },
+    {
+      "__typename": "ClientLibraryFunctionReference",
+      "title": "Update data: update()",
+      "href": "https://supabase.com/docs/reference/javascript/update",
+      "content": "Perform an UPDATE on the table or view. const { error } = await supabase.from('countries').update({ name: 'Australia' }).eq('id', 1)",
+      "language": "JAVASCRIPT",
+      "methodName": "update"
+    },
+    {
+      "__typename": "TroubleshootingGuide",
+      "title": "Why is my table not returning data via the API?",
+      "href": "https://supabase.com/docs/guides/troubleshooting/why-is-my-table-not-returning-data",
+      "content": "If a table returns an empty array through the Data API, Row Level Security is usually enabled without a policy that allows the requesting role to read rows. Add a select policy or use the service role key on the server."
+    }
+  ],
+  "errors": [
+    { "code": "bad_jwt", "service": "AUTH", "httpStatusCode": 403, "message": "JWT sent in the Authorization header is not valid." },
+    { "code": "email_exists", "service": "AUTH", "httpStatusCode": 422, "message": "Email address already exists in the system." },
+    { "code": "over_email_send_rate_limit", "service": "AUTH", "httpStatusCode": 429, "message": "Too many emails have been sent to this email address. Ask the user to wait a while before trying again." },
+    { "code": "session_not_found", "service": "AUTH", "httpStatusCode": 403, "message": "Session to which the API request relates no longer exists." },
+    { "code": "user_banned", "service": "AUTH", "httpStatusCode": 403, "message": "User to which the API request relates has a banned_until property which is still active." },
+    { "code": "EntityTooLarge", "service": "STORAGE", "httpStatusCode": 413, "message": "The uploaded file exceeds the maximum allowed size." },
+    { "code": "NoSuchBucket", "service": "STORAGE", "httpStatusCode": 404, "message": "The specified bucket does not exist." },
+    { "code": "InvalidJWT", "service": "STORAGE", "httpStatusCode": 401, "message": "The provided JWT is invalid or expired." },
+    { "code": "RealtimeDisabledForTenant", "service": "REALTIME", "httpStatusCode": 403, "message": "Realtime is disabled for this project." },
+    { "code": "ConnectionRateLimitReached", "service": "REALTIME", "httpStatusCode": 429, "message": "Too many connections for this project; the connection rate limit was reached." }
+  ]
+}

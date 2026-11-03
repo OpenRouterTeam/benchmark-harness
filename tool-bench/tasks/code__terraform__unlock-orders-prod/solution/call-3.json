@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"create_run","arguments":{"message":"Verify orders-api-prod after clearing stuck lock","run_type":"plan_only","terraform_org_name":"acme-platform","workspace_name":"orders-api-prod"}}}

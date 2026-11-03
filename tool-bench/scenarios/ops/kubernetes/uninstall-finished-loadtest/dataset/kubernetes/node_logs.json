@@ -1,0 +1,32 @@
+[
+  {
+    "_key": "ip-10-0-1-21.ec2.internal/kubelet",
+    "lines": [
+      "Nov 04 15:22:00 ip-10-0-1-21 kubelet[2113]: I1104 kubelet.go:2464] \"SyncLoop (PLEG): event for pod\" event={\"Type\":\"ContainerStarted\"}",
+      "Nov 04 15:39:00 ip-10-0-1-21 kubelet[2113]: I1104 kubelet_node_status.go:488] \"Fast updating node status as it just became ready\"",
+      "Nov 04 16:03:00 ip-10-0-1-21 kubelet[2113]: I1104 image_gc_manager.go:383] \"Disk usage on image filesystem is over the high threshold, trying to free bytes down to the low threshold\" usage=81 highThreshold=85 amountToFree=0 lowThreshold=80",
+      "Nov 04 16:14:00 ip-10-0-1-21 kubelet[2113]: I1104 prober.go:107] \"Probe failed\" probeType=\"Readiness\" pod=\"kube-system/coredns\" containerName=\"coredns\" probeResult=\"failure\" output=\"HTTP probe failed with statuscode: 503\"",
+      "Nov 04 16:19:00 ip-10-0-1-21 kubelet[2113]: I1104 kubelet.go:2464] \"SyncLoop (housekeeping)\""
+    ]
+  },
+  {
+    "_key": "ip-10-0-2-37.ec2.internal/kubelet",
+    "lines": [
+      "Nov 04 15:22:00 ip-10-0-2-37 kubelet[2113]: I1104 kubelet.go:2464] \"SyncLoop (PLEG): event for pod\" event={\"Type\":\"ContainerStarted\"}",
+      "Nov 04 15:39:00 ip-10-0-2-37 kubelet[2113]: I1104 kubelet_node_status.go:488] \"Fast updating node status as it just became ready\"",
+      "Nov 04 16:03:00 ip-10-0-2-37 kubelet[2113]: I1104 image_gc_manager.go:383] \"Disk usage on image filesystem is over the high threshold, trying to free bytes down to the low threshold\" usage=81 highThreshold=85 amountToFree=0 lowThreshold=80",
+      "Nov 04 16:14:00 ip-10-0-2-37 kubelet[2113]: I1104 kubelet_pods.go:1029] \"Unable to retrieve pull secret, the image pull may not succeed.\" pod=\"default/debug\" secret=\"\"",
+      "Nov 04 16:19:00 ip-10-0-2-37 kubelet[2113]: I1104 kubelet.go:2464] \"SyncLoop (housekeeping)\""
+    ]
+  },
+  {
+    "_key": "ip-10-0-3-52.ec2.internal/kubelet",
+    "lines": [
+      "Nov 04 15:22:00 ip-10-0-3-52 kubelet[2113]: I1104 kubelet.go:2464] \"SyncLoop (PLEG): event for pod\" event={\"Type\":\"ContainerStarted\"}",
+      "Nov 04 15:39:00 ip-10-0-3-52 kubelet[2113]: I1104 kubelet_node_status.go:488] \"Fast updating node status as it just became ready\"",
+      "Nov 04 16:03:00 ip-10-0-3-52 kubelet[2113]: I1104 image_gc_manager.go:383] \"Disk usage on image filesystem is over the high threshold, trying to free bytes down to the low threshold\" usage=81 highThreshold=85 amountToFree=0 lowThreshold=80",
+      "Nov 04 16:14:00 ip-10-0-3-52 kubelet[2113]: I1104 kubelet_pods.go:1029] \"Unable to retrieve pull secret, the image pull may not succeed.\" pod=\"default/debug\" secret=\"\"",
+      "Nov 04 16:19:00 ip-10-0-3-52 kubelet[2113]: I1104 kubelet.go:2464] \"SyncLoop (housekeeping)\""
+    ]
+  }
+]

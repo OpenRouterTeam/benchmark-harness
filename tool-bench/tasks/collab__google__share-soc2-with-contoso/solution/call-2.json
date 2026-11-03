@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"search_drive_files","arguments":{"query":"name contains 'SOC 2'"}}}

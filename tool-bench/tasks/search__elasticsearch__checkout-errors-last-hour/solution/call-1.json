@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"esql","arguments":{"query":"FROM logs-checkout-prod-* | WHERE @timestamp >= NOW() - 1 hour AND status_code >= 500 | STATS errors = COUNT(*) BY service | SORT errors DESC"}}}

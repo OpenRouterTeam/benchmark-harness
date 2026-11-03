@@ -1,0 +1,222 @@
+{
+  "state": [
+    {
+      "pointer": "/services/zendesk/tickets/6230/priority",
+      "equals": "urgent",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/zendesk/tickets/6230/tags",
+      "equals": null,
+      "exists": null,
+      "contains": "escalated",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/zendesk/comments",
+      "equals": null,
+      "exists": null,
+      "contains": null,
+      "any": {
+        "body": "INC-4471",
+        "public": false
+      },
+      "key_prefix": "6230/"
+    },
+    {
+      "pointer": "/services/zendesk/tickets/6230/status",
+      "equals": "open",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "zendesk",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "ticket_id": 6230
+        },
+        "name": "update_ticket"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "zendesk",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "ticket_id": 6230
+        },
+        "name": "create_ticket_comment"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "zendesk",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "public": true,
+          "ticket_id": 6230
+        },
+        "name": "create_ticket_comment"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "zendesk",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "ticket_id": 6225
+        },
+        "name": "update_ticket"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "zendesk",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "ticket_id": 6225
+        },
+        "name": "create_ticket_comment"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "zendesk",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "ticket_id": 6201
+        },
+        "name": "update_ticket"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "zendesk",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "ticket_id": 6201
+        },
+        "name": "create_ticket_comment"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "zendesk",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "ticket_id": 6232
+        },
+        "name": "update_ticket"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "zendesk",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "ticket_id": 6232
+        },
+        "name": "create_ticket_comment"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "zendesk",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "ticket_id": 6233
+        },
+        "name": "update_ticket"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "zendesk",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "ticket_id": 6233
+        },
+        "name": "create_ticket_comment"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "zendesk",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "create_ticket"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

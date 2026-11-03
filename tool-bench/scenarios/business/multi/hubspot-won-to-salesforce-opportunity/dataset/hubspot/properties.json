@@ -1,0 +1,48 @@
+[
+  {
+    "_key": "deals/deal_source",
+    "updatedAt": "2025-02-11T17:40:02.554Z",
+    "createdAt": "2025-02-11T17:40:02.554Z",
+    "name": "deal_source",
+    "label": "Deal source",
+    "type": "enumeration",
+    "fieldType": "select",
+    "description": "Where the opportunity originated",
+    "groupName": "dealinformation",
+    "options": [
+      {
+        "label": "Inbound",
+        "value": "inbound",
+        "description": "",
+        "displayOrder": 0,
+        "hidden": false
+      },
+      {
+        "label": "Outbound",
+        "value": "outbound",
+        "description": "",
+        "displayOrder": 1,
+        "hidden": false
+      },
+      {
+        "label": "Partner",
+        "value": "partner",
+        "description": "",
+        "displayOrder": 2,
+        "hidden": false
+      }
+    ],
+    "displayOrder": -1,
+    "calculated": false,
+    "externalOptions": false,
+    "hasUniqueValue": false,
+    "hidden": false,
+    "modificationMetadata": {
+      "archivable": true,
+      "readOnlyDefinition": false,
+      "readOnlyValue": false
+    },
+    "formField": false,
+    "archived": false
+  }
+]

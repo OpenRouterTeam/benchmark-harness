@@ -1,0 +1,19 @@
+[
+  {
+    "id": "61000004",
+    "properties": {
+      "hs_task_subject": "Send Globex the revised expansion quote",
+      "hs_task_body": "Send Globex the revised expansion quote",
+      "hs_task_status": "NOT_STARTED",
+      "hs_task_priority": "HIGH",
+      "hs_task_type": "TODO",
+      "hs_timestamp": "2026-11-03T14:00:00.000Z",
+      "hubspot_owner_id": "81234502",
+      "hs_createdate": "2026-10-27T13:00:00.000Z",
+      "hs_lastmodifieddate": "2026-10-27T13:00:00.000Z"
+    },
+    "createdAt": "2026-10-27T13:00:00.000Z",
+    "updatedAt": "2026-10-27T13:00:00.000Z",
+    "archived": false
+  }
+]

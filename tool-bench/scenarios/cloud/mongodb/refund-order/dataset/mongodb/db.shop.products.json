@@ -1,0 +1,226 @@
+[
+  {
+    "_key": "BKP-40",
+    "_id": "BKP-40",
+    "name": "Ridge 40L Backpack",
+    "category": "outdoor",
+    "price": 159,
+    "active": true
+  },
+  {
+    "_key": "BLN-PRO",
+    "_id": "BLN-PRO",
+    "name": "Pro Blender",
+    "category": "kitchen",
+    "price": 249,
+    "active": true
+  },
+  {
+    "_key": "BRD-M",
+    "_id": "BRD-M",
+    "name": "Maple Cutting Board",
+    "category": "kitchen",
+    "price": 45,
+    "active": true
+  },
+  {
+    "_key": "CAP-RN",
+    "_id": "CAP-RN",
+    "name": "Trail Cap",
+    "category": "apparel",
+    "price": 27,
+    "active": true
+  },
+  {
+    "_key": "CBL-C3",
+    "_id": "CBL-C3",
+    "name": "USB-C Cable 3-pack",
+    "category": "electronics",
+    "price": 19,
+    "active": true
+  },
+  {
+    "_key": "CHF-8",
+    "_id": "CHF-8",
+    "name": "Chef's Knife 8in",
+    "category": "kitchen",
+    "price": 89,
+    "active": true
+  },
+  {
+    "_key": "CUP-TI",
+    "_id": "CUP-TI",
+    "name": "Titanium Camp Mug",
+    "category": "outdoor",
+    "price": 25.5,
+    "active": true
+  },
+  {
+    "_key": "DTCH-6",
+    "_id": "DTCH-6",
+    "name": "Dutch Oven 6qt",
+    "category": "kitchen",
+    "price": 189,
+    "active": true
+  },
+  {
+    "_key": "ESP-M2",
+    "_id": "ESP-M2",
+    "name": "Espresso Machine M2",
+    "category": "kitchen",
+    "price": 649,
+    "active": true
+  },
+  {
+    "_key": "FLT-W",
+    "_id": "FLT-W",
+    "name": "Water Filter",
+    "category": "outdoor",
+    "price": 44,
+    "active": true
+  },
+  {
+    "_key": "GRL-PT",
+    "_id": "GRL-PT",
+    "name": "Portable Grill",
+    "category": "outdoor",
+    "price": 199,
+    "active": true
+  },
+  {
+    "_key": "HDL-300",
+    "_id": "HDL-300",
+    "name": "Headlamp 300lm",
+    "category": "outdoor",
+    "price": 39,
+    "active": true
+  },
+  {
+    "_key": "HDP-X2",
+    "_id": "HDP-X2",
+    "name": "Studio X2 Headphones",
+    "category": "electronics",
+    "price": 199,
+    "active": true
+  },
+  {
+    "_key": "JKT-RN",
+    "_id": "JKT-RN",
+    "name": "Rainshell Jacket",
+    "category": "apparel",
+    "price": 179,
+    "active": true
+  },
+  {
+    "_key": "KBD-MX",
+    "_id": "KBD-MX",
+    "name": "Mechanical Keyboard",
+    "category": "electronics",
+    "price": 139,
+    "active": true
+  },
+  {
+    "_key": "LPT-STD",
+    "_id": "LPT-STD",
+    "name": "Laptop Stand",
+    "category": "electronics",
+    "price": 59,
+    "active": true
+  },
+  {
+    "_key": "MSE-W",
+    "_id": "MSE-W",
+    "name": "Wireless Mouse",
+    "category": "electronics",
+    "price": 49,
+    "active": true
+  },
+  {
+    "_key": "PAD-TRK",
+    "_id": "PAD-TRK",
+    "name": "Trekking Poles",
+    "category": "outdoor",
+    "price": 89,
+    "active": true
+  },
+  {
+    "_key": "SCK-W3",
+    "_id": "SCK-W3",
+    "name": "Wool Hiking Socks 3-pack",
+    "category": "apparel",
+    "price": 29,
+    "active": true
+  },
+  {
+    "_key": "SLP-20",
+    "_id": "SLP-20",
+    "name": "Summit 20F Sleeping Bag",
+    "category": "outdoor",
+    "price": 189,
+    "active": true
+  },
+  {
+    "_key": "SMW-4",
+    "_id": "SMW-4",
+    "name": "Smartwatch Series 4",
+    "category": "electronics",
+    "price": 349,
+    "active": true
+  },
+  {
+    "_key": "SPK-BT",
+    "_id": "SPK-BT",
+    "name": "Pulse Bluetooth Speaker",
+    "category": "electronics",
+    "price": 129,
+    "active": true
+  },
+  {
+    "_key": "SPT-W",
+    "_id": "SPT-W",
+    "name": "Wooden Spatula Set",
+    "category": "kitchen",
+    "price": 24,
+    "active": true
+  },
+  {
+    "_key": "STV-CMP",
+    "_id": "STV-CMP",
+    "name": "Camp Stove",
+    "category": "outdoor",
+    "price": 119,
+    "active": true
+  },
+  {
+    "_key": "TEE-MR",
+    "_id": "TEE-MR",
+    "name": "Merino Tee",
+    "category": "apparel",
+    "price": 59,
+    "active": true
+  },
+  {
+    "_key": "TNT-2P",
+    "_id": "TNT-2P",
+    "name": "Trailhead 2P Tent",
+    "category": "outdoor",
+    "price": 249,
+    "active": true
+  },
+  {
+    "_key": "TNT-4P",
+    "_id": "TNT-4P",
+    "name": "Basecamp 4P Tent",
+    "category": "outdoor",
+    "price": 429,
+    "active": true
+  },
+  {
+    "_key": "TV-55Q",
+    "_id": "TV-55Q",
+    "name": "55in QLED TV",
+    "category": "electronics",
+    "price": 899,
+    "active": true
+  }
+]

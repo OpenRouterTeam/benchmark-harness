@@ -1,0 +1,75 @@
+[
+  {
+    "_key": "https://docs.lumenpay.dev",
+    "title": "LumenPay Docs",
+    "description": "Guides and API reference for accepting payments with LumenPay.",
+    "language": "en",
+    "markdown": "# LumenPay Docs\n\nEverything you need to accept payments with LumenPay.\n\n## Guides\n\n- [Quickstart](https://docs.lumenpay.dev/guides/quickstart)\n- [Authentication](https://docs.lumenpay.dev/guides/authentication)\n- [Testing in sandbox](https://docs.lumenpay.dev/guides/testing)\n\n## API reference\n\n- [Overview](https://docs.lumenpay.dev/api/overview)\n- [Payments](https://docs.lumenpay.dev/api/payments)\n- [Refunds](https://docs.lumenpay.dev/api/refunds)\n- [Customers](https://docs.lumenpay.dev/api/customers)\n- [Webhooks](https://docs.lumenpay.dev/api/webhooks)\n\n[Changelog](https://docs.lumenpay.dev/changelog)"
+  },
+  {
+    "_key": "https://docs.lumenpay.dev/guides/quickstart",
+    "title": "Quickstart | LumenPay Docs",
+    "language": "en",
+    "markdown": "# Quickstart\n\nCreate a sandbox account, grab your secret key, and make your first payment in five minutes.\n\n```bash\ncurl https://api.lumenpay.dev/v1/payments -u sk_test_123: -d amount=1000 -d currency=usd\n```\n\nNext: [Authentication](https://docs.lumenpay.dev/guides/authentication)"
+  },
+  {
+    "_key": "https://docs.lumenpay.dev/guides/authentication",
+    "title": "Authentication | LumenPay Docs",
+    "language": "en",
+    "markdown": "# Authentication\n\nLumenPay authenticates requests with secret keys sent as HTTP Basic auth usernames. Keys starting with `sk_test_` work only in sandbox."
+  },
+  {
+    "_key": "https://docs.lumenpay.dev/guides/testing",
+    "title": "Testing in sandbox | LumenPay Docs",
+    "language": "en",
+    "markdown": "# Testing in sandbox\n\nUse card number 4242 4242 4242 4242 with any future expiry to simulate a successful payment."
+  },
+  {
+    "_key": "https://docs.lumenpay.dev/api/overview",
+    "title": "API overview | LumenPay API Reference",
+    "language": "en",
+    "markdown": "# API overview\n\nThe LumenPay API is organized around REST. Base URL: `https://api.lumenpay.dev/v1`. All responses are JSON, and errors use conventional HTTP status codes.\n\n- [Payments](https://docs.lumenpay.dev/api/payments)\n- [Refunds](https://docs.lumenpay.dev/api/refunds)\n- [Customers](https://docs.lumenpay.dev/api/customers)\n- [Webhooks](https://docs.lumenpay.dev/api/webhooks)"
+  },
+  {
+    "_key": "https://docs.lumenpay.dev/api/payments",
+    "title": "Payments | LumenPay API Reference",
+    "language": "en",
+    "markdown": "# Payments\n\n`POST /v1/payments` creates a payment. Required: `amount` (integer, minor units), `currency`. Optional: `customer`, `description`, `capture` (default true).\n\n`GET /v1/payments/{id}` retrieves a payment."
+  },
+  {
+    "_key": "https://docs.lumenpay.dev/api/refunds",
+    "title": "Refunds | LumenPay API Reference",
+    "language": "en",
+    "markdown": "# Refunds\n\n`POST /v1/refunds` refunds a captured payment in full or in part. Required: `payment`. Optional: `amount`, `reason` (`duplicate`, `fraudulent`, `requested_by_customer`)."
+  },
+  {
+    "_key": "https://docs.lumenpay.dev/api/customers",
+    "title": "Customers | LumenPay API Reference",
+    "language": "en",
+    "markdown": "# Customers\n\n`POST /v1/customers` creates a customer. `GET /v1/customers?email=` searches by email."
+  },
+  {
+    "_key": "https://docs.lumenpay.dev/api/webhooks",
+    "title": "Webhooks | LumenPay API Reference",
+    "language": "en",
+    "markdown": "# Webhooks\n\nLumenPay sends `payment.succeeded`, `payment.failed` and `refund.created` events. Verify the `Lumen-Signature` header with your endpoint secret."
+  },
+  {
+    "_key": "https://docs.lumenpay.dev/changelog",
+    "title": "Changelog | LumenPay Docs",
+    "language": "en",
+    "markdown": "# Changelog\n\n## 2026-10-01\n\n- Refunds: added the `requested_by_customer` reason.\n\n## 2026-08-14\n\n- Webhooks: signatures now use HMAC-SHA256."
+  },
+  {
+    "_key": "https://lumenpay.dev",
+    "title": "LumenPay | Payments for platforms",
+    "language": "en",
+    "markdown": "# Payments for platforms\n\nLumenPay helps marketplaces and SaaS platforms accept payments in 40 countries. [Read the docs](https://docs.lumenpay.dev)"
+  },
+  {
+    "_key": "https://lumenpay.dev/pricing",
+    "title": "Pricing | LumenPay",
+    "language": "en",
+    "markdown": "# Pricing\n\n2.6% + 30¢ per successful card payment. No monthly fees."
+  }
+]

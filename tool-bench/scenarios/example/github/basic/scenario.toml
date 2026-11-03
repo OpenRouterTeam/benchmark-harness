@@ -1,0 +1,10 @@
+# Fixture for mock-core/world tests; not a benchmark task (taskgen skips example/).
+[scenario]
+id = "example/github/basic"
+title = "GitHub mock fixture"
+now = "2026-03-14T09:00:00Z"
+seed = "example-github-basic"
+services = ["github"]
+
+[[expect.required_calls]]
+service = "github"

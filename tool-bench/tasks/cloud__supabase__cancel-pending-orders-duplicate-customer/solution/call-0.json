@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"execute_sql","arguments":{"project_id":"qmvbxtzkplrnwdhyfaco","query":"select id, full_name, email from public.customers where full_name ilike 'priya%'"}}}

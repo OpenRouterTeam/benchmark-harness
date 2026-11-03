@@ -1,0 +1,23 @@
+[
+  {
+    "_key": "lumen-retail/storefront/checkout-web:v2.13.4",
+    "name": "v2.13.4",
+    "commit": "9a4e7c2d1f8b05a36c9e2d7f4b1a8c0e5d3f6a29",
+    "message": "checkout-web 2.13.4",
+    "created_at": "2026-10-20T15:40:00.000Z"
+  },
+  {
+    "_key": "lumen-retail/storefront/checkout-web:v2.14.0-rc2",
+    "name": "v2.14.0-rc2",
+    "commit": "3c8d1e6f0a2b47c95d3e8f1a6b0c2d9e4f7a1b38",
+    "message": "checkout-web 2.14.0-rc2",
+    "created_at": "2026-10-27T11:02:00.000Z"
+  },
+  {
+    "_key": "lumen-retail/storefront/checkout-web:v2.14.0-rc3",
+    "name": "v2.14.0-rc3",
+    "commit": "6e1f0c9a4b7d25e83f6a0b1c9d2e4f7a8b3c5d60",
+    "message": "checkout-web 2.14.0-rc3",
+    "created_at": "2026-10-29T12:38:00.000Z"
+  }
+]

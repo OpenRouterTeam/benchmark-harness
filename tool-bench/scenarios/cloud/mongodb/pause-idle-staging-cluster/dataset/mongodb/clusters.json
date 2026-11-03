@@ -1,0 +1,273 @@
+[
+  {
+    "_key": "65c0ffee0000000000000001/shop-prod",
+    "id": "66a0c1000000000000000001",
+    "groupId": "65c0ffee0000000000000001",
+    "name": "shop-prod",
+    "clusterType": "REPLICASET",
+    "createDate": "2024-03-05T09:00:00Z",
+    "mongoDBMajorVersion": "8.0",
+    "mongoDBVersion": "8.0.15",
+    "paused": false,
+    "stateName": "IDLE",
+    "backupEnabled": true,
+    "pitEnabled": false,
+    "terminationProtectionEnabled": true,
+    "diskSizeGB": 40,
+    "replicationSpecs": [
+      {
+        "zoneName": "Zone 1",
+        "regionConfigs": [
+          {
+            "providerName": "AWS",
+            "regionName": "US_EAST_1",
+            "priority": 7,
+            "electableSpecs": {
+              "instanceSize": "M30",
+              "nodeCount": 3
+            },
+            "autoScaling": {
+              "compute": {
+                "enabled": true,
+                "scaleDownEnabled": true,
+                "minInstanceSize": "M30",
+                "maxInstanceSize": "M50"
+              },
+              "diskGB": {
+                "enabled": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "connectionStrings": {
+      "standard": "mongodb://shop-prod-shard-00-00.x7kq2.mongodb.net:27017,shop-prod-shard-00-01.x7kq2.mongodb.net:27017,shop-prod-shard-00-02.x7kq2.mongodb.net:27017/?ssl=true&authSource=admin&replicaSet=atlas-x7kq2-shard-0",
+      "standardSrv": "mongodb+srv://shop-prod.x7kq2.mongodb.net"
+    }
+  },
+  {
+    "_key": "65c0ffee0000000000000001/analytics-prod",
+    "id": "66a0c1000000000000000002",
+    "groupId": "65c0ffee0000000000000001",
+    "name": "analytics-prod",
+    "clusterType": "REPLICASET",
+    "createDate": "2024-03-05T09:00:00Z",
+    "mongoDBMajorVersion": "8.0",
+    "mongoDBVersion": "8.0.15",
+    "paused": false,
+    "stateName": "IDLE",
+    "backupEnabled": true,
+    "pitEnabled": false,
+    "terminationProtectionEnabled": true,
+    "diskSizeGB": 40,
+    "replicationSpecs": [
+      {
+        "zoneName": "Zone 1",
+        "regionConfigs": [
+          {
+            "providerName": "AWS",
+            "regionName": "US_EAST_1",
+            "priority": 7,
+            "electableSpecs": {
+              "instanceSize": "M20",
+              "nodeCount": 3
+            },
+            "autoScaling": {
+              "compute": {
+                "enabled": true,
+                "scaleDownEnabled": true,
+                "minInstanceSize": "M20",
+                "maxInstanceSize": "M40"
+              },
+              "diskGB": {
+                "enabled": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "connectionStrings": {
+      "standard": "mongodb://analytics-prod-shard-00-00.x7kq2.mongodb.net:27017,analytics-prod-shard-00-01.x7kq2.mongodb.net:27017,analytics-prod-shard-00-02.x7kq2.mongodb.net:27017/?ssl=true&authSource=admin&replicaSet=atlas-x7kq2-shard-0",
+      "standardSrv": "mongodb+srv://analytics-prod.x7kq2.mongodb.net"
+    }
+  },
+  {
+    "_key": "65c0ffee0000000000000002/shop-staging",
+    "id": "66a0c1000000000000000003",
+    "groupId": "65c0ffee0000000000000002",
+    "name": "shop-staging",
+    "clusterType": "REPLICASET",
+    "createDate": "2024-03-05T09:00:00Z",
+    "mongoDBMajorVersion": "8.0",
+    "mongoDBVersion": "8.0.15",
+    "paused": false,
+    "stateName": "IDLE",
+    "backupEnabled": true,
+    "pitEnabled": false,
+    "terminationProtectionEnabled": false,
+    "diskSizeGB": 40,
+    "replicationSpecs": [
+      {
+        "zoneName": "Zone 1",
+        "regionConfigs": [
+          {
+            "providerName": "AWS",
+            "regionName": "US_EAST_1",
+            "priority": 7,
+            "electableSpecs": {
+              "instanceSize": "M10",
+              "nodeCount": 3
+            },
+            "autoScaling": {
+              "compute": {
+                "enabled": true,
+                "scaleDownEnabled": true,
+                "minInstanceSize": "M10",
+                "maxInstanceSize": "M30"
+              },
+              "diskGB": {
+                "enabled": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "connectionStrings": {
+      "standard": "mongodb://shop-staging-shard-00-00.p3n8d.mongodb.net:27017,shop-staging-shard-00-01.p3n8d.mongodb.net:27017,shop-staging-shard-00-02.p3n8d.mongodb.net:27017/?ssl=true&authSource=admin&replicaSet=atlas-p3n8d-shard-0",
+      "standardSrv": "mongodb+srv://shop-staging.p3n8d.mongodb.net"
+    }
+  },
+  {
+    "_key": "65c0ffee0000000000000002/analytics-staging",
+    "id": "66a0c1000000000000000004",
+    "groupId": "65c0ffee0000000000000002",
+    "name": "analytics-staging",
+    "clusterType": "REPLICASET",
+    "createDate": "2024-03-05T09:00:00Z",
+    "mongoDBMajorVersion": "8.0",
+    "mongoDBVersion": "8.0.15",
+    "paused": false,
+    "stateName": "IDLE",
+    "backupEnabled": true,
+    "pitEnabled": false,
+    "terminationProtectionEnabled": false,
+    "diskSizeGB": 40,
+    "replicationSpecs": [
+      {
+        "zoneName": "Zone 1",
+        "regionConfigs": [
+          {
+            "providerName": "AWS",
+            "regionName": "US_EAST_1",
+            "priority": 7,
+            "electableSpecs": {
+              "instanceSize": "M10",
+              "nodeCount": 3
+            },
+            "autoScaling": {
+              "compute": {
+                "enabled": true,
+                "scaleDownEnabled": true,
+                "minInstanceSize": "M10",
+                "maxInstanceSize": "M30"
+              },
+              "diskGB": {
+                "enabled": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "connectionStrings": {
+      "standard": "mongodb://analytics-staging-shard-00-00.p3n8d.mongodb.net:27017,analytics-staging-shard-00-01.p3n8d.mongodb.net:27017,analytics-staging-shard-00-02.p3n8d.mongodb.net:27017/?ssl=true&authSource=admin&replicaSet=atlas-p3n8d-shard-0",
+      "standardSrv": "mongodb+srv://analytics-staging.p3n8d.mongodb.net"
+    }
+  },
+  {
+    "_key": "65c0ffee0000000000000003/analytics-staging",
+    "id": "66a0c1000000000000000005",
+    "groupId": "65c0ffee0000000000000003",
+    "name": "analytics-staging",
+    "clusterType": "REPLICASET",
+    "createDate": "2024-03-05T09:00:00Z",
+    "mongoDBMajorVersion": "8.0",
+    "mongoDBVersion": "8.0.15",
+    "paused": false,
+    "stateName": "IDLE",
+    "backupEnabled": true,
+    "pitEnabled": false,
+    "terminationProtectionEnabled": false,
+    "diskSizeGB": 40,
+    "replicationSpecs": [
+      {
+        "zoneName": "Zone 1",
+        "regionConfigs": [
+          {
+            "providerName": "AWS",
+            "regionName": "US_EAST_1",
+            "priority": 7,
+            "electableSpecs": {
+              "instanceSize": "M10",
+              "nodeCount": 3
+            },
+            "autoScaling": {
+              "compute": {
+                "enabled": true,
+                "scaleDownEnabled": true,
+                "minInstanceSize": "M10",
+                "maxInstanceSize": "M30"
+              },
+              "diskGB": {
+                "enabled": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "connectionStrings": {
+      "standard": "mongodb://analytics-staging-shard-00-00.w9v4t.mongodb.net:27017,analytics-staging-shard-00-01.w9v4t.mongodb.net:27017,analytics-staging-shard-00-02.w9v4t.mongodb.net:27017/?ssl=true&authSource=admin&replicaSet=atlas-w9v4t-shard-0",
+      "standardSrv": "mongodb+srv://analytics-staging.w9v4t.mongodb.net"
+    }
+  },
+  {
+    "_key": "65c0ffee0000000000000004/ds-sandbox",
+    "id": "66a0c1000000000000000006",
+    "groupId": "65c0ffee0000000000000004",
+    "name": "ds-sandbox",
+    "clusterType": "REPLICASET",
+    "createDate": "2024-03-05T09:00:00Z",
+    "mongoDBMajorVersion": "8.0",
+    "mongoDBVersion": "8.0.15",
+    "paused": false,
+    "stateName": "IDLE",
+    "backupEnabled": false,
+    "pitEnabled": false,
+    "terminationProtectionEnabled": false,
+    "diskSizeGB": 0.5,
+    "replicationSpecs": [
+      {
+        "zoneName": "Zone 1",
+        "regionConfigs": [
+          {
+            "providerName": "TENANT",
+            "backingProviderName": "AWS",
+            "regionName": "US_EAST_1",
+            "priority": 7,
+            "electableSpecs": {
+              "instanceSize": "M0"
+            }
+          }
+        ]
+      }
+    ],
+    "connectionStrings": {
+      "standard": "mongodb://ds-sandbox-shard-00-00.m2r6s.mongodb.net:27017,ds-sandbox-shard-00-01.m2r6s.mongodb.net:27017,ds-sandbox-shard-00-02.m2r6s.mongodb.net:27017/?ssl=true&authSource=admin&replicaSet=atlas-m2r6s-shard-0",
+      "standardSrv": "mongodb+srv://ds-sandbox.m2r6s.mongodb.net"
+    }
+  }
+]

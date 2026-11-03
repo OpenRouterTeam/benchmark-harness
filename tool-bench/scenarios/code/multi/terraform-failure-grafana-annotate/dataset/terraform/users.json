@@ -1,0 +1,29 @@
+[
+ {
+  "id": "user-sCLiMu3Hnw2KThIL",
+  "username": "sam-rivera",
+  "email": "sam.rivera@acme.io",
+  "current": true
+ },
+ {
+  "id": "user-sIP8122NxE6G9g6M",
+  "username": "priya-nair",
+  "email": "priya.nair@acme.io"
+ },
+ {
+  "id": "user-Vm0I7MiOQY9x5zBV",
+  "username": "dmitri-volkov",
+  "email": "dmitri.volkov@acme.io"
+ },
+ {
+  "id": "user-TSdKoSGwM7m5pCTl",
+  "username": "alice-wong",
+  "email": "alice.wong@acme.io"
+ },
+ {
+  "id": "user-A8A0AX37KC262Y8i",
+  "username": "api-org-acme-platform-ci",
+  "email": "",
+  "is-service-account": true
+ }
+]

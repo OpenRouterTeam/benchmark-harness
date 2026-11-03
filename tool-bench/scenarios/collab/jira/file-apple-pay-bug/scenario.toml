@@ -1,0 +1,52 @@
+[scenario]
+id = "collab/jira/file-apple-pay-bug"
+title = "File a High-priority WEB bug for the missing Apple Pay button, assigned to Alex Kim"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-jira-file-apple-pay-bug"
+services = ["jira"]
+tags = ["write", "single-service", "jira", "disambiguation"]
+timeout_sec = 900
+
+# The new issue is WEB-56. "Alex Kim" is alex.kim, not Alex Kimball or the inactive
+# "Alex Kim (contractor)". WEB-53 (an older, Done Apple Pay bug) must not be reopened.
+[[expect.state]]
+pointer = "/services/jira/issues/WEB-56/fields/issuetype"
+equals = "Bug"
+
+[[expect.state]]
+pointer = "/services/jira/issues/WEB-56/fields/summary"
+contains = "Apple Pay"
+
+[[expect.state]]
+pointer = "/services/jira/issues/WEB-56/fields/priority"
+equals = "High"
+
+[[expect.state]]
+pointer = "/services/jira/issues/WEB-56/fields/assignee"
+equals = "alex.kim"
+
+[[expect.state]]
+pointer = "/services/jira/issues/WEB-56/fields/components"
+equals = ["Checkout"]
+
+[[expect.state]]
+pointer = "/services/jira/issues/WEB-56/fields/labels"
+contains = "ios"
+
+[[expect.state]]
+pointer = "/services/jira/issues/WEB-57"
+exists = false
+
+[[expect.state]]
+pointer = "/services/jira/issues/WEB-53/fields/status"
+equals = "Done"
+
+[[solution.call]]
+endpoint = "atlassian"
+tool = "jira_search_assignable_users"
+arguments = { query = "Alex Kim", project_key = "WEB" }
+
+[[solution.call]]
+endpoint = "atlassian"
+tool = "jira_create_issue"
+arguments = { project_key = "WEB", summary = "Apple Pay button missing at checkout on iOS 18 Safari", issue_type = "Bug", assignee = "alex.kim", components = "Checkout", description = "The Apple Pay button does not render on the checkout payment step in Safari on iOS 18.", additional_fields = "{\"priority\": {\"name\": \"High\"}, \"labels\": [\"ios\"]}" }

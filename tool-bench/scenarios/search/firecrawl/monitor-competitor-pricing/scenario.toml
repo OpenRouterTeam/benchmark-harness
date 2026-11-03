@@ -1,0 +1,63 @@
+[scenario]
+id = "search/firecrawl/monitor-competitor-pricing"
+title = "Create a daily monitor on a competitor's pricing page"
+now = "2026-10-28T16:30:00Z"
+seed = "search-firecrawl-monitor-competitor-pricing"
+services = ["firecrawl"]
+tags = ["write", "single-service", "firecrawl"]
+timeout_sec = 900
+
+# The first monitor created in this world gets this ID (deterministic per seed).
+[[expect.state]]
+pointer = "/services/firecrawl/monitors/adf6b65a-6476-82e0-8fc2-15f9b1e90267/name"
+equals = "Fabrikam pricing"
+
+[[expect.state]]
+pointer = "/services/firecrawl/monitors/adf6b65a-6476-82e0-8fc2-15f9b1e90267/status"
+equals = "active"
+
+[[expect.state]]
+pointer = "/services/firecrawl/monitors/adf6b65a-6476-82e0-8fc2-15f9b1e90267/targets/0/urls/0"
+contains = "fabrikam.io/pricing"
+
+[[expect.state]]
+pointer = "/services/firecrawl/monitors/adf6b65a-6476-82e0-8fc2-15f9b1e90267/schedule/intervalMinutes"
+equals = 1440
+
+[[expect.state]]
+pointer = "/services/firecrawl/monitors/adf6b65a-6476-82e0-8fc2-15f9b1e90267/notification/email/recipients"
+contains = "pricing-intel@contoso.example"
+
+# The existing monitors are untouched.
+[[expect.state]]
+pointer = "/services/firecrawl/monitors/3f6b2a10-5c4e-4d21-9b7a-1e0c2d3f4a02/targets/0/urls/0"
+equals = "https://www.fabrikam.io/careers"
+
+[[expect.state]]
+pointer = "/services/firecrawl/monitors/3f6b2a10-5c4e-4d21-9b7a-1e0c2d3f4a01/status"
+equals = "active"
+
+[[expect.required_calls]]
+service = "firecrawl"
+method = "POST"
+path = "/v2/monitor"
+
+[[expect.forbidden_calls]]
+service = "firecrawl"
+method = "DELETE"
+path_regex = "^/v2/monitor/"
+
+[[expect.forbidden_calls]]
+service = "firecrawl"
+method = "PATCH"
+path_regex = "^/v2/monitor/3f6b2a10-5c4e-4d21-9b7a-1e0c2d3f4a0[12]$"
+
+[[solution.call]]
+endpoint = "firecrawl"
+tool = "firecrawl_monitor_list"
+arguments = {}
+
+[[solution.call]]
+endpoint = "firecrawl"
+tool = "firecrawl_monitor_create"
+arguments = { name = "Fabrikam pricing", page = "https://www.fabrikam.io/pricing", goal = "Alert when Fabrikam changes any plan price or plan limit.", scheduleText = "daily", timezone = "UTC", email = "pricing-intel@contoso.example", includeDiffs = true }

@@ -1,0 +1,89 @@
+{
+  "state": [
+    {
+      "pointer": "/services/linear/issues/WEB-51/priority",
+      "equals": 1,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/issues/WEB-51/assigneeId",
+      "equals": "0bfae6ae-01d0-58d1-a611-7d1973102c45",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/comments/WEB-51#2/body",
+      "equals": null,
+      "exists": null,
+      "contains": "Acme",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/issues/PAY-97/priority",
+      "equals": 2,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/issues/PAY-97/assigneeId",
+      "equals": "a4176131-9edb-57a6-9830-0638d2d2fa29",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/issues/WEB-44/priority",
+      "equals": 3,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/linear/comments/PAY-97#1",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "linear",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "linear_createComment"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "linear",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "linear_archiveIssue"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"search_gmail_messages","arguments":{"query":"from:northwind.example invoice October"}}}

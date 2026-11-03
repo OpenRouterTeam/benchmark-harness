@@ -1,0 +1,1 @@
+Pipeline 5520 (main, commit 'Record refund reason on partial refunds') failed in the integration-tests job (also failed on retry): test_partial_refund_records_reason hit psycopg.errors.UndefinedColumn because column "refund_reason" of relation "refunds" does not exist; the code writes refund_reason but no migration adds that column.

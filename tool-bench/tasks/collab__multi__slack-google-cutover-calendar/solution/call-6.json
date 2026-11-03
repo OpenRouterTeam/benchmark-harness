@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"slack_send_message","arguments":{"channel_id":"C05DBMIG2RT","message":"It's on the Ops team calendar: Payments cluster PG16 production cutover, Saturday 2026-11-07 22:00-01:00 CT. Sam and Priya are invited.","thread_ts":"1792600205.318801"}}}

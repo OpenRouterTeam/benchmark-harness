@@ -1,0 +1,1 @@
+A customer, Jordan Lee (jordan.lee@example.com), says they were charged twice for the same purchase last week. Find the double charge in our order data in Elasticsearch, then refund the duplicate (the second of the two orders) in full in Stripe, with the reason recorded as a duplicate. Leave the first order's charge, and every other payment, untouched.

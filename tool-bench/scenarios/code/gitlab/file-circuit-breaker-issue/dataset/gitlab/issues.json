@@ -1,0 +1,120 @@
+[
+  {
+    "_key": "northwind/payments/checkout-api#51",
+    "id": 40051,
+    "iid": 51,
+    "title": "Retry budget for PSP calls is not configurable",
+    "description": "",
+    "state": "opened",
+    "author": "dana.kowalski",
+    "assignees": [
+      "sam.okafor"
+    ],
+    "labels": [
+      "backend"
+    ],
+    "milestone_id": 7104,
+    "created_at": "2026-03-21T10:00:00.000Z",
+    "updated_at": "2026-03-21T10:00:00.000Z",
+    "closed_at": null,
+    "issue_type": "issue"
+  },
+  {
+    "_key": "northwind/payments/checkout-api#53",
+    "id": 40053,
+    "iid": 53,
+    "title": "Checkout 502s during PSP failover",
+    "description": "",
+    "state": "closed",
+    "author": "dana.kowalski",
+    "assignees": [
+      "mei.chen"
+    ],
+    "labels": [
+      "backend",
+      "reliability"
+    ],
+    "milestone_id": 7103,
+    "created_at": "2026-03-23T10:00:00.000Z",
+    "updated_at": "2026-03-23T10:00:00.000Z",
+    "closed_at": "2026-03-25T10:00:00.000Z",
+    "issue_type": "issue"
+  },
+  {
+    "_key": "northwind/payments/checkout-api#54",
+    "id": 40054,
+    "iid": 54,
+    "title": "Add circuit breaker for address-validation",
+    "description": "",
+    "state": "closed",
+    "author": "dana.kowalski",
+    "assignees": [
+      "priya.raman"
+    ],
+    "labels": [
+      "backend",
+      "reliability"
+    ],
+    "milestone_id": 7103,
+    "created_at": "2026-03-24T10:00:00.000Z",
+    "updated_at": "2026-03-24T10:00:00.000Z",
+    "closed_at": "2026-03-26T10:00:00.000Z",
+    "issue_type": "issue"
+  },
+  {
+    "_key": "northwind/payments/checkout-api#56",
+    "id": 40056,
+    "iid": 56,
+    "title": "Postmortem: checkout outage 2026-04-01",
+    "description": "Timeline and action items for the 2026-04-01 checkout outage. Root cause: fraud-score p99 latency jumped to 9s and checkout threads blocked on it.\n\nAction items:\n- [ ] Circuit breaker around fraud-score calls\n- [ ] Alert on fraud-score p99",
+    "state": "opened",
+    "author": "dana.kowalski",
+    "assignees": [
+      "dana.kowalski"
+    ],
+    "labels": [
+      "reliability",
+      "postmortem"
+    ],
+    "milestone_id": 7104,
+    "created_at": "2026-03-26T10:00:00.000Z",
+    "updated_at": "2026-03-26T10:00:00.000Z",
+    "closed_at": null,
+    "issue_type": "issue"
+  },
+  {
+    "_key": "northwind/payments/checkout-api#57",
+    "id": 40057,
+    "iid": 57,
+    "title": "Move fraud-score timeout to config",
+    "description": "",
+    "state": "opened",
+    "author": "dana.kowalski",
+    "assignees": [],
+    "labels": [
+      "backend"
+    ],
+    "milestone_id": null,
+    "created_at": "2026-03-27T10:00:00.000Z",
+    "updated_at": "2026-03-27T10:00:00.000Z",
+    "closed_at": null,
+    "issue_type": "issue"
+  },
+  {
+    "_key": "northwind/mobile/checkout-ios#88",
+    "id": 50088,
+    "iid": 88,
+    "title": "Apple Pay sheet freezes on iOS 17.4",
+    "description": "",
+    "state": "opened",
+    "author": "mei.lin",
+    "assignees": [
+      "mei.lin"
+    ],
+    "labels": [],
+    "milestone_id": 7210,
+    "created_at": "2026-03-28T10:00:00.000Z",
+    "updated_at": "2026-03-28T10:00:00.000Z",
+    "issue_type": "issue"
+  }
+]

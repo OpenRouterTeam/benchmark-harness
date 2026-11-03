@@ -1,0 +1,5 @@
+[scenario]
+id = "test/salesforce/fixture"
+title = "Salesforce mock test org"
+now = "2026-05-12T15:00:00Z"
+seed = "salesforce-fixture"

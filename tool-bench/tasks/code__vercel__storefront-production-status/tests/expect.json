@@ -1,0 +1,36 @@
+{
+  "state": [],
+  "required_calls": [],
+  "forbidden_calls": [
+    {
+      "service": "vercel",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "vercel-create-deployment"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "vercel",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "vercel-delete-project"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": {
+    "contains": [
+      "c3a9f12"
+    ],
+    "regex": "(?i)(250\\s*MB|function size|maximum size|size limit)"
+  }
+}

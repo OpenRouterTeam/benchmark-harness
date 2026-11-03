@@ -1,0 +1,145 @@
+[
+  {
+    "_key": "default",
+    "metadata": {
+      "name": "default",
+      "uid": "f2fbe20f-ffe1-4641-a177-030dcb8915c3",
+      "resourceVersion": "41017",
+      "creationTimestamp": "2025-10-23T13:05:00Z",
+      "labels": {
+        "kubernetes.io/metadata.name": "default"
+      }
+    },
+    "spec": {
+      "finalizers": [
+        "kubernetes"
+      ]
+    },
+    "status": {
+      "phase": "Active"
+    }
+  },
+  {
+    "_key": "kube-system",
+    "metadata": {
+      "name": "kube-system",
+      "uid": "3f0dc022-cc97-4aae-af9c-44ce98b4c6d2",
+      "resourceVersion": "41051",
+      "creationTimestamp": "2025-10-23T13:05:00Z",
+      "labels": {
+        "kubernetes.io/metadata.name": "kube-system"
+      }
+    },
+    "spec": {
+      "finalizers": [
+        "kubernetes"
+      ]
+    },
+    "status": {
+      "phase": "Active"
+    }
+  },
+  {
+    "_key": "kube-public",
+    "metadata": {
+      "name": "kube-public",
+      "uid": "030efa4c-fda2-4ef9-a348-7eb618da9e1f",
+      "resourceVersion": "41085",
+      "creationTimestamp": "2025-10-23T13:05:00Z",
+      "labels": {
+        "kubernetes.io/metadata.name": "kube-public"
+      }
+    },
+    "spec": {
+      "finalizers": [
+        "kubernetes"
+      ]
+    },
+    "status": {
+      "phase": "Active"
+    }
+  },
+  {
+    "_key": "kube-node-lease",
+    "metadata": {
+      "name": "kube-node-lease",
+      "uid": "62cddf7a-bb68-4a19-a16d-cf532029c214",
+      "resourceVersion": "41119",
+      "creationTimestamp": "2025-10-23T13:05:00Z",
+      "labels": {
+        "kubernetes.io/metadata.name": "kube-node-lease"
+      }
+    },
+    "spec": {
+      "finalizers": [
+        "kubernetes"
+      ]
+    },
+    "status": {
+      "phase": "Active"
+    }
+  },
+  {
+    "_key": "shop-prod",
+    "metadata": {
+      "name": "shop-prod",
+      "uid": "66b979ac-37f5-46fb-ae1b-9ff50ac7b2d4",
+      "resourceVersion": "41323",
+      "creationTimestamp": "2026-05-01T13:05:00Z",
+      "labels": {
+        "kubernetes.io/metadata.name": "shop-prod",
+        "env": "prod"
+      }
+    },
+    "spec": {
+      "finalizers": [
+        "kubernetes"
+      ]
+    },
+    "status": {
+      "phase": "Active"
+    }
+  },
+  {
+    "_key": "shop-staging",
+    "metadata": {
+      "name": "shop-staging",
+      "uid": "e9a30c45-1d25-4c08-a579-62b8f16d78fe",
+      "resourceVersion": "41357",
+      "creationTimestamp": "2026-05-01T13:05:00Z",
+      "labels": {
+        "kubernetes.io/metadata.name": "shop-staging",
+        "env": "staging"
+      }
+    },
+    "spec": {
+      "finalizers": [
+        "kubernetes"
+      ]
+    },
+    "status": {
+      "phase": "Active"
+    }
+  },
+  {
+    "_key": "payments",
+    "metadata": {
+      "name": "payments",
+      "uid": "bc661d34-367b-4355-a75c-33cc08302165",
+      "resourceVersion": "41391",
+      "creationTimestamp": "2026-05-01T13:05:00Z",
+      "labels": {
+        "kubernetes.io/metadata.name": "payments",
+        "env": "prod"
+      }
+    },
+    "spec": {
+      "finalizers": [
+        "kubernetes"
+      ]
+    },
+    "status": {
+      "phase": "Active"
+    }
+  }
+]

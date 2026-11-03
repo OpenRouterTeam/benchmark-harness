@@ -1,0 +1,138 @@
+[
+  {
+    "_key": "orders-db-replica-1-replica-lag",
+    "AlarmName": "orders-db-replica-1-replica-lag",
+    "AlarmDescription": "Replica lag on orders-db-replica-1 above 5 minutes",
+    "AlarmArn": "arn:aws:cloudwatch:us-east-1:481562039417:alarm:orders-db-replica-1-replica-lag",
+    "AlarmConfigurationUpdatedTimestamp": "2026-06-02T10:00:00Z",
+    "ActionsEnabled": true,
+    "OKActions": [
+      "arn:aws:sns:us-east-1:481562039417:pagerduty-platform"
+    ],
+    "AlarmActions": [
+      "arn:aws:sns:us-east-1:481562039417:pagerduty-platform"
+    ],
+    "InsufficientDataActions": [],
+    "StateValue": "OK",
+    "StateReason": "Threshold Crossed: 3 datapoints [2.0, 1.0, 1.0] were not greater than the threshold (300.0).",
+    "StateUpdatedTimestamp": "2026-10-23T03:31:00Z",
+    "StateTransitionedTimestamp": "2026-10-23T03:31:00Z",
+    "MetricName": "ReplicaLag",
+    "Namespace": "AWS/RDS",
+    "Statistic": "Maximum",
+    "Dimensions": [
+      {
+        "Name": "DBInstanceIdentifier",
+        "Value": "orders-db-replica-1"
+      }
+    ],
+    "Period": 60,
+    "EvaluationPeriods": 3,
+    "DatapointsToAlarm": 3,
+    "Threshold": 300.0,
+    "ComparisonOperator": "GreaterThanThreshold",
+    "TreatMissingData": "missing"
+  },
+  {
+    "_key": "orders-db-replica-2-replica-lag",
+    "AlarmName": "orders-db-replica-2-replica-lag",
+    "AlarmDescription": "Replica lag on orders-db-replica-2 above 5 minutes",
+    "AlarmArn": "arn:aws:cloudwatch:us-east-1:481562039417:alarm:orders-db-replica-2-replica-lag",
+    "AlarmConfigurationUpdatedTimestamp": "2026-06-02T10:00:00Z",
+    "ActionsEnabled": true,
+    "OKActions": [
+      "arn:aws:sns:us-east-1:481562039417:pagerduty-platform"
+    ],
+    "AlarmActions": [
+      "arn:aws:sns:us-east-1:481562039417:pagerduty-platform"
+    ],
+    "InsufficientDataActions": [],
+    "StateValue": "ALARM",
+    "StateReason": "Threshold Crossed: 3 datapoints [351.0 (30/10/26 13:10:00), 388.0 (30/10/26 13:09:00), 412.0 (30/10/26 13:08:00)] were greater than the threshold (300.0).",
+    "StateUpdatedTimestamp": "2026-10-30T13:11:00Z",
+    "StateTransitionedTimestamp": "2026-10-30T13:11:00Z",
+    "MetricName": "ReplicaLag",
+    "Namespace": "AWS/RDS",
+    "Statistic": "Maximum",
+    "Dimensions": [
+      {
+        "Name": "DBInstanceIdentifier",
+        "Value": "orders-db-replica-2"
+      }
+    ],
+    "Period": 60,
+    "EvaluationPeriods": 3,
+    "DatapointsToAlarm": 3,
+    "Threshold": 300.0,
+    "ComparisonOperator": "GreaterThanThreshold",
+    "TreatMissingData": "missing"
+  },
+  {
+    "_key": "inventory-db-replica-1-replica-lag",
+    "AlarmName": "inventory-db-replica-1-replica-lag",
+    "AlarmDescription": "Replica lag on inventory-db-replica-1 above 5 minutes",
+    "AlarmArn": "arn:aws:cloudwatch:us-east-1:481562039417:alarm:inventory-db-replica-1-replica-lag",
+    "AlarmConfigurationUpdatedTimestamp": "2026-06-02T10:00:00Z",
+    "ActionsEnabled": true,
+    "OKActions": [
+      "arn:aws:sns:us-east-1:481562039417:pagerduty-platform"
+    ],
+    "AlarmActions": [
+      "arn:aws:sns:us-east-1:481562039417:pagerduty-platform"
+    ],
+    "InsufficientDataActions": [],
+    "StateValue": "ALARM",
+    "StateReason": "Threshold Crossed: 3 datapoints [330.0, 318.0, 305.0] were greater than the threshold (300.0).",
+    "StateUpdatedTimestamp": "2026-10-30T13:19:00Z",
+    "StateTransitionedTimestamp": "2026-10-30T13:19:00Z",
+    "MetricName": "ReplicaLag",
+    "Namespace": "AWS/RDS",
+    "Statistic": "Maximum",
+    "Dimensions": [
+      {
+        "Name": "DBInstanceIdentifier",
+        "Value": "inventory-db-replica-1"
+      }
+    ],
+    "Period": 60,
+    "EvaluationPeriods": 3,
+    "DatapointsToAlarm": 3,
+    "Threshold": 300.0,
+    "ComparisonOperator": "GreaterThanThreshold",
+    "TreatMissingData": "missing"
+  },
+  {
+    "_key": "orders-db-staging-replica-lag",
+    "AlarmName": "orders-db-staging-replica-lag",
+    "AlarmDescription": "Replica lag on orders-db-staging above 5 minutes",
+    "AlarmArn": "arn:aws:cloudwatch:us-east-1:481562039417:alarm:orders-db-staging-replica-lag",
+    "AlarmConfigurationUpdatedTimestamp": "2026-06-02T10:00:00Z",
+    "ActionsEnabled": true,
+    "OKActions": [
+      "arn:aws:sns:us-east-1:481562039417:pagerduty-platform"
+    ],
+    "AlarmActions": [
+      "arn:aws:sns:us-east-1:481562039417:pagerduty-platform"
+    ],
+    "InsufficientDataActions": [],
+    "StateValue": "ALARM",
+    "StateReason": "Threshold Crossed: 3 datapoints [902.0, 870.0, 845.0] were greater than the threshold (300.0).",
+    "StateUpdatedTimestamp": "2026-10-30T08:01:00Z",
+    "StateTransitionedTimestamp": "2026-10-30T08:01:00Z",
+    "MetricName": "ReplicaLag",
+    "Namespace": "AWS/RDS",
+    "Statistic": "Maximum",
+    "Dimensions": [
+      {
+        "Name": "DBInstanceIdentifier",
+        "Value": "orders-db-staging"
+      }
+    ],
+    "Period": 60,
+    "EvaluationPeriods": 3,
+    "DatapointsToAlarm": 3,
+    "Threshold": 300.0,
+    "ComparisonOperator": "GreaterThanThreshold",
+    "TreatMissingData": "missing"
+  }
+]

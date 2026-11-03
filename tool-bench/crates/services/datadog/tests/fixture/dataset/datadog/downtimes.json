@@ -1,0 +1,98 @@
+[
+  {
+    "active": false,
+    "active_child": null,
+    "canceled": null,
+    "creator_id": 1445400,
+    "disabled": false,
+    "downtime_type": 0,
+    "end": 1793376000,
+    "id": 3100201,
+    "message": "Postgres minor version upgrade",
+    "monitor_id": null,
+    "monitor_tags": [
+      "*"
+    ],
+    "mute_first_recovery_notification": false,
+    "notify_end_states": [
+      "alert",
+      "no data",
+      "warn"
+    ],
+    "notify_end_types": [
+      "expired"
+    ],
+    "parent_id": null,
+    "recurrence": null,
+    "scope": [
+      "host:db-prod-01"
+    ],
+    "start": 1793368800,
+    "timezone": "UTC",
+    "updater_id": null
+  },
+  {
+    "active": false,
+    "active_child": null,
+    "canceled": 1793286400,
+    "creator_id": 1445400,
+    "disabled": true,
+    "downtime_type": 0,
+    "end": 1793289600,
+    "id": 3100202,
+    "message": "Staging rebuild",
+    "monitor_id": null,
+    "monitor_tags": [
+      "*"
+    ],
+    "mute_first_recovery_notification": false,
+    "notify_end_states": [
+      "alert",
+      "no data",
+      "warn"
+    ],
+    "notify_end_types": [
+      "expired"
+    ],
+    "parent_id": null,
+    "recurrence": null,
+    "scope": [
+      "env:staging"
+    ],
+    "start": 1793286000,
+    "timezone": "UTC",
+    "updater_id": null
+  },
+  {
+    "active": false,
+    "active_child": null,
+    "canceled": null,
+    "creator_id": 1445400,
+    "disabled": false,
+    "downtime_type": 2,
+    "end": 1793462400,
+    "id": 3100203,
+    "message": "Checkout deploy freeze window",
+    "monitor_id": 5001,
+    "monitor_tags": [
+      "*"
+    ],
+    "mute_first_recovery_notification": false,
+    "notify_end_states": [
+      "alert",
+      "no data",
+      "warn"
+    ],
+    "notify_end_types": [
+      "expired"
+    ],
+    "parent_id": null,
+    "recurrence": null,
+    "scope": [
+      "env:prod"
+    ],
+    "start": 1793458800,
+    "timezone": "UTC",
+    "updater_id": null
+  }
+]

@@ -1,0 +1,35 @@
+[scenario]
+id = "business/stripe/customer-mrr"
+title = "Report a customer's monthly recurring revenue across their subscriptions"
+now = "2026-03-18T15:00:00Z"
+seed = "business-stripe-customer-mrr"
+services = ["stripe"]
+tags = ["lookup", "single-service", "stripe", "disambiguation"]
+timeout_sec = 900
+
+# Harbor & Pine Coffee Co. pays for two active subscriptions:
+#   Team monthly $249.00 x1 + Additional seats $15.00 x6   = $339.00 / month
+#   Analytics add-on $1,200.00 / year                      = $100.00 / month
+# MRR = $439.00. Excluded: a canceled Starter plan ($99), a trialing Extra location ($49),
+# and the look-alike customer Harbor & Pine Roasters ($252.50).
+[expect.answer]
+regex = '(^|[^0-9,])439(\.00)?([^0-9.]|\.([^0-9]|$)|$)'
+
+[[expect.forbidden_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write" }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_read"
+arguments = { stripe_api_operation_id = "GetCustomersSearch", parameters = { query = "name:\"Harbor & Pine Coffee Co.\"" }, stripe_context = "acct_1FwY8bQk2LmN4pRs", livemode = false }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_read"
+arguments = { stripe_api_operation_id = "GetSubscriptions", parameters = { customer = "cus_mxxxdqMeoA1GEc", status = "active" }, stripe_context = "acct_1FwY8bQk2LmN4pRs", livemode = false }
+
+[solution]
+answer = "Harbor & Pine Coffee Co. (cus_mxxxdqMeoA1GEc) has an MRR of $439.00: Team monthly with 6 additional seats ($339.00/month) plus the Analytics add-on billed yearly ($1,200.00/year = $100.00/month). The canceled Starter plan and the Extra location trial are not counted.\n"

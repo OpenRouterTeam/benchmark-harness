@@ -1,0 +1,1620 @@
+{
+ "Name": "lambda",
+ "ServiceName": "Lambda",
+ "Actions": [
+  {
+   "Name": "AddLayerVersionPermission",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "AddPermission",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CheckpointDurableExecution",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "ConnectMicrovm",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateAlias",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateCapacityProvider",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateCodeSigningConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateEventSourceMapping",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateFunction",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateFunctionUrlConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateMicrovmAuthToken",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateMicrovmImage",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateMicrovmShellAuthToken",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateNetworkConnector",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateWebFunction",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateWebFunctionEndpoint",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "CreateWebFunctionRevision",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteAlias",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteCapacityProvider",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteCodeSigningConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteEventSourceMapping",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteFunction",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteFunctionCodeSigningConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteFunctionConcurrency",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteFunctionEventInvokeConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteFunctionUrlConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteLayerVersion",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteMicrovmImage",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteMicrovmImageVersion",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteNetworkConnector",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteProvisionedConcurrencyConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteResourcePolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteWebFunction",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteWebFunctionEndpoint",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DeleteWebFunctionRevision",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "DisableReplication",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "EnableReplication",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "GetAccountSettings",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetAlias",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetCapacityProvider",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetCodeSigningConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetDurableExecution",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetDurableExecutionHistory",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetDurableExecutionState",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetEventSourceMapping",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetFunction",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetFunctionCodeSigningConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetFunctionConcurrency",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetFunctionConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetFunctionEventInvokeConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetFunctionRecursionConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetFunctionScalingConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetFunctionUrlConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetLayerVersion",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetLayerVersionPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetMicrovm",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetMicrovmImage",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetMicrovmImageBuild",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetMicrovmImageVersion",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetNetworkConnector",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetPolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetProvisionedConcurrencyConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetResourcePolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetRuntimeManagementConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetWebAccountSettings",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetWebFunction",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetWebFunctionEndpoint",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "GetWebFunctionRevision",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "InvokeAsync",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "InvokeFunction",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "InvokeFunctionUrl",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "InvokeWebFunctionEndpoint",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "ListAliases",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListCapacityProviders",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListCodeSigningConfigs",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListDurableExecutionsByFunction",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListEventSourceMappings",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListFunctionEventInvokeConfigs",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListFunctionUrlConfigs",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListFunctionVersionsByCapacityProvider",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListFunctions",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListFunctionsByCodeSigningConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListLayerVersions",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListLayers",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListManagedMicrovmImageVersions",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListManagedMicrovmImages",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListMicrovmImageBuilds",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListMicrovmImageVersions",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListMicrovmImages",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListMicrovms",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListNetworkConnectorVersions",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListNetworkConnectors",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListProvisionedConcurrencyConfigs",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListTags",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListVersionsByFunction",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListWebFunctionEndpoints",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListWebFunctionRevisions",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "ListWebFunctions",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": true,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": false
+    }
+   }
+  },
+  {
+   "Name": "PassCapacityProvider",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PassNetworkConnector",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PublishLayerVersion",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PublishVersion",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutFunctionCodeSigningConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutFunctionConcurrency",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutFunctionEventInvokeConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutFunctionRecursionConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutFunctionScalingConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutProvisionedConcurrencyConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutResourcePolicy",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "PutRuntimeManagementConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "RemoveLayerVersionPermission",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "RemovePermission",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": true,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "ResumeMicrovm",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "RunMicrovm",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "SendDurableExecutionCallbackFailure",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "SendDurableExecutionCallbackHeartbeat",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "SendDurableExecutionCallbackSuccess",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "StopDurableExecution",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "SuspendMicrovm",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "TagResource",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "TerminateMicrovm",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": true,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UntagResource",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": true,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateAlias",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateCapacityProvider",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateCodeSigningConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateEventSourceMapping",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateFunctionCode",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateFunctionCodeSigningConfig",
+   "Annotations": {
+    "Properties": {
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateFunctionConfiguration",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateFunctionEventInvokeConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateFunctionUrlConfig",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateMicrovmImage",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateMicrovmImageVersion",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateNetworkConnector",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  },
+  {
+   "Name": "UpdateWebFunctionEndpoint",
+   "Annotations": {
+    "Properties": {
+     "IsDataPlane": false,
+     "IsList": false,
+     "IsPermissionManagement": false,
+     "IsTaggingOnly": false,
+     "IsWrite": true
+    }
+   }
+  }
+ ],
+ "Version": "v1.5"
+}

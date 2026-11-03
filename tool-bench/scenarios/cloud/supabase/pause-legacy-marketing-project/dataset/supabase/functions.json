@@ -1,0 +1,30 @@
+[
+  {
+    "_key": "qmvbxtzkplrnwdhyfaco/stripe-webhook",
+    "id": "4f1d2c3b-8a9e-4b7c-9d6e-1a2b3c4d5e6f",
+    "slug": "stripe-webhook",
+    "name": "stripe-webhook",
+    "status": "ACTIVE",
+    "version": 3,
+    "created_at": 1758817200000,
+    "updated_at": 1771926000000,
+    "verify_jwt": false,
+    "import_map": false,
+    "entrypoint_path": "index.ts",
+    "ezbr_sha256": "6b1f0c9a1e2d3c4b5a69788766554433221100ffeeddccbbaa99887766554433"
+  },
+  {
+    "_key": "qmvbxtzkplrnwdhyfaco/send-order-email",
+    "id": "9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d",
+    "slug": "send-order-email",
+    "name": "send-order-email",
+    "status": "ACTIVE",
+    "version": 7,
+    "created_at": 1759395600000,
+    "updated_at": 1773158400000,
+    "verify_jwt": true,
+    "import_map": false,
+    "entrypoint_path": "index.ts",
+    "ezbr_sha256": "0f1e2d3c4b5a69788766554433221100ffeeddccbbaa99887766554433221100"
+  }
+]

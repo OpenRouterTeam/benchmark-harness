@@ -1,0 +1,22 @@
+[
+  {
+    "_key": "acme/platform/api:main:README.md",
+    "content": "# api\n\nPublic REST API.\n"
+  },
+  {
+    "_key": "acme/platform/api:main:src/limiter.rs",
+    "content": "pub fn refill(bucket: &mut Bucket) {\n    bucket.tokens += bucket.rate;\n}\n"
+  },
+  {
+    "_key": "acme/platform/api:main:.gitlab-ci.yml",
+    "content": "stages: [build, test]\nbuild:\n  stage: build\n  script: cargo build\nunit-tests:\n  stage: test\n  script: cargo test\n"
+  },
+  {
+    "_key": "acme/platform/api:fix/rate-limiter:src/limiter.rs",
+    "content": "pub fn refill(bucket: &mut Bucket) {\n    bucket.tokens = (bucket.tokens + bucket.rate).min(bucket.capacity);\n}\n"
+  },
+  {
+    "_key": "acme/platform/web:main:package.json",
+    "content": "{\"name\": \"web\"}\n"
+  }
+]

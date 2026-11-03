@@ -1,0 +1,20 @@
+[
+  {
+    "_key": "northwind/payments/ledger#118",
+    "id": 30118,
+    "iid": 118,
+    "title": "Refunds posted twice when PSP retries webhook",
+    "description": "Seen for 14 refunds on 2026-04-01.",
+    "state": "opened",
+    "author": "dana.kowalski",
+    "assignees": [
+      "priya.raman"
+    ],
+    "labels": [
+      "bug"
+    ],
+    "created_at": "2026-04-01T19:00:00.000Z",
+    "updated_at": "2026-04-02T06:45:00.000Z",
+    "issue_type": "issue"
+  }
+]

@@ -1,0 +1,69 @@
+[scenario]
+id = "business/stripe/refund-duplicate-charge"
+title = "Refund the duplicate of a double-charged order"
+now = "2026-03-18T15:00:00Z"
+seed = "business-stripe-refund-duplicate-charge"
+services = ["stripe"]
+tags = ["write", "single-service", "stripe", "disambiguation"]
+timeout_sec = 900
+
+# Northwind Bakery was charged $480.00 twice for order #1077 on 2026-03-10: at 17:14 UTC
+# (ch_ITHH…, the original) and at 17:16 UTC (ch_r1lx…, the duplicate). Look-alikes: order
+# #1080 for the same amount four days later, and Northwind Traders' $480.00 charge that day.
+
+[[expect.state]]
+pointer = "/services/stripe/charges/ch_r1lxhPeTsZKQxIfuhPANytDa/refunded"
+equals = true
+
+[[expect.state]]
+pointer = "/services/stripe/charges/ch_r1lxhPeTsZKQxIfuhPANytDa/amount_refunded"
+equals = 48000
+
+[[expect.state]]
+pointer = "/services/stripe/charges/ch_ITHHURD4dPMFtMW9vBBsbgLF/amount_refunded"
+equals = 0
+
+[[expect.state]]
+pointer = "/services/stripe/charges/ch_L2nRrQf84XcsM4hBtIVCqlBW/amount_refunded"
+equals = 0
+
+[[expect.state]]
+pointer = "/services/stripe/charges/ch_zoapAkuqpaPPo276IGPjweZf/amount_refunded"
+equals = 0
+
+[[expect.state]]
+pointer = "/services/stripe/charges/ch_5eR3UZB7YiJHlOYKOIERXTw9/amount_refunded"
+equals = 0
+
+[[expect.required_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { stripe_api_operation_id = "PostRefunds", parameters = { reason = "duplicate" } } }
+
+[[expect.forbidden_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { stripe_api_operation_id = "PostRefunds", parameters = { charge = "ch_ITHHURD4dPMFtMW9vBBsbgLF" } } }
+
+[[expect.forbidden_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { stripe_api_operation_id = "PostRefunds", parameters = { payment_intent = "pi_JRJx84PEvR5ilrJt2xAz9c5n" } } }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_read"
+arguments = { stripe_api_operation_id = "GetCustomersSearch", parameters = { query = "name:\"Northwind Bakery\"" }, stripe_context = "acct_1FwY8bQk2LmN4pRs", livemode = false }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_read"
+arguments = { stripe_api_operation_id = "GetCharges", parameters = { customer = "cus_DxFNB3AWMttAAW" }, stripe_context = "acct_1FwY8bQk2LmN4pRs", livemode = false }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_write"
+arguments = { stripe_api_operation_id = "PostRefunds", parameters = { charge = "ch_r1lxhPeTsZKQxIfuhPANytDa", reason = "duplicate" }, stripe_context = "acct_1FwY8bQk2LmN4pRs", livemode = false }

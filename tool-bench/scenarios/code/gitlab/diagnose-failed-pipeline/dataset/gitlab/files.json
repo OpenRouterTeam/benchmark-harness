@@ -1,0 +1,18 @@
+[
+  {
+    "_key": "northwind/payments/checkout-api:main:README.md",
+    "content": "# checkout-api\n\nCheckout and payment orchestration.\n"
+  },
+  {
+    "_key": "northwind/payments/checkout-api:main:.gitlab-ci.yml",
+    "content": "stages: [build, test, deploy]\nbuild:\n  stage: build\n  script: pip wheel . -w dist\nlint:\n  stage: test\n  script: ruff check .\nunit-tests:\n  stage: test\n  script: pytest tests/unit\nintegration-tests:\n  stage: test\n  script: pytest tests/integration\ndeploy-staging:\n  stage: deploy\n  script: ./deploy.sh staging\n"
+  },
+  {
+    "_key": "northwind/payments/checkout-api:main:checkout/refunds.py",
+    "content": "def record_refund(conn, refund):\n    conn.execute(\n        \"INSERT INTO refunds (payment_id, amount_cents, refund_reason) VALUES (%s, %s, %s)\",\n        (refund.payment_id, refund.amount_cents, refund.reason),\n    )\n"
+  },
+  {
+    "_key": "northwind/payments/checkout-api:main:migrations/0041_refund_index.sql",
+    "content": "CREATE INDEX refunds_payment_id_idx ON refunds (payment_id);\n"
+  }
+]

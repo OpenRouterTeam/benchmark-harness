@@ -1,0 +1,67 @@
+[
+ {
+  "id": "polset-KwQNXvEJDCWzt5vz",
+  "organization": "acme-platform",
+  "name": "cis-aws-baseline",
+  "description": "CIS AWS Foundations v1.2 checks (advisory)",
+  "kind": "sentinel",
+  "global": true,
+  "overridable": true,
+  "policy-count": 4,
+  "workspaces": [],
+  "projects": [],
+  "created-at": "2025-01-14T10:00:00Z",
+  "updated-at": "2026-04-02T10:00:00Z",
+  "vcs-repo": {
+   "identifier": "acme/policy-sets",
+   "branch": "main",
+   "display-identifier": "acme/policy-sets",
+   "ingress-submodules": false,
+   "oauth-token-id": "ot-5qR8wXmN2vPa7Ldk"
+  },
+  "policies-path": "cis-aws"
+ },
+ {
+  "id": "polset-rFbsC7TeJrGoDKiS",
+  "organization": "acme-platform",
+  "name": "payments-pci",
+  "description": "PCI DSS guardrails for the payments workspaces (hard mandatory)",
+  "kind": "sentinel",
+  "global": false,
+  "overridable": false,
+  "policy-count": 6,
+  "workspaces": [
+   "ws-vJd7W10B1cG75Uxp"
+  ],
+  "projects": [],
+  "created-at": "2025-03-01T10:00:00Z",
+  "updated-at": "2026-09-12T10:00:00Z",
+  "vcs-repo": {
+   "identifier": "acme/policy-sets",
+   "branch": "main",
+   "display-identifier": "acme/policy-sets",
+   "ingress-submodules": false,
+   "oauth-token-id": "ot-5qR8wXmN2vPa7Ldk"
+  },
+  "policies-path": "payments-pci"
+ },
+ {
+  "id": "polset-bsN6cr2itlX7tO9T",
+  "organization": "acme-platform",
+  "name": "required-tags-opa",
+  "description": "Every taggable resource must carry team and env tags",
+  "kind": "opa",
+  "global": false,
+  "overridable": true,
+  "policy-count": 1,
+  "workspaces": [
+   "ws-ZQ7RjwWMr2evfIuC",
+   "ws-FxCPzmnaeIMOUbSd",
+   "ws-gOHPQz7D1ZRgqBJq",
+   "ws-1XTLw5Eso096xbeL"
+  ],
+  "projects": [],
+  "created-at": "2025-08-20T10:00:00Z",
+  "updated-at": "2025-08-20T10:00:00Z"
+ }
+]

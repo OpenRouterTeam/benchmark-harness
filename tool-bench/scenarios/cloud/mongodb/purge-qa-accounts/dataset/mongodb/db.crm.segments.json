@@ -1,0 +1,20 @@
+[
+  {
+    "_key": "seg-vip",
+    "_id": "seg-vip",
+    "name": "VIP",
+    "rule": {
+      "lifetimeValue": {
+        "$gte": 1000
+      }
+    }
+  },
+  {
+    "_key": "seg-lapsed",
+    "_id": "seg-lapsed",
+    "name": "Lapsed",
+    "rule": {
+      "status": "inactive"
+    }
+  }
+]

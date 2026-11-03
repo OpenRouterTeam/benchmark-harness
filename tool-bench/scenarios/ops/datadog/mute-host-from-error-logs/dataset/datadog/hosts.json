@@ -1,0 +1,301 @@
+[
+  {
+    "_key": "checkout-api-prod-1a",
+    "name": "checkout-api-prod-1a",
+    "host_name": "checkout-api-prod-1a",
+    "id": 5520031001,
+    "aliases": [
+      "checkout-api-prod-1a",
+      "i-014904fd19"
+    ],
+    "apps": [
+      "agent",
+      "ntp",
+      "nginx"
+    ],
+    "aws_name": "checkout-api-prod-1a",
+    "is_muted": false,
+    "mute_timeout": null,
+    "last_reported_time": 1793370585,
+    "up": true,
+    "sources": [
+      "agent",
+      "aws"
+    ],
+    "tags_by_source": {
+      "Datadog": [
+        "host:checkout-api-prod-1a"
+      ],
+      "Users": [
+        "env:prod",
+        "service:checkout-api",
+        "availability-zone:us-east-1a"
+      ]
+    },
+    "meta": {
+      "agent_version": "7.58.2",
+      "platform": "linux2",
+      "processor": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "cpuCores": 4,
+      "machine": "amd64",
+      "pythonV": "3.12.6",
+      "socket-hostname": "checkout-api-prod-1a",
+      "socket-fqdn": "checkout-api-prod-1a.ec2.internal",
+      "gohai": "{}"
+    },
+    "metrics": {
+      "cpu": 34.0,
+      "iowait": 0.6,
+      "load": 0.85
+    }
+  },
+  {
+    "_key": "checkout-api-prod-1b",
+    "name": "checkout-api-prod-1b",
+    "host_name": "checkout-api-prod-1b",
+    "id": 5520031002,
+    "aliases": [
+      "checkout-api-prod-1b",
+      "i-014904fd1a"
+    ],
+    "apps": [
+      "agent",
+      "ntp",
+      "nginx"
+    ],
+    "aws_name": "checkout-api-prod-1b",
+    "is_muted": false,
+    "mute_timeout": null,
+    "last_reported_time": 1793370588,
+    "up": true,
+    "sources": [
+      "agent",
+      "aws"
+    ],
+    "tags_by_source": {
+      "Datadog": [
+        "host:checkout-api-prod-1b"
+      ],
+      "Users": [
+        "env:prod",
+        "service:checkout-api",
+        "availability-zone:us-east-1b"
+      ]
+    },
+    "meta": {
+      "agent_version": "7.58.2",
+      "platform": "linux2",
+      "processor": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "cpuCores": 4,
+      "machine": "amd64",
+      "pythonV": "3.12.6",
+      "socket-hostname": "checkout-api-prod-1b",
+      "socket-fqdn": "checkout-api-prod-1b.ec2.internal",
+      "gohai": "{}"
+    },
+    "metrics": {
+      "cpu": 71.0,
+      "iowait": 0.6,
+      "load": 1.77
+    }
+  },
+  {
+    "_key": "checkout-api-prod-1c",
+    "name": "checkout-api-prod-1c",
+    "host_name": "checkout-api-prod-1c",
+    "id": 5520031003,
+    "aliases": [
+      "checkout-api-prod-1c",
+      "i-014904fd1b"
+    ],
+    "apps": [
+      "agent",
+      "ntp",
+      "nginx"
+    ],
+    "aws_name": "checkout-api-prod-1c",
+    "is_muted": false,
+    "mute_timeout": null,
+    "last_reported_time": 1793370580,
+    "up": true,
+    "sources": [
+      "agent",
+      "aws"
+    ],
+    "tags_by_source": {
+      "Datadog": [
+        "host:checkout-api-prod-1c"
+      ],
+      "Users": [
+        "env:prod",
+        "service:checkout-api",
+        "availability-zone:us-east-1c"
+      ]
+    },
+    "meta": {
+      "agent_version": "7.58.2",
+      "platform": "linux2",
+      "processor": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "cpuCores": 4,
+      "machine": "amd64",
+      "pythonV": "3.12.6",
+      "socket-hostname": "checkout-api-prod-1c",
+      "socket-fqdn": "checkout-api-prod-1c.ec2.internal",
+      "gohai": "{}"
+    },
+    "metrics": {
+      "cpu": 31.0,
+      "iowait": 0.6,
+      "load": 0.78
+    }
+  },
+  {
+    "_key": "checkout-api-staging-1b",
+    "name": "checkout-api-staging-1b",
+    "host_name": "checkout-api-staging-1b",
+    "id": 5520031004,
+    "aliases": [
+      "checkout-api-staging-1b",
+      "i-014904fd1c"
+    ],
+    "apps": [
+      "agent",
+      "ntp",
+      "nginx"
+    ],
+    "aws_name": "checkout-api-staging-1b",
+    "is_muted": false,
+    "mute_timeout": null,
+    "last_reported_time": 1793370570,
+    "up": true,
+    "sources": [
+      "agent",
+      "aws"
+    ],
+    "tags_by_source": {
+      "Datadog": [
+        "host:checkout-api-staging-1b"
+      ],
+      "Users": [
+        "env:staging",
+        "service:checkout-api",
+        "availability-zone:us-east-1b"
+      ]
+    },
+    "meta": {
+      "agent_version": "7.58.2",
+      "platform": "linux2",
+      "processor": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "cpuCores": 4,
+      "machine": "amd64",
+      "pythonV": "3.12.6",
+      "socket-hostname": "checkout-api-staging-1b",
+      "socket-fqdn": "checkout-api-staging-1b.ec2.internal",
+      "gohai": "{}"
+    },
+    "metrics": {
+      "cpu": 9.0,
+      "iowait": 0.6,
+      "load": 0.23
+    }
+  },
+  {
+    "_key": "checkout-worker-prod-1b",
+    "name": "checkout-worker-prod-1b",
+    "host_name": "checkout-worker-prod-1b",
+    "id": 5520031005,
+    "aliases": [
+      "checkout-worker-prod-1b",
+      "i-014904fd1d"
+    ],
+    "apps": [
+      "agent",
+      "ntp"
+    ],
+    "aws_name": "checkout-worker-prod-1b",
+    "is_muted": false,
+    "mute_timeout": null,
+    "last_reported_time": 1793370586,
+    "up": true,
+    "sources": [
+      "agent",
+      "aws"
+    ],
+    "tags_by_source": {
+      "Datadog": [
+        "host:checkout-worker-prod-1b"
+      ],
+      "Users": [
+        "env:prod",
+        "service:checkout-worker",
+        "availability-zone:us-east-1b"
+      ]
+    },
+    "meta": {
+      "agent_version": "7.58.2",
+      "platform": "linux2",
+      "processor": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "cpuCores": 4,
+      "machine": "amd64",
+      "pythonV": "3.12.6",
+      "socket-hostname": "checkout-worker-prod-1b",
+      "socket-fqdn": "checkout-worker-prod-1b.ec2.internal",
+      "gohai": "{}"
+    },
+    "metrics": {
+      "cpu": 55.0,
+      "iowait": 0.6,
+      "load": 1.38
+    }
+  },
+  {
+    "_key": "payments-api-prod-1a",
+    "name": "payments-api-prod-1a",
+    "host_name": "payments-api-prod-1a",
+    "id": 5520031006,
+    "aliases": [
+      "payments-api-prod-1a",
+      "i-014904fd1e"
+    ],
+    "apps": [
+      "agent",
+      "ntp",
+      "nginx"
+    ],
+    "aws_name": "payments-api-prod-1a",
+    "is_muted": true,
+    "mute_timeout": 1793379600,
+    "last_reported_time": 1793370584,
+    "up": true,
+    "sources": [
+      "agent",
+      "aws"
+    ],
+    "tags_by_source": {
+      "Datadog": [
+        "host:payments-api-prod-1a"
+      ],
+      "Users": [
+        "env:prod",
+        "service:payments-api",
+        "availability-zone:us-east-1a"
+      ]
+    },
+    "meta": {
+      "agent_version": "7.58.2",
+      "platform": "linux2",
+      "processor": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+      "cpuCores": 4,
+      "machine": "amd64",
+      "pythonV": "3.12.6",
+      "socket-hostname": "payments-api-prod-1a",
+      "socket-fqdn": "payments-api-prod-1a.ec2.internal",
+      "gohai": "{}"
+    },
+    "metrics": {
+      "cpu": 28.0,
+      "iowait": 0.6,
+      "load": 0.7
+    }
+  }
+]

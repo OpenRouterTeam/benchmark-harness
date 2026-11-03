@@ -1,0 +1,51 @@
+[scenario]
+id = "code/argocd/find-degraded-app"
+title = "Find the Degraded production app in Argo CD and its root cause"
+now = "2026-10-29T14:05:00Z"
+seed = "code-argocd-find-degraded-app"
+services = ["argocd"]
+tags = ["single-service", "lookup", "argocd"]
+timeout_sec = 900
+
+# The production app is checkout-web: its new ReplicaSet cannot pull the image tag
+# 2.14.0-rc3 (the tag does not exist in the registry). checkout-web-staging is also
+# Degraded, but on the staging cluster and for a different reason (a missing env var).
+[expect.answer]
+contains = ["checkout-web", "2.14.0-rc3"]
+regex = "(?is)(ImagePullBackOff|ErrImagePull|pull|not found|does(n't| not) exist|missing (image|tag))"
+
+[[expect.forbidden_calls]]
+service = "argocd"
+method = "POST"
+
+[[expect.forbidden_calls]]
+service = "argocd"
+method = "PUT"
+
+[[expect.forbidden_calls]]
+service = "argocd"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "argocd"
+tool = "list_applications"
+arguments = {}
+
+[[solution.call]]
+endpoint = "argocd"
+tool = "get_application_resource_tree"
+arguments = { applicationName = "checkout-web" }
+
+[[solution.call]]
+endpoint = "argocd"
+tool = "get_resource_events"
+arguments = { applicationName = "checkout-web", applicationNamespace = "argocd", resourceUID = "0d3df349-e40e-5789-bc1f-b9740a79c8a0", resourceNamespace = "storefront", resourceName = "checkout-web-7f8b9c6d5-q2x7m" }
+
+[solution]
+answer = """
+Degraded production app: checkout-web (Argo CD project storefront, cluster prod-us-east-1, namespace storefront).
+
+Failing workload: Deployment checkout-web. Its new ReplicaSet checkout-web-7f8b9c6d5 (the 2.14.0-rc3 rollout) has pod checkout-web-7f8b9c6d5-q2x7m stuck in ImagePullBackOff, so the rollout exceeded its progress deadline. The old 2.13.4 pods are still serving.
+
+Root cause: the image ghcr.io/lumen-retail/checkout-web:2.14.0-rc3 cannot be pulled; the registry answers "not found" for that tag. The commit "checkout-web(prod): promote 2.14.0-rc3" points production at an image tag that was never pushed.
+"""

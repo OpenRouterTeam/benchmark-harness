@@ -1,0 +1,1104 @@
+{
+ "providers": [
+  {
+   "id": "323",
+   "namespace": "hashicorp",
+   "name": "aws",
+   "alias": "aws",
+   "tier": "official",
+   "owner-name": "hashicorp",
+   "description": "Lifecycle management of AWS resources, including EC2, Lambda, EKS, ECS, VPC, S3, RDS, DynamoDB, and more. This provider is maintained internally by the HashiCorp AWS Provider team.",
+   "source": "https://github.com/hashicorp/terraform-provider-aws",
+   "logo-url": "/images/providers/aws.png",
+   "downloads": 4012345678,
+   "featured": true,
+   "versions": [
+    {
+     "id": "61201",
+     "version": "5.80.0",
+     "published-at": "2024-12-05T21:11:02Z",
+     "downloads": 9871234
+    },
+    {
+     "id": "61622",
+     "version": "5.81.0",
+     "published-at": "2024-12-12T20:47:41Z",
+     "downloads": 10234117
+    },
+    {
+     "id": "62430",
+     "version": "5.82.2",
+     "published-at": "2024-12-20T19:02:13Z",
+     "downloads": 15450987
+    }
+   ]
+  },
+  {
+   "id": "389",
+   "namespace": "hashicorp",
+   "name": "google",
+   "alias": "google",
+   "tier": "official",
+   "owner-name": "hashicorp",
+   "description": "Lifecycle management of Google Cloud Platform resources.",
+   "source": "https://github.com/hashicorp/terraform-provider-google",
+   "logo-url": "/images/providers/google-cloud.svg",
+   "downloads": 1876543210,
+   "featured": true,
+   "versions": [
+    {
+     "id": "61101",
+     "version": "6.12.0",
+     "published-at": "2024-11-25T17:30:00Z",
+     "downloads": 4412000
+    },
+    {
+     "id": "61640",
+     "version": "6.13.0",
+     "published-at": "2024-12-09T18:02:55Z",
+     "downloads": 4921870
+    },
+    {
+     "id": "62188",
+     "version": "6.14.1",
+     "published-at": "2024-12-18T16:44:10Z",
+     "downloads": 3350112
+    }
+   ]
+  },
+  {
+   "id": "2134",
+   "namespace": "hashicorp",
+   "name": "azurerm",
+   "alias": "azurerm",
+   "tier": "official",
+   "owner-name": "hashicorp",
+   "description": "Lifecycle management of Microsoft Azure using the Azure Resource Manager APIs. maintained by the Azure team at Microsoft and the Terraform team at HashiCorp",
+   "source": "https://github.com/hashicorp/terraform-provider-azurerm",
+   "logo-url": "/images/providers/azure.svg",
+   "downloads": 1023456789,
+   "featured": true,
+   "versions": [
+    {
+     "id": "61300",
+     "version": "4.13.0",
+     "published-at": "2024-12-06T09:41:20Z",
+     "downloads": 3010200
+    },
+    {
+     "id": "62011",
+     "version": "4.14.0",
+     "published-at": "2024-12-13T10:12:31Z",
+     "downloads": 3988451
+    }
+   ]
+  },
+  {
+   "id": "397",
+   "namespace": "hashicorp",
+   "name": "random",
+   "alias": "random",
+   "tier": "official",
+   "owner-name": "hashicorp",
+   "description": "Supports the use of randomness within Terraform configurations.",
+   "source": "https://github.com/hashicorp/terraform-provider-random",
+   "logo-url": "/images/providers/hashicorp.svg",
+   "downloads": 2501234567,
+   "featured": false,
+   "versions": [
+    {
+     "id": "58210",
+     "version": "3.6.2",
+     "published-at": "2024-05-21T13:00:00Z",
+     "downloads": 51234567
+    },
+    {
+     "id": "60120",
+     "version": "3.6.3",
+     "published-at": "2024-09-11T12:11:02Z",
+     "downloads": 89012345
+    }
+   ]
+  }
+ ],
+ "provider_docs": [
+  {
+   "id": "8710001",
+   "provider": "hashicorp/aws",
+   "title": "AWS Provider",
+   "slug": "index",
+   "category": "overview",
+   "subcategory": null,
+   "path": "website/docs/index.html.markdown",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"\"\nlayout: \"aws\"\npage_title: \"AWS: AWS Provider\"\ndescription: |-\n  Use the Amazon Web Services (AWS) provider to interact with the many resources supported by AWS. You must configure the provider with the proper credentials before you can use it.\n---\n\n# AWS Provider\n\nUse the Amazon Web Services (AWS) provider to interact with the\nmany resources supported by AWS. You must configure the provider\nwith the proper credentials before you can use it.\n\n## Example Usage\n\n```terraform\nterraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_vpc\" \"example\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n```\n\n## Authentication and Configuration\n\nConfiguration for the AWS Provider can be derived from several sources, applied in the following order:\n\n1. Parameters in the provider configuration\n1. Environment variables\n1. Shared credentials files\n1. Shared configuration files\n1. Container credentials\n1. Instance profile credentials and Region\n\n## Argument Reference\n\n* `region` - (Optional) AWS Region where the provider will operate. Can also be set with the `AWS_REGION` environment variable.\n* `profile` - (Optional) AWS profile name as set in the shared configuration and credentials files.\n* `assume_role` - (Optional) Configuration block for an assumed role.\n* `default_tags` - (Optional) Configuration block with resource tag settings to apply across all resources handled by this provider.\n"
+  },
+  {
+   "id": "8710102",
+   "provider": "hashicorp/aws",
+   "title": "aws_instance",
+   "slug": "instance",
+   "category": "resources",
+   "subcategory": "EC2 (Elastic Compute Cloud)",
+   "path": "website/docs/r/instance.html.markdown",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"EC2 (Elastic Compute Cloud)\"\nlayout: \"aws\"\npage_title: \"AWS: aws_instance\"\ndescription: |-\n  Provides an EC2 instance resource. This allows instances to be created, updated, and deleted. Instances also support provisioning.\n---\n\n# Resource: aws_instance\n\nProvides an EC2 instance resource. This allows instances to be created, updated, and deleted.\n\n## Example Usage\n\n```terraform\ndata \"aws_ami\" \"ubuntu\" {\n  most_recent = true\n\n  filter {\n    name   = \"name\"\n    values = [\"ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*\"]\n  }\n\n  owners = [\"099720109477\"] # Canonical\n}\n\nresource \"aws_instance\" \"web\" {\n  ami           = data.aws_ami.ubuntu.id\n  instance_type = \"t3.micro\"\n\n  tags = {\n    Name = \"HelloWorld\"\n  }\n}\n```\n\n## Argument Reference\n\n* `ami` - (Optional) AMI to use for the instance.\n* `instance_type` - (Optional) Instance type to use for the instance.\n* `subnet_id` - (Optional) VPC Subnet ID to launch in.\n* `vpc_security_group_ids` - (Optional) List of security group IDs to associate with.\n* `tags` - (Optional) Map of tags to assign to the resource.\n\n## Attribute Reference\n\n* `arn` - ARN of the instance.\n* `id` - ID of the instance.\n* `private_ip` - Private IP address assigned to the instance.\n* `public_ip` - Public IP address assigned to the instance, if applicable.\n"
+  },
+  {
+   "id": "8710103",
+   "provider": "hashicorp/aws",
+   "title": "aws_s3_bucket",
+   "slug": "s3_bucket",
+   "category": "resources",
+   "subcategory": "S3 (Simple Storage)",
+   "path": "website/docs/r/s3_bucket.html.markdown",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"S3 (Simple Storage)\"\nlayout: \"aws\"\npage_title: \"AWS: aws_s3_bucket\"\ndescription: |-\n  Provides a S3 bucket resource.\n---\n\n# Resource: aws_s3_bucket\n\nProvides a S3 bucket resource.\n\n-> This functionality is for managing S3 in an AWS Partition. To manage S3 on Outposts, see the `aws_s3control_bucket` resource.\n\n## Example Usage\n\n```terraform\nresource \"aws_s3_bucket\" \"example\" {\n  bucket = \"my-tf-test-bucket\"\n\n  tags = {\n    Name        = \"My bucket\"\n    Environment = \"Dev\"\n  }\n}\n```\n\n## Argument Reference\n\n* `bucket` - (Optional, Forces new resource) Name of the bucket. If omitted, Terraform will assign a random, unique name.\n* `force_destroy` - (Optional, Default:`false`) Boolean that indicates all objects should be deleted from the bucket when the bucket is destroyed.\n* `object_lock_enabled` - (Optional, Forces new resource) Indicates whether this bucket has an Object Lock configuration enabled.\n* `tags` - (Optional) Map of tags to assign to the bucket.\n\n## Attribute Reference\n\n* `arn` - ARN of the bucket.\n* `bucket_domain_name` - Bucket domain name.\n* `region` - AWS region this bucket resides in.\n"
+  },
+  {
+   "id": "8710104",
+   "provider": "hashicorp/aws",
+   "title": "aws_s3_bucket_versioning",
+   "slug": "s3_bucket_versioning",
+   "category": "resources",
+   "subcategory": "S3 (Simple Storage)",
+   "path": "website/docs/r/s3_bucket_versioning.html.markdown",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"S3 (Simple Storage)\"\nlayout: \"aws\"\npage_title: \"AWS: aws_s3_bucket_versioning\"\ndescription: |-\n  Provides a resource for controlling versioning on an S3 bucket.\n---\n\n# Resource: aws_s3_bucket_versioning\n\nProvides a resource for controlling versioning on an S3 bucket.\n\n## Example Usage\n\n```terraform\nresource \"aws_s3_bucket_versioning\" \"versioning_example\" {\n  bucket = aws_s3_bucket.example.id\n  versioning_configuration {\n    status = \"Enabled\"\n  }\n}\n```\n\n## Argument Reference\n\n* `bucket` - (Required, Forces new resource) Name of the S3 bucket.\n* `versioning_configuration` - (Required) Configuration block for the versioning parameters.\n"
+  },
+  {
+   "id": "8710105",
+   "provider": "hashicorp/aws",
+   "title": "aws_db_instance",
+   "slug": "db_instance",
+   "category": "resources",
+   "subcategory": "RDS (Relational Database)",
+   "path": "website/docs/r/db_instance.html.markdown",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"RDS (Relational Database)\"\nlayout: \"aws\"\npage_title: \"AWS: aws_db_instance\"\ndescription: |-\n  Provides an RDS instance resource. A DB instance is an isolated database environment in the cloud. A DB instance can contain multiple user-created databases.\n---\n\n# Resource: aws_db_instance\n\nProvides an RDS instance resource.\n\n~> **Note:** All arguments including the username and password will be stored in the raw state as plain-text.\n\n## Example Usage\n\n```terraform\nresource \"aws_db_instance\" \"default\" {\n  allocated_storage    = 10\n  db_name              = \"mydb\"\n  engine               = \"postgres\"\n  engine_version       = \"16.4\"\n  instance_class       = \"db.t3.micro\"\n  username             = \"foo\"\n  manage_master_user_password = true\n  skip_final_snapshot  = true\n}\n```\n\n## Argument Reference\n\n* `allocated_storage` - (Required unless a `snapshot_identifier` or `replicate_source_db` is provided) The allocated storage in gibibytes.\n* `allow_major_version_upgrade` - (Optional) Indicates that major version upgrades are allowed. Changing this parameter does not result in an outage and the change is asynchronously applied as soon as possible.\n* `engine` - (Required unless a `snapshot_identifier` or `replicate_source_db` is provided) The database engine to use.\n* `engine_version` - (Optional) The engine version to use. If `auto_minor_version_upgrade` is enabled, you can provide a prefix of the version such as `16` (for `16.4`).\n* `instance_class` - (Required) The instance type of the RDS instance.\n* `multi_az` - (Optional) Specifies if the RDS instance is multi-AZ.\n\n## Attribute Reference\n\n* `address` - The hostname of the RDS instance.\n* `endpoint` - The connection endpoint in `address:port` format.\n"
+  },
+  {
+   "id": "8710106",
+   "provider": "hashicorp/aws",
+   "title": "aws_vpc",
+   "slug": "vpc",
+   "category": "resources",
+   "subcategory": "VPC (Virtual Private Cloud)",
+   "path": "website/docs/r/vpc.html.markdown",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"VPC (Virtual Private Cloud)\"\nlayout: \"aws\"\npage_title: \"AWS: aws_vpc\"\ndescription: |-\n  Provides a VPC resource.\n---\n\n# Resource: aws_vpc\n\nProvides a VPC resource.\n\n## Example Usage\n\n```terraform\nresource \"aws_vpc\" \"main\" {\n  cidr_block       = \"10.0.0.0/16\"\n  instance_tenancy = \"default\"\n\n  tags = {\n    Name = \"main\"\n  }\n}\n```\n\n## Argument Reference\n\n* `cidr_block` - (Optional) The IPv4 CIDR block for the VPC.\n* `enable_dns_hostnames` - (Optional) A boolean flag to enable/disable DNS hostnames in the VPC. Defaults false.\n* `enable_dns_support` - (Optional) A boolean flag to enable/disable DNS support in the VPC. Defaults to true.\n\n## Attribute Reference\n\n* `arn` - Amazon Resource Name (ARN) of VPC\n* `id` - The ID of the VPC\n"
+  },
+  {
+   "id": "8710107",
+   "provider": "hashicorp/aws",
+   "title": "aws_nat_gateway",
+   "slug": "nat_gateway",
+   "category": "resources",
+   "subcategory": "VPC (Virtual Private Cloud)",
+   "path": "website/docs/r/nat_gateway.html.markdown",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"VPC (Virtual Private Cloud)\"\nlayout: \"aws\"\npage_title: \"AWS: aws_nat_gateway\"\ndescription: |-\n  Provides a resource to create a VPC NAT Gateway.\n---\n\n# Resource: aws_nat_gateway\n\nProvides a resource to create a VPC NAT Gateway.\n\n## Example Usage\n\n### Public NAT\n\n```terraform\nresource \"aws_nat_gateway\" \"example\" {\n  allocation_id = aws_eip.example.id\n  subnet_id     = aws_subnet.example.id\n\n  tags = {\n    Name = \"gw NAT\"\n  }\n\n  depends_on = [aws_internet_gateway.example]\n}\n```\n\n## Argument Reference\n\n* `allocation_id` - (Optional) The Allocation ID of the Elastic IP address for the NAT Gateway. Required for `connectivity_type` of `public`.\n* `connectivity_type` - (Optional) Connectivity type for the NAT Gateway. Valid values are `private` and `public`. Defaults to `public`.\n* `subnet_id` - (Required) The Subnet ID of the subnet in which to place the NAT Gateway.\n\n## Attribute Reference\n\n* `id` - The ID of the NAT Gateway.\n* `public_ip` - The Elastic IP address associated with the NAT Gateway.\n"
+  },
+  {
+   "id": "8710108",
+   "provider": "hashicorp/aws",
+   "title": "aws_ecs_service",
+   "slug": "ecs_service",
+   "category": "resources",
+   "subcategory": "ECS (Elastic Container)",
+   "path": "website/docs/r/ecs_service.html.markdown",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"ECS (Elastic Container)\"\nlayout: \"aws\"\npage_title: \"AWS: aws_ecs_service\"\ndescription: |-\n  Provides an ECS service.\n---\n\n# Resource: aws_ecs_service\n\nProvides an ECS service - effectively a task that is expected to run until an error occurs or a user terminates it (typically a webserver or a database).\n\n## Example Usage\n\n```terraform\nresource \"aws_ecs_service\" \"mongo\" {\n  name            = \"mongodb\"\n  cluster         = aws_ecs_cluster.foo.id\n  task_definition = aws_ecs_task_definition.mongo.arn\n  desired_count   = 3\n}\n```\n\n## Argument Reference\n\n* `name` - (Required) Name of the service (up to 255 letters, numbers, hyphens, and underscores)\n* `desired_count` - (Optional) Number of instances of the task definition to place and keep running. Defaults to 0.\n* `launch_type` - (Optional) Launch type on which to run your service. The valid values are `EC2`, `FARGATE`, and `EXTERNAL`.\n"
+  },
+  {
+   "id": "8710201",
+   "provider": "hashicorp/aws",
+   "title": "aws_ami",
+   "slug": "ami",
+   "category": "data-sources",
+   "subcategory": "EC2 (Elastic Compute Cloud)",
+   "path": "website/docs/d/ami.html.markdown",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"EC2 (Elastic Compute Cloud)\"\nlayout: \"aws\"\npage_title: \"AWS: aws_ami\"\ndescription: |-\n  Get information on an Amazon Machine Image (AMI).\n---\n\n# Data Source: aws_ami\n\nUse this data source to get the ID of a registered AMI for use in other resources.\n\n## Example Usage\n\n```terraform\ndata \"aws_ami\" \"example\" {\n  most_recent = true\n  owners      = [\"self\"]\n\n  filter {\n    name   = \"name\"\n    values = [\"myami-*\"]\n  }\n}\n```\n\n## Argument Reference\n\n* `owners` - (Optional) List of AMI owners to limit search.\n* `most_recent` - (Optional) If more than one result is returned, use the most recent AMI.\n* `filter` - (Optional) One or more name/value pairs to filter off of.\n"
+  },
+  {
+   "id": "8710202",
+   "provider": "hashicorp/aws",
+   "title": "aws_vpc",
+   "slug": "vpc",
+   "category": "data-sources",
+   "subcategory": "VPC (Virtual Private Cloud)",
+   "path": "website/docs/d/vpc.html.markdown",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"VPC (Virtual Private Cloud)\"\nlayout: \"aws\"\npage_title: \"AWS: aws_vpc\"\ndescription: |-\n  Provides details about a specific VPC\n---\n\n# Data Source: aws_vpc\n\n`aws_vpc` provides details about a specific VPC.\n\n## Example Usage\n\n```terraform\ndata \"aws_vpc\" \"selected\" {\n  id = var.vpc_id\n}\n```\n\n## Argument Reference\n\n* `cidr_block` - (Optional) Cidr block of the desired VPC.\n* `default` - (Optional) Boolean constraint on whether the desired VPC is the default VPC for the region.\n* `id` - (Optional) ID of the specific VPC to retrieve.\n* `tags` - (Optional) Map of tags, each pair of which must exactly match a pair on the desired VPC.\n"
+  },
+  {
+   "id": "8710301",
+   "provider": "hashicorp/aws",
+   "title": "Terraform AWS Provider Version 5 Upgrade Guide",
+   "slug": "version-5-upgrade",
+   "category": "guides",
+   "subcategory": null,
+   "path": "website/docs/guides/version-5-upgrade.html.markdown",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"\"\nlayout: \"aws\"\npage_title: \"AWS: Terraform AWS Provider Version 5 Upgrade Guide\"\ndescription: |-\n  Terraform AWS Provider Version 5 Upgrade Guide\n---\n\n# Terraform AWS Provider Version 5 Upgrade Guide\n\nVersion 5.0.0 of the AWS provider for Terraform is a major release and includes changes that you need to consider when upgrading.\n\n## Provider Version Configuration\n\n```terraform\nterraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n```\n\n## Provider Arguments\n\nVersion 5.0.0 removes these `provider` arguments: `assume_role.duration_seconds`, `s3_force_path_style`, `shared_credentials_file`, `skip_get_ec2_platforms`.\n\n## Default Tags\n\nThe following enhancements are included: duplicate `default_tags` can now be included and will be overwritten by resource `tags`.\n"
+  },
+  {
+   "id": "8710401",
+   "provider": "hashicorp/aws",
+   "title": "arn_parse",
+   "slug": "arn_parse",
+   "category": "functions",
+   "subcategory": null,
+   "path": "website/docs/functions/arn_parse.html.markdown",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"\"\nlayout: \"aws\"\npage_title: \"AWS: arn_parse\"\ndescription: |-\n  Parses an ARN into its constituent parts.\n---\n\n# Function: arn_parse\n\nParses an ARN into its constituent parts.\n\nSee the [AWS documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference-arns.html) for additional information on Amazon Resource Names.\n\n## Example Usage\n\n```terraform\n# result:\n# {\n#   \"partition\": \"aws\",\n#   \"service\": \"iam\",\n#   \"region\": \"\",\n#   \"account_id\": \"444455556666\",\n#   \"resource\": \"role/example\",\n# }\noutput \"example\" {\n  value = provider::aws::arn_parse(\"arn:aws:iam::444455556666:role/example\")\n}\n```\n\n## Signature\n\n```text\narn_parse(arn string) object\n```\n"
+  },
+  {
+   "id": "8720001",
+   "provider": "hashicorp/google",
+   "title": "Google Cloud Platform Provider",
+   "slug": "index",
+   "category": "overview",
+   "subcategory": null,
+   "path": "website/docs/index.html.markdown",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"\"\nlayout: \"google\"\npage_title: \"Google: Google Cloud Platform Provider\"\ndescription: |-\n  The Google provider is used to configure your Google Cloud Platform infrastructure\n---\n\n# Google Cloud Platform Provider\n\nThe Google provider is used to configure your [Google Cloud Platform](https://cloud.google.com/) infrastructure.\n\n## Example Usage\n\n```terraform\nprovider \"google\" {\n  project = \"my-project-id\"\n  region  = \"us-central1\"\n}\n```\n\n## Configuration Reference\n\n* `project` - (Optional) The default project to manage resources in.\n* `region` - (Optional) The default region to manage resources in.\n* `credentials` - (Optional) Either the path to or the contents of a service account key file in JSON format.\n"
+  },
+  {
+   "id": "8720101",
+   "provider": "hashicorp/google",
+   "title": "google_compute_instance",
+   "slug": "compute_instance",
+   "category": "resources",
+   "subcategory": "Compute Engine",
+   "path": "website/docs/r/compute_instance.html.markdown",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"Compute Engine\"\nlayout: \"google\"\npage_title: \"Google: google_compute_instance\"\ndescription: |-\n  Manages a VM instance resource within GCE.\n---\n\n# google_compute_instance\n\nManages a VM instance resource within GCE.\n\n## Example Usage\n\n```terraform\nresource \"google_compute_instance\" \"default\" {\n  name         = \"my-instance\"\n  machine_type = \"n2-standard-2\"\n  zone         = \"us-central1-a\"\n\n  boot_disk {\n    initialize_params {\n      image = \"debian-cloud/debian-12\"\n    }\n  }\n\n  network_interface {\n    network = \"default\"\n  }\n}\n```\n\n## Argument Reference\n\n* `boot_disk` - (Required) The boot disk for the instance.\n* `machine_type` - (Required) The machine type to create.\n* `name` - (Required) A unique name for the resource.\n* `zone` - (Optional) The zone that the machine should be created in.\n"
+  },
+  {
+   "id": "8720102",
+   "provider": "hashicorp/google",
+   "title": "google_storage_bucket",
+   "slug": "storage_bucket",
+   "category": "resources",
+   "subcategory": "Cloud Storage",
+   "path": "website/docs/r/storage_bucket.html.markdown",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"Cloud Storage\"\nlayout: \"google\"\npage_title: \"Google: google_storage_bucket\"\ndescription: |-\n  Creates a new bucket in Google Cloud Storage.\n---\n\n# google_storage_bucket\n\nCreates a new bucket in Google cloud storage service (GCS).\n\n## Example Usage\n\n```terraform\nresource \"google_storage_bucket\" \"static-site\" {\n  name          = \"image-store.com\"\n  location      = \"EU\"\n  force_destroy = true\n\n  uniform_bucket_level_access = true\n}\n```\n\n## Argument Reference\n\n* `name` - (Required) The name of the bucket.\n* `location` - (Required) The GCS location.\n* `force_destroy` - (Optional, Default: false) When deleting a bucket, this boolean option will delete all contained objects.\n"
+  },
+  {
+   "id": "8720103",
+   "provider": "hashicorp/google",
+   "title": "google_sql_database_instance",
+   "slug": "sql_database_instance",
+   "category": "resources",
+   "subcategory": "Cloud SQL",
+   "path": "website/docs/r/sql_database_instance.html.markdown",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"Cloud SQL\"\nlayout: \"google\"\npage_title: \"Google: google_sql_database_instance\"\ndescription: |-\n  Creates a new SQL database instance in Google Cloud SQL.\n---\n\n# google_sql_database_instance\n\nCreates a new Google SQL Database Instance.\n\n## Example Usage\n\n```terraform\nresource \"google_sql_database_instance\" \"main\" {\n  name             = \"main-instance\"\n  database_version = \"POSTGRES_15\"\n  region           = \"us-central1\"\n\n  settings {\n    tier = \"db-f1-micro\"\n  }\n}\n```\n\n## Argument Reference\n\n* `database_version` - (Required) The MySQL, PostgreSQL or SQL Server version to use.\n* `region` - (Optional) The region the instance will sit in.\n* `settings` - (Optional) The settings to use for the database.\n* `deletion_protection` - (Optional) Whether Terraform will be prevented from destroying the instance. Defaults to true.\n"
+  },
+  {
+   "id": "8720201",
+   "provider": "hashicorp/google",
+   "title": "google_compute_network",
+   "slug": "compute_network",
+   "category": "data-sources",
+   "subcategory": "Compute Engine",
+   "path": "website/docs/d/compute_network.html.markdown",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"Compute Engine\"\nlayout: \"google\"\npage_title: \"Google: google_compute_network\"\ndescription: |-\n  Get a network within GCE.\n---\n\n# google_compute_network\n\nGet a network within GCE from its name.\n\n## Example Usage\n\n```terraform\ndata \"google_compute_network\" \"my-network\" {\n  name = \"default-us-east1\"\n}\n```\n\n## Argument Reference\n\n* `name` - (Required) The name of the network.\n* `project` - (Optional) The ID of the project in which the resource belongs.\n"
+  },
+  {
+   "id": "8730001",
+   "provider": "hashicorp/azurerm",
+   "title": "Azure Provider",
+   "slug": "index",
+   "category": "overview",
+   "subcategory": null,
+   "path": "website/docs/index.html.markdown",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"\"\nlayout: \"azurerm\"\npage_title: \"Azurerm: Azure Provider\"\ndescription: |-\n  The Azure Provider is used to interact with the many resources supported by Azure Resource Manager (also known as AzureRM) through its APIs.\n---\n\n# Azure Provider\n\nThe Azure Provider can be used to configure infrastructure in [Microsoft Azure](https://azure.microsoft.com/en-us/) using the Azure Resource Manager API's.\n\n## Example Usage\n\n```terraform\nprovider \"azurerm\" {\n  features {}\n}\n\nresource \"azurerm_resource_group\" \"example\" {\n  name     = \"example-resources\"\n  location = \"West Europe\"\n}\n```\n\n## Argument Reference\n\n* `features` - (Required) A `features` block.\n* `subscription_id` - (Required) The Subscription ID which should be used.\n"
+  },
+  {
+   "id": "8730101",
+   "provider": "hashicorp/azurerm",
+   "title": "azurerm_resource_group",
+   "slug": "resource_group",
+   "category": "resources",
+   "subcategory": "Base",
+   "path": "website/docs/r/resource_group.html.markdown",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"Base\"\nlayout: \"azurerm\"\npage_title: \"Azurerm: azurerm_resource_group\"\ndescription: |-\n  Manages a Resource Group.\n---\n\n# azurerm_resource_group\n\nManages a Resource Group.\n\n## Example Usage\n\n```terraform\nresource \"azurerm_resource_group\" \"example\" {\n  name     = \"example\"\n  location = \"West Europe\"\n}\n```\n\n## Arguments Reference\n\n* `location` - (Required) The Azure Region where the Resource Group should exist.\n* `name` - (Required) The Name which should be used for this Resource Group.\n"
+  },
+  {
+   "id": "8730102",
+   "provider": "hashicorp/azurerm",
+   "title": "azurerm_storage_account",
+   "slug": "storage_account",
+   "category": "resources",
+   "subcategory": "Storage",
+   "path": "website/docs/r/storage_account.html.markdown",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"Storage\"\nlayout: \"azurerm\"\npage_title: \"Azurerm: azurerm_storage_account\"\ndescription: |-\n  Manages a Azure Storage Account.\n---\n\n# azurerm_storage_account\n\nManages an Azure Storage Account.\n\n## Example Usage\n\n```terraform\nresource \"azurerm_storage_account\" \"example\" {\n  name                     = \"storageaccountname\"\n  resource_group_name      = azurerm_resource_group.example.name\n  location                 = azurerm_resource_group.example.location\n  account_tier             = \"Standard\"\n  account_replication_type = \"GRS\"\n}\n```\n\n## Argument Reference\n\n* `account_tier` - (Required) Defines the Tier to use for this storage account. Valid options are `Standard` and `Premium`.\n* `account_replication_type` - (Required) Defines the type of replication to use for this storage account.\n"
+  },
+  {
+   "id": "8740001",
+   "provider": "hashicorp/random",
+   "title": "Provider: Random",
+   "slug": "index",
+   "category": "overview",
+   "subcategory": null,
+   "path": "docs/index.md",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"\"\nlayout: \"random\"\npage_title: \"Random: Provider: Random\"\ndescription: |-\n  The Random provider is used to generate randomness.\n---\n\n# Random Provider\n\nThe \"random\" provider allows the use of randomness within Terraform configurations. This is a *logical provider*, which means that it works entirely within Terraform's logic, and doesn't interact with any other services.\n"
+  },
+  {
+   "id": "8740101",
+   "provider": "hashicorp/random",
+   "title": "random_password",
+   "slug": "password",
+   "category": "resources",
+   "subcategory": null,
+   "path": "docs/resources/password.md",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"\"\nlayout: \"random\"\npage_title: \"Random: random_password\"\ndescription: |-\n  Identical to random_string with the exception that the result is treated as sensitive.\n---\n\n# random_password (Resource)\n\nIdentical to `random_string` with the exception that the result is treated as sensitive and, thus, _not_ displayed in console output.\n\n## Example Usage\n\n```terraform\nresource \"random_password\" \"password\" {\n  length           = 16\n  special          = true\n  override_special = \"!#$%&*()-_=+[]{}<>:?\"\n}\n```\n\n## Schema\n\n### Required\n\n- `length` (Number) The length of the string desired.\n"
+  },
+  {
+   "id": "8740102",
+   "provider": "hashicorp/random",
+   "title": "random_id",
+   "slug": "id",
+   "category": "resources",
+   "subcategory": null,
+   "path": "docs/resources/id.md",
+   "language": "hcl",
+   "content": "---\nsubcategory: \"\"\nlayout: \"random\"\npage_title: \"Random: random_id\"\ndescription: |-\n  The resource random_id generates random numbers that are intended to be used as unique identifiers for other resources.\n---\n\n# random_id (Resource)\n\nThe resource `random_id` generates random numbers that are intended to be used as unique identifiers for other resources.\n\n## Example Usage\n\n```terraform\nresource \"random_id\" \"server\" {\n  byte_length = 8\n}\n```\n\n## Schema\n\n### Required\n\n- `byte_length` (Number) The number of random bytes to produce.\n"
+  }
+ ],
+ "modules": [
+  {
+   "namespace": "terraform-aws-modules",
+   "name": "vpc",
+   "provider": "aws",
+   "owner": "antonbabenko",
+   "description": "Terraform module to create AWS VPC resources",
+   "source": "https://github.com/terraform-aws-modules/terraform-aws-vpc",
+   "downloads": 151234567,
+   "verified": false,
+   "published_at": "2024-11-14T09:07:41Z",
+   "versions": [
+    "5.14.0",
+    "5.15.0",
+    "5.16.0"
+   ],
+   "root": {
+    "readme": "# AWS VPC Terraform module\n\nTerraform module which creates VPC resources on AWS.\n\n## Usage\n\n```hcl\nmodule \"vpc\" {\n  source = \"terraform-aws-modules/vpc/aws\"\n\n  name = \"my-vpc\"\n  cidr = \"10.0.0.0/16\"\n\n  azs             = [\"eu-west-1a\", \"eu-west-1b\", \"eu-west-1c\"]\n  private_subnets = [\"10.0.1.0/24\", \"10.0.2.0/24\", \"10.0.3.0/24\"]\n  public_subnets  = [\"10.0.101.0/24\", \"10.0.102.0/24\", \"10.0.103.0/24\"]\n\n  enable_nat_gateway = true\n  enable_vpn_gateway = true\n}\n```\n",
+    "inputs": [
+     {
+      "name": "name",
+      "type": "string",
+      "description": "Name to be used on all the resources as identifier",
+      "default": "",
+      "required": false
+     },
+     {
+      "name": "cidr",
+      "type": "string",
+      "description": "(Optional) The IPv4 CIDR block for the VPC.",
+      "default": "10.0.0.0/16",
+      "required": false
+     },
+     {
+      "name": "azs",
+      "type": "list(string)",
+      "description": "A list of availability zones names or ids in the region",
+      "default": [],
+      "required": false
+     },
+     {
+      "name": "private_subnets",
+      "type": "list(string)",
+      "description": "A list of private subnets inside the VPC",
+      "default": [],
+      "required": false
+     },
+     {
+      "name": "public_subnets",
+      "type": "list(string)",
+      "description": "A list of public subnets inside the VPC",
+      "default": [],
+      "required": false
+     },
+     {
+      "name": "enable_nat_gateway",
+      "type": "bool",
+      "description": "Should be true if you want to provision NAT Gateways for each of your private networks",
+      "default": false,
+      "required": false
+     },
+     {
+      "name": "single_nat_gateway",
+      "type": "bool",
+      "description": "Should be true if you want to provision a single shared NAT Gateway across all of your private networks",
+      "default": false,
+      "required": false
+     },
+     {
+      "name": "one_nat_gateway_per_az",
+      "type": "bool",
+      "description": "Should be true if you want only one NAT Gateway per availability zone.",
+      "default": false,
+      "required": false
+     },
+     {
+      "name": "enable_dns_hostnames",
+      "type": "bool",
+      "description": "Should be true to enable DNS hostnames in the VPC",
+      "default": true,
+      "required": false
+     },
+     {
+      "name": "tags",
+      "type": "map(string)",
+      "description": "A map of tags to add to all resources",
+      "default": {},
+      "required": false
+     }
+    ],
+    "outputs": [
+     {
+      "name": "vpc_id",
+      "description": "The ID of the VPC"
+     },
+     {
+      "name": "vpc_cidr_block",
+      "description": "The CIDR block of the VPC"
+     },
+     {
+      "name": "private_subnets",
+      "description": "List of IDs of private subnets"
+     },
+     {
+      "name": "public_subnets",
+      "description": "List of IDs of public subnets"
+     },
+     {
+      "name": "natgw_ids",
+      "description": "List of NAT Gateway IDs"
+     }
+    ],
+    "dependencies": [],
+    "provider_dependencies": [
+     {
+      "name": "aws",
+      "namespace": "hashicorp",
+      "source": "hashicorp/aws",
+      "version": ">= 5.46"
+     }
+    ],
+    "resources": [
+     {
+      "name": "this",
+      "type": "aws_vpc"
+     },
+     {
+      "name": "private",
+      "type": "aws_subnet"
+     },
+     {
+      "name": "public",
+      "type": "aws_subnet"
+     },
+     {
+      "name": "this",
+      "type": "aws_nat_gateway"
+     },
+     {
+      "name": "this",
+      "type": "aws_internet_gateway"
+     }
+    ]
+   },
+   "submodules": [
+    {
+     "path": "modules/vpc-endpoints",
+     "name": "vpc-endpoints",
+     "readme": "# AWS VPC Endpoints Terraform sub-module\n\nTerraform sub-module which creates VPC endpoint resources on AWS.\n",
+     "empty": false,
+     "inputs": [
+      {
+       "name": "vpc_id",
+       "type": "string",
+       "description": "The ID of the VPC in which the endpoint will be used",
+       "default": null,
+       "required": false
+      },
+      {
+       "name": "endpoints",
+       "type": "any",
+       "description": "A map of interface and/or gateway endpoints containing their properties and configurations",
+       "default": {},
+       "required": false
+      }
+     ],
+     "outputs": [
+      {
+       "name": "endpoints",
+       "description": "Array containing the full resource object and attributes for all endpoints created"
+      }
+     ],
+     "dependencies": [],
+     "provider_dependencies": [],
+     "resources": [
+      {
+       "name": "this",
+       "type": "aws_vpc_endpoint"
+      }
+     ]
+    }
+   ],
+   "examples": [
+    {
+     "path": "examples/simple",
+     "name": "simple",
+     "readme": "# Simple VPC\n\nConfiguration in this directory creates set of VPC resources which may be sufficient for development environment.\n",
+     "empty": false,
+     "inputs": [],
+     "outputs": [],
+     "dependencies": [],
+     "provider_dependencies": [],
+     "resources": []
+    },
+    {
+     "path": "examples/complete",
+     "name": "complete",
+     "readme": "# Complete VPC\n\nConfiguration in this directory creates set of VPC resources which may be sufficient for staging or production environment.\n",
+     "empty": false,
+     "inputs": [],
+     "outputs": [],
+     "dependencies": [],
+     "provider_dependencies": [],
+     "resources": []
+    }
+   ]
+  },
+  {
+   "namespace": "terraform-aws-modules",
+   "name": "eks",
+   "provider": "aws",
+   "owner": "antonbabenko",
+   "description": "Terraform module to create Amazon Elastic Kubernetes (EKS) resources",
+   "source": "https://github.com/terraform-aws-modules/terraform-aws-eks",
+   "downloads": 98765432,
+   "verified": false,
+   "published_at": "2024-12-17T15:20:03Z",
+   "versions": [
+    "20.30.1",
+    "20.31.0",
+    "20.31.6"
+   ],
+   "root": {
+    "readme": "# AWS EKS Terraform module\n\nTerraform module which creates Amazon EKS (Kubernetes) resources\n",
+    "inputs": [
+     {
+      "name": "cluster_name",
+      "type": "string",
+      "description": "Name of the EKS cluster",
+      "default": "",
+      "required": false
+     },
+     {
+      "name": "cluster_version",
+      "type": "string",
+      "description": "Kubernetes `<major>.<minor>` version to use for the EKS cluster (i.e.: `1.31`)",
+      "default": null,
+      "required": false
+     },
+     {
+      "name": "vpc_id",
+      "type": "string",
+      "description": "ID of the VPC where the cluster security group will be provisioned",
+      "default": null,
+      "required": false
+     },
+     {
+      "name": "subnet_ids",
+      "type": "list(string)",
+      "description": "A list of subnet IDs where the nodes/node groups will be provisioned",
+      "default": [],
+      "required": false
+     },
+     {
+      "name": "eks_managed_node_groups",
+      "type": "any",
+      "description": "Map of EKS managed node group definitions to create",
+      "default": {},
+      "required": false
+     },
+     {
+      "name": "cluster_endpoint_public_access",
+      "type": "bool",
+      "description": "Indicates whether or not the Amazon EKS public API server endpoint is enabled",
+      "default": false,
+      "required": false
+     }
+    ],
+    "outputs": [
+     {
+      "name": "cluster_endpoint",
+      "description": "Endpoint for your Kubernetes API server"
+     },
+     {
+      "name": "cluster_name",
+      "description": "The name of the EKS cluster"
+     },
+     {
+      "name": "oidc_provider_arn",
+      "description": "The ARN of the OIDC Provider if `enable_irsa = true`"
+     }
+    ],
+    "dependencies": [],
+    "provider_dependencies": [
+     {
+      "name": "aws",
+      "namespace": "hashicorp",
+      "source": "hashicorp/aws",
+      "version": ">= 5.79"
+     },
+     {
+      "name": "tls",
+      "namespace": "hashicorp",
+      "source": "hashicorp/tls",
+      "version": ">= 3.0"
+     }
+    ],
+    "resources": [
+     {
+      "name": "this",
+      "type": "aws_eks_cluster"
+     },
+     {
+      "name": "this",
+      "type": "aws_iam_role"
+     }
+    ]
+   },
+   "submodules": [],
+   "examples": [
+    {
+     "path": "examples/eks-managed-node-group",
+     "name": "eks-managed-node-group",
+     "readme": "# EKS Managed Node Group Examples\n\nConfiguration in this directory creates Amazon EKS clusters with EKS Managed Node Groups.\n",
+     "empty": false,
+     "inputs": [],
+     "outputs": [],
+     "dependencies": [],
+     "provider_dependencies": [],
+     "resources": []
+    }
+   ]
+  },
+  {
+   "namespace": "terraform-aws-modules",
+   "name": "rds",
+   "provider": "aws",
+   "owner": "antonbabenko",
+   "description": "Terraform module to create AWS RDS resources",
+   "source": "https://github.com/terraform-aws-modules/terraform-aws-rds",
+   "downloads": 34567890,
+   "verified": false,
+   "published_at": "2024-10-30T11:42:19Z",
+   "versions": [
+    "6.9.0",
+    "6.10.0"
+   ],
+   "root": {
+    "readme": "# AWS RDS Terraform module\n\nTerraform module which creates RDS resources on AWS.\n",
+    "inputs": [
+     {
+      "name": "identifier",
+      "type": "string",
+      "description": "The name of the RDS instance",
+      "default": null,
+      "required": true
+     },
+     {
+      "name": "engine",
+      "type": "string",
+      "description": "The database engine to use",
+      "default": null,
+      "required": false
+     },
+     {
+      "name": "engine_version",
+      "type": "string",
+      "description": "The engine version to use",
+      "default": null,
+      "required": false
+     },
+     {
+      "name": "instance_class",
+      "type": "string",
+      "description": "The instance type of the RDS instance",
+      "default": null,
+      "required": false
+     },
+     {
+      "name": "allocated_storage",
+      "type": "number",
+      "description": "The allocated storage in gigabytes",
+      "default": null,
+      "required": false
+     },
+     {
+      "name": "multi_az",
+      "type": "bool",
+      "description": "Specifies if the RDS instance is multi-AZ",
+      "default": false,
+      "required": false
+     }
+    ],
+    "outputs": [
+     {
+      "name": "db_instance_address",
+      "description": "The address of the RDS instance"
+     },
+     {
+      "name": "db_instance_endpoint",
+      "description": "The connection endpoint"
+     }
+    ],
+    "dependencies": [],
+    "provider_dependencies": [
+     {
+      "name": "aws",
+      "namespace": "hashicorp",
+      "source": "hashicorp/aws",
+      "version": ">= 5.62"
+     }
+    ],
+    "resources": []
+   },
+   "submodules": [
+    {
+     "path": "modules/db_instance",
+     "name": "db_instance",
+     "readme": "# AWS RDS DB Instance Terraform sub-module\n",
+     "empty": false,
+     "inputs": [],
+     "outputs": [],
+     "dependencies": [],
+     "provider_dependencies": [],
+     "resources": [
+      {
+       "name": "this",
+       "type": "aws_db_instance"
+      }
+     ]
+    }
+   ],
+   "examples": [
+    {
+     "path": "examples/complete-postgres",
+     "name": "complete-postgres",
+     "readme": "# Complete RDS example for PostgreSQL\n",
+     "empty": false,
+     "inputs": [],
+     "outputs": [],
+     "dependencies": [],
+     "provider_dependencies": [],
+     "resources": []
+    }
+   ]
+  },
+  {
+   "namespace": "terraform-aws-modules",
+   "name": "s3-bucket",
+   "provider": "aws",
+   "owner": "antonbabenko",
+   "description": "Terraform module to create AWS S3 resources",
+   "source": "https://github.com/terraform-aws-modules/terraform-aws-s3-bucket",
+   "downloads": 87654321,
+   "verified": false,
+   "published_at": "2024-12-02T08:15:55Z",
+   "versions": [
+    "4.2.1",
+    "4.2.2"
+   ],
+   "root": {
+    "readme": "# AWS S3 bucket Terraform module\n\nTerraform module which creates S3 bucket on AWS with all (or almost all) features provided by Terraform AWS provider.\n",
+    "inputs": [
+     {
+      "name": "bucket",
+      "type": "string",
+      "description": "(Optional, Forces new resource) The name of the bucket.",
+      "default": null,
+      "required": false
+     },
+     {
+      "name": "versioning",
+      "type": "map(string)",
+      "description": "Map containing versioning configuration.",
+      "default": {},
+      "required": false
+     },
+     {
+      "name": "force_destroy",
+      "type": "bool",
+      "description": "A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error.",
+      "default": false,
+      "required": false
+     }
+    ],
+    "outputs": [
+     {
+      "name": "s3_bucket_id",
+      "description": "The name of the bucket."
+     },
+     {
+      "name": "s3_bucket_arn",
+      "description": "The ARN of the bucket."
+     }
+    ],
+    "dependencies": [],
+    "provider_dependencies": [
+     {
+      "name": "aws",
+      "namespace": "hashicorp",
+      "source": "hashicorp/aws",
+      "version": ">= 5.70"
+     }
+    ],
+    "resources": [
+     {
+      "name": "this",
+      "type": "aws_s3_bucket"
+     }
+    ]
+   },
+   "submodules": [],
+   "examples": []
+  },
+  {
+   "namespace": "terraform-google-modules",
+   "name": "network",
+   "provider": "google",
+   "owner": "bharathkkb",
+   "description": "Sets up a new VPC network on Google Cloud",
+   "source": "https://github.com/terraform-google-modules/terraform-google-network",
+   "downloads": 23456789,
+   "verified": true,
+   "published_at": "2024-12-04T20:31:12Z",
+   "versions": [
+    "9.3.0",
+    "10.0.0"
+   ],
+   "root": {
+    "readme": "# Terraform Network Module\n\nThis modules makes it easy to set up a new VPC Network in GCP by defining your network and subnet ranges in a concise syntax.\n",
+    "inputs": [
+     {
+      "name": "project_id",
+      "type": "string",
+      "description": "The ID of the project where this VPC will be created",
+      "default": null,
+      "required": true
+     },
+     {
+      "name": "network_name",
+      "type": "string",
+      "description": "The name of the network being created",
+      "default": null,
+      "required": true
+     },
+     {
+      "name": "subnets",
+      "type": "list(map(string))",
+      "description": "The list of subnets being created",
+      "default": null,
+      "required": true
+     },
+     {
+      "name": "routing_mode",
+      "type": "string",
+      "description": "The network routing mode (default 'GLOBAL')",
+      "default": "GLOBAL",
+      "required": false
+     }
+    ],
+    "outputs": [
+     {
+      "name": "network_name",
+      "description": "The name of the VPC being created"
+     },
+     {
+      "name": "subnets_names",
+      "description": "The names of the subnets being created"
+     }
+    ],
+    "dependencies": [],
+    "provider_dependencies": [
+     {
+      "name": "google",
+      "namespace": "hashicorp",
+      "source": "hashicorp/google",
+      "version": ">= 4.64, < 7"
+     }
+    ],
+    "resources": []
+   },
+   "submodules": [],
+   "examples": []
+  }
+ ],
+ "policies": [
+  {
+   "id": "policies/hashicorp/CIS-Policy-Set-for-AWS-Terraform",
+   "namespace": "hashicorp",
+   "name": "CIS-Policy-Set-for-AWS-Terraform",
+   "title": "Pre-written Sentinel Policies for AWS CIS Foundations Benchmarking",
+   "owner-name": "hashicorp",
+   "downloads": 402117,
+   "verified": true,
+   "ingress": "vcs",
+   "source": "https://github.com/hashicorp/policy-library-aws-cis-v1.2.0-terraform",
+   "versions": [
+    "1.0.0"
+   ],
+   "latest-version": {
+    "id": "policy-library-version-1201",
+    "version": "1.0.1",
+    "downloads": 251003,
+    "published-at": "2024-03-12T17:01:44Z",
+    "description": "CIS Amazon Web Services Foundations Benchmark v1.2.0 policies for Terraform",
+    "readme": "# Pre-written Sentinel Policies for AWS CIS Foundations Benchmarking\n\nThe Center for Internet Security (CIS) AWS Foundations Benchmark provides prescriptive guidance for configuring security options for a subset of Amazon Web Services.\n\n## Policies included\n\n- Ensure no security groups allow ingress from 0.0.0.0/0 to port 22\n- Ensure no security groups allow ingress from 0.0.0.0/0 to port 3389\n- Ensure the default security group of every VPC restricts all traffic\n- Ensure VPC flow logging is enabled in all VPCs\n\n## Usage\n\nAdd the policies to a `sentinel.hcl` file in your policy set repository.\n"
+   },
+   "policies": [
+    {
+     "id": "policy-80101",
+     "name": "ec2-security-group-ingress-traffic-restriction-port-22",
+     "title": "EC2 security groups should not allow ingress from 0.0.0.0/0 to port 22",
+     "shasum": "6748627e8c815599f001483aae126e07724e61eaf5b99c507a48e0787b342e1c"
+    },
+    {
+     "id": "policy-80102",
+     "name": "ec2-security-group-ingress-traffic-restriction-port-3389",
+     "title": "EC2 security groups should not allow ingress from 0.0.0.0/0 to port 3389",
+     "shasum": "7d09ef40b87feb5e13d7acd1cc9e08d31bd3121a2c84fcc77a785e657904023a"
+    },
+    {
+     "id": "policy-80103",
+     "name": "ec2-vpc-default-security-group-no-traffic",
+     "title": "The default security group of every VPC should restrict all traffic",
+     "shasum": "5d43219b848685415290ab26b7153277d2b9bb8711a5bda58d966b38f51271f5"
+    },
+    {
+     "id": "policy-80104",
+     "name": "ec2-vpc-flow-logging-enabled",
+     "title": "VPC flow logging should be enabled in all VPCs",
+     "shasum": "f23765667b19c83206176a2c6a0fb3cc6370c23c81a912c80b01a164ae70091e"
+    }
+   ],
+   "policy-modules": [
+    {
+     "id": "policy-module-9101",
+     "name": "report",
+     "shasum": "c365142e8bef24d816990ab5604763323c68ff613597fd510e7826c6cd6685e6"
+    },
+    {
+     "id": "policy-module-9102",
+     "name": "tfconfig-functions",
+     "shasum": "42e4c580f5efb92447b1ee04bb600c960734cf15b97a0661c78c2aa751e6c400"
+    }
+   ]
+  },
+  {
+   "id": "policies/hashicorp/FSBP-Policy-Set-for-AWS-Terraform",
+   "namespace": "hashicorp",
+   "name": "FSBP-Policy-Set-for-AWS-Terraform",
+   "title": "Pre-written Sentinel Policies for AWS Foundational Security Best Practices",
+   "owner-name": "hashicorp",
+   "downloads": 188244,
+   "verified": true,
+   "ingress": "vcs",
+   "source": "https://github.com/hashicorp/policy-library-aws-fsbp-terraform",
+   "versions": [],
+   "latest-version": {
+    "id": "policy-library-version-1355",
+    "version": "1.2.0",
+    "downloads": 90122,
+    "published-at": "2024-09-03T14:22:09Z",
+    "description": "AWS Foundational Security Best Practices policies for Terraform",
+    "readme": "# Pre-written Sentinel Policies for AWS Foundational Security Best Practices\n\nThis policy set enforces the AWS Foundational Security Best Practices standard, a set of controls that detect when your AWS accounts and resources deviate from security best practices.\n\n## Policies included\n\n- S3 general purpose buckets should block public access\n- RDS DB instances should have encryption at-rest enabled\n- EBS default encryption should be enabled\n"
+   },
+   "policies": [
+    {
+     "id": "policy-81201",
+     "name": "s3-block-public-access-bucket-level",
+     "title": "S3 general purpose buckets should block public access",
+     "shasum": "b445d20692a0d5da5c72e4af7da870c60038c428b4ad615ad280bb12c1f3ec78"
+    },
+    {
+     "id": "policy-81202",
+     "name": "rds-encryption-at-rest-enabled",
+     "title": "RDS DB instances should have encryption at-rest enabled",
+     "shasum": "58dc6859240ebdefa3921393b084328cf29b40b5ff7b8ce8e199159a6b72eee7"
+    },
+    {
+     "id": "policy-81203",
+     "name": "ec2-ebs-default-encryption-enabled",
+     "title": "EBS default encryption should be enabled",
+     "shasum": "770cac6b51547558a4978c4f7f0b31de145225290097118d778704d44015b393"
+    }
+   ],
+   "policy-modules": [
+    {
+     "id": "policy-module-9201",
+     "name": "report",
+     "shasum": "6dca576b61bc420a02adcca20477b3dbbfbd50da754a1955ee3883761d1753d0"
+    }
+   ]
+  },
+  {
+   "id": "policies/hashicorp/CIS-Policy-Set-for-GCP-Terraform",
+   "namespace": "hashicorp",
+   "name": "CIS-Policy-Set-for-GCP-Terraform",
+   "title": "Pre-written Sentinel Policies for GCP CIS Foundations Benchmarking",
+   "owner-name": "hashicorp",
+   "downloads": 61230,
+   "verified": true,
+   "ingress": "vcs",
+   "source": "https://github.com/hashicorp/policy-library-gcp-cis-terraform",
+   "versions": [],
+   "latest-version": {
+    "id": "policy-library-version-1410",
+    "version": "1.0.0",
+    "downloads": 61230,
+    "published-at": "2024-06-18T10:00:00Z",
+    "description": "CIS Google Cloud Platform Foundation Benchmark policies for Terraform",
+    "readme": "# Pre-written Sentinel Policies for GCP CIS Foundations Benchmarking\n\nPolicies that check Google Cloud resources against the CIS Google Cloud Platform Foundation Benchmark.\n"
+   },
+   "policies": [
+    {
+     "id": "policy-82301",
+     "name": "gcp-storage-bucket-uniform-access",
+     "title": "Cloud Storage buckets should have uniform bucket-level access enabled",
+     "shasum": "43720c7dccb1101a6a73116453b2b64e675b58738dbeef5489b6c23950724783"
+    },
+    {
+     "id": "policy-82302",
+     "name": "gcp-sql-instance-no-public-ip",
+     "title": "Cloud SQL database instances should not have public IPs",
+     "shasum": "8025bf52863b9a3dba1dbb695d3eb6087777eef43551412f3c60cba1c96d6785"
+    }
+   ],
+   "policy-modules": [
+    {
+     "id": "policy-module-9301",
+     "name": "report",
+     "shasum": "e43012b96336fa158e4f70c8a1f91da6b716c8e01fb5259daa907709a093097f"
+    }
+   ]
+  }
+ ]
+}

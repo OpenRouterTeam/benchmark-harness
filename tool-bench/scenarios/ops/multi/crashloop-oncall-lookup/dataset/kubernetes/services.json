@@ -1,0 +1,82 @@
+[
+  {
+    "_key": "payments/payments-api",
+    "metadata": {
+      "name": "payments-api",
+      "namespace": "payments",
+      "uid": "bce40bbd-c83a-455f-a3ae-5e9a460c5008",
+      "resourceVersion": "41629",
+      "creationTimestamp": "2026-08-31T14:00:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "payments-api"
+      }
+    },
+    "spec": {
+      "type": "ClusterIP",
+      "clusterIP": "10.96.60.168",
+      "clusterIPs": [
+        "10.96.60.168"
+      ],
+      "ports": [
+        {
+          "name": "http",
+          "protocol": "TCP",
+          "port": 80,
+          "targetPort": 8080
+        }
+      ],
+      "selector": {
+        "app.kubernetes.io/name": "payments-api"
+      },
+      "sessionAffinity": "None",
+      "ipFamilies": [
+        "IPv4"
+      ],
+      "ipFamilyPolicy": "SingleStack",
+      "internalTrafficPolicy": "Cluster"
+    },
+    "status": {
+      "loadBalancer": {}
+    }
+  },
+  {
+    "_key": "payments/ledger-worker",
+    "metadata": {
+      "name": "ledger-worker",
+      "namespace": "payments",
+      "uid": "755053d4-71b8-4367-aab3-a17eb42e459a",
+      "resourceVersion": "41646",
+      "creationTimestamp": "2026-08-31T14:00:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "ledger-worker"
+      }
+    },
+    "spec": {
+      "type": "ClusterIP",
+      "clusterIP": "10.96.171.101",
+      "clusterIPs": [
+        "10.96.171.101"
+      ],
+      "ports": [
+        {
+          "name": "http",
+          "protocol": "TCP",
+          "port": 8080,
+          "targetPort": 8080
+        }
+      ],
+      "selector": {
+        "app.kubernetes.io/name": "ledger-worker"
+      },
+      "sessionAffinity": "None",
+      "ipFamilies": [
+        "IPv4"
+      ],
+      "ipFamilyPolicy": "SingleStack",
+      "internalTrafficPolicy": "Cluster"
+    },
+    "status": {
+      "loadBalancer": {}
+    }
+  }
+]

@@ -1,0 +1,54 @@
+[scenario]
+id = "cloud/supabase/enable-rls-flagged-table"
+title = "Enable RLS on the table the security advisor flags in production"
+now = "2026-04-02T09:00:00Z"
+seed = "cloud-supabase-enable-rls-flagged-table"
+services = ["supabase"]
+tags = ["write", "single-service", "supabase"]
+timeout_sec = 900
+
+# The security advisor reports rls_disabled_in_public for public.invoices (production and
+# staging); customers and orders already have RLS and policies.
+[[expect.state]]
+pointer = "/services/supabase/tables/qmvbxtzkplrnwdhyfaco.public.invoices/rls_enabled"
+equals = true
+
+[[expect.state]]
+pointer = "/services/supabase/tables/qmvbxtzkplrnwdhyfaco.public.invoices/policies"
+equals = []
+
+[[expect.state]]
+pointer = "/services/supabase/tables/qmvbxtzkplrnwdhyfaco.public.customers/rls_enabled"
+equals = true
+
+[[expect.state]]
+pointer = "/services/supabase/tables/qmvbxtzkplrnwdhyfaco.public.orders/rls_enabled"
+equals = true
+
+[[expect.state]]
+pointer = "/services/supabase/tables/hzrkcwpxnqdlmvbtejsa.public.invoices/rls_enabled"
+equals = false
+
+[[expect.state]]
+pointer = "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.invoices/1/number"
+equals = "INV-2026-00001"
+
+[[expect.required_calls]]
+service = "supabase"
+method = "POST"
+path = "/v1/projects/qmvbxtzkplrnwdhyfaco/database/migrations"
+
+[[expect.forbidden_calls]]
+service = "supabase"
+method = "POST"
+path_regex = '^/v1/projects/hzrkcwpxnqdlmvbtejsa/database/migrations$'
+
+[[solution.call]]
+endpoint = "supabase"
+tool = "get_advisors"
+arguments = { project_id = "qmvbxtzkplrnwdhyfaco", type = "security" }
+
+[[solution.call]]
+endpoint = "supabase"
+tool = "apply_migration"
+arguments = { project_id = "qmvbxtzkplrnwdhyfaco", name = "enable_rls_on_invoices", query = "alter table public.invoices enable row level security;" }

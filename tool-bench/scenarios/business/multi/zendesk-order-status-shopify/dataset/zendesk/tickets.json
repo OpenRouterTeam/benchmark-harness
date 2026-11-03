@@ -1,0 +1,5 @@
+[
+  {"id": 6610, "subject": "Can you gift wrap my order?", "status": "solved", "priority": "low", "type": "question", "requester_id": 9030102, "assignee_id": 9030002, "created_at": "2026-05-08T14:20:00Z", "updated_at": "2026-05-08T16:00:00Z", "tags": ["gift_wrap"]},
+  {"id": 6618, "subject": "Return label for pour-over set", "status": "open", "priority": "normal", "type": "question", "requester_id": 9030103, "assignee_id": 9030002, "created_at": "2026-05-14T11:00:00Z", "updated_at": "2026-05-14T11:00:00Z", "tags": ["returns"]},
+  {"id": 6621, "subject": "Where is my order??", "status": "open", "priority": "normal", "type": "question", "requester_id": 9030101, "assignee_id": 9030002, "created_at": "2026-05-17T21:40:00Z", "updated_at": "2026-05-17T21:40:00Z", "tags": ["order_status"]}
+]

@@ -1,0 +1,27 @@
+[
+  {
+    "_key": "octo-org/web:main",
+    "name": "main",
+    "sha": "ec9101404d2eae359a8f7a7bd61afcfc080f77b1",
+    "protected": true,
+    "required_approvals": 1
+  },
+  {
+    "_key": "octo-org/web:renovate/lodash-4.x",
+    "name": "renovate/lodash-4.x",
+    "sha": "6ea035e584d56c79cc252b6a34973828261a108b",
+    "protected": false
+  },
+  {
+    "_key": "octo-org/web:renovate/axios-1.x",
+    "name": "renovate/axios-1.x",
+    "sha": "0d2f21da868f4125f15d529dc12b95fee09dd50a",
+    "protected": false
+  },
+  {
+    "_key": "octo-org/web:feat/dark-mode",
+    "name": "feat/dark-mode",
+    "sha": "7ac193ec2348ccbf0e604befe6f7b6d0c7ef0a4b",
+    "protected": false
+  }
+]

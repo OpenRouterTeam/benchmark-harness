@@ -1,0 +1,34 @@
+{
+  "state": [],
+  "required_calls": [],
+  "forbidden_calls": [
+    {
+      "service": "jira",
+      "method": "PUT",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "jira",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/rest/api/2/(issue|issueLink)",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": {
+    "contains": [
+      "PAY-119",
+      "PAY-117",
+      "Sam Ortiz"
+    ],
+    "regex": null
+  }
+}

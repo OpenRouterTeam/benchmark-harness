@@ -1,0 +1,62 @@
+[
+  {
+    "_key": "payments/ledger-worker-zx4mrndj8b-dwvg9/ledger-worker",
+    "current": [
+      "2026-10-30T11:22:11.204Z INFO  ledger-worker 1.9.0 starting (commit 8c1e2f4)",
+      "2026-10-30T11:22:11.391Z INFO  connected to postgres ledger-db.payments.svc:5432 db=ledger",
+      "2026-10-30T11:22:11.512Z INFO  kafka consumer group=ledger-worker topics=[payments.captured payments.refunded]",
+      "2026-10-30T13:51:58.004Z INFO  committed batch size=212 lag=0",
+      "2026-10-30T13:59:12.871Z INFO  committed batch size=187 lag=0"
+    ]
+  },
+  {
+    "_key": "payments/ledger-worker-zx4mrndj8b-gdg8j/ledger-worker",
+    "current": [
+      "2026-10-30T13:53:41.118Z INFO  ledger-worker 1.9.0 starting (commit 8c1e2f4)",
+      "2026-10-30T13:53:41.240Z INFO  loading config from /etc/ledger/config.yaml",
+      "2026-10-30T13:53:44.302Z ERROR db: connect ledger-db.payments.svc:5432: pq: password authentication failed for user \"ledger\"",
+      "2026-10-30T13:53:44.302Z FATAL could not initialise ledger store, exiting (exit code 1)"
+    ],
+    "previous": [
+      "2026-10-30T13:53:41.118Z INFO  ledger-worker 1.9.0 starting (commit 8c1e2f4)",
+      "2026-10-30T13:53:41.240Z INFO  loading config from /etc/ledger/config.yaml",
+      "2026-10-30T13:53:44.302Z ERROR db: connect ledger-db.payments.svc:5432: pq: password authentication failed for user \"ledger\"",
+      "2026-10-30T13:53:44.302Z FATAL could not initialise ledger store, exiting (exit code 1)"
+    ]
+  },
+  {
+    "_key": "payments-staging/ledger-worker-c64m9bbw8-v45ss/ledger-worker",
+    "current": [
+      "2026-10-30T13:55:02.551Z INFO  ledger-worker 1.10.0-rc.2 starting",
+      "panic: invalid config: unknown field \"retryBackoffMs\" in kafka section",
+      "goroutine 1 [running]:",
+      "main.main()",
+      "\t/src/cmd/ledger-worker/main.go:41 +0x2a5"
+    ],
+    "previous": [
+      "2026-10-30T13:49:47.020Z INFO  ledger-worker 1.10.0-rc.2 starting",
+      "panic: invalid config: unknown field \"retryBackoffMs\" in kafka section"
+    ]
+  },
+  {
+    "_key": "payments/payments-api-86zf47v9z-fhnrw/payments-api",
+    "current": [
+      "2026-10-30T13:59:58.112Z INFO  POST /v1/charges 201 41ms",
+      "2026-10-30T14:00:01.007Z INFO  GET /healthz 200 1ms"
+    ]
+  },
+  {
+    "_key": "payments/payments-api-86zf47v9z-r9xzx/payments-api",
+    "current": [
+      "2026-10-30T13:59:58.112Z INFO  POST /v1/charges 201 41ms",
+      "2026-10-30T14:00:01.007Z INFO  GET /healthz 200 1ms"
+    ]
+  },
+  {
+    "_key": "payments/payments-api-86zf47v9z-q8wj4/payments-api",
+    "current": [
+      "2026-10-30T13:59:58.112Z INFO  POST /v1/charges 201 41ms",
+      "2026-10-30T14:00:01.007Z INFO  GET /healthz 200 1ms"
+    ]
+  }
+]

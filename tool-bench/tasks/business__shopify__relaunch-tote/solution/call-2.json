@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"update-product","arguments":{"id":"gid://shopify/Product/8201","status":"ACTIVE"}}}

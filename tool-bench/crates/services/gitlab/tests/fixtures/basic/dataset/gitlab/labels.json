@@ -1,0 +1,24 @@
+[
+  {
+    "_key": "acme/platform/api~bug",
+    "id": 301,
+    "name": "bug",
+    "color": "#d9534f",
+    "description": "Something is broken",
+    "priority": 1
+  },
+  {
+    "_key": "acme/platform/api~backend",
+    "id": 302,
+    "name": "backend",
+    "color": "#428bca",
+    "description": null
+  },
+  {
+    "_key": "acme~security",
+    "id": 310,
+    "name": "security",
+    "color": "#ff0000",
+    "description": "Security relevant (group label)"
+  }
+]

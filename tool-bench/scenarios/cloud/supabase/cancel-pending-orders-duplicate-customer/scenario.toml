@@ -1,0 +1,70 @@
+[scenario]
+id = "cloud/supabase/cancel-pending-orders-duplicate-customer"
+title = "Cancel the unpaid orders of the right Priya Shah"
+now = "2026-04-02T09:00:00Z"
+seed = "cloud-supabase-cancel-pending-orders-duplicate-customer"
+services = ["supabase"]
+tags = ["write", "single-service", "supabase", "disambiguation"]
+timeout_sec = 900
+
+# Customer 1042 (priya.shah@fastmail.com) has pending orders 5003 and 5011 and paid order 5007.
+# Customer 1107 is another Priya Shah (pending 5020); 1110 is Priya Shahani (pending 5021);
+# staging has a copy of the fastmail customer with pending orders that must stay untouched.
+[[expect.state]]
+pointer = "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5003/status"
+equals = "cancelled"
+
+[[expect.state]]
+pointer = "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5011/status"
+equals = "cancelled"
+
+[[expect.state]]
+pointer = "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5003/total"
+equals = 89.9
+
+[[expect.state]]
+pointer = "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5007/status"
+equals = "paid"
+
+[[expect.state]]
+pointer = "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5020/status"
+equals = "pending"
+
+[[expect.state]]
+pointer = "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5021/status"
+equals = "pending"
+
+[[expect.state]]
+pointer = "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.orders/5009/status"
+equals = "pending"
+
+[[expect.state]]
+pointer = "/services/supabase/db.hzrkcwpxnqdlmvbtejsa.public.orders/3/status"
+equals = "pending"
+
+[[expect.state]]
+pointer = "/services/supabase/db.hzrkcwpxnqdlmvbtejsa.public.orders/4/status"
+equals = "pending"
+
+[[expect.state]]
+pointer = "/services/supabase/db.qmvbxtzkplrnwdhyfaco.public.customers/1042/email"
+equals = "priya.shah@fastmail.com"
+
+[[expect.required_calls]]
+service = "supabase"
+method = "POST"
+path = "/v1/projects/qmvbxtzkplrnwdhyfaco/database/query"
+
+[[expect.forbidden_calls]]
+service = "supabase"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "supabase"
+tool = "execute_sql"
+arguments = { project_id = "qmvbxtzkplrnwdhyfaco", query = "select id, full_name, email from public.customers where full_name ilike 'priya%'" }
+
+[[solution.call]]
+endpoint = "supabase"
+tool = "execute_sql"
+arguments = { project_id = "qmvbxtzkplrnwdhyfaco", query = "update public.orders set status = 'cancelled' where status = 'pending' and customer_id = (select id from public.customers where email = 'priya.shah@fastmail.com') returning id, status, total" }

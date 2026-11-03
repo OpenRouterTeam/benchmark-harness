@@ -1,0 +1,113 @@
+[scenario]
+id = "cloud/multi/aws-jira-decommission-worker"
+title = "Work a Jira decommission ticket: stop and tag the prod EC2 worker, then close the ticket"
+now = "2026-10-29T15:00:00Z"
+seed = "cloud-multi-aws-jira-decommission-worker"
+services = ["aws", "jira"]
+tags = ["write", "multi-service", "aws", "jira", "disambiguation"]
+timeout_sec = 1200
+
+# OPS-34 (In Progress, assigned to the caller jordan.lee) asks to stop, not terminate, the prod
+# reporting-worker-legacy (i-07b9d1f3a5c8e2046) and tag it DecommissionTicket=OPS-34. The
+# staging twin i-0e4a6c8b2d1f35790 keeps running. OPS-33 (Done) is the earlier scheduler
+# decommission; its instance keeps its OPS-33 tag.
+[[expect.state]]
+pointer = "/services/aws/instances/i-07b9d1f3a5c8e2046/instanceState/name"
+equals = "stopped"
+
+[[expect.state]]
+pointer = "/services/aws/instances/i-07b9d1f3a5c8e2046/tagSet"
+contains = { key = "DecommissionTicket", value = "OPS-34" }
+
+[[expect.state]]
+pointer = "/services/aws/instances/i-0e4a6c8b2d1f35790/instanceState/name"
+equals = "running"
+
+[[expect.state]]
+pointer = "/services/aws/instances/i-0e4a6c8b2d1f35790/tagSet"
+equals = [{ key = "Name", value = "reporting-worker-legacy" }, { key = "Environment", value = "staging" }, { key = "Team", value = "data-eng" }]
+
+[[expect.state]]
+pointer = "/services/aws/instances/i-0a3f5c7e9b1d24680/instanceState/name"
+equals = "running"
+
+[[expect.state]]
+pointer = "/services/aws/instances/i-0c8e2a4f6b1d39057/tagSet"
+contains = { key = "DecommissionTicket", value = "OPS-33" }
+
+[[expect.state]]
+pointer = "/services/jira/issues/OPS-34/fields/status"
+equals = "Done"
+
+[[expect.state]]
+pointer = "/services/jira/issues/OPS-34/fields/resolution"
+equals = "Done"
+
+[[expect.state]]
+pointer = "/services/jira/comments"
+any = { issue = "OPS-34", author = "jordan.lee" }
+
+[[expect.state]]
+pointer = "/services/jira/issues/OPS-33/fields/status"
+equals = "Done"
+
+[[expect.required_calls]]
+service = "aws"
+method = "POST"
+body_contains = "Action=StopInstances"
+
+[[expect.required_calls]]
+service = "aws"
+method = "POST"
+body_contains = "Action=CreateTags"
+
+[[expect.required_calls]]
+service = "jira"
+method = "POST"
+path = "/rest/api/2/issue/OPS-34/transitions"
+
+[[expect.forbidden_calls]]
+service = "aws"
+body_contains = "Action=TerminateInstances"
+
+[[expect.forbidden_calls]]
+service = "aws"
+body_contains = "i-0e4a6c8b2d1f35790"
+method = "POST"
+
+[[expect.forbidden_calls]]
+service = "jira"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "atlassian"
+tool = "jira_search"
+arguments = { jql = "project = OPS AND assignee = currentUser() AND statusCategory != Done", fields = "summary,status,description" }
+
+[[solution.call]]
+endpoint = "atlassian"
+tool = "jira_get_issue"
+arguments = { issue_key = "OPS-34" }
+
+[[solution.call]]
+endpoint = "aws-api"
+tool = "call_aws"
+arguments = { cli_command = "aws ec2 describe-instances --filters Name=tag:Name,Values=reporting-worker-legacy" }
+
+[[solution.call]]
+endpoint = "aws-api"
+tool = "call_aws"
+arguments = { cli_command = [
+  "aws ec2 stop-instances --instance-ids i-07b9d1f3a5c8e2046",
+  "aws ec2 create-tags --resources i-07b9d1f3a5c8e2046 --tags Key=DecommissionTicket,Value=OPS-34",
+] }
+
+[[solution.call]]
+endpoint = "atlassian"
+tool = "jira_add_comment"
+arguments = { issue_key = "OPS-34", body = "Stopped (not terminated) the production instance reporting-worker-legacy (i-07b9d1f3a5c8e2046) and tagged it DecommissionTicket=OPS-34. Its EBS volume is kept. The staging copy (i-0e4a6c8b2d1f35790) is still running." }
+
+[[solution.call]]
+endpoint = "atlassian"
+tool = "jira_transition_issue"
+arguments = { issue_key = "OPS-34", transition_id = "31", fields = "{\"resolution\": {\"name\": \"Done\"}}" }

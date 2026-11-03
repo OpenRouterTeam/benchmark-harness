@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"agent_run","arguments":{"input":{"data":[{"companyName":"Corvane Robotics"},{"companyName":"Lumetric Health"},{"companyName":"Bramblewood Foods"}]},"query":"For each company in the input, find its headquarters city and approximate employee headcount, with a source URL."}}}

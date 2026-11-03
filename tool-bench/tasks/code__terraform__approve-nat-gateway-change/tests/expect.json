@@ -1,0 +1,99 @@
+{
+  "state": [
+    {
+      "pointer": "/services/terraform/runs/run-1q2oy8I2MqSd5oM4/status",
+      "equals": "applied",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/terraform/runs/run-1q2oy8I2MqSd5oM4/confirm-comment",
+      "equals": null,
+      "exists": null,
+      "contains": "CHG-2291",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/terraform/workspaces/ws-X6Cm5W6LhJnKhlo2/locked",
+      "equals": false,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/terraform/runs/run-blTtGlrNXHe62r7y/status",
+      "equals": "planned",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/terraform/workspaces/ws-aM6dcH7sRwt97v2D/locked",
+      "equals": true,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "terraform",
+      "method": "POST",
+      "path": "/api/v2/runs/run-1q2oy8I2MqSd5oM4/actions/apply",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "terraform",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/api/v2/runs/run-blTtGlrNXHe62r7y/actions/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "terraform",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/api/v2/runs/run-1q2oy8I2MqSd5oM4/actions/(discard|cancel|force-cancel)$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "terraform",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/api/v2/workspaces/[^/]+/actions/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "terraform",
+      "method": "POST",
+      "path": "/api/v2/runs",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

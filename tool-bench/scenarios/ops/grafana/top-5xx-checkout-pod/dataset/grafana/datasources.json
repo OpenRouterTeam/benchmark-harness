@@ -1,0 +1,150 @@
+[
+  {
+    "_key": "prom-prod",
+    "id": 1,
+    "uid": "prom-prod",
+    "name": "Prometheus (prod)",
+    "type": "prometheus",
+    "typeName": "Prometheus",
+    "access": "proxy",
+    "url": "http://prometheus.monitoring.svc:9090",
+    "isDefault": true,
+    "jsonData": {
+      "httpMethod": "POST",
+      "prometheusType": "Prometheus",
+      "prometheusVersion": "2.55.1",
+      "timeInterval": "30s"
+    },
+    "secureJsonFields": {},
+    "version": 3,
+    "readOnly": false
+  },
+  {
+    "_key": "prom-staging",
+    "id": 2,
+    "uid": "prom-staging",
+    "name": "Prometheus (staging)",
+    "type": "prometheus",
+    "typeName": "Prometheus",
+    "access": "proxy",
+    "url": "http://prometheus.monitoring-staging.svc:9090",
+    "isDefault": false,
+    "jsonData": {
+      "httpMethod": "POST",
+      "prometheusType": "Prometheus",
+      "prometheusVersion": "2.55.1",
+      "timeInterval": "30s"
+    },
+    "secureJsonFields": {},
+    "version": 3,
+    "readOnly": false
+  },
+  {
+    "_key": "loki-prod",
+    "id": 3,
+    "uid": "loki-prod",
+    "name": "Loki (prod)",
+    "type": "loki",
+    "typeName": "Loki",
+    "access": "proxy",
+    "url": "http://loki-gateway.logging.svc",
+    "isDefault": false,
+    "jsonData": {
+      "maxLines": 1000,
+      "derivedFields": [
+        {
+          "datasourceUid": "tempo-prod",
+          "matcherRegex": "trace_id=(\\w+)",
+          "name": "TraceID",
+          "url": "${__value.raw}"
+        }
+      ]
+    },
+    "secureJsonFields": {},
+    "version": 3,
+    "readOnly": false
+  },
+  {
+    "_key": "loki-staging",
+    "id": 4,
+    "uid": "loki-staging",
+    "name": "Loki (staging)",
+    "type": "loki",
+    "typeName": "Loki",
+    "access": "proxy",
+    "url": "http://loki-gateway.logging-staging.svc",
+    "isDefault": false,
+    "jsonData": {
+      "maxLines": 1000,
+      "derivedFields": [
+        {
+          "datasourceUid": "tempo-prod",
+          "matcherRegex": "trace_id=(\\w+)",
+          "name": "TraceID",
+          "url": "${__value.raw}"
+        }
+      ]
+    },
+    "secureJsonFields": {},
+    "version": 3,
+    "readOnly": false
+  },
+  {
+    "_key": "tempo-prod",
+    "id": 5,
+    "uid": "tempo-prod",
+    "name": "Tempo (prod)",
+    "type": "tempo",
+    "typeName": "Tempo",
+    "access": "proxy",
+    "url": "http://tempo-query-frontend.tracing.svc:3200",
+    "isDefault": false,
+    "jsonData": {
+      "tracesToLogsV2": {
+        "datasourceUid": "loki-prod"
+      },
+      "serviceMap": {
+        "datasourceUid": "prom-prod"
+      },
+      "nodeGraph": {
+        "enabled": true
+      }
+    },
+    "secureJsonFields": {},
+    "version": 3,
+    "readOnly": false
+  },
+  {
+    "_key": "pyroscope-prod",
+    "id": 6,
+    "uid": "pyroscope-prod",
+    "name": "Pyroscope",
+    "type": "grafana-pyroscope-datasource",
+    "typeName": "Grafana Pyroscope",
+    "access": "proxy",
+    "url": "http://pyroscope.profiling.svc:4040",
+    "isDefault": false,
+    "jsonData": {},
+    "secureJsonFields": {},
+    "version": 3,
+    "readOnly": false
+  },
+  {
+    "_key": "am-prod",
+    "id": 7,
+    "uid": "am-prod",
+    "name": "Alertmanager (prod)",
+    "type": "alertmanager",
+    "typeName": "Alertmanager",
+    "access": "proxy",
+    "url": "http://alertmanager.monitoring.svc:9093",
+    "isDefault": false,
+    "jsonData": {
+      "implementation": "prometheus",
+      "handleGrafanaManagedAlerts": false
+    },
+    "secureJsonFields": {},
+    "version": 3,
+    "readOnly": true
+  }
+]

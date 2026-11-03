@@ -1,0 +1,1990 @@
+[
+  {
+    "_key": "d5a8fe16-1e30-5a6f-9bee-d5b7e780a42b",
+    "app": "payments/payments-api",
+    "group": "apps",
+    "version": "v1",
+    "kind": "Deployment",
+    "namespace": "payments",
+    "name": "payments-api",
+    "uid": "d5a8fe16-1e30-5a6f-9bee-d5b7e780a42b",
+    "resourceVersion": "42666",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:27"
+      }
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": true,
+    "status": "OutOfSync",
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "payments-api",
+        "namespace": "payments",
+        "uid": "d5a8fe16-1e30-5a6f-9bee-d5b7e780a42b",
+        "resourceVersion": "42666",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "payments-api",
+          "app.kubernetes.io/instance": "payments_payments-api",
+          "app.kubernetes.io/version": "3.17.2",
+          "app.kubernetes.io/part-of": "payments"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "27",
+          "argocd.argoproj.io/tracking-id": "payments_payments-api:apps/Deployment:payments/payments-api"
+        }
+      },
+      "spec": {
+        "replicas": 4,
+        "revisionHistoryLimit": 5,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "payments-api",
+            "app.kubernetes.io/instance": "payments_payments-api"
+          }
+        },
+        "strategy": {
+          "type": "RollingUpdate",
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "payments-api",
+              "app.kubernetes.io/instance": "payments_payments-api",
+              "app.kubernetes.io/version": "3.17.2"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "payments-api",
+            "containers": [
+              {
+                "name": "payments-api",
+                "image": "ghcr.io/lumen-retail/payments-api:3.17.2",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "observedGeneration": 29,
+        "replicas": 4,
+        "readyReplicas": 4,
+        "availableReplicas": 4,
+        "updatedReplicas": 4
+      }
+    },
+    "targetManifest": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "payments-api",
+        "namespace": "payments",
+        "labels": {
+          "app.kubernetes.io/name": "payments-api",
+          "app.kubernetes.io/instance": "payments_payments-api",
+          "app.kubernetes.io/version": "3.17.2",
+          "app.kubernetes.io/part-of": "payments"
+        },
+        "annotations": {
+          "argocd.argoproj.io/tracking-id": "payments_payments-api:apps/Deployment:payments/payments-api"
+        }
+      },
+      "spec": {
+        "replicas": 4,
+        "revisionHistoryLimit": 5,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "payments-api",
+            "app.kubernetes.io/instance": "payments_payments-api"
+          }
+        },
+        "strategy": {
+          "type": "RollingUpdate",
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "payments-api",
+              "app.kubernetes.io/instance": "payments_payments-api",
+              "app.kubernetes.io/version": "3.17.2"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "payments-api",
+            "containers": [
+              {
+                "name": "payments-api",
+                "image": "ghcr.io/lumen-retail/payments-api:3.18.0",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "_key": "9cb194d4-7397-54b4-858c-199b2799cfca",
+    "app": "payments/payments-api",
+    "group": "apps",
+    "version": "v1",
+    "kind": "ReplicaSet",
+    "namespace": "payments",
+    "name": "payments-api-7b5c9d8f6",
+    "uid": "9cb194d4-7397-54b4-858c-199b2799cfca",
+    "resourceVersion": "42683",
+    "createdAt": "2026-10-20T10:10:30Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "Deployment",
+        "namespace": "payments",
+        "name": "payments-api",
+        "uid": "d5a8fe16-1e30-5a6f-9bee-d5b7e780a42b"
+      }
+    ],
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:27"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/payments-api:3.17.2"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "payments-api-7b5c9d8f6",
+        "namespace": "payments",
+        "uid": "9cb194d4-7397-54b4-858c-199b2799cfca",
+        "resourceVersion": "42683",
+        "creationTimestamp": "2026-10-20T10:10:30Z",
+        "labels": {
+          "app.kubernetes.io/name": "payments-api",
+          "app.kubernetes.io/instance": "payments_payments-api",
+          "pod-template-hash": "7b5c9d8f6"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "27"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "payments-api",
+            "uid": "d5a8fe16-1e30-5a6f-9bee-d5b7e780a42b",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "replicas": 4,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "payments-api",
+            "app.kubernetes.io/instance": "payments_payments-api",
+            "pod-template-hash": "7b5c9d8f6"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "payments-api",
+              "app.kubernetes.io/instance": "payments_payments-api",
+              "app.kubernetes.io/version": "3.17.2"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "payments-api",
+            "containers": [
+              {
+                "name": "payments-api",
+                "image": "ghcr.io/lumen-retail/payments-api:3.17.2",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "replicas": 4,
+        "readyReplicas": 4,
+        "availableReplicas": 4
+      }
+    }
+  },
+  {
+    "_key": "b05a5a30-a937-54fe-be9d-82541bb9dd1e",
+    "app": "payments/payments-api",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "payments",
+    "name": "payments-api-7b5c9d8f6-a8s7d",
+    "uid": "b05a5a30-a937-54fe-be9d-82541bb9dd1e",
+    "resourceVersion": "42700",
+    "createdAt": "2026-10-20T10:10:30Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "payments",
+        "name": "payments-api-7b5c9d8f6",
+        "uid": "9cb194d4-7397-54b4-858c-199b2799cfca"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-17-203.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/payments-api:3.17.2"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "payments-api-7b5c9d8f6-a8s7d",
+        "namespace": "payments",
+        "uid": "b05a5a30-a937-54fe-be9d-82541bb9dd1e",
+        "resourceVersion": "42700",
+        "creationTimestamp": "2026-10-20T10:10:30Z",
+        "labels": {
+          "app.kubernetes.io/name": "payments-api",
+          "app.kubernetes.io/instance": "payments_payments-api",
+          "pod-template-hash": "7b5c9d8f6"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "payments-api-7b5c9d8f6",
+            "uid": "9cb194d4-7397-54b4-858c-199b2799cfca",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "payments-api",
+        "containers": [
+          {
+            "name": "payments-api",
+            "image": "ghcr.io/lumen-retail/payments-api:3.17.2",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-17-203.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "payments-api",
+            "image": "ghcr.io/lumen-retail/payments-api:3.17.2",
+            "imageID": "ghcr.io/lumen-retail/payments-api@sha256:f386e38d20ed04885ba65f7395bfa2b6ba9a0b48f386e38d20ed04885ba65f73",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-28T09:00:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-20T10:10:30Z"
+      }
+    }
+  },
+  {
+    "_key": "5b8a244b-e41f-5049-a9f5-60663227c9c7",
+    "app": "payments/payments-api",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "payments",
+    "name": "payments-api-7b5c9d8f6-f6g5h",
+    "uid": "5b8a244b-e41f-5049-a9f5-60663227c9c7",
+    "resourceVersion": "42717",
+    "createdAt": "2026-10-20T10:10:30Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "payments",
+        "name": "payments-api-7b5c9d8f6",
+        "uid": "9cb194d4-7397-54b4-858c-199b2799cfca"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-18-44.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/payments-api:3.17.2"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "payments-api-7b5c9d8f6-f6g5h",
+        "namespace": "payments",
+        "uid": "5b8a244b-e41f-5049-a9f5-60663227c9c7",
+        "resourceVersion": "42717",
+        "creationTimestamp": "2026-10-20T10:10:30Z",
+        "labels": {
+          "app.kubernetes.io/name": "payments-api",
+          "app.kubernetes.io/instance": "payments_payments-api",
+          "pod-template-hash": "7b5c9d8f6"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "payments-api-7b5c9d8f6",
+            "uid": "9cb194d4-7397-54b4-858c-199b2799cfca",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "payments-api",
+        "containers": [
+          {
+            "name": "payments-api",
+            "image": "ghcr.io/lumen-retail/payments-api:3.17.2",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-18-44.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "payments-api",
+            "image": "ghcr.io/lumen-retail/payments-api:3.17.2",
+            "imageID": "ghcr.io/lumen-retail/payments-api@sha256:f386e38d20ed04885ba65f7395bfa2b6ba9a0b48f386e38d20ed04885ba65f73",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-28T09:00:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-20T10:10:30Z"
+      }
+    }
+  },
+  {
+    "_key": "fd695916-d66e-569a-a6d1-d9f7be673f4b",
+    "app": "payments/payments-api",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "payments",
+    "name": "payments-api-7b5c9d8f6-j4k3l",
+    "uid": "fd695916-d66e-569a-a6d1-d9f7be673f4b",
+    "resourceVersion": "42734",
+    "createdAt": "2026-10-20T10:10:30Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "payments",
+        "name": "payments-api-7b5c9d8f6",
+        "uid": "9cb194d4-7397-54b4-858c-199b2799cfca"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-19-12.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/payments-api:3.17.2"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "payments-api-7b5c9d8f6-j4k3l",
+        "namespace": "payments",
+        "uid": "fd695916-d66e-569a-a6d1-d9f7be673f4b",
+        "resourceVersion": "42734",
+        "creationTimestamp": "2026-10-20T10:10:30Z",
+        "labels": {
+          "app.kubernetes.io/name": "payments-api",
+          "app.kubernetes.io/instance": "payments_payments-api",
+          "pod-template-hash": "7b5c9d8f6"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "payments-api-7b5c9d8f6",
+            "uid": "9cb194d4-7397-54b4-858c-199b2799cfca",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "payments-api",
+        "containers": [
+          {
+            "name": "payments-api",
+            "image": "ghcr.io/lumen-retail/payments-api:3.17.2",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-19-12.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "payments-api",
+            "image": "ghcr.io/lumen-retail/payments-api:3.17.2",
+            "imageID": "ghcr.io/lumen-retail/payments-api@sha256:f386e38d20ed04885ba65f7395bfa2b6ba9a0b48f386e38d20ed04885ba65f73",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-28T09:00:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-20T10:10:30Z"
+      }
+    }
+  },
+  {
+    "_key": "7dc8d6bc-4117-593a-a79a-b8a13c18d69a",
+    "app": "payments/payments-api",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "payments",
+    "name": "payments-api-7b5c9d8f6-z2x1c",
+    "uid": "7dc8d6bc-4117-593a-a79a-b8a13c18d69a",
+    "resourceVersion": "42751",
+    "createdAt": "2026-10-20T10:10:30Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "payments",
+        "name": "payments-api-7b5c9d8f6",
+        "uid": "9cb194d4-7397-54b4-858c-199b2799cfca"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-17-203.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/payments-api:3.17.2"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "payments-api-7b5c9d8f6-z2x1c",
+        "namespace": "payments",
+        "uid": "7dc8d6bc-4117-593a-a79a-b8a13c18d69a",
+        "resourceVersion": "42751",
+        "creationTimestamp": "2026-10-20T10:10:30Z",
+        "labels": {
+          "app.kubernetes.io/name": "payments-api",
+          "app.kubernetes.io/instance": "payments_payments-api",
+          "pod-template-hash": "7b5c9d8f6"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "payments-api-7b5c9d8f6",
+            "uid": "9cb194d4-7397-54b4-858c-199b2799cfca",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "payments-api",
+        "containers": [
+          {
+            "name": "payments-api",
+            "image": "ghcr.io/lumen-retail/payments-api:3.17.2",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-17-203.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "payments-api",
+            "image": "ghcr.io/lumen-retail/payments-api:3.17.2",
+            "imageID": "ghcr.io/lumen-retail/payments-api@sha256:f386e38d20ed04885ba65f7395bfa2b6ba9a0b48f386e38d20ed04885ba65f73",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-28T09:00:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-20T10:10:30Z"
+      }
+    }
+  },
+  {
+    "_key": "0a9ace3c-00f0-5322-9711-873cab7a86d9",
+    "app": "payments/payments-api",
+    "group": "",
+    "version": "v1",
+    "kind": "Service",
+    "namespace": "payments",
+    "name": "payments-api",
+    "uid": "0a9ace3c-00f0-5322-9711-873cab7a86d9",
+    "resourceVersion": "42768",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "networkingInfo": {
+      "targetLabels": {
+        "app.kubernetes.io/name": "payments-api",
+        "app.kubernetes.io/instance": "payments_payments-api"
+      }
+    },
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "payments-api",
+        "namespace": "payments",
+        "uid": "0a9ace3c-00f0-5322-9711-873cab7a86d9",
+        "resourceVersion": "42768",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "annotations": {
+          "argocd.argoproj.io/tracking-id": "payments_payments-api:/Service:payments/payments-api"
+        }
+      },
+      "spec": {
+        "type": "ClusterIP",
+        "selector": {
+          "app.kubernetes.io/name": "payments-api",
+          "app.kubernetes.io/instance": "payments_payments-api"
+        },
+        "ports": [
+          {
+            "name": "http",
+            "port": 80,
+            "targetPort": 8080,
+            "protocol": "TCP"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "_key": "b6c253a5-e866-5437-bac3-8e9cca4a0b4a",
+    "app": "payments/payments-api",
+    "group": "",
+    "version": "v1",
+    "kind": "ConfigMap",
+    "namespace": "payments",
+    "name": "payments-api-config",
+    "uid": "b6c253a5-e866-5437-bac3-8e9cca4a0b4a",
+    "resourceVersion": "42785",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {
+        "name": "payments-api-config",
+        "namespace": "payments",
+        "uid": "b6c253a5-e866-5437-bac3-8e9cca4a0b4a",
+        "resourceVersion": "42785",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/instance": "payments_payments-api"
+        },
+        "annotations": {
+          "argocd.argoproj.io/tracking-id": "payments_payments-api:/ConfigMap:payments/payments-api-config"
+        }
+      },
+      "data": {
+        "LEDGER_URL": "http://ledger.payments.svc",
+        "IDEMPOTENCY_TTL": "24h"
+      }
+    }
+  },
+  {
+    "_key": "41db962d-0f81-5de8-8dc3-ced47c1d11fc",
+    "app": "payments/payments-api",
+    "group": "",
+    "version": "v1",
+    "kind": "ConfigMap",
+    "namespace": "payments",
+    "name": "payments-api-legacy-webhooks",
+    "uid": "41db962d-0f81-5de8-8dc3-ced47c1d11fc",
+    "resourceVersion": "42802",
+    "createdAt": "2025-10-01T09:00:00Z",
+    "managed": true,
+    "status": "OutOfSync",
+    "requiresPruning": true,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {
+        "name": "payments-api-legacy-webhooks",
+        "namespace": "payments",
+        "uid": "41db962d-0f81-5de8-8dc3-ced47c1d11fc",
+        "resourceVersion": "42802",
+        "creationTimestamp": "2025-10-01T09:00:00Z",
+        "labels": {
+          "app.kubernetes.io/instance": "payments_payments-api"
+        },
+        "annotations": {
+          "argocd.argoproj.io/tracking-id": "payments_payments-api:/ConfigMap:payments/payments-api-legacy-webhooks"
+        }
+      },
+      "data": {
+        "WEBHOOK_TARGETS": "https://hooks.legacy-psp.example/notify"
+      }
+    }
+  },
+  {
+    "_key": "f28fe01a-192d-5085-b41f-1861d153d731",
+    "app": "payments-staging/payments-api",
+    "group": "apps",
+    "version": "v1",
+    "kind": "Deployment",
+    "namespace": "payments",
+    "name": "payments-api",
+    "uid": "f28fe01a-192d-5085-b41f-1861d153d731",
+    "resourceVersion": "42870",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:27"
+      }
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": true,
+    "status": "OutOfSync",
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "payments-api",
+        "namespace": "payments",
+        "uid": "f28fe01a-192d-5085-b41f-1861d153d731",
+        "resourceVersion": "42870",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "payments-api",
+          "app.kubernetes.io/instance": "payments-staging_payments-api",
+          "app.kubernetes.io/version": "3.17.2",
+          "app.kubernetes.io/part-of": "payments"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "27",
+          "argocd.argoproj.io/tracking-id": "payments-staging_payments-api:apps/Deployment:payments/payments-api"
+        }
+      },
+      "spec": {
+        "replicas": 1,
+        "revisionHistoryLimit": 5,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "payments-api",
+            "app.kubernetes.io/instance": "payments-staging_payments-api"
+          }
+        },
+        "strategy": {
+          "type": "RollingUpdate",
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "payments-api",
+              "app.kubernetes.io/instance": "payments-staging_payments-api",
+              "app.kubernetes.io/version": "3.17.2"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "payments-api",
+            "containers": [
+              {
+                "name": "payments-api",
+                "image": "ghcr.io/lumen-retail/payments-api:3.17.2",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "observedGeneration": 29,
+        "replicas": 1,
+        "readyReplicas": 1,
+        "availableReplicas": 1,
+        "updatedReplicas": 1
+      }
+    },
+    "targetManifest": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "payments-api",
+        "namespace": "payments",
+        "labels": {
+          "app.kubernetes.io/name": "payments-api",
+          "app.kubernetes.io/instance": "payments-staging_payments-api",
+          "app.kubernetes.io/version": "3.17.2",
+          "app.kubernetes.io/part-of": "payments"
+        },
+        "annotations": {
+          "argocd.argoproj.io/tracking-id": "payments-staging_payments-api:apps/Deployment:payments/payments-api"
+        }
+      },
+      "spec": {
+        "replicas": 1,
+        "revisionHistoryLimit": 5,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "payments-api",
+            "app.kubernetes.io/instance": "payments-staging_payments-api"
+          }
+        },
+        "strategy": {
+          "type": "RollingUpdate",
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "payments-api",
+              "app.kubernetes.io/instance": "payments-staging_payments-api",
+              "app.kubernetes.io/version": "3.17.2"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "payments-api",
+            "containers": [
+              {
+                "name": "payments-api",
+                "image": "ghcr.io/lumen-retail/payments-api:3.18.0",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "_key": "6e9b3bf8-ac28-537b-bc78-b94e14edf69c",
+    "app": "payments-staging/payments-api",
+    "group": "apps",
+    "version": "v1",
+    "kind": "ReplicaSet",
+    "namespace": "payments",
+    "name": "payments-api-7b5c9d8f6",
+    "uid": "6e9b3bf8-ac28-537b-bc78-b94e14edf69c",
+    "resourceVersion": "42887",
+    "createdAt": "2026-10-20T10:10:30Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "Deployment",
+        "namespace": "payments",
+        "name": "payments-api",
+        "uid": "f28fe01a-192d-5085-b41f-1861d153d731"
+      }
+    ],
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:27"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/payments-api:3.17.2"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "payments-api-7b5c9d8f6",
+        "namespace": "payments",
+        "uid": "6e9b3bf8-ac28-537b-bc78-b94e14edf69c",
+        "resourceVersion": "42887",
+        "creationTimestamp": "2026-10-20T10:10:30Z",
+        "labels": {
+          "app.kubernetes.io/name": "payments-api",
+          "app.kubernetes.io/instance": "payments-staging_payments-api",
+          "pod-template-hash": "7b5c9d8f6"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "27"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "payments-api",
+            "uid": "f28fe01a-192d-5085-b41f-1861d153d731",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "replicas": 1,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "payments-api",
+            "app.kubernetes.io/instance": "payments-staging_payments-api",
+            "pod-template-hash": "7b5c9d8f6"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "payments-api",
+              "app.kubernetes.io/instance": "payments-staging_payments-api",
+              "app.kubernetes.io/version": "3.17.2"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "payments-api",
+            "containers": [
+              {
+                "name": "payments-api",
+                "image": "ghcr.io/lumen-retail/payments-api:3.17.2",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "replicas": 1,
+        "readyReplicas": 1,
+        "availableReplicas": 1
+      }
+    }
+  },
+  {
+    "_key": "a72afd4e-f95e-509b-9559-0ca0a5dfd110",
+    "app": "payments-staging/payments-api",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "payments",
+    "name": "payments-api-7b5c9d8f6-q1w2e",
+    "uid": "a72afd4e-f95e-509b-9559-0ca0a5dfd110",
+    "resourceVersion": "42904",
+    "createdAt": "2026-10-20T10:10:30Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "payments",
+        "name": "payments-api-7b5c9d8f6",
+        "uid": "6e9b3bf8-ac28-537b-bc78-b94e14edf69c"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-52-7.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/payments-api:3.17.2"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "payments-api-7b5c9d8f6-q1w2e",
+        "namespace": "payments",
+        "uid": "a72afd4e-f95e-509b-9559-0ca0a5dfd110",
+        "resourceVersion": "42904",
+        "creationTimestamp": "2026-10-20T10:10:30Z",
+        "labels": {
+          "app.kubernetes.io/name": "payments-api",
+          "app.kubernetes.io/instance": "payments-staging_payments-api",
+          "pod-template-hash": "7b5c9d8f6"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "payments-api-7b5c9d8f6",
+            "uid": "6e9b3bf8-ac28-537b-bc78-b94e14edf69c",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "payments-api",
+        "containers": [
+          {
+            "name": "payments-api",
+            "image": "ghcr.io/lumen-retail/payments-api:3.17.2",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-52-7.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "payments-api",
+            "image": "ghcr.io/lumen-retail/payments-api:3.17.2",
+            "imageID": "ghcr.io/lumen-retail/payments-api@sha256:f386e38d20ed04885ba65f7395bfa2b6ba9a0b48f386e38d20ed04885ba65f73",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-28T09:00:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-20T10:10:30Z"
+      }
+    }
+  },
+  {
+    "_key": "de0a60ac-fb0b-5d9d-b53f-253951717837",
+    "app": "payments-staging/payments-api",
+    "group": "",
+    "version": "v1",
+    "kind": "Service",
+    "namespace": "payments",
+    "name": "payments-api",
+    "uid": "de0a60ac-fb0b-5d9d-b53f-253951717837",
+    "resourceVersion": "42921",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "networkingInfo": {
+      "targetLabels": {
+        "app.kubernetes.io/name": "payments-api",
+        "app.kubernetes.io/instance": "payments-staging_payments-api"
+      }
+    },
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "payments-api",
+        "namespace": "payments",
+        "uid": "de0a60ac-fb0b-5d9d-b53f-253951717837",
+        "resourceVersion": "42921",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "annotations": {
+          "argocd.argoproj.io/tracking-id": "payments-staging_payments-api:/Service:payments/payments-api"
+        }
+      },
+      "spec": {
+        "type": "ClusterIP",
+        "selector": {
+          "app.kubernetes.io/name": "payments-api",
+          "app.kubernetes.io/instance": "payments-staging_payments-api"
+        },
+        "ports": [
+          {
+            "name": "http",
+            "port": 80,
+            "targetPort": 8080,
+            "protocol": "TCP"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "_key": "4447eeda-07ea-5bdc-ad51-4d42bdd60551",
+    "app": "payments-staging/payments-api",
+    "group": "",
+    "version": "v1",
+    "kind": "ConfigMap",
+    "namespace": "payments",
+    "name": "payments-api-config",
+    "uid": "4447eeda-07ea-5bdc-ad51-4d42bdd60551",
+    "resourceVersion": "42938",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {
+        "name": "payments-api-config",
+        "namespace": "payments",
+        "uid": "4447eeda-07ea-5bdc-ad51-4d42bdd60551",
+        "resourceVersion": "42938",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/instance": "payments-staging_payments-api"
+        },
+        "annotations": {
+          "argocd.argoproj.io/tracking-id": "payments-staging_payments-api:/ConfigMap:payments/payments-api-config"
+        }
+      },
+      "data": {
+        "LEDGER_URL": "http://ledger.payments.svc",
+        "IDEMPOTENCY_TTL": "24h"
+      }
+    }
+  },
+  {
+    "_key": "675645aa-e28d-5292-a17c-94c47c5d9f17",
+    "app": "payments-staging/payments-api",
+    "group": "",
+    "version": "v1",
+    "kind": "ConfigMap",
+    "namespace": "payments",
+    "name": "payments-api-legacy-webhooks",
+    "uid": "675645aa-e28d-5292-a17c-94c47c5d9f17",
+    "resourceVersion": "42955",
+    "createdAt": "2025-10-01T09:00:00Z",
+    "managed": true,
+    "status": "OutOfSync",
+    "requiresPruning": true,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {
+        "name": "payments-api-legacy-webhooks",
+        "namespace": "payments",
+        "uid": "675645aa-e28d-5292-a17c-94c47c5d9f17",
+        "resourceVersion": "42955",
+        "creationTimestamp": "2025-10-01T09:00:00Z",
+        "labels": {
+          "app.kubernetes.io/instance": "payments-staging_payments-api"
+        },
+        "annotations": {
+          "argocd.argoproj.io/tracking-id": "payments-staging_payments-api:/ConfigMap:payments/payments-api-legacy-webhooks"
+        }
+      },
+      "data": {
+        "WEBHOOK_TARGETS": "https://hooks.legacy-psp.example/notify"
+      }
+    }
+  },
+  {
+    "_key": "708cd88a-a667-5409-aac0-3f86a50ff9f1",
+    "app": "argocd/payments-gateway",
+    "group": "apps",
+    "version": "v1",
+    "kind": "Deployment",
+    "namespace": "payments",
+    "name": "payments-gateway",
+    "uid": "708cd88a-a667-5409-aac0-3f86a50ff9f1",
+    "resourceVersion": "43023",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:11"
+      }
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "payments-gateway",
+        "namespace": "payments",
+        "uid": "708cd88a-a667-5409-aac0-3f86a50ff9f1",
+        "resourceVersion": "43023",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "payments-gateway",
+          "app.kubernetes.io/instance": "payments-gateway",
+          "app.kubernetes.io/version": "1.4.2",
+          "app.kubernetes.io/part-of": "payments"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "11",
+          "argocd.argoproj.io/tracking-id": "payments-gateway:apps/Deployment:payments/payments-gateway"
+        }
+      },
+      "spec": {
+        "replicas": 2,
+        "revisionHistoryLimit": 5,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "payments-gateway",
+            "app.kubernetes.io/instance": "payments-gateway"
+          }
+        },
+        "strategy": {
+          "type": "RollingUpdate",
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "payments-gateway",
+              "app.kubernetes.io/instance": "payments-gateway",
+              "app.kubernetes.io/version": "1.4.2"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "payments-gateway",
+            "containers": [
+              {
+                "name": "payments-gateway",
+                "image": "ghcr.io/lumen-retail/payments-gateway:1.4.2",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "observedGeneration": 13,
+        "replicas": 2,
+        "readyReplicas": 2,
+        "availableReplicas": 2,
+        "updatedReplicas": 2
+      }
+    }
+  },
+  {
+    "_key": "ef09a4a9-6f1a-5eb7-a223-5b1c687a418d",
+    "app": "argocd/payments-gateway",
+    "group": "apps",
+    "version": "v1",
+    "kind": "ReplicaSet",
+    "namespace": "payments",
+    "name": "payments-gateway-4f6d8b9c7",
+    "uid": "ef09a4a9-6f1a-5eb7-a223-5b1c687a418d",
+    "resourceVersion": "43040",
+    "createdAt": "2026-10-25T10:05:20Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "Deployment",
+        "namespace": "payments",
+        "name": "payments-gateway",
+        "uid": "708cd88a-a667-5409-aac0-3f86a50ff9f1"
+      }
+    ],
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:11"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/payments-gateway:1.4.2"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "payments-gateway-4f6d8b9c7",
+        "namespace": "payments",
+        "uid": "ef09a4a9-6f1a-5eb7-a223-5b1c687a418d",
+        "resourceVersion": "43040",
+        "creationTimestamp": "2026-10-25T10:05:20Z",
+        "labels": {
+          "app.kubernetes.io/name": "payments-gateway",
+          "app.kubernetes.io/instance": "payments-gateway",
+          "pod-template-hash": "4f6d8b9c7"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "11"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "payments-gateway",
+            "uid": "708cd88a-a667-5409-aac0-3f86a50ff9f1",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "replicas": 2,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "payments-gateway",
+            "app.kubernetes.io/instance": "payments-gateway",
+            "pod-template-hash": "4f6d8b9c7"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "payments-gateway",
+              "app.kubernetes.io/instance": "payments-gateway",
+              "app.kubernetes.io/version": "1.4.2"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "payments-gateway",
+            "containers": [
+              {
+                "name": "payments-gateway",
+                "image": "ghcr.io/lumen-retail/payments-gateway:1.4.2",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "replicas": 2,
+        "readyReplicas": 2,
+        "availableReplicas": 2
+      }
+    }
+  },
+  {
+    "_key": "4bb82ae1-a197-58d7-82e1-755c7039abac",
+    "app": "argocd/payments-gateway",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "payments",
+    "name": "payments-gateway-4f6d8b9c7-e5r6t",
+    "uid": "4bb82ae1-a197-58d7-82e1-755c7039abac",
+    "resourceVersion": "43057",
+    "createdAt": "2026-10-25T10:05:20Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "payments",
+        "name": "payments-gateway-4f6d8b9c7",
+        "uid": "ef09a4a9-6f1a-5eb7-a223-5b1c687a418d"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-18-44.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/payments-gateway:1.4.2"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "payments-gateway-4f6d8b9c7-e5r6t",
+        "namespace": "payments",
+        "uid": "4bb82ae1-a197-58d7-82e1-755c7039abac",
+        "resourceVersion": "43057",
+        "creationTimestamp": "2026-10-25T10:05:20Z",
+        "labels": {
+          "app.kubernetes.io/name": "payments-gateway",
+          "app.kubernetes.io/instance": "payments-gateway",
+          "pod-template-hash": "4f6d8b9c7"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "payments-gateway-4f6d8b9c7",
+            "uid": "ef09a4a9-6f1a-5eb7-a223-5b1c687a418d",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "payments-gateway",
+        "containers": [
+          {
+            "name": "payments-gateway",
+            "image": "ghcr.io/lumen-retail/payments-gateway:1.4.2",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-18-44.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "payments-gateway",
+            "image": "ghcr.io/lumen-retail/payments-gateway:1.4.2",
+            "imageID": "ghcr.io/lumen-retail/payments-gateway@sha256:a7e6e203ed133ce497bce26f0f6aadab8abc2549a7e6e203ed133ce497bce26f",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-28T09:00:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-25T10:05:20Z"
+      }
+    }
+  },
+  {
+    "_key": "be397757-0639-530f-81da-e2f674e4ee9e",
+    "app": "argocd/payments-gateway",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "payments",
+    "name": "payments-gateway-4f6d8b9c7-y7u8i",
+    "uid": "be397757-0639-530f-81da-e2f674e4ee9e",
+    "resourceVersion": "43074",
+    "createdAt": "2026-10-25T10:05:20Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "payments",
+        "name": "payments-gateway-4f6d8b9c7",
+        "uid": "ef09a4a9-6f1a-5eb7-a223-5b1c687a418d"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-19-12.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/payments-gateway:1.4.2"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "payments-gateway-4f6d8b9c7-y7u8i",
+        "namespace": "payments",
+        "uid": "be397757-0639-530f-81da-e2f674e4ee9e",
+        "resourceVersion": "43074",
+        "creationTimestamp": "2026-10-25T10:05:20Z",
+        "labels": {
+          "app.kubernetes.io/name": "payments-gateway",
+          "app.kubernetes.io/instance": "payments-gateway",
+          "pod-template-hash": "4f6d8b9c7"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "payments-gateway-4f6d8b9c7",
+            "uid": "ef09a4a9-6f1a-5eb7-a223-5b1c687a418d",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "payments-gateway",
+        "containers": [
+          {
+            "name": "payments-gateway",
+            "image": "ghcr.io/lumen-retail/payments-gateway:1.4.2",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-19-12.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "payments-gateway",
+            "image": "ghcr.io/lumen-retail/payments-gateway:1.4.2",
+            "imageID": "ghcr.io/lumen-retail/payments-gateway@sha256:a7e6e203ed133ce497bce26f0f6aadab8abc2549a7e6e203ed133ce497bce26f",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-28T09:00:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-25T10:05:20Z"
+      }
+    }
+  }
+]

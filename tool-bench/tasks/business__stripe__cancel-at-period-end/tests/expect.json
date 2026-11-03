@@ -1,0 +1,103 @@
+{
+  "state": [
+    {
+      "pointer": "/services/stripe/subscriptions/sub_eAeIb5HpilxLht73ad3sTPEH/status",
+      "equals": "active",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/subscriptions/sub_eAeIb5HpilxLht73ad3sTPEH/cancel_at",
+      "equals": 1776018000,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/subscriptions/sub_eAeIb5HpilxLht73ad3sTPEH/ended_at",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/subscriptions/sub_eAeIb5HpilxLht73ad3sTPEH/cancellation_details/comment",
+      "equals": null,
+      "exists": null,
+      "contains": "via email",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/subscriptions/sub_50927iiN3XYUjf7BdJEsSV7n/status",
+      "equals": "active",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/subscriptions/sub_50927iiN3XYUjf7BdJEsSV7n/canceled_at",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/subscriptions/sub_Oz1daMzPMPupkoWAlwTJJ0UI/canceled_at",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/subscriptions/sub_Oz1daMzPMPupkoWAlwTJJ0UI/status",
+      "equals": "active",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "stripe_api_operation_id": "PostSubscriptionsSubscriptionExposedId"
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "stripe_api_operation_id": "DeleteSubscriptionsSubscriptionExposedId"
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

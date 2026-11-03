@@ -1,0 +1,135 @@
+{
+  "state": [
+    {
+      "pointer": "/services/aws/alarms/orders-api-high-cpu/Namespace",
+      "equals": "AWS/EC2",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/aws/alarms/orders-api-high-cpu/MetricName",
+      "equals": "CPUUtilization",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/aws/alarms/orders-api-high-cpu/Dimensions",
+      "equals": [
+        {
+          "Name": "InstanceId",
+          "Value": "i-04c1a7e2b9d35f018"
+        }
+      ],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/aws/alarms/orders-api-high-cpu/Statistic",
+      "equals": "Average",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/aws/alarms/orders-api-high-cpu/Period",
+      "equals": 300,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/aws/alarms/orders-api-high-cpu/EvaluationPeriods",
+      "equals": 3,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/aws/alarms/orders-api-high-cpu/Threshold",
+      "equals": 80.0,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/aws/alarms/orders-api-high-cpu/ComparisonOperator",
+      "equals": "GreaterThanThreshold",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/aws/alarms/orders-api-high-cpu/AlarmActions",
+      "equals": [
+        "arn:aws:sns:us-east-1:481562039417:ops-pager"
+      ],
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/aws/alarms/orders-api-status-check/AlarmConfigurationUpdatedTimestamp",
+      "equals": "2026-01-19T08:00:00Z",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/aws/alarms/orders-worker-high-cpu/AlarmConfigurationUpdatedTimestamp",
+      "equals": "2026-01-20T10:30:00Z",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/aws/alarms/billing-estimated-charges/AlarmConfigurationUpdatedTimestamp",
+      "equals": "2025-06-01T00:00:00Z",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "aws",
+      "method": "POST",
+      "path": "/",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "AlarmName": "orders-api-high-cpu",
+        "MetricName": "CPUUtilization"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "aws",
+      "method": null,
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": "\"StateReason\"",
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

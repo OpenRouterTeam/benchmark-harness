@@ -1,0 +1,60 @@
+[scenario]
+id = "business/salesforce/close-won-kestrel-renewal"
+title = "Mark the right Kestrel renewal as Closed Won"
+now = "2026-05-12T15:00:00Z"
+seed = "business-salesforce-close-won-kestrel-renewal"
+services = ["salesforce"]
+tags = ["write", "single-service", "salesforce", "disambiguation"]
+timeout_sec = 900
+
+# Target: "Kestrel Aerospace - Renewal FY27" on the Denver account.
+[[expect.state]]
+pointer = "/services/salesforce/Opportunity/0065g000006FoSrAAK/StageName"
+equals = "Closed Won"
+
+[[expect.state]]
+pointer = "/services/salesforce/Opportunity/0065g000006FoSrAAK/IsWon"
+equals = true
+
+[[expect.state]]
+pointer = "/services/salesforce/Opportunity/0065g000006FoSrAAK/CloseDate"
+equals = "2026-05-12"
+
+# The UK subsidiary's renewal is still pending.
+[[expect.state]]
+pointer = "/services/salesforce/Opportunity/0065g00000zqiLyAAI/StageName"
+equals = "Negotiation/Review"
+
+# Kestrel Analytics (a different company) renewal untouched.
+[[expect.state]]
+pointer = "/services/salesforce/Opportunity/0065g00000N039FAAR/StageName"
+equals = "Proposal/Price Quote"
+
+# Last year's renewal keeps its close date.
+[[expect.state]]
+pointer = "/services/salesforce/Opportunity/0065g00000jfTUgAAM/CloseDate"
+equals = "2025-06-27"
+
+# The Denver account's expansion deal stays open.
+[[expect.state]]
+pointer = "/services/salesforce/Opportunity/0065g0000024COoAAM/StageName"
+equals = "Proposal/Price Quote"
+
+[[expect.required_calls]]
+service = "salesforce"
+method = "PATCH"
+path_regex = "^/services/data/v[0-9.]+/(composite/sobjects|sobjects/Opportunity/0065g000006FoSr(AAK)?)$"
+
+[[expect.forbidden_calls]]
+service = "salesforce"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "salesforce"
+tool = "salesforce_query_records"
+arguments = { objectName = "Opportunity", fields = ["Id", "Name", "StageName", "CloseDate", "Amount", "Account.Name", "Account.BillingCity"], whereClause = "Account.Name LIKE 'Kestrel%' AND IsClosed = false" }
+
+[[solution.call]]
+endpoint = "salesforce"
+tool = "salesforce_dml_records"
+arguments = { operation = "update", objectName = "Opportunity", records = [{ Id = "0065g000006FoSrAAK", StageName = "Closed Won", CloseDate = "2026-05-12" }] }

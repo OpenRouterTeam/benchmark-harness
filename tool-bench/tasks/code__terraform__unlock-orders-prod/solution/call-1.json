@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"list_workspaces","arguments":{"project_id":"prj-RGb4nwJ3c5kaUkvv","search_query":"orders","terraform_org_name":"acme-platform"}}}

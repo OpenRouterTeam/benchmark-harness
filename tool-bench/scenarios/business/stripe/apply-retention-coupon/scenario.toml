@@ -1,0 +1,93 @@
+[scenario]
+id = "business/stripe/apply-retention-coupon"
+title = "Apply the right retention coupon to the right Maya Chen's Team plan"
+now = "2026-03-18T15:00:00Z"
+seed = "business-stripe-apply-retention-coupon"
+services = ["stripe"]
+tags = ["write", "single-service", "stripe", "disambiguation"]
+timeout_sec = 900
+
+# Two customers are named Maya Chen: cus_pSUd… (maya@brightline.studio, description
+# "Brightline Studio") and cus_SnEf… (gmail, freelance), and both have a Team plan.
+# Brightline Maya's Team plan is sub_7fWx…; her storage add-on is sub_rgXM….
+# Coupons: RETAIN20-3M is the one (20% off, repeating 3 months); look-alikes are
+# RETAIN20-12M (12 months), RETAIN25-3M (expired), SPRING20 (once) and ANNUAL50.
+# Discounts are stored under "<subscription>:<coupon>".
+
+[[expect.state]]
+pointer = "/services/stripe/discounts/sub_7fWxXdMb0rsO3dgqzvcplQuy:RETAIN20-3M/subscription"
+equals = "sub_7fWxXdMb0rsO3dgqzvcplQuy"
+
+[[expect.state]]
+pointer = "/services/stripe/subscriptions/sub_7fWxXdMb0rsO3dgqzvcplQuy/discounts/0"
+exists = true
+
+[[expect.state]]
+pointer = "/services/stripe/subscriptions/sub_7fWxXdMb0rsO3dgqzvcplQuy/discounts/1"
+exists = false
+
+[[expect.state]]
+pointer = "/services/stripe/subscriptions/sub_7fWxXdMb0rsO3dgqzvcplQuy/status"
+equals = "active"
+
+[[expect.state]]
+pointer = "/services/stripe/subscriptions/sub_rgXMKqDnvuQz0FKgeUQUpWDn/discounts"
+equals = []
+
+[[expect.state]]
+pointer = "/services/stripe/subscriptions/sub_2BwOc3Og08AwUPGK5akzzYWH/discounts"
+equals = []
+
+[[expect.state]]
+pointer = "/services/stripe/subscriptions/sub_QVurYL97NwETo29YW2uWzNau/discounts"
+equals = []
+
+[[expect.required_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { stripe_api_operation_id = "PostSubscriptionsSubscriptionExposedId" } }
+
+[[expect.forbidden_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { stripe_api_operation_id = "PostCoupons" } }
+
+[[expect.forbidden_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { stripe_api_operation_id = "DeleteSubscriptionsSubscriptionExposedId" } }
+
+[[expect.forbidden_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { parameters = { id = "sub_2BwOc3Og08AwUPGK5akzzYWH" } } }
+
+[[expect.forbidden_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { parameters = { subscription_exposed_id = "sub_2BwOc3Og08AwUPGK5akzzYWH" } } }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_read"
+arguments = { stripe_api_operation_id = "GetCustomersSearch", parameters = { query = "name:\"Maya Chen\"" }, stripe_context = "acct_1FwY8bQk2LmN4pRs", livemode = false }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_read"
+arguments = { stripe_api_operation_id = "GetSubscriptions", parameters = { customer = "cus_pSUd3Vj4eF7gD2" }, stripe_context = "acct_1FwY8bQk2LmN4pRs", livemode = false }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_read"
+arguments = { stripe_api_operation_id = "GetCoupons", parameters = { limit = 20 }, stripe_context = "acct_1FwY8bQk2LmN4pRs", livemode = false }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_write"
+arguments = { stripe_api_operation_id = "PostSubscriptionsSubscriptionExposedId", parameters = { id = "sub_7fWxXdMb0rsO3dgqzvcplQuy", discounts = [{ coupon = "RETAIN20-3M" }] }, stripe_context = "acct_1FwY8bQk2LmN4pRs", livemode = false }

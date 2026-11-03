@@ -1,0 +1,58 @@
+[
+  {
+    "_key": "shop-prod/catalog",
+    "metadata": {
+      "name": "catalog",
+      "namespace": "shop-prod",
+      "uid": "d155c004-839f-421c-a9f7-fd37d77d8c75",
+      "resourceVersion": "42071",
+      "creationTimestamp": "2026-08-19T13:05:00Z"
+    },
+    "spec": {
+      "scaleTargetRef": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "catalog"
+      },
+      "minReplicas": 4,
+      "maxReplicas": 12,
+      "metrics": [
+        {
+          "type": "Resource",
+          "resource": {
+            "name": "cpu",
+            "target": {
+              "type": "Utilization",
+              "averageUtilization": 70
+            }
+          }
+        }
+      ]
+    },
+    "status": {
+      "currentReplicas": 4,
+      "desiredReplicas": 4,
+      "currentMetrics": [
+        {
+          "type": "Resource",
+          "resource": {
+            "name": "cpu",
+            "current": {
+              "averageValue": "141m",
+              "averageUtilization": 56
+            }
+          }
+        }
+      ],
+      "conditions": [
+        {
+          "type": "AbleToScale",
+          "status": "True",
+          "lastTransitionTime": "2026-08-19T13:05:00Z",
+          "reason": "ReadyForNewScale",
+          "message": "recommended size matches current size"
+        }
+      ]
+    }
+  }
+]

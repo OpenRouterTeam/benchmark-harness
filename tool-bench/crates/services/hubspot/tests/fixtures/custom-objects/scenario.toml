@@ -1,0 +1,4 @@
+[scenario]
+id = "test/hubspot/custom-objects"
+now = "2026-05-04T12:00:00Z"
+seed = "test-hubspot-custom-objects"

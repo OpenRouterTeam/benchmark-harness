@@ -1,0 +1,20 @@
+[
+  {
+    "_key": "octo-org/competitive-intel:main",
+    "name": "main",
+    "sha": "13cf997c4f6018852ee3d753bb7bcff6cb7c4129",
+    "protected": true
+  },
+  {
+    "_key": "octo-org/competitive-intel-2024:main",
+    "name": "main",
+    "sha": "1fd7b37693581dd5814a8439631d657cb7b31ed3",
+    "protected": true
+  },
+  {
+    "_key": "octo-org/pricing-site:main",
+    "name": "main",
+    "sha": "6d7776fa2b7f3872a3b0e9010fa46e1f2c1152d2",
+    "protected": true
+  }
+]

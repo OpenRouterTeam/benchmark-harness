@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"merge_merge_request","arguments":{"merge_request_iid":"41","project_id":"northwind/payments/ledger","should_remove_source_branch":true}}}

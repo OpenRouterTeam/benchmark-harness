@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"update-customer","arguments":{"id":"7101","tags":["newsletter","VIP"]}}}

@@ -1,0 +1,12 @@
+{
+  "state": [],
+  "required_calls": [],
+  "forbidden_calls": [],
+  "answer": {
+    "contains": [
+      "TestRetryBackoffCapsAtMaxDelay",
+      "32s"
+    ],
+    "regex": null
+  }
+}

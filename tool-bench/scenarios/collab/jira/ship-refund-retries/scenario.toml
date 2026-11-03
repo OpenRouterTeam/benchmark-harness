@@ -1,0 +1,64 @@
+[scenario]
+id = "collab/jira/ship-refund-retries"
+title = "Close the refund webhook retries story as Done and note the release"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-jira-ship-refund-retries"
+services = ["jira"]
+tags = ["write", "single-service", "jira", "disambiguation"]
+timeout_sec = 900
+
+# PAY-121 (refund webhooks, In Review) goes to Done with resolution Done and gets a
+# comment mentioning 2026.11; the next comment ID is 10044. PAY-122 (payout webhooks)
+# is the look-alike and must stay untouched.
+[[expect.state]]
+pointer = "/services/jira/issues/PAY-121/fields/status"
+equals = "Done"
+
+[[expect.state]]
+pointer = "/services/jira/issues/PAY-121/fields/resolution"
+equals = "Done"
+
+[[expect.state]]
+pointer = "/services/jira/comments/10044/issue"
+equals = "PAY-121"
+
+[[expect.state]]
+pointer = "/services/jira/comments/10044/body"
+contains = "2026.11"
+
+[[expect.state]]
+pointer = "/services/jira/issues/PAY-122/fields/status"
+equals = "To Do"
+
+[[expect.state]]
+pointer = "/services/jira/issues/PAY-122/changelog"
+equals = []
+
+[[expect.required_calls]]
+service = "jira"
+method = "POST"
+path = "/rest/api/2/issue/PAY-121/transitions"
+
+[[expect.forbidden_calls]]
+service = "jira"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "atlassian"
+tool = "jira_search"
+arguments = { jql = "project = PAY AND text ~ \"refund webhooks\" AND statusCategory != Done", fields = "summary,status,assignee" }
+
+[[solution.call]]
+endpoint = "atlassian"
+tool = "jira_get_transitions"
+arguments = { issue_key = "PAY-121" }
+
+[[solution.call]]
+endpoint = "atlassian"
+tool = "jira_transition_issue"
+arguments = { issue_key = "PAY-121", transition_id = "31", fields = "{\"resolution\": {\"name\": \"Done\"}}" }
+
+[[solution.call]]
+endpoint = "atlassian"
+tool = "jira_add_comment"
+arguments = { issue_key = "PAY-121", body = "Shipped in release 2026.11." }

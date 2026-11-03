@@ -1,0 +1,342 @@
+[
+  {
+    "_key": "3f8d4719-d6d0-59cc-919e-a13459a70dfd",
+    "metadata": {
+      "name": "checkout-web-7f8b9c6d5-q2x7m.95511d6abb57fbc0",
+      "namespace": "storefront",
+      "uid": "3f8d4719-d6d0-59cc-919e-a13459a70dfd",
+      "resourceVersion": "41221",
+      "creationTimestamp": "2026-10-29T12:53:10Z"
+    },
+    "involvedObject": {
+      "kind": "Pod",
+      "namespace": "storefront",
+      "name": "checkout-web-7f8b9c6d5-q2x7m",
+      "uid": "0d3df349-e40e-5789-bc1f-b9740a79c8a0",
+      "apiVersion": "v1",
+      "resourceVersion": "41068"
+    },
+    "reason": "Scheduled",
+    "message": "Successfully assigned storefront/checkout-web-7f8b9c6d5-q2x7m to ip-10-42-17-203.ec2.internal",
+    "source": {
+      "component": "default-scheduler"
+    },
+    "firstTimestamp": "2026-10-29T12:53:10Z",
+    "lastTimestamp": "2026-10-29T12:53:10Z",
+    "count": 1,
+    "type": "Normal",
+    "eventTime": null,
+    "reportingComponent": "default-scheduler",
+    "reportingInstance": ""
+  },
+  {
+    "_key": "47c6a43a-07ce-53f2-bf51-177740731148",
+    "metadata": {
+      "name": "checkout-web-7f8b9c6d5-q2x7m.9a85034cab3451b2",
+      "namespace": "storefront",
+      "uid": "47c6a43a-07ce-53f2-bf51-177740731148",
+      "resourceVersion": "41238",
+      "creationTimestamp": "2026-10-29T12:53:12Z"
+    },
+    "involvedObject": {
+      "kind": "Pod",
+      "namespace": "storefront",
+      "name": "checkout-web-7f8b9c6d5-q2x7m",
+      "uid": "0d3df349-e40e-5789-bc1f-b9740a79c8a0",
+      "apiVersion": "v1",
+      "resourceVersion": "41068",
+      "fieldPath": "spec.containers{checkout-web}"
+    },
+    "reason": "Pulling",
+    "message": "Pulling image \"ghcr.io/lumen-retail/checkout-web:2.14.0-rc3\"",
+    "source": {
+      "component": "kubelet",
+      "host": "ip-10-42-17-203.ec2.internal"
+    },
+    "firstTimestamp": "2026-10-29T12:53:12Z",
+    "lastTimestamp": "2026-10-29T13:58:40Z",
+    "count": 15,
+    "type": "Normal",
+    "eventTime": null,
+    "reportingComponent": "kubelet",
+    "reportingInstance": "ip-10-42-17-203.ec2.internal"
+  },
+  {
+    "_key": "9b52ec45-f566-5a9c-9418-889a47592b3e",
+    "metadata": {
+      "name": "checkout-web-7f8b9c6d5-q2x7m.9ba64de966a91d6a",
+      "namespace": "storefront",
+      "uid": "9b52ec45-f566-5a9c-9418-889a47592b3e",
+      "resourceVersion": "41255",
+      "creationTimestamp": "2026-10-29T12:53:13Z"
+    },
+    "involvedObject": {
+      "kind": "Pod",
+      "namespace": "storefront",
+      "name": "checkout-web-7f8b9c6d5-q2x7m",
+      "uid": "0d3df349-e40e-5789-bc1f-b9740a79c8a0",
+      "apiVersion": "v1",
+      "resourceVersion": "41068",
+      "fieldPath": "spec.containers{checkout-web}"
+    },
+    "reason": "Failed",
+    "message": "Failed to pull image \"ghcr.io/lumen-retail/checkout-web:2.14.0-rc3\": rpc error: code = NotFound desc = failed to pull and unpack image \"ghcr.io/lumen-retail/checkout-web:2.14.0-rc3\": failed to resolve reference \"ghcr.io/lumen-retail/checkout-web:2.14.0-rc3\": ghcr.io/lumen-retail/checkout-web:2.14.0-rc3: not found",
+    "source": {
+      "component": "kubelet",
+      "host": "ip-10-42-17-203.ec2.internal"
+    },
+    "firstTimestamp": "2026-10-29T12:53:13Z",
+    "lastTimestamp": "2026-10-29T13:58:41Z",
+    "count": 15,
+    "type": "Warning",
+    "eventTime": null,
+    "reportingComponent": "kubelet",
+    "reportingInstance": "ip-10-42-17-203.ec2.internal"
+  },
+  {
+    "_key": "5cf55616-75e7-5634-90db-40be9538fb41",
+    "metadata": {
+      "name": "checkout-web-7f8b9c6d5-q2x7m.ed717fabb9d7e204",
+      "namespace": "storefront",
+      "uid": "5cf55616-75e7-5634-90db-40be9538fb41",
+      "resourceVersion": "41272",
+      "creationTimestamp": "2026-10-29T12:53:13Z"
+    },
+    "involvedObject": {
+      "kind": "Pod",
+      "namespace": "storefront",
+      "name": "checkout-web-7f8b9c6d5-q2x7m",
+      "uid": "0d3df349-e40e-5789-bc1f-b9740a79c8a0",
+      "apiVersion": "v1",
+      "resourceVersion": "41068",
+      "fieldPath": "spec.containers{checkout-web}"
+    },
+    "reason": "Failed",
+    "message": "Error: ErrImagePull",
+    "source": {
+      "component": "kubelet",
+      "host": "ip-10-42-17-203.ec2.internal"
+    },
+    "firstTimestamp": "2026-10-29T12:53:13Z",
+    "lastTimestamp": "2026-10-29T13:58:41Z",
+    "count": 15,
+    "type": "Warning",
+    "eventTime": null,
+    "reportingComponent": "kubelet",
+    "reportingInstance": "ip-10-42-17-203.ec2.internal"
+  },
+  {
+    "_key": "36356a20-6c8f-51c6-aba4-216765a0b5b9",
+    "metadata": {
+      "name": "checkout-web-7f8b9c6d5-q2x7m.2906bf338cc15d39",
+      "namespace": "storefront",
+      "uid": "36356a20-6c8f-51c6-aba4-216765a0b5b9",
+      "resourceVersion": "41289",
+      "creationTimestamp": "2026-10-29T12:53:40Z"
+    },
+    "involvedObject": {
+      "kind": "Pod",
+      "namespace": "storefront",
+      "name": "checkout-web-7f8b9c6d5-q2x7m",
+      "uid": "0d3df349-e40e-5789-bc1f-b9740a79c8a0",
+      "apiVersion": "v1",
+      "resourceVersion": "41068",
+      "fieldPath": "spec.containers{checkout-web}"
+    },
+    "reason": "BackOff",
+    "message": "Back-off pulling image \"ghcr.io/lumen-retail/checkout-web:2.14.0-rc3\"",
+    "source": {
+      "component": "kubelet",
+      "host": "ip-10-42-17-203.ec2.internal"
+    },
+    "firstTimestamp": "2026-10-29T12:53:40Z",
+    "lastTimestamp": "2026-10-29T14:03:55Z",
+    "count": 287,
+    "type": "Normal",
+    "eventTime": null,
+    "reportingComponent": "kubelet",
+    "reportingInstance": "ip-10-42-17-203.ec2.internal"
+  },
+  {
+    "_key": "ad90a93b-da56-5852-8b6d-8633b9d813da",
+    "metadata": {
+      "name": "checkout-web.210289ed4340c4e2",
+      "namespace": "storefront",
+      "uid": "ad90a93b-da56-5852-8b6d-8633b9d813da",
+      "resourceVersion": "41306",
+      "creationTimestamp": "2026-10-29T12:53:09Z"
+    },
+    "involvedObject": {
+      "kind": "Deployment",
+      "namespace": "storefront",
+      "name": "checkout-web",
+      "uid": "6e282409-742b-5660-a152-9996bf7041b2",
+      "apiVersion": "apps/v1",
+      "resourceVersion": "41034"
+    },
+    "reason": "ScalingReplicaSet",
+    "message": "Scaled up replica set checkout-web-7f8b9c6d5 to 1",
+    "source": {
+      "component": "deployment-controller"
+    },
+    "firstTimestamp": "2026-10-29T12:53:09Z",
+    "lastTimestamp": "2026-10-29T12:53:09Z",
+    "count": 1,
+    "type": "Normal",
+    "eventTime": null,
+    "reportingComponent": "deployment-controller",
+    "reportingInstance": ""
+  },
+  {
+    "_key": "6790eaff-b6eb-57b1-9ec4-ad1139ad8d5b",
+    "metadata": {
+      "name": "checkout-web.7784214998b7a3ec",
+      "namespace": "argocd",
+      "uid": "6790eaff-b6eb-57b1-9ec4-ad1139ad8d5b",
+      "resourceVersion": "41323",
+      "creationTimestamp": "2026-10-29T12:53:01Z"
+    },
+    "involvedObject": {
+      "kind": "Application",
+      "namespace": "argocd",
+      "name": "checkout-web",
+      "uid": "16e65a6a-b98c-5a8f-95f5-4425d5655901",
+      "apiVersion": "argoproj.io/v1alpha1",
+      "resourceVersion": "41017"
+    },
+    "reason": "OperationStarted",
+    "message": "initiated automated sync to 'a23f2a7b21f788c07d95ceaeb529e54b7ae3dbcd'",
+    "source": {
+      "component": "argocd-application-controller"
+    },
+    "firstTimestamp": "2026-10-29T12:53:01Z",
+    "lastTimestamp": "2026-10-29T12:53:01Z",
+    "count": 1,
+    "type": "Normal",
+    "eventTime": null,
+    "reportingComponent": "argocd-application-controller",
+    "reportingInstance": ""
+  },
+  {
+    "_key": "df43324c-b29d-55b7-a34c-d1cbefc93237",
+    "metadata": {
+      "name": "checkout-web.131814434e7c2003",
+      "namespace": "argocd",
+      "uid": "df43324c-b29d-55b7-a34c-d1cbefc93237",
+      "resourceVersion": "41340",
+      "creationTimestamp": "2026-10-29T12:53:05Z"
+    },
+    "involvedObject": {
+      "kind": "Application",
+      "namespace": "argocd",
+      "name": "checkout-web",
+      "uid": "16e65a6a-b98c-5a8f-95f5-4425d5655901",
+      "apiVersion": "argoproj.io/v1alpha1",
+      "resourceVersion": "41017"
+    },
+    "reason": "OperationCompleted",
+    "message": "Sync operation to a23f2a7b21f788c07d95ceaeb529e54b7ae3dbcd succeeded",
+    "source": {
+      "component": "argocd-application-controller"
+    },
+    "firstTimestamp": "2026-10-29T12:53:05Z",
+    "lastTimestamp": "2026-10-29T12:53:05Z",
+    "count": 1,
+    "type": "Normal",
+    "eventTime": null,
+    "reportingComponent": "argocd-application-controller",
+    "reportingInstance": ""
+  },
+  {
+    "_key": "6b931c32-4b8d-5242-8e2b-2dd82a625521",
+    "metadata": {
+      "name": "checkout-web.6a3526375f411445",
+      "namespace": "argocd",
+      "uid": "6b931c32-4b8d-5242-8e2b-2dd82a625521",
+      "resourceVersion": "41357",
+      "creationTimestamp": "2026-10-29T12:53:12Z"
+    },
+    "involvedObject": {
+      "kind": "Application",
+      "namespace": "argocd",
+      "name": "checkout-web",
+      "uid": "16e65a6a-b98c-5a8f-95f5-4425d5655901",
+      "apiVersion": "argoproj.io/v1alpha1",
+      "resourceVersion": "41017"
+    },
+    "reason": "ResourceUpdated",
+    "message": "Updated health status: Healthy -> Progressing",
+    "source": {
+      "component": "argocd-application-controller"
+    },
+    "firstTimestamp": "2026-10-29T12:53:12Z",
+    "lastTimestamp": "2026-10-29T12:53:12Z",
+    "count": 1,
+    "type": "Normal",
+    "eventTime": null,
+    "reportingComponent": "argocd-application-controller",
+    "reportingInstance": ""
+  },
+  {
+    "_key": "16cb486a-02f3-5796-ad17-99c87e4b7a2b",
+    "metadata": {
+      "name": "checkout-web.c56866f684149086",
+      "namespace": "argocd",
+      "uid": "16cb486a-02f3-5796-ad17-99c87e4b7a2b",
+      "resourceVersion": "41374",
+      "creationTimestamp": "2026-10-29T13:03:12Z"
+    },
+    "involvedObject": {
+      "kind": "Application",
+      "namespace": "argocd",
+      "name": "checkout-web",
+      "uid": "16e65a6a-b98c-5a8f-95f5-4425d5655901",
+      "apiVersion": "argoproj.io/v1alpha1",
+      "resourceVersion": "41017"
+    },
+    "reason": "ResourceUpdated",
+    "message": "Updated health status: Progressing -> Degraded",
+    "source": {
+      "component": "argocd-application-controller"
+    },
+    "firstTimestamp": "2026-10-29T13:03:12Z",
+    "lastTimestamp": "2026-10-29T13:03:12Z",
+    "count": 1,
+    "type": "Normal",
+    "eventTime": null,
+    "reportingComponent": "argocd-application-controller",
+    "reportingInstance": ""
+  },
+  {
+    "_key": "eda2eaff-5061-5d1b-8b0a-f7451e0f4ce7",
+    "metadata": {
+      "name": "checkout-web-58c4d9f7b-hx8pl.3e1be2ec58e58f2c",
+      "namespace": "storefront",
+      "uid": "eda2eaff-5061-5d1b-8b0a-f7451e0f4ce7",
+      "resourceVersion": "41476",
+      "creationTimestamp": "2026-10-27T11:46:30Z"
+    },
+    "involvedObject": {
+      "kind": "Pod",
+      "namespace": "storefront",
+      "name": "checkout-web-58c4d9f7b-hx8pl",
+      "uid": "1a942843-edab-5ae9-98ef-869e1f9da15c",
+      "apiVersion": "v1",
+      "resourceVersion": "41442",
+      "fieldPath": "spec.containers{checkout-web}"
+    },
+    "reason": "BackOff",
+    "message": "Back-off restarting failed container checkout-web in pod checkout-web-58c4d9f7b-hx8pl_storefront",
+    "source": {
+      "component": "kubelet",
+      "host": "ip-10-42-52-7.ec2.internal"
+    },
+    "firstTimestamp": "2026-10-27T11:46:30Z",
+    "lastTimestamp": "2026-10-29T14:00:05Z",
+    "count": 1712,
+    "type": "Warning",
+    "eventTime": null,
+    "reportingComponent": "kubelet",
+    "reportingInstance": "ip-10-42-52-7.ec2.internal"
+  }
+]

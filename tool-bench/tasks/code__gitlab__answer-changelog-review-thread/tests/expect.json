@@ -1,0 +1,81 @@
+{
+  "state": [
+    {
+      "pointer": "/services/gitlab/notes/81503/resolved",
+      "equals": true,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/gitlab/notes/81502/resolved",
+      "equals": false,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/gitlab/notes/81601/resolved",
+      "equals": false,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/gitlab/merge_requests/northwind~1billing~1billing-service!88/state",
+      "equals": "opened",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "gitlab",
+      "method": "POST",
+      "path": null,
+      "path_regex": "/merge_requests/88/discussions/d7e8c986532452a2290d7e7255e2b2cae36e36ce/notes$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": "24f172e5",
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "gitlab",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/api/v4/projects/(northwind%2Fmobile%2Fcheckout-ios|204)/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "gitlab",
+      "method": "PUT",
+      "path": null,
+      "path_regex": "^/api/v4/projects/(northwind%2Fmobile%2Fcheckout-ios|204)/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "gitlab",
+      "method": "PUT",
+      "path": null,
+      "path_regex": "^/api/v4/projects/[^/]+/merge_requests/88/merge$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

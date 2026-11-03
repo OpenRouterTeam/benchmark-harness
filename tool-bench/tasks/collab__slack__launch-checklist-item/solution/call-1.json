@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"slack_add_list_record","arguments":{"columns":{"Due date":"2026-11-05","Owner":"U03PRIYAN4T","Status":"In progress","Task":"Rotate webhook signing secrets"},"list_id":"F0PAYV2LST1"}}}

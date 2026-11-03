@@ -1,0 +1,22 @@
+[scenario]
+id = "ops/datadog/checkout-p95-peak"
+title = "Find the peak production checkout p95 latency during yesterday's slowdown"
+now = "2026-10-30T09:00:00Z"
+seed = "ops-datadog-checkout-p95-peak"
+services = ["datadog"]
+tags = ["lookup", "single-service", "datadog"]
+timeout_sec = 900
+
+# Prod peaks at 1843 ms at 14:35 inside the window. Distractors: staging peaks at 2210 ms
+# (14:15), prod is higher just outside the window (2950 ms at 13:30, 2400 ms at 15:15), and
+# cart-api peaks at 2120 ms.
+[expect.answer]
+contains = ["1843", "14:35"]
+
+[[solution.call]]
+endpoint = "datadog"
+tool = "query_metrics"
+arguments = { from = 1793282400, to = 1793286000, query = "max:checkout.api.latency.p95{env:prod,service:checkout-api}" }
+
+[solution]
+answer = "The production checkout API p95 latency peaked at 1843 ms at 14:35 UTC on 2026-10-29."

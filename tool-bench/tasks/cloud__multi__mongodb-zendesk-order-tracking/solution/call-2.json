@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"find","arguments":{"collection":"orders","connectionId":"preconfigured","database":"shop","filter":{"customer.email":"hana.sato@example.org"}}}}

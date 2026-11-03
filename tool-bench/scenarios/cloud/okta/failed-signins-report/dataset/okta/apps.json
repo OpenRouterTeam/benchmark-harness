@@ -1,0 +1,272 @@
+[
+  {
+    "id": "0oa3slsfrc5Lm8Rt1x7",
+    "name": "salesforce",
+    "label": "Salesforce.com",
+    "status": "ACTIVE",
+    "lastUpdated": "2024-03-01T15:05:00.000Z",
+    "created": "2024-03-01T15:05:00.000Z",
+    "accessibility": {
+      "selfService": false,
+      "errorRedirectUrl": null,
+      "loginRedirectUrl": null
+    },
+    "visibility": {
+      "autoSubmitToolbar": false,
+      "hide": {
+        "iOS": false,
+        "web": false
+      },
+      "appLinks": {
+        "salesforce_link": true
+      }
+    },
+    "features": [],
+    "signOnMode": "SAML_2_0",
+    "credentials": {
+      "userNameTemplate": {
+        "template": "${source.login}",
+        "type": "BUILT_IN"
+      },
+      "signing": {
+        "kid": "k13slsfrc5Lm8Rt1x7"
+      }
+    },
+    "settings": {
+      "app": {
+        "instanceType": "PRODUCTION",
+        "integrationType": "STANDARD"
+      },
+      "notifications": {
+        "vpn": {
+          "network": {
+            "connection": "DISABLED"
+          },
+          "message": null,
+          "helpUrl": null
+        }
+      },
+      "manualProvisioning": false,
+      "implicitAssignment": false,
+      "notes": {
+        "admin": null,
+        "enduser": null
+      }
+    }
+  },
+  {
+    "id": "0oa3slack07Nv6Yw2x7",
+    "name": "slack",
+    "label": "Slack",
+    "status": "ACTIVE",
+    "lastUpdated": "2024-01-10T15:00:00.000Z",
+    "created": "2024-01-10T15:00:00.000Z",
+    "accessibility": {
+      "selfService": false,
+      "errorRedirectUrl": null,
+      "loginRedirectUrl": null
+    },
+    "visibility": {
+      "autoSubmitToolbar": false,
+      "hide": {
+        "iOS": false,
+        "web": false
+      },
+      "appLinks": {
+        "slack_link": true
+      }
+    },
+    "features": [],
+    "signOnMode": "SAML_2_0",
+    "credentials": {
+      "userNameTemplate": {
+        "template": "${source.login}",
+        "type": "BUILT_IN"
+      },
+      "signing": {
+        "kid": "k13slack07Nv6Yw2x7"
+      }
+    },
+    "settings": {
+      "app": {
+        "domain": "octo-corp"
+      },
+      "notifications": {
+        "vpn": {
+          "network": {
+            "connection": "DISABLED"
+          },
+          "message": null,
+          "helpUrl": null
+        }
+      },
+      "manualProvisioning": false,
+      "implicitAssignment": false,
+      "notes": {
+        "admin": null,
+        "enduser": null
+      }
+    }
+  },
+  {
+    "id": "0oa3ghent09Hb3Jd4x7",
+    "name": "github_enterprise_cloud",
+    "label": "GitHub Enterprise",
+    "status": "ACTIVE",
+    "lastUpdated": "2024-01-10T15:10:00.000Z",
+    "created": "2024-01-10T15:10:00.000Z",
+    "accessibility": {
+      "selfService": false,
+      "errorRedirectUrl": null,
+      "loginRedirectUrl": null
+    },
+    "visibility": {
+      "autoSubmitToolbar": false,
+      "hide": {
+        "iOS": false,
+        "web": false
+      },
+      "appLinks": {
+        "github_enterprise_cloud_link": true
+      }
+    },
+    "features": [],
+    "signOnMode": "SAML_2_0",
+    "credentials": {
+      "userNameTemplate": {
+        "template": "${source.login}",
+        "type": "BUILT_IN"
+      },
+      "signing": {
+        "kid": "k13ghent09Hb3Jd4x7"
+      }
+    },
+    "settings": {
+      "app": {
+        "orgName": "octo-corp"
+      },
+      "notifications": {
+        "vpn": {
+          "network": {
+            "connection": "DISABLED"
+          },
+          "message": null,
+          "helpUrl": null
+        }
+      },
+      "manualProvisioning": false,
+      "implicitAssignment": false,
+      "notes": {
+        "admin": null,
+        "enduser": null
+      }
+    }
+  },
+  {
+    "id": "0oa3zndsk12Ac5Ef6x7",
+    "name": "zendesk",
+    "label": "Zendesk",
+    "status": "ACTIVE",
+    "lastUpdated": "2024-01-11T15:00:00.000Z",
+    "created": "2024-01-11T15:00:00.000Z",
+    "accessibility": {
+      "selfService": false,
+      "errorRedirectUrl": null,
+      "loginRedirectUrl": null
+    },
+    "visibility": {
+      "autoSubmitToolbar": false,
+      "hide": {
+        "iOS": false,
+        "web": false
+      },
+      "appLinks": {
+        "zendesk_link": true
+      }
+    },
+    "features": [],
+    "signOnMode": "SAML_2_0",
+    "credentials": {
+      "userNameTemplate": {
+        "template": "${source.login}",
+        "type": "BUILT_IN"
+      },
+      "signing": {
+        "kid": "k13zndsk12Ac5Ef6x7"
+      }
+    },
+    "settings": {
+      "app": {
+        "companySubdomain": "octocorp"
+      },
+      "notifications": {
+        "vpn": {
+          "network": {
+            "connection": "DISABLED"
+          },
+          "message": null,
+          "helpUrl": null
+        }
+      },
+      "manualProvisioning": false,
+      "implicitAssignment": false,
+      "notes": {
+        "admin": null,
+        "enduser": null
+      }
+    }
+  },
+  {
+    "id": "0oa3wikbk7Gh8Ij9x7",
+    "name": "bookmark",
+    "label": "Internal Wiki",
+    "status": "ACTIVE",
+    "lastUpdated": "2024-04-02T15:00:00.000Z",
+    "created": "2024-04-02T15:00:00.000Z",
+    "accessibility": {
+      "selfService": false,
+      "errorRedirectUrl": null,
+      "loginRedirectUrl": null
+    },
+    "visibility": {
+      "autoSubmitToolbar": false,
+      "hide": {
+        "iOS": false,
+        "web": false
+      },
+      "appLinks": {
+        "login": true
+      }
+    },
+    "features": [],
+    "signOnMode": "BOOKMARK",
+    "credentials": {
+      "userNameTemplate": {
+        "template": "${source.login}",
+        "type": "BUILT_IN"
+      },
+      "signing": {}
+    },
+    "settings": {
+      "app": {
+        "requestIntegration": false,
+        "url": "https://wiki.octo-corp.example"
+      },
+      "notifications": {
+        "vpn": {
+          "network": {
+            "connection": "DISABLED"
+          },
+          "message": null,
+          "helpUrl": null
+        }
+      },
+      "manualProvisioning": false,
+      "implicitAssignment": false,
+      "notes": {
+        "admin": null,
+        "enduser": null
+      }
+    }
+  }
+]

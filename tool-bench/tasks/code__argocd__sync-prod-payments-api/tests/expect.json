@@ -1,0 +1,101 @@
+{
+  "state": [
+    {
+      "pointer": "/services/argocd/applications/payments~1payments-api/status/sync/status",
+      "equals": "Synced",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/argocd/applications/payments~1payments-api/status/operationState/syncResult/revision",
+      "equals": "fe01f33d2a5392fa17c1c35f25d294d24075c28b",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/argocd/resources/41db962d-0f81-5de8-8dc3-ced47c1d11fc",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/argocd/applications/payments-staging~1payments-api/status/sync/status",
+      "equals": "OutOfSync",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/argocd/applications/payments-staging~1payments-api/status/operationState/syncResult/revision",
+      "equals": "aa59f08385fb84287ad815b3091ecb99d811bc62",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/argocd/resources/675645aa-e28d-5292-a17c-94c47c5d9f17",
+      "equals": null,
+      "exists": true,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "argocd",
+      "method": "POST",
+      "path": "/api/v1/applications/payments-api/sync",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "appNamespace": "payments"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "argocd",
+      "method": "POST",
+      "path": "/api/v1/applications/payments-api/sync",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "appNamespace": "payments-staging"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "argocd",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "argocd",
+      "method": "PUT",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

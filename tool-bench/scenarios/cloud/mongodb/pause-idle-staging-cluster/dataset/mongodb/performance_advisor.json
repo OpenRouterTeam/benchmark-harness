@@ -1,0 +1,41 @@
+[
+  {
+    "_key": "65c0ffee0000000000000001/shop-prod",
+    "suggestedIndexes": [
+      {
+        "id": "66c0a1000000000000000001",
+        "namespace": "shop.orders",
+        "index": [
+          {
+            "customer.customerId": 1
+          },
+          {
+            "createdAt": -1
+          }
+        ],
+        "weight": 1843200,
+        "impact": [
+          "66c0a1000000000000000101"
+        ]
+      }
+    ],
+    "dropIndexSuggestions": {
+      "hiddenIndexes": [],
+      "redundantIndexes": [],
+      "unusedIndexes": [
+        {
+          "name": "legacy_sku_1",
+          "namespace": "shop.products",
+          "sizeBytes": 65536
+        }
+      ]
+    },
+    "slowQueryLogs": [
+      {
+        "namespace": "shop.orders",
+        "line": "{\"t\":{\"$date\":\"2026-03-13T22:14:05.112+00:00\"},\"s\":\"I\",\"c\":\"COMMAND\",\"msg\":\"Slow query\",\"attr\":{\"ns\":\"shop.orders\",\"durationMillis\":812,\"planSummary\":\"COLLSCAN\"}}"
+      }
+    ],
+    "schemaSuggestions": []
+  }
+]

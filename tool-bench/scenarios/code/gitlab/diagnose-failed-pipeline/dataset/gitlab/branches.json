@@ -1,0 +1,32 @@
+[
+  {
+    "_key": "northwind/payments/checkout-api:main",
+    "name": "main",
+    "commit": "15861d77e15bd024968dadadb0eb84ad84c0d8b2",
+    "base": null
+  },
+  {
+    "_key": "northwind/payments/checkout-api:fix/rounding",
+    "name": "fix/rounding",
+    "commit": "55465f704c5d8af2389908476fece8a7845e9676",
+    "base": "main"
+  },
+  {
+    "_key": "northwind/payments/checkout-api:feat/apple-pay",
+    "name": "feat/apple-pay",
+    "commit": "f2fb3d300b5ec0dffcd10819b740f7870476a3b1",
+    "base": "main"
+  },
+  {
+    "_key": "northwind/payments/ledger:main",
+    "name": "main",
+    "commit": "3ea3467069845475e233b6d2bbfb2c3f200a367b",
+    "base": null
+  },
+  {
+    "_key": "northwind/mobile/checkout-ios:main",
+    "name": "main",
+    "commit": "c7f72c0e6eddc20ff9c16d2fd5d12d87fece59f9",
+    "base": null
+  }
+]

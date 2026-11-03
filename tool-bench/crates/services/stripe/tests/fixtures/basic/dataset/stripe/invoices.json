@@ -1,0 +1,31 @@
+[
+  {
+    "id": "in_HarborMar000000000000001",
+    "customer": "cus_HarborPine0001",
+    "number": "HPC1F0A2-0012",
+    "status": "paid",
+    "created": 1772323200,
+    "period_start": 1772323200,
+    "period_end": 1772323200,
+    "billing_reason": "subscription_cycle",
+    "parent": {"quote_details": null, "subscription_details": {"metadata": {"plan": "pro"}, "subscription": "sub_HarborPro000000000000001"}, "type": "subscription_details"},
+    "status_transitions": {"finalized_at": 1772323200, "marked_uncollectible_at": null, "paid_at": 1772323260, "voided_at": null},
+    "lines": {"data": [
+      {"id": "il_HarborMarPro000000000001", "amount": 24900, "description": "1 × Fernway Pro (at $249.00 / month)", "quantity": 1, "period": {"start": 1772323200, "end": 1775001600}},
+      {"id": "il_HarborMarSeat00000000002", "amount": 9000, "description": "6 × Additional seats (at $15.00 / month)", "quantity": 6, "period": {"start": 1772323200, "end": 1775001600}}
+    ]}
+  },
+  {
+    "id": "in_LumenOpen00000000000002",
+    "customer": "cus_LumenData00003",
+    "number": "LUM0D3E4-0003",
+    "status": "open",
+    "collection_method": "send_invoice",
+    "created": 1773273600,
+    "due_date": 1775865600,
+    "status_transitions": {"finalized_at": 1773273600, "marked_uncollectible_at": null, "paid_at": null, "voided_at": null},
+    "lines": {"data": [
+      {"id": "il_LumenOpen0000000000000001", "amount": 75000, "description": "Custom report build", "quantity": 1}
+    ]}
+  }
+]

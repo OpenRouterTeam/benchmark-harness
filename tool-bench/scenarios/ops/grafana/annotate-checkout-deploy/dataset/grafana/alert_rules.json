@@ -1,0 +1,411 @@
+[
+  {
+    "_key": "ae3checkout5xx",
+    "id": 11,
+    "uid": "ae3checkout5xx",
+    "title": "HighCheckoutErrorRate",
+    "folderUID": "f-prod",
+    "ruleGroup": "checkout",
+    "condition": "C",
+    "for": "5m",
+    "data": [
+      {
+        "refId": "A",
+        "queryType": "",
+        "relativeTimeRange": {
+          "from": 600,
+          "to": 0
+        },
+        "datasourceUid": "prom-prod",
+        "model": {
+          "expr": "sum(rate(http_requests_total{service=\"checkout\",status=~\"5..\"}[5m])) / sum(rate(http_requests_total{service=\"checkout\"}[5m]))",
+          "refId": "A",
+          "instant": true
+        }
+      },
+      {
+        "refId": "C",
+        "queryType": "",
+        "relativeTimeRange": {
+          "from": 0,
+          "to": 0
+        },
+        "datasourceUid": "__expr__",
+        "model": {
+          "type": "threshold",
+          "expression": "A",
+          "conditions": [
+            {
+              "evaluator": {
+                "type": "gt",
+                "params": [
+                  0.02
+                ]
+              }
+            }
+          ],
+          "refId": "C"
+        }
+      }
+    ],
+    "updated": "2026-10-31T15:30:00Z",
+    "noDataState": "NoData",
+    "execErrState": "Error",
+    "labels": {
+      "severity": "critical",
+      "team": "checkout"
+    },
+    "annotations": {
+      "summary": "Checkout 5xx ratio above 2%",
+      "runbook_url": "https://runbooks.octo-corp.com/checkout/5xx"
+    },
+    "isPaused": false,
+    "provenance": "",
+    "version": 3,
+    "state": "firing",
+    "health": "ok",
+    "alerts": [
+      {
+        "labels": {
+          "alertname": "HighCheckoutErrorRate",
+          "severity": "critical",
+          "team": "checkout",
+          "grafana_folder": "Production"
+        },
+        "annotations": {
+          "summary": "Checkout 5xx ratio above 2%"
+        },
+        "state": "Alerting",
+        "activeAt": "2026-11-12T14:56:00Z",
+        "value": "[ var='A' labels={} value=0.0293 ]"
+      }
+    ]
+  },
+  {
+    "_key": "ae3checkoutlat",
+    "id": 12,
+    "uid": "ae3checkoutlat",
+    "title": "HighCheckoutLatency",
+    "folderUID": "f-prod",
+    "ruleGroup": "checkout",
+    "condition": "C",
+    "for": "5m",
+    "data": [
+      {
+        "refId": "A",
+        "queryType": "",
+        "relativeTimeRange": {
+          "from": 600,
+          "to": 0
+        },
+        "datasourceUid": "prom-prod",
+        "model": {
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{service=\"checkout\"}[5m])))",
+          "refId": "A",
+          "instant": true
+        }
+      },
+      {
+        "refId": "C",
+        "queryType": "",
+        "relativeTimeRange": {
+          "from": 0,
+          "to": 0
+        },
+        "datasourceUid": "__expr__",
+        "model": {
+          "type": "threshold",
+          "expression": "A",
+          "conditions": [
+            {
+              "evaluator": {
+                "type": "gt",
+                "params": [
+                  0.02
+                ]
+              }
+            }
+          ],
+          "refId": "C"
+        }
+      }
+    ],
+    "updated": "2026-10-31T15:30:00Z",
+    "noDataState": "NoData",
+    "execErrState": "Error",
+    "labels": {
+      "severity": "warning",
+      "team": "checkout"
+    },
+    "annotations": {
+      "summary": "Checkout p99 latency above 1.5s"
+    },
+    "isPaused": false,
+    "provenance": "",
+    "version": 3,
+    "state": "firing",
+    "health": "ok",
+    "alerts": [
+      {
+        "labels": {
+          "alertname": "HighCheckoutLatency",
+          "severity": "warning",
+          "team": "checkout",
+          "grafana_folder": "Production"
+        },
+        "annotations": {
+          "summary": "Checkout p99 latency above 1.5s"
+        },
+        "state": "Alerting",
+        "activeAt": "2026-11-12T15:09:00Z",
+        "value": "[ var='A' labels={} value=1.94 ]"
+      }
+    ]
+  },
+  {
+    "_key": "ae3pglag",
+    "id": 13,
+    "uid": "ae3pglag",
+    "title": "PostgresReplicationLag",
+    "folderUID": "f-platform",
+    "ruleGroup": "databases",
+    "condition": "C",
+    "for": "5m",
+    "data": [
+      {
+        "refId": "A",
+        "queryType": "",
+        "relativeTimeRange": {
+          "from": 600,
+          "to": 0
+        },
+        "datasourceUid": "prom-prod",
+        "model": {
+          "expr": "max by (instance) (pg_replication_lag_seconds{cluster=\"orders-db\"})",
+          "refId": "A",
+          "instant": true
+        }
+      },
+      {
+        "refId": "C",
+        "queryType": "",
+        "relativeTimeRange": {
+          "from": 0,
+          "to": 0
+        },
+        "datasourceUid": "__expr__",
+        "model": {
+          "type": "threshold",
+          "expression": "A",
+          "conditions": [
+            {
+              "evaluator": {
+                "type": "gt",
+                "params": [
+                  0.02
+                ]
+              }
+            }
+          ],
+          "refId": "C"
+        }
+      }
+    ],
+    "updated": "2026-10-31T15:30:00Z",
+    "noDataState": "NoData",
+    "execErrState": "Error",
+    "labels": {
+      "severity": "warning",
+      "team": "sre"
+    },
+    "annotations": {
+      "summary": "Replica {{ $labels.instance }} is {{ $value }}s behind"
+    },
+    "isPaused": false,
+    "provenance": "",
+    "version": 3,
+    "state": "firing",
+    "health": "ok",
+    "alerts": [
+      {
+        "labels": {
+          "alertname": "PostgresReplicationLag",
+          "instance": "pg-replica-2",
+          "severity": "warning",
+          "team": "sre",
+          "grafana_folder": "Platform"
+        },
+        "annotations": {
+          "summary": "Replica pg-replica-2 is 47s behind"
+        },
+        "state": "Alerting",
+        "activeAt": "2026-11-12T12:30:00Z",
+        "value": "[ var='A' labels={instance=pg-replica-2} value=47 ]"
+      },
+      {
+        "labels": {
+          "alertname": "PostgresReplicationLag",
+          "instance": "pg-replica-1",
+          "severity": "warning",
+          "team": "sre",
+          "grafana_folder": "Platform"
+        },
+        "annotations": {
+          "summary": "Replica pg-replica-1 is 0.4s behind"
+        },
+        "state": "Normal",
+        "activeAt": null,
+        "value": ""
+      }
+    ]
+  },
+  {
+    "_key": "ae3stg5xx",
+    "id": 14,
+    "uid": "ae3stg5xx",
+    "title": "HighCheckoutErrorRate (staging)",
+    "folderUID": "f-staging",
+    "ruleGroup": "checkout-staging",
+    "condition": "C",
+    "for": "5m",
+    "data": [
+      {
+        "refId": "A",
+        "queryType": "",
+        "relativeTimeRange": {
+          "from": 600,
+          "to": 0
+        },
+        "datasourceUid": "prom-staging",
+        "model": {
+          "expr": "sum(rate(http_requests_total{service=\"checkout\",status=~\"5..\"}[5m])) / sum(rate(http_requests_total{service=\"checkout\"}[5m]))",
+          "refId": "A",
+          "instant": true
+        }
+      },
+      {
+        "refId": "C",
+        "queryType": "",
+        "relativeTimeRange": {
+          "from": 0,
+          "to": 0
+        },
+        "datasourceUid": "__expr__",
+        "model": {
+          "type": "threshold",
+          "expression": "A",
+          "conditions": [
+            {
+              "evaluator": {
+                "type": "gt",
+                "params": [
+                  0.02
+                ]
+              }
+            }
+          ],
+          "refId": "C"
+        }
+      }
+    ],
+    "updated": "2026-10-31T15:30:00Z",
+    "noDataState": "NoData",
+    "execErrState": "Error",
+    "labels": {
+      "severity": "info",
+      "team": "checkout",
+      "env": "staging"
+    },
+    "annotations": {
+      "summary": "Staging checkout 5xx ratio above 2%"
+    },
+    "isPaused": false,
+    "provenance": "",
+    "version": 3,
+    "state": "firing",
+    "health": "ok",
+    "alerts": [
+      {
+        "labels": {
+          "alertname": "HighCheckoutErrorRate (staging)",
+          "severity": "info",
+          "team": "checkout",
+          "env": "staging",
+          "grafana_folder": "Staging"
+        },
+        "annotations": {
+          "summary": "Staging checkout 5xx ratio above 2%"
+        },
+        "state": "Alerting",
+        "activeAt": "2026-11-12T11:30:00Z",
+        "value": "[ var='A' labels={} value=0.41 ]"
+      }
+    ]
+  },
+  {
+    "_key": "ae3disk",
+    "id": 15,
+    "uid": "ae3disk",
+    "title": "NodeDiskFillingUp",
+    "folderUID": "f-platform",
+    "ruleGroup": "nodes",
+    "condition": "C",
+    "for": "1h",
+    "data": [
+      {
+        "refId": "A",
+        "queryType": "",
+        "relativeTimeRange": {
+          "from": 600,
+          "to": 0
+        },
+        "datasourceUid": "prom-prod",
+        "model": {
+          "expr": "predict_linear(node_filesystem_avail_bytes[6h], 24*3600) < 0",
+          "refId": "A",
+          "instant": true
+        }
+      },
+      {
+        "refId": "C",
+        "queryType": "",
+        "relativeTimeRange": {
+          "from": 0,
+          "to": 0
+        },
+        "datasourceUid": "__expr__",
+        "model": {
+          "type": "threshold",
+          "expression": "A",
+          "conditions": [
+            {
+              "evaluator": {
+                "type": "gt",
+                "params": [
+                  0.02
+                ]
+              }
+            }
+          ],
+          "refId": "C"
+        }
+      }
+    ],
+    "updated": "2026-10-31T15:30:00Z",
+    "noDataState": "NoData",
+    "execErrState": "Error",
+    "labels": {
+      "severity": "warning",
+      "team": "sre"
+    },
+    "annotations": {
+      "summary": "Disk on {{ $labels.instance }} will fill within 24h"
+    },
+    "isPaused": false,
+    "provenance": "",
+    "version": 3,
+    "state": "inactive",
+    "health": "ok",
+    "alerts": []
+  }
+]

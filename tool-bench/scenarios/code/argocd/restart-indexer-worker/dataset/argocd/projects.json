@@ -1,0 +1,83 @@
+[
+  {
+    "_key": "default",
+    "metadata": {
+      "name": "default",
+      "namespace": "argocd",
+      "uid": "31c4f0fe-906e-571a-8028-a665ef57a368",
+      "resourceVersion": "42615",
+      "generation": 1,
+      "creationTimestamp": "2025-05-20T09:00:00Z"
+    },
+    "spec": {
+      "sourceRepos": [
+        "*"
+      ],
+      "destinations": [
+        {
+          "server": "*",
+          "namespace": "*"
+        }
+      ],
+      "clusterResourceWhitelist": [
+        {
+          "group": "*",
+          "kind": "*"
+        }
+      ]
+    },
+    "status": {}
+  },
+  {
+    "_key": "search",
+    "metadata": {
+      "name": "search",
+      "namespace": "argocd",
+      "uid": "617939fb-57ff-5785-a3b9-ba6e3000f457",
+      "resourceVersion": "42632",
+      "generation": 3,
+      "creationTimestamp": "2025-06-02T10:00:00Z"
+    },
+    "spec": {
+      "description": "Product search",
+      "sourceRepos": [
+        "https://github.com/lumen-retail/*"
+      ],
+      "destinations": [
+        {
+          "server": "https://prod-use1.k8s.lumen.internal",
+          "namespace": "search"
+        },
+        {
+          "server": "https://staging-use1.k8s.lumen.internal",
+          "namespace": "search"
+        }
+      ],
+      "clusterResourceWhitelist": [
+        {
+          "group": "",
+          "kind": "Namespace"
+        }
+      ],
+      "namespaceResourceWhitelist": [
+        {
+          "group": "*",
+          "kind": "*"
+        }
+      ],
+      "roles": [
+        {
+          "name": "deployers",
+          "description": "CI deployers for search",
+          "policies": [
+            "p, proj:search:deployers, applications, sync, search/*, allow"
+          ],
+          "groups": [
+            "lumen-retail:platform"
+          ]
+        }
+      ]
+    },
+    "status": {}
+  }
+]

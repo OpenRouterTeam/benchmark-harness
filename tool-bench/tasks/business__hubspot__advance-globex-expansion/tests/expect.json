@@ -1,0 +1,99 @@
+{
+  "state": [
+    {
+      "pointer": "/services/hubspot/deals/9100101/properties/dealstage",
+      "equals": "contractsent",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/hubspot/deals/9100101/properties/closedate",
+      "equals": null,
+      "exists": null,
+      "contains": "2026-11-20",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/hubspot/deals/9100101/properties/amount",
+      "equals": "96000",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/hubspot/deals/9100103/properties/dealstage",
+      "equals": "closedlost",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/hubspot/deals/9100103/properties/closedate",
+      "equals": "2025-11-28T17:00:00.000Z",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/hubspot/deals/9100102/properties/dealstage",
+      "equals": "closedwon",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "hubspot",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/crm/v3/objects/(deals|deal|0-3)/batch/update$",
+      "query_contains": null,
+      "body": {
+        "inputs": [
+          {
+            "id": "9100101"
+          }
+        ]
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "hubspot",
+      "method": "POST",
+      "path": null,
+      "path_regex": "/batch/update$",
+      "query_contains": null,
+      "body": {
+        "inputs": [
+          {
+            "id": "9100103"
+          }
+        ]
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "hubspot",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/crm/v3/objects/(deals|deal|0-3)/batch/create$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

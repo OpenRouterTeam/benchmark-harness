@@ -1,0 +1,181 @@
+[
+  {
+    "id": "eaff934c3d84acea7f853036b1",
+    "calendarId": "ops@octo-corp.example",
+    "status": "confirmed",
+    "summary": "Ops standup",
+    "start": {
+      "dateTime": "2026-11-03T09:30:00-05:00",
+      "timeZone": "America/New_York"
+    },
+    "end": {
+      "dateTime": "2026-11-03T09:45:00-05:00",
+      "timeZone": "America/New_York"
+    },
+    "organizer": {
+      "email": "ops@octo-corp.example",
+      "self": true
+    },
+    "creator": {
+      "email": "ops@octo-corp.example",
+      "self": true
+    },
+    "created": "2026-10-01T14:00:00.000Z",
+    "updated": "2026-10-01T14:00:00.000Z",
+    "eventType": "default",
+    "reminders": {
+      "useDefault": true
+    },
+    "sequence": 0,
+    "iCalUID": "eaff934c3d84acea7f853036b1@google.com",
+    "attendees": [
+      {
+        "email": "sam.ortiz@octo-corp.example",
+        "responseStatus": "accepted"
+      }
+    ]
+  },
+  {
+    "id": "55ef3a697e7fb038a2c8b5f702",
+    "calendarId": "ops@octo-corp.example",
+    "status": "confirmed",
+    "summary": "Vendor call: Fabrikam",
+    "start": {
+      "dateTime": "2026-11-03T15:30:00-05:00",
+      "timeZone": "America/New_York"
+    },
+    "end": {
+      "dateTime": "2026-11-03T16:00:00-05:00",
+      "timeZone": "America/New_York"
+    },
+    "organizer": {
+      "email": "ops@octo-corp.example",
+      "self": true
+    },
+    "creator": {
+      "email": "ops@octo-corp.example",
+      "self": true
+    },
+    "created": "2026-10-01T14:00:00.000Z",
+    "updated": "2026-10-01T14:00:00.000Z",
+    "eventType": "default",
+    "reminders": {
+      "useDefault": true
+    },
+    "sequence": 0,
+    "iCalUID": "55ef3a697e7fb038a2c8b5f702@google.com",
+    "attendees": [
+      {
+        "email": "kai@fabrikam.example",
+        "responseStatus": "accepted"
+      }
+    ]
+  },
+  {
+    "id": "ae2a3372cbeee330eecbe86872",
+    "calendarId": "ops@octo-corp.example",
+    "status": "confirmed",
+    "summary": "Q4 planning sync",
+    "start": {
+      "dateTime": "2026-08-04T14:00:00-04:00",
+      "timeZone": "America/New_York"
+    },
+    "end": {
+      "dateTime": "2026-08-04T14:45:00-04:00",
+      "timeZone": "America/New_York"
+    },
+    "organizer": {
+      "email": "ops@octo-corp.example",
+      "self": true
+    },
+    "creator": {
+      "email": "ops@octo-corp.example",
+      "self": true
+    },
+    "created": "2026-10-01T14:00:00.000Z",
+    "updated": "2026-10-01T14:00:00.000Z",
+    "eventType": "default",
+    "reminders": {
+      "useDefault": true
+    },
+    "sequence": 0,
+    "iCalUID": "ae2a3372cbeee330eecbe86872@google.com",
+    "attendees": [
+      {
+        "email": "priya.natarajan@octo-corp.example",
+        "responseStatus": "accepted"
+      },
+      {
+        "email": "marcus.webb@octo-corp.example",
+        "responseStatus": "accepted"
+      }
+    ]
+  },
+  {
+    "id": "05debed2d94d9139bb658f0938",
+    "calendarId": "c_ops_team@group.calendar.google.com",
+    "status": "confirmed",
+    "summary": "Maintenance window: DB failover test",
+    "start": {
+      "dateTime": "2026-10-31T06:00:00-04:00",
+      "timeZone": "America/New_York"
+    },
+    "end": {
+      "dateTime": "2026-10-31T08:00:00-04:00",
+      "timeZone": "America/New_York"
+    },
+    "organizer": {
+      "email": "c_ops_team@group.calendar.google.com",
+      "self": false
+    },
+    "creator": {
+      "email": "ops@octo-corp.example",
+      "self": true
+    },
+    "created": "2026-10-01T14:00:00.000Z",
+    "updated": "2026-10-01T14:00:00.000Z",
+    "eventType": "default",
+    "reminders": {
+      "useDefault": true
+    },
+    "sequence": 0,
+    "iCalUID": "05debed2d94d9139bb658f0938@google.com",
+    "attendees": []
+  },
+  {
+    "id": "2bd9e47e5b6554867e8d481477",
+    "calendarId": "ops@octo-corp.example",
+    "status": "confirmed",
+    "summary": "Vendor renewal review",
+    "start": {
+      "dateTime": "2026-10-30T13:00:00-04:00",
+      "timeZone": "America/New_York"
+    },
+    "end": {
+      "dateTime": "2026-10-30T13:30:00-04:00",
+      "timeZone": "America/New_York"
+    },
+    "organizer": {
+      "email": "ops@octo-corp.example",
+      "self": true
+    },
+    "creator": {
+      "email": "ops@octo-corp.example",
+      "self": true
+    },
+    "created": "2026-10-01T14:00:00.000Z",
+    "updated": "2026-10-01T14:00:00.000Z",
+    "eventType": "default",
+    "reminders": {
+      "useDefault": true
+    },
+    "sequence": 0,
+    "iCalUID": "2bd9e47e5b6554867e8d481477@google.com",
+    "attendees": [
+      {
+        "email": "lena.fischer@octo-corp.example",
+        "responseStatus": "accepted"
+      }
+    ]
+  }
+]

@@ -1,0 +1,86 @@
+[
+  {
+    "_key": "lumen-retail/storefront/checkout-web@9a4e7c2d1f8b05a36c9e2d7f4b1a8c0e5d3f6a29",
+    "id": "9a4e7c2d1f8b05a36c9e2d7f4b1a8c0e5d3f6a29",
+    "title": "Fix promo code banner overflow on mobile",
+    "message": "Fix promo code banner overflow on mobile\n",
+    "author_name": "Jon Berg",
+    "author_email": "jon.berg@lumen-retail.com",
+    "authored_date": "2026-10-20T15:31:00.000Z",
+    "committed_date": "2026-10-20T15:31:00.000Z",
+    "parent_ids": [],
+    "branch": "main"
+  },
+  {
+    "_key": "lumen-retail/storefront/checkout-web@3c8d1e6f0a2b47c95d3e8f1a6b0c2d9e4f7a1b38",
+    "id": "3c8d1e6f0a2b47c95d3e8f1a6b0c2d9e4f7a1b38",
+    "title": "Apple Pay express checkout button (behind flag)",
+    "message": "Apple Pay express checkout button (behind flag)\n",
+    "author_name": "Maria Okafor",
+    "author_email": "maria.okafor@lumen-retail.com",
+    "authored_date": "2026-10-27T10:55:00.000Z",
+    "committed_date": "2026-10-27T10:55:00.000Z",
+    "parent_ids": [],
+    "branch": "main"
+  },
+  {
+    "_key": "lumen-retail/storefront/checkout-web@6e1f0c9a4b7d25e83f6a0b1c9d2e4f7a8b3c5d60",
+    "id": "6e1f0c9a4b7d25e83f6a0b1c9d2e4f7a8b3c5d60",
+    "title": "Apple Pay: handle shipping contact updates",
+    "message": "Apple Pay: handle shipping contact updates\n",
+    "author_name": "Maria Okafor",
+    "author_email": "maria.okafor@lumen-retail.com",
+    "authored_date": "2026-10-29T12:31:00.000Z",
+    "committed_date": "2026-10-29T12:31:00.000Z",
+    "parent_ids": [],
+    "branch": "main"
+  },
+  {
+    "_key": "lumen-retail/storefront/checkout-web@d05b8e3a7c1f49e2b6d0a3c8f5e1b7d29c4a6f03",
+    "id": "d05b8e3a7c1f49e2b6d0a3c8f5e1b7d29c4a6f03",
+    "title": "Lint: migrate to eslint flat config",
+    "message": "Lint: migrate to eslint flat config\n",
+    "author_name": "Jon Berg",
+    "author_email": "jon.berg@lumen-retail.com",
+    "authored_date": "2026-10-29T13:14:00.000Z",
+    "committed_date": "2026-10-29T13:14:00.000Z",
+    "parent_ids": [],
+    "branch": "main"
+  },
+  {
+    "_key": "lumen-retail/storefront/storefront-deploy@b73eaab2b7b7af66a64d59e777aaae2334f0a62e",
+    "id": "b73eaab2b7b7af66a64d59e777aaae2334f0a62e",
+    "title": "checkout-web: release 2.13.4",
+    "message": "checkout-web: release 2.13.4\n\nPromoted by checkout-web pipeline #7690 (tag v2.13.4).\n",
+    "author_name": "Deploy Bot",
+    "author_email": "deploy-bot@lumen-retail.com",
+    "authored_date": "2026-10-20T16:02:11.000Z",
+    "committed_date": "2026-10-20T16:02:11.000Z",
+    "parent_ids": [],
+    "branch": "main"
+  },
+  {
+    "_key": "lumen-retail/storefront/storefront-deploy@cbd3f1734780d1588d9e6348448a9829c2fd04e2",
+    "id": "cbd3f1734780d1588d9e6348448a9829c2fd04e2",
+    "title": "checkout-web(staging): bump to 2.14.0-rc2",
+    "message": "checkout-web(staging): bump to 2.14.0-rc2\n",
+    "author_name": "Maria Okafor",
+    "author_email": "maria.okafor@lumen-retail.com",
+    "authored_date": "2026-10-27T11:40:03.000Z",
+    "committed_date": "2026-10-27T11:40:03.000Z",
+    "parent_ids": [],
+    "branch": "staging"
+  },
+  {
+    "_key": "lumen-retail/storefront/storefront-deploy@a23f2a7b21f788c07d95ceaeb529e54b7ae3dbcd",
+    "id": "a23f2a7b21f788c07d95ceaeb529e54b7ae3dbcd",
+    "title": "checkout-web(prod): promote 2.14.0-rc3",
+    "message": "checkout-web(prod): promote 2.14.0-rc3\n\nSet image ghcr.io/lumen-retail/checkout-web:2.14.0-rc3 in apps/checkout-web/overlays/production.\nPromoted by lumen-retail/storefront/checkout-web pipeline #7712 (tag v2.14.0-rc3).\n",
+    "author_name": "Deploy Bot",
+    "author_email": "deploy-bot@lumen-retail.com",
+    "authored_date": "2026-10-29T12:51:47.000Z",
+    "committed_date": "2026-10-29T12:51:47.000Z",
+    "parent_ids": [],
+    "branch": "main"
+  }
+]

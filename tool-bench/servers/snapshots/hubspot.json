@@ -1,0 +1,1281 @@
+{
+  "name": "hubspot",
+  "server_info": {
+    "name": "hubspot-mcp-server",
+    "version": "0.4.0"
+  },
+  "protocol_version": "2025-06-18",
+  "tools": [
+    {
+      "name": "hubspot-get-user-details",
+      "description": "\n    🎯 Purpose\n      1. Authenticates and analyzes the current HubSpot access token, providing context about the user's permissions and account details.\n\n    🧭 Usage Guidance:\n      1. This tool must be used before performing any operations with Hubspot tools to determine the identity of the user, and permissions they have on their Hubspot account.\n\n    📦 Returns:\n      1. User ID, Hub ID, App ID, token type, a comprehensive list of authorized API scopes, and detailed owner information, and account information.\n      2. The uiDomain and hubId can be used to construct URLs to the HubSpot UI for the user.\n      3. If the user is an owner, the ownerId will help identify objects that are owned by the user.\n  ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "Get User Details",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "hubspot-list-objects",
+      "description": "\n    🎯 Purpose:\n      1. Retrieves a paginated list of objects of a specified type from HubSpot.\n\n    📦 Returns:\n      1. Collection of objects with their properties and metadata, plus pagination information.\n\n    🧭 Usage Guidance:\n      1. Use for initial data exploration to understand the data structure of a HubSpot object type.\n      2. Helps list objects when the search criteria or filter criteria is not clear.\n      3. Use hubspot-search-objects for targeted queries when the data structure is known.\n      4. Use hubspot-batch-read-objects to retrieve specific objects by their IDs.\n      5. Use hubspot-list-associations to list associations between objects.\n  ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "objectType": {
+            "type": "string",
+            "description": "The type of HubSpot object to list. Valid values include: appointments, companies, contacts, courses, deals, leads, line_items, listings, marketing_events, meetings, orders, postal_mail, products, quotes, services, subscriptions, tickets, users. For custom objects, use the hubspot-get-schemas tool to get the objectType."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 500,
+            "default": 100,
+            "description": "The maximum number of results to display per page (max: 500)."
+          },
+          "after": {
+            "type": "string",
+            "description": "The paging cursor token of the last successfully read resource."
+          },
+          "properties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "A list of the properties to be returned in the response."
+          },
+          "associations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "A list of object types to retrieve associated IDs for (e.g., appointments, companies, contacts, courses, deals, leads, line_items, listings, marketing_events, meetings, orders, postal_mail, products, quotes, services, subscriptions, tickets, users)."
+          },
+          "archived": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to return only results that have been archived."
+          }
+        },
+        "required": [
+          "objectType"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "List CRM Objects",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "hubspot-search-objects",
+      "description": "\n    🎯 Purpose:\n      1. Performs advanced filtered searches across HubSpot object types using complex criteria.\n\n    📋 Prerequisites:\n      1. Use the hubspot-list-objects tool to sample existing objects for the object type.\n      2. If hubspot-list-objects tool's response isn't helpful, use hubspot-list-properties tool.\n\n    📦 Returns:\n      1. Filtered collection matching specific criteria with pagination information.\n\n    🧭 Usage Guidance:\n      1. Preferred for targeted data retrieval when exact filtering criteria are known. Supports complex boolean logic through filter groups.\n      2. Use hubspot-list-objects when filter criteria is not specified or clear or when a search fails.\n      3. Use hubspot-batch-read-objects to retrieve specific objects by their IDs.\n      4. Use hubspot-list-associations to get the associations between objects.\n\n    🔍 Filtering Capabilities:\n      1. Think of \"filterGroups\" as separate search conditions that you want to combine with OR logic (meaning ANY of them can match).\n      2. If you want to find things that match ALL of several conditions (AND logic), put those conditions together in the same filters list.\n      3. If you want to find things that match AT LEAST ONE of several conditions (OR logic), put each condition in a separate filterGroup.\n      4. You can include a maximum of five filterGroups with up to 6 filters in each group, with a maximum of 18 filters in total.\n  ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "objectType": {
+            "type": "string",
+            "description": "The type of HubSpot object to search. Valid values include: appointments, companies, contacts, courses, deals, leads, line_items, listings, marketing_events, meetings, orders, postal_mail, products, quotes, services, subscriptions, tickets, users. For custom objects, use the hubspot-get-schemas tool to get the objectType."
+          },
+          "query": {
+            "type": "string",
+            "description": "Text to search across default searchable properties of the specified object type. Each object type has different searchable properties. For example: contacts (firstname, lastname, email, phone, company), companies (name, website, domain, phone), deals (dealname, pipeline, dealstage, description, dealtype), etc"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 10,
+            "description": "The maximum number of results to display per page (max: 100)."
+          },
+          "after": {
+            "type": "string",
+            "description": "The paging cursor token of the last successfully read resource."
+          },
+          "properties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "A list of the properties to be returned in the response."
+          },
+          "sorts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "propertyName": {
+                  "type": "string",
+                  "description": "The name of the property to sort by"
+                },
+                "direction": {
+                  "type": "string",
+                  "enum": [
+                    "ASCENDING",
+                    "DESCENDING"
+                  ],
+                  "description": "The sort direction"
+                }
+              },
+              "required": [
+                "propertyName",
+                "direction"
+              ],
+              "additionalProperties": false
+            },
+            "description": "A list of sort criteria to apply to the results."
+          },
+          "filterGroups": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "filters": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "propertyName": {
+                        "type": "string",
+                        "description": "The name of the property to filter by"
+                      },
+                      "operator": {
+                        "type": "string",
+                        "enum": [
+                          "EQ",
+                          "NEQ",
+                          "LT",
+                          "LTE",
+                          "GT",
+                          "GTE",
+                          "BETWEEN",
+                          "IN",
+                          "NOT_IN",
+                          "HAS_PROPERTY",
+                          "NOT_HAS_PROPERTY",
+                          "CONTAINS_TOKEN",
+                          "NOT_CONTAINS_TOKEN"
+                        ],
+                        "description": "The operator to use for comparison"
+                      },
+                      "value": {
+                        "description": "The value to compare against. Must be a string"
+                      },
+                      "values": {
+                        "type": "array",
+                        "description": "Set of string values for multi-value operators like IN and NOT_IN."
+                      },
+                      "highValue": {
+                        "description": "The upper bound value for range operators like BETWEEN. The lower bound is specified by the value attribute"
+                      }
+                    },
+                    "required": [
+                      "propertyName",
+                      "operator"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "description": "Array of filters to apply (combined with AND)."
+                }
+              },
+              "required": [
+                "filters"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Groups of filters to apply (combined with OR)."
+          }
+        },
+        "required": [
+          "objectType"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "Search CRM Objects",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "hubspot-batch-create-associations",
+      "description": "\n    🛡️ Guardrails:\n      1.  Data Modification Warning: This tool modifies HubSpot data. Only use when the user has explicitly requested to update their CRM.\n\n    🎯 Purpose:\n      1. Establishes relationships between HubSpot objects, linking records across different object types, by creating associations between objects in batch.\n      2. Uses a single set of association types for all associations in the batch.\n\n    📋 Prerequisites:\n      1. Use the hubspot-get-user-details tool to get the OwnerId and UserId if you don't have that already.\n      2. Use the hubspot-get-association-definitions tool to identify valid association types before creating associations.\n  ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "fromObjectType": {
+            "type": "string",
+            "description": "The type of HubSpot object to create association from. Valid values include: appointments, companies, contacts, courses, deals, leads, line_items, listings, marketing_events, meetings, orders, postal_mail, products, quotes, services, subscriptions, tickets, users. For custom objects, use the hubspot-get-schemas tool to get the objectType."
+          },
+          "toObjectType": {
+            "type": "string",
+            "description": "The type of HubSpot object to create association to. Valid values include: appointments, companies, contacts, courses, deals, leads, line_items, listings, marketing_events, meetings, orders, postal_mail, products, quotes, services, subscriptions, tickets, users. For custom objects, use the hubspot-get-schemas tool to get the objectType."
+          },
+          "types": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "associationCategory": {
+                  "type": "string",
+                  "enum": [
+                    "HUBSPOT_DEFINED",
+                    "USER_DEFINED",
+                    "INTEGRATOR_DEFINED"
+                  ]
+                },
+                "associationTypeId": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0
+                }
+              },
+              "required": [
+                "associationCategory",
+                "associationTypeId"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "description": "The types of associations to create"
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "from": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the object to create association from"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ],
+                  "additionalProperties": false
+                },
+                "to": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the object to create association to"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "from",
+                "to"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "description": "List of association inputs defining the relationships to create. (max 100 associations per batch)"
+          }
+        },
+        "required": [
+          "fromObjectType",
+          "toObjectType",
+          "types",
+          "inputs"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "Create CRM Object Associations in Batch",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "hubspot-get-association-definitions",
+      "description": "\n    🎯 Purpose:\n      1. Retrieves valid association types between specific HubSpot object types.\n\n    📦 Returns:\n      1. Array of valid association definitions with type IDs, labels, and categories.\n\n    🧭 Usage Guidance:\n      1. Always use before creating associations to ensure valid relationship types or to help troubleshoot association creation errors.\n  ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "fromObjectType": {
+            "type": "string",
+            "description": "The type of HubSpot object to get association from. Valid values include: appointments, companies, contacts, courses, deals, leads, line_items, listings, marketing_events, meetings, orders, postal_mail, products, quotes, services, subscriptions, tickets, users. For custom objects, use the hubspot-get-schemas tool to get the objectType."
+          },
+          "toObjectType": {
+            "type": "string",
+            "description": "The type of HubSpot object to get association to. Valid values include: appointments, companies, contacts, courses, deals, leads, line_items, listings, marketing_events, meetings, orders, postal_mail, products, quotes, services, subscriptions, tickets, users. For custom objects, use the hubspot-get-schemas tool to get the objectType."
+          }
+        },
+        "required": [
+          "fromObjectType",
+          "toObjectType"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "Get CRM Association Types",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "hubspot-list-associations",
+      "description": "\n    🎯 Purpose:\n      1. Retrieves existing relationships between a specific object and other objects of a particular type.\n      2. For example, you can find all companies that a contact is associated with, all deals related to a company, or discover which customers have an open ticket.\n\n    📦 Returns:\n      1. Collection of associated object IDs and relationship metadata.\n      2. Use hubspot-batch-read-objects to get more information about the associated objects.\n\n    🧭 Usage Guidance:\n      1. Use this tool when mapping relationships between different HubSpot objects to understand your data's connections.\n      2. This tool is ideal when you already know a specific record's ID and need to discover its relationships with other object types.\n      3. Prefer this over hubspot-search-objects tool when exploring established connections rather than filtering by properties or criteria.\n  ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "objectType": {
+            "type": "string",
+            "description": "The type of HubSpot object to get associations from. Valid values include: appointments, companies, contacts, courses, deals, leads, line_items, listings, marketing_events, meetings, orders, postal_mail, products, quotes, services, subscriptions, tickets, users. For custom objects, use the hubspot-get-schemas tool to get the objectType."
+          },
+          "objectId": {
+            "type": "string",
+            "description": "The ID of the HubSpot object to get associations from"
+          },
+          "toObjectType": {
+            "type": "string",
+            "description": "The type of HubSpot object to get associations to. Valid values include: appointments, companies, contacts, courses, deals, leads, line_items, listings, marketing_events, meetings, orders, postal_mail, products, quotes, services, subscriptions, tickets, users. For custom objects, use the hubspot-get-schemas tool to get the objectType."
+          },
+          "after": {
+            "type": "string",
+            "description": "Paging cursor token for retrieving the next page of results"
+          }
+        },
+        "required": [
+          "objectType",
+          "objectId",
+          "toObjectType"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "List CRM Object Associations",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "hubspot-batch-create-objects",
+      "description": "\n    🛡️ Guardrails:\n      1. Data Modification Warning: This tool modifies HubSpot data. Only use when the user has explicitly requested to update their CRM.\n\n    🎯 Purpose:\n      1. Creates multiple HubSpot objects of the same objectType in a single API call, optimizing for bulk operations.\n\n    📋 Prerequisites:\n      1. Use the hubspot-get-user-details tool to get the OwnerId and UserId if you don't have that already.\n      2. Use the hubspot-list-objects tool to sample existing objects for the object type.\n      3. Use the hubspot-get-association-definitions tool to identify valid association types before creating associations.\n  ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "objectType": {
+            "type": "string",
+            "description": "The type of HubSpot object to create. Valid values include: appointments, companies, contacts, courses, deals, leads, line_items, listings, marketing_events, meetings, orders, postal_mail, products, quotes, services, subscriptions, tickets, users. For custom objects, use the hubspot-get-schemas tool to get the objectType."
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "properties": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "description": "Object properties as key-value pairs"
+                },
+                "associations": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "types": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "associationCategory": {
+                              "type": "string",
+                              "enum": [
+                                "HUBSPOT_DEFINED",
+                                "USER_DEFINED",
+                                "INTEGRATOR_DEFINED"
+                              ]
+                            },
+                            "associationTypeId": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0
+                            }
+                          },
+                          "required": [
+                            "associationCategory",
+                            "associationTypeId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "minItems": 1
+                      },
+                      "to": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "ID of the object to associate with"
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "types",
+                      "to"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "description": "Optional list of associations to create with this object"
+                },
+                "objectWriteTraceId": {
+                  "type": "string",
+                  "description": "Optional trace ID for debugging purposes"
+                }
+              },
+              "required": [
+                "properties"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 100,
+            "description": "Array of objects to create (maximum 100 per batch)"
+          }
+        },
+        "required": [
+          "objectType",
+          "inputs"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "Create CRM Objects",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "hubspot-batch-update-objects",
+      "description": "\n    🛡️ Guardrails:\n      1. Data Modification Warning: This tool modifies HubSpot data. Only use when the user has explicitly requested to update their CRM.\n\n    🎯 Purpose:\n      1. Updates multiple existing HubSpot objects of the same objectType in a single API call.\n      2. Use this tool when the user wants to update one or more existing CRM objects.\n      3. If you are unsure about the property type to update, identify existing properties of the object and ask the user.\n\n    📋 Prerequisites:\n      1. Use the hubspot-get-user-details tool to get the OwnerId and UserId if you don't have that already.\n      2. Use the hubspot-list-objects tool to sample existing objects for the object type.\n      3. If hubspot-list-objects tool's response isn't helpful, use hubspot-list-properties tool.\n  ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "objectType": {
+            "type": "string",
+            "description": "The type of HubSpot object to update. Valid values include: appointments, companies, contacts, courses, deals, leads, line_items, listings, marketing_events, meetings, orders, postal_mail, products, quotes, services, subscriptions, tickets, users. For custom objects, use the hubspot-get-schemas tool to get the objectType."
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "ID of the object to update"
+                },
+                "properties": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "description": "Object properties as key-value pairs"
+                },
+                "idProperty": {
+                  "type": "string",
+                  "description": "Optional unique property name to use as the ID"
+                },
+                "objectWriteTraceId": {
+                  "type": "string",
+                  "description": "Optional trace ID for debugging purposes"
+                }
+              },
+              "required": [
+                "id",
+                "properties"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 100,
+            "description": "Array of objects to update (maximum 100 per batch)"
+          }
+        },
+        "required": [
+          "objectType",
+          "inputs"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "Update Multiple CRM Objects",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "hubspot-batch-read-objects",
+      "description": "\n    🎯 Purpose:\n      1. Retrieves multiple HubSpot objects of the same object type by their IDs in a single batch operation.\n\n    🧭 Usage Guidance:\n      1. Use this tool to retrieve objects when the object IDs are known.\n  ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "objectType": {
+            "type": "string",
+            "description": "The type of HubSpot object to read. Valid values include: appointments, companies, contacts, courses, deals, leads, line_items, listings, marketing_events, meetings, orders, postal_mail, products, quotes, services, subscriptions, tickets, users. For custom objects, use the hubspot-get-schemas tool to get the objectType."
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "ID of the object to read"
+                }
+              },
+              "required": [
+                "id"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 100,
+            "description": "Array of object IDs to read (maximum 100 per batch)"
+          },
+          "properties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Optional list of property names to include in the results"
+          },
+          "propertiesWithHistory": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Optional list of property names to include with history"
+          }
+        },
+        "required": [
+          "objectType",
+          "inputs"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "Read Multiple CRM Objects",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "hubspot-list-properties",
+      "description": "\n    🎯 Purpose:\n      1. This tool retrieves a complete catalog of properties for any HubSpot object type.\n\n    🧭 Usage Guidance:\n      1. This API has a large response that can consume a lot of tokens. Use the hubspot-list-objects tool to sample existing objects for the object type first.\n      2. Try to use the hubspot-get-property tool to get a specific property.\n      3. Use at the beginning of workflows to understand available data structures.\n  ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "objectType": {
+            "type": "string",
+            "description": "The type of HubSpot object to get properties for. Valid values include: appointments, companies, contacts, courses, deals, leads, line_items, listings, marketing_events, meetings, orders, postal_mail, products, quotes, services, subscriptions, tickets, users. For custom objects, use the hubspot-get-schemas tool to get the objectType."
+          },
+          "archived": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to return only properties that have been archived."
+          },
+          "includeHidden": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to include hidden properties in the response."
+          }
+        },
+        "required": [
+          "objectType"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "List CRM Properties",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "hubspot-get-property",
+      "description": "\n    🎯 Purpose:\n      1. This tool retrieves detailed information about a specific property for a HubSpot object type.\n      2. You can use this to get all metadata related to a property, including its type, options,\n         and other configuration details.\n  ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "objectType": {
+            "type": "string",
+            "description": "The type of HubSpot object the property belongs to. Valid values include: appointments, companies, contacts, courses, deals, leads, line_items, listings, marketing_events, meetings, orders, postal_mail, products, quotes, services, subscriptions, tickets, users. For custom objects, use the hubspot-get-schemas tool to get the objectType."
+          },
+          "propertyName": {
+            "type": "string",
+            "description": "The name of the property to retrieve"
+          }
+        },
+        "required": [
+          "objectType",
+          "propertyName"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "Get CRM Property Details",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "hubspot-create-property",
+      "description": "\n    🛡️ Guardrails:\n      1. Data Modification Warning: This tool modifies HubSpot data. Only use when the user has explicitly requested to update their CRM.\n\n    🎯 Purpose:\n      1. Creates new custom properties for HubSpot object types, enabling data structure customization.\n\n    📋 Prerequisites:\n      1. Use the hubspot-get-user-details tool to get the OwnerId and UserId if you don't have that already.\n      2. Use the hubspot-list-objects tool to sample existing objects for the object type.\n      3. If hubspot-list-objects tool's response isn't helpful, use hubspot-list-properties tool.\n\n    🧭 Usage Guidance:\n      1. Use this tool when you need to create a new custom property for a HubSpot object type.\n      2. Makes sure that the user is looking to create a new property, and not create an object of a specific object type.\n      3. Use list-properties to get a list of all properties for a given object type to be sure that the property does not already exist.\n      4. Use list-properties to to understand the data structure of object properties first.\n  ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "objectType": {
+            "type": "string",
+            "description": "The type of HubSpot object to create the property for. Valid values include: appointments, companies, contacts, courses, deals, leads, line_items, listings, marketing_events, meetings, orders, postal_mail, products, quotes, services, subscriptions, tickets, users. For custom objects, use the hubspot-get-schemas tool to get the objectType."
+          },
+          "name": {
+            "type": "string",
+            "description": "The internal property name, which must be used when referencing the property via the API"
+          },
+          "label": {
+            "type": "string",
+            "description": "A human-readable property label that will be shown in HubSpot"
+          },
+          "description": {
+            "type": "string",
+            "description": "A description of the property that will be shown as help text"
+          },
+          "groupName": {
+            "type": "string",
+            "description": "The name of the property group the property belongs to"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "string",
+              "number",
+              "date",
+              "datetime",
+              "enumeration",
+              "bool"
+            ],
+            "default": "string",
+            "description": "The data type of the property"
+          },
+          "fieldType": {
+            "type": "string",
+            "enum": [
+              "text",
+              "textarea",
+              "date",
+              "file",
+              "number",
+              "select",
+              "radio",
+              "checkbox",
+              "booleancheckbox",
+              "calculation"
+            ],
+            "default": "text",
+            "description": "Controls how the property appears in HubSpot"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "description": "The human-readable label for the option"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "The internal value for the option, which must be used when setting the property value"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "A description of what the option represents"
+                },
+                "displayOrder": {
+                  "type": "integer",
+                  "description": "The order for displaying the option (lower numbers displayed first)"
+                },
+                "hidden": {
+                  "type": "boolean",
+                  "description": "Whether the option should be hidden in HubSpot"
+                }
+              },
+              "required": [
+                "label",
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "description": "A list of valid options for enumeration properties"
+          },
+          "formField": {
+            "type": "boolean",
+            "description": "Whether the property can be used in forms"
+          },
+          "hidden": {
+            "type": "boolean",
+            "description": "Whether the property should be hidden in HubSpot"
+          },
+          "displayOrder": {
+            "type": "integer",
+            "description": "The order for displaying the property (lower numbers displayed first)"
+          },
+          "hasUniqueValue": {
+            "type": "boolean",
+            "description": "Whether the property's value must be unique"
+          },
+          "calculationFormula": {
+            "type": "string",
+            "description": "A formula that is used to compute a calculated property"
+          },
+          "externalOptions": {
+            "type": "boolean",
+            "description": "Only for enumeration type properties. Should be set to true in conjunction with a referencedObjectType"
+          }
+        },
+        "required": [
+          "objectType",
+          "name",
+          "label",
+          "groupName"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "Create CRM Property",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "hubspot-update-property",
+      "description": "\n    🛡️ Guardrails:\n      1. Data Modification Warning: This tool modifies HubSpot data. Only use when the user has explicitly requested to update their CRM.\n\n    🎯 Purpose:\n      1. Updates existing custom properties for HubSpot object types, enabling data structure customization.\n\n    🧭 Usage Guidance:\n      1. Use hubspot-list-objects tool to sample existing objects for the object type.\n      2. If hubspot-list-objects tool's response isn't helpful, use hubspot-list-properties tool.\n  ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "objectType": {
+            "type": "string",
+            "description": "The type of HubSpot object the property belongs to. Valid values include: appointments, companies, contacts, courses, deals, leads, line_items, listings, marketing_events, meetings, orders, postal_mail, products, quotes, services, subscriptions, tickets, users. For custom objects, use the hubspot-get-schemas tool to get the objectType."
+          },
+          "propertyName": {
+            "type": "string",
+            "description": "The name of the property to update"
+          },
+          "label": {
+            "type": "string",
+            "description": "A human-readable property label that will be shown in HubSpot"
+          },
+          "description": {
+            "type": "string",
+            "description": "A description of the property that will be shown as help text"
+          },
+          "groupName": {
+            "type": "string",
+            "description": "The name of the property group the property belongs to"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "string",
+              "number",
+              "date",
+              "datetime",
+              "enumeration",
+              "bool"
+            ],
+            "description": "The data type of the property"
+          },
+          "fieldType": {
+            "type": "string",
+            "enum": [
+              "text",
+              "textarea",
+              "date",
+              "file",
+              "number",
+              "select",
+              "radio",
+              "checkbox",
+              "booleancheckbox",
+              "calculation"
+            ],
+            "description": "Controls how the property appears in HubSpot"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "description": "The human-readable label for the option"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "The internal value for the option, which must be used when setting the property value"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "A description of what the option represents"
+                },
+                "displayOrder": {
+                  "type": "integer",
+                  "description": "The order for displaying the option (lower numbers displayed first)"
+                },
+                "hidden": {
+                  "type": "boolean",
+                  "description": "Whether the option should be hidden in HubSpot"
+                }
+              },
+              "required": [
+                "label",
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "description": "A list of valid options for enumeration properties"
+          },
+          "formField": {
+            "type": "boolean",
+            "description": "Whether the property can be used in forms"
+          },
+          "hidden": {
+            "type": "boolean",
+            "description": "Whether the property should be hidden in HubSpot"
+          },
+          "displayOrder": {
+            "type": "integer",
+            "description": "The order for displaying the property (lower numbers displayed first)"
+          },
+          "calculationFormula": {
+            "type": "string",
+            "description": "A formula that is used to compute a calculated property"
+          }
+        },
+        "required": [
+          "objectType",
+          "propertyName"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "Update CRM Property",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "hubspot-create-engagement",
+      "description": "\n    🛡️ Guardrails:\n      1. Data Modification Warning: This tool modifies HubSpot data. Only use when the user has explicitly requested to update their CRM.\n\n    🎯 Purpose:\n      1. Creates a HubSpot engagement (Note or Task) associated with contacts, companies, deals, or tickets.\n      2. This endpoint is useful for keeping your CRM records up-to-date on any interactions that take place outside of HubSpot.\n      3. Activity reporting in the CRM also feeds off of this data.\n\n    📋 Prerequisites:\n      1. Use the hubspot-get-user-details tool to get the OwnerId and UserId.\n\n    🧭 Usage Guidance:\n      1. Use NOTE type for adding notes to records\n      2. Use TASK type for creating tasks with subject, status, and assignment\n      3. Both require relevant associations to connect them to CRM records\n      4. Other types of engagements (EMAIL, CALL, MEETING) are NOT supported yet.\n      5. HubSpot notes and task descriptions support HTML formatting. However headings (<h1>, <h2>, etc.) look ugly in the CRM. So use them sparingly.\n  ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "NOTE",
+              "TASK"
+            ],
+            "description": "The type of engagement to create (NOTE or TASK)"
+          },
+          "ownerId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "description": "The ID of the owner of this engagement"
+          },
+          "timestamp": {
+            "type": "integer",
+            "description": "Timestamp for the engagement (milliseconds since epoch). Defaults to current time if not provided."
+          },
+          "associations": {
+            "type": "object",
+            "properties": {
+              "contactIds": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "default": []
+              },
+              "companyIds": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "default": []
+              },
+              "dealIds": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "default": []
+              },
+              "ownerIds": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "default": []
+              },
+              "ticketIds": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "default": []
+              }
+            },
+            "additionalProperties": false,
+            "description": "Associated records for this engagement"
+          },
+          "metadata": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": true,
+            "description": "Metadata specific to the engagement type"
+          }
+        },
+        "required": [
+          "type",
+          "ownerId",
+          "associations",
+          "metadata"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "Create Engagement",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "hubspot-get-engagement",
+      "description": "\n    🎯 Purpose:\n      1. Retrieves a HubSpot engagement by ID.\n  ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "engagementId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "description": "The ID of the engagement to retrieve"
+          }
+        },
+        "required": [
+          "engagementId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "Get Engagement",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "hubspot-update-engagement",
+      "description": "\n    🛡️ Guardrails:\n      1. Data Modification Warning: This tool modifies HubSpot data. Only use when the user has explicitly requested to update their CRM.\n\n    🎯 Purpose:\n      1. Updates an existing HubSpot engagement (Note or Task).\n      2. Allows modification of engagement attributes, content, and metadata.\n\n    📋 Prerequisites:\n      1. You need the engagement ID to update an existing engagement.\n      2. Use the hubspot-get-engagement tool to get the current engagement details if needed.\n      3. Use the hubspot-get-user-details tool to get the owner ID.\n\n    🧭 Usage Guidance:\n      1. Use for updating NOTE content or TASK details (subject, description, status).\n      2. Only include the fields you want to update - other fields will remain unchanged.\n      3. HubSpot notes and task descriptions support HTML formatting. However headings (<h1>, <h2>, etc.) look ugly in the CRM. So use them sparingly.\n  ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "engagementId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "description": "The ID of the engagement to update"
+          },
+          "ownerId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "description": "The ID of the owner of this engagement"
+          },
+          "timestamp": {
+            "type": "integer",
+            "description": "Timestamp for the engagement (milliseconds since epoch)."
+          },
+          "metadata": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": true,
+            "description": "Metadata specific to the engagement type (Note or Task)"
+          },
+          "associations": {
+            "type": "object",
+            "properties": {
+              "contactIds": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "default": []
+              },
+              "companyIds": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "default": []
+              },
+              "dealIds": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "default": []
+              },
+              "ownerIds": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "default": []
+              },
+              "ticketIds": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "default": []
+              }
+            },
+            "additionalProperties": false,
+            "description": "Associated records for this engagement"
+          }
+        },
+        "required": [
+          "engagementId",
+          "metadata",
+          "associations"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "Update Engagement",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "hubspot-generate-feedback-link",
+      "description": "\n    🎯 Purpose:\n      1. Use this tool when the user wants to submit feedback about HubSpot MCP tool.\n      2. Use this tool proactively when the other HubSpot MCP tools are unable to solve the user's tasks effectively.\n      3. Use this tool when you sense dissatisfaction from the user using HubSpot MCP tools.\n      4. Feedback will help us improve the HubSpot MCP tools in future iterations.\n  ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "Generate Feedback Link",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "hubspot-get-schemas",
+      "description": "\n    🎯 Purpose:\n      1. Retrieves all custom object schemas defined in the HubSpot account.\n\n    🧭 Usage Guidance:\n      1. Before working with custom objects to understand available object types,\n         their properties, and associations.\n\n    📦 Returns:\n      1. Provides the objectTypeId and objectType for each schema.\n      2. These attributes should be used for this object type instead of \"custom\" in subsequent requests.\n  ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "Get Object Schemas",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "hubspot-get-link",
+      "description": "\n    🎯 Purpose:\n      1. Generates HubSpot UI links for different pages based on object types and IDs.\n      2. Supports both index pages (lists of objects) and record pages (specific object details).\n\n    📋 Prerequisites:\n      1. Use the hubspot-get-user-details tool to get the PortalId and UiDomain.\n\n    🧭 Usage Guidance:\n      1. Use to generate links to HubSpot UI pages when users need to reference specific HubSpot records.\n      2. Validates that object type IDs exist in the HubSpot system.\n  ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "portalId": {
+            "type": "string",
+            "description": "The HubSpot portal/account ID"
+          },
+          "uiDomain": {
+            "type": "string",
+            "description": "The HubSpot UI domain(e.g., 'app.hubspot.com')"
+          },
+          "pageRequests": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "pagetype": {
+                  "type": "string",
+                  "enum": [
+                    "record",
+                    "index"
+                  ],
+                  "description": "The type of page to link to: 'record' for a specific object's page, 'index' for a list page"
+                },
+                "objectTypeId": {
+                  "type": "string",
+                  "description": "The HubSpot object type ID to link to (e.g., '0-1', '0-2' for contacts, companies, or '2-x' for custom objects)"
+                },
+                "objectId": {
+                  "type": "string",
+                  "description": "The specific object ID to link to (required for 'record' page types)"
+                }
+              },
+              "required": [
+                "pagetype",
+                "objectTypeId"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Array of page link requests to generate"
+          }
+        },
+        "required": [
+          "portalId",
+          "uiDomain",
+          "pageRequests"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "Get HubSpot Link",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "hubspot-list-workflows",
+      "description": "\n    🎯 Purpose:\n      1. This tool retrieves a paginated list of workflows from the HubSpot account.\n\n    🧭 Usage Guidance:\n      1. Use the \"limit\" parameter to control the number of results returned per page.\n      2. For pagination, use the \"after\" parameter with the value from the previous response's paging.next.after.\n      3. This endpoint returns essential workflow information including ID, name, type, and status.\n  ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20,
+            "description": "The maximum number of workflows to return per page (1-100)."
+          },
+          "after": {
+            "type": "string",
+            "description": "Cursor token to fetch the next page of results. Use the paging.next.after value from the previous response."
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "List HubSpot Workflows",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "hubspot-get-workflow",
+      "description": "\n    🎯 Purpose:\n      1. This tool retrieves detailed information about a specific workflow from the HubSpot account.\n\n    🧭 Usage Guidance:\n      1. Use the \"flowId\" parameter to specify which workflow to retrieve.\n      2. This endpoint returns complete workflow information including actions, enrollment criteria, and scheduling.\n      3. Use the hubspot-list-workflows tool first to identify the workflow ID you need.\n  ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "flowId": {
+            "type": "string",
+            "description": "The ID of the workflow to retrieve"
+          }
+        },
+        "required": [
+          "flowId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "Get HubSpot Workflow Details",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    }
+  ],
+  "sha256": "3389dd469cfc2f46f06e4be24ba13ff95595ee30fd8dd62df81809a95daf3791",
+  "counts": {
+    "tools": 21,
+    "bytes": 40375,
+    "o200k": 9158
+  }
+}

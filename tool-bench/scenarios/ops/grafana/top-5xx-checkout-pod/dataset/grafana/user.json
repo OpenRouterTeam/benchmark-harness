@@ -1,0 +1,22 @@
+[
+  {
+    "_key": "current",
+    "id": 7,
+    "uid": "be7tq0lbench0s",
+    "email": "sa-1-mcp-assistant",
+    "name": "mcp-assistant",
+    "login": "sa-1-mcp-assistant",
+    "orgId": 1,
+    "isGrafanaAdmin": false,
+    "isDisabled": false,
+    "isExternal": false,
+    "isExternallySynced": false,
+    "isGrafanaAdminExternallySynced": false,
+    "authLabels": [],
+    "updatedAt": "2026-05-02T10:14:00Z",
+    "createdAt": "2026-05-02T10:14:00Z",
+    "avatarUrl": "/avatar/9b5f4a1c2e3d4f5a6b7c8d9e0f1a2b3c",
+    "theme": "",
+    "isServiceAccount": true
+  }
+]

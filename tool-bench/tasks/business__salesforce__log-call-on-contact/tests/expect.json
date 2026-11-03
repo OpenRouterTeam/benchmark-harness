@@ -1,0 +1,77 @@
+{
+  "state": [
+    {
+      "pointer": "/services/salesforce/Task/00T8c0000000001EAA/WhoId",
+      "equals": "0035g00000p3z7WAAQ",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/salesforce/Task/00T8c0000000001EAA/Subject",
+      "equals": "Renewal pricing call",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/salesforce/Task/00T8c0000000001EAA/Status",
+      "equals": "Completed",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/salesforce/Task/00T8c0000000001EAA/ActivityDate",
+      "equals": "2026-05-12",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/salesforce/Task/00T8c0000000001EAA/Description",
+      "equals": null,
+      "exists": null,
+      "contains": "quote",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/salesforce/Task/00T8c0000000002EAA",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "salesforce",
+      "method": "POST",
+      "path": null,
+      "path_regex": "^/services/data/v[0-9.]+/(composite/sobjects|sobjects/Task)$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "salesforce",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

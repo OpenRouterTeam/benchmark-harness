@@ -1,0 +1,3262 @@
+[
+  {
+    "_key": "6e282409-742b-5660-a152-9996bf7041b2",
+    "app": "argocd/checkout-web",
+    "group": "apps",
+    "version": "v1",
+    "kind": "Deployment",
+    "namespace": "storefront",
+    "name": "checkout-web",
+    "uid": "6e282409-742b-5660-a152-9996bf7041b2",
+    "resourceVersion": "41034",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:14"
+      }
+    ],
+    "health": {
+      "status": "Degraded",
+      "message": "Deployment \"checkout-web\" exceeded its progress deadline"
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "checkout-web",
+        "namespace": "storefront",
+        "uid": "6e282409-742b-5660-a152-9996bf7041b2",
+        "resourceVersion": "41034",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "checkout-web",
+          "app.kubernetes.io/instance": "checkout-web",
+          "app.kubernetes.io/version": "2.14.0-rc3",
+          "app.kubernetes.io/part-of": "storefront"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "14",
+          "argocd.argoproj.io/tracking-id": "checkout-web:apps/Deployment:storefront/checkout-web"
+        }
+      },
+      "spec": {
+        "replicas": 3,
+        "revisionHistoryLimit": 5,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "checkout-web",
+            "app.kubernetes.io/instance": "checkout-web"
+          }
+        },
+        "strategy": {
+          "type": "RollingUpdate",
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "checkout-web",
+              "app.kubernetes.io/instance": "checkout-web",
+              "app.kubernetes.io/version": "2.14.0-rc3"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "checkout-web",
+            "containers": [
+              {
+                "name": "checkout-web",
+                "image": "ghcr.io/lumen-retail/checkout-web:2.14.0-rc3",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "observedGeneration": 16,
+        "replicas": 4,
+        "readyReplicas": 3,
+        "availableReplicas": 3,
+        "updatedReplicas": 1,
+        "conditions": [
+          {
+            "type": "Available",
+            "status": "True",
+            "reason": "MinimumReplicasAvailable"
+          },
+          {
+            "type": "Progressing",
+            "status": "False",
+            "reason": "ProgressDeadlineExceeded",
+            "message": "ReplicaSet \"checkout-web-7f8b9c6d5\" has timed out progressing."
+          }
+        ]
+      }
+    }
+  },
+  {
+    "_key": "d3736bca-c410-54e0-b916-61aa0a7e608e",
+    "app": "argocd/checkout-web",
+    "group": "apps",
+    "version": "v1",
+    "kind": "ReplicaSet",
+    "namespace": "storefront",
+    "name": "checkout-web-7f8b9c6d5",
+    "uid": "d3736bca-c410-54e0-b916-61aa0a7e608e",
+    "resourceVersion": "41051",
+    "createdAt": "2026-10-29T12:53:10Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "Deployment",
+        "namespace": "storefront",
+        "name": "checkout-web",
+        "uid": "6e282409-742b-5660-a152-9996bf7041b2"
+      }
+    ],
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:14"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/checkout-web:2.14.0-rc3"
+    ],
+    "health": {
+      "status": "Progressing",
+      "message": "Waiting for rollout to finish: 0 of 1 updated replicas are available..."
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "checkout-web-7f8b9c6d5",
+        "namespace": "storefront",
+        "uid": "d3736bca-c410-54e0-b916-61aa0a7e608e",
+        "resourceVersion": "41051",
+        "creationTimestamp": "2026-10-29T12:53:10Z",
+        "labels": {
+          "app.kubernetes.io/name": "checkout-web",
+          "app.kubernetes.io/instance": "checkout-web",
+          "pod-template-hash": "7f8b9c6d5"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "14"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "checkout-web",
+            "uid": "6e282409-742b-5660-a152-9996bf7041b2",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "replicas": 3,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "checkout-web",
+            "app.kubernetes.io/instance": "checkout-web",
+            "pod-template-hash": "7f8b9c6d5"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "checkout-web",
+              "app.kubernetes.io/instance": "checkout-web",
+              "app.kubernetes.io/version": "2.14.0-rc3"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "checkout-web",
+            "containers": [
+              {
+                "name": "checkout-web",
+                "image": "ghcr.io/lumen-retail/checkout-web:2.14.0-rc3",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "replicas": 3,
+        "readyReplicas": 0,
+        "availableReplicas": 0
+      }
+    }
+  },
+  {
+    "_key": "0d3df349-e40e-5789-bc1f-b9740a79c8a0",
+    "app": "argocd/checkout-web",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "storefront",
+    "name": "checkout-web-7f8b9c6d5-q2x7m",
+    "uid": "0d3df349-e40e-5789-bc1f-b9740a79c8a0",
+    "resourceVersion": "41068",
+    "createdAt": "2026-10-29T12:53:10Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "storefront",
+        "name": "checkout-web-7f8b9c6d5",
+        "uid": "d3736bca-c410-54e0-b916-61aa0a7e608e"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "ImagePullBackOff"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-17-203.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "0/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/checkout-web:2.14.0-rc3"
+    ],
+    "health": {
+      "status": "Progressing",
+      "message": "Back-off pulling image \"ghcr.io/lumen-retail/checkout-web:2.14.0-rc3\""
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "checkout-web-7f8b9c6d5-q2x7m",
+        "namespace": "storefront",
+        "uid": "0d3df349-e40e-5789-bc1f-b9740a79c8a0",
+        "resourceVersion": "41068",
+        "creationTimestamp": "2026-10-29T12:53:10Z",
+        "labels": {
+          "app.kubernetes.io/name": "checkout-web",
+          "app.kubernetes.io/instance": "checkout-web",
+          "pod-template-hash": "7f8b9c6d5"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "checkout-web-7f8b9c6d5",
+            "uid": "d3736bca-c410-54e0-b916-61aa0a7e608e",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "checkout-web",
+        "containers": [
+          {
+            "name": "checkout-web",
+            "image": "ghcr.io/lumen-retail/checkout-web:2.14.0-rc3",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-17-203.ec2.internal"
+      },
+      "status": {
+        "phase": "Pending",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "False"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "checkout-web",
+            "image": "ghcr.io/lumen-retail/checkout-web:2.14.0-rc3",
+            "imageID": "",
+            "ready": false,
+            "restartCount": 0,
+            "started": false,
+            "state": {
+              "waiting": {
+                "reason": "ImagePullBackOff",
+                "message": "Back-off pulling image \"ghcr.io/lumen-retail/checkout-web:2.14.0-rc3\""
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-29T12:53:10Z"
+      }
+    }
+  },
+  {
+    "_key": "37a0fe4f-c307-5cce-88ad-6aad4ff18b75",
+    "app": "argocd/checkout-web",
+    "group": "apps",
+    "version": "v1",
+    "kind": "ReplicaSet",
+    "namespace": "storefront",
+    "name": "checkout-web-6c9d7f5b8",
+    "uid": "37a0fe4f-c307-5cce-88ad-6aad4ff18b75",
+    "resourceVersion": "41102",
+    "createdAt": "2026-10-20T16:10:50Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "Deployment",
+        "namespace": "storefront",
+        "name": "checkout-web",
+        "uid": "6e282409-742b-5660-a152-9996bf7041b2"
+      }
+    ],
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:13"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/checkout-web:2.13.4"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "checkout-web-6c9d7f5b8",
+        "namespace": "storefront",
+        "uid": "37a0fe4f-c307-5cce-88ad-6aad4ff18b75",
+        "resourceVersion": "41102",
+        "creationTimestamp": "2026-10-20T16:10:50Z",
+        "labels": {
+          "app.kubernetes.io/name": "checkout-web",
+          "app.kubernetes.io/instance": "checkout-web",
+          "pod-template-hash": "6c9d7f5b8"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "13"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "checkout-web",
+            "uid": "6e282409-742b-5660-a152-9996bf7041b2",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "replicas": 3,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "checkout-web",
+            "app.kubernetes.io/instance": "checkout-web",
+            "pod-template-hash": "6c9d7f5b8"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "checkout-web",
+              "app.kubernetes.io/instance": "checkout-web",
+              "app.kubernetes.io/version": "2.13.4"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "checkout-web",
+            "containers": [
+              {
+                "name": "checkout-web",
+                "image": "ghcr.io/lumen-retail/checkout-web:2.13.4",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "replicas": 3,
+        "readyReplicas": 3,
+        "availableReplicas": 3
+      }
+    }
+  },
+  {
+    "_key": "86e90d62-257f-5b6b-aa6d-f81ef4467fd9",
+    "app": "argocd/checkout-web",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "storefront",
+    "name": "checkout-web-6c9d7f5b8-4kfzp",
+    "uid": "86e90d62-257f-5b6b-aa6d-f81ef4467fd9",
+    "resourceVersion": "41119",
+    "createdAt": "2026-10-20T16:10:50Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "storefront",
+        "name": "checkout-web-6c9d7f5b8",
+        "uid": "37a0fe4f-c307-5cce-88ad-6aad4ff18b75"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-17-203.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/checkout-web:2.13.4"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "checkout-web-6c9d7f5b8-4kfzp",
+        "namespace": "storefront",
+        "uid": "86e90d62-257f-5b6b-aa6d-f81ef4467fd9",
+        "resourceVersion": "41119",
+        "creationTimestamp": "2026-10-20T16:10:50Z",
+        "labels": {
+          "app.kubernetes.io/name": "checkout-web",
+          "app.kubernetes.io/instance": "checkout-web",
+          "pod-template-hash": "6c9d7f5b8"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "checkout-web-6c9d7f5b8",
+            "uid": "37a0fe4f-c307-5cce-88ad-6aad4ff18b75",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "checkout-web",
+        "containers": [
+          {
+            "name": "checkout-web",
+            "image": "ghcr.io/lumen-retail/checkout-web:2.13.4",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-17-203.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "checkout-web",
+            "image": "ghcr.io/lumen-retail/checkout-web:2.13.4",
+            "imageID": "ghcr.io/lumen-retail/checkout-web@sha256:bd96a5c4b1e5a678429438db8460017b371f834cbd96a5c4b1e5a678429438db",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-20T16:11:20Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-20T16:10:50Z"
+      }
+    }
+  },
+  {
+    "_key": "13285785-4146-5943-bcb9-0c87fd99891f",
+    "app": "argocd/checkout-web",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "storefront",
+    "name": "checkout-web-6c9d7f5b8-9wd2r",
+    "uid": "13285785-4146-5943-bcb9-0c87fd99891f",
+    "resourceVersion": "41136",
+    "createdAt": "2026-10-20T16:10:50Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "storefront",
+        "name": "checkout-web-6c9d7f5b8",
+        "uid": "37a0fe4f-c307-5cce-88ad-6aad4ff18b75"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-18-44.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/checkout-web:2.13.4"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "checkout-web-6c9d7f5b8-9wd2r",
+        "namespace": "storefront",
+        "uid": "13285785-4146-5943-bcb9-0c87fd99891f",
+        "resourceVersion": "41136",
+        "creationTimestamp": "2026-10-20T16:10:50Z",
+        "labels": {
+          "app.kubernetes.io/name": "checkout-web",
+          "app.kubernetes.io/instance": "checkout-web",
+          "pod-template-hash": "6c9d7f5b8"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "checkout-web-6c9d7f5b8",
+            "uid": "37a0fe4f-c307-5cce-88ad-6aad4ff18b75",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "checkout-web",
+        "containers": [
+          {
+            "name": "checkout-web",
+            "image": "ghcr.io/lumen-retail/checkout-web:2.13.4",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-18-44.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "checkout-web",
+            "image": "ghcr.io/lumen-retail/checkout-web:2.13.4",
+            "imageID": "ghcr.io/lumen-retail/checkout-web@sha256:bd96a5c4b1e5a678429438db8460017b371f834cbd96a5c4b1e5a678429438db",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-20T16:11:20Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-20T16:10:50Z"
+      }
+    }
+  },
+  {
+    "_key": "0ab80997-0929-51f4-8bfa-9ec0d3c1235d",
+    "app": "argocd/checkout-web",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "storefront",
+    "name": "checkout-web-6c9d7f5b8-tn6vb",
+    "uid": "0ab80997-0929-51f4-8bfa-9ec0d3c1235d",
+    "resourceVersion": "41153",
+    "createdAt": "2026-10-20T16:10:50Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "storefront",
+        "name": "checkout-web-6c9d7f5b8",
+        "uid": "37a0fe4f-c307-5cce-88ad-6aad4ff18b75"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-19-12.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/checkout-web:2.13.4"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "checkout-web-6c9d7f5b8-tn6vb",
+        "namespace": "storefront",
+        "uid": "0ab80997-0929-51f4-8bfa-9ec0d3c1235d",
+        "resourceVersion": "41153",
+        "creationTimestamp": "2026-10-20T16:10:50Z",
+        "labels": {
+          "app.kubernetes.io/name": "checkout-web",
+          "app.kubernetes.io/instance": "checkout-web",
+          "pod-template-hash": "6c9d7f5b8"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "checkout-web-6c9d7f5b8",
+            "uid": "37a0fe4f-c307-5cce-88ad-6aad4ff18b75",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "checkout-web",
+        "containers": [
+          {
+            "name": "checkout-web",
+            "image": "ghcr.io/lumen-retail/checkout-web:2.13.4",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-19-12.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "checkout-web",
+            "image": "ghcr.io/lumen-retail/checkout-web:2.13.4",
+            "imageID": "ghcr.io/lumen-retail/checkout-web@sha256:bd96a5c4b1e5a678429438db8460017b371f834cbd96a5c4b1e5a678429438db",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-20T16:11:20Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-20T16:10:50Z"
+      }
+    }
+  },
+  {
+    "_key": "53fb62bc-6370-50db-ba17-19f3908d743b",
+    "app": "argocd/checkout-web",
+    "group": "",
+    "version": "v1",
+    "kind": "Service",
+    "namespace": "storefront",
+    "name": "checkout-web",
+    "uid": "53fb62bc-6370-50db-ba17-19f3908d743b",
+    "resourceVersion": "41170",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "networkingInfo": {
+      "targetLabels": {
+        "app.kubernetes.io/name": "checkout-web",
+        "app.kubernetes.io/instance": "checkout-web"
+      }
+    },
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "checkout-web",
+        "namespace": "storefront",
+        "uid": "53fb62bc-6370-50db-ba17-19f3908d743b",
+        "resourceVersion": "41170",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "annotations": {
+          "argocd.argoproj.io/tracking-id": "checkout-web:/Service:storefront/checkout-web"
+        }
+      },
+      "spec": {
+        "type": "ClusterIP",
+        "selector": {
+          "app.kubernetes.io/name": "checkout-web",
+          "app.kubernetes.io/instance": "checkout-web"
+        },
+        "ports": [
+          {
+            "name": "http",
+            "port": 80,
+            "targetPort": 8080,
+            "protocol": "TCP"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "_key": "9c331f90-4dc3-5924-8fd1-c80cef88677e",
+    "app": "argocd/checkout-web",
+    "group": "",
+    "version": "v1",
+    "kind": "ConfigMap",
+    "namespace": "storefront",
+    "name": "checkout-web-config",
+    "uid": "9c331f90-4dc3-5924-8fd1-c80cef88677e",
+    "resourceVersion": "41187",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {
+        "name": "checkout-web-config",
+        "namespace": "storefront",
+        "uid": "9c331f90-4dc3-5924-8fd1-c80cef88677e",
+        "resourceVersion": "41187",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/instance": "checkout-web"
+        },
+        "annotations": {
+          "argocd.argoproj.io/tracking-id": "checkout-web:/ConfigMap:storefront/checkout-web-config"
+        }
+      },
+      "data": {
+        "CATALOG_API_URL": "http://catalog-api.storefront.svc:80",
+        "FEATURE_ONE_CLICK": "true",
+        "LOG_LEVEL": "info"
+      }
+    }
+  },
+  {
+    "_key": "66e34c4f-882f-5ac1-91b1-7ffc12da83d3",
+    "app": "argocd/checkout-web",
+    "group": "networking.k8s.io",
+    "version": "v1",
+    "kind": "Ingress",
+    "namespace": "storefront",
+    "name": "checkout-web",
+    "uid": "66e34c4f-882f-5ac1-91b1-7ffc12da83d3",
+    "resourceVersion": "41204",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "networkingInfo": {
+      "targetRefs": [
+        {
+          "kind": "Service",
+          "namespace": "storefront",
+          "name": "checkout-web"
+        }
+      ],
+      "ingress": [
+        {
+          "hostname": "k8s-ingress-1a2b3c.elb.us-east-1.amazonaws.com"
+        }
+      ],
+      "externalURLs": [
+        "https://shop.lumen-retail.com/"
+      ]
+    },
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "networking.k8s.io/v1",
+      "kind": "Ingress",
+      "metadata": {
+        "name": "checkout-web",
+        "namespace": "storefront",
+        "uid": "66e34c4f-882f-5ac1-91b1-7ffc12da83d3",
+        "resourceVersion": "41204",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/instance": "checkout-web"
+        },
+        "annotations": {
+          "argocd.argoproj.io/tracking-id": "checkout-web:networking.k8s.io/Ingress:storefront/checkout-web"
+        }
+      },
+      "spec": {
+        "ingressClassName": "nginx",
+        "rules": [
+          {
+            "host": "shop.lumen-retail.com",
+            "http": {
+              "paths": [
+                {
+                  "path": "/",
+                  "pathType": "Prefix",
+                  "backend": {
+                    "service": {
+                      "name": "checkout-web",
+                      "port": {
+                        "number": 80
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "tls": [
+          {
+            "hosts": [
+              "shop.lumen-retail.com"
+            ],
+            "secretName": "checkout-web-tls"
+          }
+        ]
+      },
+      "status": {
+        "loadBalancer": {
+          "ingress": [
+            {
+              "hostname": "k8s-ingress-1a2b3c.elb.us-east-1.amazonaws.com"
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "_key": "82565050-c0db-5b9e-a0c1-0c6f5fc615b8",
+    "app": "argocd/checkout-web-staging",
+    "group": "apps",
+    "version": "v1",
+    "kind": "Deployment",
+    "namespace": "storefront",
+    "name": "checkout-web",
+    "uid": "82565050-c0db-5b9e-a0c1-0c6f5fc615b8",
+    "resourceVersion": "41408",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:22"
+      }
+    ],
+    "health": {
+      "status": "Degraded",
+      "message": "Deployment \"checkout-web\" exceeded its progress deadline"
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "checkout-web",
+        "namespace": "storefront",
+        "uid": "82565050-c0db-5b9e-a0c1-0c6f5fc615b8",
+        "resourceVersion": "41408",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "checkout-web",
+          "app.kubernetes.io/instance": "checkout-web-staging",
+          "app.kubernetes.io/version": "2.14.0-rc2",
+          "app.kubernetes.io/part-of": "storefront"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "22",
+          "argocd.argoproj.io/tracking-id": "checkout-web-staging:apps/Deployment:storefront/checkout-web"
+        }
+      },
+      "spec": {
+        "replicas": 1,
+        "revisionHistoryLimit": 5,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "checkout-web",
+            "app.kubernetes.io/instance": "checkout-web-staging"
+          }
+        },
+        "strategy": {
+          "type": "RollingUpdate",
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "checkout-web",
+              "app.kubernetes.io/instance": "checkout-web-staging",
+              "app.kubernetes.io/version": "2.14.0-rc2"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "checkout-web",
+            "containers": [
+              {
+                "name": "checkout-web",
+                "image": "ghcr.io/lumen-retail/checkout-web:2.14.0-rc2",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "observedGeneration": 24,
+        "replicas": 1,
+        "readyReplicas": 0,
+        "availableReplicas": 0,
+        "updatedReplicas": 1
+      }
+    }
+  },
+  {
+    "_key": "c68be2a3-9446-502b-956a-51dec74fae5e",
+    "app": "argocd/checkout-web-staging",
+    "group": "apps",
+    "version": "v1",
+    "kind": "ReplicaSet",
+    "namespace": "storefront",
+    "name": "checkout-web-58c4d9f7b",
+    "uid": "c68be2a3-9446-502b-956a-51dec74fae5e",
+    "resourceVersion": "41425",
+    "createdAt": "2026-10-27T11:45:40Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "Deployment",
+        "namespace": "storefront",
+        "name": "checkout-web",
+        "uid": "82565050-c0db-5b9e-a0c1-0c6f5fc615b8"
+      }
+    ],
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:22"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/checkout-web:2.14.0-rc2"
+    ],
+    "health": {
+      "status": "Degraded",
+      "message": "Deployment \"checkout-web\" exceeded its progress deadline"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "checkout-web-58c4d9f7b",
+        "namespace": "storefront",
+        "uid": "c68be2a3-9446-502b-956a-51dec74fae5e",
+        "resourceVersion": "41425",
+        "creationTimestamp": "2026-10-27T11:45:40Z",
+        "labels": {
+          "app.kubernetes.io/name": "checkout-web",
+          "app.kubernetes.io/instance": "checkout-web-staging",
+          "pod-template-hash": "58c4d9f7b"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "22"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "checkout-web",
+            "uid": "82565050-c0db-5b9e-a0c1-0c6f5fc615b8",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "replicas": 1,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "checkout-web",
+            "app.kubernetes.io/instance": "checkout-web-staging",
+            "pod-template-hash": "58c4d9f7b"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "checkout-web",
+              "app.kubernetes.io/instance": "checkout-web-staging",
+              "app.kubernetes.io/version": "2.14.0-rc2"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "checkout-web",
+            "containers": [
+              {
+                "name": "checkout-web",
+                "image": "ghcr.io/lumen-retail/checkout-web:2.14.0-rc2",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "replicas": 1,
+        "readyReplicas": 0,
+        "availableReplicas": 0
+      }
+    }
+  },
+  {
+    "_key": "1a942843-edab-5ae9-98ef-869e1f9da15c",
+    "app": "argocd/checkout-web-staging",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "storefront",
+    "name": "checkout-web-58c4d9f7b-hx8pl",
+    "uid": "1a942843-edab-5ae9-98ef-869e1f9da15c",
+    "resourceVersion": "41442",
+    "createdAt": "2026-10-27T11:45:40Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "storefront",
+        "name": "checkout-web-58c4d9f7b",
+        "uid": "c68be2a3-9446-502b-956a-51dec74fae5e"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "CrashLoopBackOff"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-52-7.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "0/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "389"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/checkout-web:2.14.0-rc2"
+    ],
+    "health": {
+      "status": "Degraded",
+      "message": "back-off 5m0s restarting failed container=checkout-web pod=checkout-web-58c4d9f7b-hx8pl_storefront(6b0e)"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "checkout-web-58c4d9f7b-hx8pl",
+        "namespace": "storefront",
+        "uid": "1a942843-edab-5ae9-98ef-869e1f9da15c",
+        "resourceVersion": "41442",
+        "creationTimestamp": "2026-10-27T11:45:40Z",
+        "labels": {
+          "app.kubernetes.io/name": "checkout-web",
+          "app.kubernetes.io/instance": "checkout-web-staging",
+          "pod-template-hash": "58c4d9f7b"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "checkout-web-58c4d9f7b",
+            "uid": "c68be2a3-9446-502b-956a-51dec74fae5e",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "checkout-web",
+        "containers": [
+          {
+            "name": "checkout-web",
+            "image": "ghcr.io/lumen-retail/checkout-web:2.14.0-rc2",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-52-7.ec2.internal"
+      },
+      "status": {
+        "phase": "Pending",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "False"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "checkout-web",
+            "image": "ghcr.io/lumen-retail/checkout-web:2.14.0-rc2",
+            "ready": false,
+            "restartCount": 389,
+            "started": false,
+            "lastState": {
+              "terminated": {
+                "exitCode": 1,
+                "reason": "Error",
+                "finishedAt": "2026-10-29T14:00:02Z"
+              }
+            },
+            "state": {
+              "waiting": {
+                "reason": "CrashLoopBackOff"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-27T11:45:40Z"
+      }
+    }
+  },
+  {
+    "_key": "1b6fda0b-9afe-5938-8996-f8489201de1a",
+    "app": "argocd/checkout-web-staging",
+    "group": "",
+    "version": "v1",
+    "kind": "Service",
+    "namespace": "storefront",
+    "name": "checkout-web",
+    "uid": "1b6fda0b-9afe-5938-8996-f8489201de1a",
+    "resourceVersion": "41459",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "networkingInfo": {
+      "targetLabels": {
+        "app.kubernetes.io/name": "checkout-web",
+        "app.kubernetes.io/instance": "checkout-web-staging"
+      }
+    },
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "checkout-web",
+        "namespace": "storefront",
+        "uid": "1b6fda0b-9afe-5938-8996-f8489201de1a",
+        "resourceVersion": "41459",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "annotations": {
+          "argocd.argoproj.io/tracking-id": "checkout-web-staging:/Service:storefront/checkout-web"
+        }
+      },
+      "spec": {
+        "type": "ClusterIP",
+        "selector": {
+          "app.kubernetes.io/name": "checkout-web",
+          "app.kubernetes.io/instance": "checkout-web-staging"
+        },
+        "ports": [
+          {
+            "name": "http",
+            "port": 80,
+            "targetPort": 8080,
+            "protocol": "TCP"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "_key": "e36762a8-5047-5406-aba0-a804cbc51166",
+    "app": "argocd/catalog-api",
+    "group": "apps",
+    "version": "v1",
+    "kind": "Deployment",
+    "namespace": "storefront",
+    "name": "catalog-api",
+    "uid": "e36762a8-5047-5406-aba0-a804cbc51166",
+    "resourceVersion": "41510",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:31"
+      }
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "catalog-api",
+        "namespace": "storefront",
+        "uid": "e36762a8-5047-5406-aba0-a804cbc51166",
+        "resourceVersion": "41510",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "catalog-api",
+          "app.kubernetes.io/instance": "catalog-api",
+          "app.kubernetes.io/version": "5.2.1",
+          "app.kubernetes.io/part-of": "storefront"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "31",
+          "argocd.argoproj.io/tracking-id": "catalog-api:apps/Deployment:storefront/catalog-api"
+        }
+      },
+      "spec": {
+        "replicas": 2,
+        "revisionHistoryLimit": 5,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "catalog-api",
+            "app.kubernetes.io/instance": "catalog-api"
+          }
+        },
+        "strategy": {
+          "type": "RollingUpdate",
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "catalog-api",
+              "app.kubernetes.io/instance": "catalog-api",
+              "app.kubernetes.io/version": "5.2.1"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "catalog-api",
+            "containers": [
+              {
+                "name": "catalog-api",
+                "image": "ghcr.io/lumen-retail/catalog-api:5.2.1",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "observedGeneration": 33,
+        "replicas": 2,
+        "readyReplicas": 2,
+        "availableReplicas": 2,
+        "updatedReplicas": 2
+      }
+    }
+  },
+  {
+    "_key": "fa75c0f0-baa0-5bed-9760-3763b57812bb",
+    "app": "argocd/catalog-api",
+    "group": "apps",
+    "version": "v1",
+    "kind": "ReplicaSet",
+    "namespace": "storefront",
+    "name": "catalog-api-d4b6c8f9a",
+    "uid": "fa75c0f0-baa0-5bed-9760-3763b57812bb",
+    "resourceVersion": "41527",
+    "createdAt": "2026-10-24T08:12:00Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "Deployment",
+        "namespace": "storefront",
+        "name": "catalog-api",
+        "uid": "e36762a8-5047-5406-aba0-a804cbc51166"
+      }
+    ],
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:31"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/catalog-api:5.2.1"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "catalog-api-d4b6c8f9a",
+        "namespace": "storefront",
+        "uid": "fa75c0f0-baa0-5bed-9760-3763b57812bb",
+        "resourceVersion": "41527",
+        "creationTimestamp": "2026-10-24T08:12:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "catalog-api",
+          "app.kubernetes.io/instance": "catalog-api",
+          "pod-template-hash": "d4b6c8f9a"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "31"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "catalog-api",
+            "uid": "e36762a8-5047-5406-aba0-a804cbc51166",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "replicas": 2,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "catalog-api",
+            "app.kubernetes.io/instance": "catalog-api",
+            "pod-template-hash": "d4b6c8f9a"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "catalog-api",
+              "app.kubernetes.io/instance": "catalog-api",
+              "app.kubernetes.io/version": "5.2.1"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "catalog-api",
+            "containers": [
+              {
+                "name": "catalog-api",
+                "image": "ghcr.io/lumen-retail/catalog-api:5.2.1",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "replicas": 2,
+        "readyReplicas": 2,
+        "availableReplicas": 2
+      }
+    }
+  },
+  {
+    "_key": "25069301-bd38-5573-b016-7b4549f7d10a",
+    "app": "argocd/catalog-api",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "storefront",
+    "name": "catalog-api-d4b6c8f9a-m2c9z",
+    "uid": "25069301-bd38-5573-b016-7b4549f7d10a",
+    "resourceVersion": "41544",
+    "createdAt": "2026-10-24T08:12:00Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "storefront",
+        "name": "catalog-api-d4b6c8f9a",
+        "uid": "fa75c0f0-baa0-5bed-9760-3763b57812bb"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-18-44.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/catalog-api:5.2.1"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "catalog-api-d4b6c8f9a-m2c9z",
+        "namespace": "storefront",
+        "uid": "25069301-bd38-5573-b016-7b4549f7d10a",
+        "resourceVersion": "41544",
+        "creationTimestamp": "2026-10-24T08:12:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "catalog-api",
+          "app.kubernetes.io/instance": "catalog-api",
+          "pod-template-hash": "d4b6c8f9a"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "catalog-api-d4b6c8f9a",
+            "uid": "fa75c0f0-baa0-5bed-9760-3763b57812bb",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "catalog-api",
+        "containers": [
+          {
+            "name": "catalog-api",
+            "image": "ghcr.io/lumen-retail/catalog-api:5.2.1",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-18-44.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "catalog-api",
+            "image": "ghcr.io/lumen-retail/catalog-api:5.2.1",
+            "imageID": "ghcr.io/lumen-retail/catalog-api@sha256:a2968b929e2076962181c9e650d2f41f3590e34ba2968b929e2076962181c9e6",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-24T08:12:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-24T08:12:00Z"
+      }
+    }
+  },
+  {
+    "_key": "318e4800-9b71-5d2d-b66e-8fdcfcffb7b1",
+    "app": "argocd/catalog-api",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "storefront",
+    "name": "catalog-api-d4b6c8f9a-v7r4k",
+    "uid": "318e4800-9b71-5d2d-b66e-8fdcfcffb7b1",
+    "resourceVersion": "41561",
+    "createdAt": "2026-10-24T08:12:00Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "storefront",
+        "name": "catalog-api-d4b6c8f9a",
+        "uid": "fa75c0f0-baa0-5bed-9760-3763b57812bb"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-19-12.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/catalog-api:5.2.1"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "catalog-api-d4b6c8f9a-v7r4k",
+        "namespace": "storefront",
+        "uid": "318e4800-9b71-5d2d-b66e-8fdcfcffb7b1",
+        "resourceVersion": "41561",
+        "creationTimestamp": "2026-10-24T08:12:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "catalog-api",
+          "app.kubernetes.io/instance": "catalog-api",
+          "pod-template-hash": "d4b6c8f9a"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "catalog-api-d4b6c8f9a",
+            "uid": "fa75c0f0-baa0-5bed-9760-3763b57812bb",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "catalog-api",
+        "containers": [
+          {
+            "name": "catalog-api",
+            "image": "ghcr.io/lumen-retail/catalog-api:5.2.1",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-19-12.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "catalog-api",
+            "image": "ghcr.io/lumen-retail/catalog-api:5.2.1",
+            "imageID": "ghcr.io/lumen-retail/catalog-api@sha256:a2968b929e2076962181c9e650d2f41f3590e34ba2968b929e2076962181c9e6",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-24T08:12:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-24T08:12:00Z"
+      }
+    }
+  },
+  {
+    "_key": "aa859e3e-1ec9-57e2-8d0c-2a610c9324c4",
+    "app": "argocd/catalog-api",
+    "group": "",
+    "version": "v1",
+    "kind": "Service",
+    "namespace": "storefront",
+    "name": "catalog-api",
+    "uid": "aa859e3e-1ec9-57e2-8d0c-2a610c9324c4",
+    "resourceVersion": "41578",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "networkingInfo": {
+      "targetLabels": {
+        "app.kubernetes.io/name": "catalog-api",
+        "app.kubernetes.io/instance": "catalog-api"
+      }
+    },
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "catalog-api",
+        "namespace": "storefront",
+        "uid": "aa859e3e-1ec9-57e2-8d0c-2a610c9324c4",
+        "resourceVersion": "41578",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "annotations": {
+          "argocd.argoproj.io/tracking-id": "catalog-api:/Service:storefront/catalog-api"
+        }
+      },
+      "spec": {
+        "type": "ClusterIP",
+        "selector": {
+          "app.kubernetes.io/name": "catalog-api",
+          "app.kubernetes.io/instance": "catalog-api"
+        },
+        "ports": [
+          {
+            "name": "http",
+            "port": 80,
+            "targetPort": 8080,
+            "protocol": "TCP"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "_key": "616d1008-a090-5d47-a077-1d3eda187c40",
+    "app": "argocd/order-events-consumer",
+    "group": "apps",
+    "version": "v1",
+    "kind": "Deployment",
+    "namespace": "storefront",
+    "name": "order-events-consumer",
+    "uid": "616d1008-a090-5d47-a077-1d3eda187c40",
+    "resourceVersion": "41612",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:9"
+      }
+    ],
+    "health": {
+      "status": "Progressing",
+      "message": "Waiting for rollout to finish: 3 of 4 updated replicas are available..."
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "order-events-consumer",
+        "namespace": "storefront",
+        "uid": "616d1008-a090-5d47-a077-1d3eda187c40",
+        "resourceVersion": "41612",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "order-events-consumer",
+          "app.kubernetes.io/instance": "order-events-consumer",
+          "app.kubernetes.io/version": "1.9.0",
+          "app.kubernetes.io/part-of": "storefront"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "9",
+          "argocd.argoproj.io/tracking-id": "order-events-consumer:apps/Deployment:storefront/order-events-consumer"
+        }
+      },
+      "spec": {
+        "replicas": 4,
+        "revisionHistoryLimit": 5,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "order-events-consumer",
+            "app.kubernetes.io/instance": "order-events-consumer"
+          }
+        },
+        "strategy": {
+          "type": "RollingUpdate",
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "order-events-consumer",
+              "app.kubernetes.io/instance": "order-events-consumer",
+              "app.kubernetes.io/version": "1.9.0"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "order-events-consumer",
+            "containers": [
+              {
+                "name": "order-events-consumer",
+                "image": "ghcr.io/lumen-retail/order-events-consumer:1.9.0",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "observedGeneration": 11,
+        "replicas": 4,
+        "readyReplicas": 3,
+        "availableReplicas": 3,
+        "updatedReplicas": 4
+      }
+    }
+  },
+  {
+    "_key": "c025aea0-7246-5af1-af65-91e61b14401c",
+    "app": "argocd/order-events-consumer",
+    "group": "apps",
+    "version": "v1",
+    "kind": "ReplicaSet",
+    "namespace": "storefront",
+    "name": "order-events-consumer-b7d5f6c4e",
+    "uid": "c025aea0-7246-5af1-af65-91e61b14401c",
+    "resourceVersion": "41629",
+    "createdAt": "2026-10-29T14:03:00Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "Deployment",
+        "namespace": "storefront",
+        "name": "order-events-consumer",
+        "uid": "616d1008-a090-5d47-a077-1d3eda187c40"
+      }
+    ],
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:9"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/order-events-consumer:1.9.0"
+    ],
+    "health": {
+      "status": "Progressing",
+      "message": "Waiting for rollout to finish: 3 of 4 updated replicas are available..."
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "order-events-consumer-b7d5f6c4e",
+        "namespace": "storefront",
+        "uid": "c025aea0-7246-5af1-af65-91e61b14401c",
+        "resourceVersion": "41629",
+        "creationTimestamp": "2026-10-29T14:03:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "order-events-consumer",
+          "app.kubernetes.io/instance": "order-events-consumer",
+          "pod-template-hash": "b7d5f6c4e"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "9"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "order-events-consumer",
+            "uid": "616d1008-a090-5d47-a077-1d3eda187c40",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "replicas": 4,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "order-events-consumer",
+            "app.kubernetes.io/instance": "order-events-consumer",
+            "pod-template-hash": "b7d5f6c4e"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "order-events-consumer",
+              "app.kubernetes.io/instance": "order-events-consumer",
+              "app.kubernetes.io/version": "1.9.0"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "order-events-consumer",
+            "containers": [
+              {
+                "name": "order-events-consumer",
+                "image": "ghcr.io/lumen-retail/order-events-consumer:1.9.0",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "replicas": 4,
+        "readyReplicas": 3,
+        "availableReplicas": 3
+      }
+    }
+  },
+  {
+    "_key": "522aa197-e087-5c0f-97c5-48d59c8be479",
+    "app": "argocd/order-events-consumer",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "storefront",
+    "name": "order-events-consumer-b7d5f6c4e-a1b2c",
+    "uid": "522aa197-e087-5c0f-97c5-48d59c8be479",
+    "resourceVersion": "41646",
+    "createdAt": "2026-10-29T14:03:00Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "storefront",
+        "name": "order-events-consumer-b7d5f6c4e",
+        "uid": "c025aea0-7246-5af1-af65-91e61b14401c"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-17-203.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/order-events-consumer:1.9.0"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "order-events-consumer-b7d5f6c4e-a1b2c",
+        "namespace": "storefront",
+        "uid": "522aa197-e087-5c0f-97c5-48d59c8be479",
+        "resourceVersion": "41646",
+        "creationTimestamp": "2026-10-29T14:03:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "order-events-consumer",
+          "app.kubernetes.io/instance": "order-events-consumer",
+          "pod-template-hash": "b7d5f6c4e"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "order-events-consumer-b7d5f6c4e",
+            "uid": "c025aea0-7246-5af1-af65-91e61b14401c",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "order-events-consumer",
+        "containers": [
+          {
+            "name": "order-events-consumer",
+            "image": "ghcr.io/lumen-retail/order-events-consumer:1.9.0",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-17-203.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "order-events-consumer",
+            "image": "ghcr.io/lumen-retail/order-events-consumer:1.9.0",
+            "imageID": "ghcr.io/lumen-retail/order-events-consumer@sha256:284bff44e1a991e098c043a842892fcbbc44002a284bff44e1a991e098c043a8",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-29T14:03:20Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-29T14:03:00Z"
+      }
+    }
+  },
+  {
+    "_key": "39d4bb7f-bd26-5aa7-b495-823404897591",
+    "app": "argocd/order-events-consumer",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "storefront",
+    "name": "order-events-consumer-b7d5f6c4e-d3e4f",
+    "uid": "39d4bb7f-bd26-5aa7-b495-823404897591",
+    "resourceVersion": "41663",
+    "createdAt": "2026-10-29T14:03:00Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "storefront",
+        "name": "order-events-consumer-b7d5f6c4e",
+        "uid": "c025aea0-7246-5af1-af65-91e61b14401c"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-18-44.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/order-events-consumer:1.9.0"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "order-events-consumer-b7d5f6c4e-d3e4f",
+        "namespace": "storefront",
+        "uid": "39d4bb7f-bd26-5aa7-b495-823404897591",
+        "resourceVersion": "41663",
+        "creationTimestamp": "2026-10-29T14:03:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "order-events-consumer",
+          "app.kubernetes.io/instance": "order-events-consumer",
+          "pod-template-hash": "b7d5f6c4e"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "order-events-consumer-b7d5f6c4e",
+            "uid": "c025aea0-7246-5af1-af65-91e61b14401c",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "order-events-consumer",
+        "containers": [
+          {
+            "name": "order-events-consumer",
+            "image": "ghcr.io/lumen-retail/order-events-consumer:1.9.0",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-18-44.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "order-events-consumer",
+            "image": "ghcr.io/lumen-retail/order-events-consumer:1.9.0",
+            "imageID": "ghcr.io/lumen-retail/order-events-consumer@sha256:284bff44e1a991e098c043a842892fcbbc44002a284bff44e1a991e098c043a8",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-29T14:03:20Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-29T14:03:00Z"
+      }
+    }
+  },
+  {
+    "_key": "e5334c90-3801-5964-8258-bdcb7b40b9ef",
+    "app": "argocd/order-events-consumer",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "storefront",
+    "name": "order-events-consumer-b7d5f6c4e-g5h6j",
+    "uid": "e5334c90-3801-5964-8258-bdcb7b40b9ef",
+    "resourceVersion": "41680",
+    "createdAt": "2026-10-29T14:03:00Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "storefront",
+        "name": "order-events-consumer-b7d5f6c4e",
+        "uid": "c025aea0-7246-5af1-af65-91e61b14401c"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-19-12.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/order-events-consumer:1.9.0"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "order-events-consumer-b7d5f6c4e-g5h6j",
+        "namespace": "storefront",
+        "uid": "e5334c90-3801-5964-8258-bdcb7b40b9ef",
+        "resourceVersion": "41680",
+        "creationTimestamp": "2026-10-29T14:03:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "order-events-consumer",
+          "app.kubernetes.io/instance": "order-events-consumer",
+          "pod-template-hash": "b7d5f6c4e"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "order-events-consumer-b7d5f6c4e",
+            "uid": "c025aea0-7246-5af1-af65-91e61b14401c",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "order-events-consumer",
+        "containers": [
+          {
+            "name": "order-events-consumer",
+            "image": "ghcr.io/lumen-retail/order-events-consumer:1.9.0",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-19-12.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "order-events-consumer",
+            "image": "ghcr.io/lumen-retail/order-events-consumer:1.9.0",
+            "imageID": "ghcr.io/lumen-retail/order-events-consumer@sha256:284bff44e1a991e098c043a842892fcbbc44002a284bff44e1a991e098c043a8",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-29T14:03:20Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-29T14:03:00Z"
+      }
+    }
+  },
+  {
+    "_key": "efde6e2b-ce00-5bdd-b8a4-1ddaa5dc1f67",
+    "app": "argocd/order-events-consumer",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "storefront",
+    "name": "order-events-consumer-b7d5f6c4e-k7l8m",
+    "uid": "efde6e2b-ce00-5bdd-b8a4-1ddaa5dc1f67",
+    "resourceVersion": "41697",
+    "createdAt": "2026-10-29T14:03:00Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "storefront",
+        "name": "order-events-consumer-b7d5f6c4e",
+        "uid": "c025aea0-7246-5af1-af65-91e61b14401c"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "ContainerCreating"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-19-12.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "0/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "ghcr.io/lumen-retail/order-events-consumer:1.9.0"
+    ],
+    "health": {
+      "status": "Progressing"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "order-events-consumer-b7d5f6c4e-k7l8m",
+        "namespace": "storefront",
+        "uid": "efde6e2b-ce00-5bdd-b8a4-1ddaa5dc1f67",
+        "resourceVersion": "41697",
+        "creationTimestamp": "2026-10-29T14:03:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "order-events-consumer",
+          "app.kubernetes.io/instance": "order-events-consumer",
+          "pod-template-hash": "b7d5f6c4e"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "order-events-consumer-b7d5f6c4e",
+            "uid": "c025aea0-7246-5af1-af65-91e61b14401c",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "order-events-consumer",
+        "containers": [
+          {
+            "name": "order-events-consumer",
+            "image": "ghcr.io/lumen-retail/order-events-consumer:1.9.0",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-19-12.ec2.internal"
+      },
+      "status": {
+        "phase": "Pending",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "False"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "order-events-consumer",
+            "image": "ghcr.io/lumen-retail/order-events-consumer:1.9.0",
+            "ready": false,
+            "restartCount": 0,
+            "started": false,
+            "state": {
+              "waiting": {
+                "reason": "ContainerCreating"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-29T14:03:00Z"
+      }
+    }
+  },
+  {
+    "_key": "5f091c6b-07f2-5e65-b219-9b4cdd0cff8f",
+    "app": "argocd/ingress-nginx",
+    "group": "apps",
+    "version": "v1",
+    "kind": "Deployment",
+    "namespace": "ingress-nginx",
+    "name": "ingress-nginx-controller",
+    "uid": "5f091c6b-07f2-5e65-b219-9b4cdd0cff8f",
+    "resourceVersion": "41731",
+    "createdAt": "2026-10-01T08:00:00Z",
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:4"
+      }
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": true,
+    "status": "Synced",
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "ingress-nginx-controller",
+        "namespace": "ingress-nginx",
+        "uid": "5f091c6b-07f2-5e65-b219-9b4cdd0cff8f",
+        "resourceVersion": "41731",
+        "creationTimestamp": "2026-10-01T08:00:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "ingress-nginx-controller",
+          "app.kubernetes.io/instance": "ingress-nginx",
+          "app.kubernetes.io/version": "1.11.3",
+          "app.kubernetes.io/part-of": "ingress-nginx"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "4",
+          "argocd.argoproj.io/tracking-id": "ingress-nginx:apps/Deployment:ingress-nginx/ingress-nginx-controller"
+        }
+      },
+      "spec": {
+        "replicas": 2,
+        "revisionHistoryLimit": 5,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "ingress-nginx-controller",
+            "app.kubernetes.io/instance": "ingress-nginx"
+          }
+        },
+        "strategy": {
+          "type": "RollingUpdate",
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "ingress-nginx-controller",
+              "app.kubernetes.io/instance": "ingress-nginx",
+              "app.kubernetes.io/version": "1.11.3"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "ingress-nginx-controller",
+            "containers": [
+              {
+                "name": "ingress-nginx-controller",
+                "image": "registry.k8s.io/ingress-nginx/controller:v1.11.3",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "observedGeneration": 6,
+        "replicas": 2,
+        "readyReplicas": 2,
+        "availableReplicas": 2,
+        "updatedReplicas": 2
+      }
+    }
+  },
+  {
+    "_key": "f5541183-f643-5220-90c8-505ab7b056d1",
+    "app": "argocd/ingress-nginx",
+    "group": "apps",
+    "version": "v1",
+    "kind": "ReplicaSet",
+    "namespace": "ingress-nginx",
+    "name": "ingress-nginx-controller-5c6b7d8e9",
+    "uid": "f5541183-f643-5220-90c8-505ab7b056d1",
+    "resourceVersion": "41748",
+    "createdAt": "2026-10-15T09:21:00Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "Deployment",
+        "namespace": "ingress-nginx",
+        "name": "ingress-nginx-controller",
+        "uid": "5f091c6b-07f2-5e65-b219-9b4cdd0cff8f"
+      }
+    ],
+    "info": [
+      {
+        "name": "Revision",
+        "value": "Rev:4"
+      }
+    ],
+    "images": [
+      "registry.k8s.io/ingress-nginx/controller:v1.11.3"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "apps/v1",
+      "kind": "ReplicaSet",
+      "metadata": {
+        "name": "ingress-nginx-controller-5c6b7d8e9",
+        "namespace": "ingress-nginx",
+        "uid": "f5541183-f643-5220-90c8-505ab7b056d1",
+        "resourceVersion": "41748",
+        "creationTimestamp": "2026-10-15T09:21:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "ingress-nginx-controller",
+          "app.kubernetes.io/instance": "ingress-nginx",
+          "pod-template-hash": "5c6b7d8e9"
+        },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "4"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "ingress-nginx-controller",
+            "uid": "5f091c6b-07f2-5e65-b219-9b4cdd0cff8f",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "replicas": 2,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "ingress-nginx-controller",
+            "app.kubernetes.io/instance": "ingress-nginx",
+            "pod-template-hash": "5c6b7d8e9"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "ingress-nginx-controller",
+              "app.kubernetes.io/instance": "ingress-nginx",
+              "app.kubernetes.io/version": "1.11.3"
+            }
+          },
+          "spec": {
+            "serviceAccountName": "ingress-nginx-controller",
+            "containers": [
+              {
+                "name": "ingress-nginx-controller",
+                "image": "registry.k8s.io/ingress-nginx/controller:v1.11.3",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "250m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "memory": "512Mi"
+                  }
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10
+                }
+              }
+            ]
+          }
+        }
+      },
+      "status": {
+        "replicas": 2,
+        "readyReplicas": 2,
+        "availableReplicas": 2
+      }
+    }
+  },
+  {
+    "_key": "a14b1f2e-7567-5c31-8ec8-b71acd069ec1",
+    "app": "argocd/ingress-nginx",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "ingress-nginx",
+    "name": "ingress-nginx-controller-5c6b7d8e9-p9q8r",
+    "uid": "a14b1f2e-7567-5c31-8ec8-b71acd069ec1",
+    "resourceVersion": "41765",
+    "createdAt": "2026-10-15T09:21:00Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "ingress-nginx",
+        "name": "ingress-nginx-controller-5c6b7d8e9",
+        "uid": "f5541183-f643-5220-90c8-505ab7b056d1"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-10-5.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "registry.k8s.io/ingress-nginx/controller:v1.11.3"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "ingress-nginx-controller-5c6b7d8e9-p9q8r",
+        "namespace": "ingress-nginx",
+        "uid": "a14b1f2e-7567-5c31-8ec8-b71acd069ec1",
+        "resourceVersion": "41765",
+        "creationTimestamp": "2026-10-15T09:21:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "ingress-nginx-controller",
+          "app.kubernetes.io/instance": "ingress-nginx",
+          "pod-template-hash": "5c6b7d8e9"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "ingress-nginx-controller-5c6b7d8e9",
+            "uid": "f5541183-f643-5220-90c8-505ab7b056d1",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "ingress-nginx-controller",
+        "containers": [
+          {
+            "name": "ingress-nginx-controller",
+            "image": "registry.k8s.io/ingress-nginx/controller:v1.11.3",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-10-5.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "ingress-nginx-controller",
+            "image": "registry.k8s.io/ingress-nginx/controller:v1.11.3",
+            "imageID": "registry.k8s.io/ingress-nginx/controller@sha256:29bae926b887d7aba5c6e5b16c53cf965d4a367329bae926b887d7aba5c6e5b1",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-28T09:00:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-15T09:21:00Z"
+      }
+    }
+  },
+  {
+    "_key": "63952d0c-484e-5241-a448-d40789ebe879",
+    "app": "argocd/ingress-nginx",
+    "group": "",
+    "version": "v1",
+    "kind": "Pod",
+    "namespace": "ingress-nginx",
+    "name": "ingress-nginx-controller-5c6b7d8e9-s7t6u",
+    "uid": "63952d0c-484e-5241-a448-d40789ebe879",
+    "resourceVersion": "41782",
+    "createdAt": "2026-10-15T09:21:00Z",
+    "parentRefs": [
+      {
+        "group": "apps",
+        "kind": "ReplicaSet",
+        "namespace": "ingress-nginx",
+        "name": "ingress-nginx-controller-5c6b7d8e9",
+        "uid": "f5541183-f643-5220-90c8-505ab7b056d1"
+      }
+    ],
+    "info": [
+      {
+        "name": "Status Reason",
+        "value": "Running"
+      },
+      {
+        "name": "Node",
+        "value": "ip-10-42-10-6.ec2.internal"
+      },
+      {
+        "name": "Containers",
+        "value": "1/1"
+      },
+      {
+        "name": "Restart Count",
+        "value": "0"
+      }
+    ],
+    "images": [
+      "registry.k8s.io/ingress-nginx/controller:v1.11.3"
+    ],
+    "health": {
+      "status": "Healthy"
+    },
+    "managed": false,
+    "manifest": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "ingress-nginx-controller-5c6b7d8e9-s7t6u",
+        "namespace": "ingress-nginx",
+        "uid": "63952d0c-484e-5241-a448-d40789ebe879",
+        "resourceVersion": "41782",
+        "creationTimestamp": "2026-10-15T09:21:00Z",
+        "labels": {
+          "app.kubernetes.io/name": "ingress-nginx-controller",
+          "app.kubernetes.io/instance": "ingress-nginx",
+          "pod-template-hash": "5c6b7d8e9"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "ingress-nginx-controller-5c6b7d8e9",
+            "uid": "f5541183-f643-5220-90c8-505ab7b056d1",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "serviceAccountName": "ingress-nginx-controller",
+        "containers": [
+          {
+            "name": "ingress-nginx-controller",
+            "image": "registry.k8s.io/ingress-nginx/controller:v1.11.3",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "memory": "512Mi"
+              }
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": "http"
+              },
+              "periodSeconds": 10
+            }
+          }
+        ],
+        "nodeName": "ip-10-42-10-6.ec2.internal"
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "name": "ingress-nginx-controller",
+            "image": "registry.k8s.io/ingress-nginx/controller:v1.11.3",
+            "imageID": "registry.k8s.io/ingress-nginx/controller@sha256:29bae926b887d7aba5c6e5b16c53cf965d4a367329bae926b887d7aba5c6e5b1",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-10-28T09:00:30Z"
+              }
+            }
+          }
+        ],
+        "startTime": "2026-10-15T09:21:00Z"
+      }
+    }
+  }
+]

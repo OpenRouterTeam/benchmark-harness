@@ -1,0 +1,318 @@
+[
+  {
+    "_key": "65f7aa000000000000000001",
+    "_id": {
+      "$oid": "65f7aa000000000000000001"
+    },
+    "orderNumber": 10401,
+    "customer": {
+      "customerId": {
+        "$oid": "65d1c0000000000000000002"
+      },
+      "name": "Marcus Webb",
+      "email": "marcus.webb@example.net"
+    },
+    "status": "delivered",
+    "items": [
+      {
+        "sku": "TNT-2P",
+        "name": "Trailhead 2P Tent",
+        "category": "outdoor",
+        "price": 1,
+        "qty": 1
+      }
+    ],
+    "total": 1,
+    "currency": "USD",
+    "createdAt": {
+      "$date": "2026-01-28T16:05:00.000Z"
+    },
+    "shippedAt": {
+      "$date": "2026-01-29T12:05:00.000Z"
+    },
+    "deliveredAt": {
+      "$date": "2026-01-31T12:05:00.000Z"
+    }
+  },
+  {
+    "_key": "65f7aa000000000000000002",
+    "_id": {
+      "$oid": "65f7aa000000000000000002"
+    },
+    "orderNumber": 10428,
+    "customer": {
+      "customerId": {
+        "$oid": "65d1c0000000000000000004"
+      },
+      "name": "Diego Alvarez",
+      "email": "diego.alvarez@example.com"
+    },
+    "status": "delivered",
+    "items": [
+      {
+        "sku": "CHF-8",
+        "name": "Chef's Knife 8in",
+        "category": "kitchen",
+        "price": 1,
+        "qty": 2
+      },
+      {
+        "sku": "BRD-M",
+        "name": "Maple Cutting Board",
+        "category": "kitchen",
+        "price": 1,
+        "qty": 1
+      }
+    ],
+    "total": 3,
+    "currency": "USD",
+    "createdAt": {
+      "$date": "2026-02-02T09:14:00.000Z"
+    },
+    "shippedAt": {
+      "$date": "2026-02-03T05:14:00.000Z"
+    },
+    "deliveredAt": {
+      "$date": "2026-02-05T05:14:00.000Z"
+    }
+  },
+  {
+    "_key": "65f7aa000000000000000003",
+    "_id": {
+      "$oid": "65f7aa000000000000000003"
+    },
+    "orderNumber": 10433,
+    "customer": {
+      "customerId": {
+        "$oid": "65d1c0000000000000000001"
+      },
+      "name": "Priya Natarajan",
+      "email": "priya.natarajan@example.com"
+    },
+    "status": "delivered",
+    "items": [
+      {
+        "sku": "HDP-X2",
+        "name": "Studio X2 Headphones",
+        "category": "electronics",
+        "price": 1,
+        "qty": 1
+      },
+      {
+        "sku": "CBL-C3",
+        "name": "USB-C Cable 3-pack",
+        "category": "electronics",
+        "price": 1,
+        "qty": 1
+      }
+    ],
+    "total": 2,
+    "currency": "USD",
+    "createdAt": {
+      "$date": "2026-02-03T18:40:00.000Z"
+    },
+    "shippedAt": {
+      "$date": "2026-02-04T14:40:00.000Z"
+    },
+    "deliveredAt": {
+      "$date": "2026-02-06T14:40:00.000Z"
+    }
+  },
+  {
+    "_key": "65f7aa000000000000000004",
+    "_id": {
+      "$oid": "65f7aa000000000000000004"
+    },
+    "orderNumber": 10441,
+    "customer": {
+      "customerId": {
+        "$oid": "65d1c0000000000000000003"
+      },
+      "name": "Hana Sato",
+      "email": "hana.sato@example.org"
+    },
+    "status": "delivered",
+    "items": [
+      {
+        "sku": "JKT-RN",
+        "name": "Rainshell Jacket",
+        "category": "apparel",
+        "price": 1,
+        "qty": 1
+      },
+      {
+        "sku": "SCK-W3",
+        "name": "Wool Hiking Socks 3-pack",
+        "category": "apparel",
+        "price": 1,
+        "qty": 2
+      }
+    ],
+    "total": 3,
+    "currency": "USD",
+    "createdAt": {
+      "$date": "2026-02-05T11:02:00.000Z"
+    },
+    "shippedAt": {
+      "$date": "2026-02-06T07:02:00.000Z"
+    },
+    "deliveredAt": {
+      "$date": "2026-02-08T07:02:00.000Z"
+    }
+  },
+  {
+    "_key": "65f7aa000000000000000005",
+    "_id": {
+      "$oid": "65f7aa000000000000000005"
+    },
+    "orderNumber": 10452,
+    "customer": {
+      "customerId": {
+        "$oid": "65d1c0000000000000000005"
+      },
+      "name": "Grace Okafor",
+      "email": "grace.okafor@example.com"
+    },
+    "status": "cancelled",
+    "items": [
+      {
+        "sku": "TV-55Q",
+        "name": "55in QLED TV",
+        "category": "electronics",
+        "price": 1,
+        "qty": 1
+      }
+    ],
+    "total": 1,
+    "currency": "USD",
+    "createdAt": {
+      "$date": "2026-02-07T20:31:00.000Z"
+    }
+  },
+  {
+    "_key": "65f7aa000000000000000006",
+    "_id": {
+      "$oid": "65f7aa000000000000000006"
+    },
+    "orderNumber": 10459,
+    "customer": {
+      "customerId": {
+        "$oid": "65d1c0000000000000000002"
+      },
+      "name": "Marcus Webb",
+      "email": "marcus.webb@example.net"
+    },
+    "status": "delivered",
+    "items": [
+      {
+        "sku": "BKP-40",
+        "name": "Ridge 40L Backpack",
+        "category": "outdoor",
+        "price": 1,
+        "qty": 2
+      },
+      {
+        "sku": "HDL-300",
+        "name": "Headlamp 300lm",
+        "category": "outdoor",
+        "price": 1,
+        "qty": 3
+      }
+    ],
+    "total": 5,
+    "currency": "USD",
+    "createdAt": {
+      "$date": "2026-02-09T13:45:00.000Z"
+    },
+    "shippedAt": {
+      "$date": "2026-02-10T09:45:00.000Z"
+    },
+    "deliveredAt": {
+      "$date": "2026-02-12T09:45:00.000Z"
+    }
+  },
+  {
+    "_key": "65f7aa000000000000000007",
+    "_id": {
+      "$oid": "65f7aa000000000000000007"
+    },
+    "orderNumber": 10482,
+    "customer": {
+      "customerId": {
+        "$oid": "65d1c0000000000000000001"
+      },
+      "name": "Priya Natarajan",
+      "email": "priya.natarajan@example.com"
+    },
+    "status": "delivered",
+    "items": [
+      {
+        "sku": "SLP-20",
+        "name": "Summit 20F Sleeping Bag",
+        "category": "outdoor",
+        "price": 1,
+        "qty": 1
+      },
+      {
+        "sku": "CUP-TI",
+        "name": "Titanium Camp Mug",
+        "category": "outdoor",
+        "price": 1,
+        "qty": 1
+      }
+    ],
+    "total": 2,
+    "currency": "USD",
+    "createdAt": {
+      "$date": "2026-02-16T15:27:00.000Z"
+    },
+    "shippedAt": {
+      "$date": "2026-02-17T11:27:00.000Z"
+    },
+    "deliveredAt": {
+      "$date": "2026-02-19T11:27:00.000Z"
+    }
+  },
+  {
+    "_key": "65f7aa000000000000000009",
+    "_id": {
+      "$oid": "65f7aa000000000000000009"
+    },
+    "orderNumber": 10601,
+    "customer": {
+      "customerId": {
+        "$oid": "65d1c0000000000000000003"
+      },
+      "name": "Hana Sato",
+      "email": "hana.sato@example.org"
+    },
+    "status": "delivered",
+    "items": [
+      {
+        "sku": "HDP-X2",
+        "name": "Studio X2 Headphones",
+        "category": "electronics",
+        "price": 1,
+        "qty": 1
+      }
+    ],
+    "total": 1,
+    "currency": "USD",
+    "createdAt": {
+      "$date": "2026-10-21T18:02:00.000Z"
+    },
+    "shippedAt": {
+      "$date": "2026-10-21T18:30:00.000Z"
+    },
+    "deliveredAt": {
+      "$date": "2026-10-22T09:00:00.000Z"
+    },
+    "shipping": {
+      "carrier": "UPS",
+      "trackingNumber": "1ZTESTSTAGING000001",
+      "eta": {
+        "$date": "2026-10-22T00:00:00.000Z"
+      }
+    }
+  }
+]

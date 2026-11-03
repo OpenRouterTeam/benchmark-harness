@@ -1,0 +1,86 @@
+[
+  {
+    "_key": "search-indexer-worker-85c7b6d9f-m7n8p/search-indexer-worker",
+    "podName": "search-indexer-worker-85c7b6d9f-m7n8p",
+    "namespace": "search",
+    "container": "search-indexer-worker",
+    "lines": [
+      {
+        "timeStamp": "2026-10-29T13:40:02Z",
+        "content": "{\"level\":\"info\",\"msg\":\"consumed batch\",\"topic\":\"catalog-updates\",\"size\":200}"
+      },
+      {
+        "timeStamp": "2026-10-29T13:40:03Z",
+        "content": "{\"level\":\"error\",\"msg\":\"bulk index failed\",\"status\":401,\"error\":\"security_exception: unable to authenticate user [svc-search-indexer] for REST request [/_bulk]\"}"
+      },
+      {
+        "timeStamp": "2026-10-29T13:40:08Z",
+        "content": "{\"level\":\"warn\",\"msg\":\"retrying bulk request\",\"attempt\":5,\"backoff\":\"30s\"}"
+      }
+    ]
+  },
+  {
+    "_key": "search-indexer-worker-85c7b6d9f-q9r1s/search-indexer-worker",
+    "podName": "search-indexer-worker-85c7b6d9f-q9r1s",
+    "namespace": "search",
+    "container": "search-indexer-worker",
+    "lines": [
+      {
+        "timeStamp": "2026-10-29T13:40:02Z",
+        "content": "{\"level\":\"info\",\"msg\":\"consumed batch\",\"topic\":\"catalog-updates\",\"size\":200}"
+      },
+      {
+        "timeStamp": "2026-10-29T13:40:03Z",
+        "content": "{\"level\":\"error\",\"msg\":\"bulk index failed\",\"status\":401,\"error\":\"security_exception: unable to authenticate user [svc-search-indexer] for REST request [/_bulk]\"}"
+      },
+      {
+        "timeStamp": "2026-10-29T13:40:08Z",
+        "content": "{\"level\":\"warn\",\"msg\":\"retrying bulk request\",\"attempt\":5,\"backoff\":\"30s\"}"
+      }
+    ]
+  },
+  {
+    "_key": "search-indexer-worker-85c7b6d9f-t2u3v/search-indexer-worker",
+    "podName": "search-indexer-worker-85c7b6d9f-t2u3v",
+    "namespace": "search",
+    "container": "search-indexer-worker",
+    "lines": [
+      {
+        "timeStamp": "2026-10-29T13:40:02Z",
+        "content": "{\"level\":\"info\",\"msg\":\"consumed batch\",\"topic\":\"catalog-updates\",\"size\":200}"
+      },
+      {
+        "timeStamp": "2026-10-29T13:40:03Z",
+        "content": "{\"level\":\"error\",\"msg\":\"bulk index failed\",\"status\":401,\"error\":\"security_exception: unable to authenticate user [svc-search-indexer] for REST request [/_bulk]\"}"
+      },
+      {
+        "timeStamp": "2026-10-29T13:40:08Z",
+        "content": "{\"level\":\"warn\",\"msg\":\"retrying bulk request\",\"attempt\":5,\"backoff\":\"30s\"}"
+      }
+    ]
+  },
+  {
+    "_key": "search-indexer-api-6d8f9b7c4-f3g4h/search-indexer-api",
+    "podName": "search-indexer-api-6d8f9b7c4-f3g4h",
+    "namespace": "search",
+    "container": "search-indexer-api",
+    "lines": [
+      {
+        "timeStamp": "2026-10-29T13:40:05Z",
+        "content": "{\"level\":\"info\",\"msg\":\"GET /v1/search?q=desk 200\",\"duration_ms\":23}"
+      }
+    ]
+  },
+  {
+    "_key": "search-indexer-api-6d8f9b7c4-j5k6l/search-indexer-api",
+    "podName": "search-indexer-api-6d8f9b7c4-j5k6l",
+    "namespace": "search",
+    "container": "search-indexer-api",
+    "lines": [
+      {
+        "timeStamp": "2026-10-29T13:40:05Z",
+        "content": "{\"level\":\"info\",\"msg\":\"GET /v1/search?q=desk 200\",\"duration_ms\":23}"
+      }
+    ]
+  }
+]

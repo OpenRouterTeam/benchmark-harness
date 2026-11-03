@@ -1,0 +1,127 @@
+[
+  {
+    "_key": "octo-org/competitive-intel#1",
+    "id": 4001,
+    "node_id": "I_kwDOFE00414389",
+    "number": 1,
+    "title": "Brightmetric drops free tier",
+    "body": "Brightmetric removed its free tier on 2025-02-01; cheapest plan is now $49/month.",
+    "user": "dhruv",
+    "labels": [
+      "brightmetric",
+      "pricing"
+    ],
+    "assignees": [],
+    "milestone": null,
+    "state": "closed",
+    "state_reason": "completed",
+    "locked": false,
+    "created_at": "2025-02-03T09:00:00Z",
+    "updated_at": "2025-02-10T09:00:00Z",
+    "closed_at": "2025-02-10T09:00:00Z"
+  },
+  {
+    "_key": "octo-org/competitive-intel#2",
+    "id": 4002,
+    "node_id": "I_kwDO1ECDB392EE",
+    "number": 2,
+    "title": "Lumenrail raises $22M Series A",
+    "body": "Lumenrail announced a $22M Series A led by Northgate Capital.",
+    "user": "elena",
+    "labels": [
+      "lumenrail",
+      "funding"
+    ],
+    "assignees": [],
+    "milestone": null,
+    "state": "closed",
+    "state_reason": "completed",
+    "locked": false,
+    "created_at": "2025-04-15T10:00:00Z",
+    "updated_at": "2025-04-20T10:00:00Z",
+    "closed_at": "2025-04-20T10:00:00Z"
+  },
+  {
+    "_key": "octo-org/competitive-intel#3",
+    "id": 4003,
+    "node_id": "I_kwDO5F5FE9BB00",
+    "number": 3,
+    "title": "Lumenrail Scale plan in beta",
+    "body": "Lumenrail opened a Scale plan beta (announced 2025-11-10). Watch for GA pricing.",
+    "user": "dhruv",
+    "labels": [
+      "lumenrail",
+      "launch"
+    ],
+    "assignees": [],
+    "milestone": null,
+    "state": "closed",
+    "state_reason": "completed",
+    "locked": false,
+    "created_at": "2025-11-12T11:00:00Z",
+    "updated_at": "2025-11-20T11:00:00Z",
+    "closed_at": "2025-11-20T11:00:00Z"
+  },
+  {
+    "_key": "octo-org/competitive-intel#4",
+    "id": 4004,
+    "node_id": "I_kwDO1152218775",
+    "number": 4,
+    "title": "Brightmetric launches EU data residency",
+    "body": "Brightmetric now offers EU hosting on Business and above.",
+    "user": "kwame",
+    "labels": [
+      "brightmetric",
+      "launch"
+    ],
+    "assignees": [],
+    "milestone": null,
+    "state": "open",
+    "state_reason": null,
+    "locked": false,
+    "created_at": "2026-09-02T08:30:00Z",
+    "updated_at": "2026-09-02T08:30:00Z",
+    "closed_at": null
+  },
+  {
+    "_key": "octo-org/competitive-intel#5",
+    "id": 4005,
+    "node_id": "I_kwDO4A7B93856D",
+    "number": 5,
+    "title": "Q4 pricing review: collect competitor price points",
+    "body": "Tracking issue for the Q4 pricing review. Link competitor pricing issues here.",
+    "user": "mona",
+    "labels": [
+      "pricing"
+    ],
+    "assignees": [],
+    "milestone": null,
+    "state": "open",
+    "state_reason": null,
+    "locked": false,
+    "created_at": "2026-10-01T09:00:00Z",
+    "updated_at": "2026-10-21T09:00:00Z",
+    "closed_at": null
+  },
+  {
+    "_key": "octo-org/competitive-intel-2024#41",
+    "id": 4141,
+    "node_id": "I_kwDO0B08BF980B",
+    "number": 41,
+    "title": "Lumenrail pricing page snapshot",
+    "body": "Lumenrail Team $99/month (2024).",
+    "user": "dhruv",
+    "labels": [
+      "lumenrail",
+      "pricing"
+    ],
+    "assignees": [],
+    "milestone": null,
+    "state": "closed",
+    "state_reason": "completed",
+    "locked": false,
+    "created_at": "2024-07-01T09:00:00Z",
+    "updated_at": "2024-07-02T09:00:00Z",
+    "closed_at": "2024-07-02T09:00:00Z"
+  }
+]

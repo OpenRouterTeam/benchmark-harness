@@ -1,0 +1,1 @@
+In Driftwood Python SDK v4 the request timeout is set with `timeout_seconds` (passed to driftwood.Client); it defaults to 30 seconds. (v3's request_timeout was removed.) Source: https://docs.driftwood.dev/python/v4/configuration

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "98305",
+    "key": "ENG",
+    "name": "Engineering",
+    "type": "global",
+    "description": "Engineering docs",
+    "homepage": "100001",
+    "_key": "ENG"
+  },
+  {
+    "id": "98306",
+    "key": "ARCH",
+    "name": "Archive",
+    "type": "global",
+    "description": "Old and superseded docs",
+    "homepage": "200001",
+    "_key": "ARCH"
+  }
+]

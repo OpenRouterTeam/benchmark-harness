@@ -1,0 +1,42 @@
+[
+ {
+  "id": "polchk-SnPvJmFxyltdmJGq",
+  "run": "run-Sxnff6DCeHaF93uZ",
+  "status": "passed",
+  "scope": "organization",
+  "result": {
+   "result": true,
+   "passed": 6,
+   "total-failed": 0,
+   "hard-failed": 0,
+   "soft-failed": 0,
+   "advisory-failed": 0,
+   "duration-ms": 412,
+   "sentinel": null
+  },
+  "status-timestamps": {
+   "queued-at": "2026-10-14T10:02:31Z",
+   "passed-at": "2026-10-14T10:02:31Z"
+  }
+ },
+ {
+  "id": "polchk-4Mh45YDdgOvWU1nr",
+  "run": "run-V1kS7u01JzNGAFbo",
+  "status": "passed",
+  "scope": "organization",
+  "result": {
+   "result": true,
+   "passed": 6,
+   "total-failed": 0,
+   "hard-failed": 0,
+   "soft-failed": 0,
+   "advisory-failed": 0,
+   "duration-ms": 412,
+   "sentinel": null
+  },
+  "status-timestamps": {
+   "queued-at": "2026-10-21T16:40:02Z",
+   "passed-at": "2026-10-21T16:40:02Z"
+  }
+ }
+]

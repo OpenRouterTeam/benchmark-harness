@@ -1,0 +1,4 @@
+[scenario]
+id = "test/cloudflare/fixture"
+now = "2026-03-14T09:00:00Z"
+seed = "test-cloudflare-fixture"

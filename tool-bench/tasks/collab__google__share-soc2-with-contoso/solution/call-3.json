@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"manage_drive_access","arguments":{"action":"grant","file_id":"150dluRbaiTmEP9Spu-wAk0p_lQupubYY","role":"reader","share_type":"user","share_with":"dana.whitfield@contoso.example"}}}

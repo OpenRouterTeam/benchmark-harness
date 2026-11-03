@@ -1,0 +1,29 @@
+[
+  {
+    "_key": "31",
+    "id": 31,
+    "owner": "octo-org",
+    "repository_name": "payments-api",
+    "repository_id": 1296301,
+    "actor_id": 583303,
+    "actor_name": "priya",
+    "before_sha": "0f0701d1c83ce533a548477accbf97eb5be6ae8a",
+    "after_sha": "c8e958100c97fe624295213b1c3ede0dd48f1ffe",
+    "ref": "refs/heads/main",
+    "pushed_at": "2026-03-06T16:45:00Z",
+    "result": "pass",
+    "evaluation_result": "pass",
+    "rule_evaluations": [
+      {
+        "rule_source": {
+          "type": "ruleset",
+          "id": 1,
+          "name": "Protect main"
+        },
+        "enforcement": "active",
+        "result": "pass",
+        "rule_type": "pull_request"
+      }
+    ]
+  }
+]

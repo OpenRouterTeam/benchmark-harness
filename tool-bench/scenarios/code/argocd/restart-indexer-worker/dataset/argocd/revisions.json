@@ -1,0 +1,25 @@
+[
+  {
+    "_key": "5c3b5ab31cc9041e7f8db3c6c37e83a4b25c3719",
+    "repoURL": "https://github.com/lumen-retail/search-deploy.git",
+    "sha": "5c3b5ab31cc9041e7f8db3c6c37e83a4b25c3719",
+    "refs": [
+      "v4.6.0"
+    ],
+    "message": "search: release 4.6.0",
+    "author": "ci-bot",
+    "date": "2026-10-21T09:00:00Z"
+  },
+  {
+    "_key": "7ca5d26b0be980b05528199e7c8a4d83862b643a",
+    "repoURL": "https://github.com/lumen-retail/search-deploy.git",
+    "sha": "7ca5d26b0be980b05528199e7c8a4d83862b643a",
+    "refs": [
+      "main",
+      "HEAD"
+    ],
+    "message": "search-indexer: raise bulk flush interval to 10s (pending review)",
+    "author": "dev.patel",
+    "date": "2026-10-29T11:20:00Z"
+  }
+]

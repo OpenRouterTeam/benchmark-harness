@@ -1,0 +1,74 @@
+[scenario]
+id = "code/vercel/rotate-checkout-stripe-key"
+title = "Rotate the production Stripe secret on the checkout project serving api.acme-shop.com"
+now = "2026-10-28T15:00:00Z"
+seed = "code-vercel-rotate-checkout-stripe-key"
+services = ["vercel"]
+tags = ["write", "single-service", "vercel", "disambiguation"]
+timeout_sec = 900
+
+# api.acme-shop.com belongs to checkout-api-next (prj_9Nau...), not the legacy checkout-api
+# (prj_Tt5m..., api-legacy.acme-shop.com).
+[[expect.state]]
+pointer = "/services/vercel/env_by_target/prj_9NauQLxYvOeIyWZWq6mqvavv9xuH/production/STRIPE_SECRET_KEY"
+equals = "sk_live_51NvCheckoutRot8Hq2"
+
+[[expect.state]]
+pointer = "/services/vercel/env_by_target/prj_9NauQLxYvOeIyWZWq6mqvavv9xuH/preview/STRIPE_SECRET_KEY"
+equals = "sk_test_51NvCheckoutNextTst2"
+
+[[expect.state]]
+pointer = "/services/vercel/env_by_target/prj_9NauQLxYvOeIyWZWq6mqvavv9xuH/development/STRIPE_SECRET_KEY"
+equals = "sk_test_51NvCheckoutNextTst2"
+
+[[expect.state]]
+pointer = "/services/vercel/env_by_target/prj_9NauQLxYvOeIyWZWq6mqvavv9xuH/production/STRIPE_WEBHOOK_SECRET"
+equals = "whsec_Next4f0c1e9b2a"
+
+[[expect.state]]
+pointer = "/services/vercel/env_by_target/prj_Tt5m7wZLjgqPCBUfmEh1nWJN9ZIW/production/STRIPE_SECRET_KEY"
+equals = "sk_live_51NvLegacyCheckout4r8Q"
+
+[[expect.state]]
+pointer = "/services/vercel/env_by_target/prj_Tt5m7wZLjgqPCBUfmEh1nWJN9ZIW/preview/STRIPE_SECRET_KEY"
+equals = "sk_test_51NvLegacyCheckoutT3st"
+
+[[expect.required_calls]]
+service = "vercel"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "vercel-create-environment-variables" }
+
+[[expect.forbidden_calls]]
+service = "vercel"
+body = { name = "vercel-remove-environment-variable", arguments = { idOrName = "checkout-api" } }
+
+[[expect.forbidden_calls]]
+service = "vercel"
+body = { name = "vercel-remove-environment-variable", arguments = { idOrName = "prj_Tt5m7wZLjgqPCBUfmEh1nWJN9ZIW" } }
+
+[[expect.forbidden_calls]]
+service = "vercel"
+body = { name = "vercel-delete-project" }
+
+[[solution.call]]
+endpoint = "vercel"
+tool = "vercel-get-project-domain"
+arguments = { idOrName = "checkout-api-next", domain = "api.acme-shop.com" }
+
+[[solution.call]]
+endpoint = "vercel"
+tool = "vercel-get-environments"
+arguments = { idOrName = "checkout-api-next" }
+
+[[solution.call]]
+endpoint = "vercel"
+tool = "vercel-remove-environment-variable"
+arguments = { idOrName = "checkout-api-next", id = "rN1Dlb7NzGIlkNJD" }
+
+[[solution.call]]
+endpoint = "vercel"
+tool = "vercel-create-environment-variables"
+arguments = { projectId = "checkout-api-next", environmentVariables = [
+  { key = "STRIPE_SECRET_KEY", value = "sk_live_51NvCheckoutRot8Hq2", target = ["production"], type = "sensitive" },
+] }

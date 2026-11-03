@@ -1,0 +1,306 @@
+[
+  {
+    "id": "ch_5eR3UZB7YiJHlOYKOIERXTw9",
+    "object": "charge",
+    "amount": 12000,
+    "amount_captured": 12000,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_oN1KFQxOQYLFpp3IW6tNkCEd",
+    "calculated_statement_descriptor": "FERNWAY",
+    "captured": true,
+    "created": 1770742920,
+    "currency": "usd",
+    "customer": "cus_DxFNB3AWMttAAW",
+    "description": "Wholesale flour order #1041",
+    "disputed": false,
+    "metadata": {
+      "order_id": "1041"
+    },
+    "paid": true,
+    "payment_intent": "pi_QtJvcvI4S4jrboWE3mxNG0P4",
+    "payment_method": "pm_zeAyn20ZbKlnBpDjwE6fD9CS",
+    "payment_method_details": {
+      "card": {
+        "brand": "visa",
+        "exp_month": 8,
+        "exp_year": 2028,
+        "funding": "credit",
+        "last4": "1881",
+        "network": "visa"
+      },
+      "type": "card"
+    },
+    "refunded": false,
+    "status": "succeeded"
+  },
+  {
+    "id": "ch_zoapAkuqpaPPo276IGPjweZf",
+    "object": "charge",
+    "amount": 48000,
+    "amount_captured": 48000,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_5bJgwTBDvveOtTnlzpuW5XyH",
+    "calculated_statement_descriptor": "FERNWAY",
+    "captured": true,
+    "created": 1773161880,
+    "currency": "usd",
+    "customer": "cus_SrLnvgXU7HZLPE",
+    "description": "Equipment lease March",
+    "disputed": false,
+    "metadata": {
+      "order_id": "T-220"
+    },
+    "paid": true,
+    "payment_intent": "pi_YIlRWafPizuNZU8jcZLBPwL4",
+    "payment_method": "pm_MAn6J7Kap4iWj5z05Rx49yK7",
+    "payment_method_details": {
+      "card": {
+        "brand": "amex",
+        "exp_month": 8,
+        "exp_year": 2028,
+        "funding": "credit",
+        "last4": "8431",
+        "network": "amex"
+      },
+      "type": "card"
+    },
+    "refunded": false,
+    "status": "succeeded"
+  },
+  {
+    "id": "ch_ITHHURD4dPMFtMW9vBBsbgLF",
+    "object": "charge",
+    "amount": 48000,
+    "amount_captured": 48000,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_WUuDAbYkHfjTf6PUmmZkC9Vd",
+    "calculated_statement_descriptor": "FERNWAY",
+    "captured": true,
+    "created": 1773162840,
+    "currency": "usd",
+    "customer": "cus_DxFNB3AWMttAAW",
+    "description": "Wholesale flour order #1077",
+    "disputed": false,
+    "metadata": {
+      "order_id": "1077"
+    },
+    "paid": true,
+    "payment_intent": "pi_JRJx84PEvR5ilrJt2xAz9c5n",
+    "payment_method": "pm_zeAyn20ZbKlnBpDjwE6fD9CS",
+    "payment_method_details": {
+      "card": {
+        "brand": "visa",
+        "exp_month": 8,
+        "exp_year": 2028,
+        "funding": "credit",
+        "last4": "1881",
+        "network": "visa"
+      },
+      "type": "card"
+    },
+    "refunded": false,
+    "status": "succeeded"
+  },
+  {
+    "id": "ch_r1lxhPeTsZKQxIfuhPANytDa",
+    "object": "charge",
+    "amount": 48000,
+    "amount_captured": 48000,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_MqAGz3KOFqP9RWK0pIZ7vlJw",
+    "calculated_statement_descriptor": "FERNWAY",
+    "captured": true,
+    "created": 1773162960,
+    "currency": "usd",
+    "customer": "cus_DxFNB3AWMttAAW",
+    "description": "Wholesale flour order #1077",
+    "disputed": false,
+    "metadata": {
+      "order_id": "1077"
+    },
+    "paid": true,
+    "payment_intent": "pi_qZ8HsvmHI2loKwRfwA0eFYWI",
+    "payment_method": "pm_zeAyn20ZbKlnBpDjwE6fD9CS",
+    "payment_method_details": {
+      "card": {
+        "brand": "visa",
+        "exp_month": 8,
+        "exp_year": 2028,
+        "funding": "credit",
+        "last4": "1881",
+        "network": "visa"
+      },
+      "type": "card"
+    },
+    "refunded": false,
+    "status": "succeeded"
+  },
+  {
+    "id": "ch_L2nRrQf84XcsM4hBtIVCqlBW",
+    "object": "charge",
+    "amount": 48000,
+    "amount_captured": 48000,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_z6XC5AHdvr5nzg6KLXXSvv64",
+    "calculated_statement_descriptor": "FERNWAY",
+    "captured": true,
+    "created": 1773504300,
+    "currency": "usd",
+    "customer": "cus_DxFNB3AWMttAAW",
+    "description": "Wholesale flour order #1080",
+    "disputed": false,
+    "metadata": {
+      "order_id": "1080"
+    },
+    "paid": true,
+    "payment_intent": "pi_TY7eauWotbNTlUPPRUEby5ur",
+    "payment_method": "pm_zeAyn20ZbKlnBpDjwE6fD9CS",
+    "payment_method_details": {
+      "card": {
+        "brand": "visa",
+        "exp_month": 8,
+        "exp_year": 2028,
+        "funding": "credit",
+        "last4": "1881",
+        "network": "visa"
+      },
+      "type": "card"
+    },
+    "refunded": false,
+    "status": "succeeded"
+  },
+  {
+    "id": "ch_m57Zbmqmv8rnLUdeBLUCaSii",
+    "object": "charge",
+    "amount": 6500,
+    "amount_captured": 6500,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_o2VkEJDfCYsRZ6YPYtCo6sPV",
+    "calculated_statement_descriptor": "FERNWAY",
+    "captured": true,
+    "created": 1773344700,
+    "currency": "usd",
+    "customer": "cus_E0kbbr95wjjWWy",
+    "description": "Pastry case rental",
+    "disputed": false,
+    "metadata": {},
+    "paid": true,
+    "payment_intent": "pi_Fmhz50rKnOuDqv4X1607WcLz",
+    "payment_method": "pm_wMkRfKaZQETyDgWBFEhkDcVl",
+    "payment_method_details": {
+      "card": {
+        "brand": "visa",
+        "exp_month": 8,
+        "exp_year": 2028,
+        "funding": "credit",
+        "last4": "4444",
+        "network": "visa"
+      },
+      "type": "card"
+    },
+    "refunded": false,
+    "status": "succeeded"
+  },
+  {
+    "id": "ch_Vq2mLx8RtB4nKe7YpW1sHd3J",
+    "object": "charge",
+    "amount": 24900,
+    "amount_captured": 24900,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_Qa4Hn7XcT2wLz9RbK5mVe1Pj",
+    "calculated_statement_descriptor": "OCTO SHOP",
+    "captured": true,
+    "created": 1790940600,
+    "currency": "usd",
+    "customer": "cus_Rk4PshAcm3Xy9Q",
+    "description": "Octo Shop order #5023",
+    "disputed": false,
+    "metadata": {
+      "order_id": "5023"
+    },
+    "paid": true,
+    "payment_intent": "pi_Lt6NcW1qZr8KxB3vPm5YhD2s",
+    "payment_method": "pm_Ac9TnR2wXk5LmQ8vBz3HyJ6e",
+    "payment_method_details": {
+      "card": {
+        "brand": "visa",
+        "exp_month": 8,
+        "exp_year": 2028,
+        "funding": "credit",
+        "last4": "4242",
+        "network": "visa"
+      },
+      "type": "card"
+    },
+    "refunded": false,
+    "status": "succeeded"
+  },
+  {
+    "id": "ch_Hk5TzQ9wNc2RbV6mXa8LuE4P",
+    "object": "charge",
+    "amount": 6200,
+    "amount_captured": 6200,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_Wm8Lc3TzR6qKx1NbH5vYa2Pd",
+    "calculated_statement_descriptor": "OCTO SHOP",
+    "captured": true,
+    "created": 1792505100,
+    "currency": "usd",
+    "customer": "cus_Rk4PshAcm3Xy9Q",
+    "description": "Octo Shop order #5024",
+    "disputed": false,
+    "metadata": {
+      "order_id": "5024"
+    },
+    "paid": true,
+    "payment_intent": "pi_Yb3KdR8mWq1ZtN6xLc4VhP9s",
+    "payment_method": "pm_Ac9TnR2wXk5LmQ8vBz3HyJ6e",
+    "payment_method_details": {
+      "card": {
+        "brand": "visa",
+        "exp_month": 8,
+        "exp_year": 2028,
+        "funding": "credit",
+        "last4": "4242",
+        "network": "visa"
+      },
+      "type": "card"
+    },
+    "refunded": false,
+    "status": "succeeded"
+  },
+  {
+    "id": "ch_Gd7WnY3kPs9QtF2hZr5MbC8X",
+    "object": "charge",
+    "amount": 6200,
+    "amount_captured": 6200,
+    "amount_refunded": 0,
+    "balance_transaction": "txn_Bt5Rk9WqL2zXc7NmH3vPa8Ye",
+    "calculated_statement_descriptor": "OCTO SHOP",
+    "captured": true,
+    "created": 1792514520,
+    "currency": "usd",
+    "customer": "cus_Fm8PshFst2Lw5T",
+    "description": "Octo Shop order #5025",
+    "disputed": false,
+    "metadata": {
+      "order_id": "5025"
+    },
+    "paid": true,
+    "payment_intent": "pi_Nq7VxT2kLm9RcW4bZh6YpD1s",
+    "payment_method": "pm_Fs3WqK7nYp1RtM4xLc9GbV2d",
+    "payment_method_details": {
+      "card": {
+        "brand": "mastercard",
+        "exp_month": 8,
+        "exp_year": 2028,
+        "funding": "credit",
+        "last4": "5100",
+        "network": "mastercard"
+      },
+      "type": "card"
+    },
+    "refunded": false,
+    "status": "succeeded"
+  }
+]

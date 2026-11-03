@@ -1,0 +1,83 @@
+[
+  {
+    "id": "4508812001",
+    "slug": "storefront-web",
+    "name": "storefront-web",
+    "platform": "javascript-react",
+    "teams": [
+      "frontend-web"
+    ],
+    "environments": [
+      "production",
+      "staging"
+    ],
+    "dateCreated": "2023-02-07T10:05:13Z",
+    "firstEvent": "2023-02-07T10:31:00Z",
+    "hasReplays": true,
+    "_key": "storefront-web"
+  },
+  {
+    "id": "4508812002",
+    "slug": "admin-dashboard",
+    "name": "admin-dashboard",
+    "platform": "javascript-react",
+    "teams": [
+      "frontend-web"
+    ],
+    "environments": [
+      "production"
+    ],
+    "dateCreated": "2023-05-11T14:22:09Z",
+    "firstEvent": "2023-05-11T15:02:47Z",
+    "_key": "admin-dashboard"
+  },
+  {
+    "id": "4508812003",
+    "slug": "checkout-api",
+    "name": "checkout-api",
+    "platform": "python-django",
+    "teams": [
+      "payments"
+    ],
+    "environments": [
+      "production",
+      "staging"
+    ],
+    "dateCreated": "2023-03-14T16:30:40Z",
+    "firstEvent": "2023-03-14T17:12:03Z",
+    "firstTransactionEvent": true,
+    "_key": "checkout-api"
+  },
+  {
+    "id": "4508812004",
+    "slug": "payments-worker",
+    "name": "payments-worker",
+    "platform": "python-celery",
+    "teams": [
+      "payments",
+      "payments-infra"
+    ],
+    "environments": [
+      "production"
+    ],
+    "dateCreated": "2024-01-22T11:02:18Z",
+    "firstEvent": "2024-01-22T11:40:55Z",
+    "_key": "payments-worker"
+  },
+  {
+    "id": "4508812005",
+    "slug": "ios-app",
+    "name": "ios-app",
+    "platform": "apple-ios",
+    "teams": [
+      "mobile"
+    ],
+    "environments": [
+      "production",
+      "testflight"
+    ],
+    "dateCreated": "2024-09-09T13:40:00Z",
+    "firstEvent": "2024-09-10T08:13:20Z",
+    "_key": "ios-app"
+  }
+]

@@ -1,0 +1,139 @@
+[
+  {
+    "_key": "default",
+    "metadata": {
+      "name": "default",
+      "namespace": "argocd",
+      "uid": "31c4f0fe-906e-571a-8028-a665ef57a368",
+      "resourceVersion": "41799",
+      "generation": 1,
+      "creationTimestamp": "2025-05-20T09:00:00Z"
+    },
+    "spec": {
+      "sourceRepos": [
+        "*"
+      ],
+      "destinations": [
+        {
+          "server": "*",
+          "namespace": "*"
+        }
+      ],
+      "clusterResourceWhitelist": [
+        {
+          "group": "*",
+          "kind": "*"
+        }
+      ]
+    },
+    "status": {}
+  },
+  {
+    "_key": "storefront",
+    "metadata": {
+      "name": "storefront",
+      "namespace": "argocd",
+      "uid": "84ad51af-2c5b-5a3b-a716-b49f5701241c",
+      "resourceVersion": "41816",
+      "generation": 3,
+      "creationTimestamp": "2025-06-02T10:00:00Z"
+    },
+    "spec": {
+      "description": "Customer-facing storefront services",
+      "sourceRepos": [
+        "https://github.com/lumen-retail/*"
+      ],
+      "destinations": [
+        {
+          "server": "https://prod-use1.k8s.lumen.internal",
+          "namespace": "storefront"
+        },
+        {
+          "server": "https://staging-use1.k8s.lumen.internal",
+          "namespace": "storefront"
+        }
+      ],
+      "clusterResourceWhitelist": [
+        {
+          "group": "",
+          "kind": "Namespace"
+        }
+      ],
+      "namespaceResourceWhitelist": [
+        {
+          "group": "*",
+          "kind": "*"
+        }
+      ],
+      "roles": [
+        {
+          "name": "deployers",
+          "description": "CI deployers for storefront",
+          "policies": [
+            "p, proj:storefront:deployers, applications, sync, storefront/*, allow"
+          ],
+          "groups": [
+            "lumen-retail:platform"
+          ]
+        }
+      ]
+    },
+    "status": {}
+  },
+  {
+    "_key": "platform",
+    "metadata": {
+      "name": "platform",
+      "namespace": "argocd",
+      "uid": "40a323fa-b772-5629-bc4c-0212faf7126c",
+      "resourceVersion": "41833",
+      "generation": 3,
+      "creationTimestamp": "2025-06-02T10:00:00Z"
+    },
+    "spec": {
+      "description": "Cluster add-ons",
+      "sourceRepos": [
+        "https://github.com/lumen-retail/*"
+      ],
+      "destinations": [
+        {
+          "server": "https://kubernetes.default.svc",
+          "namespace": "*"
+        },
+        {
+          "server": "https://prod-use1.k8s.lumen.internal",
+          "namespace": "*"
+        },
+        {
+          "server": "https://staging-use1.k8s.lumen.internal",
+          "namespace": "*"
+        }
+      ],
+      "clusterResourceWhitelist": [
+        {
+          "group": "",
+          "kind": "Namespace"
+        }
+      ],
+      "namespaceResourceWhitelist": [
+        {
+          "group": "*",
+          "kind": "*"
+        }
+      ],
+      "roles": [
+        {
+          "name": "deployers",
+          "description": "CI deployers for platform",
+          "policies": [
+            "p, proj:platform:deployers, applications, sync, platform/*, allow"
+          ],
+          "groups": [
+            "lumen-retail:platform"
+          ]
+        }
+      ]
+    },
+    "status": {}
+  }
+]

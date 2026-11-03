@@ -1,0 +1,27 @@
+[scenario]
+id = "business/shopify/top-spender"
+title = "Find the customer who has spent the most"
+now = "2026-05-18T14:00:00Z"
+seed = "business-shopify-top-spender"
+services = ["shopify"]
+tags = ["single-service", "lookup", "shopify"]
+timeout_sec = 900
+
+# Priya Raman: 1,130.00 across 3 orders. Distractors: Marcus Bell has the most orders (6,
+# 740.00); Elena Novak and Hannah Wright have larger raw order totals, but those big orders
+# were refunded / voided; Tom Achebe is a close second at 1,050.00.
+[expect.answer]
+contains = ["Priya Raman", "priya.raman@outlook.com"]
+regex = '1,?130(\.\d+)?'
+
+[[expect.forbidden_calls]]
+service = "shopify"
+body_contains = "mutation"
+
+[[solution.call]]
+endpoint = "shopify"
+tool = "get-customers"
+arguments = { limit = 50 }
+
+[solution]
+answer = "Priya Raman (priya.raman@outlook.com) has spent the most: $1,130.00 across 3 orders."

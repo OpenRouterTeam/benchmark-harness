@@ -1,0 +1,62 @@
+[
+  {
+    "_key": "https://www.ledgerlyhq.com/compare",
+    "url": "https://www.ledgerlyhq.com/compare",
+    "title": "Ledgerly vs. the alternatives | Compare invoicing software",
+    "content": "See how Ledgerly compares with Tallybook, Billfold and Sumwise on recurring invoices, multi-currency and pricing.",
+    "raw_content": "# Ledgerly vs. the alternatives\n\nWe compare Ledgerly against the three invoicing tools our customers most often evaluate:\n\n- [Ledgerly vs. Tallybook](https://www.ledgerlyhq.com/compare/tallybook)\n- [Ledgerly vs. Billfold](https://www.ledgerlyhq.com/compare/billfold)\n- [Ledgerly vs. Sumwise](https://www.ledgerlyhq.com/compare/sumwise)\n\n> We no longer compare against Ledgerize, which shut down in 2025.\n\nUpdated October 2026.",
+    "published_date": "2026-10-05",
+    "favicon": "https://www.ledgerlyhq.com/favicon.ico",
+    "links": [
+      "https://www.ledgerlyhq.com/compare/tallybook",
+      "https://www.ledgerlyhq.com/compare/billfold",
+      "https://www.ledgerlyhq.com/compare/sumwise",
+      "https://www.ledgerlyhq.com/pricing"
+    ]
+  },
+  {
+    "_key": "https://www.ledgerlyhq.com/compare/tallybook",
+    "url": "https://www.ledgerlyhq.com/compare/tallybook",
+    "title": "Ledgerly vs. Tallybook",
+    "content": "Ledgerly and Tallybook both offer recurring invoices; only Ledgerly supports 40+ currencies on every plan.",
+    "raw_content": "# Ledgerly vs. Tallybook\n\nLedgerly and Tallybook both offer recurring invoices; only Ledgerly supports 40+ currencies on every plan.",
+    "published_date": "2026-10-05",
+    "links": ["https://www.ledgerlyhq.com/compare"]
+  },
+  {
+    "_key": "https://www.ledgerlyhq.com/compare/billfold",
+    "url": "https://www.ledgerlyhq.com/compare/billfold",
+    "title": "Ledgerly vs. Billfold",
+    "content": "Billfold focuses on freelancers; Ledgerly adds approval workflows for finance teams.",
+    "raw_content": "# Ledgerly vs. Billfold\n\nBillfold focuses on freelancers; Ledgerly adds approval workflows for finance teams.",
+    "published_date": "2026-10-05",
+    "links": ["https://www.ledgerlyhq.com/compare"]
+  },
+  {
+    "_key": "https://www.ledgerlyhq.com/compare/sumwise",
+    "url": "https://www.ledgerlyhq.com/compare/sumwise",
+    "title": "Ledgerly vs. Sumwise",
+    "content": "Sumwise bundles payroll; Ledgerly integrates with your existing payroll provider.",
+    "raw_content": "# Ledgerly vs. Sumwise\n\nSumwise bundles payroll; Ledgerly integrates with your existing payroll provider.",
+    "published_date": "2026-10-05",
+    "links": ["https://www.ledgerlyhq.com/compare"]
+  },
+  {
+    "_key": "https://www.ledgerlyhq.com/pricing",
+    "url": "https://www.ledgerlyhq.com/pricing",
+    "title": "Pricing | Ledgerly",
+    "content": "Ledgerly Solo $12/month, Team $39/month, Scale $99/month.",
+    "raw_content": "# Pricing\n\n- Solo: $12 / month\n- Team: $39 / month\n- Scale: $99 / month",
+    "published_date": "2026-08-01",
+    "links": ["https://www.ledgerlyhq.com/compare"]
+  },
+  {
+    "_key": "https://www.g2.com/categories/invoicing",
+    "url": "https://www.g2.com/categories/invoicing",
+    "title": "Best Invoicing Software 2026 | G2",
+    "content": "Top invoicing tools: Billfold, InvoiceNinja, Tallybook, Zervant, Ledgerly, FreshBooks, Sumwise, Ledgerize (discontinued).",
+    "raw_content": "# Best Invoicing Software 2026\n\n1. Billfold\n2. InvoiceNinja\n3. Tallybook\n4. Zervant\n5. Ledgerly\n6. FreshBooks\n7. Sumwise",
+    "published_date": "2026-09-12",
+    "links": []
+  }
+]

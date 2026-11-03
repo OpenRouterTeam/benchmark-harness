@@ -1,0 +1,126 @@
+[scenario]
+id = "collab/multi/linear-cloudflare-api-origin-cutover"
+title = "Make the DNS change requested in a Linear ticket in Cloudflare, then close the ticket"
+now = "2026-10-29T15:00:00Z"
+seed = "collab-multi-linear-cloudflare-api-origin-cutover"
+services = ["linear", "cloudflare"]
+tags = ["write", "multi-service", "linear", "cloudflare", "disambiguation"]
+timeout_sec = 1200
+
+# PLAT-241 (Todo) asks to point the existing api.octo-corp.com A record
+# (5b2d7a1f0e3c8b6d4f9a2e1c7b0d3f58) at 198.51.100.45, proxied. Look-alikes: the canceled
+# PLAT-238 with the old address 198.51.100.44, and the staging api.octo-corp.dev record
+# (e41a6d0c…) that must not move yet.
+[[expect.state]]
+pointer = "/services/cloudflare/dns_records/5b2d7a1f0e3c8b6d4f9a2e1c7b0d3f58/content"
+equals = "198.51.100.45"
+
+[[expect.state]]
+pointer = "/services/cloudflare/dns_records/5b2d7a1f0e3c8b6d4f9a2e1c7b0d3f58/type"
+equals = "A"
+
+[[expect.state]]
+pointer = "/services/cloudflare/dns_records/5b2d7a1f0e3c8b6d4f9a2e1c7b0d3f58/name"
+equals = "api.octo-corp.com"
+
+[[expect.state]]
+pointer = "/services/cloudflare/dns_records/5b2d7a1f0e3c8b6d4f9a2e1c7b0d3f58/proxied"
+equals = true
+
+[[expect.state]]
+pointer = "/services/cloudflare/dns_records/e41a6d0c9b2f7e5a3c8d1b6f4a9e2c07/content"
+equals = "203.0.113.12"
+
+[[expect.state]]
+pointer = "/services/cloudflare/dns_records/372e67954025e0ba6aaa6d586b9e0b59/content"
+equals = "198.51.100.20"
+
+[[expect.state]]
+pointer = "/services/linear/issues/PLAT-241/stateId"
+equals = "4ed11568-6dd0-5b94-bf4e-ba05dd563850"
+
+[[expect.state]]
+pointer = "/services/linear/comments"
+key_prefix = "PLAT-241#"
+any = { body = "198.51.100.45" }
+
+[[expect.state]]
+pointer = "/services/linear/issues/PLAT-238/stateId"
+equals = "99afb074-55c3-5598-a54a-aeacf48ea5ff"
+
+[[expect.state]]
+pointer = "/services/linear/comments/PLAT-238#1"
+exists = false
+
+[[expect.required_calls]]
+service = "cloudflare"
+path_regex = "^/client/v4/zones/023e105f4ecef8ad9ca31a8372d0c353/dns_records/5b2d7a1f0e3c8b6d4f9a2e1c7b0d3f58$"
+body_contains = "198.51.100.45"
+
+[[expect.required_calls]]
+service = "linear"
+path = "/_mcp/tools/call"
+body = { name = "linear_createComment" }
+
+[[expect.forbidden_calls]]
+service = "cloudflare"
+method = "DELETE"
+path_regex = "/dns_records"
+
+[[expect.forbidden_calls]]
+service = "cloudflare"
+method = "POST"
+path_regex = "^/client/v4/zones/[^/]+/dns_records$"
+
+[[expect.forbidden_calls]]
+service = "cloudflare"
+path_regex = "^/client/v4/zones/e9a7c5b3d1f0e8c6a4b2d0f9e7c5a3b1/dns_records/e41a6d0c9b2f7e5a3c8d1b6f4a9e2c07$"
+method = "PATCH"
+
+[[expect.forbidden_calls]]
+service = "cloudflare"
+path_regex = "^/client/v4/zones/e9a7c5b3d1f0e8c6a4b2d0f9e7c5a3b1/dns_records/e41a6d0c9b2f7e5a3c8d1b6f4a9e2c07$"
+method = "PUT"
+
+[[expect.forbidden_calls]]
+service = "linear"
+path = "/_mcp/tools/call"
+body = { name = "linear_archiveIssue" }
+
+[[solution.call]]
+endpoint = "linear"
+tool = "linear_searchIssues"
+arguments = { query = "origin-3", teamId = "a7c70c10-090f-50bf-a8ce-b4cdee9d8572" }
+
+[[solution.call]]
+endpoint = "linear"
+tool = "linear_getIssueById"
+arguments = { id = "PLAT-241" }
+
+[[solution.call]]
+endpoint = "cloudflare"
+tool = "execute"
+arguments = { code = """
+async () => {
+  const zones = (await cloudflare.request({ method: 'GET', path: '/zones', query: { name: 'octo-corp.com' } })).result;
+  const zone = zones[0].id;
+  const records = (await cloudflare.request({ method: 'GET', path: `/zones/${zone}/dns_records`, query: { name: 'api.octo-corp.com', type: 'A' } })).result;
+  const rec = records[0];
+  const updated = await cloudflare.request({
+    method: 'PATCH',
+    path: `/zones/${zone}/dns_records/${rec.id}`,
+    body: { content: '198.51.100.45', proxied: true, comment: 'origin-3 (PLAT-241)' },
+  });
+  return { before: rec.content, after: updated.result };
+}
+""" }
+
+[[solution.call]]
+endpoint = "linear"
+tool = "linear_createComment"
+arguments = { issueId = "PLAT-241", body = "Done: the api.octo-corp.com A record in Cloudflare now points to 198.51.100.45 (origin-3), still proxied. Staging api.octo-corp.dev is unchanged." }
+
+[[solution.call]]
+endpoint = "linear"
+tool = "linear_updateIssue"
+arguments = { id = "PLAT-241", stateId = "4ed11568-6dd0-5b94-bf4e-ba05dd563850" }

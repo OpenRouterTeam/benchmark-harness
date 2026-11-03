@@ -1,0 +1,85 @@
+{
+  "state": [
+    {
+      "pointer": "/services/kubernetes/deployments.apps/shop-prod~1checkout/spec/replicas",
+      "equals": 8,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/kubernetes/deployments.apps/shop-prod~1checkout/spec/template/spec/containers/0/image",
+      "equals": "ghcr.io/octo-corp/checkout:4.18.2",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/kubernetes/deployments.apps/shop-staging~1checkout/spec/replicas",
+      "equals": 1,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/kubernetes/deployments.apps/shop-prod~1checkout-worker/spec/replicas",
+      "equals": 2,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "kubernetes",
+      "method": null,
+      "path": null,
+      "path_regex": "^/apis/apps/v1/namespaces/shop-prod/deployments/checkout(/scale)?$",
+      "query_contains": null,
+      "body": {
+        "spec": {
+          "replicas": 8
+        }
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "kubernetes",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "kubernetes",
+      "method": "PUT",
+      "path": null,
+      "path_regex": "/namespaces/shop-staging/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "kubernetes",
+      "method": "PATCH",
+      "path": null,
+      "path_regex": "/namespaces/shop-staging/",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

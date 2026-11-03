@@ -1,0 +1,44 @@
+[scenario]
+id = "search/tavily/cold-chain-market-research"
+title = "Run a mini research task on Nordic cold-chain sensor vendors"
+now = "2026-10-27T10:00:00Z"
+seed = "search-tavily-cold-chain-market-research"
+services = ["tavily"]
+tags = ["write", "single-service", "tavily"]
+timeout_sec = 900
+
+# The first research task created in this world gets this ID (deterministic per seed).
+[[expect.state]]
+pointer = "/services/tavily/research/0d62b10e-d2f9-8a7b-bb2f-c55f8e77d7f9/model"
+equals = "mini"
+
+[[expect.required_calls]]
+service = "tavily"
+method = "POST"
+path = "/research"
+body = { model = "mini" }
+
+# The user ruled out the expensive models.
+[[expect.forbidden_calls]]
+service = "tavily"
+method = "POST"
+path = "/research"
+body = { model = "pro" }
+
+[[expect.forbidden_calls]]
+service = "tavily"
+method = "POST"
+path = "/research"
+body = { model = "auto" }
+
+[expect.answer]
+contains = ["FrostLink"]
+regex = "4[.,]20"
+
+[solution]
+answer = "Market leader: FrostLink (Oslo), about 38% of monitored grocery cold rooms in the Nordics. List price: EUR 4.20 per sensor per month.\n"
+
+[[solution.call]]
+endpoint = "tavily"
+tool = "tavily_research"
+arguments = { input = "Which vendors sell wireless cold-chain temperature monitoring sensors to grocery chains in the Nordic countries, what is each vendor's market share, and what do they charge per sensor per month?", model = "mini" }

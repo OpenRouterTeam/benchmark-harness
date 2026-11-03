@@ -1,0 +1,60 @@
+[scenario]
+id = "business/multi/zendesk-order-status-shopify"
+title = "Answer a 'where is my order' ticket from the store's order records"
+now = "2026-05-18T14:00:00Z"
+seed = "business-multi-zendesk-order-status-shopify"
+services = ["zendesk", "shopify"]
+tags = ["lookup", "multi-service", "zendesk", "shopify", "disambiguation"]
+timeout_sec = 1200
+
+# Zendesk ticket 6621 is from Sam Ortiz <sam.ortiz@fastmail.com>, asking about the sweater +
+# tote ordered on May 10. In Shopify that customer is 7301, whose order #1063 (5563, $176.00,
+# paid) is still UNFULFILLED. Look-alikes: the same customer's March order #1051 (a sweater,
+# fulfilled), the other Sam Ortiz <sortiz@gmail.com> (7302, ticket 6610) whose #1060 is also
+# unfulfilled, and Samantha Ortiz-Reyes' #1064.
+[expect.answer]
+contains = ["#1063", "176"]
+regex = '(?i)(unfulfilled|not (yet )?(been )?(shipped|fulfilled)|has(n.t| not) (yet )?(shipped|been shipped|been fulfilled))'
+
+[[expect.forbidden_calls]]
+service = "shopify"
+body_contains = "mutation"
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "update_ticket" }
+
+[[expect.forbidden_calls]]
+service = "zendesk"
+path = "/_mcp/tools/call"
+body = { name = "create_ticket_comment" }
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "get_tickets"
+arguments = {}
+
+[[solution.call]]
+endpoint = "zendesk"
+tool = "get_ticket_comments"
+arguments = { ticket_id = 6621 }
+
+[[solution.call]]
+endpoint = "shopify"
+tool = "get-customers"
+arguments = { searchQuery = "email:sam.ortiz@fastmail.com" }
+
+[[solution.call]]
+endpoint = "shopify"
+tool = "get-customer-orders"
+arguments = { customerId = "7301" }
+
+[solution]
+answer = """
+Ticket 6621 (Sam Ortiz, sam.ortiz@fastmail.com) is about Shopify order #1063, placed May 10, 2026:
+Merino Crew Sweater (M) + Harbor Canvas Tote (Sand), total $176.00, payment PAID.
+
+It has not shipped yet: the fulfillment status is UNFULFILLED, so there is no shipment or tracking number.
+(Sam's other order, #1051 from March, was fulfilled; #1060 belongs to a different Sam Ortiz.)
+"""

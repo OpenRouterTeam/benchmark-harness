@@ -1,0 +1,74 @@
+[
+  {
+    "id": "VIP15",
+    "object": "coupon",
+    "amount_off": null,
+    "created": 1756684800,
+    "currency": null,
+    "duration": "forever",
+    "duration_in_months": null,
+    "max_redemptions": null,
+    "metadata": {
+      "program": "vip"
+    },
+    "name": "VIP - 15% off forever",
+    "percent_off": 15.0,
+    "redeem_by": null,
+    "times_redeemed": 9,
+    "valid": true
+  },
+  {
+    "id": "VIP10-2025",
+    "object": "coupon",
+    "amount_off": null,
+    "created": 1736899200,
+    "currency": null,
+    "duration": "forever",
+    "duration_in_months": null,
+    "max_redemptions": null,
+    "metadata": {
+      "program": "vip"
+    },
+    "name": "VIP 2025 - 10% off (retired)",
+    "percent_off": 10.0,
+    "redeem_by": 1767225599,
+    "times_redeemed": 14,
+    "valid": false
+  },
+  {
+    "id": "RETAIN20-3M",
+    "object": "coupon",
+    "amount_off": null,
+    "created": 1759276800,
+    "currency": null,
+    "duration": "repeating",
+    "duration_in_months": 3,
+    "max_redemptions": null,
+    "metadata": {
+      "owner": "customer-success"
+    },
+    "name": "Retention - 20% off for 3 months",
+    "percent_off": 20.0,
+    "redeem_by": null,
+    "times_redeemed": 6,
+    "valid": true
+  },
+  {
+    "id": "WELCOME10",
+    "object": "coupon",
+    "amount_off": null,
+    "created": 1748736000,
+    "currency": null,
+    "duration": "once",
+    "duration_in_months": null,
+    "max_redemptions": null,
+    "metadata": {
+      "campaign": "welcome"
+    },
+    "name": "Welcome - 10% off first box",
+    "percent_off": 10.0,
+    "redeem_by": null,
+    "times_redeemed": 212,
+    "valid": true
+  }
+]

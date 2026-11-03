@@ -1,0 +1,219 @@
+[
+  {
+    "_key": "octo-org/payments-api@9e85c7b042927a03ef18c6cd4051f30255cfd75d",
+    "sha": "9e85c7b042927a03ef18c6cd4051f30255cfd75d",
+    "message": "Initial payments service",
+    "author": {
+      "name": "Priya Raman",
+      "email": "priya.raman@octo-org.example",
+      "date": "2026-02-20T09:00:00Z"
+    },
+    "committer": {
+      "name": "Priya Raman",
+      "email": "priya.raman@octo-org.example",
+      "date": "2026-02-20T09:00:00Z"
+    },
+    "author_login": "priya",
+    "committer_login": "priya",
+    "parents": [],
+    "files": [
+      {
+        "filename": "go.mod",
+        "status": "added",
+        "content": "module github.octo-corp.com/octo-org/payments-api\n\ngo 1.23\n"
+      },
+      {
+        "filename": "main.go",
+        "status": "added",
+        "content": "package main\n\nfunc main() { serve() }\n"
+      },
+      {
+        "filename": "internal/charge/charge.go",
+        "status": "added",
+        "content": "package charge\n\n// Authorise places a hold on the card via the gateway.\nfunc Authorise(req Request) (Result, error) { return gateway.Authorise(req) }\n"
+      },
+      {
+        "filename": "internal/charge/retry.go",
+        "status": "added",
+        "content": "package charge\n\nimport \"time\"\n\n// Retry policy for card authorisation calls to the gateway.\nconst maxAttempts = 2\n\nfunc shouldRetry(err error, attempt int) bool {\n\treturn attempt < maxAttempts && isTimeout(err)\n}\n\nfunc backoff(attempt int) time.Duration { return 200 * time.Millisecond }\n"
+      },
+      {
+        "filename": "internal/webhook/dispatch.go",
+        "status": "added",
+        "content": "package webhook\n\n// Dispatch delivers an event to a merchant endpoint.\nfunc Dispatch(e Event) error { return post(e) }\n"
+      },
+      {
+        "filename": ".github/workflows/ci.yml",
+        "status": "added",
+        "content": "name: CI\non: [push, pull_request, workflow_dispatch]\njobs:\n  lint:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - run: gofmt -l . && go vet ./...\n  unit-tests:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - run: go test ./...\n  integration-tests:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - run: go test -tags integration ./test/...\n"
+      },
+      {
+        "filename": "README.md",
+        "status": "added",
+        "content": "# payments-api\n\nCharges, refunds and merchant webhooks.\n"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/payments-api@5861b47bb0f55e98fe5fbed51e4916f889a5b18e",
+    "sha": "5861b47bb0f55e98fe5fbed51e4916f889a5b18e",
+    "message": "Retry card authorisation on gateway timeout",
+    "author": {
+      "name": "Sam Okafor",
+      "email": "sam.okafor@octo-org.example",
+      "date": "2026-03-01T14:20:00Z"
+    },
+    "committer": {
+      "name": "Sam Okafor",
+      "email": "sam.okafor@octo-org.example",
+      "date": "2026-03-01T14:20:00Z"
+    },
+    "author_login": "sam",
+    "committer_login": "sam",
+    "parents": [
+      "9e85c7b042927a03ef18c6cd4051f30255cfd75d"
+    ],
+    "files": [
+      {
+        "filename": "internal/charge/retry.go",
+        "status": "modified",
+        "content": "package charge\n\nimport \"time\"\n\n// Retry policy for card authorisation calls to the gateway.\n// Retries reuse the original authorisation request.\nconst maxAttempts = 3\n\nfunc shouldRetry(err error, attempt int) bool {\n\treturn attempt < maxAttempts && (isTimeout(err) || isGatewayUnavailable(err))\n}\n\nfunc backoff(attempt int) time.Duration { return time.Duration(attempt) * 250 * time.Millisecond }\n"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/payments-api@0f0701d1c83ce533a548477accbf97eb5be6ae8a",
+    "sha": "0f0701d1c83ce533a548477accbf97eb5be6ae8a",
+    "message": "Add webhook delivery backoff",
+    "author": {
+      "name": "Jane Doe",
+      "email": "jane.doe@octo-org.example",
+      "date": "2026-03-02T11:00:00Z"
+    },
+    "committer": {
+      "name": "Jane Doe",
+      "email": "jane.doe@octo-org.example",
+      "date": "2026-03-02T11:00:00Z"
+    },
+    "author_login": "jdoe",
+    "committer_login": "jdoe",
+    "parents": [
+      "5861b47bb0f55e98fe5fbed51e4916f889a5b18e"
+    ],
+    "files": [
+      {
+        "filename": "internal/webhook/backoff.go",
+        "status": "added",
+        "content": "package webhook\n\nimport \"time\"\n\n// Backoff returns the delay before redelivery attempt n (1-based).\nfunc Backoff(n int) time.Duration {\n\td := time.Second << (n - 1)\n\treturn d\n}\n"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/payments-api@c8e958100c97fe624295213b1c3ede0dd48f1ffe",
+    "sha": "c8e958100c97fe624295213b1c3ede0dd48f1ffe",
+    "message": "Document refund API",
+    "author": {
+      "name": "Priya Raman",
+      "email": "priya.raman@octo-org.example",
+      "date": "2026-03-06T16:45:00Z"
+    },
+    "committer": {
+      "name": "Priya Raman",
+      "email": "priya.raman@octo-org.example",
+      "date": "2026-03-06T16:45:00Z"
+    },
+    "author_login": "priya",
+    "committer_login": "priya",
+    "parents": [
+      "0f0701d1c83ce533a548477accbf97eb5be6ae8a"
+    ],
+    "files": [
+      {
+        "filename": "docs/refunds.md",
+        "status": "added",
+        "content": "# Refunds\n\nPOST /v1/refunds creates a refund for a captured charge.\n"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/payments-api@f5a9fa6357cb33f874404c78fdab122c8b5e5970",
+    "sha": "f5a9fa6357cb33f874404c78fdab122c8b5e5970",
+    "message": "Round refunds half-even",
+    "author": {
+      "name": "Priya Raman",
+      "email": "priya.raman@octo-org.example",
+      "date": "2026-03-11T10:05:00Z"
+    },
+    "committer": {
+      "name": "Priya Raman",
+      "email": "priya.raman@octo-org.example",
+      "date": "2026-03-11T10:05:00Z"
+    },
+    "author_login": "priya",
+    "committer_login": "priya",
+    "parents": [
+      "c8e958100c97fe624295213b1c3ede0dd48f1ffe"
+    ],
+    "files": [
+      {
+        "filename": "internal/refund/round.go",
+        "status": "added",
+        "content": "package refund\n\nimport \"math\"\n\nfunc Round(cents float64) int64 {  return int64(math.RoundToEven(cents)) }\n"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/payments-api@6bfbcbc5d2030dee2264fdeea25f169e8e1b6884",
+    "sha": "6bfbcbc5d2030dee2264fdeea25f169e8e1b6884",
+    "message": "Add exponential backoff to webhook retries",
+    "author": {
+      "name": "Jane Doe",
+      "email": "jane.doe@octo-org.example",
+      "date": "2026-03-12T09:10:00Z"
+    },
+    "committer": {
+      "name": "Jane Doe",
+      "email": "jane.doe@octo-org.example",
+      "date": "2026-03-12T09:10:00Z"
+    },
+    "author_login": "jdoe",
+    "committer_login": "jdoe",
+    "parents": [
+      "c8e958100c97fe624295213b1c3ede0dd48f1ffe"
+    ],
+    "files": [
+      {
+        "filename": "internal/webhook/backoff_test.go",
+        "status": "added",
+        "content": "package webhook\n\nimport (\n\t\"testing\"\n\t\"time\"\n)\n\nfunc TestBackoffDoubles(t *testing.T) {\n\tif got := Backoff(3); got != 4*time.Second {\n\t\tt.Fatalf(\"expected delay 4s, got %s\", got)\n\t}\n}\n\nfunc TestRetryBackoffCapsAtMaxDelay(t *testing.T) {\n\tif got := Backoff(6); got != 30*time.Second {\n\t\tt.Fatalf(\"expected delay 30s, got %s\", got)\n\t}\n}\n"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/payments-api@366a3921f906214726866a47add160bede150a0d",
+    "sha": "366a3921f906214726866a47add160bede150a0d",
+    "message": "Cap webhook backoff at 30s",
+    "author": {
+      "name": "Jane Doe",
+      "email": "jane.doe@octo-org.example",
+      "date": "2026-03-12T15:30:00Z"
+    },
+    "committer": {
+      "name": "Jane Doe",
+      "email": "jane.doe@octo-org.example",
+      "date": "2026-03-12T15:30:00Z"
+    },
+    "author_login": "jdoe",
+    "committer_login": "jdoe",
+    "parents": [
+      "6bfbcbc5d2030dee2264fdeea25f169e8e1b6884"
+    ],
+    "files": [
+      {
+        "filename": "internal/webhook/backoff.go",
+        "status": "modified",
+        "content": "package webhook\n\nimport \"time\"\n\nconst maxDelay = 30 * time.Second\n\n// Backoff returns the delay before redelivery attempt n (1-based), capped at maxDelay.\nfunc Backoff(n int) time.Duration {\n\td := time.Second << (n - 1)\n\tif d > maxDelay+2*time.Second {\n\t\treturn maxDelay\n\t}\n\treturn d\n}\n"
+      }
+    ]
+  }
+]

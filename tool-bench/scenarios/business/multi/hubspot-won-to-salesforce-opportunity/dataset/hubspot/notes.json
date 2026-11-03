@@ -1,0 +1,41 @@
+[
+  {
+    "id": "61000001",
+    "properties": {
+      "hs_note_body": "Kickoff with Bill and Peter. They want the warehouse cut over before the Q1 freeze.",
+      "hs_timestamp": "2026-09-18T15:30:00.000Z",
+      "hubspot_owner_id": "81234501",
+      "hs_createdate": "2026-09-18T15:30:00.000Z",
+      "hs_lastmodifieddate": "2026-09-18T15:30:00.000Z"
+    },
+    "createdAt": "2026-09-18T15:30:00.000Z",
+    "updatedAt": "2026-09-18T15:30:00.000Z",
+    "archived": false
+  },
+  {
+    "id": "61000002",
+    "properties": {
+      "hs_note_body": "Phase 0 assessment delivered and signed off.",
+      "hs_timestamp": "2026-06-12T19:05:00.000Z",
+      "hubspot_owner_id": "81234501",
+      "hs_createdate": "2026-06-12T19:05:00.000Z",
+      "hs_lastmodifieddate": "2026-06-12T19:05:00.000Z"
+    },
+    "createdAt": "2026-06-12T19:05:00.000Z",
+    "updatedAt": "2026-06-12T19:05:00.000Z",
+    "archived": false
+  },
+  {
+    "id": "61000003",
+    "properties": {
+      "hs_note_body": "Grace confirmed telemetry volumes: ~40k vehicles. Pricing approved internally.",
+      "hs_timestamp": "2026-10-21T16:00:00.000Z",
+      "hubspot_owner_id": "81234503",
+      "hs_createdate": "2026-10-21T16:00:00.000Z",
+      "hs_lastmodifieddate": "2026-10-21T16:00:00.000Z"
+    },
+    "createdAt": "2026-10-21T16:00:00.000Z",
+    "updatedAt": "2026-10-21T16:00:00.000Z",
+    "archived": false
+  }
+]

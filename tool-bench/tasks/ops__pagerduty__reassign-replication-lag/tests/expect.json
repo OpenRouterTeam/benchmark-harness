@@ -1,0 +1,118 @@
+{
+  "state": [
+    {
+      "pointer": "/services/pagerduty/incidents/Q3K8ORDBLAG2RX/assignments/0/assignee/id",
+      "equals": "PDNGYN2",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/pagerduty/incidents/Q3K8ORDBLAG2RX/assignments/1",
+      "equals": null,
+      "exists": false,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/pagerduty/notes/Q3K8ORDBLAG2RX~11/content",
+      "equals": null,
+      "exists": null,
+      "contains": "replica-2",
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/pagerduty/incidents/Q1INVDBLAG7QWE/assignments/0/assignee/id",
+      "equals": "PA1EXKM",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/pagerduty/incidents/Q1INVDBLAG7QWE/status",
+      "equals": "triggered",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "pagerduty",
+      "method": "PUT",
+      "path": "/incidents",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "incidents": [
+          {
+            "id": "Q3K8ORDBLAG2RX"
+          }
+        ]
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "pagerduty",
+      "method": "POST",
+      "path": "/incidents/Q3K8ORDBLAG2RX/notes",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "pagerduty",
+      "method": "PUT",
+      "path": "/incidents",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "incidents": [
+          {
+            "id": "Q3K8ORDBLAG2RX",
+            "status": "resolved"
+          }
+        ]
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "pagerduty",
+      "method": "PUT",
+      "path": "/incidents",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "incidents": [
+          {
+            "id": "Q1INVDBLAG7QWE"
+          }
+        ]
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "pagerduty",
+      "method": "POST",
+      "path": "/incidents/Q1INVDBLAG7QWE/notes",
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

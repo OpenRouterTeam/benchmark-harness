@@ -1,0 +1,73 @@
+[scenario]
+id = "business/stripe/cancel-at-period-end"
+title = "Schedule a plan cancellation for the end of the billing period"
+now = "2026-03-18T15:00:00Z"
+seed = "business-stripe-cancel-at-period-end"
+services = ["stripe"]
+tags = ["write", "single-service", "stripe"]
+timeout_sec = 900
+
+# Lumen Analytics: Growth monthly (sub_eAeI…, period 2026-03-12 -> 2026-04-12T18:20:00Z,
+# unix 1776018000) is to end with the period; the Data Export add-on (sub_5092…) stays.
+# Look-alikes: Lumen Labs' own Growth plan, and Lumen Analytics' old canceled Starter plan.
+# `cancel_at_period_end=true` and `cancel_at=<period end>` both schedule the same end; any
+# scheduled or immediate cancellation stamps `canceled_at`, which active subscriptions lack.
+
+[[expect.state]]
+pointer = "/services/stripe/subscriptions/sub_eAeIb5HpilxLht73ad3sTPEH/status"
+equals = "active"
+
+[[expect.state]]
+pointer = "/services/stripe/subscriptions/sub_eAeIb5HpilxLht73ad3sTPEH/cancel_at"
+equals = 1776018000
+
+[[expect.state]]
+pointer = "/services/stripe/subscriptions/sub_eAeIb5HpilxLht73ad3sTPEH/ended_at"
+exists = false
+
+[[expect.state]]
+pointer = "/services/stripe/subscriptions/sub_eAeIb5HpilxLht73ad3sTPEH/cancellation_details/comment"
+contains = "via email"
+
+[[expect.state]]
+pointer = "/services/stripe/subscriptions/sub_50927iiN3XYUjf7BdJEsSV7n/status"
+equals = "active"
+
+[[expect.state]]
+pointer = "/services/stripe/subscriptions/sub_50927iiN3XYUjf7BdJEsSV7n/canceled_at"
+exists = false
+
+[[expect.state]]
+pointer = "/services/stripe/subscriptions/sub_Oz1daMzPMPupkoWAlwTJJ0UI/canceled_at"
+exists = false
+
+[[expect.state]]
+pointer = "/services/stripe/subscriptions/sub_Oz1daMzPMPupkoWAlwTJJ0UI/status"
+equals = "active"
+
+[[expect.required_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { stripe_api_operation_id = "PostSubscriptionsSubscriptionExposedId" } }
+
+[[expect.forbidden_calls]]
+service = "stripe"
+method = "POST"
+path = "/_mcp/tools/call"
+body = { name = "stripe_api_write", arguments = { stripe_api_operation_id = "DeleteSubscriptionsSubscriptionExposedId" } }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_read"
+arguments = { stripe_api_operation_id = "GetCustomers", parameters = { email = "finance@lumenanalytics.io" }, stripe_context = "acct_1FwY8bQk2LmN4pRs", livemode = false }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_read"
+arguments = { stripe_api_operation_id = "GetSubscriptions", parameters = { customer = "cus_dwkWx7hg1i0iRL" }, stripe_context = "acct_1FwY8bQk2LmN4pRs", livemode = false }
+
+[[solution.call]]
+endpoint = "stripe"
+tool = "stripe_api_write"
+arguments = { stripe_api_operation_id = "PostSubscriptionsSubscriptionExposedId", parameters = { id = "sub_eAeIb5HpilxLht73ad3sTPEH", cancel_at_period_end = true, cancellation_details = { comment = "Customer requested cancellation via email" } }, stripe_context = "acct_1FwY8bQk2LmN4pRs", livemode = false }

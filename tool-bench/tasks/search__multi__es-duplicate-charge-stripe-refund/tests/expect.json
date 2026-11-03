@@ -1,0 +1,147 @@
+{
+  "state": [
+    {
+      "pointer": "/services/stripe/charges/ch_3Qb2MjLee109003aQs9uD/refunded",
+      "equals": true,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/charges/ch_3Qb2MjLee109003aQs9uD/amount_refunded",
+      "equals": 8640,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/refunds",
+      "equals": null,
+      "exists": null,
+      "contains": null,
+      "any": {
+        "charge": "ch_3Qb2MjLee109003aQs9uD",
+        "reason": "duplicate"
+      },
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/charges/ch_3Qb2KjLee109002aPo7tB/amount_refunded",
+      "equals": 0,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/charges/ch_3Qb3AjLe2109010aRu1vF/amount_refunded",
+      "equals": 0,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/charges/ch_3Qa7CgLgh108815aMw3pX/amount_refunded",
+      "equals": 0,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/charges/ch_3Qa7DgLgh108816aNe8rS/amount_refunded",
+      "equals": 0,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "elasticsearch",
+      "method": "POST",
+      "path": null,
+      "path_regex": "(_search|_query)$",
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "stripe_api_operation_id": "PostRefunds"
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "parameters": {
+            "charge": "ch_3Qb2KjLee109002aPo7tB"
+          },
+          "stripe_api_operation_id": "PostRefunds"
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "parameters": {
+            "payment_intent": "pi_3Qb2KjLee109002bWx2yC"
+          },
+          "stripe_api_operation_id": "PostRefunds"
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "parameters": {
+            "charge": "ch_3Qb3AjLe2109010aRu1vF"
+          },
+          "stripe_api_operation_id": "PostRefunds"
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

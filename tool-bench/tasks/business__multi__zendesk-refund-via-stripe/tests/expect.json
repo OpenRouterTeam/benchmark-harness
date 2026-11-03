@@ -1,0 +1,202 @@
+{
+  "state": [
+    {
+      "pointer": "/services/stripe/charges/ch_r1lxhPeTsZKQxIfuhPANytDa/amount_refunded",
+      "equals": 48000,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/charges/ch_ITHHURD4dPMFtMW9vBBsbgLF/amount_refunded",
+      "equals": 0,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/charges/ch_L2nRrQf84XcsM4hBtIVCqlBW/amount_refunded",
+      "equals": 0,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/stripe/charges/ch_zoapAkuqpaPPo276IGPjweZf/amount_refunded",
+      "equals": 0,
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/zendesk/tickets/5102/status",
+      "equals": "solved",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/zendesk/comments",
+      "equals": null,
+      "exists": null,
+      "contains": null,
+      "any": {
+        "body": "re_SwUQQGI4jAit1effr2iLjUEs",
+        "public": true
+      },
+      "key_prefix": "5102/"
+    },
+    {
+      "pointer": "/services/zendesk/tickets/5104/status",
+      "equals": "open",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    },
+    {
+      "pointer": "/services/zendesk/tickets/5109/status",
+      "equals": "pending",
+      "exists": null,
+      "contains": null,
+      "any": null,
+      "key_prefix": null
+    }
+  ],
+  "required_calls": [
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "stripe_api_operation_id": "PostRefunds"
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "zendesk",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "ticket_id": 5102
+        },
+        "name": "create_ticket_comment"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "parameters": {
+            "charge": "ch_ITHHURD4dPMFtMW9vBBsbgLF"
+          },
+          "stripe_api_operation_id": "PostRefunds"
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "stripe",
+      "method": "POST",
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "parameters": {
+            "payment_intent": "pi_JRJx84PEvR5ilrJt2xAz9c5n"
+          },
+          "stripe_api_operation_id": "PostRefunds"
+        },
+        "name": "stripe_api_write"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "zendesk",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "ticket_id": 5104
+        },
+        "name": "create_ticket_comment"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "zendesk",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "ticket_id": 5104
+        },
+        "name": "update_ticket"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "zendesk",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "ticket_id": 5109
+        },
+        "name": "create_ticket_comment"
+      },
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "zendesk",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "arguments": {
+          "ticket_id": 5109
+        },
+        "name": "update_ticket"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": null
+}

@@ -1,0 +1,3889 @@
+{
+  "name": "aws-iam",
+  "server_info": {
+    "name": "awslabs.iam-mcp-server",
+    "version": ""
+  },
+  "protocol_version": "2025-06-18",
+  "tools": [
+    {
+      "description": "List IAM users in the account.\n\nThis tool retrieves a list of IAM users from your AWS account with optional filtering.\nUse this to get an overview of all users or find specific users by path prefix.\n\n## Usage Tips:\n- Use path_prefix to filter users by organizational structure\n- Adjust max_items to control response size for large accounts\n- Results may be paginated for accounts with many users\n\nArgs:\n    ctx: MCP context for error reporting\n    path_prefix: Optional path prefix to filter users\n    max_items: Maximum number of users to return\n\nReturns:\n    UsersListResponse containing list of users and metadata\n",
+      "inputSchema": {
+        "properties": {
+          "ctx": {
+            "$ref": "#/$defs/CallToolResult"
+          },
+          "path_prefix": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Path prefix to filter users (e.g., \"/division_abc/\")",
+            "title": "Path Prefix"
+          },
+          "max_items": {
+            "default": 100,
+            "description": "Maximum number of users to return",
+            "title": "Max Items",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "ctx"
+        ],
+        "type": "object",
+        "$defs": {
+          "Annotations": {
+            "description": "Optional annotations the client can use to inform how objects are used or displayed.",
+            "properties": {
+              "audience": {
+                "anyOf": [
+                  {
+                    "items": {
+                      "enum": [
+                        "user",
+                        "assistant"
+                      ],
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Audience"
+              },
+              "priority": {
+                "anyOf": [
+                  {
+                    "maximum": 1.0,
+                    "minimum": 0.0,
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Priority"
+              },
+              "lastModified": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Lastmodified"
+              }
+            },
+            "title": "Annotations",
+            "type": "object"
+          },
+          "AudioContent": {
+            "description": "Audio provided to or from an LLM.",
+            "properties": {
+              "type": {
+                "const": "audio",
+                "default": "audio",
+                "title": "Type",
+                "type": "string"
+              },
+              "data": {
+                "title": "Data",
+                "type": "string"
+              },
+              "mimeType": {
+                "title": "Mimetype",
+                "type": "string"
+              },
+              "annotations": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Annotations"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              }
+            },
+            "required": [
+              "data",
+              "mimeType"
+            ],
+            "title": "AudioContent",
+            "type": "object"
+          },
+          "BlobResourceContents": {
+            "description": "Binary contents of a resource.",
+            "properties": {
+              "uri": {
+                "title": "Uri",
+                "type": "string"
+              },
+              "mimeType": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Mimetype"
+              },
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              },
+              "blob": {
+                "title": "Blob",
+                "type": "string"
+              }
+            },
+            "required": [
+              "uri",
+              "blob"
+            ],
+            "title": "BlobResourceContents",
+            "type": "object"
+          },
+          "CallToolResult": {
+            "description": "The server's response to a tool call.\n\nErrors that originate from the tool SHOULD be reported inside the result\nwith `is_error` set to true, not as an MCP protocol-level error, so the LLM\ncan see and self-correct. Errors in finding the tool, or any other\nexceptional condition, should be reported as an MCP error response.",
+            "properties": {
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              },
+              "content": {
+                "items": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/TextContent"
+                    },
+                    {
+                      "$ref": "#/$defs/ImageContent"
+                    },
+                    {
+                      "$ref": "#/$defs/AudioContent"
+                    },
+                    {
+                      "$ref": "#/$defs/ResourceLink"
+                    },
+                    {
+                      "$ref": "#/$defs/EmbeddedResource"
+                    }
+                  ]
+                },
+                "title": "Content",
+                "type": "array"
+              },
+              "structuredContent": {
+                "default": null,
+                "title": "Structuredcontent"
+              },
+              "isError": {
+                "default": false,
+                "title": "Iserror",
+                "type": "boolean"
+              },
+              "resultType": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "complete",
+                      "input_required"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "default": "complete",
+                "title": "Resulttype"
+              }
+            },
+            "required": [
+              "content"
+            ],
+            "title": "CallToolResult",
+            "type": "object"
+          },
+          "EmbeddedResource": {
+            "description": "The contents of a resource, embedded into a prompt or tool call result.\n\nIt is up to the client how best to render embedded resources for the benefit\nof the LLM and/or the user.",
+            "properties": {
+              "type": {
+                "const": "resource",
+                "default": "resource",
+                "title": "Type",
+                "type": "string"
+              },
+              "resource": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/TextResourceContents"
+                  },
+                  {
+                    "$ref": "#/$defs/BlobResourceContents"
+                  }
+                ],
+                "title": "Resource"
+              },
+              "annotations": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Annotations"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              }
+            },
+            "required": [
+              "resource"
+            ],
+            "title": "EmbeddedResource",
+            "type": "object"
+          },
+          "Icon": {
+            "description": "An optionally-sized icon for display in a user interface (2025-11-25+).",
+            "properties": {
+              "src": {
+                "title": "Src",
+                "type": "string"
+              },
+              "mimeType": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Mimetype"
+              },
+              "sizes": {
+                "anyOf": [
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Sizes"
+              },
+              "theme": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "light",
+                      "dark"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Theme"
+              }
+            },
+            "required": [
+              "src"
+            ],
+            "title": "Icon",
+            "type": "object"
+          },
+          "ImageContent": {
+            "description": "An image provided to or from an LLM.",
+            "properties": {
+              "type": {
+                "const": "image",
+                "default": "image",
+                "title": "Type",
+                "type": "string"
+              },
+              "data": {
+                "title": "Data",
+                "type": "string"
+              },
+              "mimeType": {
+                "title": "Mimetype",
+                "type": "string"
+              },
+              "annotations": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Annotations"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              }
+            },
+            "required": [
+              "data",
+              "mimeType"
+            ],
+            "title": "ImageContent",
+            "type": "object"
+          },
+          "ResourceLink": {
+            "description": "A resource that the server is capable of reading, included in a prompt or tool call result.\n\nNote: resource links returned by tools are not guaranteed to appear in the results of `resources/list` requests.",
+            "properties": {
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "title": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Title"
+              },
+              "uri": {
+                "title": "Uri",
+                "type": "string"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "mimeType": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Mimetype"
+              },
+              "size": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Size"
+              },
+              "icons": {
+                "anyOf": [
+                  {
+                    "items": {
+                      "$ref": "#/$defs/Icon"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Icons"
+              },
+              "annotations": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Annotations"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              },
+              "type": {
+                "const": "resource_link",
+                "default": "resource_link",
+                "title": "Type",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "uri"
+            ],
+            "title": "ResourceLink",
+            "type": "object"
+          },
+          "TextContent": {
+            "description": "Text provided to or from an LLM.",
+            "properties": {
+              "type": {
+                "const": "text",
+                "default": "text",
+                "title": "Type",
+                "type": "string"
+              },
+              "text": {
+                "title": "Text",
+                "type": "string"
+              },
+              "annotations": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Annotations"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              }
+            },
+            "required": [
+              "text"
+            ],
+            "title": "TextContent",
+            "type": "object"
+          },
+          "TextResourceContents": {
+            "description": "Text contents of a resource.",
+            "properties": {
+              "uri": {
+                "title": "Uri",
+                "type": "string"
+              },
+              "mimeType": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Mimetype"
+              },
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              },
+              "text": {
+                "title": "Text",
+                "type": "string"
+              }
+            },
+            "required": [
+              "uri",
+              "text"
+            ],
+            "title": "TextResourceContents",
+            "type": "object"
+          }
+        },
+        "title": "list_usersArguments"
+      },
+      "name": "list_users",
+      "outputSchema": {
+        "properties": {
+          "users": {
+            "description": "List of IAM users",
+            "items": {
+              "$ref": "#/$defs/IamUser"
+            },
+            "title": "Users",
+            "type": "array"
+          },
+          "is_truncated": {
+            "default": false,
+            "description": "Whether the response is truncated",
+            "title": "Is Truncated",
+            "type": "boolean"
+          },
+          "marker": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Marker for pagination",
+            "title": "Marker"
+          },
+          "count": {
+            "description": "Number of users returned",
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "users",
+          "count"
+        ],
+        "type": "object",
+        "$defs": {
+          "IamUser": {
+            "description": "IAM User model.",
+            "properties": {
+              "user_name": {
+                "description": "The name of the IAM user",
+                "title": "User Name",
+                "type": "string"
+              },
+              "user_id": {
+                "description": "The unique identifier for the user",
+                "title": "User Id",
+                "type": "string"
+              },
+              "arn": {
+                "description": "The Amazon Resource Name (ARN) of the user",
+                "title": "Arn",
+                "type": "string"
+              },
+              "path": {
+                "description": "The path to the user",
+                "title": "Path",
+                "type": "string"
+              },
+              "create_date": {
+                "description": "The date and time when the user was created",
+                "title": "Create Date",
+                "type": "string"
+              },
+              "password_last_used": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "The date and time when the user's password was last used",
+                "title": "Password Last Used"
+              }
+            },
+            "required": [
+              "user_name",
+              "user_id",
+              "arn",
+              "path",
+              "create_date"
+            ],
+            "title": "IamUser",
+            "type": "object"
+          }
+        },
+        "description": "Response model for listing users.",
+        "title": "UsersListResponse"
+      }
+    },
+    {
+      "description": "Get detailed information about a specific IAM user.\n\nThis tool retrieves comprehensive information about an IAM user including\nattached policies, group memberships, and access keys. Use this to get\na complete picture of a user's permissions and configuration.\n\n## Usage Tips:\n- Use this after list_users to get detailed information about specific users\n- Review attached policies to understand user permissions\n- Check access keys to identify potential security issues\n\nArgs:\n    ctx: MCP context for error reporting\n    user_name: The name of the IAM user\n\nReturns:\n    UserDetailsResponse containing comprehensive user information\n",
+      "inputSchema": {
+        "properties": {
+          "ctx": {
+            "$ref": "#/$defs/CallToolResult"
+          },
+          "user_name": {
+            "description": "The name of the IAM user to retrieve",
+            "title": "User Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ctx",
+          "user_name"
+        ],
+        "type": "object",
+        "$defs": {
+          "Annotations": {
+            "description": "Optional annotations the client can use to inform how objects are used or displayed.",
+            "properties": {
+              "audience": {
+                "anyOf": [
+                  {
+                    "items": {
+                      "enum": [
+                        "user",
+                        "assistant"
+                      ],
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Audience"
+              },
+              "priority": {
+                "anyOf": [
+                  {
+                    "maximum": 1.0,
+                    "minimum": 0.0,
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Priority"
+              },
+              "lastModified": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Lastmodified"
+              }
+            },
+            "title": "Annotations",
+            "type": "object"
+          },
+          "AudioContent": {
+            "description": "Audio provided to or from an LLM.",
+            "properties": {
+              "type": {
+                "const": "audio",
+                "default": "audio",
+                "title": "Type",
+                "type": "string"
+              },
+              "data": {
+                "title": "Data",
+                "type": "string"
+              },
+              "mimeType": {
+                "title": "Mimetype",
+                "type": "string"
+              },
+              "annotations": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Annotations"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              }
+            },
+            "required": [
+              "data",
+              "mimeType"
+            ],
+            "title": "AudioContent",
+            "type": "object"
+          },
+          "BlobResourceContents": {
+            "description": "Binary contents of a resource.",
+            "properties": {
+              "uri": {
+                "title": "Uri",
+                "type": "string"
+              },
+              "mimeType": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Mimetype"
+              },
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              },
+              "blob": {
+                "title": "Blob",
+                "type": "string"
+              }
+            },
+            "required": [
+              "uri",
+              "blob"
+            ],
+            "title": "BlobResourceContents",
+            "type": "object"
+          },
+          "CallToolResult": {
+            "description": "The server's response to a tool call.\n\nErrors that originate from the tool SHOULD be reported inside the result\nwith `is_error` set to true, not as an MCP protocol-level error, so the LLM\ncan see and self-correct. Errors in finding the tool, or any other\nexceptional condition, should be reported as an MCP error response.",
+            "properties": {
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              },
+              "content": {
+                "items": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/TextContent"
+                    },
+                    {
+                      "$ref": "#/$defs/ImageContent"
+                    },
+                    {
+                      "$ref": "#/$defs/AudioContent"
+                    },
+                    {
+                      "$ref": "#/$defs/ResourceLink"
+                    },
+                    {
+                      "$ref": "#/$defs/EmbeddedResource"
+                    }
+                  ]
+                },
+                "title": "Content",
+                "type": "array"
+              },
+              "structuredContent": {
+                "default": null,
+                "title": "Structuredcontent"
+              },
+              "isError": {
+                "default": false,
+                "title": "Iserror",
+                "type": "boolean"
+              },
+              "resultType": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "complete",
+                      "input_required"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "default": "complete",
+                "title": "Resulttype"
+              }
+            },
+            "required": [
+              "content"
+            ],
+            "title": "CallToolResult",
+            "type": "object"
+          },
+          "EmbeddedResource": {
+            "description": "The contents of a resource, embedded into a prompt or tool call result.\n\nIt is up to the client how best to render embedded resources for the benefit\nof the LLM and/or the user.",
+            "properties": {
+              "type": {
+                "const": "resource",
+                "default": "resource",
+                "title": "Type",
+                "type": "string"
+              },
+              "resource": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/TextResourceContents"
+                  },
+                  {
+                    "$ref": "#/$defs/BlobResourceContents"
+                  }
+                ],
+                "title": "Resource"
+              },
+              "annotations": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Annotations"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              }
+            },
+            "required": [
+              "resource"
+            ],
+            "title": "EmbeddedResource",
+            "type": "object"
+          },
+          "Icon": {
+            "description": "An optionally-sized icon for display in a user interface (2025-11-25+).",
+            "properties": {
+              "src": {
+                "title": "Src",
+                "type": "string"
+              },
+              "mimeType": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Mimetype"
+              },
+              "sizes": {
+                "anyOf": [
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Sizes"
+              },
+              "theme": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "light",
+                      "dark"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Theme"
+              }
+            },
+            "required": [
+              "src"
+            ],
+            "title": "Icon",
+            "type": "object"
+          },
+          "ImageContent": {
+            "description": "An image provided to or from an LLM.",
+            "properties": {
+              "type": {
+                "const": "image",
+                "default": "image",
+                "title": "Type",
+                "type": "string"
+              },
+              "data": {
+                "title": "Data",
+                "type": "string"
+              },
+              "mimeType": {
+                "title": "Mimetype",
+                "type": "string"
+              },
+              "annotations": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Annotations"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              }
+            },
+            "required": [
+              "data",
+              "mimeType"
+            ],
+            "title": "ImageContent",
+            "type": "object"
+          },
+          "ResourceLink": {
+            "description": "A resource that the server is capable of reading, included in a prompt or tool call result.\n\nNote: resource links returned by tools are not guaranteed to appear in the results of `resources/list` requests.",
+            "properties": {
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "title": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Title"
+              },
+              "uri": {
+                "title": "Uri",
+                "type": "string"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "mimeType": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Mimetype"
+              },
+              "size": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Size"
+              },
+              "icons": {
+                "anyOf": [
+                  {
+                    "items": {
+                      "$ref": "#/$defs/Icon"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Icons"
+              },
+              "annotations": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Annotations"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              },
+              "type": {
+                "const": "resource_link",
+                "default": "resource_link",
+                "title": "Type",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "uri"
+            ],
+            "title": "ResourceLink",
+            "type": "object"
+          },
+          "TextContent": {
+            "description": "Text provided to or from an LLM.",
+            "properties": {
+              "type": {
+                "const": "text",
+                "default": "text",
+                "title": "Type",
+                "type": "string"
+              },
+              "text": {
+                "title": "Text",
+                "type": "string"
+              },
+              "annotations": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Annotations"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              }
+            },
+            "required": [
+              "text"
+            ],
+            "title": "TextContent",
+            "type": "object"
+          },
+          "TextResourceContents": {
+            "description": "Text contents of a resource.",
+            "properties": {
+              "uri": {
+                "title": "Uri",
+                "type": "string"
+              },
+              "mimeType": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Mimetype"
+              },
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              },
+              "text": {
+                "title": "Text",
+                "type": "string"
+              }
+            },
+            "required": [
+              "uri",
+              "text"
+            ],
+            "title": "TextResourceContents",
+            "type": "object"
+          }
+        },
+        "title": "get_userArguments"
+      },
+      "name": "get_user",
+      "outputSchema": {
+        "properties": {
+          "user": {
+            "$ref": "#/$defs/IamUser",
+            "description": "User details"
+          },
+          "attached_policies": {
+            "description": "List of attached managed policies",
+            "items": {
+              "$ref": "#/$defs/AttachedPolicy"
+            },
+            "title": "Attached Policies",
+            "type": "array"
+          },
+          "inline_policies": {
+            "description": "List of inline policy names",
+            "items": {
+              "type": "string"
+            },
+            "title": "Inline Policies",
+            "type": "array"
+          },
+          "groups": {
+            "description": "List of group names the user belongs to",
+            "items": {
+              "type": "string"
+            },
+            "title": "Groups",
+            "type": "array"
+          },
+          "access_keys": {
+            "description": "List of access keys for the user",
+            "items": {
+              "$ref": "#/$defs/AccessKey"
+            },
+            "title": "Access Keys",
+            "type": "array"
+          }
+        },
+        "required": [
+          "user"
+        ],
+        "type": "object",
+        "$defs": {
+          "AccessKey": {
+            "description": "IAM Access Key model.",
+            "properties": {
+              "access_key_id": {
+                "description": "The access key ID",
+                "title": "Access Key Id",
+                "type": "string"
+              },
+              "status": {
+                "description": "The status of the access key (Active or Inactive)",
+                "title": "Status",
+                "type": "string"
+              },
+              "create_date": {
+                "description": "The date and time when the access key was created",
+                "title": "Create Date",
+                "type": "string"
+              }
+            },
+            "required": [
+              "access_key_id",
+              "status",
+              "create_date"
+            ],
+            "title": "AccessKey",
+            "type": "object"
+          },
+          "AttachedPolicy": {
+            "description": "Attached Policy model.",
+            "properties": {
+              "policy_name": {
+                "description": "The name of the policy",
+                "title": "Policy Name",
+                "type": "string"
+              },
+              "policy_arn": {
+                "description": "The ARN of the policy",
+                "title": "Policy Arn",
+                "type": "string"
+              }
+            },
+            "required": [
+              "policy_name",
+              "policy_arn"
+            ],
+            "title": "AttachedPolicy",
+            "type": "object"
+          },
+          "IamUser": {
+            "description": "IAM User model.",
+            "properties": {
+              "user_name": {
+                "description": "The name of the IAM user",
+                "title": "User Name",
+                "type": "string"
+              },
+              "user_id": {
+                "description": "The unique identifier for the user",
+                "title": "User Id",
+                "type": "string"
+              },
+              "arn": {
+                "description": "The Amazon Resource Name (ARN) of the user",
+                "title": "Arn",
+                "type": "string"
+              },
+              "path": {
+                "description": "The path to the user",
+                "title": "Path",
+                "type": "string"
+              },
+              "create_date": {
+                "description": "The date and time when the user was created",
+                "title": "Create Date",
+                "type": "string"
+              },
+              "password_last_used": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "The date and time when the user's password was last used",
+                "title": "Password Last Used"
+              }
+            },
+            "required": [
+              "user_name",
+              "user_id",
+              "arn",
+              "path",
+              "create_date"
+            ],
+            "title": "IamUser",
+            "type": "object"
+          }
+        },
+        "description": "Response model for detailed user information.",
+        "title": "UserDetailsResponse"
+      }
+    },
+    {
+      "description": "Create a new IAM user.\n\nThis tool creates a new IAM user in your AWS account. The user will be created\nwithout any permissions by default - you'll need to attach policies separately.\n\n## Security Best Practices:\n- Use descriptive user names that indicate the user's role or purpose\n- Set appropriate paths for organizational structure\n- Consider using permissions boundaries to limit maximum permissions\n- Follow the principle of least privilege when assigning permissions later\n\nArgs:\n    ctx: MCP context for error reporting\n    user_name: The name of the new IAM user\n    path: The path for the user (default: '/')\n    permissions_boundary: Optional ARN of the permissions boundary policy\n    confirmed: Must be true to confirm this write operation\n\nReturns:\n    CreateUserResponse containing the created user details\n",
+      "inputSchema": {
+        "properties": {
+          "ctx": {
+            "$ref": "#/$defs/CallToolResult"
+          },
+          "user_name": {
+            "description": "The name of the new IAM user",
+            "title": "User Name",
+            "type": "string"
+          },
+          "path": {
+            "default": "/",
+            "description": "The path for the user",
+            "title": "Path",
+            "type": "string"
+          },
+          "permissions_boundary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ARN of the permissions boundary policy",
+            "title": "Permissions Boundary"
+          },
+          "confirmed": {
+            "default": false,
+            "description": "Must be true to confirm this write operation",
+            "title": "Confirmed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ctx",
+          "user_name"
+        ],
+        "type": "object",
+        "$defs": {
+          "Annotations": {
+            "description": "Optional annotations the client can use to inform how objects are used or displayed.",
+            "properties": {
+              "audience": {
+                "anyOf": [
+                  {
+                    "items": {
+                      "enum": [
+                        "user",
+                        "assistant"
+                      ],
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Audience"
+              },
+              "priority": {
+                "anyOf": [
+                  {
+                    "maximum": 1.0,
+                    "minimum": 0.0,
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Priority"
+              },
+              "lastModified": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Lastmodified"
+              }
+            },
+            "title": "Annotations",
+            "type": "object"
+          },
+          "AudioContent": {
+            "description": "Audio provided to or from an LLM.",
+            "properties": {
+              "type": {
+                "const": "audio",
+                "default": "audio",
+                "title": "Type",
+                "type": "string"
+              },
+              "data": {
+                "title": "Data",
+                "type": "string"
+              },
+              "mimeType": {
+                "title": "Mimetype",
+                "type": "string"
+              },
+              "annotations": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Annotations"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              }
+            },
+            "required": [
+              "data",
+              "mimeType"
+            ],
+            "title": "AudioContent",
+            "type": "object"
+          },
+          "BlobResourceContents": {
+            "description": "Binary contents of a resource.",
+            "properties": {
+              "uri": {
+                "title": "Uri",
+                "type": "string"
+              },
+              "mimeType": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Mimetype"
+              },
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              },
+              "blob": {
+                "title": "Blob",
+                "type": "string"
+              }
+            },
+            "required": [
+              "uri",
+              "blob"
+            ],
+            "title": "BlobResourceContents",
+            "type": "object"
+          },
+          "CallToolResult": {
+            "description": "The server's response to a tool call.\n\nErrors that originate from the tool SHOULD be reported inside the result\nwith `is_error` set to true, not as an MCP protocol-level error, so the LLM\ncan see and self-correct. Errors in finding the tool, or any other\nexceptional condition, should be reported as an MCP error response.",
+            "properties": {
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              },
+              "content": {
+                "items": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/TextContent"
+                    },
+                    {
+                      "$ref": "#/$defs/ImageContent"
+                    },
+                    {
+                      "$ref": "#/$defs/AudioContent"
+                    },
+                    {
+                      "$ref": "#/$defs/ResourceLink"
+                    },
+                    {
+                      "$ref": "#/$defs/EmbeddedResource"
+                    }
+                  ]
+                },
+                "title": "Content",
+                "type": "array"
+              },
+              "structuredContent": {
+                "default": null,
+                "title": "Structuredcontent"
+              },
+              "isError": {
+                "default": false,
+                "title": "Iserror",
+                "type": "boolean"
+              },
+              "resultType": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "complete",
+                      "input_required"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "default": "complete",
+                "title": "Resulttype"
+              }
+            },
+            "required": [
+              "content"
+            ],
+            "title": "CallToolResult",
+            "type": "object"
+          },
+          "EmbeddedResource": {
+            "description": "The contents of a resource, embedded into a prompt or tool call result.\n\nIt is up to the client how best to render embedded resources for the benefit\nof the LLM and/or the user.",
+            "properties": {
+              "type": {
+                "const": "resource",
+                "default": "resource",
+                "title": "Type",
+                "type": "string"
+              },
+              "resource": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/TextResourceContents"
+                  },
+                  {
+                    "$ref": "#/$defs/BlobResourceContents"
+                  }
+                ],
+                "title": "Resource"
+              },
+              "annotations": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Annotations"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              }
+            },
+            "required": [
+              "resource"
+            ],
+            "title": "EmbeddedResource",
+            "type": "object"
+          },
+          "Icon": {
+            "description": "An optionally-sized icon for display in a user interface (2025-11-25+).",
+            "properties": {
+              "src": {
+                "title": "Src",
+                "type": "string"
+              },
+              "mimeType": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Mimetype"
+              },
+              "sizes": {
+                "anyOf": [
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Sizes"
+              },
+              "theme": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "light",
+                      "dark"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Theme"
+              }
+            },
+            "required": [
+              "src"
+            ],
+            "title": "Icon",
+            "type": "object"
+          },
+          "ImageContent": {
+            "description": "An image provided to or from an LLM.",
+            "properties": {
+              "type": {
+                "const": "image",
+                "default": "image",
+                "title": "Type",
+                "type": "string"
+              },
+              "data": {
+                "title": "Data",
+                "type": "string"
+              },
+              "mimeType": {
+                "title": "Mimetype",
+                "type": "string"
+              },
+              "annotations": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Annotations"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              }
+            },
+            "required": [
+              "data",
+              "mimeType"
+            ],
+            "title": "ImageContent",
+            "type": "object"
+          },
+          "ResourceLink": {
+            "description": "A resource that the server is capable of reading, included in a prompt or tool call result.\n\nNote: resource links returned by tools are not guaranteed to appear in the results of `resources/list` requests.",
+            "properties": {
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "title": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Title"
+              },
+              "uri": {
+                "title": "Uri",
+                "type": "string"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "mimeType": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Mimetype"
+              },
+              "size": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Size"
+              },
+              "icons": {
+                "anyOf": [
+                  {
+                    "items": {
+                      "$ref": "#/$defs/Icon"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Icons"
+              },
+              "annotations": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Annotations"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              },
+              "type": {
+                "const": "resource_link",
+                "default": "resource_link",
+                "title": "Type",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "uri"
+            ],
+            "title": "ResourceLink",
+            "type": "object"
+          },
+          "TextContent": {
+            "description": "Text provided to or from an LLM.",
+            "properties": {
+              "type": {
+                "const": "text",
+                "default": "text",
+                "title": "Type",
+                "type": "string"
+              },
+              "text": {
+                "title": "Text",
+                "type": "string"
+              },
+              "annotations": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Annotations"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              }
+            },
+            "required": [
+              "text"
+            ],
+            "title": "TextContent",
+            "type": "object"
+          },
+          "TextResourceContents": {
+            "description": "Text contents of a resource.",
+            "properties": {
+              "uri": {
+                "title": "Uri",
+                "type": "string"
+              },
+              "mimeType": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Mimetype"
+              },
+              "_meta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta"
+              },
+              "text": {
+                "title": "Text",
+                "type": "string"
+              }
+            },
+            "required": [
+              "uri",
+              "text"
+            ],
+            "title": "TextResourceContents",
+            "type": "object"
+          }
+        },
+        "title": "create_userArguments"
+      },
+      "name": "create_user",
+      "outputSchema": {
+        "properties": {
+          "user": {
+            "$ref": "#/$defs/IamUser",
+            "description": "Created user details"
+          },
+          "message": {
+            "description": "Success message",
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user",
+          "message"
+        ],
+        "type": "object",
+        "$defs": {
+          "IamUser": {
+            "description": "IAM User model.",
+            "properties": {
+              "user_name": {
+                "description": "The name of the IAM user",
+                "title": "User Name",
+                "type": "string"
+              },
+              "user_id": {
+                "description": "The unique identifier for the user",
+                "title": "User Id",
+                "type": "string"
+              },
+              "arn": {
+                "description": "The Amazon Resource Name (ARN) of the user",
+                "title": "Arn",
+                "type": "string"
+              },
+              "path": {
+                "description": "The path to the user",
+                "title": "Path",
+                "type": "string"
+              },
+              "create_date": {
+                "description": "The date and time when the user was created",
+                "title": "Create Date",
+                "type": "string"
+              },
+              "password_last_used": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "The date and time when the user's password was last used",
+                "title": "Password Last Used"
+              }
+            },
+            "required": [
+              "user_name",
+              "user_id",
+              "arn",
+              "path",
+              "create_date"
+            ],
+            "title": "IamUser",
+            "type": "object"
+          }
+        },
+        "description": "Response model for creating a user.",
+        "title": "CreateUserResponse"
+      }
+    },
+    {
+      "description": "Delete an IAM user.\n\nArgs:\n    user_name: The name of the IAM user to delete\n    force: If True, removes all attached policies, groups, and access keys first\n    confirmed: Must be true to confirm this write operation\n\nReturns:\n    Dictionary containing deletion status\n",
+      "inputSchema": {
+        "properties": {
+          "user_name": {
+            "description": "The name of the IAM user to delete",
+            "title": "User Name",
+            "type": "string"
+          },
+          "force": {
+            "default": false,
+            "description": "Force delete user by removing all attached policies, groups, and access keys first",
+            "title": "Force",
+            "type": "boolean"
+          },
+          "confirmed": {
+            "default": false,
+            "description": "Must be true to confirm this write operation",
+            "title": "Confirmed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "user_name"
+        ],
+        "type": "object",
+        "title": "delete_userArguments"
+      },
+      "name": "delete_user",
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "type": "object",
+        "title": "delete_userOutput"
+      }
+    },
+    {
+      "description": "List IAM roles in the account.\n\nArgs:\n    path_prefix: Optional path prefix to filter roles\n    max_items: Maximum number of roles to return\n\nReturns:\n    Dictionary containing list of roles and metadata\n",
+      "inputSchema": {
+        "properties": {
+          "path_prefix": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Path prefix to filter roles (e.g., \"/service-role/\")",
+            "title": "Path Prefix"
+          },
+          "max_items": {
+            "default": 100,
+            "description": "Maximum number of roles to return",
+            "title": "Max Items",
+            "type": "integer"
+          }
+        },
+        "type": "object",
+        "title": "list_rolesArguments"
+      },
+      "name": "list_roles",
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "type": "object",
+        "title": "list_rolesOutput"
+      }
+    },
+    {
+      "description": "Create a new IAM role.\n\nArgs:\n    role_name: The name of the new IAM role\n    assume_role_policy_document: The trust policy document in JSON format\n    path: The path for the role (default: '/')\n    description: Optional description of the role\n    max_session_duration: Maximum session duration in seconds\n    permissions_boundary: Optional ARN of the permissions boundary policy\n    confirmed: Must be true to confirm this write operation\n\nReturns:\n    Dictionary containing the created role details\n",
+      "inputSchema": {
+        "properties": {
+          "role_name": {
+            "description": "The name of the new IAM role",
+            "title": "Role Name",
+            "type": "string"
+          },
+          "assume_role_policy_document": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "additionalProperties": true,
+                "type": "object"
+              }
+            ],
+            "description": "The trust policy document in JSON format (string or dict)",
+            "title": "Assume Role Policy Document"
+          },
+          "path": {
+            "default": "/",
+            "description": "The path for the role",
+            "title": "Path",
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Description of the role",
+            "title": "Description"
+          },
+          "max_session_duration": {
+            "default": 3600,
+            "description": "Maximum session duration in seconds (3600-43200)",
+            "title": "Max Session Duration",
+            "type": "integer"
+          },
+          "permissions_boundary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ARN of the permissions boundary policy",
+            "title": "Permissions Boundary"
+          },
+          "confirmed": {
+            "default": false,
+            "description": "Must be true to confirm this write operation",
+            "title": "Confirmed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "role_name",
+          "assume_role_policy_document"
+        ],
+        "type": "object",
+        "title": "create_roleArguments"
+      },
+      "name": "create_role",
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "type": "object",
+        "title": "create_roleOutput"
+      }
+    },
+    {
+      "description": "List IAM policies in the account.\n\nArgs:\n    scope: Scope of policies to list (\"All\", \"AWS\", or \"Local\")\n    only_attached: Only return policies that are attached\n    path_prefix: Optional path prefix to filter policies\n    max_items: Maximum number of policies to return\n\nReturns:\n    Dictionary containing list of policies and metadata\n",
+      "inputSchema": {
+        "properties": {
+          "scope": {
+            "default": "Local",
+            "description": "Scope of policies to list: \"All\", \"AWS\", or \"Local\"",
+            "title": "Scope",
+            "type": "string"
+          },
+          "only_attached": {
+            "default": false,
+            "description": "Only return policies that are attached to a user, group, or role",
+            "title": "Only Attached",
+            "type": "boolean"
+          },
+          "path_prefix": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Path prefix to filter policies",
+            "title": "Path Prefix"
+          },
+          "max_items": {
+            "default": 100,
+            "description": "Maximum number of policies to return",
+            "title": "Max Items",
+            "type": "integer"
+          }
+        },
+        "type": "object",
+        "title": "list_policiesArguments"
+      },
+      "name": "list_policies",
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "type": "object",
+        "title": "list_policiesOutput"
+      }
+    },
+    {
+      "description": "Retrieve the policy document for a managed policy.\n\nThis tool retrieves the policy document for a specific managed policy version.\nUse this to examine the actual permissions and wildcards in managed policies.\n\nArgs:\n    policy_arn: The ARN of the managed policy\n    version_id: Optional version ID (defaults to current version)\n\nReturns:\n    ManagedPolicyResponse containing the policy document and details\n",
+      "inputSchema": {
+        "properties": {
+          "policy_arn": {
+            "description": "The ARN of the managed policy",
+            "title": "Policy Arn",
+            "type": "string"
+          },
+          "version_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The version ID of the policy (defaults to current version)",
+            "title": "Version Id"
+          }
+        },
+        "required": [
+          "policy_arn"
+        ],
+        "type": "object",
+        "title": "get_managed_policy_documentArguments"
+      },
+      "name": "get_managed_policy_document",
+      "outputSchema": {
+        "properties": {
+          "policy_arn": {
+            "description": "The ARN of the managed policy",
+            "title": "Policy Arn",
+            "type": "string"
+          },
+          "policy_name": {
+            "description": "The name of the policy",
+            "title": "Policy Name",
+            "type": "string"
+          },
+          "version_id": {
+            "description": "The version ID of the policy",
+            "title": "Version Id",
+            "type": "string"
+          },
+          "policy_document": {
+            "description": "The policy document in JSON format",
+            "title": "Policy Document",
+            "type": "string"
+          },
+          "is_default_version": {
+            "description": "Whether this is the default version",
+            "title": "Is Default Version",
+            "type": "boolean"
+          },
+          "create_date": {
+            "description": "The date and time when this version was created",
+            "title": "Create Date",
+            "type": "string"
+          },
+          "message": {
+            "description": "Operation result message",
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy_arn",
+          "policy_name",
+          "version_id",
+          "policy_document",
+          "is_default_version",
+          "create_date",
+          "message"
+        ],
+        "type": "object",
+        "description": "Response model for managed policy document operations.",
+        "title": "ManagedPolicyResponse"
+      }
+    },
+    {
+      "description": "Attach a managed policy to an IAM user.\n\nArgs:\n    user_name: The name of the IAM user\n    policy_arn: The ARN of the policy to attach\n    confirmed: Must be true to confirm this write operation\n\nReturns:\n    Dictionary containing attachment status\n",
+      "inputSchema": {
+        "properties": {
+          "user_name": {
+            "description": "The name of the IAM user",
+            "title": "User Name",
+            "type": "string"
+          },
+          "policy_arn": {
+            "description": "The ARN of the policy to attach",
+            "title": "Policy Arn",
+            "type": "string"
+          },
+          "confirmed": {
+            "default": false,
+            "description": "Must be true to confirm this write operation",
+            "title": "Confirmed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "user_name",
+          "policy_arn"
+        ],
+        "type": "object",
+        "title": "attach_user_policyArguments"
+      },
+      "name": "attach_user_policy",
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "type": "object",
+        "title": "attach_user_policyOutput"
+      }
+    },
+    {
+      "description": "Detach a managed policy from an IAM user.\n\nArgs:\n    user_name: The name of the IAM user\n    policy_arn: The ARN of the policy to detach\n    confirmed: Must be true to confirm this write operation\n\nReturns:\n    Dictionary containing detachment status\n",
+      "inputSchema": {
+        "properties": {
+          "user_name": {
+            "description": "The name of the IAM user",
+            "title": "User Name",
+            "type": "string"
+          },
+          "policy_arn": {
+            "description": "The ARN of the policy to detach",
+            "title": "Policy Arn",
+            "type": "string"
+          },
+          "confirmed": {
+            "default": false,
+            "description": "Must be true to confirm this write operation",
+            "title": "Confirmed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "user_name",
+          "policy_arn"
+        ],
+        "type": "object",
+        "title": "detach_user_policyArguments"
+      },
+      "name": "detach_user_policy",
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "type": "object",
+        "title": "detach_user_policyOutput"
+      }
+    },
+    {
+      "description": "Create a new access key for an IAM user.\n\nArgs:\n    user_name: The name of the IAM user\n    confirmed: Must be true to confirm this write operation\n\nReturns:\n    Dictionary containing the new access key details (SecretAccessKey is redacted)\n",
+      "inputSchema": {
+        "properties": {
+          "user_name": {
+            "description": "The name of the IAM user",
+            "title": "User Name",
+            "type": "string"
+          },
+          "confirmed": {
+            "default": false,
+            "description": "Must be true to confirm this write operation",
+            "title": "Confirmed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "user_name"
+        ],
+        "type": "object",
+        "title": "create_access_keyArguments"
+      },
+      "name": "create_access_key",
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "type": "object",
+        "title": "create_access_keyOutput"
+      }
+    },
+    {
+      "description": "Delete an access key for an IAM user.\n\nArgs:\n    user_name: The name of the IAM user\n    access_key_id: The access key ID to delete\n    confirmed: Must be true to confirm this write operation\n\nReturns:\n    Dictionary containing deletion status\n",
+      "inputSchema": {
+        "properties": {
+          "user_name": {
+            "description": "The name of the IAM user",
+            "title": "User Name",
+            "type": "string"
+          },
+          "access_key_id": {
+            "description": "The access key ID to delete",
+            "title": "Access Key Id",
+            "type": "string"
+          },
+          "confirmed": {
+            "default": false,
+            "description": "Must be true to confirm this write operation",
+            "title": "Confirmed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "user_name",
+          "access_key_id"
+        ],
+        "type": "object",
+        "title": "delete_access_keyArguments"
+      },
+      "name": "delete_access_key",
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "type": "object",
+        "title": "delete_access_keyOutput"
+      }
+    },
+    {
+      "description": "Simulate IAM policy evaluation for a principal.\n\nArgs:\n    policy_source_arn: ARN of the user or role to simulate\n    action_names: List of actions to simulate\n    resource_arns: Optional list of resource ARNs to test against\n    context_entries: Optional context entries for the simulation\n\nReturns:\n    Dictionary containing simulation results\n",
+      "inputSchema": {
+        "properties": {
+          "policy_source_arn": {
+            "description": "ARN of the user or role to simulate",
+            "title": "Policy Source Arn",
+            "type": "string"
+          },
+          "action_names": {
+            "description": "List of actions to simulate",
+            "items": {
+              "type": "string"
+            },
+            "title": "Action Names",
+            "type": "array"
+          },
+          "resource_arns": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "List of resource ARNs to test against",
+            "title": "Resource Arns"
+          },
+          "context_entries": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Context entries for the simulation",
+            "title": "Context Entries"
+          }
+        },
+        "required": [
+          "policy_source_arn",
+          "action_names"
+        ],
+        "type": "object",
+        "title": "simulate_principal_policyArguments"
+      },
+      "name": "simulate_principal_policy",
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "type": "object",
+        "title": "simulate_principal_policyOutput"
+      }
+    },
+    {
+      "description": "List IAM groups in the account.\n\nThis tool retrieves a list of IAM groups from your AWS account with optional filtering.\nUse this to get an overview of all groups or find specific groups by path prefix.\n\n## Usage Tips:\n- Use path_prefix to filter groups by organizational structure\n- Adjust max_items to control response size for large accounts\n- Results may be paginated for accounts with many groups\n\nArgs:\n    path_prefix: Optional path prefix to filter groups\n    max_items: Maximum number of groups to return\n\nReturns:\n    GroupsListResponse containing list of groups and metadata\n",
+      "inputSchema": {
+        "properties": {
+          "path_prefix": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Path prefix to filter groups (e.g., \"/division_abc/\")",
+            "title": "Path Prefix"
+          },
+          "max_items": {
+            "default": 100,
+            "description": "Maximum number of groups to return",
+            "title": "Max Items",
+            "type": "integer"
+          }
+        },
+        "type": "object",
+        "title": "list_groupsArguments"
+      },
+      "name": "list_groups",
+      "outputSchema": {
+        "properties": {
+          "groups": {
+            "description": "List of IAM groups",
+            "items": {
+              "$ref": "#/$defs/IamGroup"
+            },
+            "title": "Groups",
+            "type": "array"
+          },
+          "is_truncated": {
+            "default": false,
+            "description": "Whether the response is truncated",
+            "title": "Is Truncated",
+            "type": "boolean"
+          },
+          "marker": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Marker for pagination",
+            "title": "Marker"
+          },
+          "count": {
+            "description": "Number of groups returned",
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "groups",
+          "count"
+        ],
+        "type": "object",
+        "$defs": {
+          "IamGroup": {
+            "description": "IAM Group model.",
+            "properties": {
+              "group_name": {
+                "description": "The name of the IAM group",
+                "title": "Group Name",
+                "type": "string"
+              },
+              "group_id": {
+                "description": "The unique identifier for the group",
+                "title": "Group Id",
+                "type": "string"
+              },
+              "arn": {
+                "description": "The Amazon Resource Name (ARN) of the group",
+                "title": "Arn",
+                "type": "string"
+              },
+              "path": {
+                "description": "The path to the group",
+                "title": "Path",
+                "type": "string"
+              },
+              "create_date": {
+                "description": "The date and time when the group was created",
+                "title": "Create Date",
+                "type": "string"
+              }
+            },
+            "required": [
+              "group_name",
+              "group_id",
+              "arn",
+              "path",
+              "create_date"
+            ],
+            "title": "IamGroup",
+            "type": "object"
+          }
+        },
+        "description": "Response model for listing groups.",
+        "title": "GroupsListResponse"
+      }
+    },
+    {
+      "description": "Get detailed information about a specific IAM group.\n\nThis tool retrieves comprehensive information about an IAM group including\ngroup members, attached policies, and inline policies. Use this to get\na complete picture of a group's configuration and membership.\n\n## Usage Tips:\n- Use this after list_groups to get detailed information about specific groups\n- Review attached policies to understand group permissions\n- Check group members to see who has these permissions\n\nArgs:\n    group_name: The name of the IAM group\n\nReturns:\n    GroupDetailsResponse containing comprehensive group information\n",
+      "inputSchema": {
+        "properties": {
+          "group_name": {
+            "description": "The name of the IAM group to retrieve",
+            "title": "Group Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "group_name"
+        ],
+        "type": "object",
+        "title": "get_groupArguments"
+      },
+      "name": "get_group",
+      "outputSchema": {
+        "properties": {
+          "group": {
+            "$ref": "#/$defs/IamGroup",
+            "description": "Group details"
+          },
+          "users": {
+            "description": "List of user names in the group",
+            "items": {
+              "type": "string"
+            },
+            "title": "Users",
+            "type": "array"
+          },
+          "attached_policies": {
+            "description": "List of attached managed policies",
+            "items": {
+              "$ref": "#/$defs/AttachedPolicy"
+            },
+            "title": "Attached Policies",
+            "type": "array"
+          },
+          "inline_policies": {
+            "description": "List of inline policy names",
+            "items": {
+              "type": "string"
+            },
+            "title": "Inline Policies",
+            "type": "array"
+          }
+        },
+        "required": [
+          "group"
+        ],
+        "type": "object",
+        "$defs": {
+          "AttachedPolicy": {
+            "description": "Attached Policy model.",
+            "properties": {
+              "policy_name": {
+                "description": "The name of the policy",
+                "title": "Policy Name",
+                "type": "string"
+              },
+              "policy_arn": {
+                "description": "The ARN of the policy",
+                "title": "Policy Arn",
+                "type": "string"
+              }
+            },
+            "required": [
+              "policy_name",
+              "policy_arn"
+            ],
+            "title": "AttachedPolicy",
+            "type": "object"
+          },
+          "IamGroup": {
+            "description": "IAM Group model.",
+            "properties": {
+              "group_name": {
+                "description": "The name of the IAM group",
+                "title": "Group Name",
+                "type": "string"
+              },
+              "group_id": {
+                "description": "The unique identifier for the group",
+                "title": "Group Id",
+                "type": "string"
+              },
+              "arn": {
+                "description": "The Amazon Resource Name (ARN) of the group",
+                "title": "Arn",
+                "type": "string"
+              },
+              "path": {
+                "description": "The path to the group",
+                "title": "Path",
+                "type": "string"
+              },
+              "create_date": {
+                "description": "The date and time when the group was created",
+                "title": "Create Date",
+                "type": "string"
+              }
+            },
+            "required": [
+              "group_name",
+              "group_id",
+              "arn",
+              "path",
+              "create_date"
+            ],
+            "title": "IamGroup",
+            "type": "object"
+          }
+        },
+        "description": "Response model for detailed group information.",
+        "title": "GroupDetailsResponse"
+      }
+    },
+    {
+      "description": "Create a new IAM group.\n\nThis tool creates a new IAM group in your AWS account. The group will be created\nwithout any permissions by default - you'll need to attach policies separately.\n\n## Security Best Practices:\n- Use descriptive group names that indicate the group's purpose\n- Set appropriate paths for organizational structure\n- Follow the principle of least privilege when assigning permissions later\n\nArgs:\n    group_name: The name of the new IAM group\n    path: The path for the group (default: '/')\n    confirmed: Must be true to confirm this write operation\n\nReturns:\n    CreateGroupResponse containing the created group details\n",
+      "inputSchema": {
+        "properties": {
+          "group_name": {
+            "description": "The name of the new IAM group",
+            "title": "Group Name",
+            "type": "string"
+          },
+          "path": {
+            "default": "/",
+            "description": "The path for the group",
+            "title": "Path",
+            "type": "string"
+          },
+          "confirmed": {
+            "default": false,
+            "description": "Must be true to confirm this write operation",
+            "title": "Confirmed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "group_name"
+        ],
+        "type": "object",
+        "title": "create_groupArguments"
+      },
+      "name": "create_group",
+      "outputSchema": {
+        "properties": {
+          "group": {
+            "$ref": "#/$defs/IamGroup",
+            "description": "Created group details"
+          },
+          "message": {
+            "description": "Success message",
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "group",
+          "message"
+        ],
+        "type": "object",
+        "$defs": {
+          "IamGroup": {
+            "description": "IAM Group model.",
+            "properties": {
+              "group_name": {
+                "description": "The name of the IAM group",
+                "title": "Group Name",
+                "type": "string"
+              },
+              "group_id": {
+                "description": "The unique identifier for the group",
+                "title": "Group Id",
+                "type": "string"
+              },
+              "arn": {
+                "description": "The Amazon Resource Name (ARN) of the group",
+                "title": "Arn",
+                "type": "string"
+              },
+              "path": {
+                "description": "The path to the group",
+                "title": "Path",
+                "type": "string"
+              },
+              "create_date": {
+                "description": "The date and time when the group was created",
+                "title": "Create Date",
+                "type": "string"
+              }
+            },
+            "required": [
+              "group_name",
+              "group_id",
+              "arn",
+              "path",
+              "create_date"
+            ],
+            "title": "IamGroup",
+            "type": "object"
+          }
+        },
+        "description": "Response model for creating a group.",
+        "title": "CreateGroupResponse"
+      }
+    },
+    {
+      "description": "Delete an IAM group.\n\nArgs:\n    group_name: The name of the IAM group to delete\n    force: If True, removes all members and attached policies first\n    confirmed: Must be true to confirm this write operation\n\nReturns:\n    Dictionary containing deletion status\n",
+      "inputSchema": {
+        "properties": {
+          "group_name": {
+            "description": "The name of the IAM group to delete",
+            "title": "Group Name",
+            "type": "string"
+          },
+          "force": {
+            "default": false,
+            "description": "Force delete by removing all members and policies first",
+            "title": "Force",
+            "type": "boolean"
+          },
+          "confirmed": {
+            "default": false,
+            "description": "Must be true to confirm this write operation",
+            "title": "Confirmed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "group_name"
+        ],
+        "type": "object",
+        "title": "delete_groupArguments"
+      },
+      "name": "delete_group",
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "type": "object",
+        "title": "delete_groupOutput"
+      }
+    },
+    {
+      "description": "Add a user to an IAM group.\n\nArgs:\n    group_name: The name of the IAM group\n    user_name: The name of the IAM user\n    confirmed: Must be true to confirm this write operation\n\nReturns:\n    GroupMembershipResponse containing operation status\n",
+      "inputSchema": {
+        "properties": {
+          "group_name": {
+            "description": "The name of the IAM group",
+            "title": "Group Name",
+            "type": "string"
+          },
+          "user_name": {
+            "description": "The name of the IAM user",
+            "title": "User Name",
+            "type": "string"
+          },
+          "confirmed": {
+            "default": false,
+            "description": "Must be true to confirm this write operation",
+            "title": "Confirmed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "group_name",
+          "user_name"
+        ],
+        "type": "object",
+        "title": "add_user_to_groupArguments"
+      },
+      "name": "add_user_to_group",
+      "outputSchema": {
+        "properties": {
+          "message": {
+            "description": "Operation result message",
+            "title": "Message",
+            "type": "string"
+          },
+          "group_name": {
+            "description": "The name of the group",
+            "title": "Group Name",
+            "type": "string"
+          },
+          "user_name": {
+            "description": "The name of the user",
+            "title": "User Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "message",
+          "group_name",
+          "user_name"
+        ],
+        "type": "object",
+        "description": "Response model for group membership operations.",
+        "title": "GroupMembershipResponse"
+      }
+    },
+    {
+      "description": "Remove a user from an IAM group.\n\nArgs:\n    group_name: The name of the IAM group\n    user_name: The name of the IAM user\n    confirmed: Must be true to confirm this write operation\n\nReturns:\n    GroupMembershipResponse containing operation status\n",
+      "inputSchema": {
+        "properties": {
+          "group_name": {
+            "description": "The name of the IAM group",
+            "title": "Group Name",
+            "type": "string"
+          },
+          "user_name": {
+            "description": "The name of the IAM user",
+            "title": "User Name",
+            "type": "string"
+          },
+          "confirmed": {
+            "default": false,
+            "description": "Must be true to confirm this write operation",
+            "title": "Confirmed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "group_name",
+          "user_name"
+        ],
+        "type": "object",
+        "title": "remove_user_from_groupArguments"
+      },
+      "name": "remove_user_from_group",
+      "outputSchema": {
+        "properties": {
+          "message": {
+            "description": "Operation result message",
+            "title": "Message",
+            "type": "string"
+          },
+          "group_name": {
+            "description": "The name of the group",
+            "title": "Group Name",
+            "type": "string"
+          },
+          "user_name": {
+            "description": "The name of the user",
+            "title": "User Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "message",
+          "group_name",
+          "user_name"
+        ],
+        "type": "object",
+        "description": "Response model for group membership operations.",
+        "title": "GroupMembershipResponse"
+      }
+    },
+    {
+      "description": "Attach a managed policy to an IAM group.\n\nArgs:\n    group_name: The name of the IAM group\n    policy_arn: The ARN of the policy to attach\n    confirmed: Must be true to confirm this write operation\n\nReturns:\n    GroupPolicyAttachmentResponse containing operation status\n",
+      "inputSchema": {
+        "properties": {
+          "group_name": {
+            "description": "The name of the IAM group",
+            "title": "Group Name",
+            "type": "string"
+          },
+          "policy_arn": {
+            "description": "The ARN of the policy to attach",
+            "title": "Policy Arn",
+            "type": "string"
+          },
+          "confirmed": {
+            "default": false,
+            "description": "Must be true to confirm this write operation",
+            "title": "Confirmed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "group_name",
+          "policy_arn"
+        ],
+        "type": "object",
+        "title": "attach_group_policyArguments"
+      },
+      "name": "attach_group_policy",
+      "outputSchema": {
+        "properties": {
+          "message": {
+            "description": "Operation result message",
+            "title": "Message",
+            "type": "string"
+          },
+          "group_name": {
+            "description": "The name of the group",
+            "title": "Group Name",
+            "type": "string"
+          },
+          "policy_arn": {
+            "description": "The ARN of the policy",
+            "title": "Policy Arn",
+            "type": "string"
+          }
+        },
+        "required": [
+          "message",
+          "group_name",
+          "policy_arn"
+        ],
+        "type": "object",
+        "description": "Response model for group policy attachment operations.",
+        "title": "GroupPolicyAttachmentResponse"
+      }
+    },
+    {
+      "description": "Detach a managed policy from an IAM group.\n\nArgs:\n    group_name: The name of the IAM group\n    policy_arn: The ARN of the policy to detach\n    confirmed: Must be true to confirm this write operation\n\nReturns:\n    GroupPolicyAttachmentResponse containing operation status\n",
+      "inputSchema": {
+        "properties": {
+          "group_name": {
+            "description": "The name of the IAM group",
+            "title": "Group Name",
+            "type": "string"
+          },
+          "policy_arn": {
+            "description": "The ARN of the policy to detach",
+            "title": "Policy Arn",
+            "type": "string"
+          },
+          "confirmed": {
+            "default": false,
+            "description": "Must be true to confirm this write operation",
+            "title": "Confirmed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "group_name",
+          "policy_arn"
+        ],
+        "type": "object",
+        "title": "detach_group_policyArguments"
+      },
+      "name": "detach_group_policy",
+      "outputSchema": {
+        "properties": {
+          "message": {
+            "description": "Operation result message",
+            "title": "Message",
+            "type": "string"
+          },
+          "group_name": {
+            "description": "The name of the group",
+            "title": "Group Name",
+            "type": "string"
+          },
+          "policy_arn": {
+            "description": "The ARN of the policy",
+            "title": "Policy Arn",
+            "type": "string"
+          }
+        },
+        "required": [
+          "message",
+          "group_name",
+          "policy_arn"
+        ],
+        "type": "object",
+        "description": "Response model for group policy attachment operations.",
+        "title": "GroupPolicyAttachmentResponse"
+      }
+    },
+    {
+      "description": "Create or update an inline policy for an IAM user.\n\nThis tool creates a new inline policy or updates an existing one for the specified user.\nInline policies are directly embedded in a single user, role, or group and have a one-to-one\nrelationship with the identity.\n\n## Security Best Practices:\n- Follow the principle of least privilege when creating policies\n- Use managed policies for common permissions that can be reused\n- Regularly review and audit inline policies\n- Test policies using simulate_principal_policy before applying\n\nArgs:\n    user_name: The name of the IAM user\n    policy_name: The name of the inline policy\n    policy_document: The policy document in JSON format\n    confirmed: Must be true to confirm this write operation\n\nReturns:\n    InlinePolicyResponse containing the policy details and operation status\n",
+      "inputSchema": {
+        "properties": {
+          "user_name": {
+            "description": "The name of the IAM user",
+            "title": "User Name",
+            "type": "string"
+          },
+          "policy_name": {
+            "description": "The name of the inline policy",
+            "title": "Policy Name",
+            "type": "string"
+          },
+          "policy_document": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "additionalProperties": true,
+                "type": "object"
+              }
+            ],
+            "description": "The policy document in JSON format (string or dict)",
+            "title": "Policy Document"
+          },
+          "confirmed": {
+            "default": false,
+            "description": "Must be true to confirm this write operation",
+            "title": "Confirmed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "user_name",
+          "policy_name",
+          "policy_document"
+        ],
+        "type": "object",
+        "title": "put_user_policyArguments"
+      },
+      "name": "put_user_policy",
+      "outputSchema": {
+        "properties": {
+          "policy_name": {
+            "description": "The name of the policy",
+            "title": "Policy Name",
+            "type": "string"
+          },
+          "policy_document": {
+            "description": "The policy document in JSON format",
+            "title": "Policy Document",
+            "type": "string"
+          },
+          "user_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The name of the user (for user policies)",
+            "title": "User Name"
+          },
+          "role_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The name of the role (for role policies)",
+            "title": "Role Name"
+          },
+          "message": {
+            "description": "Operation result message",
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy_name",
+          "policy_document",
+          "message"
+        ],
+        "type": "object",
+        "description": "Response model for inline policy operations.",
+        "title": "InlinePolicyResponse"
+      }
+    },
+    {
+      "description": "Retrieve an inline policy for an IAM user.\n\nThis tool retrieves the policy document for a specific inline policy attached to a user.\n\nArgs:\n    user_name: The name of the IAM user\n    policy_name: The name of the inline policy\n\nReturns:\n    InlinePolicyResponse containing the policy document and details\n",
+      "inputSchema": {
+        "properties": {
+          "user_name": {
+            "description": "The name of the IAM user",
+            "title": "User Name",
+            "type": "string"
+          },
+          "policy_name": {
+            "description": "The name of the inline policy",
+            "title": "Policy Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_name",
+          "policy_name"
+        ],
+        "type": "object",
+        "title": "get_user_policyArguments"
+      },
+      "name": "get_user_policy",
+      "outputSchema": {
+        "properties": {
+          "policy_name": {
+            "description": "The name of the policy",
+            "title": "Policy Name",
+            "type": "string"
+          },
+          "policy_document": {
+            "description": "The policy document in JSON format",
+            "title": "Policy Document",
+            "type": "string"
+          },
+          "user_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The name of the user (for user policies)",
+            "title": "User Name"
+          },
+          "role_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The name of the role (for role policies)",
+            "title": "Role Name"
+          },
+          "message": {
+            "description": "Operation result message",
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy_name",
+          "policy_document",
+          "message"
+        ],
+        "type": "object",
+        "description": "Response model for inline policy operations.",
+        "title": "InlinePolicyResponse"
+      }
+    },
+    {
+      "description": "Delete an inline policy from an IAM user.\n\nThis tool removes an inline policy from the specified user. The policy document\nwill be permanently deleted and cannot be recovered.\n\nArgs:\n    user_name: The name of the IAM user\n    policy_name: The name of the inline policy to delete\n    confirmed: Must be true to confirm this write operation\n\nReturns:\n    Dictionary containing deletion status\n",
+      "inputSchema": {
+        "properties": {
+          "user_name": {
+            "description": "The name of the IAM user",
+            "title": "User Name",
+            "type": "string"
+          },
+          "policy_name": {
+            "description": "The name of the inline policy to delete",
+            "title": "Policy Name",
+            "type": "string"
+          },
+          "confirmed": {
+            "default": false,
+            "description": "Must be true to confirm this write operation",
+            "title": "Confirmed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "user_name",
+          "policy_name"
+        ],
+        "type": "object",
+        "title": "delete_user_policyArguments"
+      },
+      "name": "delete_user_policy",
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "type": "object",
+        "title": "delete_user_policyOutput"
+      }
+    },
+    {
+      "description": "Create or update an inline policy for an IAM role.\n\nThis tool creates a new inline policy or updates an existing one for the specified role.\nInline policies are directly embedded in a single user, role, or group and have a one-to-one\nrelationship with the identity.\n\nArgs:\n    role_name: The name of the IAM role\n    policy_name: The name of the inline policy\n    policy_document: The policy document in JSON format\n    confirmed: Must be true to confirm this write operation\n\nReturns:\n    InlinePolicyResponse containing the policy details and operation status\n",
+      "inputSchema": {
+        "properties": {
+          "role_name": {
+            "description": "The name of the IAM role",
+            "title": "Role Name",
+            "type": "string"
+          },
+          "policy_name": {
+            "description": "The name of the inline policy",
+            "title": "Policy Name",
+            "type": "string"
+          },
+          "policy_document": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "additionalProperties": true,
+                "type": "object"
+              }
+            ],
+            "description": "The policy document in JSON format (string or dict)",
+            "title": "Policy Document"
+          },
+          "confirmed": {
+            "default": false,
+            "description": "Must be true to confirm this write operation",
+            "title": "Confirmed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "role_name",
+          "policy_name",
+          "policy_document"
+        ],
+        "type": "object",
+        "title": "put_role_policyArguments"
+      },
+      "name": "put_role_policy",
+      "outputSchema": {
+        "properties": {
+          "policy_name": {
+            "description": "The name of the policy",
+            "title": "Policy Name",
+            "type": "string"
+          },
+          "policy_document": {
+            "description": "The policy document in JSON format",
+            "title": "Policy Document",
+            "type": "string"
+          },
+          "user_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The name of the user (for user policies)",
+            "title": "User Name"
+          },
+          "role_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The name of the role (for role policies)",
+            "title": "Role Name"
+          },
+          "message": {
+            "description": "Operation result message",
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy_name",
+          "policy_document",
+          "message"
+        ],
+        "type": "object",
+        "description": "Response model for inline policy operations.",
+        "title": "InlinePolicyResponse"
+      }
+    },
+    {
+      "description": "Retrieve an inline policy for an IAM role.\n\nThis tool retrieves the policy document for a specific inline policy attached to a role.\n\nArgs:\n    role_name: The name of the IAM role\n    policy_name: The name of the inline policy\n\nReturns:\n    InlinePolicyResponse containing the policy document and details\n",
+      "inputSchema": {
+        "properties": {
+          "role_name": {
+            "description": "The name of the IAM role",
+            "title": "Role Name",
+            "type": "string"
+          },
+          "policy_name": {
+            "description": "The name of the inline policy",
+            "title": "Policy Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role_name",
+          "policy_name"
+        ],
+        "type": "object",
+        "title": "get_role_policyArguments"
+      },
+      "name": "get_role_policy",
+      "outputSchema": {
+        "properties": {
+          "policy_name": {
+            "description": "The name of the policy",
+            "title": "Policy Name",
+            "type": "string"
+          },
+          "policy_document": {
+            "description": "The policy document in JSON format",
+            "title": "Policy Document",
+            "type": "string"
+          },
+          "user_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The name of the user (for user policies)",
+            "title": "User Name"
+          },
+          "role_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The name of the role (for role policies)",
+            "title": "Role Name"
+          },
+          "message": {
+            "description": "Operation result message",
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy_name",
+          "policy_document",
+          "message"
+        ],
+        "type": "object",
+        "description": "Response model for inline policy operations.",
+        "title": "InlinePolicyResponse"
+      }
+    },
+    {
+      "description": "Delete an inline policy from an IAM role.\n\nThis tool removes an inline policy from the specified role. The policy document\nwill be permanently deleted and cannot be recovered.\n\nArgs:\n    role_name: The name of the IAM role\n    policy_name: The name of the inline policy to delete\n    confirmed: Must be true to confirm this write operation\n\nReturns:\n    Dictionary containing deletion status\n",
+      "inputSchema": {
+        "properties": {
+          "role_name": {
+            "description": "The name of the IAM role",
+            "title": "Role Name",
+            "type": "string"
+          },
+          "policy_name": {
+            "description": "The name of the inline policy to delete",
+            "title": "Policy Name",
+            "type": "string"
+          },
+          "confirmed": {
+            "default": false,
+            "description": "Must be true to confirm this write operation",
+            "title": "Confirmed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "role_name",
+          "policy_name"
+        ],
+        "type": "object",
+        "title": "delete_role_policyArguments"
+      },
+      "name": "delete_role_policy",
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "type": "object",
+        "title": "delete_role_policyOutput"
+      }
+    },
+    {
+      "description": "List all inline policies for an IAM user.\n\nThis tool retrieves the names of all inline policies attached to the specified user.\n\nArgs:\n    user_name: The name of the IAM user\n\nReturns:\n    InlinePolicyListResponse containing the list of policy names\n",
+      "inputSchema": {
+        "properties": {
+          "user_name": {
+            "description": "The name of the IAM user",
+            "title": "User Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_name"
+        ],
+        "type": "object",
+        "title": "list_user_policiesArguments"
+      },
+      "name": "list_user_policies",
+      "outputSchema": {
+        "properties": {
+          "policy_names": {
+            "description": "List of inline policy names",
+            "items": {
+              "type": "string"
+            },
+            "title": "Policy Names",
+            "type": "array"
+          },
+          "user_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The name of the user (for user policies)",
+            "title": "User Name"
+          },
+          "role_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The name of the role (for role policies)",
+            "title": "Role Name"
+          },
+          "count": {
+            "description": "Number of policies returned",
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "policy_names",
+          "count"
+        ],
+        "type": "object",
+        "description": "Response model for listing inline policies.",
+        "title": "InlinePolicyListResponse"
+      }
+    },
+    {
+      "description": "List all inline policies for an IAM role.\n\nThis tool retrieves the names of all inline policies attached to the specified role.\n\nArgs:\n    role_name: The name of the IAM role\n\nReturns:\n    InlinePolicyListResponse containing the list of policy names\n",
+      "inputSchema": {
+        "properties": {
+          "role_name": {
+            "description": "The name of the IAM role",
+            "title": "Role Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role_name"
+        ],
+        "type": "object",
+        "title": "list_role_policiesArguments"
+      },
+      "name": "list_role_policies",
+      "outputSchema": {
+        "properties": {
+          "policy_names": {
+            "description": "List of inline policy names",
+            "items": {
+              "type": "string"
+            },
+            "title": "Policy Names",
+            "type": "array"
+          },
+          "user_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The name of the user (for user policies)",
+            "title": "User Name"
+          },
+          "role_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The name of the role (for role policies)",
+            "title": "Role Name"
+          },
+          "count": {
+            "description": "Number of policies returned",
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "policy_names",
+          "count"
+        ],
+        "type": "object",
+        "description": "Response model for listing inline policies.",
+        "title": "InlinePolicyListResponse"
+      }
+    }
+  ],
+  "sha256": "93488f7f87fdd608a900fba067860e72ce4b4fc525022afd5308e646241b6b2d",
+  "counts": {
+    "tools": 29,
+    "bytes": 63640,
+    "o200k": 14619
+  }
+}

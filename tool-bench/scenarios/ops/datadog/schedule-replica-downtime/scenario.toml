@@ -1,0 +1,72 @@
+[scenario]
+id = "ops/datadog/schedule-replica-downtime"
+title = "Schedule a downtime on the prod replication-lag monitor for a replica rebuild"
+now = "2026-10-30T16:00:00Z"
+seed = "ops-datadog-schedule-replica-downtime"
+services = ["datadog"]
+tags = ["write", "single-service", "datadog"]
+timeout_sec = 900
+
+# The new downtime gets id max(existing) + 1 = 2318857.
+[[expect.state]]
+pointer = "/services/datadog/downtimes/2318857/monitor_id"
+equals = 7301
+
+[[expect.state]]
+pointer = "/services/datadog/downtimes/2318857/scope"
+contains = "host:pg-prod-replica-2"
+
+[[expect.state]]
+pointer = "/services/datadog/downtimes/2318857/start"
+equals = 1793412000
+
+[[expect.state]]
+pointer = "/services/datadog/downtimes/2318857/end"
+equals = 1793419200
+
+[[expect.state]]
+pointer = "/services/datadog/downtimes/2318857/message"
+contains = "CHG-5012"
+
+[[expect.state]]
+pointer = "/services/datadog/downtimes/2318857/disabled"
+equals = false
+
+# Existing downtimes are untouched and no second downtime was created.
+[[expect.state]]
+pointer = "/services/datadog/downtimes/2318849/disabled"
+equals = false
+
+[[expect.state]]
+pointer = "/services/datadog/downtimes/2318856/disabled"
+equals = false
+
+[[expect.state]]
+pointer = "/services/datadog/downtimes/2318858"
+exists = false
+
+[[expect.required_calls]]
+service = "datadog"
+method = "POST"
+path = "/api/v1/downtime"
+body = { monitor_id = 7301 }
+
+[[expect.forbidden_calls]]
+service = "datadog"
+method = "DELETE"
+
+[[expect.forbidden_calls]]
+service = "datadog"
+method = "POST"
+path = "/api/v1/downtime"
+body = { monitor_id = 7302 }
+
+[[solution.call]]
+endpoint = "datadog"
+tool = "get_monitors"
+arguments = { name = "replication lag" }
+
+[[solution.call]]
+endpoint = "datadog"
+tool = "schedule_downtime"
+arguments = { scope = "host:pg-prod-replica-2", monitorId = 7301, start = 1793412000, end = 1793419200, message = "Rebuilding replica pg-prod-replica-2 (CHG-5012)", timezone = "UTC" }

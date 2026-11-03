@@ -1,0 +1,63 @@
+[scenario]
+id = "cloud/cloudflare/enable-checkout-flag"
+title = "Roll out a feature flag in the production account's KV store"
+now = "2026-10-28T15:00:00Z"
+seed = "cloud-cloudflare-enable-checkout-flag"
+services = ["cloudflare"]
+tags = ["write", "single-service", "cloudflare", "disambiguation"]
+timeout_sec = 900
+
+# Two accounts (so account_id must be chosen) and three namespaces with a checkout_v2 key:
+# production storefront-flags (c8f1...), production storefront-flags-preview (a3e7...) and
+# the staging account's storefront-flags (6f2a...). Only the first may change, keeping
+# owner and fallback.
+[[expect.state]]
+pointer = "/services/cloudflare/kv_values/c8f1b5e9a3d7c2f6b0e4a8d2c6f0b4e8~1checkout_v2/value_json"
+equals = { enabled = true, rollout = 25, owner = "payments", fallback = "checkout_v1" }
+
+[[expect.state]]
+pointer = "/services/cloudflare/kv_values/a3e7c1f5b9d2a6e0c4f8b2d6a0e4c8f2~1checkout_v2/value_json"
+equals = { enabled = true, rollout = 100, owner = "payments", fallback = "checkout_v1" }
+
+[[expect.state]]
+pointer = "/services/cloudflare/kv_values/6f2a9c4e1b8d5f3a7c0e9b2d4f6a8c1e~1checkout_v2/value_json"
+equals = { enabled = true, rollout = 100, owner = "payments", fallback = "checkout_v1" }
+
+[[expect.state]]
+pointer = "/services/cloudflare/kv_values/c8f1b5e9a3d7c2f6b0e4a8d2c6f0b4e8~1search_v3/value_json"
+equals = { enabled = true, rollout = 50, owner = "discovery" }
+
+[[expect.required_calls]]
+service = "cloudflare"
+method = "PUT"
+path_regex = "^/client/v4/accounts/4f8a2c1e9b7d6a5f3e2d1c0b9a8f7e6d/storage/kv/namespaces/c8f1b5e9a3d7c2f6b0e4a8d2c6f0b4e8/(values/checkout_v2|bulk)$"
+
+[[expect.forbidden_calls]]
+service = "cloudflare"
+path_regex = "^/client/v4/accounts/9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b/storage/kv/namespaces/6f2a9c4e1b8d5f3a7c0e9b2d4f6a8c1e/(values|bulk)"
+method = "PUT"
+
+[[expect.forbidden_calls]]
+service = "cloudflare"
+method = "DELETE"
+path_regex = "/storage/kv/"
+
+[[solution.call]]
+endpoint = "cloudflare"
+tool = "execute"
+arguments = { code = "async () => (await cloudflare.request({ method: 'GET', path: '/accounts' })).result.map(a => ({ id: a.id, name: a.name }))" }
+
+[[solution.call]]
+endpoint = "cloudflare"
+tool = "execute"
+arguments = { account_id = "4f8a2c1e9b7d6a5f3e2d1c0b9a8f7e6d", code = """
+async () => {
+  const namespaces = (await cloudflare.request({ method: 'GET', path: `/accounts/${accountId}/storage/kv/namespaces` })).result;
+  const ns = namespaces.find(n => n.title === 'storefront-flags');
+  const path = `/accounts/${accountId}/storage/kv/namespaces/${ns.id}/values/checkout_v2`;
+  const current = JSON.parse((await cloudflare.request({ method: 'GET', path })).result);
+  const next = { ...current, enabled: true, rollout: 25 };
+  await cloudflare.request({ method: 'PUT', path, body: next });
+  return { namespace: ns.id, before: current, after: next };
+}
+""" }

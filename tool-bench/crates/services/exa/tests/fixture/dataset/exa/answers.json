@@ -1,0 +1,9 @@
+[
+  {
+    "id": "driftwood-timeout",
+    "match": ["driftwood", "timeout"],
+    "content": "In Driftwood Python SDK v4, use timeout_seconds (default 30 seconds).",
+    "structured": { "option": "timeout_seconds", "defaultSeconds": 30 },
+    "citations": [{ "url": "https://docs.driftwood.dev/python/v4/configuration", "title": "Client configuration | Driftwood Python SDK v4" }]
+  }
+]

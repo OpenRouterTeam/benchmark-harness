@@ -1,0 +1,84 @@
+[scenario]
+id = "cloud/aws/orders-api-cpu-alarm"
+title = "Create a CPU alarm for the production orders-api instance"
+now = "2026-03-14T09:00:00Z"
+seed = "cloud-aws-orders-api-cpu-alarm"
+services = ["aws"]
+tags = ["write", "single-service", "aws"]
+timeout_sec = 900
+
+[[expect.state]]
+pointer = "/services/aws/alarms/orders-api-high-cpu/Namespace"
+equals = "AWS/EC2"
+
+[[expect.state]]
+pointer = "/services/aws/alarms/orders-api-high-cpu/MetricName"
+equals = "CPUUtilization"
+
+# The prod instance, not the staging one with the same Name tag.
+[[expect.state]]
+pointer = "/services/aws/alarms/orders-api-high-cpu/Dimensions"
+equals = [{ Name = "InstanceId", Value = "i-04c1a7e2b9d35f018" }]
+
+[[expect.state]]
+pointer = "/services/aws/alarms/orders-api-high-cpu/Statistic"
+equals = "Average"
+
+[[expect.state]]
+pointer = "/services/aws/alarms/orders-api-high-cpu/Period"
+equals = 300
+
+[[expect.state]]
+pointer = "/services/aws/alarms/orders-api-high-cpu/EvaluationPeriods"
+equals = 3
+
+[[expect.state]]
+pointer = "/services/aws/alarms/orders-api-high-cpu/Threshold"
+equals = 80.0
+
+[[expect.state]]
+pointer = "/services/aws/alarms/orders-api-high-cpu/ComparisonOperator"
+equals = "GreaterThanThreshold"
+
+[[expect.state]]
+pointer = "/services/aws/alarms/orders-api-high-cpu/AlarmActions"
+equals = ["arn:aws:sns:us-east-1:481562039417:ops-pager"]
+
+# Existing alarms are neither deleted nor reconfigured.
+[[expect.state]]
+pointer = "/services/aws/alarms/orders-api-status-check/AlarmConfigurationUpdatedTimestamp"
+equals = "2026-01-19T08:00:00Z"
+
+[[expect.state]]
+pointer = "/services/aws/alarms/orders-worker-high-cpu/AlarmConfigurationUpdatedTimestamp"
+equals = "2026-01-20T10:30:00Z"
+
+[[expect.state]]
+pointer = "/services/aws/alarms/billing-estimated-charges/AlarmConfigurationUpdatedTimestamp"
+equals = "2025-06-01T00:00:00Z"
+
+[[expect.required_calls]]
+service = "aws"
+method = "POST"
+path = "/"
+body = { AlarmName = "orders-api-high-cpu", MetricName = "CPUUtilization" }
+
+# Forcing alarm states (SetAlarmState) is never part of this task.
+[[expect.forbidden_calls]]
+service = "aws"
+body_contains = "\"StateReason\""
+
+[[solution.call]]
+endpoint = "aws-api"
+tool = "call_aws"
+arguments = { cli_command = "aws ec2 describe-instances --filters Name=tag:Name,Values=orders-api Name=tag:Environment,Values=prod" }
+
+[[solution.call]]
+endpoint = "aws-cloudwatch"
+tool = "get_active_alarms"
+arguments = {}
+
+[[solution.call]]
+endpoint = "aws-api"
+tool = "call_aws"
+arguments = { cli_command = "aws cloudwatch put-metric-alarm --alarm-name orders-api-high-cpu --namespace AWS/EC2 --metric-name CPUUtilization --dimensions Name=InstanceId,Value=i-04c1a7e2b9d35f018 --statistic Average --period 300 --evaluation-periods 3 --threshold 80 --comparison-operator GreaterThanThreshold --alarm-actions arn:aws:sns:us-east-1:481562039417:ops-pager" }

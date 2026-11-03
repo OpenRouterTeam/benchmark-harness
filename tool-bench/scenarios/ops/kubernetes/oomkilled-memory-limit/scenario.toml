@@ -1,0 +1,80 @@
+[scenario]
+id = "ops/kubernetes/oomkilled-memory-limit"
+title = "Raise the memory limit of the OOM-killed analytics workload"
+now = "2026-12-01T03:15:00Z"
+seed = "ops-kubernetes-oomkilled-memory-limit"
+services = ["kubernetes"]
+tags = ["write", "single-service", "kubernetes", "disambiguation"]
+timeout_sec = 900
+
+[[expect.state]]
+pointer = "/services/kubernetes/deployments.apps/analytics~1report-builder/spec/template/spec/containers/0/resources/limits/memory"
+equals = "1Gi"
+
+[[expect.state]]
+pointer = "/services/kubernetes/deployments.apps/analytics~1report-builder/spec/template/spec/containers/0/image"
+equals = "ghcr.io/octo-corp/report-builder:3.2.0"
+
+[[expect.state]]
+pointer = "/services/kubernetes/deployments.apps/analytics~1report-builder/spec/replicas"
+equals = 2
+
+[[expect.state]]
+pointer = "/services/kubernetes/deployments.apps/analytics~1report-api/spec/template/spec/containers/0/resources/limits/memory"
+equals = "512Mi"
+
+[[expect.state]]
+pointer = "/services/kubernetes/deployments.apps/analytics~1report-scheduler/spec/template/spec/containers/0/resources/limits/memory"
+equals = "128Mi"
+
+[[expect.state]]
+pointer = "/services/kubernetes/deployments.apps/analytics-staging~1report-builder/spec/template/spec/containers/0/resources/limits/memory"
+equals = "512Mi"
+
+[[expect.required_calls]]
+service = "kubernetes"
+path = "/apis/apps/v1/namespaces/analytics/deployments/report-builder"
+body_contains = "1Gi"
+
+[[expect.forbidden_calls]]
+service = "kubernetes"
+method = "DELETE"
+
+[[expect.forbidden_calls]]
+service = "kubernetes"
+method = "PATCH"
+path_regex = "/namespaces/analytics-staging/|/deployments/report-(api|scheduler)"
+
+[[expect.forbidden_calls]]
+service = "kubernetes"
+method = "PUT"
+path_regex = "/namespaces/analytics-staging/|/deployments/report-(api|scheduler)"
+
+[[solution.call]]
+endpoint = "kubernetes"
+tool = "pods_list_in_namespace"
+arguments = { namespace = "analytics" }
+
+[[solution.call]]
+endpoint = "kubernetes"
+tool = "pods_get"
+arguments = { namespace = "analytics", name = "report-builder-t2h6vx4p7r-q8j52" }
+
+[[solution.call]]
+endpoint = "kubernetes"
+tool = "resources_create_or_update"
+arguments = { resource = """
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: report-builder
+  namespace: analytics
+spec:
+  template:
+    spec:
+      containers:
+        - name: report-builder
+          resources:
+            limits:
+              memory: 1Gi
+""" }

@@ -1,0 +1,43 @@
+[
+ {
+  "id": "st-FbqAoao8IB4WM7jr",
+  "organization": "acme-platform",
+  "project": "prj-ybX47sD3ublmAH34",
+  "name": "edge-cdn",
+  "description": "CloudFront + WAF edge stack deployed per region",
+  "vcs-repo": {
+   "identifier": "acme/edge-stack",
+   "branch": "main",
+   "oauth-token-id": "ot-5qR8wXmN2vPa7Ldk"
+  },
+  "speculative-enabled": true,
+  "created-at": "2026-03-04T10:00:00Z",
+  "updated-at": "2026-10-11T10:00:00Z",
+  "inputs-count": 4,
+  "outputs-count": 2,
+  "creation-source": "vcs",
+  "working-directory": "",
+  "upstream-count": 0,
+  "downstream-count": 1
+ },
+ {
+  "id": "st-0bboyY04q1qhpoCi",
+  "organization": "acme-platform",
+  "project": "prj-Oc8bkFmEfGG81QGr",
+  "name": "observability-agents",
+  "description": "Datadog and OpenTelemetry collectors for every EKS cluster",
+  "vcs-repo": {
+   "identifier": "acme/observability-stack",
+   "branch": "main",
+   "oauth-token-id": "ot-5qR8wXmN2vPa7Ldk"
+  },
+  "speculative-enabled": false,
+  "created-at": "2026-05-20T10:00:00Z",
+  "updated-at": "2026-09-30T10:00:00Z",
+  "inputs-count": 6,
+  "outputs-count": 0,
+  "creation-source": "vcs",
+  "upstream-count": 1,
+  "downstream-count": 0
+ }
+]

@@ -1,0 +1,12 @@
+[
+  {
+    "_key": "pyroscope-prod/checkout",
+    "datasource": "pyroscope-prod",
+    "service": "checkout",
+    "profileType": "process_cpu:cpu:nanoseconds:cpu:nanoseconds",
+    "labels": {
+      "namespace": "shop-prod",
+      "pod": "checkout-7b9d6c5f4-xk2lp"
+    }
+  }
+]

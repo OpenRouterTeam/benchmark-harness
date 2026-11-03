@@ -1,0 +1,65 @@
+[
+  {
+    "id": "cus_mxxxdqMeoA1GEc",
+    "object": "customer",
+    "address": null,
+    "balance": 0,
+    "created": 1741108920,
+    "currency": "usd",
+    "description": null,
+    "email": "ap@harborpine.coffee",
+    "invoice_prefix": "HPC1F0A2",
+    "metadata": {},
+    "name": "Harbor & Pine Coffee Co.",
+    "next_invoice_sequence": 13,
+    "phone": "+15035550142",
+    "invoice_settings": {
+      "custom_fields": null,
+      "default_payment_method": "pm_9Q1NGqNl9OSZ2TNMxHIIdyhV",
+      "footer": null,
+      "rendering_options": null
+    }
+  },
+  {
+    "id": "cus_KLuZbdeYbCuh62",
+    "object": "customer",
+    "address": null,
+    "balance": 0,
+    "created": 1747685100,
+    "currency": "usd",
+    "description": null,
+    "email": "orders@harborpineroasters.com",
+    "invoice_prefix": "HPR77B31",
+    "metadata": {},
+    "name": "Harbor & Pine Roasters",
+    "next_invoice_sequence": 5,
+    "phone": null,
+    "invoice_settings": {
+      "custom_fields": null,
+      "default_payment_method": "pm_lxD6mxZLsornhnWpBxC569Uv",
+      "footer": null,
+      "rendering_options": null
+    }
+  },
+  {
+    "id": "cus_9QBU7Zcqm1FH2Y",
+    "object": "customer",
+    "address": null,
+    "balance": 0,
+    "created": 1756744800,
+    "currency": "usd",
+    "description": null,
+    "email": "owner@northwindbakery.com",
+    "invoice_prefix": "NWB77C10",
+    "metadata": {},
+    "name": "Northwind Bakery",
+    "next_invoice_sequence": 7,
+    "phone": null,
+    "invoice_settings": {
+      "custom_fields": null,
+      "default_payment_method": "pm_xRmpvcm2h55TSXJwVyafhKdC",
+      "footer": null,
+      "rendering_options": null
+    }
+  }
+]

@@ -1,0 +1,29 @@
+[scenario]
+id = "search/brave/caterer-saturday-hours"
+title = "Find a local caterer's phone and Saturday hours among look-alike businesses"
+now = "2026-10-26T16:30:00Z"
+seed = "search-brave-caterer-saturday-hours"
+services = ["brave"]
+tags = ["lookup", "single-service", "brave", "disambiguation"]
+timeout_sec = 900
+
+# Right business: Portland, OR (+1 503-555-0142, Sat 09:00-14:00). Distractors: the
+# Portland, ME namesake (207-555-0198, Sat 10:00-16:00), Juniper Rye Bakery (503-555-0177),
+# and a stale review page saying "Sat Closed".
+[expect.answer]
+contains = ["555-0142"]
+regex = '(?i)0?9(:00)?\s*(am|a\.m\.)?\s*(-|–|—|to|until)\s*(14:00|14\.00|2(:00)?\s*(pm|p\.m\.))'
+
+# Phone numbers and hours only come from local listing data.
+[[expect.required_calls]]
+service = "brave"
+method = "GET"
+path_regex = "^/res/v1/local/"
+
+[solution]
+answer = "Juniper & Rye Catering, 1120 SE Morrison St, Portland, OR 97214. Phone: +1 503-555-0142. Saturday hours: 09:00-14:00 (closed Sundays).\n"
+
+[[solution.call]]
+endpoint = "brave-search"
+tool = "brave_local_search"
+arguments = { query = "Juniper & Rye Catering Portland Oregon" }

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"linear_updateIssue","arguments":{"assigneeId":"0bfae6ae-01d0-58d1-a611-7d1973102c45","id":"WEB-51","priority":1}}}

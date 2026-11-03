@@ -1,0 +1,32 @@
+[
+  {
+    "id": "163a9f5f-e3fc-57c2-823a-efaa498f11e0",
+    "name": "Backlog",
+    "type": "backlog",
+    "position": 0
+  },
+  {
+    "id": "314b7357-2955-5030-bed5-07bc0838b94e",
+    "name": "Planned",
+    "type": "planned",
+    "position": 1
+  },
+  {
+    "id": "1dc8f361-a5ba-56f9-ac51-b69191f73dfe",
+    "name": "In Progress",
+    "type": "started",
+    "position": 2
+  },
+  {
+    "id": "6e125b08-9731-51fe-8faa-66f0edfacabd",
+    "name": "Completed",
+    "type": "completed",
+    "position": 3
+  },
+  {
+    "id": "6f6aeb04-32b9-58b6-b7c1-49c03fcd71e8",
+    "name": "Canceled",
+    "type": "canceled",
+    "position": 4
+  }
+]

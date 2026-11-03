@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"execute_sql","arguments":{"project_id":"qmvbxtzkplrnwdhyfaco","query":"update public.orders set status = 'cancelled' where status = 'pending' and customer_id = (select id from public.customers where email = 'priya.shah@fastmail.com') returning id, status, total"}}}

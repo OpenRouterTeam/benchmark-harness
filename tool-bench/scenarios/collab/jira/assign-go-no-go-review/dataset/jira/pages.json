@@ -1,0 +1,165 @@
+[
+  {
+    "id": "100001",
+    "type": "page",
+    "title": "Engineering Home",
+    "space": "ENG",
+    "parent": null,
+    "body": "<p>Welcome to the Engineering space.</p>",
+    "version": 1,
+    "created": "2026-01-05T15:00:00.000Z",
+    "createdBy": "priya.natarajan",
+    "updated": "2026-01-05T15:00:00.000Z",
+    "updatedBy": "priya.natarajan",
+    "labels": [],
+    "status": "current",
+    "history": [
+      {
+        "number": 1,
+        "title": "Engineering Home",
+        "body": "<p>Welcome to the Engineering space.</p>",
+        "when": "2026-01-05T15:00:00.000Z",
+        "by": "priya.natarajan",
+        "message": ""
+      }
+    ]
+  },
+  {
+    "id": "100002",
+    "type": "page",
+    "title": "Payments v2 launch plan",
+    "space": "ENG",
+    "parent": "100001",
+    "body": "<h2>Scope</h2><p>Move all checkout traffic to the v2 gateway.</p><h2>Go/no-go criteria</h2><p>Criteria owner: <strong>Lena Fischer</strong> (Product). Error rate under 0.5% for 72 hours on the 50% ramp.</p><h2>Timeline</h2><p>GA on 2026-11-12, go/no-go review by 2026-11-10.</p>",
+    "version": 4,
+    "created": "2026-10-02T15:00:00.000Z",
+    "createdBy": "priya.natarajan",
+    "updated": "2026-10-22T15:00:00.000Z",
+    "updatedBy": "priya.natarajan",
+    "labels": [
+      "payments",
+      "launch"
+    ],
+    "status": "current",
+    "history": [
+      {
+        "number": 4,
+        "title": "Payments v2 launch plan",
+        "body": "<h2>Scope</h2><p>Move all checkout traffic to the v2 gateway.</p><h2>Go/no-go criteria</h2><p>Criteria owner: <strong>Lena Fischer</strong> (Product). Error rate under 0.5% for 72 hours on the 50% ramp.</p><h2>Timeline</h2><p>GA on 2026-11-12, go/no-go review by 2026-11-10.</p>",
+        "when": "2026-10-22T15:00:00.000Z",
+        "by": "priya.natarajan",
+        "message": ""
+      }
+    ]
+  },
+  {
+    "id": "100003",
+    "type": "page",
+    "title": "On-call runbook: payments",
+    "space": "ENG",
+    "parent": "100001",
+    "body": "<h2>Escalation</h2><p>Primary: Sam Ortiz. Secondary: Alex Kim.</p><h2>Dashboards</h2><p>Gateway errors, refund queue depth.</p>",
+    "version": 7,
+    "created": "2026-08-10T15:00:00.000Z",
+    "createdBy": "sam.ortiz",
+    "updated": "2026-10-01T15:00:00.000Z",
+    "updatedBy": "sam.ortiz",
+    "labels": [
+      "runbook",
+      "oncall"
+    ],
+    "status": "current",
+    "history": [
+      {
+        "number": 7,
+        "title": "On-call runbook: payments",
+        "body": "<h2>Escalation</h2><p>Primary: Sam Ortiz. Secondary: Alex Kim.</p><h2>Dashboards</h2><p>Gateway errors, refund queue depth.</p>",
+        "when": "2026-10-01T15:00:00.000Z",
+        "by": "sam.ortiz",
+        "message": ""
+      }
+    ]
+  },
+  {
+    "id": "100004",
+    "type": "page",
+    "title": "Refund webhook retries design",
+    "space": "ENG",
+    "parent": "100002",
+    "body": "<p>Exponential backoff: 1m, 5m, 30m, 2h, 12h. Tracked in PAY-121.</p>",
+    "version": 1,
+    "created": "2026-10-05T15:00:00.000Z",
+    "createdBy": "alex.kim",
+    "updated": "2026-10-05T15:00:00.000Z",
+    "updatedBy": "alex.kim",
+    "labels": [
+      "payments",
+      "design"
+    ],
+    "status": "current",
+    "history": [
+      {
+        "number": 1,
+        "title": "Refund webhook retries design",
+        "body": "<p>Exponential backoff: 1m, 5m, 30m, 2h, 12h. Tracked in PAY-121.</p>",
+        "when": "2026-10-05T15:00:00.000Z",
+        "by": "alex.kim",
+        "message": ""
+      }
+    ]
+  },
+  {
+    "id": "200001",
+    "type": "page",
+    "title": "Archive Home",
+    "space": "ARCH",
+    "parent": null,
+    "body": "<p>Superseded documents.</p>",
+    "version": 1,
+    "created": "2026-01-05T15:00:00.000Z",
+    "createdBy": "priya.natarajan",
+    "updated": "2026-01-05T15:00:00.000Z",
+    "updatedBy": "priya.natarajan",
+    "labels": [],
+    "status": "current",
+    "history": [
+      {
+        "number": 1,
+        "title": "Archive Home",
+        "body": "<p>Superseded documents.</p>",
+        "when": "2026-01-05T15:00:00.000Z",
+        "by": "priya.natarajan",
+        "message": ""
+      }
+    ]
+  },
+  {
+    "id": "200002",
+    "type": "page",
+    "title": "Payments v2 launch plan (2025 draft)",
+    "space": "ARCH",
+    "parent": "200001",
+    "body": "<h2>Go/no-go criteria</h2><p>Criteria owner: <strong>Marcus Webb</strong>. This draft was replaced by the Engineering space plan.</p>",
+    "version": 1,
+    "created": "2026-03-10T15:00:00.000Z",
+    "createdBy": "marcus.webb",
+    "updated": "2026-03-10T15:00:00.000Z",
+    "updatedBy": "marcus.webb",
+    "labels": [
+      "payments",
+      "launch",
+      "archived"
+    ],
+    "status": "current",
+    "history": [
+      {
+        "number": 1,
+        "title": "Payments v2 launch plan (2025 draft)",
+        "body": "<h2>Go/no-go criteria</h2><p>Criteria owner: <strong>Marcus Webb</strong>. This draft was replaced by the Engineering space plan.</p>",
+        "when": "2026-03-10T15:00:00.000Z",
+        "by": "marcus.webb",
+        "message": ""
+      }
+    ]
+  }
+]

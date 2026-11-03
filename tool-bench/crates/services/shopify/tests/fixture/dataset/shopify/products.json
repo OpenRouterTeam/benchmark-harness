@@ -1,0 +1,61 @@
+[
+  {
+    "id": 8101,
+    "title": "Harbor Canvas Tote",
+    "handle": "harbor-canvas-tote",
+    "descriptionHtml": "<p>Heavy waxed canvas &amp; leather handles.</p>",
+    "vendor": "Octo Goods",
+    "productType": "Bags",
+    "status": "ACTIVE",
+    "tags": ["bags", "summer"],
+    "createdAt": "2026-01-10T12:00:00Z",
+    "updatedAt": "2026-03-01T09:30:00Z",
+    "publishedAt": "2026-01-10T12:00:00Z",
+    "options": [
+      {"id": 51, "name": "Color", "position": 1, "values": [{"id": 61, "name": "Navy"}, {"id": 62, "name": "Sand"}]}
+    ],
+    "variants": [
+      {"id": 4101, "price": "38.00", "sku": "HCT-NVY", "inventoryQuantity": 12, "selectedOptions": [{"name": "Color", "value": "Navy"}]},
+      {"id": 4102, "price": "38.00", "compareAtPrice": "45.00", "sku": "HCT-SND", "inventoryQuantity": 5, "selectedOptions": [{"name": "Color", "value": "Sand"}]}
+    ],
+    "images": [
+      {"id": 9101, "url": "https://cdn.shopify.com/s/files/1/0001/products/harbor-tote-navy.jpg", "altText": "Navy tote", "width": 1200, "height": 1200}
+    ],
+    "collections": [301],
+    "metafields": [
+      {"id": 1001, "namespace": "custom", "key": "material", "value": "Waxed canvas", "type": "single_line_text_field", "createdAt": "2026-01-10T12:00:00Z", "updatedAt": "2026-01-10T12:00:00Z"}
+    ]
+  },
+  {
+    "id": 8102,
+    "title": "Alpine Wool Beanie",
+    "handle": "alpine-wool-beanie",
+    "descriptionHtml": "<p>Merino blend.</p>",
+    "vendor": "Octo Goods",
+    "productType": "Hats",
+    "status": "DRAFT",
+    "tags": ["winter"],
+    "createdAt": "2026-02-01T08:00:00Z",
+    "variants": [
+      {"id": 4103, "price": "24.00", "sku": "AWB-01", "inventoryQuantity": 30}
+    ]
+  },
+  {
+    "id": 8103,
+    "title": "Linen Shirt",
+    "handle": "linen-shirt",
+    "descriptionHtml": "",
+    "vendor": "Seaside Apparel",
+    "productType": "Shirts",
+    "status": "ACTIVE",
+    "tags": ["summer"],
+    "createdAt": "2026-02-15T08:00:00Z",
+    "options": [
+      {"id": 52, "name": "Size", "position": 1, "values": [{"id": 63, "name": "S"}, {"id": 64, "name": "M"}, {"id": 65, "name": "L"}]}
+    ],
+    "variants": [
+      {"id": 4104, "price": "58.00", "sku": "LS-S", "inventoryQuantity": 3, "selectedOptions": [{"name": "Size", "value": "S"}]},
+      {"id": 4105, "price": "58.00", "sku": "LS-M", "inventoryQuantity": 0, "selectedOptions": [{"name": "Size", "value": "M"}]}
+    ]
+  }
+]

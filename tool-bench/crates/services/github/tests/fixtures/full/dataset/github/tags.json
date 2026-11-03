@@ -1,0 +1,19 @@
+[
+  {
+    "_key": "octo-org/payments-api:v1.0.0",
+    "name": "v1.0.0",
+    "sha": "5861b47bb0f55e98fe5fbed51e4916f889a5b18e",
+    "message": "First stable release",
+    "tagger": {
+      "name": "Priya Raman",
+      "email": "priya.raman@octo-org.example",
+      "date": "2026-03-01T15:00:00Z"
+    }
+  },
+  {
+    "_key": "octo-org/payments-api:v1.1.0",
+    "name": "v1.1.0",
+    "sha": "c8e958100c97fe624295213b1c3ede0dd48f1ffe",
+    "message": "Refund docs"
+  }
+]

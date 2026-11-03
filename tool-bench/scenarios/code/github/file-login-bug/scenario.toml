@@ -1,0 +1,30 @@
+[scenario]
+id = "code/github/file-login-bug"
+title = "File a bug for a production login failure"
+now = "2026-03-14T09:00:00Z"
+seed = "code-github-file-login-bug"
+services = ["github"]
+tags = ["single-service", "write", "github"]
+timeout_sec = 900
+
+[[expect.state]]
+pointer = "/services/github/issues/octo-org~1app#4/title"
+equals = "Login page returns 500"
+
+[[expect.state]]
+pointer = "/services/github/issues/octo-org~1app#4/body"
+contains = "412"
+
+[[expect.required_calls]]
+service = "github"
+method = "POST"
+path = "/api/v3/repos/octo-org/app/issues"
+
+[[expect.forbidden_calls]]
+service = "github"
+method = "PATCH"
+
+[[solution.call]]
+endpoint = "github"
+tool = "issue_write"
+arguments = { method = "create", owner = "octo-org", repo = "app", title = "Login page returns 500", body = "The login page has returned HTTP 500 since deploy 412." }

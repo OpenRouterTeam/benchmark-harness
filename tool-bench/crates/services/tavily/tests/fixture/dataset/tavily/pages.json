@@ -1,0 +1,48 @@
+[
+  {
+    "_key": "https://docs.acme.dev/",
+    "url": "https://docs.acme.dev/",
+    "title": "Acme Docs",
+    "content": "Acme developer documentation home.",
+    "raw_content": "# Acme Docs\n\nWelcome.",
+    "favicon": "https://docs.acme.dev/favicon.ico",
+    "links": ["https://docs.acme.dev/guides/billing", "https://docs.acme.dev/api/limits", "https://docs.acme.dev/missing", "https://github.com/acme/sdk"]
+  },
+  {
+    "_key": "https://docs.acme.dev/guides/billing",
+    "url": "https://docs.acme.dev/guides/billing",
+    "title": "Billing guide | Acme Docs",
+    "content": "How Acme invoices are generated each month.",
+    "raw_content": "# Billing guide\n\nInvoices are generated on the first day of each month.\n\nRefunds are processed within 5 business days.\n\nTaxes are calculated from your billing address.",
+    "published_date": "2026-10-28",
+    "images": [{ "url": "https://docs.acme.dev/img/invoice.png", "description": "A sample Acme invoice" }],
+    "links": ["https://docs.acme.dev/guides/billing/refunds", "https://docs.acme.dev/"]
+  },
+  {
+    "_key": "https://docs.acme.dev/guides/billing/refunds",
+    "url": "https://docs.acme.dev/guides/billing/refunds",
+    "title": "Refunds | Acme Docs",
+    "content": "Acme refunds policy.",
+    "raw_content": "# Refunds\n\nRefunds go back to the original payment method.",
+    "published_date": "2026-01-15",
+    "links": []
+  },
+  {
+    "_key": "https://docs.acme.dev/api/limits",
+    "url": "https://docs.acme.dev/api/limits",
+    "title": "API rate limits | Acme Docs",
+    "content": "Acme API allows 500 requests per minute per key.",
+    "raw_content": "# API rate limits\n\n**500** requests per minute per key. See [errors](https://docs.acme.dev/api/errors).",
+    "published_date": "2025-06-01",
+    "links": []
+  },
+  {
+    "_key": "https://news.example.com/acme-raises",
+    "url": "https://news.example.com/acme-raises",
+    "title": "Acme raises Series C",
+    "content": "Acme raised $80M in a Series C round led by Northwind Ventures.",
+    "raw_content": "# Acme raises Series C\n\nAcme raised $80M.",
+    "published_date": "2026-10-29",
+    "links": []
+  }
+]

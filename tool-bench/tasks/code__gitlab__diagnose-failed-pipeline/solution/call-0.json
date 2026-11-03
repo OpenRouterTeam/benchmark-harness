@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"list_pipelines","arguments":{"project_id":"northwind/payments/checkout-api","ref":"main","status":"failed"}}}

@@ -1,0 +1,74 @@
+[scenario]
+id = "search/multi/competitor-research-github-issue"
+title = "Research a competitor's GA pricing and log it in the competitive-intel GitHub repo"
+now = "2026-10-30T09:00:00Z"
+seed = "search-multi-competitor-research-github-issue"
+services = ["exa", "github"]
+tags = ["write", "multi-service", "exa", "github", "disambiguation"]
+timeout_sec = 900
+
+# GA (2026-10-27): Scale $349/month billed annually ($419 monthly), 50M events/month. Stale:
+# the 2025 beta post ($299, 25M events). Look-alike company: Lumenwise (Scale $499). The live
+# tracker is octo-org/competitive-intel (next issue #6; closed #3 covers the beta);
+# octo-org/competitive-intel-2024 is archived.
+[[expect.state]]
+pointer = "/services/github/issues"
+key_prefix = "octo-org/competitive-intel#"
+any = { title = "Lumenrail", body = "349", labels = ["pricing", "lumenrail"], state = "open" }
+
+[[expect.state]]
+pointer = "/services/github/issues"
+key_prefix = "octo-org/competitive-intel#"
+any = { title = "Scale", body = "50" }
+
+[[expect.state]]
+pointer = "/services/github/issues/octo-org~1competitive-intel#3/state"
+equals = "closed"
+
+[[expect.state]]
+pointer = "/services/github/issues/octo-org~1competitive-intel-2024#42"
+exists = false
+
+[[expect.required_calls]]
+service = "exa"
+method = "POST"
+path_regex = "^/(search|contents)$"
+
+[[expect.required_calls]]
+service = "github"
+method = "POST"
+path = "/api/v3/repos/octo-org/competitive-intel/issues"
+
+[[expect.forbidden_calls]]
+service = "github"
+method = "PATCH"
+
+[[expect.forbidden_calls]]
+service = "github"
+method = "POST"
+path_regex = "^/api/v3/repos/[^/]+/[^/]+/issues/[0-9]+/comments$"
+
+[[expect.forbidden_calls]]
+service = "github"
+method = "POST"
+path = "/api/v3/repos/octo-org/competitive-intel-2024/issues"
+
+[[solution.call]]
+endpoint = "exa"
+tool = "web_search_exa"
+arguments = { query = "Lumenrail Scale plan generally available pricing events per month" }
+
+[[solution.call]]
+endpoint = "exa"
+tool = "web_fetch_exa"
+arguments = { urls = ["https://lumenrail.io/blog/scale-plan-generally-available"] }
+
+[[solution.call]]
+endpoint = "github"
+tool = "search_repositories"
+arguments = { query = "competitive-intel org:octo-org" }
+
+[[solution.call]]
+endpoint = "github"
+tool = "issue_write"
+arguments = { method = "create", owner = "octo-org", repo = "competitive-intel", title = "Lumenrail Scale plan is generally available", body = "Lumenrail took the Scale plan out of beta on 2026-10-27.\n\n- Price: $349/month billed annually ($419 billed monthly)\n- Included events: 50M events per month (extra events $6 per million)\n- Also: 13-month retention, SAML SSO\n\nThe 2025 beta was $299/month with 25M events; beta customers keep that price until renewal.\n\nSource: https://lumenrail.io/blog/scale-plan-generally-available", labels = ["pricing", "lumenrail"] }

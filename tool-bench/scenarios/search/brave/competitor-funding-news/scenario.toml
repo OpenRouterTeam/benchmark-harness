@@ -1,0 +1,27 @@
+[scenario]
+id = "search/brave/competitor-funding-news"
+title = "Find this week's funding news about a competitor"
+now = "2026-10-29T11:00:00Z"
+seed = "search-brave-competitor-funding-news"
+services = ["brave"]
+tags = ["lookup", "single-service", "brave"]
+timeout_sec = 900
+
+# This week: $45M Series B led by Halcyon Ventures. Distractors: the 2025 Series A
+# ($12M, Fjord Capital), a stale funding database, and look-alike Norvik Labs ($30M, Brightline).
+[expect.answer]
+contains = ["Halcyon", "Series B"]
+regex = '(?i)\$?\s?45\s?(m\b|mn\b|million)'
+
+[[expect.required_calls]]
+service = "brave"
+method = "GET"
+path_regex = "^/res/v1/"
+
+[solution]
+answer = "Norvik Analytics raised a $45 million Series B led by Halcyon Ventures (with Fjord Capital participating), reported by TechBeat on 2026-10-27.\n"
+
+[[solution.call]]
+endpoint = "brave-search"
+tool = "brave_news_search"
+arguments = { query = "Norvik Analytics funding round", freshness = "pw" }

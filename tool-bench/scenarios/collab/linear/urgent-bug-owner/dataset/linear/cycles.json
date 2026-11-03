@@ -1,0 +1,74 @@
+[
+  {
+    "id": "954f7df0-17ca-5a9a-835d-528b021a4997",
+    "teamId": "5854633b-d1e9-52b6-b3c7-d309bfb881cb",
+    "number": 41,
+    "name": null,
+    "description": null,
+    "startsAt": "2026-10-12T05:00:00.000Z",
+    "endsAt": "2026-10-26T05:00:00.000Z",
+    "completedAt": "2026-10-26T05:00:00.000Z",
+    "createdAt": "2026-08-01T15:00:00.000Z",
+    "updatedAt": "2026-08-01T15:00:00.000Z"
+  },
+  {
+    "id": "627fb4e1-47ac-567a-99cd-3e236709e3b0",
+    "teamId": "5854633b-d1e9-52b6-b3c7-d309bfb881cb",
+    "number": 42,
+    "name": null,
+    "description": null,
+    "startsAt": "2026-10-26T05:00:00.000Z",
+    "endsAt": "2026-11-09T06:00:00.000Z",
+    "completedAt": null,
+    "createdAt": "2026-08-01T15:00:00.000Z",
+    "updatedAt": "2026-08-01T15:00:00.000Z"
+  },
+  {
+    "id": "c70c9185-b7fb-567b-86c1-7aab564bfd93",
+    "teamId": "5854633b-d1e9-52b6-b3c7-d309bfb881cb",
+    "number": 43,
+    "name": null,
+    "description": null,
+    "startsAt": "2026-11-09T06:00:00.000Z",
+    "endsAt": "2026-11-23T06:00:00.000Z",
+    "completedAt": null,
+    "createdAt": "2026-08-01T15:00:00.000Z",
+    "updatedAt": "2026-08-01T15:00:00.000Z"
+  },
+  {
+    "id": "696aef31-d10c-5775-b420-98fe9624db73",
+    "teamId": "a7c70c10-090f-50bf-a8ce-b4cdee9d8572",
+    "number": 18,
+    "name": "Cutover prep",
+    "description": null,
+    "startsAt": "2026-10-19T05:00:00.000Z",
+    "endsAt": "2026-11-02T05:00:00.000Z",
+    "completedAt": null,
+    "createdAt": "2026-08-01T15:00:00.000Z",
+    "updatedAt": "2026-08-01T15:00:00.000Z"
+  },
+  {
+    "id": "cbc8043e-ec74-5b58-b69c-0c1947b618ac",
+    "teamId": "a7c70c10-090f-50bf-a8ce-b4cdee9d8572",
+    "number": 19,
+    "name": null,
+    "description": null,
+    "startsAt": "2026-11-02T05:00:00.000Z",
+    "endsAt": "2026-11-16T06:00:00.000Z",
+    "completedAt": null,
+    "createdAt": "2026-08-01T15:00:00.000Z",
+    "updatedAt": "2026-08-01T15:00:00.000Z"
+  },
+  {
+    "id": "fbe7280d-7b11-51b4-96ea-25a6acfd6c21",
+    "teamId": "6da75b4c-0e7c-5ac7-a415-f09a129582b1",
+    "number": 7,
+    "name": null,
+    "description": null,
+    "startsAt": "2026-10-22T05:00:00.000Z",
+    "endsAt": "2026-11-05T06:00:00.000Z",
+    "completedAt": null,
+    "createdAt": "2026-08-01T15:00:00.000Z",
+    "updatedAt": "2026-08-01T15:00:00.000Z"
+  }
+]

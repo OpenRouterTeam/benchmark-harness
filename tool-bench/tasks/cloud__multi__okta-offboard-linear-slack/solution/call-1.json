@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"deactivate_user","arguments":{"user_id":"00u1lnfschr3Ab4Cd5x7"}}}

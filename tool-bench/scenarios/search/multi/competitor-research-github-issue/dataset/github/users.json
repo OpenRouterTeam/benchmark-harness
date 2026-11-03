@@ -1,0 +1,46 @@
+[
+  {
+    "_key": "mona",
+    "login": "mona",
+    "id": 583231,
+    "type": "User",
+    "name": "Mona Lisa",
+    "email": "mona@octo-org.example",
+    "company": "Octo Org",
+    "created_at": "2019-01-01T00:00:00Z",
+    "location": "Lisbon"
+  },
+  {
+    "_key": "dhruv",
+    "login": "dhruv",
+    "id": 583410,
+    "type": "User",
+    "name": "Dhruv Mehta",
+    "email": "dhruv.mehta@octo-org.example",
+    "company": "Octo Org",
+    "created_at": "2020-01-01T00:00:00Z",
+    "location": "London"
+  },
+  {
+    "_key": "elena",
+    "login": "elena",
+    "id": 583411,
+    "type": "User",
+    "name": "Elena Petrova",
+    "email": "elena.petrova@octo-org.example",
+    "company": "Octo Org",
+    "created_at": "2020-01-01T00:00:00Z",
+    "location": "Berlin"
+  },
+  {
+    "_key": "kwame",
+    "login": "kwame",
+    "id": 583412,
+    "type": "User",
+    "name": "Kwame Asante",
+    "email": "kwame.asante@octo-org.example",
+    "company": "Octo Org",
+    "created_at": "2020-01-01T00:00:00Z",
+    "location": "Accra"
+  }
+]

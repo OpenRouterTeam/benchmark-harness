@@ -1,0 +1,25 @@
+[
+  {
+    "id": "8812345",
+    "objectTypeId": "2-8812345",
+    "name": "projects",
+    "fullyQualifiedName": "p24681357_projects",
+    "labels": { "singular": "Project", "plural": "Projects" },
+    "primaryDisplayProperty": "project_name",
+    "requiredProperties": ["project_name"],
+    "searchableProperties": ["project_name", "project_code"],
+    "secondaryDisplayProperties": ["project_code"],
+    "metaType": "PORTAL_SPECIFIC",
+    "archived": false,
+    "createdAt": "2025-11-03T10:00:00.000Z",
+    "updatedAt": "2025-11-03T10:00:00.000Z",
+    "properties": [
+      { "name": "project_name", "label": "Project name", "type": "string", "fieldType": "text", "groupName": "projects_information", "hasUniqueValue": false },
+      { "name": "project_code", "label": "Project code", "type": "string", "fieldType": "text", "groupName": "projects_information", "hasUniqueValue": true },
+      { "name": "budget", "label": "Budget", "type": "number", "fieldType": "number", "groupName": "projects_information" }
+    ],
+    "associations": [
+      { "fromObjectTypeId": "2-8812345", "toObjectTypeId": "0-2", "name": "projects_to_company", "id": "512", "inverseId": "513" }
+    ]
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "_key": "analytics/report-api",
+    "metadata": {
+      "name": "report-api",
+      "namespace": "analytics",
+      "uid": "4e45e7d0-6b07-449e-ac73-304be5ce3e3a",
+      "resourceVersion": "41629",
+      "creationTimestamp": "2026-08-22T03:15:00Z",
+      "labels": {
+        "app.kubernetes.io/name": "report-api"
+      }
+    },
+    "spec": {
+      "type": "ClusterIP",
+      "clusterIP": "10.96.186.128",
+      "clusterIPs": [
+        "10.96.186.128"
+      ],
+      "ports": [
+        {
+          "name": "http",
+          "protocol": "TCP",
+          "port": 80,
+          "targetPort": 8080
+        }
+      ],
+      "selector": {
+        "app.kubernetes.io/name": "report-api"
+      },
+      "sessionAffinity": "None",
+      "ipFamilies": [
+        "IPv4"
+      ],
+      "ipFamilyPolicy": "SingleStack",
+      "internalTrafficPolicy": "Cluster"
+    },
+    "status": {
+      "loadBalancer": {}
+    }
+  }
+]

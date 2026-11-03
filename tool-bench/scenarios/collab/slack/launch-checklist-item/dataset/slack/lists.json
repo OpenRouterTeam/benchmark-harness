@@ -1,0 +1,194 @@
+[
+  {
+    "_key": "F0PAYV2LST1",
+    "id": "F0PAYV2LST1",
+    "name": "Payments v2 launch checklist",
+    "description": "Everything that must be done before the Payments v2 GA (2026-11-12)",
+    "icon": ":credit_card:",
+    "owner": "U07LFISCH2R",
+    "co_owners": [
+      "U0TOOLBNCH1"
+    ],
+    "created": 1790856000,
+    "columns": [
+      {
+        "key": "Col0TASK0001",
+        "name": "Task",
+        "type": "text"
+      },
+      {
+        "key": "Col0OWNR0002",
+        "name": "Owner",
+        "type": "user"
+      },
+      {
+        "key": "Col0STAT0003",
+        "name": "Status",
+        "type": "select",
+        "options": {
+          "choices": [
+            {
+              "value": "not_started",
+              "label": "Not started",
+              "color": "gray"
+            },
+            {
+              "value": "in_progress",
+              "label": "In progress",
+              "color": "blue"
+            },
+            {
+              "value": "blocked",
+              "label": "Blocked",
+              "color": "red"
+            },
+            {
+              "value": "done",
+              "label": "Done",
+              "color": "green"
+            }
+          ]
+        }
+      },
+      {
+        "key": "Col0DUED0004",
+        "name": "Due date",
+        "type": "date"
+      }
+    ],
+    "records": [
+      {
+        "id": "Rec0PV2A0001",
+        "fields": {
+          "Col0TASK0001": "Load test checkout at 3x peak",
+          "Col0OWNR0002": [
+            "U05SORTIZ6M"
+          ],
+          "Col0STAT0003": [
+            "done"
+          ],
+          "Col0DUED0004": "2026-10-23"
+        },
+        "created_by": "U07LFISCH2R",
+        "created": 1790942400
+      },
+      {
+        "id": "Rec0PV2A0002",
+        "fields": {
+          "Col0TASK0001": "Partner sandbox credentials rotated",
+          "Col0OWNR0002": [
+            "U03PRIYAN4T"
+          ],
+          "Col0STAT0003": [
+            "in_progress"
+          ],
+          "Col0DUED0004": "2026-11-02"
+        },
+        "created_by": "U07LFISCH2R",
+        "created": 1790942400
+      },
+      {
+        "id": "Rec0PV2A0003",
+        "fields": {
+          "Col0TASK0001": "Support macros for new refund flow",
+          "Col0OWNR0002": [
+            "U07LFISCH2R"
+          ],
+          "Col0STAT0003": [
+            "not_started"
+          ],
+          "Col0DUED0004": "2026-11-09"
+        },
+        "created_by": "U07LFISCH2R",
+        "created": 1791028800
+      }
+    ],
+    "next_rec": 3,
+    "next_col": 4
+  },
+  {
+    "_key": "F0PAYV1LST9",
+    "id": "F0PAYV1LST9",
+    "name": "Payments v1 launch checklist (2025)",
+    "description": "Archived checklist from the v1 launch",
+    "icon": "",
+    "owner": "U07LFISCH2R",
+    "co_owners": [],
+    "created": 1743854400,
+    "columns": [
+      {
+        "key": "Col0V1TK0001",
+        "name": "Task",
+        "type": "text"
+      },
+      {
+        "key": "Col0V1OW0002",
+        "name": "Owner",
+        "type": "user"
+      },
+      {
+        "key": "Col0V1ST0003",
+        "name": "Status",
+        "type": "select",
+        "options": {
+          "choices": [
+            {
+              "value": "open",
+              "label": "Open",
+              "color": "gray"
+            },
+            {
+              "value": "in_progress",
+              "label": "In progress",
+              "color": "blue"
+            },
+            {
+              "value": "done",
+              "label": "Done",
+              "color": "green"
+            }
+          ]
+        }
+      },
+      {
+        "key": "Col0V1DD0004",
+        "name": "Due date",
+        "type": "date"
+      }
+    ],
+    "records": [
+      {
+        "id": "Rec0PV1A0001",
+        "fields": {
+          "Col0V1TK0001": "Update status page copy",
+          "Col0V1OW0002": [
+            "U07LFISCH2R"
+          ],
+          "Col0V1ST0003": [
+            "done"
+          ],
+          "Col0V1DD0004": "2025-05-01"
+        },
+        "created_by": "U07LFISCH2R",
+        "created": 1743940800
+      },
+      {
+        "id": "Rec0PV1A0002",
+        "fields": {
+          "Col0V1TK0001": "Announce in #general",
+          "Col0V1OW0002": [
+            "U01DWHIT5FA"
+          ],
+          "Col0V1ST0003": [
+            "done"
+          ],
+          "Col0V1DD0004": "2025-05-02"
+        },
+        "created_by": "U07LFISCH2R",
+        "created": 1743940800
+      }
+    ],
+    "next_rec": 2,
+    "next_col": 4
+  }
+]

@@ -1,0 +1,21 @@
+[
+  {
+    "id": "report-nordic-grocery-cold-chain",
+    "match": ["cold", "nordic|scandinavia"],
+    "content": "# Cold-chain temperature monitoring for Nordic grocery retail\n\n## Summary\nThe Nordic market for wireless temperature monitoring in grocery cold rooms and display cases is concentrated among three regional vendors. Pricing is almost always quoted per sensor per month, with hardware bundled.\n\n## Vendors\n\n| Vendor | HQ | Est. share of monitored grocery cold rooms (Nordics) | List price |\n|---|---|---|---|\n| FrostLink | Oslo, Norway | 38% | EUR 4.20 per sensor per month |\n| Kylma Systems | Tampere, Finland | 27% | EUR 5.10 per sensor per month |\n| ColdTrace | Malmo, Sweden | 19% | EUR 3.80 per sensor per month (36-month lease) |\n\nThe remaining share is split between global players (Sensitech, Monnit) and in-house systems.\n\n## Notes\n- FrostLink is the market leader; it supplies three of the five largest Norwegian grocery chains and won the 2026 Axfood pilot.\n- ColdTrace's lower price requires a 36-month commitment.\n- Kylma Systems bundles HACCP reporting, which explains its premium.\n\n## Sources\n[1] FrostLink pricing: https://www.frostlink.no/en/pricing\n[2] Kylma Systems retail solutions: https://kylmasystems.fi/retail\n[3] ColdTrace: https://coldtrace.se/en/plans\n[4] Nordic Retail Tech Report 2026: https://www.nordicretailtech.com/reports/cold-chain-2026\n",
+    "sources": [
+      { "title": "FrostLink pricing", "url": "https://www.frostlink.no/en/pricing" },
+      { "title": "Kylma Systems retail solutions", "url": "https://kylmasystems.fi/retail" },
+      { "title": "ColdTrace plans", "url": "https://coldtrace.se/en/plans" },
+      { "title": "Nordic Retail Tech Report 2026: Cold chain", "url": "https://www.nordicretailtech.com/reports/cold-chain-2026" }
+    ]
+  },
+  {
+    "id": "report-pharma-cold-chain",
+    "match": ["cold", "pharma"],
+    "content": "# Cold-chain monitoring for pharmaceutical logistics\n\n## Summary\nPharmaceutical cold-chain monitoring is dominated by Sensitech and Controlant, priced per shipment rather than per sensor. Controlant charges roughly USD 9 per monitored shipment.\n",
+    "sources": [
+      { "title": "Controlant", "url": "https://controlant.com" }
+    ]
+  }
+]

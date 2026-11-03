@@ -1,0 +1,20 @@
+[
+  {
+    "id": "10700",
+    "issue": "PAY-121",
+    "author": "alex.kim",
+    "comment": "Backoff implementation",
+    "started": "2026-10-20T14:00:00.000+0000",
+    "timeSpentSeconds": 21600,
+    "created": "2026-10-20T20:00:00.000+0000"
+  },
+  {
+    "id": "10701",
+    "issue": "PAY-121",
+    "author": "alex.kim",
+    "comment": "Tests",
+    "started": "2026-10-27T14:00:00.000+0000",
+    "timeSpentSeconds": 10800,
+    "created": "2026-10-27T18:00:00.000+0000"
+  }
+]

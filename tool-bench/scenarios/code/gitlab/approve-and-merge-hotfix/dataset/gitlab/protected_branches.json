@@ -1,0 +1,10 @@
+[
+  {
+    "_key": "northwind/payments/ledger:main",
+    "id": 501,
+    "name": "main",
+    "push_access_level": 40,
+    "merge_access_level": 40,
+    "allow_force_push": false
+  }
+]

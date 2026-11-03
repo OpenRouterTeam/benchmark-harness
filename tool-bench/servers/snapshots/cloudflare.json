@@ -1,0 +1,199 @@
+{
+  "name": "cloudflare",
+  "server_info": {
+    "name": "cloudflare-api",
+    "version": "0.1.0"
+  },
+  "protocol_version": "2025-06-18",
+  "tools": [
+    {
+      "name": "docs",
+      "title": "Cloudflare Docs Search",
+      "description": "Search the Cloudflare documentation.\n\n\t\tThis tool should be used to answer any question about Cloudflare products or features, including:\n\t\t- Workers, Pages, R2, Images, Stream, D1, Durable Objects, KV, Workflows, Hyperdrive, Queues\n\t\t- AI Search, Workers AI, Vectorize, AI Gateway, Browser Rendering\n\t\t- Zero Trust, Access, Tunnel, Gateway, Browser Isolation, WARP, DDOS, Magic Transit, Magic WAN\n\t\t- CDN, Cache, DNS, Zaraz, Argo, Rulesets, Terraform, Account and Billing\n\n\t\tResults are returned as semantically similar chunks to the query.\n\t\t",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Cloudflare documentation search query"
+          }
+        },
+        "required": [
+          "query"
+        ]
+      },
+      "annotations": {
+        "title": "Cloudflare Docs Search",
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "similarity": {
+                  "type": "number",
+                  "description": "Similarity score from AI Search"
+                },
+                "id": {
+                  "type": "string",
+                  "description": "Source file ID"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "Developer documentation URL"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Documentation page title"
+                },
+                "text": {
+                  "type": "string",
+                  "description": "Matching documentation chunk text"
+                }
+              },
+              "required": [
+                "similarity",
+                "id",
+                "url",
+                "title",
+                "text"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "results"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "search",
+      "title": "Cloudflare API Spec Search",
+      "description": "Search the Cloudflare OpenAPI spec. All $refs are pre-resolved inline. A 2xx response schema describes `result` of what cloudflare.request() returns; a paginated list's `result_info` schema is in the response's `x-result-info`.\n\nProducts: cloudforce-one, access, workers, magic, dlp, email-security, realtime, email, devices, ai-gateway, intel, data-security, gateway, stream, settings, brand-protection, ai-search, builds, security-center, browser-rendering, addressing, dex, images, logpush, api_gateway, cws, load_balancers, firewall, rulesets, vectorize... (172 total)\n\nTypes:\n\ninterface OperationInfo {\n  summary?: string;\n  \"x-api-token-group\"?: string[]; // API token permissions the endpoint accepts (any one); OAuth scopes have the same names\n  description?: string;\n  tags?: string[];\n  parameters?: Array<{ name: string; in: string; required?: boolean; schema?: unknown; description?: string }>;\n  requestBody?: { required?: boolean; content?: Record<string, { schema?: unknown }> };\n  // A 2xx schema describes `result` of what cloudflare.request() returns; a paginated list's result_info schema is in x-result-info\n  responses?: Record<string, { description?: string; content?: Record<string, { schema?: unknown }>; \"x-result-info\"?: unknown }>;\n}\n\ninterface PathItem {\n  get?: OperationInfo;\n  post?: OperationInfo;\n  put?: OperationInfo;\n  patch?: OperationInfo;\n  delete?: OperationInfo;\n}\n\ndeclare const spec: {\n  paths: Record<string, PathItem>;\n};\n\n\nExamples:\n\n// Find endpoints by product\nasync () => {\n  const results = [];\n  for (const [path, methods] of Object.entries(spec.paths)) {\n    for (const [method, op] of Object.entries(methods)) {\n      if (op.tags?.some(t => t.toLowerCase() === 'workers')) {\n        results.push({ method: method.toUpperCase(), path, summary: op.summary });\n      }\n    }\n  }\n  return results;\n}\n\n// Get endpoint with requestBody schema (refs are resolved)\nasync () => {\n  const op = spec.paths['/accounts/{account_id}/d1/database']?.post;\n  return { summary: op?.summary, requestBody: op?.requestBody };\n}\n\n// Get endpoint parameters\nasync () => {\n  const op = spec.paths['/accounts/{account_id}/workers/scripts']?.get;\n  return op?.parameters;\n}",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "JavaScript async arrow function to search the OpenAPI spec"
+          },
+          "truncate": {
+            "description": "Cap the result at ~6,000 tokens. Set to false only when the result goes straight to a file or pipe, not into the conversation: without the cap, a broad query can return megabytes.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "annotations": {
+        "title": "Cloudflare API Spec Search",
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "execute",
+      "title": "Cloudflare API Code Executor",
+      "description": "Execute JavaScript code that can read, create, update, or delete resources through the Cloudflare API. First use the 'search' tool to find the right endpoints, then write code using the cloudflare.request() function.\n\nAvailable in your code:\n\ninterface CloudflareRequestOptions {\n  method: \"GET\" | \"POST\" | \"PUT\" | \"PATCH\" | \"DELETE\";\n  path: string;\n  query?: Record<string, string | number | boolean | undefined>;\n  // Objects and arrays are sent as JSON. Bytes (Uint8Array, ArrayBuffer), Blob, FormData,\n  // URLSearchParams, streams, and strings with a non-JSON contentType are sent as they are. A string\n  // with a JSON contentType, or none, is sent as it is when it is already JSON, else as a JSON string.\n  body?: unknown;\n  // Content-Type header. Defaults to application/json for JSON bodies. Leave it unset for FormData,\n  // whose multipart boundary fetch adds.\n  contentType?: string;\n}\n\ninterface CloudflareResponse<T = unknown> {\n  success: boolean;\n  status: number;\n  // A JSON response's result. For any other response, its text, or a Uint8Array for binary content\n  // (images, PDFs, archives, and anything else that isn't valid UTF-8). Bytes in the value your code\n  // returns appear as { base64, byteLength }.\n  result: T;\n  errors: Array<{ code: number; message: string }>;\n  messages: Array<{ code: number; message: string }>;\n  result_info?: {\n    page: number;\n    per_page: number;\n    total_pages: number;\n    count: number;\n    total_count: number;\n  };\n}\n\ndeclare const cloudflare: {\n  request<T = unknown>(options: CloudflareRequestOptions): Promise<CloudflareResponse<T>>;\n};\n\ndeclare const accountId: string;\n\n// accountId is the account_id tool argument when passed; otherwise the session's account when it is authorized for exactly one. Reading it when neither applies throws an error.\n\nWhen the session has access to multiple accounts, pass account_id. Call GET /accounts to discover available accounts. Paginate as needed, or filter by exact name with GET /accounts?name=<exact account name>.\n\nYour code must be an async arrow function that returns the result.\nA failed request throws an Error naming the method, path, HTTP status and Cloudflare's errors. For HTTP 401/403 it also says which permission the endpoint needs and whether reconnecting will help.\n\nExample: Worker with bindings (a multipart/form-data upload):\nasync () => {\n  const code = `export default { async fetch(request, env) { return new Response(await env.MY_KV.get('key') || 'none') } };`;\n  const metadata = { main_module: \"worker.js\", bindings: [{ type: \"kv_namespace\", name: \"MY_KV\", namespace_id: \"your-kv-id\" }] };\n  const form = new FormData();\n  form.append(\"metadata\", new Blob([JSON.stringify(metadata)], { type: \"application/json\" }));\n  form.append(\"worker.js\", new Blob([code], { type: \"application/javascript+module\" }), \"worker.js\");\n  return cloudflare.request({ method: \"PUT\", path: `/accounts/${accountId}/workers/scripts/my-worker`, body: form });\n}",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "JavaScript async arrow function to execute"
+          },
+          "account_id": {
+            "description": "Cloudflare account ID to run against. Optional when the session is authorized for exactly one account, and for account-independent calls such as GET /accounts.",
+            "type": "string"
+          },
+          "truncate": {
+            "description": "Cap the result at ~6,000 tokens. Set to false only when the result goes straight to a file or pipe, not into the conversation: without the cap, a broad query can return megabytes.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "annotations": {
+        "title": "Cloudflare API Code Executor",
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": true
+      }
+    },
+    {
+      "name": "whoami",
+      "title": "Current Cloudflare Identity",
+      "description": "Return the Cloudflare user or account that this connection is authenticated as. Takes no arguments. The id is stable across token refresh, reconnection and permission changes.",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "Current Cloudflare Identity",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "openai/profile": true,
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "user:read",
+              "account:read"
+            ]
+          }
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Opaque profile identifier. Unique within this server, unchanged across token refresh, reconnection, and display-metadata changes. Never reassigned to another profile."
+          },
+          "name": {
+            "description": "Display name for the authenticated profile.",
+            "type": "string"
+          },
+          "email": {
+            "description": "Email address for display; not used as the profile identity.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ],
+  "sha256": "6bedbe079e3f017aef541e7d1b0e618da007d65add6a149e0ba4c1b100d065c2",
+  "counts": {
+    "tools": 4,
+    "bytes": 9588,
+    "o200k": 2343
+  }
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "_key": "octo-org:Bug",
+    "id": 11,
+    "node_id": "IT_kwDOAAB1",
+    "name": "Bug",
+    "description": "An unexpected problem",
+    "color": "red"
+  },
+  {
+    "_key": "octo-org:Task",
+    "id": 12,
+    "node_id": "IT_kwDOAAB2",
+    "name": "Task",
+    "description": "A specific piece of work",
+    "color": "yellow"
+  }
+]

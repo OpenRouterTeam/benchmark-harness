@@ -1,0 +1,12 @@
+[
+  {
+    "id": "report-invoicing-competitor-pricing",
+    "match": ["tallybook", "billfold", "sumwise"],
+    "content": "# Pricing of Tallybook, Billfold and Sumwise (October 2026)\n\n| Product | Entry plan | Mid plan | Top plan | Notes |\n|---|---|---|---|---|\n| Tallybook | $15/month | $45/month | $110/month | Multi-currency only on the top plan |\n| Billfold | $9/month | $29/month | n/a | Freelancer-focused, 2 plans |\n| Sumwise | $25/month | $60/month | $140/month | Includes payroll for up to 5 employees |\n\n## Positioning\nLedgerly's Team plan ($39) sits between Billfold and Tallybook mid plans. Sumwise is the most expensive but bundles payroll.\n",
+    "sources": [
+      { "title": "Tallybook pricing", "url": "https://tallybook.com/pricing" },
+      { "title": "Billfold plans", "url": "https://billfold.app/plans" },
+      { "title": "Sumwise pricing", "url": "https://www.sumwise.io/pricing" }
+    ]
+  }
+]

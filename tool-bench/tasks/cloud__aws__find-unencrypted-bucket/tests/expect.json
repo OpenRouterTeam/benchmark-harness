@@ -1,0 +1,41 @@
+{
+  "state": [],
+  "required_calls": [
+    {
+      "service": "aws",
+      "method": "GET",
+      "path": "/northwind-legacy-exports",
+      "path_regex": null,
+      "query_contains": "encryption",
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "forbidden_calls": [
+    {
+      "service": "aws",
+      "method": "PUT",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    },
+    {
+      "service": "aws",
+      "method": "DELETE",
+      "path": null,
+      "path_regex": null,
+      "query_contains": null,
+      "body": null,
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": {
+    "contains": [],
+    "regex": "^\\W*northwind-legacy-exports\\W*$"
+  }
+}

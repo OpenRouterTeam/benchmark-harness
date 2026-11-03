@@ -1,0 +1,14 @@
+[
+  {
+    "_key": "org:octo-org:tier",
+    "property_name": "tier",
+    "value_type": "single_select",
+    "required": false,
+    "allowed_values": [
+      "critical",
+      "standard",
+      "experimental"
+    ],
+    "description": "Service tier"
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "id": "acct_1FwY8bQk2LmN4pRs",
+    "business_profile": {
+      "mcc": "5734",
+      "name": "Octo Shop",
+      "support_email": "support@octo-shop.com",
+      "support_phone": null,
+      "support_address": null,
+      "url": "https://octo-shop.com"
+    },
+    "created": 1740787200,
+    "email": "ops@octo-corp.example",
+    "livemode": false,
+    "settings": {
+      "dashboard": {
+        "display_name": "Octo Shop",
+        "timezone": "America/Los_Angeles"
+      }
+    }
+  }
+]

@@ -1,0 +1,1 @@
+We moved the marketing website off its old Supabase project last month. Please pause the legacy marketing site project so it stops running. Leave the current marketing site and every other project exactly as they are.

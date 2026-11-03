@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"add_note_to_incident","arguments":{"incident_id":"Q3K8ORDBLAG2RX","note":"CloudWatch alarm orders-db-replica-2-replica-lag went into ALARM at 2026-10-30T13:11:00Z (ReplicaLag max 412s vs 300s threshold)."}}}

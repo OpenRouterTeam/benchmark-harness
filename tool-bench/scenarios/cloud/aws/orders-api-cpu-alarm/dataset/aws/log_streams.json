@@ -1,0 +1,19 @@
+[
+  {
+    "_key": "/ec2/orders-api/prod|i-04c1a7e2b9d35f018/app", "logGroupName": "/ec2/orders-api/prod", "logStreamName": "i-04c1a7e2b9d35f018/app", "creationTime": "2026-01-19T07:20:05Z",
+    "events": [
+      { "timestamp": "2026-03-14T07:10:02Z", "message": "{\"level\":\"INFO\",\"route\":\"POST /orders\",\"status\":201,\"latency_ms\":148}" },
+      { "timestamp": "2026-03-14T07:14:41Z", "message": "{\"level\":\"WARN\",\"route\":\"GET /orders/search\",\"status\":200,\"latency_ms\":2310,\"msg\":\"slow query: full scan on orders_archive\"}" },
+      { "timestamp": "2026-03-14T07:15:09Z", "message": "{\"level\":\"WARN\",\"route\":\"GET /orders/search\",\"status\":200,\"latency_ms\":2875,\"msg\":\"slow query: full scan on orders_archive\"}" },
+      { "timestamp": "2026-03-14T08:02:17Z", "message": "{\"level\":\"ERROR\",\"route\":\"GET /orders/search\",\"status\":504,\"latency_ms\":30001,\"msg\":\"upstream timeout\"}" },
+      { "timestamp": "2026-03-14T08:05:33Z", "message": "{\"level\":\"WARN\",\"route\":\"GET /orders/search\",\"status\":200,\"latency_ms\":3120,\"msg\":\"slow query: full scan on orders_archive\"}" },
+      { "timestamp": "2026-03-14T08:40:12Z", "message": "{\"level\":\"INFO\",\"route\":\"POST /orders\",\"status\":201,\"latency_ms\":162}" }
+    ]
+  },
+  {
+    "_key": "/ec2/orders-api/staging|i-09e5b3d1f7a2c6480/app", "logGroupName": "/ec2/orders-api/staging", "logStreamName": "i-09e5b3d1f7a2c6480/app", "creationTime": "2026-02-02T13:45:10Z",
+    "events": [
+      { "timestamp": "2026-03-14T08:10:00Z", "message": "{\"level\":\"INFO\",\"route\":\"GET /healthz\",\"status\":200,\"latency_ms\":2}" }
+    ]
+  }
+]

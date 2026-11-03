@@ -1,0 +1,97 @@
+[scenario]
+id = "code/multi/terraform-failure-grafana-annotate"
+title = "Annotate the prod Payments DB dashboard with the failed Terraform upgrade run"
+now = "2026-10-28T15:30:00Z"
+seed = "code-multi-terraform-failure-grafana-annotate"
+services = ["terraform", "grafana"]
+tags = ["write", "multi-service", "terraform", "grafana", "disambiguation"]
+timeout_sec = 1200
+
+# The failed prod run is run-Gy4tBHGggKx49nbH (errored 2026-10-28T13:12:09Z during apply with
+# InvalidParameterCombination). Distractors: the older prod run that errored at plan time
+# (run-nAAGvVVuIe2rfmNM), the staging run (InvalidDBParameterGroupState), and the staging /
+# legacy Payments DB dashboards. The dataset's highest annotation id is 52, so the new one is 53.
+
+[[expect.state]]
+pointer = "/services/grafana/annotations/53/dashboardUID"
+equals = "payments-db-prod"
+
+[[expect.state]]
+pointer = "/services/grafana/annotations/53/time"
+equals = 1793193129000
+
+[[expect.state]]
+pointer = "/services/grafana/annotations/53/text"
+contains = "run-Gy4tBHGggKx49nbH"
+
+[[expect.state]]
+pointer = "/services/grafana/annotations/53/text"
+contains = "InvalidParameterCombination"
+
+[[expect.state]]
+pointer = "/services/grafana/annotations/53/tags"
+contains = "terraform"
+
+[[expect.state]]
+pointer = "/services/grafana/annotations/53/tags"
+contains = "payments"
+
+[[expect.state]]
+pointer = "/services/grafana/annotations/54"
+exists = false
+
+[[expect.state]]
+pointer = "/services/terraform/runs/run-Gy4tBHGggKx49nbH/status"
+equals = "errored"
+
+[[expect.required_calls]]
+service = "grafana"
+method = "POST"
+path = "/api/annotations"
+body = { dashboardUID = "payments-db-prod" }
+
+[[expect.forbidden_calls]]
+service = "grafana"
+method = "DELETE"
+
+[[expect.forbidden_calls]]
+service = "grafana"
+method = "POST"
+path = "/api/dashboards/db"
+
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "POST"
+
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "PATCH"
+
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "DELETE"
+
+[[solution.call]]
+endpoint = "terraform"
+tool = "list_runs"
+arguments = { terraform_org_name = "acme-platform", workspace_name = "payments-api-prod" }
+
+[[solution.call]]
+endpoint = "terraform"
+tool = "get_run_details"
+arguments = { run_id = "run-Gy4tBHGggKx49nbH" }
+
+[[solution.call]]
+endpoint = "terraform"
+tool = "get_apply_logs"
+arguments = { apply_id = "apply-OttY2qKt1DNXCd1P" }
+
+[[solution.call]]
+endpoint = "grafana"
+tool = "search_dashboards"
+arguments = { query = "Payments DB" }
+
+[[solution.call]]
+endpoint = "grafana"
+tool = "create_annotation"
+arguments = { dashboardUid = "payments-db-prod", time = 1793193129000, text = "Terraform run-Gy4tBHGggKx49nbH (Upgrade payments DB to Postgres 16) failed on payments-api-prod: InvalidParameterCombination on aws_db_instance.payments", tags = ["terraform", "payments"] }

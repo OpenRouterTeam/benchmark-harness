@@ -1,0 +1,9 @@
+[
+  {
+    "id": "ironbark-sla",
+    "match": ["ironbark", "sla|uptime"],
+    "title": "Ironbark Hosting SLA",
+    "text": "Ironbark Hosting's current SLA commits Business customers to 99.95% monthly uptime, with a 10% service credit below that.",
+    "references": ["https://www.ironbarkhosting.com/legal/sla"]
+  }
+]

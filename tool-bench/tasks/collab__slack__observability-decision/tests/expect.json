@@ -1,0 +1,24 @@
+{
+  "state": [],
+  "required_calls": [],
+  "forbidden_calls": [
+    {
+      "service": "slack",
+      "method": null,
+      "path": "/_mcp/tools/call",
+      "path_regex": null,
+      "query_contains": null,
+      "body": {
+        "name": "slack_send_message"
+      },
+      "body_contains": null,
+      "min_count": 1
+    }
+  ],
+  "answer": {
+    "contains": [
+      "Grafana Cloud"
+    ],
+    "regex": "(?i)(2026-11-15|nov(ember)?\\.?\\s+15(th)?)"
+  }
+}

@@ -1,0 +1,46 @@
+[scenario]
+id = "search/firecrawl/crawl-api-reference"
+title = "Crawl only the API reference section of a partner's docs"
+now = "2026-10-29T10:00:00Z"
+seed = "search-firecrawl-crawl-api-reference"
+services = ["firecrawl"]
+tags = ["write", "single-service", "firecrawl"]
+timeout_sec = 900
+
+# The first crawl started in this world gets this ID (deterministic per seed). It must
+# cover exactly the five /api/ pages: no home page, guides, changelog or marketing site.
+[[expect.state]]
+pointer = "/services/firecrawl/crawls/763a0804-9f8a-89f5-a2e0-550cf370d6ae/url"
+contains = "docs.lumenpay.dev"
+
+[[expect.state]]
+pointer = "/services/firecrawl/crawls/763a0804-9f8a-89f5-a2e0-550cf370d6ae/total"
+equals = 5
+
+[[expect.state]]
+pointer = "/services/firecrawl/crawls/763a0804-9f8a-89f5-a2e0-550cf370d6ae/pages"
+contains = "https://docs.lumenpay.dev/api/webhooks"
+
+[[expect.state]]
+pointer = "/services/firecrawl/crawls/763a0804-9f8a-89f5-a2e0-550cf370d6ae/pages"
+contains = "https://docs.lumenpay.dev/api/overview"
+
+[[expect.required_calls]]
+service = "firecrawl"
+method = "POST"
+path = "/v2/crawl"
+
+[[expect.forbidden_calls]]
+service = "firecrawl"
+method = "DELETE"
+path_regex = "^/v2/crawl/"
+
+[[solution.call]]
+endpoint = "firecrawl"
+tool = "firecrawl_map"
+arguments = { url = "https://docs.lumenpay.dev" }
+
+[[solution.call]]
+endpoint = "firecrawl"
+tool = "firecrawl_crawl"
+arguments = { url = "https://docs.lumenpay.dev", includePaths = ["^/api/.*"], limit = 50 }

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"delete-many","arguments":{"collection":"customers","connectionId":"preconfigured","database":"crm","filter":{"email":{"$regex":"@qa\\.octoshop\\.test$"}}}}}

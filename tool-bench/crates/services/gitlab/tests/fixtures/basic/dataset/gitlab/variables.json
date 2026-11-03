@@ -1,0 +1,17 @@
+[
+  {
+    "_key": "acme/platform/api:DATABASE_URL",
+    "key": "DATABASE_URL",
+    "value": "postgres://db/api",
+    "protected": true,
+    "masked": false,
+    "environment_scope": "*"
+  },
+  {
+    "_key": "acme:SENTRY_DSN",
+    "key": "SENTRY_DSN",
+    "value": "https://abc@sentry.acme.dev/2",
+    "masked": true,
+    "environment_scope": "*"
+  }
+]

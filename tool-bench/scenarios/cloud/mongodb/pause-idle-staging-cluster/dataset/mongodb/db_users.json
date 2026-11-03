@@ -1,0 +1,38 @@
+[
+  {
+    "_key": "65c0ffee0000000000000002/analytics-etl",
+    "groupId": "65c0ffee0000000000000002",
+    "username": "analytics-etl",
+    "databaseName": "admin",
+    "roles": [
+      {
+        "roleName": "readWrite",
+        "databaseName": "analytics"
+      }
+    ],
+    "scopes": [
+      {
+        "type": "CLUSTER",
+        "name": "analytics-staging"
+      }
+    ]
+  },
+  {
+    "_key": "65c0ffee0000000000000001/shop-api",
+    "groupId": "65c0ffee0000000000000001",
+    "username": "shop-api",
+    "databaseName": "admin",
+    "roles": [
+      {
+        "roleName": "readWrite",
+        "databaseName": "shop"
+      }
+    ],
+    "scopes": [
+      {
+        "type": "CLUSTER",
+        "name": "shop-prod"
+      }
+    ]
+  }
+]

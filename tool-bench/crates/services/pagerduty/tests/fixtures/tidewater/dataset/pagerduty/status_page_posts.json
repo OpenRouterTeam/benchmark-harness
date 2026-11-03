@@ -1,0 +1,13 @@
+[
+  {
+    "id": "PSPPST1",
+    "post_type": "incident",
+    "status_page": {
+      "id": "PSTPG01",
+      "type": "status_page"
+    },
+    "title": "Elevated errors during checkout",
+    "starts_at": "2026-10-30T12:50:00Z",
+    "ends_at": "2026-10-30T18:00:00Z"
+  }
+]

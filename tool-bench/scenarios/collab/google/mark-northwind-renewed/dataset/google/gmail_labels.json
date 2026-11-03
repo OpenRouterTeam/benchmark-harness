@@ -1,0 +1,93 @@
+[
+  {
+    "id": "INBOX",
+    "name": "INBOX",
+    "type": "system"
+  },
+  {
+    "id": "SENT",
+    "name": "SENT",
+    "type": "system"
+  },
+  {
+    "id": "DRAFT",
+    "name": "DRAFT",
+    "type": "system"
+  },
+  {
+    "id": "SPAM",
+    "name": "SPAM",
+    "type": "system"
+  },
+  {
+    "id": "TRASH",
+    "name": "TRASH",
+    "type": "system"
+  },
+  {
+    "id": "IMPORTANT",
+    "name": "IMPORTANT",
+    "type": "system"
+  },
+  {
+    "id": "STARRED",
+    "name": "STARRED",
+    "type": "system"
+  },
+  {
+    "id": "UNREAD",
+    "name": "UNREAD",
+    "type": "system"
+  },
+  {
+    "id": "CHAT",
+    "name": "CHAT",
+    "type": "system"
+  },
+  {
+    "id": "CATEGORY_PERSONAL",
+    "name": "CATEGORY_PERSONAL",
+    "type": "system"
+  },
+  {
+    "id": "CATEGORY_SOCIAL",
+    "name": "CATEGORY_SOCIAL",
+    "type": "system"
+  },
+  {
+    "id": "CATEGORY_PROMOTIONS",
+    "name": "CATEGORY_PROMOTIONS",
+    "type": "system"
+  },
+  {
+    "id": "CATEGORY_UPDATES",
+    "name": "CATEGORY_UPDATES",
+    "type": "system"
+  },
+  {
+    "id": "CATEGORY_FORUMS",
+    "name": "CATEGORY_FORUMS",
+    "type": "system"
+  },
+  {
+    "id": "Label_1",
+    "name": "Vendors",
+    "type": "user",
+    "messageListVisibility": "show",
+    "labelListVisibility": "labelShow"
+  },
+  {
+    "id": "Label_2",
+    "name": "Vendors/Invoices",
+    "type": "user",
+    "messageListVisibility": "show",
+    "labelListVisibility": "labelShow"
+  },
+  {
+    "id": "Label_3",
+    "name": "Compliance",
+    "type": "user",
+    "messageListVisibility": "show",
+    "labelListVisibility": "labelShow"
+  }
+]

@@ -1,0 +1,1 @@
+Card declines are spiking and I need to get a human from Payments on the phone. In PagerDuty, who is on call right now for the Payments escalation policy — the first responder, and who is next in line if they don't pick up? Don't page anyone or change anything; just write both names to `/app/answer.md`.

@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"jira_assign_issue","arguments":{"assignee":"lena.fischer","issue_key":"PAY-124"}}}

@@ -1,0 +1,84 @@
+[scenario]
+id = "code/terraform/unlock-orders-prod"
+title = "Clear the stuck lock on the Commerce orders prod workspace and verify with a plan"
+now = "2026-10-28T15:30:00Z"
+seed = "code-terraform-unlock-orders-prod"
+services = ["terraform"]
+tags = ["single-service", "write", "terraform", "disambiguation"]
+timeout_sec = 900
+
+# Target: acme-platform/orders-api-prod (Commerce project), locked by a crashed run.
+# Look-alikes: orders-api-prod-legacy (Legacy project, locked on purpose by a user) and
+# acme-sandbox/orders-api-prod (another org, unlocked).
+[[expect.state]]
+pointer = "/services/terraform/workspaces/ws-gOHPQz7D1ZRgqBJq/locked"
+equals = false
+
+[[expect.state]]
+pointer = "/services/terraform/workspaces/ws-gOHPQz7D1ZRgqBJq/latest-run-summary/plan-only"
+equals = true
+
+[[expect.state]]
+pointer = "/services/terraform/workspaces/ws-QMfGO0wb8mhyWgrq/locked"
+equals = true
+
+[[expect.state]]
+pointer = "/services/terraform/workspaces/ws-QMfGO0wb8mhyWgrq/locked-by/type"
+equals = "users"
+
+[[expect.required_calls]]
+service = "terraform"
+method = "POST"
+path = "/api/v2/runs"
+body_contains = "ws-gOHPQz7D1ZRgqBJq"
+
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "POST"
+path_regex = "^/api/v2/workspaces/ws-QMfGO0wb8mhyWgrq/"
+
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "POST"
+path = "/api/v2/runs"
+body_contains = "ws-QMfGO0wb8mhyWgrq"
+
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "POST"
+path = "/api/v2/runs"
+body_contains = "ws-i0F81Hk5tvGLpmR9"
+
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "POST"
+path_regex = "/actions/safe-delete$"
+
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "DELETE"
+
+[[expect.forbidden_calls]]
+service = "terraform"
+method = "POST"
+path_regex = "^/api/v2/runs/[^/]+/actions/apply$"
+
+[[solution.call]]
+endpoint = "terraform"
+tool = "list_terraform_projects"
+arguments = { terraform_org_name = "acme-platform" }
+
+[[solution.call]]
+endpoint = "terraform"
+tool = "list_workspaces"
+arguments = { terraform_org_name = "acme-platform", project_id = "prj-RGb4nwJ3c5kaUkvv", search_query = "orders" }
+
+[[solution.call]]
+endpoint = "terraform"
+tool = "force_unlock_workspace"
+arguments = { workspace_id = "ws-gOHPQz7D1ZRgqBJq" }
+
+[[solution.call]]
+endpoint = "terraform"
+tool = "create_run"
+arguments = { terraform_org_name = "acme-platform", workspace_name = "orders-api-prod", run_type = "plan_only", message = "Verify orders-api-prod after clearing stuck lock" }

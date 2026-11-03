@@ -1,0 +1,78 @@
+[
+  {
+    "_key": "9101",
+    "id": 9101,
+    "project": "acme/platform/api",
+    "pipeline_id": 601,
+    "name": "build",
+    "stage": "build",
+    "status": "success",
+    "ref": "main",
+    "created_at": "2026-03-12T10:00:00.000Z",
+    "started_at": "2026-03-12T10:00:10.000Z",
+    "finished_at": "2026-03-12T10:03:00.000Z",
+    "duration": 170,
+    "user": "raj",
+    "runner_id": 31,
+    "trace": "$ cargo build\n   Compiling api v2.3.0\n    Finished release\nJob succeeded\n"
+  },
+  {
+    "_key": "9102",
+    "id": 9102,
+    "project": "acme/platform/api",
+    "pipeline_id": 601,
+    "name": "unit-tests",
+    "stage": "test",
+    "status": "failed",
+    "ref": "main",
+    "created_at": "2026-03-12T10:00:00.000Z",
+    "started_at": "2026-03-12T10:03:05.000Z",
+    "finished_at": "2026-03-12T10:09:00.000Z",
+    "duration": 355,
+    "failure_reason": "script_failure",
+    "user": "raj",
+    "runner_id": 31,
+    "trace": "$ cargo test\nrunning 42 tests\ntest limiter::refill_clamps ... FAILED\nfailures:\n---- limiter::refill_clamps stdout ----\nthread 'limiter::refill_clamps' panicked at src/limiter.rs:12: assertion failed: tokens <= capacity\nERROR: Job failed: exit code 101\n",
+    "retry_result": "success",
+    "artifacts": [
+      {
+        "file_type": "junit",
+        "size": 512,
+        "filename": "junit.xml",
+        "file_format": "gzip"
+      }
+    ],
+    "artifact_files": {
+      "reports/junit.xml": "<testsuite name=\"limiter\" failures=\"1\"/>"
+    }
+  },
+  {
+    "_key": "9103",
+    "id": 9103,
+    "project": "acme/platform/api",
+    "pipeline_id": 601,
+    "name": "deploy-staging",
+    "stage": "deploy",
+    "status": "manual",
+    "when": "manual",
+    "ref": "main",
+    "created_at": "2026-03-12T10:00:00.000Z",
+    "user": "raj"
+  },
+  {
+    "_key": "9201",
+    "id": 9201,
+    "project": "acme/platform/api",
+    "pipeline_id": 602,
+    "name": "unit-tests",
+    "stage": "test",
+    "status": "success",
+    "ref": "fix/rate-limiter",
+    "created_at": "2026-03-12T15:00:00.000Z",
+    "started_at": "2026-03-12T15:00:05.000Z",
+    "finished_at": "2026-03-12T15:06:00.000Z",
+    "duration": 355,
+    "user": "raj",
+    "trace": "$ cargo test\ntest result: ok. 43 passed\nJob succeeded\n"
+  }
+]

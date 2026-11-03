@@ -1,0 +1,28 @@
+[
+  {
+    "_key": "Q9CHKWEB5XX3VK/1",
+    "id": "PNOTE01",
+    "user": {
+      "id": "PLWEBR5",
+      "type": "user_reference"
+    },
+    "channel": {
+      "summary": "The PagerDuty website or APIs"
+    },
+    "content": "CDN shows origin 502s from checkout-web pods in us-east-1; looking at the ingress.",
+    "created_at": "2026-10-20T12:52:00Z"
+  },
+  {
+    "_key": "QA6CHKAPIOLD0D/1",
+    "id": "PNOTE02",
+    "user": {
+      "id": "PLWEBR5",
+      "type": "user_reference"
+    },
+    "channel": {
+      "summary": "The PagerDuty website or APIs"
+    },
+    "content": "Resolved: payment provider timeout config reverted.",
+    "created_at": "2026-10-12T18:41:00Z"
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "_key": "requests-checkout-2026.10",
+    "mappings": {
+      "properties": {
+        "@timestamp": {
+          "type": "date"
+        },
+        "region": {
+          "type": "keyword"
+        },
+        "endpoint": {
+          "type": "keyword"
+        },
+        "status_code": {
+          "type": "integer"
+        },
+        "duration_ms": {
+          "type": "long"
+        },
+        "customer_tier": {
+          "type": "keyword"
+        }
+      }
+    },
+    "health": "green",
+    "status": "open",
+    "pri": 2,
+    "rep": 1,
+    "uuid": "f1Ui7vOyW4zD9fM2hQnR5E"
+  },
+  {
+    "_key": "requests-checkout-2026.09",
+    "mappings": {
+      "properties": {
+        "@timestamp": {
+          "type": "date"
+        },
+        "region": {
+          "type": "keyword"
+        },
+        "endpoint": {
+          "type": "keyword"
+        },
+        "status_code": {
+          "type": "integer"
+        },
+        "duration_ms": {
+          "type": "long"
+        },
+        "customer_tier": {
+          "type": "keyword"
+        }
+      }
+    },
+    "health": "green",
+    "status": "open",
+    "pri": 1,
+    "rep": 1,
+    "uuid": "g4Vj0wPzX7aE2gN5iRoS6F"
+  }
+]

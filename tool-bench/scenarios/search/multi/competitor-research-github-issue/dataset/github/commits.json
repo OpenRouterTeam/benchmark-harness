@@ -1,0 +1,77 @@
+[
+  {
+    "_key": "octo-org/competitive-intel@13cf997c4f6018852ee3d753bb7bcff6cb7c4129",
+    "sha": "13cf997c4f6018852ee3d753bb7bcff6cb7c4129",
+    "message": "Add tracker README",
+    "author": {
+      "name": "Mona Lisa",
+      "email": "mona@octo-org.example",
+      "date": "2025-01-06T10:00:00Z"
+    },
+    "committer": {
+      "name": "Mona Lisa",
+      "email": "mona@octo-org.example",
+      "date": "2025-01-06T10:00:00Z"
+    },
+    "author_login": "mona",
+    "committer_login": "mona",
+    "parents": [],
+    "files": [
+      {
+        "filename": "README.md",
+        "status": "added",
+        "content": "# competitive-intel\n\nOne issue per competitor move. Label with the competitor and the kind of move (pricing, launch, funding).\n"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/competitive-intel-2024@1fd7b37693581dd5814a8439631d657cb7b31ed3",
+    "sha": "1fd7b37693581dd5814a8439631d657cb7b31ed3",
+    "message": "Add tracker README",
+    "author": {
+      "name": "Mona Lisa",
+      "email": "mona@octo-org.example",
+      "date": "2024-01-08T10:00:00Z"
+    },
+    "committer": {
+      "name": "Mona Lisa",
+      "email": "mona@octo-org.example",
+      "date": "2024-01-08T10:00:00Z"
+    },
+    "author_login": "mona",
+    "committer_login": "mona",
+    "parents": [],
+    "files": [
+      {
+        "filename": "README.md",
+        "status": "added",
+        "content": "# competitive-intel-2024\n\nArchived. Use octo-org/competitive-intel.\n"
+      }
+    ]
+  },
+  {
+    "_key": "octo-org/pricing-site@6d7776fa2b7f3872a3b0e9010fa46e1f2c1152d2",
+    "sha": "6d7776fa2b7f3872a3b0e9010fa46e1f2c1152d2",
+    "message": "Initial pricing page",
+    "author": {
+      "name": "Elena Petrova",
+      "email": "elena.petrova@octo-org.example",
+      "date": "2024-06-01T10:00:00Z"
+    },
+    "committer": {
+      "name": "Elena Petrova",
+      "email": "elena.petrova@octo-org.example",
+      "date": "2024-06-01T10:00:00Z"
+    },
+    "author_login": "elena",
+    "committer_login": "elena",
+    "parents": [],
+    "files": [
+      {
+        "filename": "README.md",
+        "status": "added",
+        "content": "# pricing-site\n"
+      }
+    ]
+  }
+]

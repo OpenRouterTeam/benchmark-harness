@@ -1,0 +1,37 @@
+[
+  {
+    "_key": "root",
+    "receiver": "grafana-default-email",
+    "group_by": [
+      "grafana_folder",
+      "alertname"
+    ],
+    "routes": [
+      {
+        "receiver": "sre-pagerduty",
+        "object_matchers": [
+          [
+            "severity",
+            "=",
+            "critical"
+          ]
+        ],
+        "continue": true
+      },
+      {
+        "receiver": "checkout-slack",
+        "object_matchers": [
+          [
+            "team",
+            "=",
+            "checkout"
+          ]
+        ]
+      }
+    ],
+    "group_wait": "30s",
+    "group_interval": "5m",
+    "repeat_interval": "4h",
+    "provenance": ""
+  }
+]

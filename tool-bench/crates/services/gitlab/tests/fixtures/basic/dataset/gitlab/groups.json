@@ -1,0 +1,36 @@
+[
+  {
+    "_key": "acme",
+    "id": 20,
+    "name": "Acme",
+    "full_path": "acme",
+    "description": "Acme Corp engineering",
+    "visibility": "private",
+    "created_at": "2023-01-10T09:00:00.000Z",
+    "members": [
+      {
+        "username": "dana",
+        "access_level": 50
+      },
+      {
+        "username": "raj",
+        "access_level": 30
+      }
+    ]
+  },
+  {
+    "_key": "acme/platform",
+    "id": 21,
+    "name": "Platform",
+    "full_path": "acme/platform",
+    "description": "Platform team",
+    "visibility": "private",
+    "created_at": "2023-01-11T09:00:00.000Z",
+    "members": [
+      {
+        "username": "lena",
+        "access_level": 40
+      }
+    ]
+  }
+]

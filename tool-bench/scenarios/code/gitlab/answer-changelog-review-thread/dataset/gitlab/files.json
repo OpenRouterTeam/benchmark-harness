@@ -1,0 +1,10 @@
+[
+  {
+    "_key": "northwind/billing/billing-service:main:CHANGELOG.md",
+    "content": "# Changelog\n\n## 2026.03.2\n- Bump payments-sdk to 4.1.3 (security patch)\n"
+  },
+  {
+    "_key": "northwind/billing/billing-service:deps/payments-sdk-4.2:CHANGELOG.md",
+    "content": "# Changelog\n\n## Unreleased\n- Bump payments-sdk to 4.2.0 (3DS2 challenge flow, refund idempotency keys)\n\n## 2026.03.2\n- Bump payments-sdk to 4.1.3 (security patch)\n"
+  }
+]

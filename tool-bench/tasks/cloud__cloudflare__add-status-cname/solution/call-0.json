@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"execute","arguments":{"code":"async () => (await cloudflare.request({ method: 'GET', path: '/zones', query: { name: 'octo-corp.com' } })).result.map(z => ({ id: z.id, name: z.name }))"}}}

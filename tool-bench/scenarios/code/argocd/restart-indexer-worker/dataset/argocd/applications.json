@@ -1,0 +1,318 @@
+[
+  {
+    "_key": "argocd/search-indexer",
+    "metadata": {
+      "name": "search-indexer",
+      "namespace": "argocd",
+      "uid": "7bcbdeda-9ba7-5f6b-8e04-3a9a27dbf7b8",
+      "resourceVersion": "42258",
+      "generation": 4,
+      "creationTimestamp": "2025-09-01T12:00:00Z",
+      "labels": {
+        "team": "search",
+        "env": "production"
+      },
+      "finalizers": [
+        "resources-finalizer.argocd.argoproj.io"
+      ]
+    },
+    "spec": {
+      "source": {
+        "repoURL": "https://github.com/lumen-retail/search-deploy.git",
+        "path": "search-indexer/overlays/production",
+        "targetRevision": "main"
+      },
+      "destination": {
+        "server": "https://prod-use1.k8s.lumen.internal",
+        "namespace": "search"
+      },
+      "project": "search",
+      "syncPolicy": {
+        "syncOptions": [
+          "CreateNamespace=true",
+          "ApplyOutOfSyncOnly=true"
+        ],
+        "retry": {
+          "limit": 5,
+          "backoff": {
+            "duration": "5s",
+            "factor": 2,
+            "maxDuration": "3m0s"
+          }
+        }
+      }
+    },
+    "status": {
+      "sync": {
+        "status": "OutOfSync",
+        "comparedTo": {
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/search-deploy.git",
+            "path": "search-indexer/overlays/production",
+            "targetRevision": "main"
+          },
+          "destination": {
+            "server": "https://prod-use1.k8s.lumen.internal",
+            "namespace": "search"
+          }
+        },
+        "revision": "7ca5d26b0be980b05528199e7c8a4d83862b643a"
+      },
+      "health": {
+        "status": "Healthy"
+      },
+      "history": [
+        {
+          "revision": "5c3b5ab31cc9041e7f8db3c6c37e83a4b25c3719",
+          "deployedAt": "2026-10-21T09:10:00Z",
+          "id": 0,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/search-deploy.git",
+            "path": "search-indexer/overlays/production",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-21T09:10:00Z",
+          "initiatedBy": {
+            "username": "admin"
+          }
+        }
+      ],
+      "reconciledAt": "2026-10-29T14:00:00Z",
+      "operationState": {
+        "operation": {
+          "sync": {
+            "revision": "5c3b5ab31cc9041e7f8db3c6c37e83a4b25c3719",
+            "syncOptions": [
+              "CreateNamespace=true",
+              "ApplyOutOfSyncOnly=true"
+            ]
+          },
+          "initiatedBy": {
+            "username": "admin"
+          },
+          "retry": {
+            "limit": 5
+          }
+        },
+        "phase": "Succeeded",
+        "message": "successfully synced (all tasks run)",
+        "syncResult": {
+          "resources": [
+            {
+              "group": "apps",
+              "version": "v1",
+              "kind": "Deployment",
+              "namespace": "search",
+              "name": "search-indexer-api",
+              "status": "Synced",
+              "message": "deployment.apps/search-indexer-api configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            },
+            {
+              "group": "apps",
+              "version": "v1",
+              "kind": "Deployment",
+              "namespace": "search",
+              "name": "search-indexer-worker",
+              "status": "Synced",
+              "message": "deployment.apps/search-indexer-worker configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            },
+            {
+              "group": "",
+              "version": "v1",
+              "kind": "Service",
+              "namespace": "search",
+              "name": "search-indexer-api",
+              "status": "Synced",
+              "message": "service/search-indexer-api configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            },
+            {
+              "group": "",
+              "version": "v1",
+              "kind": "ConfigMap",
+              "namespace": "search",
+              "name": "search-indexer-config",
+              "status": "Synced",
+              "message": "configmap/search-indexer-config configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            }
+          ],
+          "revision": "5c3b5ab31cc9041e7f8db3c6c37e83a4b25c3719",
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/search-deploy.git",
+            "path": "search-indexer/overlays/production",
+            "targetRevision": "main"
+          }
+        },
+        "startedAt": "2026-10-21T09:10:00Z",
+        "finishedAt": "2026-10-21T09:10:00Z"
+      },
+      "sourceType": "Kustomize",
+      "controllerNamespace": "argocd"
+    }
+  },
+  {
+    "_key": "argocd/search-indexer-staging",
+    "metadata": {
+      "name": "search-indexer-staging",
+      "namespace": "argocd",
+      "uid": "15abc271-78d1-52b7-bb2f-c8ebecd63beb",
+      "resourceVersion": "42462",
+      "generation": 4,
+      "creationTimestamp": "2025-09-01T12:05:00Z",
+      "labels": {
+        "team": "search",
+        "env": "staging"
+      },
+      "finalizers": [
+        "resources-finalizer.argocd.argoproj.io"
+      ]
+    },
+    "spec": {
+      "source": {
+        "repoURL": "https://github.com/lumen-retail/search-deploy.git",
+        "path": "search-indexer/overlays/staging",
+        "targetRevision": "main"
+      },
+      "destination": {
+        "server": "https://staging-use1.k8s.lumen.internal",
+        "namespace": "search"
+      },
+      "project": "search",
+      "syncPolicy": {
+        "syncOptions": [
+          "CreateNamespace=true",
+          "ApplyOutOfSyncOnly=true"
+        ],
+        "retry": {
+          "limit": 5,
+          "backoff": {
+            "duration": "5s",
+            "factor": 2,
+            "maxDuration": "3m0s"
+          }
+        }
+      }
+    },
+    "status": {
+      "sync": {
+        "status": "OutOfSync",
+        "comparedTo": {
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/search-deploy.git",
+            "path": "search-indexer/overlays/staging",
+            "targetRevision": "main"
+          },
+          "destination": {
+            "server": "https://staging-use1.k8s.lumen.internal",
+            "namespace": "search"
+          }
+        },
+        "revision": "7ca5d26b0be980b05528199e7c8a4d83862b643a"
+      },
+      "health": {
+        "status": "Healthy"
+      },
+      "history": [
+        {
+          "revision": "5c3b5ab31cc9041e7f8db3c6c37e83a4b25c3719",
+          "deployedAt": "2026-10-21T09:10:00Z",
+          "id": 0,
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/search-deploy.git",
+            "path": "search-indexer/overlays/staging",
+            "targetRevision": "main"
+          },
+          "deployStartedAt": "2026-10-21T09:10:00Z",
+          "initiatedBy": {
+            "username": "admin"
+          }
+        }
+      ],
+      "reconciledAt": "2026-10-29T14:00:00Z",
+      "operationState": {
+        "operation": {
+          "sync": {
+            "revision": "5c3b5ab31cc9041e7f8db3c6c37e83a4b25c3719",
+            "syncOptions": [
+              "CreateNamespace=true",
+              "ApplyOutOfSyncOnly=true"
+            ]
+          },
+          "initiatedBy": {
+            "username": "admin"
+          },
+          "retry": {
+            "limit": 5
+          }
+        },
+        "phase": "Succeeded",
+        "message": "successfully synced (all tasks run)",
+        "syncResult": {
+          "resources": [
+            {
+              "group": "apps",
+              "version": "v1",
+              "kind": "Deployment",
+              "namespace": "search",
+              "name": "search-indexer-api",
+              "status": "Synced",
+              "message": "deployment.apps/search-indexer-api configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            },
+            {
+              "group": "apps",
+              "version": "v1",
+              "kind": "Deployment",
+              "namespace": "search",
+              "name": "search-indexer-worker",
+              "status": "Synced",
+              "message": "deployment.apps/search-indexer-worker configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            },
+            {
+              "group": "",
+              "version": "v1",
+              "kind": "Service",
+              "namespace": "search",
+              "name": "search-indexer-api",
+              "status": "Synced",
+              "message": "service/search-indexer-api configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            },
+            {
+              "group": "",
+              "version": "v1",
+              "kind": "ConfigMap",
+              "namespace": "search",
+              "name": "search-indexer-config",
+              "status": "Synced",
+              "message": "configmap/search-indexer-config configured",
+              "hookPhase": "Running",
+              "syncPhase": "Sync"
+            }
+          ],
+          "revision": "5c3b5ab31cc9041e7f8db3c6c37e83a4b25c3719",
+          "source": {
+            "repoURL": "https://github.com/lumen-retail/search-deploy.git",
+            "path": "search-indexer/overlays/staging",
+            "targetRevision": "main"
+          }
+        },
+        "startedAt": "2026-10-21T09:10:00Z",
+        "finishedAt": "2026-10-21T09:10:00Z"
+      },
+      "sourceType": "Kustomize",
+      "controllerNamespace": "argocd"
+    }
+  }
+]

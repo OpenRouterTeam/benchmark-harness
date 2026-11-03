@@ -1,0 +1,62 @@
+[
+  {
+    "_key": "0f79cae54d68dcd626d5d7d4306d904d33ee1de2",
+    "repoURL": "https://github.com/lumen-retail/billing-worker-deploy.git",
+    "sha": "0f79cae54d68dcd626d5d7d4306d904d33ee1de2",
+    "refs": [
+      "v1.41.0"
+    ],
+    "message": "release v1.41.0",
+    "author": "ci-bot",
+    "date": "2026-10-06T10:00:00Z",
+    "health": {
+      "status": "Healthy"
+    }
+  },
+  {
+    "_key": "b0826e986c9c73e0088c6ecb2a14458d247d2205",
+    "repoURL": "https://github.com/lumen-retail/billing-worker-deploy.git",
+    "sha": "b0826e986c9c73e0088c6ecb2a14458d247d2205",
+    "refs": [
+      "v1.42.0"
+    ],
+    "message": "release v1.42.0",
+    "author": "ci-bot",
+    "date": "2026-10-16T10:00:00Z",
+    "health": {
+      "status": "Healthy"
+    }
+  },
+  {
+    "_key": "cf30c03f33e63617efbbbb2da615dff59a7cb010",
+    "repoURL": "https://github.com/lumen-retail/billing-worker-deploy.git",
+    "sha": "cf30c03f33e63617efbbbb2da615dff59a7cb010",
+    "refs": [
+      "main",
+      "HEAD",
+      "v1.43.0"
+    ],
+    "message": "release v1.43.0: batch invoice retries",
+    "author": "ci-bot",
+    "date": "2026-10-29T08:30:00Z",
+    "health": {
+      "status": "Degraded"
+    }
+  },
+  {
+    "_key": "f4befdc6efa7504dc43d29f4de52c0f1529f52d2",
+    "repoURL": "https://github.com/lumen-retail/billing-api-deploy.git",
+    "sha": "f4befdc6efa7504dc43d29f4de52c0f1529f52d2",
+    "refs": [
+      "main",
+      "HEAD",
+      "v2.8.0"
+    ],
+    "message": "release v2.8.0",
+    "author": "ci-bot",
+    "date": "2026-10-22T10:00:00Z",
+    "health": {
+      "status": "Healthy"
+    }
+  }
+]

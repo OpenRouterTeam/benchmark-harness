@@ -1,0 +1,67 @@
+
+        query GetCustomerOrders($query: String!, $first: Int!) {
+          orders(query: $query, first: $first) {
+            edges {
+              node {
+                id
+                name
+                createdAt
+                displayFinancialStatus
+                displayFulfillmentStatus
+                totalPriceSet {
+                  shopMoney {
+                    amount
+                    currencyCode
+                  }
+                }
+                subtotalPriceSet {
+                  shopMoney {
+                    amount
+                    currencyCode
+                  }
+                }
+                totalShippingPriceSet {
+                  shopMoney {
+                    amount
+                    currencyCode
+                  }
+                }
+                totalTaxSet {
+                  shopMoney {
+                    amount
+                    currencyCode
+                  }
+                }
+                customer {
+                  id
+                  firstName
+                  lastName
+                  email
+                }
+                lineItems(first: 5) {
+                  edges {
+                    node {
+                      id
+                      title
+                      quantity
+                      originalTotalSet {
+                        shopMoney {
+                          amount
+                          currencyCode
+                        }
+                      }
+                      variant {
+                        id
+                        title
+                        sku
+                      }
+                    }
+                  }
+                }
+                tags
+                note
+              }
+            }
+          }
+        }
+      

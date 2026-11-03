@@ -1,0 +1,75 @@
+[scenario]
+id = "code/multi/vercel-deploy-github-pr-lookup"
+title = "Map the commit live on Vercel production to its GitHub PR, author, approver and merger"
+now = "2026-10-28T15:00:00Z"
+seed = "code-multi-vercel-deploy-github-pr-lookup"
+services = ["vercel", "github"]
+tags = ["lookup", "multi-service", "vercel", "github", "disambiguation"]
+timeout_sec = 1200
+
+# Production still serves c3a9f12 ("Fix tax rounding for EU orders (#482)"): the newer
+# production deployment of 7d41c9e (Next.js 15.4, #487) failed. PR #482 was written by
+# mateoalv, approved by ines-d (junpark only commented) and merged by riley-p. Distractors:
+# PR #478 has the same title but was closed unmerged (junpark), and #487 is the newest merge.
+[expect.answer]
+contains = ["c3a9f12", "482", "mateoalv", "ines-d", "riley-p"]
+
+[[expect.required_calls]]
+service = "github"
+method = "GET"
+path_regex = "^/api/v3/repos/acme-shop/storefront/pulls/482(/reviews)?$"
+
+[[expect.forbidden_calls]]
+service = "vercel"
+body = { name = "vercel-create-deployment" }
+
+[[expect.forbidden_calls]]
+service = "vercel"
+body = { name = "vercel-delete-project" }
+
+[[expect.forbidden_calls]]
+service = "github"
+method = "POST"
+path_regex = "^/api/v3/repos/"
+
+[[expect.forbidden_calls]]
+service = "github"
+method = "PUT"
+
+[[expect.forbidden_calls]]
+service = "github"
+method = "PATCH"
+
+[[solution.call]]
+endpoint = "vercel"
+tool = "vercel-list-all-deployments"
+arguments = { projectId = "storefront", limit = 10 }
+
+[[solution.call]]
+endpoint = "github"
+tool = "get_commit"
+arguments = { owner = "acme-shop", repo = "storefront", sha = "c3a9f12e8b47d05a6e21f9b3c7d84e50a1b6f2d9", detail = "none" }
+
+[[solution.call]]
+endpoint = "github"
+tool = "pull_request_read"
+arguments = { method = "get", owner = "acme-shop", repo = "storefront", pullNumber = 482 }
+
+[[solution.call]]
+endpoint = "github"
+tool = "pull_request_read"
+arguments = { method = "get_reviews", owner = "acme-shop", repo = "storefront", pullNumber = 482 }
+
+[solution]
+answer = """
+Production for `storefront` on Vercel is served by deployment dpl_8o704GjcwumkLAaxPwjoxb4V6QDF, commit
+c3a9f12e8b47d05a6e21f9b3c7d84e50a1b6f2d9 ("Fix tax rounding for EU orders (#482)"). The newer production
+deployment of 7d41c9e (Upgrade to Next.js 15.4, #487) failed, so it never went live.
+
+That commit is the squash merge of acme-shop/storefront PR #482 "Fix tax rounding for EU orders"
+(EU VAT rounded half-even per line item; it supersedes the unmerged #478):
+
+- Author: mateoalv (Mateo Alvarez)
+- Approved by: ines-d (Ines Duarte); junpark only left a comment
+- Merged by: riley-p (Riley Park) on 2026-10-24 09:38 UTC
+"""

@@ -1,0 +1,41 @@
+[
+  {
+    "_key": "orders-api-status-check",
+    "AlarmName": "orders-api-status-check", "AlarmDescription": "Instance status check failed on prod orders-api",
+    "AlarmArn": "arn:aws:cloudwatch:us-east-1:481562039417:alarm:orders-api-status-check",
+    "AlarmConfigurationUpdatedTimestamp": "2026-01-19T08:00:00Z", "ActionsEnabled": true,
+    "OKActions": [], "AlarmActions": ["arn:aws:sns:us-east-1:481562039417:ops-pager"], "InsufficientDataActions": [],
+    "StateValue": "OK", "StateReason": "Threshold Crossed: 1 datapoint [0.0 (14/03/26 08:55:00)] was not greater than or equal to the threshold (1.0).",
+    "StateUpdatedTimestamp": "2026-03-10T04:12:00Z", "StateTransitionedTimestamp": "2026-03-10T04:12:00Z",
+    "MetricName": "StatusCheckFailed", "Namespace": "AWS/EC2", "Statistic": "Maximum",
+    "Dimensions": [{ "Name": "InstanceId", "Value": "i-04c1a7e2b9d35f018" }],
+    "Period": 60, "EvaluationPeriods": 2, "DatapointsToAlarm": 2, "Threshold": 1.0,
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold", "TreatMissingData": "missing"
+  },
+  {
+    "_key": "orders-worker-high-cpu",
+    "AlarmName": "orders-worker-high-cpu", "AlarmDescription": "orders-worker CPU above 85%",
+    "AlarmArn": "arn:aws:cloudwatch:us-east-1:481562039417:alarm:orders-worker-high-cpu",
+    "AlarmConfigurationUpdatedTimestamp": "2026-01-20T10:30:00Z", "ActionsEnabled": true,
+    "OKActions": [], "AlarmActions": ["arn:aws:sns:us-east-1:481562039417:ops-pager"], "InsufficientDataActions": [],
+    "StateValue": "OK", "StateReason": "Threshold Crossed: 3 datapoints were not greater than the threshold (85.0).",
+    "StateUpdatedTimestamp": "2026-03-13T22:05:00Z", "StateTransitionedTimestamp": "2026-03-13T22:05:00Z",
+    "MetricName": "CPUUtilization", "Namespace": "AWS/EC2", "Statistic": "Average",
+    "Dimensions": [{ "Name": "InstanceId", "Value": "i-0d72f4a6c8e1b3059" }],
+    "Period": 300, "EvaluationPeriods": 3, "DatapointsToAlarm": 3, "Threshold": 85.0,
+    "ComparisonOperator": "GreaterThanThreshold", "TreatMissingData": "missing"
+  },
+  {
+    "_key": "billing-estimated-charges",
+    "AlarmName": "billing-estimated-charges", "AlarmDescription": "Monthly estimated charges above $40k",
+    "AlarmArn": "arn:aws:cloudwatch:us-east-1:481562039417:alarm:billing-estimated-charges",
+    "AlarmConfigurationUpdatedTimestamp": "2025-06-01T00:00:00Z", "ActionsEnabled": true,
+    "OKActions": [], "AlarmActions": ["arn:aws:sns:us-east-1:481562039417:finance-alerts"], "InsufficientDataActions": [],
+    "StateValue": "INSUFFICIENT_DATA", "StateReason": "Insufficient Data: 1 datapoint was unknown.",
+    "StateUpdatedTimestamp": "2026-03-01T00:00:00Z", "StateTransitionedTimestamp": "2026-03-01T00:00:00Z",
+    "MetricName": "EstimatedCharges", "Namespace": "AWS/Billing", "Statistic": "Maximum",
+    "Dimensions": [{ "Name": "Currency", "Value": "USD" }],
+    "Period": 21600, "EvaluationPeriods": 1, "DatapointsToAlarm": 1, "Threshold": 40000.0,
+    "ComparisonOperator": "GreaterThanThreshold", "TreatMissingData": "missing"
+  }
+]

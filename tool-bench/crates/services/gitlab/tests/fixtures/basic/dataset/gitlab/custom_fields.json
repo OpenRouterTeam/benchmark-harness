@@ -1,0 +1,13 @@
+[
+  {
+    "_key": "1",
+    "id": 1,
+    "namespace": "acme",
+    "name": "Customer",
+    "field_type": "TEXT",
+    "work_item_types": [
+      "Issue",
+      "Task"
+    ]
+  }
+]

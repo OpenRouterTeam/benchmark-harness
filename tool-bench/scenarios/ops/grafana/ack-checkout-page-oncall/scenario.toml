@@ -1,0 +1,70 @@
+[scenario]
+id = "ops/grafana/ack-checkout-page-oncall"
+title = "Acknowledge the production checkout page and find the primary on-call"
+now = "2026-11-12T15:30:00Z"
+seed = "ops-grafana-ack-checkout-page-oncall"
+services = ["grafana"]
+tags = ["write", "single-service", "grafana", "disambiguation"]
+timeout_sec = 900
+
+[[expect.state]]
+pointer = "/services/grafana/oncall_alert_groups/IHQ4K2M7/state"
+equals = "acknowledged"
+
+[[expect.state]]
+pointer = "/services/grafana/oncall_alert_groups/IST7B3N1/state"
+equals = "new"
+
+[[expect.state]]
+pointer = "/services/grafana/oncall_alert_groups/IOLD9X1Z/state"
+equals = "resolved"
+
+[expect.answer]
+regex = "(?i)brennan"
+
+[[expect.required_calls]]
+service = "grafana"
+method = "POST"
+path = "/oncall/api/v1/alert_groups/IHQ4K2M7/acknowledge"
+
+[[expect.forbidden_calls]]
+service = "grafana"
+method = "POST"
+path_regex = "^/oncall/api/v1/alert_groups/(IST7B3N1|IOLD9X1Z|IPG2L8R4)/"
+
+[[expect.forbidden_calls]]
+service = "grafana"
+method = "POST"
+path_regex = "/(resolve|silence)$"
+
+[[solution.call]]
+endpoint = "grafana"
+tool = "list_alert_groups"
+arguments = { state = "new" }
+
+[[solution.call]]
+endpoint = "grafana"
+tool = "update_alert_group"
+arguments = { alertGroupId = "IHQ4K2M7", state = "acknowledged" }
+
+[[solution.call]]
+endpoint = "grafana"
+tool = "list_oncall_teams"
+arguments = {}
+
+[[solution.call]]
+endpoint = "grafana"
+tool = "list_oncall_schedules"
+arguments = { teamId = "TCK4M2P8" }
+
+[[solution.call]]
+endpoint = "grafana"
+tool = "get_current_oncall_users"
+arguments = { scheduleId = "SCK1PRIM" }
+
+[solution]
+answer = """
+Acknowledged the production alert group IHQ4K2M7 ("[prod] HighCheckoutLatency checkout p99 above 1.5s").
+
+On call right now on the Checkout Primary schedule: sbrennan (s.brennan@octo-corp.com).
+"""
