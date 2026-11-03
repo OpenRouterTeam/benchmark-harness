@@ -12,9 +12,8 @@ on:
       - ".github/workflows/tool-bench-images.yml"
   workflow_dispatch:
 
-concurrency:
-  group: tool-bench-images
-  cancel-in-progress: false
+# No concurrency group: GitHub keeps only one pending run per group, so a queued push could
+# be dropped and its tags never published. Each run publishes its own commit's references.
 
 permissions:
   contents: read
@@ -73,9 +72,14 @@ jobs:
           for pair in "world=$WORLD_IMAGE" "tools=$TOOLS_IMAGE"; do
             name="${pair%%=*}"
             ref="${pair#*=}"
-            if docker manifest inspect "$ref" >/dev/null 2>&1; then
+            if lookup=$(docker manifest inspect "$ref" 2>&1 >/dev/null); then
               echo "$ref already published"
               continue
+            fi
+            # Build only on a definite not-found; any other lookup error must not overwrite a tag.
+            if ! grep -qiE 'manifest unknown|no such manifest|not found' <<<"$lookup"; then
+              echo "manifest lookup for $ref failed: $lookup" >&2
+              exit 1
             fi
             docker buildx build --platform linux/amd64 -f "images/$name/Dockerfile" -t "$ref" --push .
             echo "published $ref"

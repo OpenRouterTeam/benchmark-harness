@@ -68,6 +68,7 @@ fn published_image_tags_follow_their_sources() {
     let dir = tempfile::tempdir().unwrap();
     let root = dir.path();
     for (file, body) in [
+        (".dockerignore", "target\n"),
         ("Cargo.toml", "a"),
         ("Cargo.lock", "b"),
         ("crates/x.rs", "c"),
@@ -81,12 +82,23 @@ fn published_image_tags_follow_their_sources() {
         fs::write(root.join(file), body).unwrap();
     }
     let before = scenario::images::published(root).unwrap();
-    assert!(before.world.starts_with("us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-world:"));
-    assert!(before.tools.starts_with("us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-tools:"));
+    assert!(
+        before
+            .world
+            .starts_with("us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-world:")
+    );
+    assert!(
+        before
+            .tools
+            .starts_with("us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-tools:")
+    );
 
     fs::create_dir_all(root.join("crates/target")).unwrap();
     fs::write(root.join("crates/target/junk"), "ignored").unwrap();
-    assert_eq!(scenario::images::published(root).unwrap().world, before.world);
+    assert_eq!(
+        scenario::images::published(root).unwrap().world,
+        before.world
+    );
 
     fs::write(root.join("scenarios/s.toml"), "changed").unwrap();
     let after = scenario::images::published(root).unwrap();
@@ -122,4 +134,26 @@ fn validation_rejects_answers_without_the_answer_path_and_bad_endpoints() {
         .unwrap_err()
         .to_string();
     assert!(err.contains("unknown endpoint nope"), "{err}");
+}
+
+#[test]
+fn image_overrides_skip_hashing_the_sources() {
+    let empty = tempfile::tempdir().unwrap();
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_taskgen"))
+        .current_dir(empty.path())
+        .args([
+            "--world-image",
+            "w:1",
+            "--tools-image",
+            "t:1",
+            "--print-images",
+        ])
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(String::from_utf8_lossy(&output.stdout), "w:1\nt:1\n");
 }

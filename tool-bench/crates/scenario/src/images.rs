@@ -15,6 +15,7 @@ use crate::taskgen::Images;
 pub const REGISTRY: &str = "us-docker.pkg.dev/openrouter-ci/harbor";
 
 const WORLD_INPUTS: &[&str] = &[
+    ".dockerignore",
     "Cargo.toml",
     "Cargo.lock",
     "crates",
@@ -22,6 +23,7 @@ const WORLD_INPUTS: &[&str] = &[
     "images/world",
 ];
 const TOOLS_INPUTS: &[&str] = &[
+    ".dockerignore",
     "Cargo.toml",
     "Cargo.lock",
     "crates",
@@ -36,15 +38,25 @@ const TAG_HEX_LEN: usize = 16;
 /// The published images for the sources under `root` (the tool-bench directory).
 pub fn published(root: &Path) -> anyhow::Result<Images> {
     Ok(Images {
-        world: format!(
-            "{REGISTRY}/tool-bench-world:{}",
-            content_tag(root, WORLD_INPUTS)?
-        ),
-        tools: format!(
-            "{REGISTRY}/tool-bench-tools:{}",
-            content_tag(root, TOOLS_INPUTS)?
-        ),
+        world: world(root)?,
+        tools: tools(root)?,
     })
+}
+
+/// The published world image for the sources under `root`.
+pub fn world(root: &Path) -> anyhow::Result<String> {
+    Ok(format!(
+        "{REGISTRY}/tool-bench-world:{}",
+        content_tag(root, WORLD_INPUTS)?
+    ))
+}
+
+/// The published tools image for the sources under `root`.
+pub fn tools(root: &Path) -> anyhow::Result<String> {
+    Ok(format!(
+        "{REGISTRY}/tool-bench-tools:{}",
+        content_tag(root, TOOLS_INPUTS)?
+    ))
 }
 
 /// Hex prefix of a SHA-256 over every input file's relative path, executable bit and bytes.
