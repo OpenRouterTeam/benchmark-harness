@@ -1,27 +1,23 @@
 //! taskgen [--scenarios scenarios] [--catalog catalog/services.toml] [--out tasks]
-//!         [--world-image IMG] [--tools-image IMG] [--check]
+//!         [--world-image IMG] [--tools-image IMG] [--check] [--print-images]
 //!
-//! Validates every scenario and regenerates its Harbor task. `--check` fails if `--out`
-//! differs from what would be generated (CI guard for hand edits).
+//! Validates every scenario and regenerates its Harbor task. The images default to the
+//! published, content-tagged references (`scenario::images`). `--check` fails if `--out`
+//! differs from what would be generated (CI guard for hand edits and unpublished sources).
+//! `--print-images` prints the two default references and exits.
 
 use std::path::PathBuf;
 
 use anyhow::{Context, bail};
 use catalog::Catalog;
-use scenario::{
-    discover,
-    taskgen::{Images, write_task},
-};
+use scenario::{discover, images, taskgen::write_task};
 
 fn main() -> anyhow::Result<()> {
     let mut args = std::env::args().skip(1);
     let mut scenarios = PathBuf::from("scenarios");
     let mut catalog_path = PathBuf::from("catalog/services.toml");
     let mut out = PathBuf::from("tasks");
-    let mut images = Images {
-        world: "tool-bench-world:dev".to_owned(),
-        tools: "tool-bench-tools:dev".to_owned(),
-    };
+    let mut images = images::published(std::path::Path::new("."))?;
     let mut check = false;
     while let Some(arg) = args.next() {
         let mut value = || args.next().with_context(|| format!("{arg} needs a value"));
@@ -32,6 +28,10 @@ fn main() -> anyhow::Result<()> {
             "--world-image" => images.world = value()?,
             "--tools-image" => images.tools = value()?,
             "--check" => check = true,
+            "--print-images" => {
+                println!("{}\n{}", images.world, images.tools);
+                return Ok(());
+            }
             other => bail!("unexpected argument {other:?}"),
         }
     }

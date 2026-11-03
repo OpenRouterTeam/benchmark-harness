@@ -5,9 +5,10 @@ services:
       tools:
         condition: service_healthy
   world:
-    image: tool-bench-world:dev
+    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-world:e701cb9bdb298bef
     environment:
       SCENARIO_ID: "business/zendesk/find-invoice-attachment"
+      BENCH_ADMIN_TOKEN: "0f8b33b3d0d227ed5212d93c9a43aa73"
     networks:
       default:
         aliases:
@@ -28,7 +29,7 @@ services:
       timeout: 3s
       retries: 60
   tools:
-    image: tool-bench-tools:dev
+    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-tools:0cddecf1618cc20e
     depends_on:
       world:
         condition: service_healthy

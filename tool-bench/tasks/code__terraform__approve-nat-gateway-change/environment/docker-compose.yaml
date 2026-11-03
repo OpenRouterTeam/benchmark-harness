@@ -5,9 +5,10 @@ services:
       tools:
         condition: service_healthy
   world:
-    image: tool-bench-world:dev
+    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-world:e701cb9bdb298bef
     environment:
       SCENARIO_ID: "code/terraform/approve-nat-gateway-change"
+      BENCH_ADMIN_TOKEN: "e627618c55a332fe6de7852f8d2181af"
     networks:
       default:
         aliases:
@@ -28,7 +29,7 @@ services:
       timeout: 3s
       retries: 60
   tools:
-    image: tool-bench-tools:dev
+    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-tools:0cddecf1618cc20e
     depends_on:
       world:
         condition: service_healthy

@@ -5,9 +5,10 @@ services:
       tools:
         condition: service_healthy
   world:
-    image: tool-bench-world:dev
+    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-world:e701cb9bdb298bef
     environment:
       SCENARIO_ID: "cloud/multi/supabase-slack-referral-signups"
+      BENCH_ADMIN_TOKEN: "7c76cdd5c376b8d4d7ac6677570aba4c"
     networks:
       default:
         aliases:
@@ -28,7 +29,7 @@ services:
       timeout: 3s
       retries: 60
   tools:
-    image: tool-bench-tools:dev
+    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-tools:0cddecf1618cc20e
     depends_on:
       world:
         condition: service_healthy

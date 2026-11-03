@@ -1,0 +1,82 @@
+name: tool-bench images
+
+# Publishes the world and tools images that tool-bench/tasks reference. Tags are content hashes
+# of the image sources (tool-bench/crates/scenario/src/images.rs), so a tag that already exists
+# is never rebuilt or overwritten.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "tool-bench/**"
+      - ".github/workflows/tool-bench-images.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: tool-bench-images
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  RUST_TOOLCHAIN: "1.99"
+  REGISTRY_HOST: us-docker.pkg.dev
+
+jobs:
+  publish:
+    name: publish
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: tool-bench
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install Rust
+        run: rustup toolchain install "$RUST_TOOLCHAIN" --profile minimal && rustup default "$RUST_TOOLCHAIN"
+
+      - name: Resolve image references
+        id: refs
+        run: |
+          set -euo pipefail
+          mapfile -t refs < <(cargo run -q --locked -p scenario --bin taskgen -- --print-images)
+          echo "world=${refs[0]}" >> "$GITHUB_OUTPUT"
+          echo "tools=${refs[1]}" >> "$GITHUB_OUTPUT"
+
+      # openrouter-infra terraform/ci/tool-bench-publish.tf: main pushes of this workflow only.
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          workload_identity_provider: projects/878631646071/locations/global/workloadIdentityPools/tool-bench-github/providers/github
+          service_account: tool-bench-publish@openrouter-ci.iam.gserviceaccount.com
+          token_format: access_token
+
+      - name: Log in to Artifact Registry
+        env:
+          ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: printf '%s' "$ACCESS_TOKEN" | docker login -u oauth2accesstoken --password-stdin "$REGISTRY_HOST"
+
+      - name: Build and push missing images
+        env:
+          WORLD_IMAGE: ${{ steps.refs.outputs.world }}
+          TOOLS_IMAGE: ${{ steps.refs.outputs.tools }}
+        run: |
+          set -euo pipefail
+          for pair in "world=$WORLD_IMAGE" "tools=$TOOLS_IMAGE"; do
+            name="${pair%%=*}"
+            ref="${pair#*=}"
+            if docker manifest inspect "$ref" >/dev/null 2>&1; then
+              echo "$ref already published"
+              continue
+            fi
+            docker buildx build --platform linux/amd64 -f "images/$name/Dockerfile" -t "$ref" --push .
+            echo "published $ref"
+          done

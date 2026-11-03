@@ -14,7 +14,8 @@ Design: `docs/superpowers/specs/2026-10-30-tool-bench-design.md`. Operating it: 
 - **Determinism:** logical clock, seeded IDs, recorded journal; `world-replay` re-issues a trial's journal against a fresh world and must match byte for byte.
 - **Model smoke run:** 3 tasks × 2 modes with Claude Code + Claude Haiku 5.5 via Ori/OpenRouter, all reward 1.0 (`docs/research/smoke-2026-10-31.md`, `deploy/smoke-ori.sh`). Full payload ≈ 820k Claude tokens per turn.
 - **Deferred-tools arms:** universal vs native ToolSearch vs all-tools-upfront, 324 runs over Claude Haiku 5.5 and Kimi K2.7 Code (`docs/research/arms-2026-10-31.md`, `deploy/smoke-arms.sh`).
-- **Not yet done:** publishing images to the image registry, merging the benchmark-runner changes, and model runs on Argo.
+- **Argo:** images are published on merge to `main` (`docs/runbook.md`); the Harbor runner registers this directory's `tasks/`.
+- **Provenance and licences** of vendored upstream data: `docs/provenance.md`.
 
 ## Layout
 

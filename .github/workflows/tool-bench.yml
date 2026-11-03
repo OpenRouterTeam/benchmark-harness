@@ -1,0 +1,51 @@
+name: tool-bench
+
+on:
+  pull_request:
+    paths:
+      - "tool-bench/**"
+      - ".github/workflows/tool-bench.yml"
+  merge_group:
+  push:
+    branches:
+      - main
+    paths:
+      - "tool-bench/**"
+      - ".github/workflows/tool-bench.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+env:
+  RUST_TOOLCHAIN: "1.99"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  rust:
+    name: rust
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: tool-bench
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install Rust
+        run: rustup toolchain install "$RUST_TOOLCHAIN" --profile minimal --component clippy && rustup default "$RUST_TOOLCHAIN"
+
+      - name: Test
+        run: cargo test --workspace --locked
+
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+
+      # Also fails when image sources changed without regenerating tasks/ (content-tagged images).
+      - name: Tasks match scenarios and image sources
+        run: cargo run --locked -p scenario --bin taskgen -- --check

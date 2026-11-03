@@ -10,7 +10,14 @@ use std::{
     net::{IpAddr, SocketAddr},
 };
 
-use axum::{Router, routing::get};
+use axum::{
+    Router,
+    extract::Request,
+    http::{StatusCode, header::AUTHORIZATION},
+    middleware::{self, Next},
+    response::{IntoResponse, Response},
+    routing::get,
+};
 use axum_server::tls_rustls::RustlsConfig;
 use mock_core::{
     admin::admin_app,
@@ -87,8 +94,23 @@ impl Running {
     }
 }
 
+/// Admin routes the tools container and health checks reach without the admin token.
+const OPEN_ADMIN_PATHS: [&str; 2] = ["/_bench/health", "/_bench/ca.pem"];
+
 /// Binds the admin API and every service, then serves them in the background.
 pub async fn spawn(world: SharedWorld, ip: IpAddr, ports: PortChoice) -> io::Result<Running> {
+    spawn_guarded(world, ip, ports, None).await
+}
+
+/// [`spawn`], with every admin route except [`OPEN_ADMIN_PATHS`] requiring
+/// `Authorization: Bearer <admin_token>` when a token is set. Trials set one so the agent,
+/// which shares the network with the world, cannot read the state or call the grader.
+pub async fn spawn_guarded(
+    world: SharedWorld,
+    ip: IpAddr,
+    ports: PortChoice,
+    admin_token: Option<String>,
+) -> io::Result<Running> {
     let port = |fixed: u16| match ports {
         PortChoice::Fixed => fixed,
         PortChoice::Ephemeral => 0,
@@ -109,6 +131,12 @@ pub async fn spawn(world: SharedWorld, ip: IpAddr, ports: PortChoice) -> io::Res
                 async move { pem }
             }),
         ));
+    let admin_routes = match admin_token {
+        Some(token) => admin_routes.layer(middleware::from_fn(move |request, next| {
+            require_admin_token(token.clone(), request, next)
+        })),
+        None => admin_routes,
+    };
     tasks.spawn(serve(admin_listener, admin_routes));
 
     let tls_listener = std::net::TcpListener::bind((ip, port(TLS_PORT)))?;
@@ -143,4 +171,20 @@ pub async fn spawn(world: SharedWorld, ip: IpAddr, ports: PortChoice) -> io::Res
         services: bound,
         tasks,
     })
+}
+
+async fn require_admin_token(token: String, request: Request, next: Next) -> Response {
+    let path = request.uri().path();
+    let authorized = OPEN_ADMIN_PATHS.contains(&path)
+        || request
+            .headers()
+            .get(AUTHORIZATION)
+            .and_then(|value| value.to_str().ok())
+            .and_then(|value| value.strip_prefix("Bearer "))
+            .is_some_and(|presented| presented == token);
+    if authorized {
+        next.run(request).await
+    } else {
+        StatusCode::UNAUTHORIZED.into_response()
+    }
 }

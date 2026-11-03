@@ -40,6 +40,7 @@ fn generated_task_has_harbor_layout_and_all_endpoints() {
         "environment/docker-compose.yaml",
         "tests/test.sh",
         "tests/expect.json",
+        "tests/admin-token",
         "solution/solve.sh",
         "solution/call-0.json",
     ] {
@@ -58,6 +59,41 @@ fn generated_task_has_harbor_layout_and_all_endpoints() {
     assert_eq!(call["params"]["name"], "issue_write");
     let test_sh = fs::read_to_string(task.join("tests/test.sh")).unwrap();
     assert!(test_sh.contains("/_bench/grade") && test_sh.contains("journal.json"));
+    assert!(test_sh.contains("Bearer $(cat /tests/admin-token)"));
+    let token = fs::read_to_string(task.join("tests/admin-token")).unwrap();
+    assert_eq!(token.trim().len(), 32);
+    assert!(compose.contains(&format!("BENCH_ADMIN_TOKEN: \"{}\"", token.trim())));
+}
+
+#[test]
+fn published_image_tags_follow_their_sources() {
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path();
+    for (file, body) in [
+        ("Cargo.toml", "a"),
+        ("Cargo.lock", "b"),
+        ("crates/x.rs", "c"),
+        ("scenarios/s.toml", "d"),
+        ("images/world/Dockerfile", "e"),
+        ("images/tools/Dockerfile", "f"),
+        ("catalog/services.toml", "g"),
+        ("servers/n.json", "h"),
+    ] {
+        fs::create_dir_all(root.join(file).parent().unwrap()).unwrap();
+        fs::write(root.join(file), body).unwrap();
+    }
+    let before = scenario::images::published(root).unwrap();
+    assert!(before.world.starts_with("us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-world:"));
+    assert!(before.tools.starts_with("us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-tools:"));
+
+    fs::create_dir_all(root.join("crates/target")).unwrap();
+    fs::write(root.join("crates/target/junk"), "ignored").unwrap();
+    assert_eq!(scenario::images::published(root).unwrap().world, before.world);
+
+    fs::write(root.join("scenarios/s.toml"), "changed").unwrap();
+    let after = scenario::images::published(root).unwrap();
+    assert_ne!(after.world, before.world);
+    assert_eq!(after.tools, before.tools);
 }
 
 #[test]

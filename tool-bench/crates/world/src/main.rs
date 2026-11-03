@@ -8,7 +8,7 @@ use mock_core::{
     dataset::Dataset,
     world::{WorldState, shared},
 };
-use world::{PortChoice, spawn};
+use world::{PortChoice, spawn_guarded};
 
 const SCENARIO_ROOT: &str = "/opt/tool-bench/scenarios";
 
@@ -28,7 +28,16 @@ async fn main() -> anyhow::Result<()> {
     let scenario = dataset.meta.id.clone();
     let world = shared(WorldState::from_dataset(dataset)?);
 
-    let running = spawn(world, IpAddr::V4(Ipv4Addr::UNSPECIFIED), PortChoice::Fixed).await?;
+    let admin_token = std::env::var("BENCH_ADMIN_TOKEN")
+        .ok()
+        .filter(|token| !token.is_empty());
+    let running = spawn_guarded(
+        world,
+        IpAddr::V4(Ipv4Addr::UNSPECIFIED),
+        PortChoice::Fixed,
+        admin_token,
+    )
+    .await?;
     eprintln!("world: scenario {scenario}, admin on {}", running.admin);
     for (name, addr) in &running.services {
         eprintln!("world: {name} on {addr}");

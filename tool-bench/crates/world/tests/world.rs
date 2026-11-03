@@ -129,3 +129,39 @@ async fn two_fresh_worlds_answer_identically() {
         normalise(rb, b.services["github"].port())
     );
 }
+
+#[tokio::test]
+async fn admin_token_guards_everything_but_health_and_ca() {
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../scenarios/example/github/basic");
+    let state = shared(WorldState::from_dataset(Dataset::load(&dir).unwrap()).unwrap());
+    let running = world::spawn_guarded(
+        state,
+        IpAddr::V4(Ipv4Addr::LOCALHOST),
+        PortChoice::Ephemeral,
+        Some("s3cret".to_owned()),
+    )
+    .await
+    .unwrap();
+    let admin = running.admin;
+    assert_eq!(get(admin, "/_bench/health").await.0, 200);
+    assert_eq!(get(admin, "/_bench/ca.pem").await.0, 200);
+    for path in ["/_bench/state", "/_bench/journal"] {
+        assert_eq!(get(admin, path).await.0, 401, "{path}");
+    }
+    assert_eq!(post(admin, "/_bench/reset", "").await.0, 401);
+    assert_eq!(post(admin, "/_bench/answer", "x").await.0, 401);
+    let wrong = client()
+        .get(format!("http://{admin}/_bench/state"))
+        .bearer_auth("nope")
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(wrong.status().as_u16(), 401);
+    let right = client()
+        .get(format!("http://{admin}/_bench/state"))
+        .bearer_auth("s3cret")
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(right.status().as_u16(), 200);
+}
