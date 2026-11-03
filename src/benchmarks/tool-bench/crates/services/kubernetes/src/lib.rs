@@ -892,6 +892,14 @@ impl Kube<'_> {
                 );
             }
         } else if ct.starts_with("application/merge-patch+json") {
+            if !patch.is_object() {
+                return status_response(
+                    StatusCode::UNPROCESSABLE_ENTITY,
+                    "Invalid",
+                    "merge patch must be a JSON object",
+                    Some(details(rt, name)),
+                );
+            }
             merge_patch(&mut next, &patch);
         } else if ct.starts_with("application/strategic-merge-patch+json") {
             if !rt.builtin {

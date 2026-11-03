@@ -99,6 +99,7 @@ pub fn run(
         store,
         now: now.to_owned(),
         cost: 0,
+        spreading: std::cell::RefCell::default(),
     };
     let result = match op.kind {
         OpKind::Query => exec.root(op, "QueryRoot", &label, false),
@@ -243,6 +244,7 @@ struct Exec<'d> {
     store: Store,
     now: String,
     cost: i64,
+    spreading: std::cell::RefCell<Vec<String>>,
 }
 
 type Fields<'d> = Vec<(String, Vec<&'d Field>)>;
@@ -356,8 +358,17 @@ impl<'d> Exec<'d> {
                                 json!({"code": "useAndDefineFragment", "fragmentName": name}),
                             )
                         })?;
+                        if self.spreading.borrow().contains(name) {
+                            return Err(GqlError::new(
+                                format!("Fragment {name} cannot spread itself"),
+                                *pos,
+                            ));
+                        }
                         if Self::type_matches(Some(&fragment.type_condition), type_name) {
-                            self.collect(&[&fragment.selection], type_name, out)?;
+                            self.spreading.borrow_mut().push(name.clone());
+                            let collected = self.collect(&[&fragment.selection], type_name, out);
+                            self.spreading.borrow_mut().pop();
+                            collected?;
                         }
                     }
                     Selection::Inline {

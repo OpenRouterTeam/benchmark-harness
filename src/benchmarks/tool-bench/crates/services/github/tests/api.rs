@@ -1415,3 +1415,15 @@ async fn scenario_datasets_load_and_answer() {
         "Login page returns 500"
     );
 }
+
+#[tokio::test]
+async fn graphql_rejects_self_spreading_fragments() {
+    let (_, app) = full();
+    let r = gql(&app, "query{...A} fragment A on Query{...A}", json!({})).await;
+    assert!(
+        r["errors"][0]["message"]
+            .as_str()
+            .unwrap()
+            .contains("cannot spread itself")
+    );
+}

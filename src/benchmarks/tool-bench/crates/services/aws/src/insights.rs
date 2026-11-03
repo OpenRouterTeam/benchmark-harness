@@ -519,11 +519,14 @@ fn eval(e: &Expr, row: &Row) -> Option<Value> {
                     .and_then(|v| as_num(&v))
                     .map(|n| Value::from(n.ceil())),
                 "bin" => {
-                    let secs = args.first().and_then(|a| match a {
-                        Expr::Field(d) => duration_secs(d),
-                        Expr::Lit(v) => as_num(v).map(|n| n as i64),
-                        _ => None,
-                    })?;
+                    let secs = args
+                        .first()
+                        .and_then(|a| match a {
+                            Expr::Field(d) => duration_secs(d),
+                            Expr::Lit(v) => as_num(v).map(|n| n as i64),
+                            _ => None,
+                        })
+                        .filter(|s| *s > 0)?;
                     let ts = row.get("_ts").and_then(Value::as_i64)?;
                     let b = ts.div_euclid(secs * 1000) * secs * 1000;
                     Some(Value::String(format_ts(b)))

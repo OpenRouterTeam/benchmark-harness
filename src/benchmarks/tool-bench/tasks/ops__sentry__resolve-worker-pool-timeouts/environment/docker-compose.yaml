@@ -5,7 +5,7 @@ services:
       tools:
         condition: service_healthy
   world:
-    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-world:8b3a0f1cc7f3d1c5
+    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-world:3a662ab7242d6555
     environment:
       SCENARIO_ID: "ops/sentry/resolve-worker-pool-timeouts"
       BENCH_ADMIN_TOKEN: "${HARBOR_TRIAL_ADMIN_TOKEN:-}"
@@ -29,7 +29,7 @@ services:
       timeout: 3s
       retries: 60
   tools:
-    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-tools:6e6e787fbf94e7df
+    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-tools:877318e219766741
     depends_on:
       world:
         condition: service_healthy

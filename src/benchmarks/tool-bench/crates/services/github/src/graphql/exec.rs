@@ -52,6 +52,7 @@ pub struct Executor<'a, R: Resolver> {
     pub vars: Map<String, Value>,
     pub resolver: R,
     pub errors: Vec<Value>,
+    spreading: Vec<String>,
 }
 
 impl<'a, R: Resolver> Executor<'a, R> {
@@ -65,6 +66,7 @@ impl<'a, R: Resolver> Executor<'a, R> {
             vars,
             resolver,
             errors: Vec::new(),
+            spreading: Vec::new(),
         }
     }
 
@@ -169,8 +171,16 @@ impl<'a, R: Resolver> Executor<'a, R> {
                         self.errors.push(json!({"message": format!("Fragment {name} was used, but not defined")}));
                         continue;
                     };
+                    if self.spreading.contains(name) {
+                        self.errors.push(
+                            json!({"message": format!("Fragment {name} cannot spread itself")}),
+                        );
+                        continue;
+                    }
                     if self.resolver.type_matches(&typename, &frag.type_cond) {
+                        self.spreading.push(name.clone());
                         let inner = self.select(parent, &frag.selections, path);
+                        self.spreading.pop();
                         for (k, v) in inner {
                             merge_into(&mut out, k, v);
                         }
