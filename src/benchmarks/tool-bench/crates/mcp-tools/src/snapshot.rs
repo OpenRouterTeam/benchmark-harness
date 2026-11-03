@@ -71,6 +71,9 @@ pub async fn capture(client: &mut McpClient, name: &str) -> anyhow::Result<Snaps
             break;
         }
     }
+    if cursor.is_some() {
+        anyhow::bail!("{name}: tools/list still had a nextCursor after {MAX_PAGES} pages");
+    }
     Ok(Snapshot::new(
         name,
         init["serverInfo"].clone(),

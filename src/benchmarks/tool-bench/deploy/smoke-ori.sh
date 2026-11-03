@@ -27,7 +27,7 @@ for id in "$@"; do
       printf '"%s": {"type": "http", "url": "http://127.0.0.1:1%s/mcp"}' "$eid" "$port"
     done; echo '}}'; } > $OUT/$slug.mcp.json
   work=$(mktemp -d $OUT/work.XXXX); cfg=$(mktemp -d $OUT/cfg.XXXX)
-  instruction=$(cat $M/scenarios/$id/instruction.md)
+  instruction=$(sed "s|/app/answer.md|$work/answer.md|g" $M/scenarios/$id/instruction.md)
   start=$(date +%s)
   (cd "$work" && env CLAUDE_CONFIG_DIR="$cfg" ${MODE:+ENABLE_TOOL_SEARCH=false} timeout 1500 ori claude --model "$MODEL" -- \
       -p "$instruction" --output-format stream-json --verbose \
@@ -35,6 +35,7 @@ for id in "$@"; do
       --permission-mode bypassPermissions < /dev/null > $OUT/$slug.stream.jsonl 2> $OUT/$slug.stderr)
   echo "agent exit=$? seconds=$(( $(date +%s) - start ))" > $OUT/$slug.meta
   overflow=0; grep -qiE 'prompt is too long|context_length_exceeded|maximum context length|exceeds the context window|input is too long' $OUT/$slug.stream.jsonl $OUT/$slug.stderr && overflow=1
+  [ -f "$work/answer.md" ] && curl -s -X POST --data-binary @"$work/answer.md" http://127.0.0.1:19000/_bench/answer > /dev/null && cp "$work/answer.md" $OUT/$slug.answer.md
   curl -s http://127.0.0.1:19000/_bench/journal > $OUT/$slug.journal.json
   curl -s -X POST -H 'content-type: application/json' --data-binary @$M/scenarios/$id/../../../../tasks/$(echo "$id" | sed 's|/|__|g')/tests/expect.json "http://127.0.0.1:19000/_bench/grade?context_overflow=$overflow" > $OUT/$slug.reward.json
   echo "$id: $(cat $OUT/$slug.reward.json) $(cat $OUT/$slug.meta)"

@@ -61,11 +61,14 @@ fn main() -> anyhow::Result<()> {
         .collect();
 
     let target = if check {
-        std::env::temp_dir().join("tool-bench-taskgen-check")
+        std::env::temp_dir().join(format!("tool-bench-taskgen-check-{}", std::process::id()))
     } else {
         out.clone()
     };
     if target.exists() {
+        if !check {
+            ensure_generated(&target)?;
+        }
         std::fs::remove_dir_all(&target)?;
     }
     std::fs::create_dir_all(&target)?;
@@ -78,6 +81,7 @@ fn main() -> anyhow::Result<()> {
             .arg(&out)
             .arg(&target)
             .status()?;
+        std::fs::remove_dir_all(&target)?;
         if !status.success() {
             bail!("{} is stale; run taskgen", out.display());
         }
@@ -89,6 +93,21 @@ fn main() -> anyhow::Result<()> {
             out.display(),
             all.len()
         );
+    }
+    Ok(())
+}
+
+/// Refuses to wipe a directory that holds anything other than generated task directories.
+fn ensure_generated(dir: &Path) -> anyhow::Result<()> {
+    for entry in std::fs::read_dir(dir)? {
+        let path = entry?.path();
+        if !path.join("task.toml").is_file() {
+            bail!(
+                "{} is not a taskgen output directory ({} is not a task); refusing to delete it",
+                dir.display(),
+                path.display()
+            );
+        }
     }
     Ok(())
 }

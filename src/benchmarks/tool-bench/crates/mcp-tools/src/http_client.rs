@@ -85,7 +85,8 @@ impl HttpClient {
 
 /// The JSON-RPC message with `id` among the `data:` events of an SSE body.
 fn sse_message(body: &str, id: u64) -> Option<Value> {
-    body.split("\n\n")
+    body.replace("\r\n", "\n")
+        .split("\n\n")
         .filter_map(|event| {
             let data: Vec<&str> = event
                 .lines()

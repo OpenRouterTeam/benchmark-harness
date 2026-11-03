@@ -28,11 +28,17 @@ docker run --rm --network $NET -e ONLY="$ONLY" -v "$OUT:/out" --entrypoint sh "$
   set -u
   for i in $(seq 1 120); do curl -fs http://world:9000/_bench/health >/dev/null && break; sleep 0.5; done
   failures=0
-  catalog --file /etc/tool-bench/services.toml endpoints | while IFS="$(printf "\t")" read -r id runtime pkg ver; do
+  endpoints=$(catalog --file /etc/tool-bench/services.toml endpoints)
+  while IFS="$(printf "\t")" read -r id runtime pkg ver; do
     if [ -n "$ONLY" ] && ! echo " $ONLY " | grep -q " $id "; then continue; fi
     port=$(catalog --file /etc/tool-bench/services.toml port "$id")
     for i in $(seq 1 60); do curl -s -o /dev/null http://tools:$port/mcp && break; sleep 0.5; done
-    toolmeter capture --name "$id" --out /out --http "http://tools:$port/mcp" || echo "$id: FAILED"
-  done'
+    if ! toolmeter capture --name "$id" --out /out --http "http://tools:$port/mcp"; then
+      echo "$id: FAILED"; failures=$((failures + 1))
+    fi
+  done <<EOF
+$endpoints
+EOF
+  [ "$failures" = 0 ] || { echo "$failures endpoint(s) failed"; exit 1; }'
 echo "--- tools container log (errors only)"
 docker logs tb-tools 2>&1 | grep -iE "error|panic|failed" | head -40 || true

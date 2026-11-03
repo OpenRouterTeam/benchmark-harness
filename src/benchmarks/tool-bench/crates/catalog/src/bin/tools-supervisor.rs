@@ -88,7 +88,10 @@ async fn main() -> anyhow::Result<()> {
 
 /// Polls the world admin API until it publishes its CA (the world may still be starting).
 async fn fetch_ca(url: &str) -> anyhow::Result<String> {
-    let http = reqwest::Client::builder().no_proxy().build()?;
+    let http = reqwest::Client::builder()
+        .no_proxy()
+        .timeout(std::time::Duration::from_secs(5))
+        .build()?;
     for _ in 0..120 {
         if let Ok(resp) = http.get(url).send().await
             && resp.status().is_success()

@@ -157,3 +157,19 @@ fn image_overrides_skip_hashing_the_sources() {
     );
     assert_eq!(String::from_utf8_lossy(&output.stdout), "w:1\nt:1\n");
 }
+
+#[test]
+fn refuses_to_wipe_a_directory_that_is_not_taskgen_output() {
+    let out = tempfile::tempdir().unwrap();
+    let keep = out.path().join("notes.txt");
+    std::fs::write(&keep, "unrelated").unwrap();
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_taskgen"))
+        .current_dir(concat!(env!("CARGO_MANIFEST_DIR"), "/../.."))
+        .args(["--world-image", "w:1", "--tools-image", "t:1", "--out"])
+        .arg(out.path())
+        .output()
+        .unwrap();
+    assert!(!output.status.success());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("refusing to delete it"));
+    assert_eq!(std::fs::read_to_string(&keep).unwrap(), "unrelated");
+}

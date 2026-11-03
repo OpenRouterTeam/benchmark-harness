@@ -64,12 +64,21 @@ def read_run(prefix):
     }
 
 
+def split_name(name):
+    # smoke-arms.sh writes <task>_<arm>, or <task>_<arm>_<run> when RUN is set.
+    head, last = name.rsplit('_', 1)
+    if last in ARMS:
+        return head, last, '0'
+    task, arm = head.rsplit('_', 1)
+    return task, arm, last
+
+
 def collect(directory):
     runs = []
     for path in sorted(glob.glob(os.path.join(directory, '*.reward.json'))):
         prefix = path[: -len('.reward.json')]
         name = os.path.basename(prefix)
-        task, arm, run = name.rsplit('_', 2)
+        task, arm, run = split_name(name)
         runs.append({'model': os.path.basename(directory), 'task': task, 'arm': arm, 'run': run, **read_run(prefix)})
     return runs
 

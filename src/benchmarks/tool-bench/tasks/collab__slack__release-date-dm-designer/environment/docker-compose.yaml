@@ -5,7 +5,7 @@ services:
       tools:
         condition: service_healthy
   world:
-    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-world:51a1466819067b7b
+    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-world:8b3a0f1cc7f3d1c5
     environment:
       SCENARIO_ID: "collab/slack/release-date-dm-designer"
       BENCH_ADMIN_TOKEN: "${HARBOR_TRIAL_ADMIN_TOKEN:-}"
@@ -29,7 +29,7 @@ services:
       timeout: 3s
       retries: 60
   tools:
-    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-tools:cade41021766b4f5
+    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-tools:6e6e787fbf94e7df
     depends_on:
       world:
         condition: service_healthy
