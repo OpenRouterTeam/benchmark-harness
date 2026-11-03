@@ -1,14 +1,14 @@
 name: tool-bench images
 
-# Publishes the world and tools images that tool-bench/tasks reference. Tags are content hashes
-# of the image sources (tool-bench/crates/scenario/src/images.rs), so a tag that already exists
-# is never rebuilt or overwritten.
+# Publishes the world and tools images that src/benchmarks/tool-bench/tasks reference. Tags are
+# content hashes of the image sources (src/benchmarks/tool-bench/crates/scenario/src/images.rs),
+# so a tag that already exists is never rebuilt or overwritten.
 on:
   push:
     branches:
       - main
     paths:
-      - "tool-bench/**"
+      - "src/benchmarks/tool-bench/**"
       - ".github/workflows/tool-bench-images.yml"
   workflow_dispatch:
 
@@ -33,7 +33,7 @@ jobs:
       id-token: write
     defaults:
       run:
-        working-directory: tool-bench
+        working-directory: src/benchmarks/tool-bench
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

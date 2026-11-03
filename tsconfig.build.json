@@ -16,6 +16,7 @@
     "src/bun-test.d.ts"
   ],
   "exclude": [
+    "src/benchmarks/tool-bench",
     "src/**/*.test.ts",
     "test",
     "node_modules",

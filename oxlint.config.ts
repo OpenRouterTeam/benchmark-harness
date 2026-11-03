@@ -3,7 +3,7 @@ import core from "ultracite/oxlint/core";
 
 export default defineConfig({
   extends: [core],
-  ignorePatterns: [...core.ignorePatterns, "tool-bench/**"],
+  ignorePatterns: [...core.ignorePatterns, "src/benchmarks/tool-bench/**"],
   jsPlugins: [
     {
       name: "openrouter",

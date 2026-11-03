@@ -3,14 +3,14 @@ name: tool-bench
 on:
   pull_request:
     paths:
-      - "tool-bench/**"
+      - "src/benchmarks/tool-bench/**"
       - ".github/workflows/tool-bench.yml"
   merge_group:
   push:
     branches:
       - main
     paths:
-      - "tool-bench/**"
+      - "src/benchmarks/tool-bench/**"
       - ".github/workflows/tool-bench.yml"
   workflow_dispatch:
 
@@ -32,7 +32,7 @@ jobs:
     timeout-minutes: 60
     defaults:
       run:
-        working-directory: tool-bench
+        working-directory: src/benchmarks/tool-bench
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

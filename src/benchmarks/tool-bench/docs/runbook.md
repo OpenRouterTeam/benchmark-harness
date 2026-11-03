@@ -22,7 +22,7 @@ For local runs, pass local tags: `--world-image tool-bench-world:dev --tools-ima
 ## 2. Register the benchmark
 
 `tool-bench` is registered in the Harbor runner (`services/gcp-harbor-trial/src/gcp_harbor_trial/benchmarks.py`
-in openrouter-web) as this repository's `main`, tasks path `tool-bench/tasks`.
+in openrouter-web) as this repository's `main`, tasks path `src/benchmarks/tool-bench/tasks`.
 
 ## 3. Run
 

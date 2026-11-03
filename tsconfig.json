@@ -44,6 +44,7 @@
     "src/bun-test.d.ts"
   ],
   "exclude": [
+    "src/benchmarks/tool-bench",
     "node_modules",
     "dist"
   ]
