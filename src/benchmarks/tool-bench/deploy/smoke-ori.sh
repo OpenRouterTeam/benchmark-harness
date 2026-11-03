@@ -10,6 +10,8 @@ M="$(cd "$(dirname "$0")/.." && pwd)"
 MODEL=${MODEL:-anthropic/claude-haiku-5.5}
 OUT=${OUT:-/tmp/tool-bench-smoke}; mkdir -p "$OUT"
 NET=tb-smoke
+# Claude Code runs on this host, so Bash is off unless HOST_BASH=1 (as in smoke-arms.sh).
+[ "${HOST_BASH:-0}" = 1 ] && DISALLOWED="" || DISALLOWED="Bash BashOutput KillShell"
 for id in "$@"; do
   slug=$(echo "$id" | tr '/' '_')${MODE:+_$MODE}
   docker rm -f tbs-world tbs-tools >/dev/null 2>&1; docker network rm $NET >/dev/null 2>&1
@@ -32,6 +34,7 @@ for id in "$@"; do
   (cd "$work" && env CLAUDE_CONFIG_DIR="$cfg" ${MODE:+ENABLE_TOOL_SEARCH=false} timeout 1500 ori claude --model "$MODEL" -- \
       -p "$instruction" --output-format stream-json --verbose \
       --strict-mcp-config --mcp-config $OUT/$slug.mcp.json \
+      ${DISALLOWED:+--disallowedTools $DISALLOWED} \
       --permission-mode bypassPermissions < /dev/null > $OUT/$slug.stream.jsonl 2> $OUT/$slug.stderr)
   echo "agent exit=$? seconds=$(( $(date +%s) - start ))" > $OUT/$slug.meta
   overflow=0; grep -qiE 'prompt is too long|context_length_exceeded|maximum context length|exceeds the context window|input is too long' $OUT/$slug.stream.jsonl $OUT/$slug.stderr && overflow=1

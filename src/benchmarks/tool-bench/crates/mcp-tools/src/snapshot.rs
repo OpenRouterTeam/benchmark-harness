@@ -63,9 +63,10 @@ pub async fn capture(client: &mut McpClient, name: &str) -> anyhow::Result<Snaps
             .request("tools/list", params)
             .await
             .context("tools/list")?;
-        if let Some(items) = page["tools"].as_array() {
-            tools.extend(items.iter().cloned());
-        }
+        let items = page["tools"]
+            .as_array()
+            .with_context(|| format!("{name}: tools/list result has no tools array"))?;
+        tools.extend(items.iter().cloned());
         cursor = page["nextCursor"].as_str().map(str::to_owned);
         if cursor.is_none() {
             break;

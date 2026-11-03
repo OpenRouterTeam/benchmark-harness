@@ -5,7 +5,7 @@ services:
       tools:
         condition: service_healthy
   world:
-    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-world:3a662ab7242d6555
+    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-world:80242aae75e4511a
     environment:
       SCENARIO_ID: "search/tavily/competitor-pricing-research"
       BENCH_ADMIN_TOKEN: "${HARBOR_TRIAL_ADMIN_TOKEN:-}"
@@ -29,7 +29,7 @@ services:
       timeout: 3s
       retries: 60
   tools:
-    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-tools:877318e219766741
+    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-tools:0abf7a84eca4412c
     depends_on:
       world:
         condition: service_healthy

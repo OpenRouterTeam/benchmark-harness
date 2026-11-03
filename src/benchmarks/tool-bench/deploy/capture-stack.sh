@@ -4,7 +4,8 @@
 # The network is --internal, so nothing can reach the internet.
 #   deploy/capture-stack.sh [out-dir] [endpoint-id ...]   (default: servers/snapshots, all)
 set -eu
-OUT="$(cd "$(dirname "$0")/.." && pwd)/${1:-servers/snapshots}"
+OUT="${1:-servers/snapshots}"
+case "$OUT" in /*) ;; *) OUT="$(cd "$(dirname "$0")/.." && pwd)/$OUT" ;; esac
 [ $# -gt 0 ] && shift
 ONLY="$*"
 NET=tool-bench-capture

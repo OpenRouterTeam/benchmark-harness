@@ -32,7 +32,9 @@ for id in "$@"; do
   for agent in oracle nop; do
     jobs="$OUT/jobs/$(basename "$task")-$agent"
     harbor run -q -p "$task" -a "$agent" -e docker -o "$jobs" >"$jobs.log" 2>&1 || true
-    reward=$(find "$jobs" -path '*verifier/reward.json' 2>/dev/null | head -1 | xargs cat 2>/dev/null | tr -d ' \n' | sed -n 's/.*"reward":\([0-9.]*\).*/\1/p')
+    result=$(find "$jobs" -path '*verifier/reward.json' 2>/dev/null | head -1 | xargs cat 2>/dev/null | tr -d ' \n')
+    reward=$(echo "$result" | sed -n 's/.*"reward":\([0-9.]*\).*/\1/p')
+    case "$result" in *'"grader_error":1'*) reward="grader_error" ;; esac
     want=$([ "$agent" = oracle ] && echo 1 || echo 0)
     if [ "${reward%.*}" = "$want" ]; then
       echo "$id: $agent reward=$reward ok"
