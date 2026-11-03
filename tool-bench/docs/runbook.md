@@ -51,8 +51,10 @@ Run each arm as its own run, with everything else identical.
 - The verifier also keeps `journal.json` (every API call) and `state.json` (final world
   state) next to `reward.json`.
 - The world's admin port (`world:9000`) answers only `/_bench/health` and `/_bench/ca.pem` without
-  the per-task token in `tests/admin-token`, which Harbor uploads only when verification starts. The
-  agent shares the network with the world but cannot read the state or call the grader.
+  `HARBOR_TRIAL_ADMIN_TOKEN`. The Argo trial runner generates a random token per trial and passes it
+  to compose (for `world`) and to the verifier, never to the agent, so the token is not in the task
+  repo. The agent shares the network with the world but cannot read the state or call the grader.
+  When the variable is unset (local compose, `deploy/oracle.sh`), the admin port stays open.
 - To compare arms, download both runs' artifacts
   (the run's artifact bucket) and run:
 

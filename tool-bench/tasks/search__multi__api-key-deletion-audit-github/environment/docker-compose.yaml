@@ -5,10 +5,10 @@ services:
       tools:
         condition: service_healthy
   world:
-    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-world:e701cb9bdb298bef
+    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-world:a92dc8d5140dc194
     environment:
       SCENARIO_ID: "search/multi/api-key-deletion-audit-github"
-      BENCH_ADMIN_TOKEN: "f2698ded917c241d7dc0862db9bbe66b"
+      BENCH_ADMIN_TOKEN: "${HARBOR_TRIAL_ADMIN_TOKEN:-}"
     networks:
       default:
         aliases:
@@ -29,7 +29,7 @@ services:
       timeout: 3s
       retries: 60
   tools:
-    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-tools:0cddecf1618cc20e
+    image: us-docker.pkg.dev/openrouter-ci/harbor/tool-bench-tools:05563c18f72e9937
     depends_on:
       world:
         condition: service_healthy

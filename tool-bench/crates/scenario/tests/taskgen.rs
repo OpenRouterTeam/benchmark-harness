@@ -40,7 +40,6 @@ fn generated_task_has_harbor_layout_and_all_endpoints() {
         "environment/docker-compose.yaml",
         "tests/test.sh",
         "tests/expect.json",
-        "tests/admin-token",
         "solution/solve.sh",
         "solution/call-0.json",
     ] {
@@ -59,10 +58,9 @@ fn generated_task_has_harbor_layout_and_all_endpoints() {
     assert_eq!(call["params"]["name"], "issue_write");
     let test_sh = fs::read_to_string(task.join("tests/test.sh")).unwrap();
     assert!(test_sh.contains("/_bench/grade") && test_sh.contains("journal.json"));
-    assert!(test_sh.contains("Bearer $(cat /tests/admin-token)"));
-    let token = fs::read_to_string(task.join("tests/admin-token")).unwrap();
-    assert_eq!(token.trim().len(), 32);
-    assert!(compose.contains(&format!("BENCH_ADMIN_TOKEN: \"{}\"", token.trim())));
+    assert!(test_sh.contains("Bearer ${HARBOR_TRIAL_ADMIN_TOKEN:-}"));
+    assert!(compose.contains("BENCH_ADMIN_TOKEN: \"${HARBOR_TRIAL_ADMIN_TOKEN:-}\""));
+    assert!(!task.join("tests/admin-token").exists());
 }
 
 #[test]

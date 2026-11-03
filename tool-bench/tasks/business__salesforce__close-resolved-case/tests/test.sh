@@ -3,7 +3,7 @@
 set -u
 mkdir -p /logs/verifier
 WORLD=http://world:9000
-AUTH="authorization: Bearer $(cat /tests/admin-token)"
+AUTH="authorization: Bearer ${HARBOR_TRIAL_ADMIN_TOKEN:-}"
 if [ -f /app/answer.md ]; then
   curl -fsS -H "$AUTH" -X POST --data-binary @/app/answer.md "$WORLD/_bench/answer" >/dev/null
 fi
