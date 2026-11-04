@@ -10,7 +10,7 @@ import { definedValues, isRecord } from "../../internal/guards";
 import type { OriAgent, OriChannel, OriReasoningEffort } from "./schema";
 import { assertValidAgentPackage, DEFAULT_CLAUDE_PACKAGE } from "./schema";
 
-const NODE_VERSION = "24" as const;
+const NODE_VERSION = "24.22.2" as const;
 
 export const NVM_INSTALL_URL =
   "https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh" as const;
