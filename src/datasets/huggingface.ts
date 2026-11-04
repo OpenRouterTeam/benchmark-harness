@@ -11,6 +11,7 @@ import {
   mapError,
   orElseSucceed,
   promise,
+  result,
   retry,
   succeed,
 } from "effect/Effect";
@@ -39,6 +40,7 @@ import { Dataset } from "../harness/dataset";
 import { optionalEnv } from "../internal/env-config";
 import { definedValues } from "../internal/guards";
 import { fetchHttpClientLayer } from "../internal/http-client";
+import { wLog } from "../internal/log";
 import { parseSchema, z } from "../internal/zod";
 import type { RetryConfig } from "../runtime/retry";
 import { withRetryAttemptLogging } from "../runtime/retry";
@@ -216,7 +218,7 @@ export function makeHfPageFetcher(
           }
         }
       }
-      const body = yield* client
+      const fetched = yield* client
         .get(HF_ROWS_BASE_URL, {
           urlParams: definedValues({
             dataset: config.dataset,
@@ -241,8 +243,21 @@ export function makeHfPageFetcher(
               new DatasetError({
                 message: `HF /rows request failed (offset=${offset}): ${String(cause)}`,
               })
-          )
+          ),
+          result
         );
+      if (Result.isFailure(fetched)) {
+        const stale = yield* readStalePage(store, cacheKey);
+        if (stale === undefined) {
+          return yield* fail(fetched.failure);
+        }
+        wLog("HF /rows request failed, serving stale cache entry", {
+          key: cacheKey,
+          error: fetched.failure.message,
+        });
+        return stale;
+      }
+      const body = fetched.success;
       const parsed = parseSchema(HfRowsResponseSchema, body);
       if (Result.isFailure(parsed)) {
         return yield* fail(
@@ -256,6 +271,24 @@ export function makeHfPageFetcher(
       }
       return parsed.success;
     });
+}
+
+function readStalePage(
+  store: CacheStore,
+  cacheKey: string | undefined
+): Effect<HfRowsResponse | undefined> {
+  if (cacheKey === undefined) {
+    return succeed(undefined);
+  }
+  return promise(() => store.readJson(cacheKey)).pipe(
+    map((cached) => {
+      if (cached === undefined) {
+        return undefined;
+      }
+      const parsed = parseSchema(HfRowsResponseSchema, cached);
+      return Result.isSuccess(parsed) ? parsed.success : undefined;
+    })
+  );
 }
 
 export function paginateHfRows<T>(opts: {
