@@ -43,6 +43,10 @@ describe("benchmark config", () => {
       { model: "other/model" },
       { provider: { order: ["Other"] } },
       { messages: [] },
+      { temperature: 1 },
+      { max_tokens: 512 },
+      { max_output_tokens: 512 },
+      { plugins: { id: "web" } },
     ]) {
       const result = parseSchema(BenchmarkRunConfigSchema, {
         benchmarkId: "tau_bench_verified_airline",

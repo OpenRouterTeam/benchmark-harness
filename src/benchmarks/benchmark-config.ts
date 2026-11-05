@@ -53,6 +53,9 @@ const HARNESS_OWNED_REQUEST_FIELDS = [
   "input",
   "messages",
   "stream",
+  "temperature",
+  "max_tokens",
+  "max_output_tokens",
 ] as const;
 
 export const InferenceOverrideSchema = z.object({
@@ -83,7 +86,13 @@ export const InferenceOverrideSchema = z.object({
           (field) => body[field] === undefined
         ),
       {
-        message: `extraBody may not set ${HARNESS_OWNED_REQUEST_FIELDS.join(", ")}: the harness owns those request fields (tool definitions, model and provider pins, prompt input) and a configured value would silently replace them`,
+        message: `extraBody may not set ${HARNESS_OWNED_REQUEST_FIELDS.join(", ")}: the harness owns those request fields (tool definitions, model and provider pins, prompt input, sampling and output caps) and a configured value would silently replace them`,
+      }
+    )
+    .refine(
+      (body) => body["plugins"] === undefined || Array.isArray(body["plugins"]),
+      {
+        message: "extraBody.plugins must be an array of plugin objects",
       }
     )
     .describe(
