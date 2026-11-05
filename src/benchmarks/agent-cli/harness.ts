@@ -10,7 +10,7 @@ import { definedValues, isRecord } from "../../internal/guards";
 import type { OriAgent, OriChannel, OriReasoningEffort } from "./schema";
 import { assertValidAgentPackage, DEFAULT_CLAUDE_PACKAGE } from "./schema";
 
-const NODE_VERSION = "22" as const;
+const NODE_VERSION = "24.22.2" as const;
 
 export const NVM_INSTALL_URL =
   "https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh" as const;
@@ -41,10 +41,10 @@ function verifiedDownload(url: string, sha256: string, dest: string): string {
 }
 
 export const DEFAULT_AGENT_RUNTIME_URL =
-  "https://github.com/OpenRouterTeam/benchmark-harness/releases/download/agent-runtime-v2/agent-runtime-linux-x64-v2.tar.zst" as const;
+  "https://github.com/OpenRouterTeam/benchmark-harness/releases/download/agent-runtime-v3/agent-runtime-linux-x64-v3.tar.zst" as const;
 
 export const DEFAULT_AGENT_RUNTIME_SHA256 =
-  "7b59b9f3053b729f3d32da06154f68552e753b77da0b1dc497f53a860a8c8af2" as const;
+  "50a4be421a0e29a3a05925f2b4d9ccfaa1a641829d7271e5ca8cc037c4ef53d3" as const;
 
 export const AGENT_REQUEST_PLUGINS_ENV = "TB_OPENROUTER_PLUGINS" as const;
 
