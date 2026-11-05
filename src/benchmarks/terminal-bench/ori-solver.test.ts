@@ -670,7 +670,7 @@ describe("terminal-bench ori solver", () => {
     const dockerfile = steps.join("\n");
     expect(dockerfile).toContain("@anthropic-ai/claude-code@1.2.3");
     expect(dockerfile).toContain("npm install -g");
-    expect(dockerfile).toContain("nvm install");
+    expect(dockerfile).toContain("nvm install 24.22.2 ");
     expect(dockerfile).not.toContain(DEFAULT_AGENT_RUNTIME_URL);
     expect(dockerfile).not.toContain(DEFAULT_AGENT_RUNTIME_SHA256);
   });
@@ -1261,7 +1261,7 @@ describe("terminal-bench pi via ori", () => {
     const dockerfile = steps.join("\n");
     expect(dockerfile).toContain("@earendil-works/pi-coding-agent@0.80.0");
     expect(dockerfile).toContain("npm install -g");
-    expect(dockerfile).toContain("nvm install");
+    expect(dockerfile).toContain("nvm install 24.22.2 ");
     expect(dockerfile).not.toContain(DEFAULT_AGENT_RUNTIME_URL);
     expect(dockerfile).not.toContain(DEFAULT_AGENT_RUNTIME_SHA256);
   });
