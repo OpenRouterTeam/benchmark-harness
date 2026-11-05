@@ -3,7 +3,7 @@ import assert from "node:assert";
 
 import type { AsyncBuffer } from "hyparquet";
 import { parquetMetadata } from "hyparquet";
-import { ByteWriter } from "hyparquet-writer";
+import { ByteWriter, parquetWriteBuffer } from "hyparquet-writer";
 
 import type { ModelMessage, ResponseItem } from "../harness/core";
 import { MessageRole, ScoreValue } from "../harness/core";
@@ -15,6 +15,8 @@ import { AtifTrajectorySchema } from "./atif-schema";
 import type { MergeResultFilesInput, MergedResultFiles } from "./parquet";
 import {
   mergeResultFilesToParquet,
+  asyncBufferFromBytes,
+  parquetErrorMessage,
   readResultRows,
   runResultToParquet,
   rowScoreToNumber,
@@ -27,6 +29,7 @@ import {
   BenchmarkResultRowSchema,
   ScorerTrajectorySchema,
 } from "./parquet-schema";
+import { parquetStreamWriter } from "./parquet-stream-writer";
 
 const USAGE = {
   inputTokens: 100,
@@ -103,9 +106,11 @@ function bufferToArrayBuffer(buf: Buffer): ArrayBuffer {
   return ab;
 }
 
-function readRows(buf: Buffer): Promise<readonly BenchmarkResultRow[]> {
+async function readRows(buf: Buffer): Promise<readonly BenchmarkResultRow[]> {
   const file = asyncBufferFromArrayBuffer(bufferToArrayBuffer(buf));
-  return readResultRows(file);
+  const rows = await readResultRows(file);
+  assertSuccess(rows);
+  return rows.success;
 }
 
 async function mergeToBytes(
@@ -119,7 +124,8 @@ async function mergeToBytes(
     writer,
     ...(runLevelScores !== undefined && { runLevelScores }),
   });
-  return { bytes: Buffer.from(writer.getBuffer()), merged };
+  assertSuccess(merged);
+  return { bytes: Buffer.from(writer.getBuffer()), merged: merged.success };
 }
 
 async function mergedRowsOf(
@@ -1203,18 +1209,18 @@ describe("mergeResultFilesToParquet", () => {
     );
     let calls = 0;
 
-    await expect(
-      mergeResultFilesToParquet({
-        files: [
-          () => {
-            calls += 1;
-            return Promise.resolve(calls === 1 ? rows : rows.slice(1));
-          },
-        ],
-        meta: { task: META.task, model: META.model, createdAt: META.createdAt },
-        writer: new ByteWriter(),
-      })
-    ).rejects.toThrow("Result file 0 changed between merge passes");
+    const merged = await mergeResultFilesToParquet({
+      files: [
+        () => {
+          calls += 1;
+          return Promise.resolve(calls === 1 ? rows : rows.slice(1));
+        },
+      ],
+      meta: { task: META.task, model: META.model, createdAt: META.createdAt },
+      writer: new ByteWriter(),
+    });
+    assertFailure(merged);
+    expect(merged.failure).toEqual({ kind: "result-file-changed", index: 0 });
   });
   it("rejects a file whose scores change between passes without changing length", async () => {
     const rows = await readRows(
@@ -1229,18 +1235,18 @@ describe("mergeResultFilesToParquet", () => {
     }));
     let calls = 0;
 
-    await expect(
-      mergeResultFilesToParquet({
-        files: [
-          () => {
-            calls += 1;
-            return Promise.resolve(calls === 1 ? rows : flipped);
-          },
-        ],
-        meta: { task: META.task, model: META.model, createdAt: META.createdAt },
-        writer: new ByteWriter(),
-      })
-    ).rejects.toThrow("Result file 0 changed between merge passes");
+    const merged = await mergeResultFilesToParquet({
+      files: [
+        () => {
+          calls += 1;
+          return Promise.resolve(calls === 1 ? rows : flipped);
+        },
+      ],
+      meta: { task: META.task, model: META.model, createdAt: META.createdAt },
+      writer: new ByteWriter(),
+    });
+    assertFailure(merged);
+    expect(merged.failure).toEqual({ kind: "result-file-changed", index: 0 });
   });
   it("rejects a file whose run-level usage changes between passes", async () => {
     const rows = await readRows(
@@ -1252,18 +1258,128 @@ describe("mergeResultFilesToParquet", () => {
     }));
     let calls = 0;
 
-    await expect(
-      mergeResultFilesToParquet({
-        files: [
-          () => {
-            calls += 1;
-            return Promise.resolve(calls === 1 ? rows : changed);
-          },
-        ],
-        meta: { task: META.task, model: META.model, createdAt: META.createdAt },
-        writer: new ByteWriter(),
-      })
-    ).rejects.toThrow("Result file 0 changed between merge passes");
+    const merged = await mergeResultFilesToParquet({
+      files: [
+        () => {
+          calls += 1;
+          return Promise.resolve(calls === 1 ? rows : changed);
+        },
+      ],
+      meta: { task: META.task, model: META.model, createdAt: META.createdAt },
+      writer: new ByteWriter(),
+    });
+    assertFailure(merged);
+    expect(merged.failure).toEqual({ kind: "result-file-changed", index: 0 });
+  });
+});
+
+describe("ParquetError", () => {
+  const meta = {
+    task: META.task,
+    model: META.model,
+    createdAt: META.createdAt,
+  };
+  const scored: MergeResultFilesInput["runLevelScores"] = () => [];
+
+  it("returns result-file-read-failed when a reader rejects", async () => {
+    const cause = new Error("disk gone");
+    const merged = await mergeResultFilesToParquet({
+      files: [() => Promise.reject(cause)],
+      meta,
+      writer: new ByteWriter(),
+    });
+    assertFailure(merged);
+    expect(merged.failure).toEqual({
+      kind: "result-file-read-failed",
+      index: 0,
+      cause,
+    });
+    expect(parquetErrorMessage(merged.failure)).toBe("disk gone");
+  });
+  it("returns parquet-write-failed when the writer sink rejects", async () => {
+    const rows = await readRows(
+      runResultToParquet({ result: RESULT, meta: META })
+    );
+    const cause = new Error("upload closed");
+    const merged = await mergeResultFilesToParquet({
+      files: [() => Promise.resolve(rows)],
+      meta,
+      writer: parquetStreamWriter(() => Promise.reject(cause), 16),
+    });
+    assertFailure(merged);
+    expect(merged.failure).toEqual({ kind: "parquet-write-failed", cause });
+    expect(parquetErrorMessage(merged.failure)).toBe("upload closed");
+  });
+  it("returns parquet-decode-failed for bytes that are not parquet", async () => {
+    const read = await readResultRows(
+      asyncBufferFromBytes(new TextEncoder().encode('{"trial_results":[]}'))
+    );
+    assertFailure(read);
+    expect(read.failure.kind).toBe("parquet-decode-failed");
+    expect(parquetErrorMessage(read.failure)).toBe(
+      "parquet file invalid (footer != PAR1)"
+    );
+  });
+  it("returns invalid-result-row for parquet without the result columns", async () => {
+    const bytes = parquetWriteBuffer({
+      columnData: [{ name: "sample_id", data: ["s0"] }],
+    });
+    const read = await readResultRows(
+      asyncBufferFromBytes(new Uint8Array(bytes))
+    );
+    assertFailure(read);
+    expect(read.failure.kind).toBe("invalid-result-row");
+    expect(parquetErrorMessage(read.failure)).toStartWith(
+      "Invalid benchmark result row: "
+    );
+  });
+  it("returns invalid-result-column-json when a scored JSON column is not JSON", async () => {
+    const rows = await readRows(
+      runResultToParquet({ result: RESULT, meta: META })
+    );
+    const broken = rows.map((row) => ({ ...row, metadata: "nope" }));
+    const merged = await mergeResultFilesToParquet({
+      files: [() => Promise.resolve(broken)],
+      meta,
+      writer: new ByteWriter(),
+      runLevelScores: scored,
+    });
+    assertFailure(merged);
+    expect(merged.failure.kind).toBe("invalid-result-column-json");
+    expect(parquetErrorMessage(merged.failure)).toStartWith("JSON Parse error");
+  });
+  it("returns invalid-result-column when a scored JSON column fails its schema", async () => {
+    const rows = await readRows(
+      runResultToParquet({ result: RESULT, meta: META })
+    );
+    const broken = rows.map((row) => ({
+      ...row,
+      scorer_trajectory: '{"kind":"unknown"}',
+    }));
+    const merged = await mergeResultFilesToParquet({
+      files: [() => Promise.resolve(broken)],
+      meta,
+      writer: new ByteWriter(),
+      runLevelScores: scored,
+    });
+    assertFailure(merged);
+    expect(merged.failure.kind).toBe("invalid-result-column");
+    expect(parquetErrorMessage(merged.failure)).toStartWith(
+      "Invalid result column: "
+    );
+  });
+  it("formats result-file-changed with the file index", () => {
+    expect(parquetErrorMessage({ kind: "result-file-changed", index: 3 })).toBe(
+      "Result file 3 changed between merge passes"
+    );
+  });
+  it("formats a non-Error cause the way unknownErrorToString does", () => {
+    expect(
+      parquetErrorMessage({ kind: "parquet-decode-failed", cause: "boom" })
+    ).toBe("boom");
+    expect(
+      parquetErrorMessage({ kind: "parquet-write-failed", cause: { code: 7 } })
+    ).toBe('{"code":7}');
   });
 });
 

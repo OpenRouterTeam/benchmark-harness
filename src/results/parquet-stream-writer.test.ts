@@ -3,12 +3,14 @@ import { describe, expect, it } from "bun:test";
 import { ByteWriter } from "hyparquet-writer";
 
 import { ScoreValue } from "../harness/core";
+import { assertSuccess } from "../internal/testing";
 import {
   asyncBufferFromBytes,
   mergeResultFilesToParquet,
   readResultRows,
   runResultToParquet,
 } from "./parquet";
+import type { BenchmarkResultRow } from "./parquet-schema";
 import { parquetStreamWriter } from "./parquet-stream-writer";
 
 const META = {
@@ -18,7 +20,9 @@ const META = {
   createdAt: "2026-01-01T00:00:00.000Z",
 } as const;
 
-function resultRows(sampleCount: number): ReturnType<typeof readResultRows> {
+async function resultRows(
+  sampleCount: number
+): Promise<readonly BenchmarkResultRow[]> {
   const sampleScores = Array.from({ length: sampleCount }, (_, index) => ({
     sampleId: `s${index}`,
     epoch: 0,
@@ -48,7 +52,9 @@ function resultRows(sampleCount: number): ReturnType<typeof readResultRows> {
     },
     meta: META,
   });
-  return readResultRows(asyncBufferFromBytes(bytes));
+  const rows = await readResultRows(asyncBufferFromBytes(bytes));
+  assertSuccess(rows);
+  return rows.success;
 }
 
 describe("parquetStreamWriter", () => {

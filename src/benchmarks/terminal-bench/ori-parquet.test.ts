@@ -21,6 +21,7 @@ import {
 import type { Sample } from "../../harness/core";
 import { initialTaskState } from "../../harness/core";
 import { Solver } from "../../harness/solver";
+import { assertSuccess } from "../../internal/testing";
 import {
   asyncBufferFromBytes,
   readResultRows,
@@ -175,7 +176,8 @@ async function runOriSampleToParquetRow() {
   const rows = await readResultRows(
     asyncBufferFromBytes(new Uint8Array(buffer))
   );
-  const row = rows[0];
+  assertSuccess(rows);
+  const row = rows.success[0];
   if (row === undefined) {
     throw new Error("parquet contained no rows");
   }
