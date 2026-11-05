@@ -5,6 +5,7 @@ import { Presets, SingleBar } from "cli-progress";
 import { gen, promise, runSync, sync } from "effect/Effect";
 import { getOrNull } from "effect/Option";
 import * as Result from "effect/Result";
+import type { ZodError } from "zod";
 
 import { isSafeOriSessionId } from "../benchmarks/agent-cli/runner";
 import type { BenchmarkRunConfig } from "../benchmarks/benchmark-config";
@@ -16,6 +17,7 @@ import {
 } from "../benchmarks/benchmark-config";
 import { DracoPanelConfigSchema } from "../benchmarks/draco/schemas";
 import { benchmarkIds, getBenchmark } from "../benchmarks/registry";
+import type { Benchmark } from "../benchmarks/types";
 import type { CostTier, ReasoningEffort } from "../harness/constants";
 import {
   ADAPTIVE_REASONING_EFFORT,
@@ -52,7 +54,82 @@ interface CliArgs {
   readonly reasoningEffort: ReasoningEffort;
 }
 
-export function parseArgs(argv: readonly string[]): CliArgs {
+export type CliError =
+  | { readonly kind: "invalid_image_detail"; readonly raw: string }
+  | { readonly kind: "invalid_cost_tier"; readonly raw: string }
+  | { readonly kind: "invalid_reasoning_effort"; readonly raw: string }
+  | {
+      readonly kind: "adaptive_reasoning_effort_unsupported";
+      readonly model: string | undefined;
+    }
+  | { readonly kind: "unknown_benchmark"; readonly benchmarkId: string }
+  | { readonly kind: "api_key_missing" }
+  | { readonly kind: "unsafe_session_id"; readonly sessionId: string }
+  | { readonly kind: "invalid_solver_config_json"; readonly cause: unknown }
+  | { readonly kind: "model_required"; readonly benchmarkId: string }
+  | {
+      readonly kind: "unknown_solver_config_options";
+      readonly benchmarkId: string;
+      readonly options: readonly string[];
+    }
+  | {
+      readonly kind: "invalid_benchmark_config";
+      readonly benchmarkId: string;
+      readonly cause: ZodError;
+    }
+  | { readonly kind: "invalid_draco_panel_config"; readonly cause: ZodError }
+  | { readonly kind: "unsupported_benchmark"; readonly benchmarkId: string };
+
+export function formatCliError(error: CliError): string {
+  switch (error.kind) {
+    case "invalid_image_detail": {
+      return `--image-detail must be one of: ${IMAGE_DETAIL_VALUES.join(", ")} (got "${error.raw}")`;
+    }
+    case "invalid_cost_tier": {
+      return `--cost-tier must be one of: ${COST_TIERS.join(", ")} (got "${error.raw}")`;
+    }
+    case "invalid_reasoning_effort": {
+      return `--reasoning-effort must be one of: ${REASONING_EFFORTS.join(", ")} (got "${error.raw}")`;
+    }
+    case "adaptive_reasoning_effort_unsupported": {
+      return `--reasoning-effort ${ADAPTIVE_REASONING_EFFORT} is only supported for: ${ADAPTIVE_REASONING_EFFORT_MODELS.join(", ")} (got model "${error.model ?? ""}")`;
+    }
+    case "unknown_benchmark": {
+      return `Unknown benchmark "${error.benchmarkId}". Available: ${benchmarkIds().join(", ")}`;
+    }
+    case "api_key_missing": {
+      return "Set OPENROUTER_API_KEY (or BENCHMARKING_OPENROUTER_API_KEY) in the environment.";
+    }
+    case "unsafe_session_id": {
+      return `BENCH_CHILD_WORKFLOW_ID contains a control character, which ori replaces with a fresh UUID and silently detaches the run from its generations (got ${JSON.stringify(error.sessionId)}).`;
+    }
+    case "invalid_solver_config_json": {
+      return `--solver-config is not valid JSON: ${String(error.cause)}`;
+    }
+    case "model_required": {
+      return `${error.benchmarkId} requires --model`;
+    }
+    case "unknown_solver_config_options": {
+      return `Unknown ${error.benchmarkId} solver-config option(s): ${error.options.join(", ")}`;
+    }
+    case "invalid_benchmark_config": {
+      return `Invalid ${error.benchmarkId} config: ${error.cause.message}`;
+    }
+    case "invalid_draco_panel_config": {
+      return `Invalid DRACO panel config: ${error.cause.message}`;
+    }
+    case "unsupported_benchmark": {
+      return `Unsupported benchmark: ${error.benchmarkId}`;
+    }
+    default: {
+      return error satisfies never;
+    }
+  }
+}
+
+export function parseArgs(
+  argv: readonly string[]
+): Result.Result<CliArgs, CliError> {
   const get = (flag: string): string | undefined => {
     const idx = argv.indexOf(flag);
     return idx !== -1 ? argv[idx + 1] : undefined;
@@ -61,25 +138,28 @@ export function parseArgs(argv: readonly string[]): CliArgs {
     const raw = get(flag);
     return raw !== undefined ? Number(raw) : undefined;
   };
-  return {
-    benchmark: get("--benchmark") ?? "gpqa_diamond",
-    model: get("--model"),
-    limit: num("--limit"),
-    start: num("--start"),
-    end: num("--end"),
-    epochs: num("--epochs"),
-    concurrency: num("--concurrency") ?? 8,
-    endpointId: get("--endpoint-id"),
-    solverConfig: get("--solver-config"),
-    artifactDir: get("--artifact-dir"),
-    resumeId: get("--resume-id"),
-    imageDetail: validateImageDetail(get("--image-detail")),
-    costTier: validateCostTier(get("--cost-tier")),
-    reasoningEffort: validateReasoningEffort(
-      get("--reasoning-effort"),
-      get("--model")
-    ),
-  };
+  return Result.gen(function* () {
+    const model = get("--model");
+    return {
+      benchmark: get("--benchmark") ?? "gpqa_diamond",
+      model,
+      limit: num("--limit"),
+      start: num("--start"),
+      end: num("--end"),
+      epochs: num("--epochs"),
+      concurrency: num("--concurrency") ?? 8,
+      endpointId: get("--endpoint-id"),
+      solverConfig: get("--solver-config"),
+      artifactDir: get("--artifact-dir"),
+      resumeId: get("--resume-id"),
+      imageDetail: yield* validateImageDetail(get("--image-detail")),
+      costTier: yield* validateCostTier(get("--cost-tier")),
+      reasoningEffort: yield* validateReasoningEffort(
+        get("--reasoning-effort"),
+        model
+      ),
+    };
+  });
 }
 
 function resolveRange(args: CliArgs):
@@ -125,48 +205,72 @@ function resolveTotalEvaluations(
   );
 }
 
-function resolveSessionId(): string {
+function resolveSessionId(): Result.Result<string, CliError> {
   const envOpt = runSync(optionalEnv("BENCH_CHILD_WORKFLOW_ID"));
   const raw = getOrNull(envOpt);
   const fromEnv = raw === null || raw.length === 0 ? null : raw;
   if (fromEnv !== null && !isSafeOriSessionId(fromEnv)) {
-    throw new Error(
-      `BENCH_CHILD_WORKFLOW_ID contains a control character, which ori replaces with a fresh UUID and silently detaches the run from its generations (got ${JSON.stringify(fromEnv)}).`
-    );
+    return Result.fail({ kind: "unsafe_session_id", sessionId: fromEnv });
   }
-  return fromEnv ?? runSync(sync(() => crypto.randomUUID()));
+  return Result.succeed(fromEnv ?? runSync(sync(() => crypto.randomUUID())));
 }
 
-function resolveApiKey(): string {
+function resolveApiKey(): Result.Result<string, CliError> {
   const primaryOpt = runSync(optionalEnv("OPENROUTER_API_KEY"));
   const fallbackOpt = runSync(optionalEnv("BENCHMARKING_OPENROUTER_API_KEY"));
   const keyValue = getOrNull(primaryOpt) ?? getOrNull(fallbackOpt);
   if (keyValue === null) {
-    throw new Error(
-      "Set OPENROUTER_API_KEY (or BENCHMARKING_OPENROUTER_API_KEY) in the environment."
-    );
+    return Result.fail({ kind: "api_key_missing" });
   }
-  return keyValue;
+  return Result.succeed(keyValue);
 }
 
-function main(): Promise<void> {
-  const args = parseArgs(process.argv.slice(2));
-  const benchmark = getBenchmark(args.benchmark);
-  if (benchmark === undefined) {
-    throw new Error(
-      `Unknown benchmark "${args.benchmark}". Available: ${benchmarkIds().join(", ")}`
-    );
+interface RunSetup {
+  readonly args: CliArgs;
+  readonly benchmark: Benchmark;
+  readonly apiKey: string;
+  readonly sessionId: string;
+  readonly benchmarkConfig: unknown;
+}
+
+function prepareRun(
+  argv: readonly string[]
+): Result.Result<RunSetup, CliError> {
+  return Result.gen(function* () {
+    const args = yield* parseArgs(argv);
+    const benchmark = getBenchmark(args.benchmark);
+    if (benchmark === undefined) {
+      return yield* Result.fail<CliError>({
+        kind: "unknown_benchmark",
+        benchmarkId: args.benchmark,
+      });
+    }
+    const apiKey = yield* resolveApiKey();
+    const sessionId = yield* resolveSessionId();
+    const benchmarkConfig =
+      args.solverConfig !== undefined
+        ? yield* parseSolverConfig(args.solverConfig)
+        : undefined;
+    return { args, benchmark, apiKey, sessionId, benchmarkConfig };
+  });
+}
+
+function reportCliError(error: CliError): void {
+  process.stderr.write(`error: ${formatCliError(error)}\n`);
+  process.exitCode = 1;
+}
+
+async function main(): Promise<void> {
+  const setup = prepareRun(process.argv.slice(2));
+  if (Result.isFailure(setup)) {
+    reportCliError(setup.failure);
+    return;
   }
-  const apiKey = resolveApiKey();
+  const { args, benchmark, apiKey, sessionId, benchmarkConfig } = setup.success;
   const baseUrl = getOrNull(runSync(optionalEnv("OPENROUTER_BASE_URL")));
   const epochs = args.epochs ?? benchmark.defaultEpochs;
   const range = resolveRange(args);
-  const sessionId = resolveSessionId();
-  const benchmarkConfig =
-    args.solverConfig !== undefined
-      ? parseSolverConfig(args.solverConfig)
-      : undefined;
-  return runHarnessPromise(
+  await runHarnessPromise(
     gen(function* () {
       let effectivePanelConfig: unknown = benchmarkConfig;
       let artifactDir: string | undefined = args.artifactDir ?? args.resumeId;
@@ -184,7 +288,7 @@ function main(): Promise<void> {
         effectivePanelConfig = resolved.benchmarkConfig;
         ({ artifactDir } = resolved);
       }
-      const benchmarkRunConfig = buildBenchmarkConfig({
+      const built = buildBenchmarkConfig({
         benchmarkId: args.benchmark,
         model: args.model,
         panelConfig: effectivePanelConfig,
@@ -194,6 +298,11 @@ function main(): Promise<void> {
         costTier: args.costTier,
         reasoningEffort: args.reasoningEffort,
       });
+      if (Result.isFailure(built)) {
+        reportCliError(built.failure);
+        return;
+      }
+      const benchmarkRunConfig = built.success;
       process.stderr.write(
         `Running ${args.benchmark}${args.model !== undefined ? ` on ${args.model}` : ""}${args.solverConfig !== undefined ? ` (solver-config=${args.solverConfig})` : ""}${artifactDir !== undefined ? ` (artifact-dir=${artifactDir})` : ""} (epochs=${epochs}, concurrency=${args.concurrency}, reasoning-effort=${args.reasoningEffort}${range !== undefined ? `, range=${range.start ?? 0}..${range.end ?? "end"}` : ""}, session=${sessionId})...\n`
       );
@@ -290,138 +399,149 @@ function main(): Promise<void> {
   );
 }
 
-function validateImageDetail(raw: string | undefined): ImageDetail | undefined {
+function validateImageDetail(
+  raw: string | undefined
+): Result.Result<ImageDetail | undefined, CliError> {
   if (raw === undefined) {
-    return undefined;
+    return Result.succeed(undefined);
   }
   if (!isMember(raw, ImageDetail)) {
-    throw new Error(
-      `--image-detail must be one of: ${IMAGE_DETAIL_VALUES.join(", ")} (got "${raw}")`
-    );
+    return Result.fail({ kind: "invalid_image_detail", raw });
   }
-  return raw;
+  return Result.succeed(raw);
 }
 
-function validateCostTier(raw: string | undefined): CostTier | undefined {
+function validateCostTier(
+  raw: string | undefined
+): Result.Result<CostTier | undefined, CliError> {
   if (raw === undefined) {
-    return undefined;
+    return Result.succeed(undefined);
   }
   if (!isMember(raw, COST_TIERS)) {
-    throw new Error(
-      `--cost-tier must be one of: ${COST_TIERS.join(", ")} (got "${raw}")`
-    );
+    return Result.fail({ kind: "invalid_cost_tier", raw });
   }
-  return raw;
+  return Result.succeed(raw);
 }
 
 function validateReasoningEffort(
   raw: string | undefined,
   model: string | undefined
-): ReasoningEffort {
+): Result.Result<ReasoningEffort, CliError> {
   if (raw === undefined) {
-    return defaultReasoningEffortFor(model);
+    return Result.succeed(defaultReasoningEffortFor(model));
   }
   if (!isMember(raw, REASONING_EFFORTS)) {
-    throw new Error(
-      `--reasoning-effort must be one of: ${REASONING_EFFORTS.join(", ")} (got "${raw}")`
-    );
+    return Result.fail({ kind: "invalid_reasoning_effort", raw });
   }
   if (
     raw === ADAPTIVE_REASONING_EFFORT &&
     (model === undefined || !supportsAdaptiveReasoningEffort(model))
   ) {
-    throw new Error(
-      `--reasoning-effort ${ADAPTIVE_REASONING_EFFORT} is only supported for: ${ADAPTIVE_REASONING_EFFORT_MODELS.join(", ")} (got model "${model ?? ""}")`
-    );
+    return Result.fail({
+      kind: "adaptive_reasoning_effort_unsupported",
+      model,
+    });
   }
-  return raw;
+  return Result.succeed(raw);
 }
 
-function requireModel(benchmarkId: string, model: string | undefined): string {
+function requireModel(
+  benchmarkId: string,
+  model: string | undefined
+): Result.Result<string, CliError> {
   if (model === undefined) {
-    throw new Error(`${benchmarkId} requires --model`);
+    return Result.fail({ kind: "model_required", benchmarkId });
   }
-  return model;
+  return Result.succeed(model);
 }
 
 function buildSchemaValidatedConfig(opts: {
   benchmarkId: string;
-  model: string;
+  model: string | undefined;
   endpointId: string | undefined;
   panelConfig: unknown;
   imageDetail?: ImageDetail;
   costTier?: CostTier;
   reasoningEffort: ReasoningEffort;
-}): BenchmarkRunConfig {
+}): Result.Result<BenchmarkRunConfig, CliError> {
   const {
     benchmarkId,
-    model,
     endpointId,
     panelConfig,
     imageDetail,
     costTier,
     reasoningEffort,
   } = opts;
-  const merged: Record<string, unknown> = definedValues({
-    benchmarkId,
-    model,
-    endpointId,
-    imageDetail,
-    costTier,
-    reasoningEffort,
-  });
-  if (typeof panelConfig === "object" && panelConfig !== null) {
-    const known = isModelBenchmarkId(benchmarkId)
-      ? knownBenchmarkOptionKeys(benchmarkId)
-      : undefined;
-    const unknown = known
-      ? Object.keys(panelConfig).filter((k) => !known.has(k))
-      : [];
-    if (unknown.length > 0) {
-      throw new Error(
-        `Unknown ${benchmarkId} solver-config option(s): ${unknown.sort().join(", ")}`
-      );
-    }
-    for (const [k, v] of Object.entries(panelConfig)) {
-      if (k !== "benchmarkId" && k !== "model") {
-        merged[k] = v;
+  return Result.gen(function* () {
+    const model = yield* requireModel(benchmarkId, opts.model);
+    const merged: Record<string, unknown> = definedValues({
+      benchmarkId,
+      model,
+      endpointId,
+      imageDetail,
+      costTier,
+      reasoningEffort,
+    });
+    if (typeof panelConfig === "object" && panelConfig !== null) {
+      const known = isModelBenchmarkId(benchmarkId)
+        ? knownBenchmarkOptionKeys(benchmarkId)
+        : undefined;
+      const unknown = known
+        ? Object.keys(panelConfig).filter((k) => !known.has(k))
+        : [];
+      if (unknown.length > 0) {
+        return yield* Result.fail<CliError>({
+          kind: "unknown_solver_config_options",
+          benchmarkId,
+          options: unknown.sort(),
+        });
+      }
+      for (const [k, v] of Object.entries(panelConfig)) {
+        if (k !== "benchmarkId" && k !== "model") {
+          merged[k] = v;
+        }
       }
     }
-  }
-  const optionsSchema = isModelBenchmarkId(benchmarkId)
-    ? BENCHMARK_OPTIONS_SCHEMAS[benchmarkId]
-    : undefined;
-  if (
-    optionsSchema !== undefined &&
-    reasoningEffort !== ADAPTIVE_REASONING_EFFORT &&
-    Object.hasOwn(optionsSchema.shape, "agentReasoningEffort") &&
-    !(
-      typeof panelConfig === "object" &&
-      panelConfig !== null &&
-      Object.hasOwn(panelConfig, "agentReasoningEffort")
-    )
-  ) {
-    merged.agentReasoningEffort = reasoningEffort;
-  }
-  const parsed = parseSchema(BenchmarkRunConfigSchema, merged);
-  if (Result.isFailure(parsed)) {
-    throw new Error(`Invalid ${benchmarkId} config: ${parsed.failure.message}`);
-  }
-  return parsed.success;
+    const optionsSchema = isModelBenchmarkId(benchmarkId)
+      ? BENCHMARK_OPTIONS_SCHEMAS[benchmarkId]
+      : undefined;
+    if (
+      optionsSchema !== undefined &&
+      reasoningEffort !== ADAPTIVE_REASONING_EFFORT &&
+      Object.hasOwn(optionsSchema.shape, "agentReasoningEffort") &&
+      !(
+        typeof panelConfig === "object" &&
+        panelConfig !== null &&
+        Object.hasOwn(panelConfig, "agentReasoningEffort")
+      )
+    ) {
+      merged.agentReasoningEffort = reasoningEffort;
+    }
+    const parsed = parseSchema(BenchmarkRunConfigSchema, merged);
+    if (Result.isFailure(parsed)) {
+      return yield* Result.fail<CliError>({
+        kind: "invalid_benchmark_config",
+        benchmarkId,
+        cause: parsed.failure,
+      });
+    }
+    return parsed.success;
+  });
 }
 
-function parseSolverConfig(raw: string): unknown {
+function parseSolverConfig(raw: string): Result.Result<unknown, CliError> {
   const trimmed = raw.trim();
-  if (trimmed.startsWith("{")) {
-    const result = Result.try(() => JSON.parse(trimmed));
-    if (Result.isFailure(result)) {
-      throw new Error(
-        `--solver-config is not valid JSON: ${String(result.failure)}`
-      );
-    }
-    return result.success;
+  if (!trimmed.startsWith("{")) {
+    return Result.succeed(raw);
   }
-  return raw;
+  const result = Result.try(() => JSON.parse(trimmed));
+  if (Result.isFailure(result)) {
+    return Result.fail({
+      kind: "invalid_solver_config_json",
+      cause: result.failure,
+    });
+  }
+  return Result.succeed(result.success);
 }
 
 export function buildBenchmarkConfig(opts: {
@@ -433,7 +553,7 @@ export function buildBenchmarkConfig(opts: {
   imageDetail: ImageDetail | undefined;
   costTier?: CostTier;
   reasoningEffort: ReasoningEffort;
-}): BenchmarkRunConfig {
+}): Result.Result<BenchmarkRunConfig, CliError> {
   const {
     benchmarkId,
     model,
@@ -447,7 +567,7 @@ export function buildBenchmarkConfig(opts: {
     case "tau_bench_verified_airline": {
       return buildSchemaValidatedConfig({
         benchmarkId: "tau_bench_verified_airline",
-        model: requireModel("tau_bench_verified_airline", model),
+        model,
         endpointId,
         panelConfig,
         costTier,
@@ -457,7 +577,7 @@ export function buildBenchmarkConfig(opts: {
     case "tau3_bench_banking": {
       return buildSchemaValidatedConfig({
         benchmarkId: "tau3_bench_banking",
-        model: requireModel("tau3_bench_banking", model),
+        model,
         endpointId,
         panelConfig,
         costTier,
@@ -467,7 +587,7 @@ export function buildBenchmarkConfig(opts: {
     case "terminal_bench": {
       return buildSchemaValidatedConfig({
         benchmarkId: "terminal_bench",
-        model: requireModel("terminal_bench", model),
+        model,
         endpointId,
         panelConfig,
         costTier,
@@ -477,20 +597,23 @@ export function buildBenchmarkConfig(opts: {
     case "draco": {
       const panel = parseSchema(DracoPanelConfigSchema, panelConfig);
       if (Result.isFailure(panel)) {
-        throw new Error(`Invalid DRACO panel config: ${panel.failure.message}`);
+        return Result.fail({
+          kind: "invalid_draco_panel_config",
+          cause: panel.failure,
+        });
       }
-      return {
+      return Result.succeed({
         benchmarkId: "draco",
         panelConfig: panel.success,
         ...definedValues({
           artifactDir,
         }),
-      };
+      });
     }
     case "mmmu_pro_vision": {
       return buildSchemaValidatedConfig({
         benchmarkId: "mmmu_pro_vision",
-        model: requireModel("mmmu_pro_vision", model),
+        model,
         endpointId,
         panelConfig,
         imageDetail: opts.imageDetail,
@@ -515,7 +638,7 @@ export function buildBenchmarkConfig(opts: {
     case "vgi_bench": {
       return buildSchemaValidatedConfig({
         benchmarkId,
-        model: requireModel(benchmarkId, model),
+        model,
         endpointId,
         panelConfig,
         costTier,
@@ -523,7 +646,7 @@ export function buildBenchmarkConfig(opts: {
       });
     }
     default: {
-      throw new Error(`Unsupported benchmark: ${benchmarkId}`);
+      return Result.fail({ kind: "unsupported_benchmark", benchmarkId });
     }
   }
 }
