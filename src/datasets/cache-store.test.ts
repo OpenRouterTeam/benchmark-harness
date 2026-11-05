@@ -9,11 +9,13 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { PassThrough, Readable } from "node:stream";
+import { PassThrough, Readable, Writable } from "node:stream";
 
+import { assertFailure, assertSuccess } from "../internal/testing";
 import type { GcsObjectClient } from "./cache-store";
 import {
   datasetCacheWriteFailures,
+  extractTarGzFrom,
   makeDiskCacheStore,
   makeGcsCacheStore,
   pipeTarGzTo,
@@ -81,7 +83,7 @@ describe("GcsCacheStore", () => {
   const savedLogLevel = process.env.LOG_LEVEL;
   const savedOrEnv = process.env.OR_ENV;
   const tmpDirs: string[] = [];
-  const infoSpies: { mockRestore: () => void }[] = [];
+  const consoleSpies: { mockRestore: () => void }[] = [];
   afterEach(() => {
     for (const name of [
       "BENCH_DATASET_CACHE_BACKEND",
@@ -105,8 +107,8 @@ describe("GcsCacheStore", () => {
     } else {
       process.env.OR_ENV = savedOrEnv;
     }
-    for (const info of infoSpies.splice(0)) {
-      info.mockRestore();
+    for (const spy of consoleSpies.splice(0)) {
+      spy.mockRestore();
     }
     while (tmpDirs.length > 0) {
       const dir = tmpDirs.pop();
@@ -122,19 +124,27 @@ describe("GcsCacheStore", () => {
     return dir;
   }
 
-  function captureInfo() {
+  function captureConsole(level: "info" | "warn") {
     process.env.OR_ENV = "development";
     process.env.LOG_LEVEL = "1";
-    const info = spyOn(console, "info").mockImplementation(() => {});
-    infoSpies.push(info);
-    return info;
+    const spy = spyOn(console, level).mockImplementation(() => {});
+    consoleSpies.push(spy);
+    return spy;
+  }
+
+  function withoutTarOnPath<T>(run: () => Promise<T>): Promise<T> {
+    const savedPath = process.env.PATH;
+    process.env.PATH = makeTmpDir();
+    return run().finally(() => {
+      process.env.PATH = savedPath;
+    });
   }
 
   it("logs a hit when a fresh JSON object is read", async () => {
     const client = makeMemoryGcsClient();
     const store = makeGcsCacheStore({ bucket: "b", client });
     await store.writeJson("hit.json", { ok: true });
-    const info = captureInfo();
+    const info = captureConsole("info");
 
     await expect(store.readJson("hit.json")).resolves.toEqual({ ok: true });
 
@@ -149,7 +159,7 @@ describe("GcsCacheStore", () => {
   it("logs a miss when a JSON object is absent", async () => {
     const client = makeMemoryGcsClient();
     const store = makeGcsCacheStore({ bucket: "b", client });
-    const info = captureInfo();
+    const info = captureConsole("info");
 
     await expect(store.readJson("missing.json")).resolves.toBeUndefined();
 
@@ -166,7 +176,7 @@ describe("GcsCacheStore", () => {
     const store = makeGcsCacheStore({ bucket: "b", client });
     await store.writeJson("stale.json", { ok: true });
     client.setUpdated("stale.json", 1_000);
-    const info = captureInfo();
+    const info = captureConsole("info");
 
     await expect(
       store.readJson("stale.json", { maxAgeMs: 1_000, now: 3_000 })
@@ -187,7 +197,7 @@ describe("GcsCacheStore", () => {
       updated: Date.now(),
     });
     const store = makeGcsCacheStore({ bucket: "b", client });
-    const info = captureInfo();
+    const info = captureConsole("info");
 
     await expect(store.readJson("invalid.json")).resolves.toBeUndefined();
 
@@ -306,7 +316,7 @@ describe("GcsCacheStore", () => {
     const src = makeTmpDir();
     writeFileSync(join(src, "task.toml"), "name = 'a'\n");
     await store.snapshotCheckout(src, "harbor", "deadbeefdeadbeef");
-    const info = captureInfo();
+    const info = captureConsole("info");
     const dest = makeTmpDir();
 
     await expect(
@@ -330,7 +340,7 @@ describe("GcsCacheStore", () => {
     const client = makeMemoryGcsClient();
     const store = makeGcsCacheStore({ bucket: "b", client });
     const dir = makeTmpDir();
-    const info = captureInfo();
+    const info = captureConsole("info");
 
     await expect(
       store.tryHydrateCheckout(dir, "harbor", "abc123")
@@ -354,7 +364,7 @@ describe("GcsCacheStore", () => {
     const store = makeGcsCacheStore({ bucket: "b", client });
     const src = makeTmpDir();
     writeFileSync(join(src, "task.toml"), "name = 'a'\n");
-    const info = captureInfo();
+    const info = captureConsole("info");
 
     await store.snapshotCheckout(src, "harbor", "deadbeefdeadbeef");
 
@@ -374,13 +384,235 @@ describe("GcsCacheStore", () => {
     const client = makeMemoryGcsClient();
     const dir = makeTmpDir();
     const snapshotKey = "repos/harbor-missing.tar.gz";
-    await expect(
-      pipeTarGzTo(
-        join(dir, "missing"),
-        client.openObjectWriteStream(snapshotKey, "application/gzip")
-      )
-    ).rejects.toThrow("tar create exited");
+    const result = await pipeTarGzTo(
+      join(dir, "missing"),
+      client.openObjectWriteStream(snapshotKey, "application/gzip")
+    );
+    assertFailure(result);
+    expect(result.failure.kind).toBe("tar_exited");
+    expect(result.failure.operation).toBe("create");
+    if (result.failure.kind === "tar_exited") {
+      expect(result.failure.code).not.toBe(0);
+      expect(result.failure.stderr).not.toBe("");
+    }
     expect(client.store.has(snapshotKey)).toBe(false);
+  });
+
+  it("pipeTarGzTo succeeds and ends the destination for a real directory", async () => {
+    const client = makeMemoryGcsClient();
+    const dir = makeTmpDir();
+    writeFileSync(join(dir, "task.toml"), "name = 'a'\n");
+    const snapshotKey = "repos/harbor-ok.tar.gz";
+    const result = await pipeTarGzTo(
+      dir,
+      client.openObjectWriteStream(snapshotKey, "application/gzip")
+    );
+    assertSuccess(result);
+    expect(client.store.has(snapshotKey)).toBe(true);
+  });
+
+  it("pipeTarGzTo reports a stream failure when the destination rejects writes", async () => {
+    const dir = makeTmpDir();
+    writeFileSync(join(dir, "task.toml"), "name = 'a'\n");
+    const dest = new Writable({
+      write(_chunk, _encoding, callback) {
+        callback(new Error("disk full"));
+      },
+    });
+    dest.on("error", () => {});
+    const result = await pipeTarGzTo(dir, dest);
+    assertFailure(result);
+    expect(result.failure).toEqual({
+      kind: "stream_failed",
+      operation: "create",
+      message: "disk full",
+    });
+  });
+
+  it("pipeTarGzTo reports a spawn failure when tar is not on PATH", async () => {
+    const dir = makeTmpDir();
+    writeFileSync(join(dir, "task.toml"), "name = 'a'\n");
+    const dest = new PassThrough();
+    dest.on("error", () => {});
+    dest.resume();
+    const result = await withoutTarOnPath(() => pipeTarGzTo(dir, dest));
+    assertFailure(result);
+    expect(result.failure.kind).toBe("spawn_failed");
+    expect(result.failure.operation).toBe("create");
+    if (result.failure.kind === "spawn_failed") {
+      expect(result.failure.message).toContain("tar");
+    }
+  });
+
+  it("extractTarGzFrom reports tar_exited for a corrupt archive", async () => {
+    const dir = makeTmpDir();
+    const result = await extractTarGzFrom(
+      Readable.from([Buffer.from("not a gzip archive")]),
+      join(dir, "out")
+    );
+    assertFailure(result);
+    expect(result.failure.kind).toBe("tar_exited");
+    expect(result.failure.operation).toBe("extract");
+    if (result.failure.kind === "tar_exited") {
+      expect(result.failure.code).not.toBe(0);
+      expect(result.failure.stderr).not.toBe("");
+    }
+  });
+
+  it("extractTarGzFrom reports mkdir_failed when the target cannot be created", async () => {
+    const dir = makeTmpDir();
+    writeFileSync(join(dir, "blocker"), "not a directory\n");
+    const result = await extractTarGzFrom(
+      Readable.from([Buffer.from("ignored")]),
+      join(dir, "blocker", "out")
+    );
+    assertFailure(result);
+    expect(result.failure.kind).toBe("mkdir_failed");
+    if (result.failure.kind === "mkdir_failed") {
+      expect(result.failure.dir).toBe(join(dir, "blocker", "out"));
+      expect(result.failure.message).toContain("ENOTDIR");
+    }
+  });
+
+  it("tryHydrateCheckout returns false and warns when the target directory cannot be created", async () => {
+    const client = makeMemoryGcsClient();
+    await client.uploadObject(
+      "repos/harbor-abc123.tar.gz",
+      Buffer.from("ignored"),
+      "application/gzip"
+    );
+    const store = makeGcsCacheStore({ bucket: "b", client });
+    const dir = makeTmpDir();
+    writeFileSync(join(dir, "blocker"), "not a directory\n");
+    const warn = captureConsole("warn");
+
+    await expect(
+      store.tryHydrateCheckout(join(dir, "blocker", "out"), "harbor", "abc123")
+    ).resolves.toBe(false);
+
+    expect(warn.mock.calls).toHaveLength(1);
+    const [message, context] = warn.mock.calls[0] ?? [];
+    expect(message).toBe("GCS checkout hydrate failed");
+    expect(context).toMatchObject({
+      key: "repos/harbor-abc123.tar.gz",
+      error: expect.stringContaining("ENOTDIR"),
+    });
+  });
+
+  it("extractTarGzFrom reports a stream failure when the source errors", async () => {
+    const dir = makeTmpDir();
+    const src = new Readable({
+      read() {
+        this.destroy(new Error("connection reset"));
+      },
+    });
+    const result = await extractTarGzFrom(src, join(dir, "out"));
+    assertFailure(result);
+    expect(result.failure).toEqual({
+      kind: "stream_failed",
+      operation: "extract",
+      message: "connection reset",
+    });
+  });
+
+  it("extractTarGzFrom reports a spawn failure when tar is not on PATH", async () => {
+    const dir = makeTmpDir();
+    const result = await withoutTarOnPath(() =>
+      extractTarGzFrom(
+        Readable.from([Buffer.from("ignored")]),
+        join(dir, "out")
+      )
+    );
+    assertFailure(result);
+    expect(result.failure.kind).toBe("spawn_failed");
+    expect(result.failure.operation).toBe("extract");
+  });
+
+  it("tryHydrateCheckout returns false and warns when the snapshot is corrupt", async () => {
+    const client = makeMemoryGcsClient();
+    await client.uploadObject(
+      "repos/harbor-abc123.tar.gz",
+      Buffer.from("not a gzip archive"),
+      "application/gzip"
+    );
+    const store = makeGcsCacheStore({ bucket: "b", client });
+    const dir = makeTmpDir();
+    const warn = captureConsole("warn");
+
+    await expect(
+      store.tryHydrateCheckout(dir, "harbor", "abc123")
+    ).resolves.toBe(false);
+
+    expect(warn.mock.calls).toHaveLength(1);
+    const [message, context] = warn.mock.calls[0] ?? [];
+    expect(message).toBe("GCS checkout hydrate failed");
+    expect(context).toMatchObject({
+      key: "repos/harbor-abc123.tar.gz",
+      error: expect.stringContaining("tar extract exited"),
+    });
+  });
+
+  it("tryHydrateCheckout returns false and warns when opening the object throws", async () => {
+    const client: GcsObjectClient = {
+      ...makeMemoryGcsClient(),
+      async openObjectReadStream() {
+        throw new Error("bucket unreachable");
+      },
+    };
+    const store = makeGcsCacheStore({ bucket: "b", client });
+    const dir = makeTmpDir();
+    const warn = captureConsole("warn");
+
+    await expect(
+      store.tryHydrateCheckout(dir, "harbor", "abc123")
+    ).resolves.toBe(false);
+
+    expect(warn.mock.calls).toEqual([
+      [
+        "GCS checkout hydrate failed",
+        { key: "repos/harbor-abc123.tar.gz", error: "bucket unreachable" },
+      ],
+    ]);
+  });
+
+  it("snapshotCheckout warns and writes nothing when tar fails", async () => {
+    const client = makeMemoryGcsClient();
+    const store = makeGcsCacheStore({ bucket: "b", client });
+    const dir = makeTmpDir();
+    const warn = captureConsole("warn");
+
+    await store.snapshotCheckout(join(dir, "missing"), "harbor", "abc123");
+
+    expect(client.store.size).toBe(0);
+    expect(warn.mock.calls).toHaveLength(1);
+    const [message, context] = warn.mock.calls[0] ?? [];
+    expect(message).toBe("GCS checkout snapshot failed");
+    expect(context).toMatchObject({
+      key: "repos/harbor-abc123.tar.gz",
+      error: expect.stringContaining("tar create exited"),
+    });
+  });
+
+  it("snapshotCheckout warns when opening the write stream throws", async () => {
+    const client: GcsObjectClient = {
+      ...makeMemoryGcsClient(),
+      openObjectWriteStream() {
+        throw new Error("bucket unreachable");
+      },
+    };
+    const store = makeGcsCacheStore({ bucket: "b", client });
+    const dir = makeTmpDir();
+    writeFileSync(join(dir, "task.toml"), "name = 'a'\n");
+    const warn = captureConsole("warn");
+
+    await store.snapshotCheckout(dir, "harbor", "abc123");
+
+    expect(warn.mock.calls).toEqual([
+      [
+        "GCS checkout snapshot failed",
+        { key: "repos/harbor-abc123.tar.gz", error: "bucket unreachable" },
+      ],
+    ]);
   });
 
   it("does not export full-buffer tar helpers", async () => {
