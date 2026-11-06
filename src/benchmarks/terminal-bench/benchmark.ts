@@ -78,6 +78,7 @@ function makeTerminalBenchLayer(
     sessionId: input.sessionId,
     endpointId: benchmarkConfig.endpointId,
     agentPackage: benchmarkConfig.agentPackage,
+    agentVersion: benchmarkConfig.agentVersion,
     oriInstallUrl: benchmarkConfig.oriInstallUrl,
     appendSystemPrompt: benchmarkConfig.appendSystemPrompt,
     systemPrompt: benchmarkConfig.systemPrompt,

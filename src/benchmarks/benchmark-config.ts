@@ -13,6 +13,7 @@ import { SWITCHYARD_MODEL } from "../providers/switchyard-router-plugin";
 import { ModalSandboxOptionsSchema } from "../sandbox/modal-schema";
 import {
   AGENT_PACKAGE_PATTERN,
+  AGENT_VERSION_PATTERN,
   DEFAULT_HARBOR_AGENT,
   DEFAULT_ORI_CHANNEL,
   DEFAULT_ORI_INSTALL_URL,
@@ -183,6 +184,10 @@ const AgentPackageSchema = z
   .string()
   .regex(AGENT_PACKAGE_PATTERN, "agentPackage contains disallowed characters");
 
+const AgentVersionSchema = z
+  .string()
+  .regex(AGENT_VERSION_PATTERN, "agentVersion contains disallowed characters");
+
 export const TerminalBenchOptionsSchema = z.object({
   maxAgentTimeoutSec: z.number().positive().optional(),
   taskSubset: z.array(z.string()).optional(),
@@ -190,6 +195,7 @@ export const TerminalBenchOptionsSchema = z.object({
   appendSystemPrompt: z.string().optional(),
   agent: z.enum(TERMINAL_BENCH_AGENTS).default(DEFAULT_TERMINAL_BENCH_AGENT),
   agentPackage: AgentPackageSchema.optional(),
+  agentVersion: AgentVersionSchema.optional(),
   oriInstallUrl: z.string().default(DEFAULT_ORI_INSTALL_URL),
   agentReasoningEffort: z.enum(ORI_REASONING_EFFORTS),
   oriChannel: z.enum(ORI_CHANNELS).default(DEFAULT_ORI_CHANNEL),
@@ -262,6 +268,7 @@ const AgenticOptionsSchema = z.object({
   ...ModalSandboxOptionsSchema.shape,
   agent: z.enum(HARBOR_AGENTS).default(DEFAULT_HARBOR_AGENT),
   agentPackage: AgentPackageSchema.optional(),
+  agentVersion: AgentVersionSchema.optional(),
   oriInstallUrl: z.string().default(DEFAULT_ORI_INSTALL_URL),
   agentReasoningEffort: z.enum(ORI_REASONING_EFFORTS),
   oriChannel: z.enum(ORI_CHANNELS).default(DEFAULT_ORI_CHANNEL),

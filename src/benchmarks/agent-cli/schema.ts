@@ -1,6 +1,10 @@
 import type { ReasoningEffort } from "../../harness/constants";
 import { ADAPTIVE_REASONING_EFFORT } from "../../harness/constants";
 import type { ValueOf } from "../../internal/guards";
+import {
+  AGENT_PACKAGE_PATTERN,
+  defaultHarnessPackage,
+} from "./harness-versions";
 
 export const ORI_AGENTS = ["pi", "claude", "prime-agent", "omp"] as const;
 
@@ -40,7 +44,10 @@ export function toOriReasoningEffort(
   return effort === ADAPTIVE_REASONING_EFFORT ? undefined : effort;
 }
 
-export const AGENT_PACKAGE_PATTERN = /^[A-Za-z0-9@/:._^=+-]+$/;
+export {
+  AGENT_PACKAGE_PATTERN,
+  AGENT_VERSION_PATTERN,
+} from "./harness-versions";
 
 export function isValidAgentPackage(value: string): boolean {
   return AGENT_PACKAGE_PATTERN.test(value);
@@ -55,8 +62,7 @@ export function assertValidAgentPackage(value: string): string {
   return value;
 }
 
-export const DEFAULT_CLAUDE_PACKAGE =
-  "@anthropic-ai/claude-code@2.1.235" as const;
+export const DEFAULT_CLAUDE_PACKAGE = defaultHarnessPackage("claude");
 
 export const DEFAULT_ORI_INSTALL_URL =
   "https://openrouter.ai/labs/ori/install.sh" as const;
