@@ -1,0 +1,21 @@
+{
+  "node": "24.22.2",
+  "harnesses": {
+    "claude": {
+      "package": "@anthropic-ai/claude-code@{version}",
+      "version": "2.1.235"
+    },
+    "pi": {
+      "package": "@earendil-works/pi-coding-agent@{version}",
+      "version": "0.84.2"
+    },
+    "prime-agent": {
+      "package": "https://pub-728493de92a943e2a9b2d17b4719f318.r2.dev/releases/v{version}/prime-agent-{version}.tgz",
+      "version": "0.9.1"
+    },
+    "omp": {
+      "package": "@oh-my-pi/pi-coding-agent@{version}",
+      "version": "18.1.2"
+    }
+  }
+}

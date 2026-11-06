@@ -124,6 +124,7 @@ function makeDeepSweLayer(
               sessionId: input.sessionId,
               endpointId: benchmarkConfig.endpointId,
               agentPackage: benchmarkConfig.agentPackage,
+              agentVersion: benchmarkConfig.agentVersion,
               oriInstallUrl: benchmarkConfig.oriInstallUrl,
               agentReasoningEffort: benchmarkConfig.agentReasoningEffort,
               oriChannel: benchmarkConfig.oriChannel,

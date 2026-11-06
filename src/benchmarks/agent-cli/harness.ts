@@ -7,10 +7,12 @@ import type {
 } from "../../harness/core";
 import { MessageRole } from "../../harness/core";
 import { definedValues, isRecord } from "../../internal/guards";
+import {
+  defaultHarnessPackage,
+  HARNESS_NODE_VERSION as NODE_VERSION,
+} from "./harness-versions";
 import type { OriAgent, OriChannel, OriReasoningEffort } from "./schema";
 import { assertValidAgentPackage, DEFAULT_CLAUDE_PACKAGE } from "./schema";
-
-const NODE_VERSION = "24.22.2" as const;
 
 export const NVM_INSTALL_URL =
   "https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh" as const;
@@ -20,13 +22,11 @@ export const NVM_INSTALL_SHA256 =
 
 export const ORI_INSTALL_DIR = "/usr/local/bin" as const;
 
-export const DEFAULT_PI_AGENT_PACKAGE =
-  "@earendil-works/pi-coding-agent@0.84.2" as const;
+export const DEFAULT_PI_AGENT_PACKAGE = defaultHarnessPackage("pi");
 
-export const DEFAULT_PRIME_AGENT_PACKAGE =
-  "https://pub-728493de92a943e2a9b2d17b4719f318.r2.dev/releases/v0.9.1/prime-agent-0.9.1.tgz" as const;
+export const DEFAULT_PRIME_AGENT_PACKAGE = defaultHarnessPackage("prime-agent");
 
-export const DEFAULT_OMP_PACKAGE = "@oh-my-pi/pi-coding-agent@18.1.2" as const;
+export const DEFAULT_OMP_PACKAGE = defaultHarnessPackage("omp");
 
 export const OMP_BUN_VERSION = "bun-v1.4.4" as const;
 

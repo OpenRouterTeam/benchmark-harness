@@ -32,6 +32,7 @@ import {
   AGENT_PROVIDER_ORDER_ENV,
   AGENT_REQUEST_PLUGINS_ENV,
 } from "./harness";
+import { resolveAgentPackage } from "./harness-versions";
 import type { OriChannel, OriReasoningEffort } from "./schema";
 import { DEFAULT_ORI_CHANNEL, DEFAULT_ORI_INSTALL_URL } from "./schema";
 
@@ -168,6 +169,7 @@ export interface AgentCliOpts {
   readonly sessionId?: string;
   readonly endpointId?: string;
   readonly agentPackage?: string;
+  readonly agentVersion?: string;
   readonly oriInstallUrl?: string;
   readonly systemPrompt?: string;
   readonly appendSystemPrompt?: string;
@@ -258,7 +260,7 @@ export function agentImageBuildSteps(
   opts: AgentCliOpts
 ): string[] {
   return harness.imageBuildSteps({
-    agentPackage: opts.agentPackage ?? harness.defaultPackage,
+    agentPackage: resolveAgentPackage(harness.id, opts),
   });
 }
 
