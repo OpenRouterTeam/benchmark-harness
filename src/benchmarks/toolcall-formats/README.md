@@ -15,6 +15,12 @@ The cases are synthetic, written by OpenRouter, and live in `cases.ts`. There is
 - `scorer.ts` validates each returned call against the exact schema sent (`json-schema.ts`), then against the expected values. Expected calls list only values the prompt states unambiguously. Keys the prompt leaves unset, or asks to omit, are left out of the expectation, so the schema still enforces their presence and type but any value the model picks passes.
 - Failure classes: `no_tool_call`, `unknown_tool`, `invalid_json`, `schema_violation`, `call_count`, `wrong_value`. Format classes point at the serving stack; `wrong_value` usually points at the model.
 
+## Exact file content
+
+File-content cases compare decoded string values exactly. The `write_unicode_content` prompt specifies its content as a JSON string literal and explicitly excludes leading or trailing whitespace. Decode the literal's escapes; its surrounding quotes are not part of the content. An added LF or CRLF is a `wrong_value`, even though the argument remains a schema-valid string.
+
+This prompt clarification preserves the 135 sample IDs, schemas, expected arguments, and scorer. It can change generated responses and scores, so record the benchmark revision when comparing runs before and after the clarification.
+
 ## Config options
 
 None beyond the shared model-benchmark options. Temperature is not configurable.

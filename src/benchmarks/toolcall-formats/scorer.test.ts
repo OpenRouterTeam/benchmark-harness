@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import type { ToolCall } from "../../harness/core";
 import { ScoreValue } from "../../harness/core";
 import type { ToolCallFormatCase } from "./cases";
-import { getToolCallFormatCase } from "./cases";
+import { getToolCallFormatCase, SCHEMA_VARIANTS, variantLabel } from "./cases";
 import { scoreToolCalls, valuesMatch } from "./scorer";
 
 function caseOf(id: string): ToolCallFormatCase {
@@ -28,6 +28,34 @@ describe("scoreToolCalls", () => {
     ]);
     expect(score.value).toBe(ScoreValue.Correct);
   });
+
+  for (const variant of SCHEMA_VARIANTS) {
+    it(`requires exact Unicode content for ${variantLabel(variant)}`, () => {
+      const entry = caseOf(
+        `toolcall_formats-write_unicode_content-${variantLabel(variant)}`
+      );
+      const content = 'She said "héllo" — naïve café ✓';
+      const score = (value: string) =>
+        scoreToolCalls(entry, [
+          call(
+            "write_file",
+            JSON.stringify({ path: "notes.txt", content: value, append: true })
+          ),
+        ]);
+
+      expect(score(content).value).toBe(ScoreValue.Correct);
+      for (const altered of [
+        `\n${content}`,
+        `${content}\n`,
+        `\r\n${content}`,
+        `${content}\r\n`,
+      ]) {
+        const result = score(altered);
+        expect(result.value).toBe(ScoreValue.Incorrect);
+        expect(result.explanation).toStartWith("wrong_value:");
+      }
+    });
+  }
 
   it("flags stringified numbers as a schema violation", () => {
     const score = scoreToolCalls(READ_SLICE_STRICT, [
