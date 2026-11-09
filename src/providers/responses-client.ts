@@ -4,6 +4,7 @@ import type {
   ResponsesRequest,
   StreamEvents,
 } from "@openrouter/sdk/models";
+import { InputsUnion$outboundSchema } from "@openrouter/sdk/models";
 import {
   ConnectionError,
   InvalidRequestError,
@@ -15,17 +16,25 @@ import { OpenRouterError } from "@openrouter/sdk/models/errors/openroutererror";
 import { SDKValidationError } from "@openrouter/sdk/models/errors/sdkvalidationerror";
 import { streamEventsFromJSON } from "@openrouter/sdk/models/streamevents";
 import { Responses as ResponsesClient } from "@openrouter/sdk/sdk/responses";
-import { Tag } from "effect/Context";
+import { Service } from "effect/Context";
 import { TaggedError } from "effect/Data";
 import type { Effect } from "effect/Effect";
 import { all, fail, flatMap, map, sync, tap, tryPromise } from "effect/Effect";
 import type { Layer } from "effect/Layer";
 import { succeed as layerSucceed } from "effect/Layer";
+import * as Result from "effect/Result";
+import {
+  encodeText,
+  fromIterable,
+  intersperseAffixes,
+  map as mapStream,
+  rechunk,
+  toReadableStream,
+} from "effect/Stream";
 
 import type { Citation, ModelUsage } from "../harness/core";
 import { ModelError } from "../harness/core";
 import type { ReasoningDetails } from "../harness/reasoning-details";
-import { Either } from "../internal/either";
 import { definedValues, isRecord } from "../internal/guards";
 import { parseSchema, z } from "../internal/zod";
 import { filterTraceHeaders } from "../runner/trace-headers";
@@ -160,9 +169,7 @@ export function toModelError(error: ResponsesError): ModelError {
   );
 }
 
-export class Responses extends Tag(
-  "@openrouter/bench-harness/responses-client/Responses"
-)<
+export class Responses extends Service<
   Responses,
   {
     readonly send: (
@@ -170,7 +177,7 @@ export class Responses extends Tag(
       options: ResponsesSendOptions
     ) => Effect<ResponsesResult, ResponsesError>;
   }
->() {}
+>()("@openrouter/bench-harness/responses-client/Responses") {}
 
 export type ResponsesService = {
   readonly send: (
@@ -196,10 +203,13 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
     let isCacheHit = false;
     let cacheStatus: string | undefined;
     let cacheSourceId: string | undefined;
+    let streamedInput: readonly unknown[] | undefined;
     const httpClient = new HTTPClient({
       fetcher: async (input, init) => {
         const request = await mergeExtraBody(input, init, options.extraBody);
-        const response = await fetch(request);
+        const response = await fetch(
+          await streamInputItems(request, streamedInput)
+        );
         identifiers = modelErrorIdentifiersFromFetchHeaders(response.headers);
         cacheStatus =
           response.headers.get(RESPONSE_CACHE_STATUS_HEADER) ?? undefined;
@@ -241,8 +251,15 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
     return tryPromise({
       try: async (signal) => {
         identifiers = {};
+        const outboundInput = outboundInputItems(body.input);
+        streamedInput =
+          options.extraBody !== undefined &&
+          Object.hasOwn(options.extraBody, "input")
+            ? undefined
+            : outboundInput;
         const requestBody = {
           ...body,
+          ...(outboundInput === undefined ? {} : { input: [] }),
           ...definedValues({
             cacheControl:
               body.cacheControl === undefined &&
@@ -342,12 +359,69 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
   return layerSucceed(Responses, Responses.of({ send: sendWithCacheSalt }));
 }
 
+function outboundInputItems(
+  input: ResponsesRequest["input"]
+): readonly unknown[] | undefined {
+  if (!Array.isArray(input) || input.length === 0) {
+    return undefined;
+  }
+  const parsed = InputsUnion$outboundSchema.safeParse(input);
+  return parsed.success && Array.isArray(parsed.data) ? parsed.data : undefined;
+}
+
+export async function streamInputItems(
+  request: Request,
+  items: readonly unknown[] | undefined
+): Promise<Request> {
+  if (items === undefined) {
+    return request;
+  }
+  const parsed: unknown = JSON.parse(await request.clone().text());
+  if (
+    !isRecord(parsed) ||
+    !Array.isArray(parsed["input"]) ||
+    parsed["input"].length > 0
+  ) {
+    return request;
+  }
+  const { input: _placeholder, ...rest } = parsed;
+  const restJson = JSON.stringify(rest);
+  const suffix = restJson === "{}" ? "]}" : `],${restJson.slice(1)}`;
+  const body = fromIterable(items).pipe(
+    rechunk(1),
+    mapStream((item) => JSON.stringify(item)),
+    intersperseAffixes({ start: '{"input":[', middle: ",", end: suffix }),
+    encodeText,
+    toReadableStream
+  );
+  const init: RequestInit & { readonly duplex: "half" } = {
+    method: request.method,
+    headers: request.headers,
+    signal: request.signal,
+    redirect: redirectPolicy(request.headers),
+    body,
+    duplex: "half",
+  };
+  return new Request(request.url, init);
+}
+
+const ACCESS_HEADER_PREFIX = "cf-access-";
+
+function redirectPolicy(headers: Headers): RequestRedirect {
+  return [...headers.keys()].some((name) =>
+    name.toLowerCase().startsWith(ACCESS_HEADER_PREFIX)
+  )
+    ? "error"
+    : "follow";
+}
+
 async function mergeExtraBody(
   input: string | URL | Request,
   init: RequestInit | undefined,
   extraBody: Readonly<Record<string, unknown>> | undefined
 ): Promise<Request> {
-  const request = input instanceof Request ? input : new Request(input, init);
+  const base = new Request(input, init);
+  const request = new Request(base, { redirect: redirectPolicy(base.headers) });
   if (extraBody === undefined) {
     return request;
   }
@@ -472,11 +546,11 @@ export async function consumeStream(
             RawResponsesTerminalEventSchema,
             rawEvent
           );
-          if (Either.isLeft(parsedRawEvent)) {
+          if (Result.isFailure(parsedRawEvent)) {
             break;
           }
           const parsedTerminalEvent = streamEventsFromJSON(
-            JSON.stringify(normalizeRawTerminalEvent(parsedRawEvent.right))
+            JSON.stringify(normalizeRawTerminalEvent(parsedRawEvent.success))
           );
           if (!parsedTerminalEvent.ok) {
             break;

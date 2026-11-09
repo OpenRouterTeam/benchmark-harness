@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "bun:test";
 
-import { Either } from "../../internal/either";
+import * as Result from "effect/Result";
+
 import { parseSchema } from "../../internal/zod";
 import {
   applyInitialState,
@@ -152,7 +153,7 @@ describe("tau3-bench-banking environment", () => {
         evaluation_criteria: { reward_basis: ["INVALID"] },
       };
       const invalidParsed = parseSchema(Tau3TaskSchema, invalidTask);
-      if (Either.isRight(invalidParsed)) {
+      if (Result.isSuccess(invalidParsed)) {
         throw new Error("fixture unexpectedly valid");
       }
       seedBankingTasksRawCache(JSON.stringify([invalidTask]));

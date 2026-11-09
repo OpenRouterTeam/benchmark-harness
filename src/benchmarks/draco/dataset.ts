@@ -1,10 +1,10 @@
 import type { Layer } from "effect/Layer";
+import * as Result from "effect/Result";
 
 import type { HfDatasetConfig } from "../../datasets/huggingface";
 import { makeHfDatasetLayer } from "../../datasets/huggingface";
 import type { Sample } from "../../harness/core";
 import type { Dataset } from "../../harness/dataset";
-import { Either } from "../../internal/either";
 import { definedValues, isRecord } from "../../internal/guards";
 import { parseSchema } from "../../internal/zod";
 import type { RetryConfig } from "../../runtime/retry";
@@ -19,9 +19,9 @@ export const DRACO_DATASET_SPLIT = "test";
 
 function parseAnswer(raw: unknown): Record<string, unknown> {
   if (typeof raw === "string") {
-    const parsed = Either.try(() => JSON.parse(raw));
-    if (Either.isRight(parsed) && isRecord(parsed.right)) {
-      return parsed.right;
+    const parsed = Result.try(() => JSON.parse(raw));
+    if (Result.isSuccess(parsed) && isRecord(parsed.success)) {
+      return parsed.success;
     }
   }
   if (isRecord(raw)) {
@@ -38,19 +38,19 @@ export function dracoRecordToSample(
     DracoTaskSchema.pick({ problem: true, domain: true }),
     record
   );
-  if (Either.isLeft(taskFields)) {
+  if (Result.isFailure(taskFields)) {
     throw new Error(
-      `DRACO row ${index} failed validation: ${taskFields.left.message}`
+      `DRACO row ${index} failed validation: ${taskFields.failure.message}`
     );
   }
-  const { problem, domain } = taskFields.right;
+  const { problem, domain } = taskFields.success;
   const id = typeof record["id"] === "string" ? record["id"] : `draco-${index}`;
   const answer = parseAnswer(record["answer"]);
   const criteria = extractCriteria(answer);
   const validatedCriteria = parseSchema(CriterionSchema.array(), criteria);
-  if (Either.isLeft(validatedCriteria)) {
+  if (Result.isFailure(validatedCriteria)) {
     throw new Error(
-      `DRACO row ${index} (id=${id}) produced invalid criteria: ${validatedCriteria.left.message}`
+      `DRACO row ${index} (id=${id}) produced invalid criteria: ${validatedCriteria.failure.message}`
     );
   }
   return {
@@ -60,7 +60,7 @@ export function dracoRecordToSample(
     metadata: {
       domain,
       index,
-      criteria: validatedCriteria.right,
+      criteria: validatedCriteria.success,
       rawAnswer: answer,
     },
   };

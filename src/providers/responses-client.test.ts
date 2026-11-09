@@ -5,7 +5,7 @@ import { readFile } from "node:fs/promises";
 import type { StreamEvents } from "@openrouter/sdk/models";
 import { OpenRouterError } from "@openrouter/sdk/models/errors/openroutererror";
 import { streamEventsFromJSON } from "@openrouter/sdk/models/streamevents";
-import { failureOption } from "effect/Cause";
+import { findErrorOption } from "effect/Cause";
 import {
   flatMap,
   gen,
@@ -17,15 +17,15 @@ import { getOrThrow } from "effect/Option";
 
 import { assertFailure } from "../../test/helpers/exit-asserts";
 import { isSystemicModelError } from "../harness/core";
-import { assertRight } from "../internal/testing";
+import { assertSuccess as assertResultSuccess } from "../internal/testing";
 import { parseSchema, z } from "../internal/zod";
 import {
   getCollectedGenerationIdEntries,
   getCollectedGenerationIds,
-  resetGenerationIds,
+  withFreshGenerationIds,
 } from "../runtime/generation-ids";
-import { setCurrentSampleId } from "../runtime/request-session-id";
-import { setCurrentEpoch, withRunAttempt } from "../runtime/response-cache";
+import { withCurrentSampleId } from "../runtime/request-session-id";
+import { withCurrentEpoch, withRunAttempt } from "../runtime/response-cache";
 import type { ModelErrorIdentifiers } from "./request-identifiers";
 import {
   consumeStream,
@@ -56,8 +56,8 @@ async function readTerminalFixture(): Promise<
     "utf8"
   );
   const result = parseSchema(TerminalFixtureSchema, JSON.parse(raw));
-  assertRight(result);
-  return result.right;
+  assertResultSuccess(result);
+  return result.success;
 }
 
 async function readStreamFixture(): Promise<string> {
@@ -614,6 +614,180 @@ describe("consumeStream", () => {
   });
 });
 describe("makeResponsesLayer", () => {
+  it.each([
+    [{ "cf-access-client-id": "id", "cf-access-client-secret": "s" }, "error"],
+    [undefined, "follow"],
+  ] as const)(
+    "refuses redirects only when the request carries Cloudflare Access headers (%j)",
+    async (traceHeaders, expected) => {
+      const previousFetch = globalThis.fetch;
+      const redirects: RequestRedirect[] = [];
+      globalThis.fetch = async (request) => {
+        assert(request instanceof Request);
+        redirects.push(request.redirect);
+        await request.text();
+        return new Response(
+          JSON.stringify({ id: "r", output: [], usage: undefined }),
+          { status: 200, headers: { "content-type": "application/json" } }
+        );
+      };
+      try {
+        await runPromise(
+          gen(function* run() {
+            const responses = yield* Responses;
+            yield* responses.send(
+              {
+                model: "m",
+                input: [{ type: "message", role: "user", content: "hi" }],
+              },
+              { timeoutMs: 1000, extraBody: { transforms: ["t"] } }
+            );
+          }).pipe(
+            provide(
+              makeResponsesLayer({
+                apiKey: "sk-test",
+                baseUrl: "https://example.test",
+                traceHeaders,
+              })
+            )
+          )
+        ).catch(() => undefined);
+        expect(redirects).toEqual([expected]);
+      } finally {
+        globalThis.fetch = previousFetch;
+      }
+    }
+  );
+
+  it("streams input items as JSON identical to the SDK body", async () => {
+    const originalFetch = globalThis.fetch;
+    const stream = await readStreamFixture();
+    const input = [
+      { type: "message", role: "user", content: "hi" },
+      {
+        type: "function_call",
+        callId: "c1",
+        name: "KB_search",
+        arguments: "{}",
+      },
+      {
+        type: "function_call_output",
+        callId: "c1",
+        output: "’".repeat(1_000_000),
+      },
+      {
+        type: "function_call_output",
+        callId: "c1",
+        output: "x".repeat(1_000_000),
+      },
+    ] as const;
+    const captured: { body: unknown; isStream: boolean; chunks: number }[] = [];
+    globalThis.fetch = async (request, init) => {
+      assert(request instanceof Request);
+      assert(init === undefined);
+      const isStream = request.body !== null;
+      let chunks = 0;
+      let text = "";
+      const decoder = new TextDecoder();
+      for await (const chunk of request.body ?? []) {
+        chunks += 1;
+        text += decoder.decode(chunk, { stream: true });
+      }
+      captured.push({ body: JSON.parse(text), isStream, chunks });
+      return new Response(stream, {
+        status: 200,
+        headers: { "content-type": "text/event-stream" },
+      });
+    };
+    try {
+      await runPromise(
+        gen(function* run() {
+          const responses = yield* Responses;
+          yield* responses.send(
+            { model: "m", input: [...input] },
+            { timeoutMs: 1000, extraBody: { transforms: ["t"] } }
+          );
+        }).pipe(
+          provide(
+            makeResponsesLayer({
+              apiKey: "sk-test",
+              baseUrl: "https://example.test",
+            })
+          )
+        )
+      );
+      expect(captured).toHaveLength(1);
+      expect(captured[0]?.chunks).toBeGreaterThan(1);
+      expect(captured[0]?.body).toEqual({
+        model: "m",
+        service_tier: "auto",
+        store: false,
+        input: [
+          { type: "message", role: "user", content: "hi" },
+          {
+            type: "function_call",
+            call_id: "c1",
+            name: "KB_search",
+            arguments: "{}",
+          },
+          {
+            type: "function_call_output",
+            call_id: "c1",
+            output: "’".repeat(1_000_000),
+          },
+          {
+            type: "function_call_output",
+            call_id: "c1",
+            output: "x".repeat(1_000_000),
+          },
+        ],
+        cache_control: { type: "ephemeral" },
+        stream: true,
+        transforms: ["t"],
+      });
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it("keeps an explicit extraBody input override", async () => {
+    const originalFetch = globalThis.fetch;
+    const stream = await readStreamFixture();
+    const capturedBodies: unknown[] = [];
+    globalThis.fetch = async (request) => {
+      assert(request instanceof Request);
+      capturedBodies.push(await request.json());
+      return new Response(stream, {
+        status: 200,
+        headers: { "content-type": "text/event-stream" },
+      });
+    };
+    try {
+      await runPromise(
+        gen(function* run() {
+          const responses = yield* Responses;
+          yield* responses.send(
+            {
+              model: "m",
+              input: [{ type: "message", role: "user", content: "hi" }],
+            },
+            { timeoutMs: 1000, extraBody: { input: [] } }
+          );
+        }).pipe(
+          provide(
+            makeResponsesLayer({
+              apiKey: "sk-test",
+              baseUrl: "https://example.test",
+            })
+          )
+        )
+      );
+      expect(capturedBodies).toEqual([expect.objectContaining({ input: [] })]);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
   it("records generation ids and applies default or explicit prompt caching", async () => {
     const originalFetch = globalThis.fetch;
     const stream = await readStreamFixture();
@@ -631,31 +805,30 @@ describe("makeResponsesLayer", () => {
     };
     try {
       const ids = await runPromise(
-        resetGenerationIds.pipe(
-          flatMap(() =>
-            gen(function* run() {
-              const responses = yield* Responses;
-              yield* responses.send(
-                { model: "m", input: [] },
-                { timeoutMs: 1000 }
-              );
-              yield* responses.send(
-                { model: "m", input: [] },
-                {
-                  timeoutMs: 1000,
-                  extraBody: {
-                    cache_control: { type: "ephemeral", ttl: "1h" },
-                  },
-                }
-              );
-            })
-          ),
-          flatMap(() => getCollectedGenerationIds),
-          provide(
-            makeResponsesLayer({
-              apiKey: "sk-test",
-              baseUrl: "https://example.test",
-            })
+        withFreshGenerationIds(
+          gen(function* run() {
+            const responses = yield* Responses;
+            yield* responses.send(
+              { model: "m", input: [] },
+              { timeoutMs: 1000 }
+            );
+            yield* responses.send(
+              { model: "m", input: [] },
+              {
+                timeoutMs: 1000,
+                extraBody: {
+                  cache_control: { type: "ephemeral", ttl: "1h" },
+                },
+              }
+            );
+          }).pipe(
+            flatMap(() => getCollectedGenerationIds),
+            provide(
+              makeResponsesLayer({
+                apiKey: "sk-test",
+                baseUrl: "https://example.test",
+              })
+            )
           )
         )
       );
@@ -760,22 +933,21 @@ describe("makeResponsesLayer", () => {
       });
     try {
       const entries = await runPromise(
-        resetGenerationIds.pipe(
-          flatMap(() =>
-            gen(function* run() {
-              const responses = yield* Responses;
-              yield* responses.send(
-                { model: "m", input: [] },
-                { timeoutMs: 1000 }
-              );
-            })
-          ),
-          flatMap(() => getCollectedGenerationIdEntries),
-          provide(
-            makeResponsesLayer({
-              apiKey: "sk-test",
-              baseUrl: "https://example.test",
-            })
+        withFreshGenerationIds(
+          gen(function* run() {
+            const responses = yield* Responses;
+            yield* responses.send(
+              { model: "m", input: [] },
+              { timeoutMs: 1000 }
+            );
+          }).pipe(
+            flatMap(() => getCollectedGenerationIdEntries),
+            provide(
+              makeResponsesLayer({
+                apiKey: "sk-test",
+                baseUrl: "https://example.test",
+              })
+            )
           )
         )
       );
@@ -820,7 +992,7 @@ describe("makeResponsesLayer", () => {
         )
       );
       assertFailure(exit);
-      const error = getOrThrow(failureOption(exit.cause));
+      const error = getOrThrow(findErrorOption(exit.cause));
       expect(error.cfRay).toBe("ray-123");
       expect(error.xRequestId).toBe("req-456");
       expect(error.message).toContain("cf_ray=ray-123");
@@ -854,7 +1026,7 @@ describe("makeResponsesLayer", () => {
         )
       );
       assertFailure(exit);
-      const error = getOrThrow(failureOption(exit.cause));
+      const error = getOrThrow(findErrorOption(exit.cause));
       expect(error.status).toBe(500);
       expect(error.retryable).toBe(true);
     } finally {
@@ -879,13 +1051,13 @@ describe("makeResponsesLayer", () => {
     try {
       await runPromise(
         gen(function* run() {
-          yield* setCurrentEpoch(2);
           const responses = yield* Responses;
           yield* responses.send(
             { model: "m", input: [] },
             { timeoutMs: 1000, extraBody: { top_k: 5 } }
           );
         }).pipe(
+          withCurrentEpoch(2),
           provide(
             makeResponsesLayer({
               apiKey: "sk-test",
@@ -923,11 +1095,11 @@ describe("makeResponsesLayer", () => {
     try {
       await runPromise(
         gen(function* run() {
-          yield* setCurrentEpoch(2);
-          yield* setCurrentSampleId("q/17");
           const responses = yield* Responses;
           yield* responses.send({ model: "m", input: [] }, { timeoutMs: 1000 });
         }).pipe(
+          withCurrentSampleId("q/17"),
+          withCurrentEpoch(2),
           provide(
             makeResponsesLayer({
               apiKey: "sk-test",
@@ -962,7 +1134,6 @@ describe("makeResponsesLayer", () => {
         withRunAttempt(
           2,
           gen(function* run() {
-            yield* setCurrentEpoch(2);
             const responses = yield* Responses;
             yield* responses.send(
               { model: "m", input: [] },
@@ -970,6 +1141,7 @@ describe("makeResponsesLayer", () => {
             );
           })
         ).pipe(
+          withCurrentEpoch(2),
           provide(
             makeResponsesLayer({
               apiKey: "sk-test",

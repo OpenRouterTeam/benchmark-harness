@@ -1,7 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import assert from "node:assert/strict";
 
-import { toReadonlyArray } from "effect/Chunk";
 import type { Effect } from "effect/Effect";
 import { gen, provide, runPromise, succeed } from "effect/Effect";
 import { mergeAll } from "effect/Layer";
@@ -104,7 +103,7 @@ describe("makeToolCallFormatsDatasetLayer", () => {
         const dataset = yield* Dataset;
         const total = yield* dataset.size;
         const chunk = yield* runCollect(dataset.stream({ start: 5, end: 10 }));
-        return { size: total, slice: toReadonlyArray(chunk) };
+        return { size: total, slice: chunk };
       }).pipe(provide(makeToolCallFormatsDatasetLayer()))
     );
 

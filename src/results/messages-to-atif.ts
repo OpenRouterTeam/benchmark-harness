@@ -1,3 +1,5 @@
+import * as Result from "effect/Result";
+
 import type {
   Citation,
   ContentPart,
@@ -6,7 +8,6 @@ import type {
   ToolCall,
 } from "../harness/core";
 import { MessageRole } from "../harness/core";
-import { Either } from "../internal/either";
 import { definedValues, isRecord } from "../internal/guards";
 import { firstZodIssueMessage, parseSchema } from "../internal/zod";
 import type {
@@ -70,12 +71,12 @@ export function messagesToAtif(input: {
         : { scorer_trajectory: input.scorerTrajectory },
   });
   const parsed = parseSchema(AtifTrajectorySchema, trajectory);
-  if (Either.isLeft(parsed)) {
+  if (Result.isFailure(parsed)) {
     throw new Error(
-      `Invalid ATIF trajectory: ${firstZodIssueMessage(parsed.left)}`
+      `Invalid ATIF trajectory: ${firstZodIssueMessage(parsed.failure)}`
     );
   }
-  return parsed.right;
+  return parsed.success;
 }
 
 export function contentPartToPojo(part: ContentPart): Record<string, unknown> {

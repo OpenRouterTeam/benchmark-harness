@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it } from "bun:test";
 import { readFile } from "node:fs/promises";
 
-import { FetchHttpClient } from "@effect/platform";
 import { gen, provide, runPromiseExit } from "effect/Effect";
 import { provide as layerProvide } from "effect/Layer";
 
 import { assertSuccess } from "../../test/helpers/exit-asserts";
 import { Model } from "../harness/model";
+import { fetchHttpClientLayer } from "../internal/http-client";
 import { makeOpenRouterModelLayer } from "./openrouter-model";
 
 function withFunctionCall(stream: string): string {
@@ -114,7 +114,7 @@ describe("openrouter-model", () => {
             model: "openai/gpt-5",
             apiKey: "sk-test",
             baseUrl: "https://example.test",
-          }).pipe(layerProvide(FetchHttpClient.layer))
+          }).pipe(layerProvide(fetchHttpClientLayer))
         )
       )
     );
@@ -183,7 +183,7 @@ describe("openrouter-model", () => {
               "x-benchmark-trace": "test-trace-key",
               authorization: "Bearer attacker-key",
             },
-          }).pipe(layerProvide(FetchHttpClient.layer))
+          }).pipe(layerProvide(fetchHttpClientLayer))
         )
       )
     );

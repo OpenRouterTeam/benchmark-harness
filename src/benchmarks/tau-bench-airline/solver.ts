@@ -1,12 +1,12 @@
-import { HttpClient } from "@effect/platform";
-import type { Semaphore } from "effect/Effect";
 import { gen, mapError, provideService } from "effect/Effect";
+import { HttpClient } from "effect/http";
+import * as Result from "effect/Result";
+import type { Semaphore } from "effect/Semaphore";
 
 import type { ModelMessage, ModelUsage, ToolCall } from "../../harness/core";
 import { MessageRole, SolverError } from "../../harness/core";
 import type { GenerateConfig, ModelService } from "../../harness/model";
 import type { SolverService } from "../../harness/solver";
-import { Either } from "../../internal/either";
 import { definedValues, isRecord } from "../../internal/guards";
 import type { ResponsesModelService } from "../../providers/responses-model";
 import {
@@ -221,9 +221,9 @@ function lastAssistantText(messages: readonly ModelMessage[]): string {
 }
 
 function executeToolCall(data: AirlineData, tc: ToolCall): string {
-  const parsed = Either.try((): unknown => JSON.parse(tc.function.arguments));
-  if (Either.isLeft(parsed) || !isRecord(parsed.right)) {
+  const parsed = Result.try((): unknown => JSON.parse(tc.function.arguments));
+  if (Result.isFailure(parsed) || !isRecord(parsed.success)) {
     return `Error: invalid JSON arguments: ${tc.function.arguments}`;
   }
-  return invokeTool(data, tc.function.name, parsed.right);
+  return invokeTool(data, tc.function.name, parsed.success);
 }

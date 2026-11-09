@@ -1,4 +1,5 @@
-import { Either } from "../../../internal/either";
+import * as Result from "effect/Result";
+
 import { isRecord } from "../../../internal/guards";
 import type {
   AirlineData,
@@ -484,11 +485,11 @@ function calculate(
   if (!/^[0-9+\-*/(). ]+$/.test(expression)) {
     return "Error: invalid characters in expression";
   }
-  const evalResult = Either.try(() => new Function(`return (${expression})`)());
-  if (Either.isLeft(evalResult)) {
-    return `Error: ${String(evalResult.left)}`;
+  const evalResult = Result.try(() => new Function(`return (${expression})`)());
+  if (Result.isFailure(evalResult)) {
+    return `Error: ${String(evalResult.failure)}`;
   }
-  return String(Math.round(Number(evalResult.right) * 100) / 100);
+  return String(Math.round(Number(evalResult.success) * 100) / 100);
 }
 
 function getFlightStatus(
@@ -541,6 +542,8 @@ export function invokeTool(
   if (!handler) {
     return `Unknown action ${name}`;
   }
-  const result = Either.try(() => handler(data, kwargs));
-  return Either.isLeft(result) ? `Error: ${String(result.left)}` : result.right;
+  const result = Result.try(() => handler(data, kwargs));
+  return Result.isFailure(result)
+    ? `Error: ${String(result.failure)}`
+    : result.success;
 }

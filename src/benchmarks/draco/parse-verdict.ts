@@ -1,4 +1,5 @@
-import { Either } from "../../internal/either";
+import * as Result from "effect/Result";
+
 import { isRecord } from "../../internal/guards";
 import type { VerdictValue } from "./schemas";
 import { VerdictValue as V } from "./schemas";
@@ -9,8 +10,8 @@ export type ParsedVerdict = readonly [
 ];
 
 export function parseSingleVerdict(content: string): ParsedVerdict | null {
-  const parsed = Either.try(() => JSON.parse(content));
-  return tryFromObject(Either.isRight(parsed) ? parsed.right : undefined);
+  const parsed = Result.try(() => JSON.parse(content));
+  return tryFromObject(Result.isSuccess(parsed) ? parsed.success : undefined);
 }
 
 function tryFromObject(obj: unknown): ParsedVerdict | null {

@@ -1,7 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { readFile } from "node:fs/promises";
 
-import { FetchHttpClient } from "@effect/platform";
 import { gen, provide, runPromise } from "effect/Effect";
 import {
   mergeAll as layerMergeAll,
@@ -19,6 +18,7 @@ import {
 } from "../../harness/progress";
 import type { RunResult } from "../../harness/run";
 import { Solver } from "../../harness/solver";
+import { fetchHttpClientLayer } from "../../internal/http-client";
 import { DRACO_BENCHMARK } from "./benchmark";
 
 function runResultWith(
@@ -135,7 +135,7 @@ describe("DRACO makeLayer", () => {
         }).pipe(
           provide(
             layerMergeAll(
-              layer.pipe(layerProvide(FetchHttpClient.layer)),
+              layer.pipe(layerProvide(fetchHttpClientLayer)),
               succeed(ProgressReporter, NOOP_PROGRESS_REPORTER),
               succeed(CheckpointStore, NOOP_CHECKPOINT_STORE)
             )

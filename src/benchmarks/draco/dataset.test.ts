@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { assertRight } from "../../internal/testing";
+import { assertSuccess } from "../../internal/testing";
 import { parseSchema } from "../../internal/zod";
 import { dracoRecordToSample } from "./dataset";
 import type { Criterion } from "./schemas";
@@ -46,8 +46,8 @@ describe("dracoRecordToSample", () => {
       CriterionSchema.array(),
       sample.metadata!["criteria"]
     );
-    assertRight(criteriaResult);
-    const criteria: Criterion[] = criteriaResult.right;
+    assertSuccess(criteriaResult);
+    const criteria: Criterion[] = criteriaResult.success;
     expect(criteria.map((c) => c.id).sort()).toEqual(["c1", "c2", "c3"]);
     expect(criteria.find((c) => c.id === "c3")!.weight).toBe(4);
   });
@@ -57,8 +57,8 @@ describe("dracoRecordToSample", () => {
       CriterionSchema.array(),
       sample.metadata!["criteria"]
     );
-    assertRight(criteriaResult);
-    expect(criteriaResult.right).toHaveLength(3);
+    assertSuccess(criteriaResult);
+    expect(criteriaResult.success).toHaveLength(3);
   });
   it("degrades gracefully on a missing/unparsable answer (empty criteria)", () => {
     const sample = dracoRecordToSample(baseRecord(undefined), 0);

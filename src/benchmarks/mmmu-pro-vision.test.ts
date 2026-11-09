@@ -2,9 +2,15 @@ import { afterEach, describe, expect, it } from "bun:test";
 
 import { blockNetwork } from "../../test/helpers/block-network";
 import { NOOP_PROGRESS_REPORTER } from "../harness/progress";
-import { assertLeft } from "../internal/testing";
+import { assertFailure, assertSuccess } from "../internal/testing";
+import { parseSchema } from "../internal/zod";
 import { runBenchmarkById } from "../runner/run-by-id";
-import { mmmuProVisionRecordToSample } from "./mmmu-pro-vision";
+import { MmmuProVisionBenchmarkConfigSchema } from "./benchmark-config";
+import {
+  mmmuProVisionRecordToSample,
+  TEST_mmmuExtraBody,
+  TEST_mmmuProVisionSolverOptions,
+} from "./mmmu-pro-vision";
 import { getBenchmark } from "./registry";
 
 const VISION_RECORD: Readonly<Record<string, unknown>> = {
@@ -119,6 +125,53 @@ describe("MMMU Pro Vision benchmark registry", () => {
       sessionId: "test",
       progressReporter: NOOP_PROGRESS_REPORTER,
     });
-    assertLeft(result);
+    assertFailure(result);
+  });
+});
+
+describe("mmmuExtraBody", () => {
+  it("returns undefined when nothing is configured", () => {
+    expect(TEST_mmmuExtraBody(undefined, undefined)).toBeUndefined();
+  });
+
+  it("forwards the configured extraBody alongside media_resolution", () => {
+    expect(
+      TEST_mmmuExtraBody(
+        { deferred_tools: { protocol: "v1" } },
+        "MEDIA_RESOLUTION_HIGH"
+      )
+    ).toEqual({
+      deferred_tools: { protocol: "v1" },
+      media_resolution: "MEDIA_RESOLUTION_HIGH",
+    });
+  });
+
+  it("lets the benchmark's media_resolution win over a configured one", () => {
+    expect(
+      TEST_mmmuExtraBody(
+        { media_resolution: "MEDIA_RESOLUTION_LOW" },
+        "MEDIA_RESOLUTION_HIGH"
+      )
+    ).toEqual({
+      media_resolution: "MEDIA_RESOLUTION_HIGH",
+    });
+  });
+});
+
+describe("mmmuProVisionSolverOptions", () => {
+  it("forwards the configured extraBody and media resolution into the solver", () => {
+    const parsed = parseSchema(MmmuProVisionBenchmarkConfigSchema, {
+      benchmarkId: "mmmu_pro_vision",
+      model: "test/model",
+      reasoningEffort: "high",
+      mediaResolution: "MEDIA_RESOLUTION_HIGH",
+      extraBody: { deferred_tools: { protocol: "v1" } },
+    });
+    assertSuccess(parsed);
+    const options = TEST_mmmuProVisionSolverOptions(parsed.success);
+    expect(options.mediaResolution).toBe("MEDIA_RESOLUTION_HIGH");
+    expect(options.inference.extraBody).toEqual({
+      deferred_tools: { protocol: "v1" },
+    });
   });
 });

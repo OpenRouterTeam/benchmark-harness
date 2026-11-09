@@ -1,4 +1,5 @@
-import { Either } from "../../../internal/either";
+import * as Result from "effect/Result";
+
 import { unknownErrorToString } from "../../../internal/errors";
 import type { BankingData } from "../types";
 import { getBankingTable } from "../types";
@@ -357,13 +358,13 @@ export function queryDatabaseTool(
   }
   let constraintDict: Record<string, unknown> = {};
   if (constraints) {
-    const parsed = Either.try((): Record<string, unknown> =>
+    const parsed = Result.try((): Record<string, unknown> =>
       JSON.parse(constraints)
     );
-    if (Either.isLeft(parsed)) {
-      return `Error: Invalid JSON: ${unknownErrorToString(parsed.left)}`;
+    if (Result.isFailure(parsed)) {
+      return `Error: Invalid JSON: ${unknownErrorToString(parsed.failure)}`;
     }
-    constraintDict = parsed.right;
+    constraintDict = parsed.success;
   }
   const results = queryDb({
     db,

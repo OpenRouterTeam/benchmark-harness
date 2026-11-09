@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 import { PassThrough } from "node:stream";
 
 import { promise, succeed } from "effect/Effect";
-import { fail as layerFail, succeed as layerSucceed } from "effect/Layer";
+import { succeed as layerSucceed } from "effect/Layer";
 import { fromEffect, fromIterable } from "effect/Stream";
 
 import type { InjectedBenchmarkRunConfig } from "../benchmarks/benchmark-config";
@@ -11,7 +11,8 @@ import { gpqaScorer, gpqaSolver } from "../benchmarks/gpqa";
 import type { Benchmark } from "../benchmarks/types";
 import { makeGcsCacheStore } from "../datasets/cache-store";
 import { Dataset } from "../harness/dataset";
-import { assertLeft, assertRight } from "../internal/testing";
+import { layerFail } from "../internal/layer";
+import { assertFailure, assertSuccess } from "../internal/testing";
 import {
   datasetSizeById,
   runBenchmarkById,
@@ -48,8 +49,8 @@ describe("benchmark runner by id", () => {
       sessionId: "test",
     });
 
-    assertLeft(result);
-    expect(result.left).toContain("injected benchmark used");
+    assertFailure(result);
+    expect(result.failure).toContain("injected benchmark used");
   });
 
   it("rejects an injected-id config without an injected benchmark", async () => {
@@ -62,8 +63,8 @@ describe("benchmark runner by id", () => {
       sessionId: "test",
     });
 
-    assertLeft(result);
-    expect(result.left).toContain("injected benchmark is required");
+    assertFailure(result);
+    expect(result.failure).toContain("injected benchmark is required");
   });
 
   it("rejects an injected benchmark for a Kepler config", async () => {
@@ -80,8 +81,8 @@ describe("benchmark runner by id", () => {
       sessionId: "test",
     });
 
-    assertLeft(result);
-    expect(result.left).toContain("cannot be supplied for Kepler benchmark");
+    assertFailure(result);
+    expect(result.failure).toContain("cannot be supplied for Kepler benchmark");
   });
 
   it("resolves dataset size from an injected benchmark", async () => {
@@ -90,8 +91,8 @@ describe("benchmark runner by id", () => {
       injectedBenchmark: INJECTED_BENCHMARK,
     });
 
-    assertRight(result);
-    expect(result.right).toBe(7);
+    assertSuccess(result);
+    expect(result.success).toBe(7);
   });
 
   it("warms an injected benchmark dataset range", async () => {
@@ -120,8 +121,8 @@ describe("benchmark runner by id", () => {
       injectedBenchmark: benchmark,
     });
 
-    assertRight(result);
-    expect(result.right).toBe(4);
+    assertSuccess(result);
+    expect(result.success).toBe(4);
     expect(streamOptions).toEqual([{ start: 15, end: 19 }]);
   });
 
@@ -174,8 +175,8 @@ describe("benchmark runner by id", () => {
       injectedBenchmark: benchmark,
     });
 
-    assertLeft(result);
-    expect(result.left).toContain("cache write");
+    assertFailure(result);
+    expect(result.failure).toContain("cache write");
   });
 
   it("warms the config-selected dataset layer", async () => {
@@ -219,8 +220,8 @@ describe("benchmark runner by id", () => {
       injectedBenchmark: benchmark,
     });
 
-    assertRight(result);
-    expect(result.right).toBe(2);
+    assertSuccess(result);
+    expect(result.success).toBe(2);
     expect(selectedConfigs).toEqual([benchmarkConfig]);
   });
 
@@ -248,8 +249,8 @@ describe("benchmark runner by id", () => {
       injectedBenchmark: benchmark,
     });
 
-    assertLeft(result);
-    expect(result.left).toContain("received mismatched benchmarkConfig");
+    assertFailure(result);
+    expect(result.failure).toContain("received mismatched benchmarkConfig");
   });
 
   it("rejects an injected benchmark whose id does not match", async () => {
@@ -272,10 +273,10 @@ describe("benchmark runner by id", () => {
       injectedBenchmark: mismatched,
     });
 
-    assertLeft(runResult);
-    assertLeft(sizeResult);
-    expect(runResult.left).toContain("Benchmark id mismatch");
-    expect(sizeResult.left).toBe(runResult.left);
+    assertFailure(runResult);
+    assertFailure(sizeResult);
+    expect(runResult.failure).toContain("Benchmark id mismatch");
+    expect(sizeResult.failure).toBe(runResult.failure);
   });
 
   it("resolves dataset size from the benchmark config", async () => {
@@ -303,9 +304,9 @@ describe("benchmark runner by id", () => {
       injectedBenchmark: benchmark,
     });
 
-    assertRight(configured);
-    assertRight(defaulted);
-    expect(configured.right).toBe(80);
-    expect(defaulted.right).toBe(100);
+    assertSuccess(configured);
+    assertSuccess(defaulted);
+    expect(configured.success).toBe(80);
+    expect(defaulted.success).toBe(100);
   });
 });

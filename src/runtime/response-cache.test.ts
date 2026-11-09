@@ -1,7 +1,7 @@
 import type { Mock } from "bun:test";
 import { afterEach, describe, expect, it, spyOn } from "bun:test";
 
-import { all, flatMap, runPromise } from "effect/Effect";
+import { all, runPromise } from "effect/Effect";
 
 import {
   buildResponseCacheSalt,
@@ -10,7 +10,7 @@ import {
   getCurrentRetryAttempt,
   getCurrentRunAttempt,
   logUnexpectedResponseCacheMiss,
-  setCurrentEpoch,
+  withCurrentEpoch,
   shouldExpectResponseCacheHit,
   withCallCacheSalt,
   withRunAttempt,
@@ -186,9 +186,7 @@ describe("currentEpochRef", () => {
     expect(await runPromise(getCurrentEpoch)).toBeUndefined();
   });
   it("returns the epoch set on the current fiber", async () => {
-    const epoch = await runPromise(
-      setCurrentEpoch(3).pipe(flatMap(() => getCurrentEpoch))
-    );
+    const epoch = await runPromise(getCurrentEpoch.pipe(withCurrentEpoch(3)));
     expect(epoch).toBe(3);
   });
 });

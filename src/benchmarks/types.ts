@@ -1,4 +1,4 @@
-import type { HttpClient } from "@effect/platform";
+import type { HttpClient } from "effect/http";
 import type { Layer } from "effect/Layer";
 
 import type { Dataset } from "../harness/dataset";

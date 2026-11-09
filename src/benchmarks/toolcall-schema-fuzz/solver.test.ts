@@ -1,0 +1,280 @@
+import { describe, expect, it } from "bun:test";
+import assert from "node:assert";
+
+import { squash } from "effect/Cause";
+import { never, provide, runPromiseExit, succeed } from "effect/Effect";
+import { isFailure, isSuccess } from "effect/Exit";
+import { HttpClient, HttpClientResponse } from "effect/http";
+import { mergeAll, succeed as layerSucceed } from "effect/Layer";
+
+import { initialTaskState, ModelError } from "../../harness/core";
+import {
+  CheckpointStore,
+  NOOP_CHECKPOINT_STORE,
+  NOOP_PROGRESS_REPORTER,
+  ProgressReporter,
+} from "../../harness/progress";
+import { ProviderSort } from "../../internal/enums";
+import { caseLookup } from "./cases";
+import { TOOLCALL_SCHEMA_FUZZ_REALISTIC_CASES } from "./realistic/wordings";
+import { buildRequestBody, toolCallSchemaFuzzSolver } from "./solver";
+
+const [ENTRY] = TOOLCALL_SCHEMA_FUZZ_REALISTIC_CASES;
+
+function completion(finishReason: "stop" | "length"): Response {
+  const body = {
+    id: "completion-1",
+    object: "chat.completion",
+    created: 1,
+    model: "test-model",
+    choices: [
+      {
+        index: 0,
+        message: { role: "assistant", content: "", refusal: null },
+        finish_reason: finishReason,
+        native_finish_reason: null,
+        logprobs: null,
+      },
+    ],
+  };
+  return new Response(JSON.stringify(body), {
+    headers: { "content-type": "application/json" },
+  });
+}
+
+function solve(httpResponse: Response) {
+  const entry = ENTRY;
+  assert(entry !== undefined);
+  const client = HttpClient.make((request) =>
+    succeed(HttpClientResponse.fromWeb(request, httpResponse.clone()))
+  );
+  const solver = toolCallSchemaFuzzSolver(client, {
+    options: {
+      model: "test-model",
+      apiKey: "test-key",
+      reasoningEffort: "none",
+      sessionId: "session-1",
+      retry: { maxRetries: 0 },
+    },
+    cases: caseLookup([entry]),
+  });
+  return runPromiseExit(
+    solver(
+      initialTaskState({
+        id: entry.id,
+        input: entry.prompt,
+        target: { text: "" },
+      })
+    ).pipe(
+      provide(
+        mergeAll(
+          layerSucceed(ProgressReporter, NOOP_PROGRESS_REPORTER),
+          layerSucceed(CheckpointStore, NOOP_CHECKPOINT_STORE)
+        )
+      )
+    )
+  );
+}
+
+const UPSTREAM_REJECTION = JSON.stringify({
+  error: {
+    message: "Provider returned error",
+    code: 400,
+    metadata: { raw: "invalid 'parameters' schema", provider_name: "Azure" },
+  },
+});
+
+describe("toolCallSchemaFuzzSolver", () => {
+  it("records a completed response", async () => {
+    const exit = await solve(completion("stop"));
+    expect(isFailure(exit)).toBe(false);
+  });
+
+  it("records the finish reason for the scorer", async () => {
+    const exit = await solve(completion("length"));
+    assert(isSuccess(exit));
+    expect(exit.value.output?.rawResponse).toStrictEqual({
+      finish_reason: "length",
+    });
+  });
+
+  it.each([400, 422])(
+    "records a %d rejection for the scorer instead of failing the run",
+    async (status) => {
+      const exit = await solve(new Response(UPSTREAM_REJECTION, { status }));
+      assert(isSuccess(exit));
+      expect(exit.value.output?.rawResponse).toStrictEqual({
+        rejected: {
+          status,
+          message: `OpenRouter HTTP ${status}: ${UPSTREAM_REJECTION}`,
+        },
+      });
+      expect(exit.value.output?.message.toolCalls).toStrictEqual([]);
+    }
+  );
+
+  it.each([
+    [
+      "no provider in the error",
+      JSON.stringify({ error: { message: "bad max_tokens", code: 400 } }),
+    ],
+    [
+      "a null provider",
+      JSON.stringify({
+        error: {
+          message: "bad max_tokens",
+          code: 400,
+          metadata: { provider_name: null },
+        },
+      }),
+    ],
+    ["a non-JSON body", "bad request"],
+  ])("fails the run on a 400 with %s", async (_label, body) => {
+    const exit = await solve(new Response(body, { status: 400 }));
+    expect(isFailure(exit)).toBe(true);
+  });
+
+  it("fails the run on an auth error", async () => {
+    const exit = await solve(new Response("no key", { status: 401 }));
+    expect(isFailure(exit)).toBe(true);
+  });
+});
+
+describe("buildRequestBody", () => {
+  it("merges extraBody into the request", () => {
+    const body = buildRequestBody(
+      { messages: [] },
+      {
+        model: "openai/gpt-4.1",
+        apiKey: "test",
+        reasoningEffort: "none",
+        extraBody: { deferred_tools: { protocol: "v1", profile: "universal" } },
+      }
+    );
+    expect(body).toMatchObject({
+      model: "openai/gpt-4.1",
+      deferred_tools: { protocol: "v1", profile: "universal" },
+    });
+  });
+
+  it("keeps the generated router plugin next to configured extraBody plugins", () => {
+    const body = buildRequestBody(
+      { messages: [] },
+      {
+        model: "openrouter/auto",
+        apiKey: "test",
+        reasoningEffort: "none",
+        costTier: "low",
+        extraBody: { plugins: [{ id: "web" }] },
+      }
+    );
+    expect(body["plugins"]).toEqual([
+      { id: "web" },
+      { id: "auto-router", cost_tier: "low" },
+    ]);
+  });
+
+  it("lets a configured router plugin override the generated one", () => {
+    const body = buildRequestBody(
+      { messages: [] },
+      {
+        model: "openrouter/auto",
+        apiKey: "test",
+        reasoningEffort: "none",
+        costTier: "low",
+        extraBody: { plugins: [{ id: "auto-router", pin_model: true }] },
+      }
+    );
+    expect(body["plugins"]).toEqual([{ id: "auto-router", pin_model: true }]);
+  });
+
+  it("forwards shared inference overrides", () => {
+    const body = buildRequestBody(
+      { messages: [] },
+      {
+        model: "openrouter/auto",
+        apiKey: "test",
+        reasoningEffort: "none",
+        maxTokens: 256,
+        sort: ProviderSort.Price,
+        providerOrder: ["together", "fireworks"],
+        providerOnly: ["fireworks"],
+        costTier: "low",
+        pinModel: true,
+      }
+    );
+    expect(body).toMatchObject({
+      model: "openrouter/auto",
+      max_tokens: 256,
+      provider: {
+        sort: ProviderSort.Price,
+        order: ["together", "fireworks"],
+        only: ["fireworks"],
+      },
+      plugins: [{ id: "auto-router", cost_tier: "low", pin_model: true }],
+    });
+  });
+
+  it("drops provider sort when an endpoint is pinned", () => {
+    const body = buildRequestBody(
+      { messages: [] },
+      {
+        model: "openai/gpt-4.1",
+        apiKey: "test",
+        reasoningEffort: "none",
+        endpointId: "endpoint",
+        sort: ProviderSort.Price,
+      }
+    );
+    expect(body).not.toHaveProperty("provider");
+  });
+});
+
+describe("toolCallSchemaFuzzSolver timeouts", () => {
+  const neverResponds = HttpClient.make(() => never);
+  const stallsBody = HttpClient.make((request) =>
+    succeed(
+      HttpClientResponse.fromWeb(
+        request,
+        new Response(new ReadableStream(), { status: 200 })
+      )
+    )
+  );
+  it.each([
+    ["never responds", neverResponds],
+    ["sends headers but stalls the body", stallsBody],
+  ])("fails with a 408 ModelError when the server %s", async (_, client) => {
+    const entry = ENTRY;
+    assert(entry !== undefined);
+    const solver = toolCallSchemaFuzzSolver(client, {
+      options: {
+        model: "test-model",
+        apiKey: "test-key",
+        reasoningEffort: "none",
+        timeoutMs: 10,
+        retry: { maxRetries: 0 },
+      },
+      cases: caseLookup([entry]),
+    });
+    const exit = await runPromiseExit(
+      solver(
+        initialTaskState({
+          id: entry.id,
+          input: entry.prompt,
+          target: { text: "" },
+        })
+      ).pipe(
+        provide(
+          mergeAll(
+            layerSucceed(ProgressReporter, NOOP_PROGRESS_REPORTER),
+            layerSucceed(CheckpointStore, NOOP_CHECKPOINT_STORE)
+          )
+        )
+      )
+    );
+    assert(isFailure(exit));
+    const error = squash(exit.cause);
+    assert(error instanceof ModelError);
+    expect(error.status).toBe(408);
+  });
+});

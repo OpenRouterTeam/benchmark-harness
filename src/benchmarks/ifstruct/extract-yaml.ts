@@ -1,7 +1,7 @@
+import * as Result from "effect/Result";
 import type { Node } from "yaml";
 import { isMap, isSeq, parse, parseDocument } from "yaml";
 
-import { Either } from "../../internal/either";
 import { unknownErrorToString } from "../../internal/errors";
 import { extractOuterFencedBlock } from "./extract-common";
 import type { ExtractResult } from "./extract-json";
@@ -15,12 +15,12 @@ export function extractYaml(response: string): ExtractResult {
   const trimmed = response.trim();
   const { block, openingFence } = extractOuterFencedBlock(trimmed);
   if (openingFence !== null && block === null) {
-    return Either.left("Unclosed code block");
+    return Result.fail("Unclosed code block");
   }
   if (block !== null) {
     const lowered = (openingFence ?? "").trim().toLowerCase();
     if (lowered.startsWith("```json")) {
-      return Either.left("Expected YAML output, got JSON code block");
+      return Result.fail("Expected YAML output, got JSON code block");
     }
     return loadBlockYaml(block.trim());
   }
@@ -28,26 +28,26 @@ export function extractYaml(response: string): ExtractResult {
 }
 
 function loadBlockYaml(content: string): ExtractResult {
-  const parsed = Either.try((): unknown =>
+  const parsed = Result.try((): unknown =>
     parse(content, { uniqueKeys: false })
   );
-  if (Either.isLeft(parsed)) {
-    return Either.left(
-      `YAML parsing error: ${unknownErrorToString(parsed.left)}`
+  if (Result.isFailure(parsed)) {
+    return Result.fail(
+      `YAML parsing error: ${unknownErrorToString(parsed.failure)}`
     );
   }
   if (isJsonLikeYaml(content)) {
-    return Either.left(JSON_AS_YAML_ERROR);
+    return Result.fail(JSON_AS_YAML_ERROR);
   }
-  return Either.right(parsed.right);
+  return Result.succeed(parsed.success);
 }
 
 function isJsonLikeYaml(content: string): boolean {
-  const doc = Either.try(() => parseDocument(content, { uniqueKeys: false }));
-  if (Either.isLeft(doc)) {
+  const doc = Result.try(() => parseDocument(content, { uniqueKeys: false }));
+  if (Result.isFailure(doc)) {
     return false;
   }
-  const root = doc.right.contents;
+  const root = doc.success.contents;
   if (root === null || root === undefined) {
     return false;
   }

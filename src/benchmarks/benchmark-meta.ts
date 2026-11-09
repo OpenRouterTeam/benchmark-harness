@@ -50,6 +50,12 @@ export const TOOLCALL_FORMATS_META = {
   temperature: 0,
 } as const satisfies BenchmarkMeta;
 
+export const TOOLCALL_SCHEMA_FUZZ_META = {
+  id: "toolcall_schema_fuzz",
+  defaultEpochs: 1,
+  temperature: 0,
+} as const satisfies BenchmarkMeta;
+
 export const BROWSECOMP_META = {
   id: "search_browsecomp",
   defaultEpochs: 1,
@@ -84,6 +90,7 @@ const BENCHMARK_META: Readonly<Record<string, BenchmarkMeta>> = {
   [DRACO_META.id]: DRACO_META,
   [IFSTRUCT_META.id]: IFSTRUCT_META,
   [TOOLCALL_FORMATS_META.id]: TOOLCALL_FORMATS_META,
+  [TOOLCALL_SCHEMA_FUZZ_META.id]: TOOLCALL_SCHEMA_FUZZ_META,
   [BROWSECOMP_META.id]: BROWSECOMP_META,
   [HLE_META.id]: HLE_META,
   [DSQA_META.id]: DSQA_META,

@@ -1,7 +1,7 @@
-import type { HttpClient } from "@effect/platform";
 import { gen } from "effect/Effect";
+import type { HttpClient } from "effect/http";
 import type { Layer } from "effect/Layer";
-import { effect, fail, mergeAll, provide, succeed } from "effect/Layer";
+import { effect, mergeAll, provide, succeed } from "effect/Layer";
 
 import type { Dataset } from "../../../harness/dataset";
 import type { ScorerService } from "../../../harness/scorer";
@@ -9,6 +9,7 @@ import { Scorer } from "../../../harness/scorer";
 import type { SolverService } from "../../../harness/solver";
 import { Solver } from "../../../harness/solver";
 import { definedValues } from "../../../internal/guards";
+import { layerFail as fail } from "../../../internal/layer";
 import type { ResponsesService } from "../../../providers/responses-client";
 import {
   makeResponsesLayer,
@@ -74,6 +75,7 @@ export function searchSolverOptionsFromConfig({
     costQualityTradeoff: config.costQualityTradeoff,
     costTier: config.costTier,
     switchyardAlgorithm: config.switchyardAlgorithm,
+    extraBody: config.extraBody,
     retry,
   });
 }

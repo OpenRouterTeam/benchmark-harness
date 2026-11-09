@@ -1,13 +1,16 @@
+import { map } from "effect/Effect";
 import type { Layer } from "effect/Layer";
+import { effect, provide } from "effect/Layer";
+import * as Result from "effect/Result";
+import { filter } from "effect/Stream";
 
 import { HfImageSchema, makeHfDatasetLayer } from "../datasets/huggingface";
 import type { ImageDetail } from "../harness/constants";
 import type { ContentPart, Sample } from "../harness/core";
-import type { Dataset as DatasetTag } from "../harness/dataset";
+import { Dataset } from "../harness/dataset";
 import type { GenerateConfig, ModelService } from "../harness/model";
 import type { SolverService } from "../harness/solver";
 import { chain, generate, systemMessage } from "../harness/solver";
-import { Either } from "../internal/either";
 import { definedValues, isDefinedAndNotNull } from "../internal/guards";
 import { parseSchema } from "../internal/zod";
 import type { RetryConfig } from "../runtime/retry";
@@ -60,17 +63,17 @@ export function mmmuProVisionRecordToSample(
   const contentParts: ContentPart[] = [{ type: "text", text: input }];
   let numImages = 0;
   const parsedImage = parseSchema(HfImageSchema, record["image"]);
-  if (mediaManifest !== undefined && Either.isLeft(parsedImage)) {
+  if (mediaManifest !== undefined && Result.isFailure(parsedImage)) {
     throw new TypeError(`MMMU Pro image ${id} is missing or invalid`);
   }
-  if (Either.isRight(parsedImage)) {
+  if (Result.isSuccess(parsedImage)) {
     contentParts.push({
       type: "image_url",
       imageUrl: definedValues({
         url:
-          mediaManifest === undefined
-            ? parsedImage.right.src
-            : mirroredMmmuProImage(mediaManifest, id, parsedImage.right.src),
+          mediaManifest === undefined || mediaManifest.excludedIds.has(id)
+            ? parsedImage.success.src
+            : mirroredMmmuProImage(mediaManifest, id, parsedImage.success.src),
         detail: imageDetail,
       }),
     });
@@ -82,13 +85,13 @@ export function mmmuProVisionRecordToSample(
       continue;
     }
     const parsed = parseSchema(HfImageSchema, imgField);
-    if (Either.isLeft(parsed)) {
+    if (Result.isFailure(parsed)) {
       continue;
     }
     contentParts.push({
       type: "image_url",
       imageUrl: definedValues({
-        url: parsed.right.src,
+        url: parsed.success.src,
         detail: imageDetail,
       }),
     });
@@ -124,10 +127,10 @@ interface MmmuProVisionDatasetOpts {
 
 export function makeMmmuProVisionDatasetLayer(
   opts?: MmmuProVisionDatasetOpts
-): Layer<DatasetTag> {
+): Layer<Dataset> {
   const revision = opts?.revision ?? MMMU_PRO_DEFAULT_REVISION;
   const mediaManifest = mmmuProMediaManifestFor(revision);
-  return makeHfDatasetLayer({
+  const hfLayer = makeHfDatasetLayer({
     dataset: MMMU_PRO_DATASET_PATH,
     config: MMMU_PRO_VISION_SUBSET,
     split: MMMU_PRO_SPLIT,
@@ -141,7 +144,66 @@ export function makeMmmuProVisionDatasetLayer(
       ),
     ...definedValues({ retry: opts?.retry }),
   });
+  const excludedIds = mediaManifest?.excludedIds;
+  if (excludedIds === undefined || excludedIds.size === 0) {
+    return hfLayer;
+  }
+  return effect(
+    Dataset,
+    map(Dataset, (inner) =>
+      Dataset.of({
+        stream: (streamOpts) =>
+          inner
+            .stream(streamOpts)
+            .pipe(filter((sample) => !excludedIds.has(sample.id))),
+        size: inner.size,
+      })
+    )
+  ).pipe(provide(hfLayer));
 }
+
+function mmmuExtraBody(
+  configured: Readonly<Record<string, unknown>> | undefined,
+  mediaResolution: GeminiMediaResolution | undefined
+): Record<string, unknown> | undefined {
+  if (configured === undefined && mediaResolution === undefined) {
+    return undefined;
+  }
+  return {
+    ...configured,
+    ...(mediaResolution !== undefined && { media_resolution: mediaResolution }),
+  };
+}
+
+function mmmuProVisionSolverOptions(
+  config: MmmuProVisionBenchmarkConfig
+): Parameters<typeof mmmuProVisionSolver>[1] {
+  return definedValues({
+    endpointId: config.endpointId,
+    mediaResolution: config.mediaResolution,
+    inference: {
+      temperature: config.temperature,
+      maxTokens: config.maxTokens,
+      reasoningEffort: config.reasoningEffort,
+      timeoutMs: config.timeoutMs,
+      sort: config.sort,
+      providerOnly: config.providerOnly,
+      providerOrder: config.providerOrder,
+      providerIgnore: config.providerIgnore,
+      allowFallbacks: config.allowFallbacks,
+      cloudflareVersion: config.cloudflareVersion,
+      experimentIds: config.experimentIds,
+      costTier: config.costTier,
+      costQualityTradeoff: config.costQualityTradeoff,
+      switchyardAlgorithm: config.switchyardAlgorithm,
+      extraBody: config.extraBody,
+    },
+  });
+}
+
+export const TEST_mmmuExtraBody = mmmuExtraBody;
+
+export const TEST_mmmuProVisionSolverOptions = mmmuProVisionSolverOptions;
 
 export function mmmuProVisionSolver(
   model: ModelService,
@@ -156,10 +218,7 @@ export function mmmuProVisionSolver(
     ...definedValues(opts.inference),
     ...definedValues({
       endpointId: opts.endpointId,
-      extraBody:
-        opts.mediaResolution !== undefined
-          ? { media_resolution: opts.mediaResolution }
-          : undefined,
+      extraBody: mmmuExtraBody(opts.inference.extraBody, opts.mediaResolution),
     }),
   };
   return chain(systemMessage(MMMU_SYSTEM_MESSAGE), generate(model, config));
@@ -185,26 +244,5 @@ export const MMMU_PRO_VISION_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
     ),
   scorer: mcqScorer,
   makeSolver: (model, config) =>
-    mmmuProVisionSolver(
-      model,
-      definedValues({
-        endpointId: config.endpointId,
-        mediaResolution: config.mediaResolution,
-        inference: {
-          temperature: config.temperature,
-          maxTokens: config.maxTokens,
-          reasoningEffort: config.reasoningEffort,
-          timeoutMs: config.timeoutMs,
-          sort: config.sort,
-          providerOnly: config.providerOnly,
-          providerIgnore: config.providerIgnore,
-          allowFallbacks: config.allowFallbacks,
-          cloudflareVersion: config.cloudflareVersion,
-          experimentIds: config.experimentIds,
-          costTier: config.costTier,
-          costQualityTradeoff: config.costQualityTradeoff,
-          switchyardAlgorithm: config.switchyardAlgorithm,
-        },
-      })
-    ),
+    mmmuProVisionSolver(model, mmmuProVisionSolverOptions(config)),
 });

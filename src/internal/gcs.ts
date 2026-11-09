@@ -1,6 +1,6 @@
 import { RETRYABLE_ERR_FN_DEFAULT, Storage } from "@google-cloud/storage";
+import * as Result from "effect/Result";
 
-import { Either } from "./either";
 import { unknownErrorToString } from "./errors";
 import { createLoggedRetryableErrorFn } from "./gcs-retry-observer";
 import { eLog, iLog } from "./log";
@@ -46,7 +46,7 @@ export function getGcsStorage(): Storage {
 
 export async function downloadFromGcs(
   input: GcsDownloadInput
-): Promise<Either.Either<GcsDownloadResult, GcsError>> {
+): Promise<Result.Result<GcsDownloadResult, GcsError>> {
   const { bucketName, objectPath } = input;
   const file = gcsClient().bucket(bucketName).file(objectPath);
   try {
@@ -56,7 +56,7 @@ export async function downloadFromGcs(
       object_path: objectPath,
       file_size_bytes: content.length,
     });
-    return Either.right({ content });
+    return Result.succeed({ content });
   } catch (error) {
     const message = unknownErrorToString(error);
     eLog("Failed to download from GCS", {
@@ -64,13 +64,13 @@ export async function downloadFromGcs(
       object_path: objectPath,
       error: message,
     });
-    return Either.left({ message });
+    return Result.fail({ message });
   }
 }
 
 export async function uploadToGcs(
   input: GcsUploadInput
-): Promise<Either.Either<GcsUploadResult, GcsError>> {
+): Promise<Result.Result<GcsUploadResult, GcsError>> {
   const {
     bucketName,
     objectPath,
@@ -87,7 +87,7 @@ export async function uploadToGcs(
       object_path: objectPath,
       file_size_bytes: buffer.length,
     });
-    return Either.right({ gcsPath: `gs://${bucketName}/${objectPath}` });
+    return Result.succeed({ gcsPath: `gs://${bucketName}/${objectPath}` });
   } catch (error) {
     const message = unknownErrorToString(error);
     eLog("Failed to upload to GCS", {
@@ -95,6 +95,6 @@ export async function uploadToGcs(
       object_path: objectPath,
       error: message,
     });
-    return Either.left({ message });
+    return Result.fail({ message });
   }
 }

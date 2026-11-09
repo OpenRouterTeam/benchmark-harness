@@ -1,21 +1,21 @@
 import { afterEach, describe, expect, it } from "bun:test";
 import { readFile } from "node:fs/promises";
 
-import { FetchHttpClient } from "@effect/platform";
 import type { ResponsesRequest } from "@openrouter/sdk/models";
-import { failureOption } from "effect/Cause";
-import { flatMap, gen, provide, runPromiseExit, succeed } from "effect/Effect";
+import { findErrorOption } from "effect/Cause";
+import { gen, provide, runPromiseExit, succeed } from "effect/Effect";
 import { provide as layerProvide } from "effect/Layer";
 import { getOrThrow } from "effect/Option";
 
 import { assertFailure, assertSuccess } from "../../test/helpers/exit-asserts";
 import { ProviderSort } from "../internal/enums";
 import { isRecord } from "../internal/guards";
-import { assertRight } from "../internal/testing";
+import { fetchHttpClientLayer } from "../internal/http-client";
+import { assertSuccess as assertResultSuccess } from "../internal/testing";
 import { parseSchema, z } from "../internal/zod";
 import {
   getCollectedGenerationIds,
-  resetGenerationIds,
+  withFreshGenerationIds,
 } from "../runtime/generation-ids";
 import type {
   ResponsesSendOptions,
@@ -90,8 +90,8 @@ async function readTerminalFixture(): Promise<
     "utf8"
   );
   const result = parseSchema(TerminalFixtureSchema, JSON.parse(raw));
-  assertRight(result);
-  return result.right;
+  assertResultSuccess(result);
+  return result.success;
 }
 
 function readStreamFixture(): Promise<string> {
@@ -171,33 +171,30 @@ describe("responses-model", () => {
       sessionId: "session-1",
     });
     const exit = await runPromiseExit(
-      resetGenerationIds.pipe(
-        flatMap(() =>
-          gen(function* run() {
-            const model = yield* ResponsesModel;
-            const turn = yield* model.generate(input, {
-              instructions: "Use bash.",
-              tools: [
-                {
-                  type: "function",
-                  name: "bash",
-                  description: "Run bash.",
-                  parameters: { type: "object" },
-                },
-              ],
-              reasoningEffort: "high",
-              temperature: 0,
-              maxTokens: 256,
-              sort: ProviderSort.Price,
-              cloudflareVersion: "ver-1",
-              experimentIds: ["jev-finish-deesc", "control"],
-              extraBody: { custom_field: "value" },
-            });
-            const generationIds = yield* getCollectedGenerationIds;
-            return { turn, generationIds };
-          })
-        ),
-        provide(layer.pipe(layerProvide(FetchHttpClient.layer)))
+      withFreshGenerationIds(
+        gen(function* run() {
+          const model = yield* ResponsesModel;
+          const turn = yield* model.generate(input, {
+            instructions: "Use bash.",
+            tools: [
+              {
+                type: "function",
+                name: "bash",
+                description: "Run bash.",
+                parameters: { type: "object" },
+              },
+            ],
+            reasoningEffort: "high",
+            temperature: 0,
+            maxTokens: 256,
+            sort: ProviderSort.Price,
+            cloudflareVersion: "ver-1",
+            experimentIds: ["jev-finish-deesc", "control"],
+            extraBody: { custom_field: "value" },
+          });
+          const generationIds = yield* getCollectedGenerationIds;
+          return { turn, generationIds };
+        }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
       )
     );
     assertSuccess(exit);
@@ -358,7 +355,7 @@ describe("responses-model", () => {
           endpointId: "endpoint-1",
           reasoningEffort: "high",
         });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["provider"]).toBeUndefined();
@@ -378,7 +375,7 @@ describe("responses-model", () => {
       gen(function* run() {
         const model = yield* ResponsesModel;
         return yield* model.generate([], { reasoningEffort: "auto" });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value).toBeDefined();
@@ -403,7 +400,7 @@ describe("responses-model", () => {
           allowFallbacks: false,
           reasoningEffort: "high",
         });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["provider"]).toEqual({
@@ -412,9 +409,35 @@ describe("responses-model", () => {
       allow_fallbacks: false,
     });
   });
+  it("sends provider.order with fallbacks left on", async () => {
+    const captured: {
+      value: CapturedRequest | undefined;
+    } = { value: undefined };
+    restore = installFetchStub(await readStreamFixture(), 200, captured);
+    const layer = makeResponsesModelLayer({
+      model: "deepseek/deepseek-v4-flash",
+      apiKey: "sk-test",
+      retry: { baseDelayMs: 0, maxRetries: 0 },
+    });
+    const exit = await runPromiseExit(
+      gen(function* run() {
+        const model = yield* ResponsesModel;
+        return yield* model.generate([], {
+          providerOrder: ["together", "digitalocean"],
+          reasoningEffort: "high",
+        });
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
+    );
+    assertSuccess(exit);
+    expect(captured.value?.body["provider"]).toEqual({
+      order: ["together", "digitalocean"],
+    });
+  });
   for (const [model, pluginId] of [
     ["openrouter/auto", "auto-router"],
     ["openrouter/auto-beta", "auto-beta-router"],
+    ["typesafe/jev-router", "jev-router"],
+    ["typesafe/jev-router:nitro", "jev-router"],
   ] as const) {
     it(`sends cost_tier on the ${pluginId} plugin`, async () => {
       const captured: {
@@ -429,7 +452,7 @@ describe("responses-model", () => {
             costTier: "high",
             reasoningEffort: "high",
           });
-        }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+        }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
       );
       assertSuccess(exit);
       expect(captured.value?.body["plugins"]).toEqual([
@@ -437,6 +460,107 @@ describe("responses-model", () => {
       ]);
     });
   }
+  describe.each([
+    ["openrouter/auto", "auto-router"],
+    ["openrouter/auto-beta", "auto-beta-router"],
+    ["typesafe/jev-router", "jev-router"],
+  ] as const)("%s cost tiers", (model, pluginId) => {
+    it.each(["low", "medium", "high"] as const)(
+      "preserves %s on subsequent turns without experiment headers",
+      async (tier) => {
+        const captured: { value: CapturedRequest | undefined } = {
+          value: undefined,
+        };
+        restore = installFetchStub(await readStreamFixture(), 200, captured);
+        const layer = makeResponsesModelLayer({
+          model,
+          apiKey: "sk-test",
+        });
+        const exit = await runPromiseExit(
+          gen(function* run() {
+            const modelService = yield* ResponsesModel;
+            const config = {
+              costTier: tier,
+              reasoningEffort: "auto",
+              extraBody: { plugins: [{ id: "web" }] },
+            } as const;
+            yield* modelService.generate(
+              [responsesMessage("user", "first turn")],
+              config
+            );
+            expect(captured.value?.body["plugins"]).toEqual([
+              { id: "web" },
+              { id: pluginId, cost_tier: tier },
+            ]);
+            return yield* modelService.generate(
+              [responsesMessage("user", "continue")],
+              config
+            );
+          }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
+        );
+        assertSuccess(exit);
+        expect(captured.value?.body["plugins"]).toEqual([
+          { id: "web" },
+          { id: pluginId, cost_tier: tier },
+        ]);
+        expect(
+          captured.value?.headers["x-openrouter-experiment-ids"]
+        ).toBeUndefined();
+      }
+    );
+  });
+
+  it.each([
+    ["openrouter/auto", "auto-router"],
+    ["openrouter/auto-beta", "auto-beta-router"],
+    ["typesafe/jev-router", "jev-router"],
+  ] as const)(
+    "preserves an explicit %s plugin override without duplicates",
+    async (model, pluginId) => {
+      const captured: { value: CapturedRequest | undefined } = {
+        value: undefined,
+      };
+      restore = installFetchStub(await readStreamFixture(), 200, captured);
+      const layer = makeResponsesModelLayer({ model, apiKey: "sk-test" });
+      const plugins = [{ id: "web" }, { id: pluginId, cost_tier: "low" }];
+      const exit = await runPromiseExit(
+        gen(function* run() {
+          const modelService = yield* ResponsesModel;
+          return yield* modelService.generate([], {
+            costTier: "high",
+            reasoningEffort: "auto",
+            extraBody: { plugins },
+          });
+        }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
+      );
+      assertSuccess(exit);
+      expect(captured.value?.body["plugins"]).toEqual(plugins);
+    }
+  );
+
+  it("leaves the Jev default unset and does not send Auto Router-only controls", async () => {
+    const captured: { value: CapturedRequest | undefined } = {
+      value: undefined,
+    };
+    restore = installFetchStub(await readStreamFixture(), 200, captured);
+    const layer = makeResponsesModelLayer({
+      model: "typesafe/jev-router",
+      apiKey: "sk-test",
+    });
+    const exit = await runPromiseExit(
+      gen(function* run() {
+        const modelService = yield* ResponsesModel;
+        return yield* modelService.generate([], {
+          reasoningEffort: "auto",
+          costQualityTradeoff: 8,
+          pinModel: true,
+        });
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
+    );
+    assertSuccess(exit);
+    expect(captured.value?.body["plugins"]).toBeUndefined();
+  });
+
   it("sends cost_tier alongside the deprecated numeric tradeoff", async () => {
     const captured: {
       value: CapturedRequest | undefined;
@@ -454,7 +578,7 @@ describe("responses-model", () => {
           costQualityTradeoff: 8,
           reasoningEffort: "high",
         });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["plugins"]).toEqual([
@@ -475,7 +599,7 @@ describe("responses-model", () => {
       gen(function* run() {
         const modelService = yield* ResponsesModel;
         return yield* modelService.generate([], { reasoningEffort: "high" });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["model"]).toBe("openrouter/switchyard");
@@ -497,7 +621,7 @@ describe("responses-model", () => {
       gen(function* run() {
         const modelService = yield* ResponsesModel;
         return yield* modelService.generate([], { reasoningEffort: "high" });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["models"]).toBeUndefined();
@@ -515,7 +639,7 @@ describe("responses-model", () => {
       gen(function* run() {
         const modelService = yield* ResponsesModel;
         return yield* modelService.generate([], { reasoningEffort: "high" });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["plugins"]).toBeUndefined();
@@ -537,7 +661,7 @@ describe("responses-model", () => {
           reasoningEffort: "high",
           switchyardAlgorithm: "stage",
         });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["model"]).toBe("nvidia/switchyard");
@@ -563,7 +687,7 @@ describe("responses-model", () => {
       gen(function* run() {
         const modelService = yield* ResponsesModel;
         return yield* modelService.generate([], { reasoningEffort: "high" });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["plugins"]).toBeUndefined();
@@ -589,7 +713,7 @@ describe("responses-model", () => {
             cache_control: { type: "ephemeral" },
           },
         });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["plugins"]).toEqual([
@@ -616,7 +740,7 @@ describe("responses-model", () => {
           reasoningEffort: "high",
           switchyardAlgorithm: "stage",
         });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(captured.value?.body["plugins"]).toBeUndefined();
@@ -644,13 +768,13 @@ describe("responses-model", () => {
           {},
           { onStreamEvent: (event) => events.push(event) }
         );
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertFailure(exit);
     expect(events).toEqual([
       { type: "response.failed", response: { error: { message: "upstream" } } },
     ]);
-    const error = getOrThrow(failureOption(exit.cause));
+    const error = getOrThrow(findErrorOption(exit.cause));
     expect(error.status).toBe(500);
   });
   it("preserves response identifiers on a failed stream", async () => {
@@ -677,10 +801,10 @@ describe("responses-model", () => {
       gen(function* run() {
         const model = yield* ResponsesModel;
         return yield* model.generate([], { reasoningEffort: "high" });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertFailure(exit);
-    const error = getOrThrow(failureOption(exit.cause));
+    const error = getOrThrow(findErrorOption(exit.cause));
     expect(error.cfRay).toBe("ray-123");
     expect(error.xRequestId).toBe("req-456");
     expect(error.generationId).toBe("gen-789");
@@ -723,10 +847,10 @@ describe("responses-model", () => {
           timeoutMs: 50,
           reasoningEffort: "high",
         });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertFailure(exit);
-    const error = getOrThrow(failureOption(exit.cause));
+    const error = getOrThrow(findErrorOption(exit.cause));
     expect(error.status).toBe(408);
     expect(error.cfRay).toBe("ray-timeout");
     expect(error.message).toContain("cf_ray=ray-timeout");
@@ -752,7 +876,7 @@ describe("responses-model", () => {
           { reasoningEffort: "high" },
           { onStreamEvent: (event) => events.push(event) }
         );
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertSuccess(exit);
     expect(exit.value.outputItems).toEqual(terminal.output);
@@ -777,10 +901,10 @@ describe("responses-model", () => {
       gen(function* run() {
         const model = yield* ResponsesModel;
         return yield* model.generate([], { reasoningEffort: "high" });
-      }).pipe(provide(layer.pipe(layerProvide(FetchHttpClient.layer))))
+      }).pipe(provide(layer.pipe(layerProvide(fetchHttpClientLayer))))
     );
     assertFailure(exit);
-    const error = getOrThrow(failureOption(exit.cause));
+    const error = getOrThrow(findErrorOption(exit.cause));
     expect(error._tag).toBe("ModelError");
     expect(error.status).toBe(400);
     expect(error.message).toBe("OpenRouter HTTP 400: bad request");

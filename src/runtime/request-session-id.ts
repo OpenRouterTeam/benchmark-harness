@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
 
+import { Reference } from "effect/Context";
 import type { Effect } from "effect/Effect";
-import type { FiberRef } from "effect/FiberRef";
-import { get, set, unsafeMake } from "effect/FiberRef";
+import { provideService } from "effect/Effect";
 
 export const OPENROUTER_SESSION_ID_MAX_LENGTH = 256;
 
@@ -10,16 +10,20 @@ export const REQUEST_SESSION_ID_MAX_LENGTH = OPENROUTER_SESSION_ID_MAX_LENGTH;
 
 const SAMPLE_SEGMENT_HASH_LENGTH = 12;
 
-export const currentSampleIdRef: FiberRef<string | undefined> = unsafeMake<
+export const currentSampleIdRef: Reference<string | undefined> = Reference<
   string | undefined
->(undefined);
+>("@openrouter/bench-harness/runtime/currentSampleId", {
+  defaultValue: () => undefined,
+});
 
-export function setCurrentSampleId(sampleId: string | undefined): Effect<void> {
-  return set(currentSampleIdRef, sampleId);
+export function withCurrentSampleId(
+  sampleId: string | undefined
+): <A, E, R>(effect: Effect<A, E, R>) => Effect<A, E, R> {
+  return (effect) => provideService(effect, currentSampleIdRef, sampleId);
 }
 
 export const getCurrentSampleId: Effect<string | undefined> =
-  get(currentSampleIdRef);
+  currentSampleIdRef;
 
 function sanitizeSampleSegment(sampleId: string): string {
   return sampleId.replaceAll(/[^A-Za-z0-9_-]+/g, "-");

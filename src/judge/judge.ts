@@ -4,12 +4,12 @@ import type {
 } from "@openrouter/sdk/models";
 import type { Effect } from "effect/Effect";
 import { fail, flatMap, mapError, succeed } from "effect/Effect";
+import * as Result from "effect/Result";
 
 import type { ReasoningEffort } from "../harness/constants";
 import { reasoningRequestFor } from "../harness/constants";
 import type { ModelUsage } from "../harness/core";
 import { ModelError } from "../harness/core";
-import { Either } from "../internal/either";
 import { definedValues } from "../internal/guards";
 import type { ResponsesService } from "../providers/responses-client";
 import {
@@ -36,7 +36,7 @@ export interface JudgeCallSpec<T> {
   readonly userInput: string;
   readonly schemaName: string;
   readonly jsonSchema?: Record<string, unknown>;
-  readonly parseVerdict: (text: string) => Either.Either<T, string>;
+  readonly parseVerdict: (text: string) => Result.Result<T, string>;
   readonly parseFailureFallback?: T;
 }
 
@@ -81,8 +81,8 @@ export function judgeCall<T>(
     flatMap((result) => {
       const parsed = spec.parseVerdict(result.text);
       const usage = usageFromResponses(result.usage);
-      if (Either.isLeft(parsed)) {
-        const parseError = `judge verdict parse failed (${spec.schemaName}): ${parsed.left}`;
+      if (Result.isFailure(parsed)) {
+        const parseError = `judge verdict parse failed (${spec.schemaName}): ${parsed.failure}`;
         if (spec.parseFailureFallback !== undefined) {
           return succeed({
             verdict: spec.parseFailureFallback,
@@ -96,7 +96,7 @@ export function judgeCall<T>(
           })
         );
       }
-      return succeed({ verdict: parsed.right, usage });
+      return succeed({ verdict: parsed.success, usage });
     })
   );
 }

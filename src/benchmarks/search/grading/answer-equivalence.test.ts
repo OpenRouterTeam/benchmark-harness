@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { assertRight, assertLeft } from "../../../internal/testing";
+import { assertSuccess, assertFailure } from "../../../internal/testing";
 import {
   ANSWER_EQUIVALENCE_GRADER_PROMPT,
   ANSWER_EQUIVALENCE_JUDGE_CONFIG,
@@ -69,15 +69,15 @@ describe("parseAnswerEquivalenceVerdict", () => {
         strict: true,
       })
     );
-    assertRight(result);
-    expect(result.right.correct).toBe("yes");
-    expect(result.right.confidence).toBe(95);
+    assertSuccess(result);
+    expect(result.success.correct).toBe("yes");
+    expect(result.success.confidence).toBe(95);
   });
   it("rejects non-JSON", () => {
-    assertLeft(parseAnswerEquivalenceVerdict("the answer is correct"));
+    assertFailure(parseAnswerEquivalenceVerdict("the answer is correct"));
   });
   it("rejects a wrong correct-value", () => {
-    assertLeft(
+    assertFailure(
       parseAnswerEquivalenceVerdict(
         JSON.stringify({
           extracted_final_answer: "42",
@@ -90,7 +90,7 @@ describe("parseAnswerEquivalenceVerdict", () => {
     );
   });
   it("rejects missing fields", () => {
-    assertLeft(
+    assertFailure(
       parseAnswerEquivalenceVerdict(JSON.stringify({ correct: "yes" }))
     );
   });

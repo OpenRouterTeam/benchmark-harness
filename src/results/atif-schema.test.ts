@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { assertLeft, assertRight } from "../internal/testing";
+import { assertFailure, assertSuccess } from "../internal/testing";
 import { parseSchema } from "../internal/zod";
 import {
   AtifAudioSourceSchema,
@@ -93,8 +93,8 @@ const VALID_TRAJECTORY = {
 describe("AtifTrajectorySchema", () => {
   it("parses a valid multimodal trajectory with tools and a subagent", () => {
     const parsed = parseSchema(AtifTrajectorySchema, VALID_TRAJECTORY);
-    assertRight(parsed);
-    expect(parsed.right).toEqual(VALID_TRAJECTORY);
+    assertSuccess(parsed);
+    expect(parsed.success).toEqual(VALID_TRAJECTORY);
   });
 
   it("rejects unknown top-level keys", () => {
@@ -102,7 +102,7 @@ describe("AtifTrajectorySchema", () => {
       ...VALID_TRAJECTORY,
       unexpected: true,
     });
-    assertLeft(parsed);
+    assertFailure(parsed);
   });
 
   it("rejects non-sequential step ids", () => {
@@ -114,7 +114,7 @@ describe("AtifTrajectorySchema", () => {
         VALID_TRAJECTORY.steps[2],
       ],
     });
-    assertLeft(parsed);
+    assertFailure(parsed);
   });
 
   it("rejects observations with an unknown source call id", () => {
@@ -131,7 +131,7 @@ describe("AtifTrajectorySchema", () => {
         VALID_TRAJECTORY.steps[2],
       ],
     });
-    assertLeft(parsed);
+    assertFailure(parsed);
   });
 
   it("rejects tool calls on user steps", () => {
@@ -152,7 +152,7 @@ describe("AtifTrajectorySchema", () => {
         VALID_TRAJECTORY.steps[2],
       ],
     });
-    assertLeft(parsed);
+    assertFailure(parsed);
   });
 
   it("rejects duplicate subagent trajectory ids", () => {
@@ -163,7 +163,7 @@ describe("AtifTrajectorySchema", () => {
         VALID_TRAJECTORY.subagent_trajectories[0],
       ],
     });
-    assertLeft(parsed);
+    assertFailure(parsed);
   });
 
   it("rejects an embedded subagent without a trajectory id", () => {
@@ -176,19 +176,19 @@ describe("AtifTrajectorySchema", () => {
         },
       ],
     });
-    assertLeft(parsed);
+    assertFailure(parsed);
   });
 
   it("rejects a reference without an id or path", () => {
     const parsed = parseSchema(AtifSubagentTrajectoryRefSchema, {
       session_id: "session-1",
     });
-    assertLeft(parsed);
+    assertFailure(parsed);
   });
 
   it("rejects content parts missing text", () => {
     const parsed = parseSchema(AtifContentPartSchema, { type: "text" });
-    assertLeft(parsed);
+    assertFailure(parsed);
   });
 
   it("normalizes Harbor audio media type aliases", () => {
@@ -196,15 +196,15 @@ describe("AtifTrajectorySchema", () => {
       media_type: "audio/mp3",
       path: "audio.mp3",
     });
-    assertRight(mp3);
-    expect(mp3.right.media_type).toBe("audio/mpeg");
+    assertSuccess(mp3);
+    expect(mp3.success.media_type).toBe("audio/mpeg");
 
     const wav = parseSchema(AtifAudioSourceSchema, {
       media_type: " AUDIO/X-WAV ",
       path: "audio.wav",
     });
-    assertRight(wav);
-    expect(wav.right.media_type).toBe("audio/wav");
+    assertSuccess(wav);
+    expect(wav.success.media_type).toBe("audio/wav");
   });
 
   it("rejects unsupported audio media types", () => {
@@ -212,6 +212,6 @@ describe("AtifTrajectorySchema", () => {
       media_type: "audio/midi",
       path: "audio.mid",
     });
-    assertLeft(parsed);
+    assertFailure(parsed);
   });
 });

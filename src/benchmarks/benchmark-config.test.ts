@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { spawnSync } from "node:child_process";
 
-import { assertLeft, assertRight } from "../internal/testing";
+import { assertFailure, assertSuccess } from "../internal/testing";
 import { parseSchema } from "../internal/zod";
 import {
   BenchmarkRunConfigSchema,
@@ -23,6 +23,37 @@ describe("benchmark config", () => {
     expect(result.status).toBe(0);
   });
 
+  it("keeps extraBody on a model benchmark config", () => {
+    const result = parseSchema(BenchmarkRunConfigSchema, {
+      benchmarkId: "tau_bench_verified_airline",
+      model: "z-ai/glm-5.3",
+      reasoningEffort: "high",
+      extraBody: { deferred_tools: { protocol: "v1", profile: "universal" } },
+    });
+
+    assertSuccess(result);
+    expect(result.success.extraBody).toEqual({
+      deferred_tools: { protocol: "v1", profile: "universal" },
+    });
+  });
+
+  it("rejects extraBody fields the harness owns", () => {
+    for (const extraBody of [
+      { tools: [] },
+      { model: "other/model" },
+      { provider: { order: ["Other"] } },
+      { messages: [] },
+    ]) {
+      const result = parseSchema(BenchmarkRunConfigSchema, {
+        benchmarkId: "tau_bench_verified_airline",
+        model: "z-ai/glm-5.3",
+        reasoningEffort: "high",
+        extraBody,
+      });
+      assertFailure(result);
+    }
+  });
+
   it("keeps Kepler configs precise while parsing them through the Kepler schema", () => {
     const result = parseSchema(KeplerBenchmarkRunConfigSchema, {
       benchmarkId: "search_hle",
@@ -30,14 +61,14 @@ describe("benchmark config", () => {
       reasoningEffort: "high",
     });
 
-    assertRight(result);
-    expect(result.right.benchmarkId).toBe("search_hle");
-    expect(result.right.lane).toEqual({
+    assertSuccess(result);
+    expect(result.success.benchmarkId).toBe("search_hle");
+    expect(result.success.lane).toEqual({
       webSearch: "server-tool",
       engine: "auto",
     });
-    expect(isSearchBenchmarkConfig(result.right)).toBe(true);
-    expect(isModelBenchmarkConfig(result.right)).toBe(true);
+    expect(isSearchBenchmarkConfig(result.success)).toBe(true);
+    expect(isModelBenchmarkConfig(result.success)).toBe(true);
   });
 
   it("does not let malformed Kepler configs fall through to the injected variant", () => {
@@ -46,7 +77,7 @@ describe("benchmark config", () => {
       model: 42,
     });
 
-    assertLeft(result);
+    assertFailure(result);
   });
 
   it("requires reasoningEffort in model benchmark configs", () => {
@@ -55,7 +86,7 @@ describe("benchmark config", () => {
       model: "openai/gpt-5",
     });
 
-    assertLeft(result);
+    assertFailure(result);
   });
 
   it("accepts the explicit auto reasoning effort", () => {
@@ -65,8 +96,8 @@ describe("benchmark config", () => {
       reasoningEffort: "auto",
     });
 
-    assertRight(result);
-    expect(result.right.reasoningEffort).toBe("auto");
+    assertSuccess(result);
+    expect(result.success.reasoningEffort).toBe("auto");
   });
 
   it("rejects switchyardAlgorithm on a non-switchyard model", () => {
@@ -77,15 +108,15 @@ describe("benchmark config", () => {
       switchyardAlgorithm: "stage",
     });
 
-    assertLeft(result);
-    expect(result.left.issues.map((issue) => issue.path)).toEqual([
+    assertFailure(result);
+    expect(result.failure.issues.map((issue) => issue.path)).toEqual([
       ["switchyardAlgorithm"],
     ]);
   });
 
   it("accepts switchyardAlgorithm on switchyard variants and omitted algorithms elsewhere", () => {
     for (const model of ["nvidia/switchyard", "nvidia/switchyard:online"]) {
-      assertRight(
+      assertSuccess(
         parseSchema(BenchmarkRunConfigSchema, {
           benchmarkId: "search_hle",
           model,
@@ -94,7 +125,7 @@ describe("benchmark config", () => {
         })
       );
     }
-    assertRight(
+    assertSuccess(
       parseSchema(BenchmarkRunConfigSchema, {
         benchmarkId: "injected_benchmark",
         model: "openai/gpt-5",
@@ -114,8 +145,8 @@ describe("benchmark config", () => {
       },
     });
 
-    assertRight(result);
-    expect(result.right).toEqual({
+    assertSuccess(result);
+    expect(result.success).toEqual({
       benchmarkId: "injected_benchmark",
       model: "injected/model",
       reasoningEffort: "high",
@@ -124,9 +155,9 @@ describe("benchmark config", () => {
         customFlag: true,
       },
     });
-    expect(isInjectedBenchmarkConfig(result.right)).toBe(true);
-    expect(isModelBenchmarkConfig(result.right)).toBe(true);
-    expect(isSearchBenchmarkConfig(result.right)).toBe(false);
+    expect(isInjectedBenchmarkConfig(result.success)).toBe(true);
+    expect(isModelBenchmarkConfig(result.success)).toBe(true);
+    expect(isSearchBenchmarkConfig(result.success)).toBe(false);
   });
 
   it("defaults injected benchmark options to an empty object", () => {
@@ -136,8 +167,8 @@ describe("benchmark config", () => {
       reasoningEffort: "high",
     });
 
-    assertRight(result);
-    expect(result.right.options).toEqual({});
+    assertSuccess(result);
+    expect(result.success.options).toEqual({});
   });
 
   it("rejects an injected config that reuses a Kepler benchmark id", () => {
@@ -148,6 +179,6 @@ describe("benchmark config", () => {
       options: { subsets: ["all"] },
     });
 
-    assertLeft(result);
+    assertFailure(result);
   });
 });

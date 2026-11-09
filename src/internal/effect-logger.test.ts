@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, spyOn } from "bun:test";
 
+import type { Cause } from "effect/Cause";
 import { empty as emptyCause, fail } from "effect/Cause";
 import {
   annotateLogs,
@@ -10,22 +11,12 @@ import {
   logWarning,
   provide,
   runPromise,
+  runSync,
+  sync,
+  withFiber,
   withLogSpan,
 } from "effect/Effect";
-import { none as noneFiberId } from "effect/FiberId";
-import { empty as emptyFiberRefs } from "effect/FiberRefs";
-import { empty as emptyHashMap } from "effect/HashMap";
-import { empty as emptyList } from "effect/List";
-import {
-  All,
-  Debug,
-  Error as ErrorLevel,
-  Fatal,
-  Info,
-  None,
-  Trace,
-  Warning,
-} from "effect/LogLevel";
+import type { LogLevel } from "effect/LogLevel";
 
 import {
   harnessEffectLogger,
@@ -34,6 +25,26 @@ import {
   runHarnessSync,
 } from "./effect-logger";
 import { emitLog, setLogContextProvider } from "./log";
+
+function logDirectly(options: {
+  readonly cause: Cause<unknown>;
+  readonly logLevel: LogLevel;
+  readonly message: unknown;
+}): void {
+  runSync(
+    withFiber((fiber) =>
+      sync(() =>
+        harnessEffectLogger.log({
+          cause: options.cause,
+          date: new Date(),
+          fiber,
+          logLevel: options.logLevel,
+          message: options.message,
+        })
+      )
+    )
+  );
+}
 
 const originalLogLevel = process.env.LOG_LEVEL;
 
@@ -89,15 +100,10 @@ describe("harness Effect logger", () => {
         provide(harnessLoggerLayer)
       )
     );
-    harnessEffectLogger.log({
-      annotations: emptyHashMap(),
+    logDirectly({
       cause: fail(new Error("boom")),
-      context: emptyFiberRefs(),
-      date: new Date(),
-      fiberId: noneFiberId,
-      logLevel: ErrorLevel,
+      logLevel: "Error",
       message: "failed",
-      spans: emptyList(),
     });
     const loggedLine = error.mock.calls[0]?.[0];
     expect(typeof loggedLine).toBe("string");
@@ -117,25 +123,16 @@ describe("harness Effect logger", () => {
     const error = spyOn(console, "error").mockImplementation(() => {});
     consoleSpies.push(info, warning, error);
     for (const [logLevel, message] of [
-      [All, "all"],
-      [Fatal, "fatal"],
-      [ErrorLevel, "error"],
-      [Warning, "warning"],
-      [Info, "info"],
-      [Debug, "debug"],
-      [Trace, "trace"],
-      [None, "none"],
+      ["All", "all"],
+      ["Fatal", "fatal"],
+      ["Error", "error"],
+      ["Warn", "warning"],
+      ["Info", "info"],
+      ["Debug", "debug"],
+      ["Trace", "trace"],
+      ["None", "none"],
     ] as const) {
-      harnessEffectLogger.log({
-        annotations: emptyHashMap(),
-        cause: emptyCause,
-        context: emptyFiberRefs(),
-        date: new Date(),
-        fiberId: noneFiberId,
-        logLevel,
-        message,
-        spans: emptyList(),
-      });
+      logDirectly({ cause: emptyCause, logLevel, message });
     }
     expect(info.mock.calls.map(([line]) => line)).toEqual([
       expect.stringContaining('"severity":"DEFAULT"'),
@@ -184,15 +181,10 @@ describe("harness Effect logger", () => {
     process.env.OR_ENV = "production";
     const info = spyOn(console, "info").mockImplementation(() => {});
     consoleSpies.push(info);
-    harnessEffectLogger.log({
-      annotations: emptyHashMap(),
+    logDirectly({
       cause: emptyCause,
-      context: emptyFiberRefs(),
-      date: new Date(),
-      fiberId: noneFiberId,
-      logLevel: Info,
+      logLevel: "Info",
       message: ["hello", 42, { field: "value" }],
-      spans: emptyList(),
     });
     expect(info.mock.calls[0]?.[0]).toContain('"message":"hello 42"');
     expect(info.mock.calls[0]?.[0]).toContain('"field":"value"');
@@ -200,15 +192,10 @@ describe("harness Effect logger", () => {
   it("preserves fields from a lone plain-object message", () => {
     const info = spyOn(console, "info").mockImplementation(() => {});
     consoleSpies.push(info);
-    harnessEffectLogger.log({
-      annotations: emptyHashMap(),
+    logDirectly({
       cause: emptyCause,
-      context: emptyFiberRefs(),
-      date: new Date(),
-      fiberId: noneFiberId,
-      logLevel: Info,
+      logLevel: "Info",
       message: { field: "value" },
-      spans: emptyList(),
     });
     expect(info.mock.calls[0]?.[0]).toBe("");
     expect(info.mock.calls[0]?.[1]).toMatchObject({ field: "value" });
@@ -216,15 +203,10 @@ describe("harness Effect logger", () => {
   it("extracts fields when a plain object is the first message argument", () => {
     const info = spyOn(console, "info").mockImplementation(() => {});
     consoleSpies.push(info);
-    harnessEffectLogger.log({
-      annotations: emptyHashMap(),
+    logDirectly({
       cause: emptyCause,
-      context: emptyFiberRefs(),
-      date: new Date(),
-      fiberId: noneFiberId,
-      logLevel: Info,
+      logLevel: "Info",
       message: [{ sample_id: "sample-1" }, "done"],
-      spans: emptyList(),
     });
     expect(info.mock.calls[0]?.[0]).toBe("done");
     expect(info.mock.calls[0]?.[1]).toMatchObject({ sample_id: "sample-1" });
@@ -232,15 +214,10 @@ describe("harness Effect logger", () => {
   it("extracts plain objects on both sides of message arguments", () => {
     const info = spyOn(console, "info").mockImplementation(() => {});
     consoleSpies.push(info);
-    harnessEffectLogger.log({
-      annotations: emptyHashMap(),
+    logDirectly({
       cause: emptyCause,
-      context: emptyFiberRefs(),
-      date: new Date(),
-      fiberId: noneFiberId,
-      logLevel: Info,
+      logLevel: "Info",
       message: [{ before: true }, "done", { after: true }],
-      spans: emptyList(),
     });
     expect(info.mock.calls[0]?.[0]).toBe("done");
     expect(info.mock.calls[0]?.[1]).toMatchObject({
@@ -251,16 +228,7 @@ describe("harness Effect logger", () => {
   it("stringifies a lone non-object message value", () => {
     const info = spyOn(console, "info").mockImplementation(() => {});
     consoleSpies.push(info);
-    harnessEffectLogger.log({
-      annotations: emptyHashMap(),
-      cause: emptyCause,
-      context: emptyFiberRefs(),
-      date: new Date(),
-      fiberId: noneFiberId,
-      logLevel: Info,
-      message: 42,
-      spans: emptyList(),
-    });
+    logDirectly({ cause: emptyCause, logLevel: "Info", message: 42 });
     expect(info.mock.calls[0]?.[0]).toBe("42");
   });
   it("keeps Date and class-instance messages as message text", () => {
@@ -269,15 +237,10 @@ describe("harness Effect logger", () => {
     class MessageValue {}
     const date = new Date("2024-01-02T03:04:05.000Z");
     const instance = new MessageValue();
-    harnessEffectLogger.log({
-      annotations: emptyHashMap(),
+    logDirectly({
       cause: emptyCause,
-      context: emptyFiberRefs(),
-      date: new Date(),
-      fiberId: noneFiberId,
-      logLevel: Info,
+      logLevel: "Info",
       message: [date, instance],
-      spans: emptyList(),
     });
     expect(info.mock.calls[0]?.[0]).toBe(`${date} [object Object]`);
   });
@@ -290,15 +253,10 @@ describe("harness Effect logger", () => {
       }
     }
     expect(() =>
-      harnessEffectLogger.log({
-        annotations: emptyHashMap(),
+      logDirectly({
         cause: emptyCause,
-        context: emptyFiberRefs(),
-        date: new Date(),
-        fiberId: noneFiberId,
-        logLevel: Info,
+        logLevel: "Info",
         message: new UnserializableMessage(),
-        spans: emptyList(),
       })
     ).not.toThrow();
     expect(info.mock.calls[0]?.[0]).toBe("[Unserializable]");
@@ -391,15 +349,10 @@ describe("harness Effect logger", () => {
       enumerable: true,
       value: "field-value",
     });
-    harnessEffectLogger.log({
-      annotations: emptyHashMap(),
+    logDirectly({
       cause: emptyCause,
-      context: emptyFiberRefs(),
-      date: new Date(),
-      fiberId: noneFiberId,
-      logLevel: Info,
+      logLevel: "Info",
       message: [fields, "prototype field"],
-      spans: emptyList(),
     });
     expect(info.mock.calls[0]?.[1]).toHaveProperty("__proto__", "field-value");
     expect(Object.getPrototypeOf(info.mock.calls[0]?.[1])).toBe(

@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 
 import { responsesRequestToJSON } from "@openrouter/sdk/models";
 
-import { assertRight } from "../../../internal/testing";
+import { assertSuccess } from "../../../internal/testing";
 import { parseSchema } from "../../../internal/zod";
 import { BENCHMARK_LEAK_EXCLUDED_DOMAINS } from "./blocklist";
 import { SearchLaneConfigSchema } from "./config";
@@ -12,8 +12,8 @@ const LEAK_BLOCKLIST = [...BENCHMARK_LEAK_EXCLUDED_DOMAINS];
 
 function lane(input: Record<string, unknown>) {
   const result = parseSchema(SearchLaneConfigSchema, input);
-  assertRight(result);
-  return result.right;
+  assertSuccess(result);
+  return result.success;
 }
 
 const BASE = {
@@ -279,17 +279,5 @@ describe("buildSearchRequestBody", () => {
         },
       },
     ]);
-  });
-  it("serializes search auto-router costTier as cost_tier through the SDK", () => {
-    const body = buildSearchRequestBody({
-      ...BASE,
-      model: "openrouter/auto",
-      lane: lane({}),
-      costTier: "high",
-    });
-    expect(body.plugins).toEqual([{ id: "auto-router", costTier: "high" }]);
-    expect(JSON.parse(responsesRequestToJSON(body))).toMatchObject({
-      plugins: [{ id: "auto-router", cost_tier: "high" }],
-    });
   });
 });

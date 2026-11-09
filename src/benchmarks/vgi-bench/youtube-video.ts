@@ -1,6 +1,6 @@
-import { get as getContext, make } from "effect/Context";
+import { map as mapEffect } from "effect/Effect";
 import type { Layer } from "effect/Layer";
-import { map as mapLayer } from "effect/Layer";
+import { effect as layerEffect, provide as layerProvide } from "effect/Layer";
 import type { Stream } from "effect/Stream";
 import {
   drop as streamDrop,
@@ -40,11 +40,13 @@ function sliceStream(
 }
 
 export function keepYoutubeSamples(layer: Layer<Dataset>): Layer<Dataset> {
-  return mapLayer(layer, (context) => {
-    const dataset = getContext(context, Dataset);
-    const filtered = dataset.stream().pipe(streamFilter(isYoutubeSample));
-    const stream: Dataset["Type"]["stream"] = (opts) =>
-      sliceStream(filtered, opts);
-    return make(Dataset, { size: runCount(filtered), stream });
-  });
+  return layerEffect(
+    Dataset,
+    mapEffect(Dataset, (dataset) => {
+      const filtered = dataset.stream().pipe(streamFilter(isYoutubeSample));
+      const stream: Dataset["Service"]["stream"] = (opts) =>
+        sliceStream(filtered, opts);
+      return { size: runCount(filtered), stream };
+    })
+  ).pipe(layerProvide(layer));
 }

@@ -1,9 +1,9 @@
 import { sync } from "effect/Effect";
+import * as Result from "effect/Result";
 
 import type { Score, TaskState, ToolCall } from "../../harness/core";
 import { ScoreValue } from "../../harness/core";
 import type { ScorerService } from "../../harness/scorer";
-import { Either } from "../../internal/either";
 import { isRecord } from "../../internal/guards";
 import type { ExpectedCall, ToolCallFormatCase } from "./cases";
 import {
@@ -108,33 +108,36 @@ function fail(failure: CallFailure, answer: string | null): Score {
 function parseCall(
   call: ToolCall,
   entry: ToolCallFormatCase
-): Either.Either<ParsedCall, CallFailure> {
+): Result.Result<ParsedCall, CallFailure> {
   const tool = entry.tools.find(
     (candidate) => candidate.function.name === call.function.name
   );
   if (tool === undefined) {
-    return Either.left({
+    return Result.fail({
       category: ToolCallFailure.UnknownTool,
       detail: `called ${JSON.stringify(call.function.name)}`,
     });
   }
-  const parsed = Either.try((): unknown => JSON.parse(call.function.arguments));
-  if (Either.isLeft(parsed) || !isRecord(parsed.right)) {
-    return Either.left({
+  const parsed = Result.try((): unknown => JSON.parse(call.function.arguments));
+  if (Result.isFailure(parsed) || !isRecord(parsed.success)) {
+    return Result.fail({
       category: ToolCallFailure.InvalidJson,
       detail: `${call.function.name} arguments ${JSON.stringify(call.function.arguments)}`,
     });
   }
-  const violations = validateJsonSchema(parsed.right, tool.function.parameters);
+  const violations = validateJsonSchema(
+    parsed.success,
+    tool.function.parameters
+  );
   if (violations.length > 0) {
-    return Either.left({
+    return Result.fail({
       category: ToolCallFailure.SchemaViolation,
       detail: `${call.function.name} ${violations
         .map((violation) => `${violation.path} ${violation.message}`)
         .join("; ")}`,
     });
   }
-  return Either.right({ name: call.function.name, args: parsed.right });
+  return Result.succeed({ name: call.function.name, args: parsed.success });
 }
 
 function findUnmatchedExpectation(
@@ -183,11 +186,13 @@ export function scoreToolCalls(
     }))
   );
   const results = toolCalls.map((call) => parseCall(call, entry));
-  const firstFailure = results.find(Either.isLeft);
+  const firstFailure = results.find(Result.isFailure);
   if (firstFailure !== undefined) {
-    return fail(firstFailure.left, answer);
+    return fail(firstFailure.failure, answer);
   }
-  const parsed = results.filter(Either.isRight).map((result) => result.right);
+  const parsed = results
+    .filter(Result.isSuccess)
+    .map((result) => result.success);
   if (parsed.length !== entry.calls.length) {
     return fail(
       {

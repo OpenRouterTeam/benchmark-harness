@@ -1,4 +1,5 @@
-import { Either } from "../../../internal/either";
+import * as Result from "effect/Result";
+
 import { unknownErrorToString } from "../../../internal/errors";
 import { isRecord } from "../../../internal/guards";
 import { addToDb, queryDatabaseTool, updateRecordInDb } from "./db-query";
@@ -223,10 +224,10 @@ function giveDiscoverableUserTool(
     return `Error: Unknown discoverable tool '${toolName}'.`;
   }
   const argsResult = parseArgsJson(argsStr);
-  if (Either.isLeft(argsResult)) {
-    return argsResult.left;
+  if (Result.isFailure(argsResult)) {
+    return argsResult.failure;
   }
-  const args = argsResult.right;
+  const args = argsResult.success;
   const tool = DISCOVERABLE_USER_TOOLS.get(toolName)!;
   const paramNames = new Set(tool.params.map((p) => p.name));
   for (const argName of Object.keys(args)) {
@@ -300,10 +301,10 @@ function callDiscoverableAgentTool(
     );
   }
   const argsResult = parseArgsJson(argsStr);
-  if (Either.isLeft(argsResult)) {
-    return argsResult.left;
+  if (Result.isFailure(argsResult)) {
+    return argsResult.failure;
   }
-  const args = argsResult.right;
+  const args = argsResult.success;
   const tool = DISCOVERABLE_AGENT_TOOLS.get(toolName)!;
   let result: string;
   try {
@@ -336,22 +337,22 @@ function listDiscoverableAgentTools(state: BankingEnvState): string {
 
 function parseArgsJson(
   argsStr: string | undefined
-): Either.Either<Record<string, unknown>, string> {
+): Result.Result<Record<string, unknown>, string> {
   let args: Record<string, unknown> = {};
   try {
     if (argsStr) {
       const parsed: unknown = JSON.parse(argsStr);
       if (!isRecord(parsed)) {
-        return Either.left("Error: Arguments must be a JSON object");
+        return Result.fail("Error: Arguments must be a JSON object");
       }
       args = parsed;
     }
   } catch (error) {
-    return Either.left(
+    return Result.fail(
       `Error: Invalid JSON in arguments: ${unknownErrorToString(error)}`
     );
   }
-  return Either.right(args);
+  return Result.succeed(args);
 }
 
 export function invokeBankingAgentTool(

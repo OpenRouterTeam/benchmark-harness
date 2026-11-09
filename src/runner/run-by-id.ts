@@ -1,10 +1,10 @@
-import { FetchHttpClient } from "@effect/platform";
 import { flatMap, provide } from "effect/Effect";
 import {
   mergeAll as layerMergeAll,
   provide as layerProvide,
   succeed as layerSucceed,
 } from "effect/Layer";
+import * as Result from "effect/Result";
 import { runCount } from "effect/Stream";
 
 import type {
@@ -36,10 +36,10 @@ import {
 import type { RunResult, RunConfig } from "../harness/run";
 import { runBenchmark } from "../harness/run";
 import { runHarnessPromise } from "../internal/effect-logger";
-import type { AsyncEither } from "../internal/either";
-import { Either } from "../internal/either";
 import { definedValues } from "../internal/guards";
+import { fetchHttpClientLayer } from "../internal/http-client";
 import { wLog } from "../internal/log";
+import type { AsyncResult } from "../internal/result";
 import type { ResultStoreService } from "../results/result-store";
 import {
   GenerationResolver,
@@ -79,12 +79,12 @@ export interface RunBenchmarkOutput {
 
 export function runBenchmarkById(
   input: RunBenchmarkInput
-): AsyncEither<RunBenchmarkOutput, string> {
+): AsyncResult<RunBenchmarkOutput, string> {
   const benchmarkResult = resolveRunBenchmark(input);
-  if (Either.isLeft(benchmarkResult)) {
-    return Promise.resolve(Either.left(benchmarkResult.left));
+  if (Result.isFailure(benchmarkResult)) {
+    return Promise.resolve(Result.fail(benchmarkResult.failure));
   }
-  const { benchmark, benchmarkLayer } = benchmarkResult.right;
+  const { benchmark, benchmarkLayer } = benchmarkResult.success;
   const progressLayer = layerSucceed(
     ProgressReporter,
     input.progressReporter ?? NOOP_PROGRESS_REPORTER
@@ -108,7 +108,7 @@ export function runBenchmarkById(
     }),
   });
   const fullBenchmarkLayer = benchmarkLayer.pipe(
-    layerProvide(FetchHttpClient.layer)
+    layerProvide(fetchHttpClientLayer)
   );
   const traceHeaders = filterTraceHeaders(input.traceHeaders);
   const resolverLayer = layerSucceed(
@@ -147,32 +147,32 @@ export function runBenchmarkById(
             sessionId: input.sessionId,
           })
         )
-          .then((resultsPath) => Either.right({ result, resultsPath }))
+          .then((resultsPath) => Result.succeed({ result, resultsPath }))
           .catch((storeErr) => {
             wLog("Failed to persist benchmark results", {
               error: String(storeErr),
             });
-            return Either.right({ result, resultsPath: null });
+            return Result.succeed({ result, resultsPath: null });
           });
       }
-      return Either.right({ result, resultsPath: null });
+      return Result.succeed({ result, resultsPath: null });
     })
-    .catch((error) => Either.left(String(error)));
+    .catch((error) => Result.fail(String(error)));
 }
 
 export function datasetSizeById(input: {
   readonly benchmarkId: string;
   readonly benchmarkConfig?: BenchmarkRunConfig;
   readonly injectedBenchmark?: Benchmark<InjectedBenchmarkRunConfig>;
-}): AsyncEither<number, string> {
+}): AsyncResult<number, string> {
   const benchmarkResult = resolveBenchmark(
     input.benchmarkId,
     input.injectedBenchmark
   );
-  if (Either.isLeft(benchmarkResult)) {
-    return Promise.resolve(Either.left(benchmarkResult.left));
+  if (Result.isFailure(benchmarkResult)) {
+    return Promise.resolve(Result.fail(benchmarkResult.failure));
   }
-  const benchmark = benchmarkResult.right;
+  const benchmark = benchmarkResult.success;
   const datasetLayer =
     input.benchmarkConfig === undefined
       ? benchmark.makeDatasetLayer()
@@ -180,8 +180,8 @@ export function datasetSizeById(input: {
         benchmark.makeDatasetLayer());
   const program = Dataset.pipe(flatMap((d) => d.size));
   return runHarnessPromise(program.pipe(provide(datasetLayer)))
-    .then((size) => Either.right(size))
-    .catch((error) => Either.left(String(error)));
+    .then((size) => Result.succeed(size))
+    .catch((error) => Result.fail(String(error)));
 }
 
 export function warmDatasetById(input: {
@@ -190,20 +190,20 @@ export function warmDatasetById(input: {
   readonly range: { readonly start: number; readonly end: number };
   readonly datasetRetry?: RetryConfig;
   readonly injectedBenchmark?: Benchmark<InjectedBenchmarkRunConfig>;
-}): AsyncEither<number, string> {
+}): AsyncResult<number, string> {
   const benchmarkResult = resolveBenchmark(
     input.benchmarkId,
     input.injectedBenchmark
   );
-  if (Either.isLeft(benchmarkResult)) {
-    return Promise.resolve(Either.left(benchmarkResult.left));
+  if (Result.isFailure(benchmarkResult)) {
+    return Promise.resolve(Result.fail(benchmarkResult.failure));
   }
   const failuresBefore = datasetCacheWriteFailures();
   const datasetLayer =
-    benchmarkResult.right.makeDatasetLayerForConfig?.(
+    benchmarkResult.success.makeDatasetLayerForConfig?.(
       input.benchmarkConfig,
       input.datasetRetry
-    ) ?? benchmarkResult.right.makeDatasetLayer(input.datasetRetry);
+    ) ?? benchmarkResult.success.makeDatasetLayer(input.datasetRetry);
   const program = Dataset.pipe(
     flatMap((dataset) => runCount(dataset.stream(input.range)))
   );
@@ -211,30 +211,30 @@ export function warmDatasetById(input: {
     .then((count) => {
       const failures = datasetCacheWriteFailures() - failuresBefore;
       return failures > 0
-        ? Either.left(`dataset cache warmup: ${failures} cache write(s) failed`)
-        : Either.right(count);
+        ? Result.fail(`dataset cache warmup: ${failures} cache write(s) failed`)
+        : Result.succeed(count);
     })
-    .catch((error) => Either.left(String(error)));
+    .catch((error) => Result.fail(String(error)));
 }
 
 function resolveBenchmark(
   benchmarkId: string,
   injectedBenchmark: Benchmark<InjectedBenchmarkRunConfig> | undefined
-): Either.Either<BenchmarkMetadata, string> {
+): Result.Result<BenchmarkMetadata, string> {
   if (injectedBenchmark !== undefined) {
     return injectedBenchmark.id === benchmarkId
-      ? Either.right(injectedBenchmark)
-      : Either.left(
+      ? Result.succeed(injectedBenchmark)
+      : Result.fail(
           `Benchmark id mismatch: requested "${benchmarkId}", supplied "${injectedBenchmark.id}"`
         );
   }
   const benchmark = getBenchmark(benchmarkId);
   return benchmark === undefined
-    ? Either.left(`Unknown benchmark "${benchmarkId}"`)
-    : Either.right(benchmark);
+    ? Result.fail(`Unknown benchmark "${benchmarkId}"`)
+    : Result.succeed(benchmark);
 }
 
-function resolveRunBenchmark(input: RunBenchmarkInput): Either.Either<
+function resolveRunBenchmark(input: RunBenchmarkInput): Result.Result<
   {
     readonly benchmark: BenchmarkMetadata;
     readonly benchmarkLayer: ReturnType<Benchmark["makeLayer"]>;
@@ -243,15 +243,15 @@ function resolveRunBenchmark(input: RunBenchmarkInput): Either.Either<
 > {
   if (isKeplerBenchmarkConfig(input.benchmarkConfig)) {
     if (input.injectedBenchmark !== undefined) {
-      return Either.left(
+      return Result.fail(
         `An injected benchmark cannot be supplied for Kepler benchmark "${input.benchmarkId}"`
       );
     }
     const keplerBenchmark = getBenchmark(input.benchmarkId);
     if (keplerBenchmark === undefined) {
-      return Either.left(`Unknown benchmark "${input.benchmarkId}"`);
+      return Result.fail(`Unknown benchmark "${input.benchmarkId}"`);
     }
-    return Either.right({
+    return Result.succeed({
       benchmark: keplerBenchmark,
       benchmarkLayer: makeBenchmarkLayer(
         keplerBenchmark,
@@ -261,16 +261,16 @@ function resolveRunBenchmark(input: RunBenchmarkInput): Either.Either<
     });
   }
   if (input.injectedBenchmark === undefined) {
-    return Either.left(
+    return Result.fail(
       `An injected benchmark is required for injected config "${input.benchmarkId}"`
     );
   }
   if (input.injectedBenchmark.id !== input.benchmarkId) {
-    return Either.left(
+    return Result.fail(
       `Benchmark id mismatch: requested "${input.benchmarkId}", supplied "${input.injectedBenchmark.id}"`
     );
   }
-  return Either.right({
+  return Result.succeed({
     benchmark: input.injectedBenchmark,
     benchmarkLayer: makeBenchmarkLayer(
       input.injectedBenchmark,

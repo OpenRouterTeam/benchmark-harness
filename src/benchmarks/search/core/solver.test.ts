@@ -30,7 +30,7 @@ import {
   makeProgressReporter,
   ProgressReporter as ProgressReporterTag,
 } from "../../../harness/progress";
-import { assertRight } from "../../../internal/testing";
+import { assertSuccess } from "../../../internal/testing";
 import { parseSchema, z } from "../../../internal/zod";
 import type {
   ResponsesResult,
@@ -42,7 +42,11 @@ import { BENCHMARK_LEAK_EXCLUDED_DOMAINS } from "./blocklist";
 import type { SearchLaneConfig } from "./config";
 import { SearchLaneConfigSchema } from "./config";
 import { DEEP_RESEARCH_INSTRUCTIONS } from "./prompts";
-import { SEARCH_SOLVER_METADATA_KEY, searchSolver } from "./solver";
+import {
+  SEARCH_SOLVER_METADATA_KEY,
+  routerExtraBody,
+  searchSolver,
+} from "./solver";
 
 const noopLayers = mergeAll(noopProgressLayer, noopCheckpointLayer);
 
@@ -68,8 +72,8 @@ function makeLane(overrides: Record<string, unknown> = {}): SearchLaneConfig {
     maxAgentTurns: 3,
     ...overrides,
   });
-  assertRight(result);
-  return result.right;
+  assertSuccess(result);
+  return result.success;
 }
 
 const LANE = makeLane();
@@ -110,8 +114,8 @@ const SolverMetadataSchema = z.object({
 
 function readMetadata(metadata: unknown): z.infer<typeof SolverMetadataSchema> {
   const parsed = parseSchema(SolverMetadataSchema, metadata);
-  assertRight(parsed);
-  return parsed.right;
+  assertSuccess(parsed);
+  return parsed.success;
 }
 describe("searchSolver", () => {
   it("completes the task with the cleaned answer and captured usage", async () => {
@@ -339,6 +343,83 @@ describe("searchSolver", () => {
       "X-OpenRouter-Experiment-Ids": "jev-finish-deesc,control",
     });
   });
+  describe.each([
+    ["openrouter/auto", "auto-router"],
+    ["openrouter/auto-beta", "auto-beta-router"],
+    ["typesafe/jev-router", "jev-router"],
+  ] as const)("%s routing", (model, pluginId) => {
+    it.each(["plugin", "server-tool"] as const)(
+      "forwards high alongside search %s requests",
+      async (webSearch) => {
+        let sentOptions: ResponsesSendOptions | undefined;
+        let sent: ResponsesRequest | undefined;
+        const solver = searchSolver(
+          {
+            send: (body, options) => {
+              sent = body;
+              sentOptions = options;
+              return effectSucceed(fixtureResult({ text: "x" }));
+            },
+          },
+          {
+            model: `${model}:nitro`,
+            instructions: "i",
+            lane: makeLane({ webSearch, maxResults: 4 }),
+            costTier: "high",
+            costQualityTradeoff: 8,
+          }
+        );
+        const state = await runSolver(
+          solver(
+            initialTaskState({ id: "s", input: "q", target: { text: "t" } })
+          )
+        );
+        const routerPlugin =
+          pluginId === "jev-router"
+            ? { id: pluginId, cost_tier: "high" }
+            : { id: pluginId, cost_tier: "high", cost_quality_tradeoff: 8 };
+        expect(sentOptions?.extraBody?.["plugins"]).toEqual([
+          ...(webSearch === "plugin"
+            ? [expect.objectContaining({ id: "web", max_results: 4 })]
+            : []),
+          routerPlugin,
+        ]);
+        expect(state.requestBody).toEqual({
+          ...sent,
+          ...sentOptions?.extraBody,
+        });
+        expect(sentOptions?.extraHeaders).toBeUndefined();
+      }
+    );
+  });
+
+  it("keeps the lane's web plugin next to configured extraBody plugins on a plain model", async () => {
+    let sentOptions: ResponsesSendOptions | undefined;
+    const solver = searchSolver(
+      {
+        send: (_body, options) => {
+          sentOptions = options;
+          return effectSucceed(fixtureResult({ text: "x" }));
+        },
+      },
+      {
+        model: "openai/gpt-4.1",
+        instructions: "i",
+        lane: makeLane({ webSearch: "plugin", maxResults: 4 }),
+        extraBody: { plugins: [{ id: "file-parser" }] },
+      }
+    );
+    await runSolver(
+      solver(initialTaskState({ id: "s", input: "q", target: { text: "t" } }))
+    );
+    expect(sentOptions?.extraBody).toEqual({
+      plugins: [
+        expect.objectContaining({ id: "web", max_results: 4 }),
+        { id: "file-parser" },
+      ],
+    });
+  });
+
   it("appends the switchyard-router plugin after the serialized web plugin", async () => {
     let sentOptions: ResponsesSendOptions | undefined;
     let sent: ResponsesRequest | undefined;
@@ -726,5 +807,62 @@ describe("searchSolver", () => {
     );
     expect(isFailure(exit)).toBe(true);
     expect(attempts).toBe(2);
+  });
+});
+
+describe("routerExtraBody", () => {
+  const body = { model: "openrouter/auto", input: "q" } as const;
+
+  it("keeps configured plugins next to the router plugin", () => {
+    const extra = routerExtraBody(body, {
+      model: "openrouter/auto",
+      costTier: "high",
+      extraBody: {
+        deferred_tools: { profile: "universal" },
+        plugins: [{ id: "my-plugin" }],
+      },
+    });
+    expect(extra).toEqual({
+      deferred_tools: { profile: "universal" },
+      plugins: [{ id: "my-plugin" }, { id: "auto-router", cost_tier: "high" }],
+    });
+  });
+
+  it("lets a configured router plugin override the generated one", () => {
+    const extra = routerExtraBody(body, {
+      model: "openrouter/auto",
+      costTier: "high",
+      extraBody: { plugins: [{ id: "auto-router", cost_tier: "low" }] },
+    });
+    expect(extra).toEqual({
+      plugins: [{ id: "auto-router", cost_tier: "low" }],
+    });
+  });
+
+  it("lets a configured web plugin replace the lane's web plugin", () => {
+    const extra = routerExtraBody(
+      {
+        model: "openrouter/auto",
+        input: "q",
+        plugins: [{ id: "web", maxResults: 5 }],
+      },
+      {
+        model: "openrouter/auto",
+        costTier: "high",
+        extraBody: { plugins: [{ id: "web", max_results: 2 }] },
+      }
+    );
+    expect(extra).toEqual({
+      plugins: [
+        { id: "web", max_results: 2 },
+        { id: "auto-router", cost_tier: "high" },
+      ],
+    });
+  });
+
+  it("returns extraBody untouched without routing options", () => {
+    expect(
+      routerExtraBody(body, { model: "openai/gpt-4.1", extraBody: { a: 1 } })
+    ).toEqual({ a: 1 });
   });
 });

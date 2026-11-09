@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { assertLeft, assertRight } from "../../../internal/testing";
+import { assertFailure, assertSuccess } from "../../../internal/testing";
 import {
   alignmentJudgeSpec,
   cellJudgeSpec,
@@ -30,13 +30,13 @@ describe("WideSearch judge specs", () => {
     const malformed = spec.parseVerdict(
       '{"alignments":[{"origin":"Alpha","transform":1}]}'
     );
-    assertRight(valid);
-    assertRight(unexpected);
-    assertRight(duplicate);
-    assertRight(unknownTransform);
-    assertLeft(malformed);
-    expect(valid.right).toEqual([{ origin: "Alpha", transform: "A" }]);
-    expect(duplicate.right).toEqual([
+    assertSuccess(valid);
+    assertSuccess(unexpected);
+    assertSuccess(duplicate);
+    assertSuccess(unknownTransform);
+    assertFailure(malformed);
+    expect(valid.success).toEqual([{ origin: "Alpha", transform: "A" }]);
+    expect(duplicate.success).toEqual([
       { origin: "Alpha", transform: "A" },
       { origin: "Alpha", transform: "B" },
     ]);
@@ -49,12 +49,12 @@ describe("WideSearch judge specs", () => {
       '{"scores":[{"index":0,"score":1},{"index":0,"score":0}]}'
     );
     const malformed = spec.parseVerdict('{"scores":[{"index":0,"score":2}]}');
-    assertRight(valid);
-    assertRight(outOfRange);
-    assertRight(duplicate);
-    assertLeft(malformed);
-    expect(valid.right).toEqual([{ index: 0, score: 1 }]);
-    expect(duplicate.right).toEqual([
+    assertSuccess(valid);
+    assertSuccess(outOfRange);
+    assertSuccess(duplicate);
+    assertFailure(malformed);
+    expect(valid.success).toEqual([{ index: 0, score: 1 }]);
+    expect(duplicate.success).toEqual([
       { index: 0, score: 1 },
       { index: 0, score: 0 },
     ]);
@@ -68,8 +68,8 @@ describe("WideSearch judge specs", () => {
     const cells = cellJudgeSpec(observed, observed, "criterion");
     const alignmentVerdict = alignment.parseVerdict('{"alignments":[]}');
     const cellVerdict = cells.parseVerdict('{"scores":[]}');
-    assertRight(alignmentVerdict);
-    assertRight(cellVerdict);
+    assertSuccess(alignmentVerdict);
+    assertSuccess(cellVerdict);
     expect(JSON.stringify(alignment.jsonSchema).length).toBeLessThan(500);
     expect(JSON.stringify(cells.jsonSchema).length).toBeLessThan(500);
     expect(alignment.jsonSchema).toMatchObject({
@@ -100,8 +100,8 @@ describe("WideSearch judge specs", () => {
         },
       },
     });
-    expect(alignmentVerdict.right).toEqual([]);
-    expect(cellVerdict.right).toEqual([]);
+    expect(alignmentVerdict.success).toEqual([]);
+    expect(cellVerdict.success).toEqual([]);
   });
   it("renders alignment values literally without replacement-string expansion", () => {
     const spec = alignmentJudgeSpec(

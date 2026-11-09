@@ -1,8 +1,7 @@
-import { fromIterable } from "effect/Chunk";
 import { fail, succeed as effectSucceed } from "effect/Effect";
 import type { Layer } from "effect/Layer";
 import { succeed as layerSucceed } from "effect/Layer";
-import { fromChunk } from "effect/Stream";
+import { fromArray } from "effect/Stream";
 
 import type { Sample } from "../../harness/core";
 import { MessageRole, SolverError } from "../../harness/core";
@@ -51,9 +50,7 @@ export function makeToolCallFormatsDatasetLayer(): Layer<Dataset> {
     Dataset,
     Dataset.of({
       stream: (opts) =>
-        fromChunk(
-          fromIterable(TOOLCALL_FORMATS_SAMPLES.slice(opts?.start, opts?.end))
-        ),
+        fromArray(TOOLCALL_FORMATS_SAMPLES.slice(opts?.start, opts?.end)),
       size: effectSucceed(TOOLCALL_FORMATS_SAMPLES.length),
     })
   );
@@ -109,6 +106,7 @@ export const TOOLCALL_FORMATS_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
           timeoutMs: config.timeoutMs,
           sort: config.sort,
           providerOnly: config.providerOnly,
+          providerOrder: config.providerOrder,
           providerIgnore: config.providerIgnore,
           allowFallbacks: config.allowFallbacks,
           cloudflareVersion: config.cloudflareVersion,
@@ -117,6 +115,7 @@ export const TOOLCALL_FORMATS_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
           costQualityTradeoff: config.costQualityTradeoff,
           pinModel: config.pinModel,
           switchyardAlgorithm: config.switchyardAlgorithm,
+          extraBody: config.extraBody,
         },
       })
     ),

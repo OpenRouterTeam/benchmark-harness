@@ -1,11 +1,11 @@
 import type { Effect } from "effect/Effect";
 import { flatMap, gen, succeed } from "effect/Effect";
+import * as Result from "effect/Result";
 
 import type { Score, Target, TaskState } from "../../../harness/core";
 import { ScoreValue } from "../../../harness/core";
 import type { RunResult } from "../../../harness/run";
 import type { SolverService } from "../../../harness/solver";
-import { Either } from "../../../internal/either";
 import { definedValues } from "../../../internal/guards";
 import { parseSchema } from "../../../internal/zod";
 import type { JudgeConfig } from "../../../judge/judge";
@@ -88,7 +88,7 @@ export function answerEquivalenceScorer(
 ): Effect<Score, never> {
   const raw = state.sample.metadata?.[VERDICT_METADATA_KEY];
   const parsed = parseSchema(AnswerEquivalenceVerdictSchema, raw);
-  if (Either.isLeft(parsed)) {
+  if (Result.isFailure(parsed)) {
     return succeed({
       value: ScoreValue.Incorrect,
       answer: state.output?.completion ?? null,
@@ -98,7 +98,7 @@ export function answerEquivalenceScorer(
           : "verdict failed validation",
     });
   }
-  const verdict: AnswerEquivalenceVerdict = parsed.right;
+  const verdict: AnswerEquivalenceVerdict = parsed.success;
   return succeed({
     value:
       verdict.correct === "yes" ? ScoreValue.Correct : ScoreValue.Incorrect,
@@ -131,8 +131,8 @@ export function answerEquivalenceRunLevelScores(
     .map((trajectory) =>
       parseSchema(AnswerEquivalenceVerdictSchema, trajectory.runs[0])
     )
-    .filter(Either.isRight)
-    .map((parsed) => parsed.right);
+    .filter(Result.isSuccess)
+    .map((parsed) => parsed.success);
   if (verdicts.length === 0) {
     return [];
   }

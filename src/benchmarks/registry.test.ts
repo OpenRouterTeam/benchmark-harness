@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from "bun:test";
 
 import { blockNetwork } from "../../test/helpers/block-network";
 import { NOOP_PROGRESS_REPORTER } from "../harness/progress";
-import { assertRight, assertLeft } from "../internal/testing";
+import { assertSuccess, assertFailure } from "../internal/testing";
 import { parseSchema } from "../internal/zod";
 import { runBenchmarkById } from "../runner/run-by-id";
 import {
@@ -45,7 +45,7 @@ describe("benchmark registry", () => {
       sessionId: "test",
       progressReporter: NOOP_PROGRESS_REPORTER,
     });
-    assertLeft(result);
+    assertFailure(result);
   });
 
   it("registers search_hle with the default search lane", () => {
@@ -57,8 +57,8 @@ describe("benchmark registry", () => {
       model: "openai/gpt-5.4-nano",
       reasoningEffort: "high",
     });
-    assertRight(config);
-    expect(config.right).toEqual({
+    assertSuccess(config);
+    expect(config.success).toEqual({
       benchmarkId: "search_hle",
       model: "openai/gpt-5.4-nano",
       reasoningEffort: "high",
@@ -77,8 +77,8 @@ describe("benchmark registry", () => {
       model: "openai/gpt-5.4-nano",
       reasoningEffort: "high",
     });
-    assertRight(config);
-    expect(config.right).toEqual({
+    assertSuccess(config);
+    expect(config.success).toEqual({
       benchmarkId: "search_dsqa",
       model: "openai/gpt-5.4-nano",
       reasoningEffort: "high",
@@ -110,8 +110,8 @@ describe("benchmark registry", () => {
       model: "openai/gpt-5.4-nano",
       reasoningEffort: "high",
     });
-    assertRight(result);
-    expect(result.right).toEqual({
+    assertSuccess(result);
+    expect(result.success).toEqual({
       benchmarkId: "search_widesearch",
       model: "openai/gpt-5.4-nano",
       reasoningEffort: "high",

@@ -1,8 +1,8 @@
 import { sync } from "effect/Effect";
+import * as Result from "effect/Result";
 
 import { ScoreValue } from "../../harness/core";
 import type { ScorerService } from "../../harness/scorer";
-import { Either } from "../../internal/either";
 import { parseSchema } from "../../internal/zod";
 import { IfStructRequirementsSchema } from "./schema";
 import { validateResponse } from "./validate";
@@ -13,15 +13,15 @@ export const ifStructScorer: ScorerService = (state) =>
       IfStructRequirementsSchema,
       state.sample.metadata
     );
-    if (Either.isLeft(parsed)) {
+    if (Result.isFailure(parsed)) {
       return {
         value: ScoreValue.Incorrect,
         answer: null,
-        explanation: `ifstruct requirements missing/invalid on sample metadata: ${parsed.left.message}`,
+        explanation: `ifstruct requirements missing/invalid on sample metadata: ${parsed.failure.message}`,
       };
     }
     const completion = state.output?.completion ?? "";
-    const result = validateResponse(completion, parsed.right);
+    const result = validateResponse(completion, parsed.success);
     const ratio = result.details.schemaMatchRatio ?? 0;
     if (result.passed) {
       return {

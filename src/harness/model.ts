@@ -1,4 +1,4 @@
-import { Tag } from "effect/Context";
+import { Service } from "effect/Context";
 import type { Effect } from "effect/Effect";
 
 import type { ProviderSort } from "../internal/enums";
@@ -25,6 +25,7 @@ export interface GenerateConfig {
   readonly costTier?: CostTier;
   readonly timeoutMs?: number;
   readonly sort?: ProviderSort;
+  readonly providerOrder?: readonly string[];
   readonly providerOnly?: readonly string[];
   readonly providerIgnore?: readonly string[];
   readonly allowFallbacks?: boolean;
@@ -36,10 +37,9 @@ export interface GenerateConfig {
   readonly extraBody?: Readonly<Record<string, unknown>>;
 }
 
-export class Model extends Tag("@openrouter/bench-harness/model")<
-  Model,
-  ModelService
->() {}
+export class Model extends Service<Model, ModelService>()(
+  "@openrouter/bench-harness/model"
+) {}
 
 export interface ModelService {
   readonly generate: (

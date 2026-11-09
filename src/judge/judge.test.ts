@@ -7,11 +7,11 @@ import {
   runPromiseExit,
   succeed,
   suspend,
-  zipRight,
+  andThen,
 } from "effect/Effect";
 import { isFailure } from "effect/Exit";
+import * as Result from "effect/Result";
 
-import { Either } from "../internal/either";
 import { parseSchema, z } from "../internal/zod";
 import type {
   ResponsesResult,
@@ -21,7 +21,7 @@ import { ResponsesError } from "../providers/responses-client";
 import {
   getCollectedGenerationIdEntries,
   recordGenerationId,
-  resetGenerationIds,
+  withFreshGenerationIds,
 } from "../runtime/generation-ids";
 import { judgeCall } from "./judge";
 
@@ -49,9 +49,9 @@ const SPEC = {
   jsonSchema: { type: "object" },
   parseVerdict: (text: string) => {
     const parsed = parseSchema(VerdictSchema, JSON.parse(text));
-    return Either.isRight(parsed)
-      ? Either.right<Verdict>(parsed.right)
-      : Either.left("bad verdict");
+    return Result.isSuccess(parsed)
+      ? Result.succeed<Verdict>(parsed.success)
+      : Result.fail("bad verdict");
   },
 };
 describe("judgeCall", () => {
@@ -112,15 +112,16 @@ describe("judgeCall", () => {
     const service: ResponsesService = {
       send: () =>
         recordGenerationId("gen-judge", true).pipe(
-          zipRight(succeed(fixtureResult('{"verdict":"yes"}')))
+          andThen(succeed(fixtureResult('{"verdict":"yes"}')))
         ),
     };
     const entries = await runPromise(
-      resetGenerationIds.pipe(
-        flatMap(() =>
-          judgeCall(service, { judgeModel: "j", reasoningEffort: "high" }, SPEC)
-        ),
-        flatMap(() => getCollectedGenerationIdEntries)
+      withFreshGenerationIds(
+        judgeCall(
+          service,
+          { judgeModel: "j", reasoningEffort: "high" },
+          SPEC
+        ).pipe(flatMap(() => getCollectedGenerationIdEntries))
       )
     );
     expect(entries).toEqual([

@@ -1,15 +1,16 @@
 import { createHash } from "node:crypto";
 
-import type { HttpClient, HttpClientError } from "@effect/platform";
-import type { Effect, Semaphore } from "effect/Effect";
+import type { Effect } from "effect/Effect";
 import { gen } from "effect/Effect";
+import type { HttpClient, HttpClientError } from "effect/http";
+import * as Result from "effect/Result";
+import type { Semaphore } from "effect/Semaphore";
 
 import type { CachedFileError } from "../../datasets/cached-file";
 import {
   fetchCachedTextFile,
   jsonTextValidator,
 } from "../../datasets/cached-file";
-import { Either } from "../../internal/either";
 import { isRecord } from "../../internal/guards";
 import type { AirlineData } from "./types";
 
@@ -52,11 +53,11 @@ export function loadAirlineData(): AirlineData {
   if (!raw) {
     throw new Error("Airline data not loaded — call ensureAirlineData() first");
   }
-  const result = Either.try((): AirlineData => JSON.parse(raw));
-  if (Either.isLeft(result)) {
+  const result = Result.try((): AirlineData => JSON.parse(raw));
+  if (Result.isFailure(result)) {
     throw new Error("Invalid cached airline JSON");
   }
-  return result.right;
+  return result.success;
 }
 
 type Hashable =

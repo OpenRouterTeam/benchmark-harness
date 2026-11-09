@@ -1,4 +1,5 @@
-import { Either } from "../../../internal/either";
+import * as Result from "effect/Result";
+
 import { parseSchema, z } from "../../../internal/zod";
 import type { JudgeCallSpec, JudgeConfig } from "../../../judge/judge";
 
@@ -184,32 +185,32 @@ export function cellJudgeSpec(
 
 function parseAlignmentVerdict(
   text: string
-): Either.Either<AlignmentVerdict, string> {
+): Result.Result<AlignmentVerdict, string> {
   const parsed = parseJson(text, AlignmentVerdictSchema);
-  return Either.isLeft(parsed)
-    ? Either.left(parsed.left)
-    : Either.right(parsed.right.alignments);
+  return Result.isFailure(parsed)
+    ? Result.fail(parsed.failure)
+    : Result.succeed(parsed.success.alignments);
 }
 
 function parseCellVerdict(
   text: string
-): Either.Either<CellJudgeVerdict, string> {
+): Result.Result<CellJudgeVerdict, string> {
   const parsed = parseJson(text, CellJudgeVerdictSchema);
-  return Either.isLeft(parsed)
-    ? Either.left(parsed.left)
-    : Either.right(parsed.right.scores);
+  return Result.isFailure(parsed)
+    ? Result.fail(parsed.failure)
+    : Result.succeed(parsed.success.scores);
 }
 
 function parseJson<T>(
   text: string,
   schema: z.ZodType<T>
-): Either.Either<T, string> {
-  const json = Either.try(() => JSON.parse(text));
-  if (Either.isLeft(json)) {
-    return Either.left(`not valid JSON: ${text}`);
+): Result.Result<T, string> {
+  const json = Result.try(() => JSON.parse(text));
+  if (Result.isFailure(json)) {
+    return Result.fail(`not valid JSON: ${text}`);
   }
-  const parsed = parseSchema(schema, json.right);
-  return Either.isLeft(parsed)
-    ? Either.left(parsed.left.message)
-    : Either.right(parsed.right);
+  const parsed = parseSchema(schema, json.success);
+  return Result.isFailure(parsed)
+    ? Result.fail(parsed.failure.message)
+    : Result.succeed(parsed.success);
 }

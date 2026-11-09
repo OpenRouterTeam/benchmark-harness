@@ -87,6 +87,7 @@ export const GPQA_DATASET = {
   dataset: "nmayorga7/gpqa_diamond",
   config: "default",
   split: "train",
+  revision: "c63e9ba02dc3da4c698e2a8485551b35041c3900",
   recordToSample: gpqaRecordToSample,
 } as const satisfies Omit<HfDatasetConfig, "pageSize">;
 
@@ -142,6 +143,7 @@ export const GPQA_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
           timeoutMs: config.timeoutMs,
           sort: config.sort,
           providerOnly: config.providerOnly,
+          providerOrder: config.providerOrder,
           providerIgnore: config.providerIgnore,
           allowFallbacks: config.allowFallbacks,
           cloudflareVersion: config.cloudflareVersion,
@@ -149,6 +151,7 @@ export const GPQA_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
           costTier: config.costTier,
           costQualityTradeoff: config.costQualityTradeoff,
           switchyardAlgorithm: config.switchyardAlgorithm,
+          extraBody: config.extraBody,
         },
       })
     ),

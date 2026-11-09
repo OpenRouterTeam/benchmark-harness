@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { assertRight } from "../../internal/testing";
+import { assertSuccess } from "../../internal/testing";
 import { parseSchema } from "../../internal/zod";
 import { IFSTRUCT_BENCHMARK, ifStructRecordToSample } from "./benchmark";
 import type { IfStructRequirements } from "./schema";
@@ -24,8 +24,8 @@ function requirementsOf(
   metadata: Readonly<Record<string, unknown>> | undefined
 ): IfStructRequirements {
   const parsed = parseSchema(IfStructRequirementsSchema, metadata);
-  assertRight(parsed);
-  return parsed.right;
+  assertSuccess(parsed);
+  return parsed.success;
 }
 describe("ifStructRecordToSample", () => {
   it("derives a stable id and maps the prompt/target", () => {

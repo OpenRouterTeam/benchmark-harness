@@ -5,7 +5,7 @@ import { join } from "node:path";
 
 import { provide, runPromise } from "effect/Effect";
 
-import { assertRight } from "../../internal/testing";
+import { assertSuccess } from "../../internal/testing";
 import type { StageKey } from "./artifact-store";
 import {
   ArtifactStoreService,
@@ -25,8 +25,8 @@ describe("FsArtifactStore", () => {
     try {
       const store = new FsArtifactStore(dir);
       const r = await store.get(KEY);
-      assertRight(r);
-      expect(r.right).toBeUndefined();
+      assertSuccess(r);
+      expect(r.success).toBeUndefined();
     } finally {
       await rm(dir, { recursive: true, force: true });
     }
@@ -35,10 +35,10 @@ describe("FsArtifactStore", () => {
     const dir = await mkdtemp(join(tmpdir(), "draco-store-"));
     try {
       const store = new FsArtifactStore(dir);
-      assertRight(await store.put(KEY, '{"verdict":"MET"}'));
+      assertSuccess(await store.put(KEY, '{"verdict":"MET"}'));
       const got = await store.get(KEY);
-      assertRight(got);
-      expect(got.right).toBe('{"verdict":"MET"}');
+      assertSuccess(got);
+      expect(got.success).toBe('{"verdict":"MET"}');
     } finally {
       await rm(dir, { recursive: true, force: true });
     }
@@ -47,11 +47,11 @@ describe("FsArtifactStore", () => {
     const dir = await mkdtemp(join(tmpdir(), "draco-store-"));
     try {
       const store = new FsArtifactStore(dir);
-      assertRight(await store.put(KEY, "v1"));
-      assertRight(await store.put(KEY, "v2"));
+      assertSuccess(await store.put(KEY, "v1"));
+      assertSuccess(await store.put(KEY, "v2"));
       const got = await store.get(KEY);
-      assertRight(got);
-      expect(got.right).toBe("v2");
+      assertSuccess(got);
+      expect(got.success).toBe("v2");
     } finally {
       await rm(dir, { recursive: true, force: true });
     }
@@ -61,12 +61,12 @@ describe("NoopArtifactStore", () => {
   it("always misses and never persists", async () => {
     const store = new NoopArtifactStore();
     const got = await store.get(KEY);
-    assertRight(got);
-    expect(got.right).toBeUndefined();
-    assertRight(await store.put(KEY, "x"));
+    assertSuccess(got);
+    expect(got.success).toBeUndefined();
+    assertSuccess(await store.put(KEY, "x"));
     const got2 = await store.get(KEY);
-    assertRight(got2);
-    expect(got2.right).toBeUndefined();
+    assertSuccess(got2);
+    expect(got2.success).toBeUndefined();
   });
 });
 describe("Effect stageGet / stagePut", () => {

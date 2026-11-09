@@ -17,6 +17,7 @@ import {
 import { DracoPanelConfigSchema } from "./draco/schemas";
 import { SearchLaneConfigSchema } from "./search/core/config";
 import { BankingRetrievalConfigSchema } from "./tau3-bench-banking/retrieval-config";
+import { ToolCallSchemaFuzzGenerator } from "./toolcall-schema-fuzz/options";
 
 export const GEMINI_MEDIA_RESOLUTIONS = [
   "MEDIA_RESOLUTION_UNSPECIFIED",
@@ -27,6 +28,16 @@ export const GEMINI_MEDIA_RESOLUTIONS = [
 
 export type GeminiMediaResolution = ValueOf<typeof GEMINI_MEDIA_RESOLUTIONS>;
 
+const HARNESS_OWNED_REQUEST_FIELDS = [
+  "tools",
+  "model",
+  "models",
+  "provider",
+  "input",
+  "messages",
+  "stream",
+] as const;
+
 export const InferenceOverrideSchema = z.object({
   temperature: z.number().optional(),
   maxTokens: z.number().optional(),
@@ -34,6 +45,7 @@ export const InferenceOverrideSchema = z.object({
   costTier: z.enum(COST_TIERS).optional(),
   timeoutMs: z.number().optional(),
   sort: z.nativeEnum(ProviderSort).optional(),
+  providerOrder: z.array(z.string()).optional(),
   providerOnly: z.array(z.string()).optional(),
   providerIgnore: z.array(z.string()).optional(),
   allowFallbacks: z.boolean().optional(),
@@ -46,6 +58,21 @@ export const InferenceOverrideSchema = z.object({
   costQualityTradeoff: z.number().int().min(0).max(10).optional(),
   pinModel: z.boolean().optional(),
   switchyardAlgorithm: z.enum(SWITCHYARD_ALGORITHMS).optional(),
+  extraBody: z
+    .record(z.string(), z.unknown())
+    .refine(
+      (body) =>
+        HARNESS_OWNED_REQUEST_FIELDS.every(
+          (field) => body[field] === undefined
+        ),
+      {
+        message: `extraBody may not set ${HARNESS_OWNED_REQUEST_FIELDS.join(", ")}: the harness owns those request fields (tool definitions, model and provider pins, prompt input) and a configured value would silently replace them`,
+      }
+    )
+    .describe(
+      `Extra JSON fields merged into every model request (for example plugins or deferred_tools). Reserved keys are rejected: ${HARNESS_OWNED_REQUEST_FIELDS.join(", ")}.`
+    )
+    .optional(),
 });
 
 export type InferenceOverride = z.infer<typeof InferenceOverrideSchema>;
@@ -168,6 +195,22 @@ export type ToolCallFormatsBenchmarkConfig = z.infer<
   typeof ToolCallFormatsBenchmarkConfigSchema
 >;
 
+export const ToolCallSchemaFuzzOptionsSchema = z.object({
+  generator: z
+    .enum(ToolCallSchemaFuzzGenerator)
+    .default(ToolCallSchemaFuzzGenerator.Realistic),
+});
+
+export const ToolCallSchemaFuzzBenchmarkConfigSchema = z.object({
+  benchmarkId: z.literal("toolcall_schema_fuzz"),
+  ...FixedTemperatureBenchmarkBaseSchema.shape,
+  ...ToolCallSchemaFuzzOptionsSchema.shape,
+});
+
+export type ToolCallSchemaFuzzBenchmarkConfig = z.infer<
+  typeof ToolCallSchemaFuzzBenchmarkConfigSchema
+>;
+
 export const SearchBenchmarkOptionsSchema = z.object({
   lane: SearchLaneConfigSchema.default(
     () => ({ webSearch: "server-tool", engine: "auto" }) as const
@@ -245,6 +288,7 @@ export const KeplerBenchmarkRunConfigSchema = z.discriminatedUnion(
     DracoBenchmarkConfigSchema,
     IfStructBenchmarkConfigSchema,
     ToolCallFormatsBenchmarkConfigSchema,
+    ToolCallSchemaFuzzBenchmarkConfigSchema,
     BrowseCompBenchmarkConfigSchema,
     HleBenchmarkConfigSchema,
     DsqaBenchmarkConfigSchema,
@@ -274,6 +318,7 @@ export const BENCHMARK_OPTIONS_SCHEMAS = {
   mmmu_pro_vision: MmmuProVisionOptionsSchema,
   ifstruct: IfStructOptionsSchema,
   toolcall_formats: ToolCallFormatsOptionsSchema,
+  toolcall_schema_fuzz: ToolCallSchemaFuzzOptionsSchema,
   search_browsecomp: SearchBenchmarkOptionsSchema,
   search_hle: SearchBenchmarkOptionsSchema,
   search_dsqa: SearchBenchmarkOptionsSchema,

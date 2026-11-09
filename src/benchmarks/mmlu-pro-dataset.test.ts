@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, it } from "bun:test";
 
-import { toReadonlyArray } from "effect/Chunk";
 import { flatMap, provide, runPromise } from "effect/Effect";
 import { runCollect } from "effect/Stream";
 
@@ -78,7 +77,7 @@ describe("makeMmluProFewShotDatasetLayer", () => {
         provide(layer)
       )
     );
-    const [sample] = toReadonlyArray(samples);
+    const [sample] = samples;
     expect(sample?.input).toContain("Question: Example 0");
     expect(sample?.input).toContain("Question: Example 4");
     expect(sample?.input).toContain("Question: Test question");

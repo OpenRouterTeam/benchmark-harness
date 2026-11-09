@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import assert from "node:assert/strict";
 
-import { FetchHttpClient } from "@effect/platform";
-import { either, provide, runPromise } from "effect/Effect";
+import { provide, result, runPromise } from "effect/Effect";
+import { isFailure } from "effect/Result";
 
-import { Either } from "../internal/either";
+import { fetchHttpClientLayer } from "../internal/http-client";
 import type { CacheStore } from "./cache-store";
 import {
   fetchCachedTextFile,
@@ -50,7 +50,7 @@ function run(
   request: Parameters<typeof fetchCachedTextFile>[0]
 ): Promise<string> {
   return runPromise(
-    fetchCachedTextFile(request).pipe(provide(FetchHttpClient.layer))
+    fetchCachedTextFile(request).pipe(provide(fetchHttpClientLayer))
   );
 }
 
@@ -148,17 +148,17 @@ describe("fetchCachedTextFile", () => {
     stubFetch([new Response("slow down", { status: 429 })]);
     const { store } = makeMemoryStore();
 
-    const result = await runPromise(
+    const outcome = await runPromise(
       fetchCachedTextFile({
         ...REQUEST,
         cacheStore: store,
         retry: { maxRetries: 1, baseDelayMs: 1 },
-      }).pipe(either, provide(FetchHttpClient.layer))
+      }).pipe(result, provide(fetchHttpClientLayer))
     );
 
-    assert(Either.isLeft(result));
-    assert(result.left._tag === "CachedFileError");
-    expect(result.left.status).toBe(429);
+    assert(isFailure(outcome));
+    assert(outcome.failure._tag === "CachedFileError");
+    expect(outcome.failure.status).toBe(429);
   });
 
   it("does not retry a non-retryable status", async () => {
@@ -168,17 +168,17 @@ describe("fetchCachedTextFile", () => {
     ]);
     const { store, entries } = makeMemoryStore();
 
-    const result = await runPromise(
+    const outcome = await runPromise(
       fetchCachedTextFile({
         ...REQUEST,
         cacheStore: store,
         retry: { maxRetries: 3, baseDelayMs: 1 },
-      }).pipe(either, provide(FetchHttpClient.layer))
+      }).pipe(result, provide(fetchHttpClientLayer))
     );
 
-    assert(Either.isLeft(result));
-    assert(result.left._tag === "CachedFileError");
-    expect(result.left.status).toBe(404);
+    assert(isFailure(outcome));
+    assert(outcome.failure._tag === "CachedFileError");
+    expect(outcome.failure.status).toBe(404);
     expect(requestCount).toBe(1);
     expect(entries.size).toBe(0);
   });
@@ -248,17 +248,17 @@ describe("fetchCachedTextFile", () => {
     stubFetch([new Response("moved", { status: 300 })]);
     const { store, entries } = makeMemoryStore();
 
-    const result = await runPromise(
+    const outcome = await runPromise(
       fetchCachedTextFile({
         ...REQUEST,
         cacheStore: store,
         retry: { maxRetries: 0, baseDelayMs: 1 },
-      }).pipe(either, provide(FetchHttpClient.layer))
+      }).pipe(result, provide(fetchHttpClientLayer))
     );
 
-    assert(Either.isLeft(result));
-    assert(result.left._tag === "CachedFileError");
-    expect(result.left.status).toBe(300);
+    assert(isFailure(outcome));
+    assert(outcome.failure._tag === "CachedFileError");
+    expect(outcome.failure.status).toBe(300);
     expect(entries.size).toBe(0);
   });
 
@@ -269,18 +269,18 @@ describe("fetchCachedTextFile", () => {
     ]);
     const { store, entries } = makeMemoryStore();
 
-    const result = await runPromise(
+    const outcome = await runPromise(
       fetchCachedTextFile({
         ...REQUEST,
         cacheStore: store,
         validate: jsonTextValidator("object"),
         retry: { maxRetries: 3, baseDelayMs: 1 },
-      }).pipe(either, provide(FetchHttpClient.layer))
+      }).pipe(result, provide(fetchHttpClientLayer))
     );
 
-    assert(Either.isLeft(result));
-    assert(result.left._tag === "CachedFileError");
-    expect(result.left.status).toBeUndefined();
+    assert(isFailure(outcome));
+    assert(outcome.failure._tag === "CachedFileError");
+    expect(outcome.failure.status).toBeUndefined();
     expect(requestCount).toBe(1);
     expect(entries.size).toBe(0);
   });

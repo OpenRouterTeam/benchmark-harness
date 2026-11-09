@@ -1,7 +1,6 @@
+import * as Result from "effect/Result";
 import type { ZodError, ZodType } from "zod";
 import { z } from "zod";
-
-import { Either } from "./either";
 export { z };
 
 export type ZodShape<T> = {
@@ -11,12 +10,12 @@ export type ZodShape<T> = {
 export function parseSchema<Input, Output>(
   schema: ZodType<Output, Input>,
   value: unknown
-): Either.Either<Output, ZodError> {
+): Result.Result<Output, ZodError> {
   const ret = schema.safeParse(value);
   if (!ret.success) {
-    return Either.left(ret.error);
+    return Result.fail(ret.error);
   }
-  return Either.right(ret.data);
+  return Result.succeed(ret.data);
 }
 
 export function firstZodIssueMessage(error: ZodError): string {

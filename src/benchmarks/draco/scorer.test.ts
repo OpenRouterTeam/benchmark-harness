@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { assertRight } from "../../internal/testing";
+import { assertSuccess } from "../../internal/testing";
 import { parseSchema, z } from "../../internal/zod";
 import pythonScore from "./__fixtures__/262b3145.score.json";
 import pythonVerdicts from "./__fixtures__/262b3145.verdicts.json";
@@ -137,8 +137,8 @@ function fixtureTask(
 describe("aggregateTaskScores (golden parity vs Python)", () => {
   it("reproduces the Python scorer output for task 262b3145", () => {
     const parsed = parseSchema(PythonVerdictsSchema, pythonVerdicts);
-    assertRight(parsed);
-    const taskVerdicts = pythonVerdictsToTs(parsed.right);
+    assertSuccess(parsed);
+    const taskVerdicts = pythonVerdictsToTs(parsed.success);
     const task = fixtureTask(
       pythonVerdicts.task_id,
       pythonScore.domain,

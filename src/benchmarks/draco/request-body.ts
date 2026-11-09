@@ -12,10 +12,10 @@ import type {
   WebSearchServerToolOpenRouter,
 } from "@openrouter/sdk/models";
 import { snakeCase } from "change-case";
-import { option, string } from "effect/Config";
 import { runSync } from "effect/Effect";
 import { getOrNull } from "effect/Option";
 
+import { optionalEnv } from "../../internal/env-config";
 import type { ValueOf } from "../../internal/guards";
 import { definedValues, isRecord } from "../../internal/guards";
 import { responsesMessage } from "../../providers/responses-model";
@@ -32,7 +32,7 @@ import type {
 import { DracoToolType } from "./schemas";
 
 function resolveMaxToolCalls(): number {
-  const v = getOrNull(runSync(string("BENCHMARK_MAX_TOOL_CALLS").pipe(option)));
+  const v = getOrNull(runSync(optionalEnv("BENCHMARK_MAX_TOOL_CALLS")));
   return v === null ? 16 : Number(v);
 }
 

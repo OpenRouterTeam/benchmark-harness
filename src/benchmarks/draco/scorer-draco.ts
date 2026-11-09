@@ -1,9 +1,9 @@
 import type { Effect } from "effect/Effect";
 import { succeed } from "effect/Effect";
+import * as Result from "effect/Result";
 
 import type { Score, Target, TaskState } from "../../harness/core";
 import { ScoreValue } from "../../harness/core";
-import { Either } from "../../internal/either";
 import { definedValues, isRecord } from "../../internal/guards";
 import { parseSchema, z } from "../../internal/zod";
 import type { DracoPanelConfig, TaskScore } from "./schemas";
@@ -81,10 +81,10 @@ function readMetadataArray<T>(raw: unknown, schema: z.ZodType<T[]>): T[] {
     return [];
   }
   const parsed = parseSchema(schema, raw);
-  if (Either.isLeft(parsed)) {
+  if (Result.isFailure(parsed)) {
     return [];
   }
-  return parsed.right;
+  return parsed.success;
 }
 
 function readGenerationCost(raw: unknown): number | null {

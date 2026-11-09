@@ -1,22 +1,23 @@
 import { describe, expect, it } from "bun:test";
 
-import { Either } from "../../../internal/either";
+import * as Result from "effect/Result";
+
 import { MAX_SERVER_TOOL_CALLS } from "../../../internal/enums";
-import { assertRight } from "../../../internal/testing";
+import { assertSuccess } from "../../../internal/testing";
 import { parseSchema } from "../../../internal/zod";
 import { SearchLaneConfigSchema } from "./config";
 
 function rejects(input: unknown): boolean {
   const result = parseSchema(SearchLaneConfigSchema, input);
-  return Either.isLeft(result);
+  return Result.isFailure(result);
 }
 describe("SearchLaneConfigSchema", () => {
   it("defaults to server-tool surface with auto engine", () => {
     const result = parseSchema(SearchLaneConfigSchema, {});
-    assertRight(result);
-    expect(result.right.webSearch).toBe("server-tool");
-    expect(result.right.engine).toBe("auto");
-    expect(result.right.webFetch).toBeUndefined();
+    assertSuccess(result);
+    expect(result.success.webSearch).toBe("server-tool");
+    expect(result.success.engine).toBe("auto");
+    expect(result.success.webFetch).toBeUndefined();
   });
   it("accepts the full ladder-lane shape", () => {
     const result = parseSchema(SearchLaneConfigSchema, {
@@ -28,9 +29,9 @@ describe("SearchLaneConfigSchema", () => {
       maxTotalResults: 100,
       searchContextSize: "high",
     });
-    assertRight(result);
-    expect(result.right.maxAgentTurns).toBe(25);
-    expect(result.right.mode).toBe("fast");
+    assertSuccess(result);
+    expect(result.success.maxAgentTurns).toBe(25);
+    expect(result.success.mode).toBe("fast");
   });
   it("rejects maxAgentTurns above the server hard cap", () => {
     expect(rejects({ maxAgentTurns: MAX_SERVER_TOOL_CALLS + 1 })).toBe(true);
@@ -52,7 +53,7 @@ describe("SearchLaneConfigSchema", () => {
         maxFetchContentTokens: 3000,
       },
     });
-    assertRight(result);
-    expect(result.right.webFetch?.maxFetchUses).toBe(3);
+    assertSuccess(result);
+    expect(result.success.webFetch?.maxFetchUses).toBe(3);
   });
 });

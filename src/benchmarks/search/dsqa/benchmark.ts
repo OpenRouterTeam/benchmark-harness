@@ -1,11 +1,11 @@
 import type { Effect } from "effect/Effect";
 import { fail, flatMap, gen, succeed } from "effect/Effect";
+import * as Result from "effect/Result";
 
 import type { Score, Target, TaskState } from "../../../harness/core";
 import { ScoreValue, SolverError } from "../../../harness/core";
 import type { RunResult } from "../../../harness/run";
 import type { SolverService } from "../../../harness/solver";
-import { Either } from "../../../internal/either";
 import { definedValues } from "../../../internal/guards";
 import { parseSchema, z } from "../../../internal/zod";
 import type { JudgeConfig } from "../../../judge/judge";
@@ -190,7 +190,7 @@ export function dsqaScorer(
 ): Effect<Score, never> {
   const raw = state.sample.metadata?.[VERDICT_METADATA_KEY];
   const parsed = parseSchema(DsqaVerdictSchema, raw);
-  if (Either.isLeft(parsed)) {
+  if (Result.isFailure(parsed)) {
     return succeed({
       value: ScoreValue.Incorrect,
       answer: state.output?.completion ?? null,
@@ -198,7 +198,7 @@ export function dsqaScorer(
         raw === undefined ? "no verdict" : "verdict failed validation",
     });
   }
-  const verdict: DsqaVerdict = parsed.right;
+  const verdict: DsqaVerdict = parsed.success;
   const verdictError = state.sample.metadata?.[VERDICT_ERROR_METADATA_KEY];
   const grade = calculateDsqaGrade(
     verdict,
@@ -225,8 +225,8 @@ function dsqaQuestionMetrics(result: RunResult): readonly DsqaMetrics[] {
     let metrics = ZERO_DSQA_METRICS;
     if (trajectory?.kind === "judge_runs") {
       const parsed = parseSchema(DsqaTrajectoryGradeSchema, trajectory.runs[0]);
-      if (Either.isRight(parsed)) {
-        metrics = parsed.right.metrics;
+      if (Result.isSuccess(parsed)) {
+        metrics = parsed.success.metrics;
       }
     }
     const existing = metricsBySample.get(sample.sampleId);

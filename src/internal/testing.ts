@@ -1,17 +1,21 @@
-import { Either } from "./either";
+import * as Result from "effect/Result";
 
-export function assertRight<A, E>(
-  e: Either.Either<A, E>
-): asserts e is Either.Right<E, A> {
-  if (Either.isLeft(e)) {
-    throw new Error(`Expected Right, got Left: ${JSON.stringify(e.left)}`);
+export function assertSuccess<A, E>(
+  r: Result.Result<A, E>
+): asserts r is Result.Success<A, E> {
+  if (Result.isFailure(r)) {
+    throw new Error(
+      `Expected Success, got Failure: ${JSON.stringify(r.failure)}`
+    );
   }
 }
 
-export function assertLeft<A, E>(
-  e: Either.Either<A, E>
-): asserts e is Either.Left<E, A> {
-  if (Either.isRight(e)) {
-    throw new Error(`Expected Left, got Right: ${JSON.stringify(e.right)}`);
+export function assertFailure<A, E>(
+  r: Result.Result<A, E>
+): asserts r is Result.Failure<A, E> {
+  if (Result.isSuccess(r)) {
+    throw new Error(
+      `Expected Failure, got Success: ${JSON.stringify(r.success)}`
+    );
   }
 }

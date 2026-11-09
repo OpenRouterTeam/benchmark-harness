@@ -1,11 +1,6 @@
 import { createHash } from "node:crypto";
 
-import type { HttpClient } from "@effect/platform";
-import { FetchHttpClient, HttpClient as HttpClientTag } from "@effect/platform";
-import type { HttpClientResponse } from "@effect/platform/HttpClientResponse";
 import { parse } from "csv-parse/sync";
-import { fromIterable } from "effect/Chunk";
-import { map as configMap, option, string } from "effect/Config";
 import type { Effect } from "effect/Effect";
 import {
   all,
@@ -18,10 +13,14 @@ import {
   retry,
   succeed,
 } from "effect/Effect";
+import type { HttpClient } from "effect/http";
+import { HttpClient as HttpClientTag } from "effect/http";
+import type { HttpClientResponse } from "effect/http/HttpClientResponse";
 import type { Layer } from "effect/Layer";
 import { effect, provide } from "effect/Layer";
 import { getOrNull } from "effect/Option";
-import { fromChunk, unwrap } from "effect/Stream";
+import * as Result from "effect/Result";
+import { fromArray, unwrap } from "effect/Stream";
 
 import {
   hfFetchRetrySchedule,
@@ -31,8 +30,9 @@ import type { Sample } from "../../../harness/core";
 import { DatasetError } from "../../../harness/core";
 import type { Dataset } from "../../../harness/dataset";
 import { Dataset as DatasetTag } from "../../../harness/dataset";
-import { Either } from "../../../internal/either";
+import { optionalEnv } from "../../../internal/env-config";
 import { definedValues, isRecord } from "../../../internal/guards";
+import { fetchHttpClientLayer } from "../../../internal/http-client";
 import { parseSchema, z } from "../../../internal/zod";
 import type { RetryConfig } from "../../../runtime/retry";
 
@@ -71,10 +71,10 @@ export function parseWideSearchSource(
   text: string,
   expectedSha256 = WIDESEARCH_DATASET_SHA256,
   expectedRows = WIDESEARCH_ROWS
-): Either.Either<readonly z.infer<typeof WideSearchSourceRowSchema>[], string> {
+): Result.Result<readonly z.infer<typeof WideSearchSourceRowSchema>[], string> {
   const digest = createHash("sha256").update(text, "utf8").digest("hex");
   if (digest !== expectedSha256) {
-    return Either.left(
+    return Result.fail(
       `WideSearch checksum mismatch: expected ${expectedSha256}, got ${digest}`
     );
   }
@@ -85,27 +85,27 @@ export function parseWideSearchSource(
       (
         line,
         index
-      ): Either.Either<z.infer<typeof WideSearchSourceRowSchema>, string> => {
-        const json = Either.try(() => JSON.parse(line));
-        if (Either.isLeft(json)) {
-          return Either.left(`WideSearch row ${index} is invalid JSON`);
+      ): Result.Result<z.infer<typeof WideSearchSourceRowSchema>, string> => {
+        const json = Result.try(() => JSON.parse(line));
+        if (Result.isFailure(json)) {
+          return Result.fail(`WideSearch row ${index} is invalid JSON`);
         }
-        const parsed = parseSchema(WideSearchSourceRowSchema, json.right);
-        return Either.isLeft(parsed)
-          ? Either.left(
-              `WideSearch row ${index} failed validation: ${parsed.left.message}`
+        const parsed = parseSchema(WideSearchSourceRowSchema, json.success);
+        return Result.isFailure(parsed)
+          ? Result.fail(
+              `WideSearch row ${index} failed validation: ${parsed.failure.message}`
             )
-          : Either.right(parsed.right);
+          : Result.succeed(parsed.success);
       }
     );
-  const firstError = rows.find(Either.isLeft);
-  if (firstError !== undefined && Either.isLeft(firstError)) {
-    return Either.left(firstError.left);
+  const firstError = rows.find(Result.isFailure);
+  if (firstError !== undefined && Result.isFailure(firstError)) {
+    return Result.fail(firstError.failure);
   }
-  const data = rows.filter(Either.isRight).map((row) => row.right);
+  const data = rows.filter(Result.isSuccess).map((row) => row.success);
   return data.length === expectedRows
-    ? Either.right(data)
-    : Either.left(
+    ? Result.succeed(data)
+    : Result.fail(
         `WideSearch row count drifted: expected ${expectedRows}, got ${data.length}`
       );
 }
@@ -118,18 +118,18 @@ export function parseWideSearchGoldCsv(
   source: string,
   taskId: string,
   required: readonly string[]
-): Either.Either<readonly Readonly<Record<string, string>>[], string> {
-  const parsed = Either.try((): unknown =>
+): Result.Result<readonly Readonly<Record<string, string>>[], string> {
+  const parsed = Result.try((): unknown =>
     parse(source, { bom: true, columns: true, skip_empty_lines: true })
   );
-  if (Either.isLeft(parsed) || !Array.isArray(parsed.right)) {
-    return Either.left(`WideSearch task ${taskId} gold CSV failed to parse`);
+  if (Result.isFailure(parsed) || !Array.isArray(parsed.success)) {
+    return Result.fail(`WideSearch task ${taskId} gold CSV failed to parse`);
   }
-  const rows = parsed.right.filter((row): row is Record<string, unknown> =>
+  const rows = parsed.success.filter((row): row is Record<string, unknown> =>
     isRecord(row)
   );
   if (rows.length === 0) {
-    return Either.left(`WideSearch task ${taskId} gold CSV is empty`);
+    return Result.fail(`WideSearch task ${taskId} gold CSV is empty`);
   }
   const headers = new Map(
     Object.keys(rows[0]!).map((header) => [normalizeColumn(header), header])
@@ -138,11 +138,11 @@ export function parseWideSearchGoldCsv(
     (column) => !headers.has(normalizeColumn(column))
   );
   if (missing.length > 0) {
-    return Either.left(
+    return Result.fail(
       `WideSearch task ${taskId} gold CSV is missing required columns: ${JSON.stringify(missing)}`
     );
   }
-  return Either.right(
+  return Result.succeed(
     rows.map((row) =>
       Object.fromEntries(
         required.map((column) => [
@@ -164,53 +164,55 @@ function wideSearchRecordToSample({
   retryConfig?: RetryConfig;
 }): Effect<Sample, DatasetError> {
   const source = parseSchema(WideSearchSourceRowSchema, record);
-  if (Either.isLeft(source)) {
+  if (Result.isFailure(source)) {
     return fail(
       new DatasetError({
-        message: `WideSearch source row failed validation: ${source.left.message}`,
+        message: `WideSearch source row failed validation: ${source.failure.message}`,
       })
     );
   }
-  const evaluationJson = Either.try(() => JSON.parse(source.right.evaluation));
-  if (Either.isLeft(evaluationJson)) {
+  const evaluationJson = Result.try(() =>
+    JSON.parse(source.success.evaluation)
+  );
+  if (Result.isFailure(evaluationJson)) {
     return fail(
       new DatasetError({
-        message: `WideSearch task ${source.right.instance_id} evaluation is invalid JSON`,
+        message: `WideSearch task ${source.success.instance_id} evaluation is invalid JSON`,
       })
     );
   }
   const evaluation = parseSchema(
     WideSearchEvaluationSchema,
-    evaluationJson.right
+    evaluationJson.success
   );
-  if (Either.isLeft(evaluation)) {
+  if (Result.isFailure(evaluation)) {
     return fail(
       new DatasetError({
-        message: `WideSearch task ${source.right.instance_id} evaluation failed validation: ${evaluation.left.message}`,
+        message: `WideSearch task ${source.success.instance_id} evaluation failed validation: ${evaluation.failure.message}`,
       })
     );
   }
-  const taskId = source.right.instance_id;
+  const taskId = source.success.instance_id;
   return fetchWideSearchGoldCsv(client, taskId, retryConfig).pipe(
     flatMap((csv) => {
       const groundTruth = parseWideSearchGoldCsv(
         csv,
         taskId,
-        evaluation.right.required
+        evaluation.success.required
       );
-      if (Either.isLeft(groundTruth)) {
-        return fail(new DatasetError({ message: groundTruth.left }));
+      if (Result.isFailure(groundTruth)) {
+        return fail(new DatasetError({ message: groundTruth.failure }));
       }
       return succeed({
         id: taskId,
-        input: source.right.query,
+        input: source.success.query,
         target: {
           text: JSON.stringify({
-            ground_truth: groundTruth.right,
-            evaluation: evaluation.right,
+            ground_truth: groundTruth.success,
+            evaluation: evaluation.success,
           }),
         },
-        metadata: { language: source.right.language },
+        metadata: { language: source.success.language },
       });
     })
   );
@@ -247,9 +249,9 @@ export function makeWideSearchDatasetLayer(
             ),
             flatMap((text) => {
               const parsed = parseWideSearchSource(text);
-              return Either.isLeft(parsed)
-                ? fail(new DatasetError({ message: parsed.left }))
-                : succeed(parsed.right);
+              return Result.isFailure(parsed)
+                ? fail(new DatasetError({ message: parsed.failure }))
+                : succeed(parsed.success);
             })
           )
       );
@@ -268,13 +270,13 @@ export function makeWideSearchDatasetLayer(
                       wideSearchRecordToSample({ record, client, retryConfig })
                     ),
                   { concurrency: GOLD_FETCH_CONCURRENCY }
-                ).pipe(map((samples) => fromChunk(fromIterable(samples))));
+                ).pipe(map((samples) => fromArray(samples)));
               })
             )
           ),
       });
     })
-  ).pipe(provide(FetchHttpClient.layer));
+  ).pipe(provide(fetchHttpClientLayer));
 }
 
 function fetchWideSearchGoldCsv(
@@ -345,9 +347,8 @@ function goldResponseBody(
 }
 
 function resolveGoldHfToken(): Effect<string, GoldFetchFailure> {
-  return string("HF_TOKEN").pipe(
-    option,
-    configMap((value) => getOrNull(value) ?? ""),
+  return optionalEnv("HF_TOKEN").pipe(
+    map((value) => getOrNull(value) ?? ""),
     mapError((): GoldFetchFailure => ({
       message: "failed to read HF_TOKEN config",
       retryable: false,

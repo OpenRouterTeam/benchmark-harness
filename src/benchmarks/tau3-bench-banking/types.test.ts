@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { assertRight, assertLeft } from "../../internal/testing";
+import { assertSuccess, assertFailure } from "../../internal/testing";
 import { parseSchema } from "../../internal/zod";
 import { BANKING_TABLES, Tau3TaskSchema, RewardType } from "./types";
 describe("tau3-bench-banking types", () => {
@@ -38,12 +38,12 @@ describe("tau3-bench-banking types", () => {
         required_documents: ["doc_credit_cards_gold_rewards_card_001"],
       };
       const result = parseSchema(Tau3TaskSchema, task);
-      assertRight(result);
-      expect(result.right.id).toBe("task_001");
-      expect(result.right.user_scenario.instructions).toBe(
+      assertSuccess(result);
+      expect(result.success.id).toBe("task_001");
+      expect(result.success.user_scenario.instructions).toBe(
         "You are playing the role of a customer..."
       );
-      expect(result.right.evaluation_criteria?.reward_basis).toEqual(["DB"]);
+      expect(result.success.evaluation_criteria?.reward_basis).toEqual(["DB"]);
     });
     it("parses task with non-null initial_state", () => {
       const task = {
@@ -86,10 +86,10 @@ describe("tau3-bench-banking types", () => {
         required_documents: [],
       };
       const result = parseSchema(Tau3TaskSchema, task);
-      assertRight(result);
-      expect(result.right.id).toBe("task_026");
+      assertSuccess(result);
+      expect(result.success.id).toBe("task_026");
       expect(
-        result.right.initial_state?.initialization_data?.agent_data
+        result.success.initial_state?.initialization_data?.agent_data
       ).toEqual({
         task_config: {
           data: { dispute_settings: { auto_resolve_disputes: true } },
@@ -128,11 +128,11 @@ describe("tau3-bench-banking types", () => {
         required_documents: [],
       };
       const result = parseSchema(Tau3TaskSchema, task);
-      assertRight(result);
-      expect(result.right.user_scenario.instructions).toBe(
+      assertSuccess(result);
+      expect(result.success.user_scenario.instructions).toBe(
         "You are Tyler Washington, a 24-year-old software engineer..."
       );
-      expect(result.right.user_scenario.persoca).toBeNull();
+      expect(result.success.user_scenario.persoca).toBeNull();
     });
     it("validates action structure within evaluation_criteria", () => {
       const task = {
@@ -157,8 +157,8 @@ describe("tau3-bench-banking types", () => {
         annotations: null,
       };
       const result = parseSchema(Tau3TaskSchema, task);
-      assertRight(result);
-      const action = result.right.evaluation_criteria?.actions?.[0];
+      assertSuccess(result);
+      const action = result.success.evaluation_criteria?.actions?.[0];
       expect(action?.name).toBe("apply_for_credit_card");
       expect(action?.arguments).toEqual({
         card_type: "Gold",
@@ -181,7 +181,7 @@ describe("tau3-bench-banking types", () => {
         annotations: null,
       };
       const result = parseSchema(Tau3TaskSchema, task);
-      assertLeft(result);
+      assertFailure(result);
     });
   });
   describe("RewardType enum", () => {

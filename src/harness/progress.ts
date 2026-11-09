@@ -1,4 +1,4 @@
-import { Tag } from "effect/Context";
+import { Service } from "effect/Context";
 import type { Effect } from "effect/Effect";
 import { sync } from "effect/Effect";
 
@@ -60,9 +60,10 @@ export interface ProgressReporterService {
   ) => Effect<void>;
 }
 
-export class ProgressReporter extends Tag(
-  "@openrouter/bench-harness/progress-reporter"
-)<ProgressReporter, ProgressReporterService>() {}
+export class ProgressReporter extends Service<
+  ProgressReporter,
+  ProgressReporterService
+>()("@openrouter/bench-harness/progress-reporter") {}
 
 export const NOOP_PROGRESS_REPORTER: ProgressReporterService = {
   onSampleStart: () => sync(() => {}),
@@ -142,9 +143,10 @@ export interface CheckpointStoreService {
   readonly remove: (key: string) => Promise<void>;
 }
 
-export class CheckpointStore extends Tag(
-  "@openrouter/bench-harness/checkpoint-store"
-)<CheckpointStore, CheckpointStoreService>() {}
+export class CheckpointStore extends Service<
+  CheckpointStore,
+  CheckpointStoreService
+>()("@openrouter/bench-harness/checkpoint-store") {}
 
 export const NOOP_CHECKPOINT_STORE: CheckpointStoreService = {
   read: async () => null,

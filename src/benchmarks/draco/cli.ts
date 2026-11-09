@@ -1,4 +1,5 @@
-import { Either } from "../../internal/either";
+import * as Result from "effect/Result";
+
 import { definedValues } from "../../internal/guards";
 import type {
   BenchmarkCliContext,
@@ -54,19 +55,19 @@ export const DRACO_CLI_PLUGIN: BenchmarkCliPlugin = {
         artifactDir: ctx.artifactDir,
       })
     );
-    if (Either.isLeft(resolved)) {
-      throw new Error(resolved.left);
+    if (Result.isFailure(resolved)) {
+      throw new Error(resolved.failure);
     }
     const persisted = await persistRunConfig(
-      resolved.right.artifactDir,
-      resolved.right.config
+      resolved.success.artifactDir,
+      resolved.success.config
     );
-    if (Either.isLeft(persisted)) {
-      process.stderr.write(`warning: ${persisted.left}\n`);
+    if (Result.isFailure(persisted)) {
+      process.stderr.write(`warning: ${persisted.failure}\n`);
     }
     return {
-      benchmarkConfig: resolved.right.config,
-      artifactDir: resolved.right.artifactDir,
+      benchmarkConfig: resolved.success.config,
+      artifactDir: resolved.success.artifactDir,
     };
   },
 };

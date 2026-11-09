@@ -10,6 +10,7 @@ import { WIDESEARCH_BENCHMARK } from "./search/widesearch/benchmark";
 import { TAU_BENCH_AIRLINE_BENCHMARK } from "./tau-bench-airline/benchmark";
 import { TAU3_BENCH_BANKING_BENCHMARK } from "./tau3-bench-banking/benchmark";
 import { TOOLCALL_FORMATS_BENCHMARK } from "./toolcall-formats/benchmark";
+import { TOOLCALL_SCHEMA_FUZZ_BENCHMARK } from "./toolcall-schema-fuzz/benchmark";
 import type { Benchmark } from "./types";
 import { VGI_BENCH_BENCHMARK } from "./vgi-bench/benchmark";
 
@@ -22,6 +23,7 @@ const BENCHMARKS: Record<string, Benchmark> = {
   [DRACO_BENCHMARK.id]: DRACO_BENCHMARK,
   [IFSTRUCT_BENCHMARK.id]: IFSTRUCT_BENCHMARK,
   [TOOLCALL_FORMATS_BENCHMARK.id]: TOOLCALL_FORMATS_BENCHMARK,
+  [TOOLCALL_SCHEMA_FUZZ_BENCHMARK.id]: TOOLCALL_SCHEMA_FUZZ_BENCHMARK,
   [BROWSECOMP_BENCHMARK.id]: BROWSECOMP_BENCHMARK,
   [HLE_BENCHMARK.id]: HLE_BENCHMARK,
   [DSQA_BENCHMARK.id]: DSQA_BENCHMARK,
