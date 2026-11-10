@@ -398,11 +398,21 @@ export async function streamInputItems(
     method: request.method,
     headers: request.headers,
     signal: request.signal,
-    redirect: "error",
+    redirect: redirectPolicy(request.headers),
     body,
     duplex: "half",
   };
   return new Request(request.url, init);
+}
+
+const ACCESS_HEADER_PREFIX = "cf-access-";
+
+function redirectPolicy(headers: Headers): RequestRedirect {
+  return [...headers.keys()].some((name) =>
+    name.toLowerCase().startsWith(ACCESS_HEADER_PREFIX)
+  )
+    ? "error"
+    : "follow";
 }
 
 async function mergeExtraBody(
@@ -410,7 +420,8 @@ async function mergeExtraBody(
   init: RequestInit | undefined,
   extraBody: Readonly<Record<string, unknown>> | undefined
 ): Promise<Request> {
-  const request = new Request(input, { ...init, redirect: "error" });
+  const base = new Request(input, init);
+  const request = new Request(base, { redirect: redirectPolicy(base.headers) });
   if (extraBody === undefined) {
     return request;
   }

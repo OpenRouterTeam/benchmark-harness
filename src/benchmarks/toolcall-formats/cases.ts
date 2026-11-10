@@ -607,8 +607,12 @@ const SCENARIOS: readonly Scenario[] = [
   {
     id: "write_unicode_content",
     tools: [WRITE_TOOL],
-    prompt:
-      'Append exactly this line to notes.txt: She said "héllo" — naïve café ✓',
+    prompt: [
+      "Append to notes.txt with append=true.",
+      "Set content to the value of this JSON string literal:",
+      '"She said \\"héllo\\" — naïve café ✓"',
+      "Preserve the decoded characters exactly; do not add leading or trailing whitespace.",
+    ].join("\n"),
     calls: [
       {
         tool: "write_file",
