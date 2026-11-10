@@ -1,4 +1,5 @@
 import { describe, expect, it } from "bun:test";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const cliPath = fileURLToPath(new URL("index.ts", import.meta.url));
@@ -89,17 +90,16 @@ describe("CLI validation boundary", () => {
   it.each(failureCases)(
     "reports $name without an uncaught exception",
     ({ args, message, env }) => {
-      const result = Bun.spawnSync([process.execPath, cliPath, ...args], {
+      const result = spawnSync(process.execPath, [cliPath, ...args], {
         env: {
           OPENROUTER_API_KEY: "test-cli-key",
           BENCH_CHILD_WORKFLOW_ID: "cli-validation-test",
           ...env,
         },
-        stdout: "pipe",
-        stderr: "pipe",
+        stdio: "pipe",
       });
       const stderr = result.stderr.toString();
-      expect(result.exitCode).toBe(1);
+      expect(result.status).toBe(1);
       expect(result.stdout.toString()).toBe("");
       expect(stderr).toStartWith(`error: ${message}`);
       expect(stderr.match(/^error:/gm)).toHaveLength(1);

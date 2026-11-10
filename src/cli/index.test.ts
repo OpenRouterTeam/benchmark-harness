@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import type { CliArgs, CliError } from ".";
+import type { CliError } from ".";
 import {
   buildBenchmarkConfig as buildBenchmarkConfigResult,
   formatCliError,
@@ -10,7 +10,7 @@ import {
 import type { BenchmarkRunConfig } from "../benchmarks/benchmark-config";
 import { assertFailure, assertSuccess } from "../internal/testing";
 
-function parseArgs(argv: readonly string[]): CliArgs {
+function parseArgs(argv: readonly string[]) {
   const parsed = parseArgsResult(argv);
   assertSuccess(parsed);
   return parsed.success;
