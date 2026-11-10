@@ -112,6 +112,35 @@ describe("describeReadOptionsError", () => {
   });
 });
 
+describe("CLI validation", () => {
+  test.each([
+    [["--concurrency=0"], "--concurrency must be a positive integer"],
+    [["--limit=abc"], "--limit must be a positive integer"],
+    [
+      ["--concurrency=1.5", "--limit=0"],
+      "--concurrency must be a positive integer",
+    ],
+  ] as const)("exits with a concise error for %p", (args, message) => {
+    const result = Bun.spawnSync({
+      cmd: [
+        process.execPath,
+        `${import.meta.dir}/mirror-vgi-bench-media.ts`,
+        ...args,
+      ],
+      env: {
+        BENCH_MEDIA_S3_BUCKET: "test-bucket",
+        BENCH_MEDIA_S3_ENDPOINT: "https://s3.example.test",
+        BENCH_MEDIA_S3_ACCESS_KEY_ID: "test-key",
+        BENCH_MEDIA_S3_SECRET_ACCESS_KEY: "test-secret",
+        BENCH_MEDIA_PUBLIC_BASE_URL: "https://media.example.test",
+      },
+    });
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout.toString()).toBe("");
+    expect(result.stderr.toString()).toBe(`${message}\n`);
+  });
+});
+
 describe("candidateSources", () => {
   test("prefers the downscaled URL over the original", () => {
     expect(candidateSources("https://example.test/videos/clip.mp4")).toEqual([
