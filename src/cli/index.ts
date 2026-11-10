@@ -7,10 +7,8 @@ import { getOrNull } from "effect/Option";
 import * as Result from "effect/Result";
 import type { ZodError } from "zod";
 
-import { isSafeOriSessionId } from "../benchmarks/agent-cli/runner";
 import type { BenchmarkRunConfig } from "../benchmarks/benchmark-config";
 import {
-  BENCHMARK_OPTIONS_SCHEMAS,
   BenchmarkRunConfigSchema,
   isModelBenchmarkId,
   knownBenchmarkOptionKeys,
@@ -101,7 +99,7 @@ export function formatCliError(error: CliError): string {
       return "Set OPENROUTER_API_KEY (or BENCHMARKING_OPENROUTER_API_KEY) in the environment.";
     }
     case "unsafe_session_id": {
-      return `BENCH_CHILD_WORKFLOW_ID contains a control character, which ori replaces with a fresh UUID and silently detaches the run from its generations (got ${JSON.stringify(error.sessionId)}).`;
+      return `BENCH_CHILD_WORKFLOW_ID contains a control character, which is not a valid x-session-id header value (got ${JSON.stringify(error.sessionId)}).`;
     }
     case "invalid_solver_config_json": {
       return `--solver-config is not valid JSON: ${String(error.cause)}`;
@@ -205,11 +203,24 @@ function resolveTotalEvaluations(
   );
 }
 
-function resolveSessionId(): Result.Result<string, CliError> {
+const CONTROL_CHAR_MAX = 0x1f;
+const DELETE_CHAR = 0x7f;
+
+function hasControlCharacter(value: string): boolean {
+  for (const char of value) {
+    const code = char.codePointAt(0) ?? 0;
+    if (code <= CONTROL_CHAR_MAX || code === DELETE_CHAR) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function resolveSessionId(): Result.Result<string, CliError> {
   const envOpt = runSync(optionalEnv("BENCH_CHILD_WORKFLOW_ID"));
   const raw = getOrNull(envOpt);
   const fromEnv = raw === null || raw.length === 0 ? null : raw;
-  if (fromEnv !== null && !isSafeOriSessionId(fromEnv)) {
+  if (fromEnv !== null && hasControlCharacter(fromEnv)) {
     return Result.fail({ kind: "unsafe_session_id", sessionId: fromEnv });
   }
   return Result.succeed(fromEnv ?? runSync(sync(() => crypto.randomUUID())));
@@ -502,21 +513,6 @@ function buildSchemaValidatedConfig(opts: {
         }
       }
     }
-    const optionsSchema = isModelBenchmarkId(benchmarkId)
-      ? BENCHMARK_OPTIONS_SCHEMAS[benchmarkId]
-      : undefined;
-    if (
-      optionsSchema !== undefined &&
-      reasoningEffort !== ADAPTIVE_REASONING_EFFORT &&
-      Object.hasOwn(optionsSchema.shape, "agentReasoningEffort") &&
-      !(
-        typeof panelConfig === "object" &&
-        panelConfig !== null &&
-        Object.hasOwn(panelConfig, "agentReasoningEffort")
-      )
-    ) {
-      merged.agentReasoningEffort = reasoningEffort;
-    }
     const parsed = parseSchema(BenchmarkRunConfigSchema, merged);
     if (Result.isFailure(parsed)) {
       return yield* Result.fail<CliError>({
@@ -584,16 +580,6 @@ export function buildBenchmarkConfig(opts: {
         reasoningEffort,
       });
     }
-    case "terminal_bench": {
-      return buildSchemaValidatedConfig({
-        benchmarkId: "terminal_bench",
-        model,
-        endpointId,
-        panelConfig,
-        costTier,
-        reasoningEffort,
-      });
-    }
     case "draco": {
       const panel = parseSchema(DracoPanelConfigSchema, panelConfig);
       if (Result.isFailure(panel)) {
@@ -626,11 +612,6 @@ export function buildBenchmarkConfig(opts: {
     case "ifstruct":
     case "toolcall_formats":
     case "toolcall_schema_fuzz":
-    case "swe_atlas_qa":
-    case "swe_atlas_tw":
-    case "swe_atlas_rf":
-    case "deep_swe":
-    case "wandr":
     case "search_browsecomp":
     case "search_hle":
     case "search_dsqa":

@@ -1,12 +1,11 @@
 import { describe, expect, it } from "bun:test";
 
-import * as Result from "effect/Result";
-
 import type { CliArgs, CliError } from ".";
 import {
   buildBenchmarkConfig as buildBenchmarkConfigResult,
   formatCliError,
   parseArgs as parseArgsResult,
+  resolveSessionId,
 } from ".";
 import type { BenchmarkRunConfig } from "../benchmarks/benchmark-config";
 import { assertFailure, assertSuccess } from "../internal/testing";
@@ -204,6 +203,22 @@ describe("bench-harness CLI", () => {
     expect(formatCliError(failure)).toStartWith("Invalid DRACO panel config: ");
   });
 
+  it("returns a schema validation failure for invalid benchmark options", () => {
+    const failure = buildBenchmarkConfigFailure({
+      benchmarkId: "gpqa_diamond",
+      model: "openai/gpt-5",
+      panelConfig: { maxTokens: "invalid" },
+      artifactDir: undefined,
+      endpointId: undefined,
+      imageDetail: undefined,
+      reasoningEffort: "high",
+    });
+    expect(failure.kind).toBe("invalid_benchmark_config");
+    expect(formatCliError(failure)).toStartWith(
+      "Invalid gpqa_diamond config: "
+    );
+  });
+
   it("passes reasoning effort to hand-built model benchmark configs", () => {
     for (const benchmarkId of [
       "gpqa_diamond",
@@ -289,64 +304,6 @@ describe("bench-harness CLI", () => {
     );
   });
 
-  it("derives agent reasoning effort for ori lanes", () => {
-    const config = buildBenchmarkConfig({
-      benchmarkId: "terminal_bench",
-      model: "anthropic/claude-opus-5",
-      panelConfig: undefined,
-      artifactDir: undefined,
-      endpointId: undefined,
-      imageDetail: undefined,
-      reasoningEffort: "xhigh",
-    });
-    expect(config).toMatchObject({
-      reasoningEffort: "xhigh",
-      agentReasoningEffort: "xhigh",
-    });
-  });
-
-  it("does not derive an ori agent reasoning effort from auto", () => {
-    const failure = buildBenchmarkConfigFailure({
-      benchmarkId: "terminal_bench",
-      model: "openrouter/jev",
-      panelConfig: undefined,
-      artifactDir: undefined,
-      endpointId: undefined,
-      imageDetail: undefined,
-      reasoningEffort: "auto",
-    });
-    expect(failure.kind).toBe("invalid_benchmark_config");
-    const config = buildBenchmarkConfig({
-      benchmarkId: "terminal_bench",
-      model: "openrouter/jev",
-      panelConfig: { agentReasoningEffort: "high" },
-      artifactDir: undefined,
-      endpointId: undefined,
-      imageDetail: undefined,
-      reasoningEffort: "auto",
-    });
-    expect(config).toMatchObject({
-      reasoningEffort: "auto",
-      agentReasoningEffort: "high",
-    });
-  });
-
-  it("preserves explicit ori agent reasoning effort", () => {
-    const config = buildBenchmarkConfig({
-      benchmarkId: "terminal_bench",
-      model: "anthropic/claude-opus-5",
-      panelConfig: { agentReasoningEffort: "max" },
-      artifactDir: undefined,
-      endpointId: undefined,
-      imageDetail: undefined,
-      reasoningEffort: "low",
-    });
-    expect(config).toMatchObject({
-      reasoningEffort: "low",
-      agentReasoningEffort: "max",
-    });
-  });
-
   it("passes tau3 retrieval config through the generic solver config", () => {
     const args = parseArgs([
       "--benchmark",
@@ -372,165 +329,6 @@ describe("bench-harness CLI", () => {
     });
   });
 
-  it("selects an ori agent harness for terminal_bench through the solver config", () => {
-    const args = parseArgs([
-      "--benchmark",
-      "terminal_bench",
-      "--model",
-      "anthropic/claude-opus-5",
-      "--solver-config",
-      '{"agent":"claude"}',
-    ]);
-    const panelConfig: unknown = JSON.parse(args.solverConfig ?? "");
-    const config = buildBenchmarkConfig({
-      benchmarkId: args.benchmark,
-      model: args.model,
-      panelConfig,
-      artifactDir: undefined,
-      endpointId: undefined,
-      imageDetail: undefined,
-      reasoningEffort: args.reasoningEffort,
-    });
-    expect(config).toMatchObject({
-      benchmarkId: "terminal_bench",
-      agent: "claude",
-    });
-  });
-
-  it("defaults terminal_bench to the pi agent", () => {
-    const config = buildBenchmarkConfig({
-      benchmarkId: "terminal_bench",
-      model: "anthropic/claude-opus-5",
-      panelConfig: undefined,
-      artifactDir: undefined,
-      endpointId: undefined,
-      imageDetail: undefined,
-      reasoningEffort: "high",
-    });
-    expect(config).toMatchObject({
-      benchmarkId: "terminal_bench",
-      agent: "pi",
-    });
-  });
-
-  it("defaults terminal_bench to the CLI reasoning effort", () => {
-    const config = buildBenchmarkConfig({
-      benchmarkId: "terminal_bench",
-      model: "anthropic/claude-opus-5",
-      panelConfig: undefined,
-      artifactDir: undefined,
-      endpointId: undefined,
-      imageDetail: undefined,
-      reasoningEffort: "high",
-    });
-    expect(config).toMatchObject({
-      benchmarkId: "terminal_bench",
-      agentReasoningEffort: "high",
-      oriChannel: "stable",
-    });
-  });
-
-  it("treats an empty run identifier as unset rather than malformed", () => {
-    const prev = process.env["BENCH_CHILD_WORKFLOW_ID"];
-    process.env["BENCH_CHILD_WORKFLOW_ID"] = "";
-    try {
-      expect(
-        Result.isSuccess(
-          buildBenchmarkConfigResult({
-            benchmarkId: "terminal_bench",
-            model: "anthropic/claude-opus-5",
-            panelConfig: undefined,
-            artifactDir: undefined,
-            endpointId: undefined,
-            imageDetail: undefined,
-            reasoningEffort: "high",
-          })
-        )
-      ).toBe(true);
-    } finally {
-      if (prev === undefined) {
-        delete process.env["BENCH_CHILD_WORKFLOW_ID"];
-      } else {
-        process.env["BENCH_CHILD_WORKFLOW_ID"] = prev;
-      }
-    }
-  });
-
-  it("rejects the removed legacy thinking field", () => {
-    const failure = buildBenchmarkConfigFailure({
-      benchmarkId: "terminal_bench",
-      model: "anthropic/claude-opus-5",
-      panelConfig: { thinking: "high" },
-      artifactDir: undefined,
-      endpointId: undefined,
-      imageDetail: undefined,
-      reasoningEffort: "high",
-    });
-    expect(formatCliError(failure)).toBe(
-      "Unknown terminal_bench solver-config option(s): thinking"
-    );
-  });
-
-  it("rejects a misspelled option instead of silently defaulting it", () => {
-    const failure = buildBenchmarkConfigFailure({
-      benchmarkId: "terminal_bench",
-      model: "anthropic/claude-opus-5",
-      panelConfig: { agentReasoningEfort: "max" },
-      artifactDir: undefined,
-      endpointId: undefined,
-      imageDetail: undefined,
-      reasoningEffort: "high",
-    });
-    expect(failure).toEqual({
-      kind: "unknown_solver_config_options",
-      benchmarkId: "terminal_bench",
-      options: ["agentReasoningEfort"],
-    });
-  });
-
-  it("still accepts every documented option and base inference override", () => {
-    const config = buildBenchmarkConfig({
-      benchmarkId: "terminal_bench",
-      model: "anthropic/claude-opus-5",
-      panelConfig: {
-        agent: "claude",
-        agentReasoningEffort: "xhigh",
-        oriChannel: "alpha",
-        systemPrompt: "terse",
-        allowedTools: ["Bash"],
-        isolateAgentConfig: true,
-        taskSubset: ["fix-git"],
-        maxTokens: 1000,
-      },
-      artifactDir: undefined,
-      endpointId: undefined,
-      imageDetail: undefined,
-      reasoningEffort: "high",
-    });
-    expect(config).toMatchObject({
-      agent: "claude",
-      agentReasoningEffort: "xhigh",
-      oriChannel: "alpha",
-      maxTokens: 1000,
-    });
-  });
-
-  it("rejects an unknown terminal_bench agent", () => {
-    const failure = buildBenchmarkConfigFailure({
-      benchmarkId: "terminal_bench",
-      model: "anthropic/claude-opus-5",
-      panelConfig: { agent: "not-an-agent" },
-      artifactDir: undefined,
-      endpointId: undefined,
-      imageDetail: undefined,
-      reasoningEffort: "high",
-    });
-    expect(failure.kind).toBe("invalid_benchmark_config");
-    expect(formatCliError(failure)).toStartWith(
-      "Invalid terminal_bench config"
-    );
-  });
-
   it("materializes the bm25_grep default for tau3", () => {
     const config = buildBenchmarkConfig({
       benchmarkId: "tau3_bench_banking",
@@ -545,5 +343,44 @@ describe("bench-harness CLI", () => {
       benchmarkId: "tau3_bench_banking",
       retrievalConfig: "bm25_grep",
     });
+  });
+});
+
+describe("resolveSessionId", () => {
+  const withWorkflowId = <T>(value: string, run: () => T): T => {
+    const prev = process.env["BENCH_CHILD_WORKFLOW_ID"];
+    process.env["BENCH_CHILD_WORKFLOW_ID"] = value;
+    try {
+      return run();
+    } finally {
+      if (prev === undefined) {
+        delete process.env["BENCH_CHILD_WORKFLOW_ID"];
+      } else {
+        process.env["BENCH_CHILD_WORKFLOW_ID"] = prev;
+      }
+    }
+  };
+
+  it("uses BENCH_CHILD_WORKFLOW_ID when set", () => {
+    const result = withWorkflowId("trial-1", resolveSessionId);
+    assertSuccess(result);
+    expect(result.success).toBe("trial-1");
+  });
+
+  it("treats an empty run identifier as unset rather than malformed", () => {
+    const result = withWorkflowId("", resolveSessionId);
+    assertSuccess(result);
+    expect(result.success).toMatch(/^[0-9a-f-]{36}$/);
+  });
+
+  it("rejects control characters that would break the x-session-id header", () => {
+    for (const sessionId of ["trial-1\n", "trial\u007F"]) {
+      const result = withWorkflowId(sessionId, resolveSessionId);
+      assertFailure(result);
+      expect(result.failure).toEqual({ kind: "unsafe_session_id", sessionId });
+      expect(formatCliError(result.failure)).toBe(
+        `BENCH_CHILD_WORKFLOW_ID contains a control character, which is not a valid x-session-id header value (got ${JSON.stringify(sessionId)}).`
+      );
+    }
   });
 });

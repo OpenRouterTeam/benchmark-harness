@@ -46,12 +46,26 @@ function stubFetch(response: unknown): void {
   };
 }
 
+function stubFetchStatus(status: number): void {
+  const original = globalThis.fetch;
+  fetchCount = 0;
+  globalThis.fetch = async () => {
+    fetchCount += 1;
+    return new Response("<html>Service Unavailable</html>", { status });
+  };
+  restoreFetch = () => {
+    globalThis.fetch = original;
+    restoreFetch = undefined;
+  };
+}
+
 function makeLayer(opts: { revision?: string }) {
   return makeHfDatasetLayer({
     dataset: "test/dataset",
     config: "default",
     split: "train",
     hfToken: "",
+    retry: { maxRetries: 0 },
     ...(opts.revision !== undefined && { revision: opts.revision }),
     recordToSample: (record) => ({
       id: String(record["id"] ?? ""),
@@ -141,6 +155,23 @@ describe("huggingface page cache", () => {
     utimesSync(file, old, old);
     expect(await fetchSize(makeLayer({}))).toBe(1);
     expect(fetchCount).toBe(2);
+  });
+
+  it("serves a stale entry when the refresh request fails", async () => {
+    stubFetch(rowsPage({ numRowsTotal: 7, rows: 1 }));
+    expect(await fetchSize(makeLayer({}))).toBe(7);
+    const file = cacheFile({});
+    const old = new Date(Date.now() - 48 * 60 * 60 * 1e3);
+    utimesSync(file, old, old);
+    restoreFetch?.();
+    stubFetchStatus(503);
+    expect(await fetchSize(makeLayer({}))).toBe(7);
+    expect(fetchCount).toBe(1);
+  });
+
+  it("fails when the request fails and nothing is cached", async () => {
+    stubFetchStatus(503);
+    await expect(fetchSize(makeLayer({}))).rejects.toThrow(/503/);
   });
 
   it("never expires entries pinned to an explicit revision", async () => {
