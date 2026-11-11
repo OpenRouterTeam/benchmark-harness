@@ -3,3 +3,6 @@ bench-results/
 dist/
 node_modules/
 *.tsbuildinfo
+
+# Claude Code local settings can store secrets from approved commands
+**/.claude/settings.local.json
