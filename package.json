@@ -11,6 +11,7 @@
     "./benchmarks/registry": "./src/benchmarks/registry.ts",
     "./benchmarks/search/core/config": "./src/benchmarks/search/core/config.ts",
     "./benchmarks/search/provenance": "./src/benchmarks/search/provenance.ts",
+    "./benchmarks/scorers/integrity": "./src/benchmarks/scorers/integrity/integrity-spec.ts",
     "./core": "./src/harness/core.ts",
     "./constants": "./src/harness/constants.ts",
     "./dataset": "./src/harness/dataset.ts",
@@ -48,7 +49,6 @@
   "dependencies": {
     "@google-cloud/storage": "7.19.0",
     "@openrouter/sdk": "1.2.113",
-    "change-case": "5.4.4",
     "chrono-node": "2.9.0",
     "cli-progress": "3.12.0",
     "csv-parse": "5.6.0",
@@ -65,6 +65,7 @@
     "@types/cli-progress": "3.11.6",
     "@types/node": "24.10.0",
     "@typescript/native": "npm:@typescript/native-preview@7.0.0-dev.20260707.2",
+    "change-case": "5.4.4",
     "oxfmt": "0.62.0",
     "oxlint": "1.77.0",
     "typescript": "7.0.2",

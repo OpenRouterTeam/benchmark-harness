@@ -95,7 +95,20 @@ export const FixedTemperatureBenchmarkBaseSchema =
     temperature: true,
   });
 
-export const GpqaOptionsSchema = z.object({});
+export const GpqaOptionsSchema = z.object({
+  integrityRubric: z
+    .boolean()
+    .optional()
+    .describe(
+      "Also judge each completion for token-level corruption with a decisions model and report it as a separate integrity metric (flagged rate and mean P(not intact)). Accuracy is unchanged."
+    ),
+  excludeSampleIds: z
+    .array(z.string().regex(/^gpqa_diamond-\d+$/))
+    .optional()
+    .describe(
+      "Sample ids (gpqa_diamond-<index>) to drop from the dataset before running."
+    ),
+});
 
 export const GpqaBenchmarkConfigSchema = z.object({
   benchmarkId: z.literal("gpqa_diamond"),

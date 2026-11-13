@@ -1,6 +1,29 @@
 import { describe, expect, it } from "bun:test";
 
-import { gpqaRecordToSample } from "./gpqa";
+import {
+  gen,
+  orDie,
+  promise,
+  provide,
+  runPromise,
+  succeed,
+} from "effect/Effect";
+import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
+import { provide as provideLayer, succeed as layerSucceed } from "effect/Layer";
+import { fromIterable, runCollect } from "effect/Stream";
+
+import { initialTaskState, MessageRole, ScoreValue } from "../harness/core";
+import { Dataset } from "../harness/dataset";
+import { Scorer } from "../harness/scorer";
+import { decisionsUrl } from "../judge/decisions";
+import type { GpqaBenchmarkConfig } from "./benchmark-config";
+import { GpqaBenchmarkConfigSchema } from "./benchmark-config";
+import {
+  gpqaRecordToSample,
+  makeGpqaScorerLayer,
+  withoutSampleIds,
+} from "./gpqa";
+import { INTEGRITY_JUDGE_MODEL } from "./scorers/integrity/integrity-spec";
 
 const GPQA_RECORD = {
   Question: "What is 2+2?",
@@ -74,5 +97,122 @@ describe("gpqaRecordToSample", () => {
     const sample = gpqaRecordToSample(GPQA_RECORD, 0);
     expect(sample.id).toBe("gpqa_diamond-0");
     expect(sample.metadata?.["subdomain"]).toBe("Arithmetic");
+  });
+});
+
+describe("makeGpqaScorerLayer", () => {
+  it("asks the decisions endpoint and keeps accuracy separate", async () => {
+    const requests: { url: string; body: unknown }[] = [];
+    const client = HttpClient.make((request) =>
+      gen(function* () {
+        const web = yield* HttpClientRequest.toWeb(request).pipe(orDie);
+        requests.push({
+          url: request.url,
+          body: yield* promise(() => web.json()),
+        });
+        return HttpClientResponse.fromWeb(
+          request,
+          Response.json({
+            answers: { level: { probabilities: { coherent_good: 0.1 } } },
+          })
+        );
+      })
+    );
+    const program = gen(function* () {
+      const scorer = yield* Scorer;
+      const state = {
+        ...initialTaskState({ id: "s1", input: "Q?", target: { text: "B" } }),
+        output: {
+          completion: "The the answer.\n\nAnswer: B",
+          message: {
+            role: MessageRole.Assistant,
+            content: "The the answer.\n\nAnswer: B",
+          },
+        },
+      };
+      return yield* scorer(state, { text: "B" });
+    }).pipe(
+      provide(
+        makeGpqaScorerLayer(
+          {
+            benchmarkId: "gpqa_diamond",
+            integrityRubric: true,
+          } as GpqaBenchmarkConfig,
+          { apiKey: "k", baseUrl: "https://example.test/api/v1" }
+        ).pipe(provideLayer(layerSucceed(HttpClient.HttpClient, client)))
+      )
+    );
+    const score = await runPromise(program);
+    expect(score.value).toBe(ScoreValue.Correct);
+    expect(requests[0]?.url).toBe("https://example.test/api/alpha/decisions");
+    expect(requests[0]?.body).toMatchObject({ model: INTEGRITY_JUDGE_MODEL });
+    expect(score.trajectory).toMatchObject({
+      kind: "judge_runs",
+      runs: [{ judge: "integrity", flagged: true }],
+    });
+  });
+});
+
+describe("decisionsUrl", () => {
+  it("derives the decisions endpoint from the API base URL", () => {
+    expect(decisionsUrl()).toBe("https://openrouter.ai/api/alpha/decisions");
+    expect(decisionsUrl("https://openrouter.ai/api/v1/")).toBe(
+      "https://openrouter.ai/api/alpha/decisions"
+    );
+  });
+
+  it("accepts an origin-only base URL like the model client does", () => {
+    expect(decisionsUrl("http://localhost:8787")).toBe(
+      "http://localhost:8787/api/alpha/decisions"
+    );
+  });
+});
+
+describe("withoutSampleIds", () => {
+  const samples = Array.from({ length: 6 }, (_, i) =>
+    gpqaRecordToSample(GPQA_RECORD, i)
+  );
+  const source = layerSucceed(
+    Dataset,
+    Dataset.of({
+      stream: () => fromIterable(samples),
+      size: succeed(samples.length),
+    })
+  );
+  const filtered = withoutSampleIds(source, [
+    "gpqa_diamond-1",
+    "gpqa_diamond-4",
+  ]);
+  const collectIds = (opts?: { start?: number; end?: number }) =>
+    runPromise(
+      gen(function* () {
+        const dataset = yield* Dataset;
+        const chunk = yield* runCollect(dataset.stream(opts));
+        return { size: yield* dataset.size, ids: chunk.map((s) => s.id) };
+      }).pipe(provide(filtered))
+    );
+
+  it("drops the listed ids and reports the reduced size", async () => {
+    expect(await collectIds()).toEqual({
+      size: 4,
+      ids: [
+        "gpqa_diamond-0",
+        "gpqa_diamond-2",
+        "gpqa_diamond-3",
+        "gpqa_diamond-5",
+      ],
+    });
+  });
+
+  it("slices start/end over the kept samples", async () => {
+    const { ids } = await collectIds({ start: 1, end: 3 });
+    expect(ids).toEqual(["gpqa_diamond-2", "gpqa_diamond-3"]);
+  });
+
+  it("rejects ids outside the gpqa_diamond-<index> form", () => {
+    const parsed = GpqaBenchmarkConfigSchema.shape.excludeSampleIds.safeParse([
+      "mmlu-1",
+    ]);
+    expect(parsed.success).toBe(false);
   });
 });

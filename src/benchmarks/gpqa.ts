@@ -1,13 +1,29 @@
+import { gen } from "effect/Effect";
+import { HttpClient } from "effect/http";
 import type { Layer } from "effect/Layer";
+import {
+  effect as layerEffect,
+  provide as layerProvide,
+  succeed as layerSucceed,
+} from "effect/Layer";
+import {
+  drop as streamDrop,
+  filter as streamFilter,
+  runCount,
+  take as streamTake,
+} from "effect/Stream";
 
 import type { HfDatasetConfig } from "../datasets/huggingface";
 import { makeHfDatasetLayer } from "../datasets/huggingface";
 import type { Sample } from "../harness/core";
-import type { Dataset } from "../harness/dataset";
+import { Dataset } from "../harness/dataset";
 import type { GenerateConfig, ModelService } from "../harness/model";
+import { Scorer } from "../harness/scorer";
 import type { SolverService } from "../harness/solver";
 import { chain, generate, systemMessage } from "../harness/solver";
 import { definedValues } from "../internal/guards";
+import type { DecisionsTarget } from "../judge/decisions";
+import { decisionChoiceProbabilities } from "../judge/decisions";
 import type { RetryConfig } from "../runtime/retry";
 import type {
   FixedTemperatureInferenceOverride,
@@ -15,6 +31,11 @@ import type {
 } from "./benchmark-config";
 import { GPQA_META } from "./benchmark-meta";
 import { defineSingleTurnBenchmark } from "./define-single-turn-benchmark";
+import {
+  integrityRunLevelScores,
+  withIntegrityRubric,
+} from "./scorers/integrity/integrity-rubric";
+import { INTEGRITY_JUDGE_MODEL } from "./scorers/integrity/integrity-spec";
 import { mcqScorer } from "./scorers/mcq/scorer";
 import { seededPermutation } from "./scorers/mcq/shuffle";
 import type { Benchmark } from "./types";
@@ -113,15 +134,70 @@ export function gpqaSolver(
 
 export const gpqaScorer = mcqScorer;
 
+export function makeGpqaScorerLayer(
+  config: GpqaBenchmarkConfig,
+  target: DecisionsTarget
+): Layer<Scorer, never, HttpClient.HttpClient> {
+  if (config.integrityRubric !== true) {
+    return layerSucceed(Scorer, Scorer.of(gpqaScorer));
+  }
+  return layerEffect(Scorer)(
+    gen(function* () {
+      const client = yield* HttpClient.HttpClient;
+      return Scorer.of(
+        withIntegrityRubric(gpqaScorer, (state, question) =>
+          decisionChoiceProbabilities(
+            client,
+            target,
+            INTEGRITY_JUDGE_MODEL,
+            state,
+            question
+          )
+        )
+      );
+    })
+  );
+}
+
 export function makeGpqaDatasetLayer(
-  retryConfig?: RetryConfig
+  retryConfig?: RetryConfig,
+  excludeSampleIds?: readonly string[]
 ): Layer<Dataset> {
-  return makeHfDatasetLayer({
+  const hfLayer = makeHfDatasetLayer({
     ...GPQA_DATASET,
     ...definedValues({
       retry: retryConfig,
     }),
   });
+  return excludeSampleIds === undefined || excludeSampleIds.length === 0
+    ? hfLayer
+    : withoutSampleIds(hfLayer, excludeSampleIds);
+}
+
+export function withoutSampleIds(
+  layer: Layer<Dataset>,
+  sampleIds: readonly string[]
+): Layer<Dataset> {
+  const excluded = new Set(sampleIds);
+  return layerEffect(
+    Dataset,
+    gen(function* () {
+      const inner = yield* Dataset;
+      const kept = inner
+        .stream()
+        .pipe(streamFilter((sample) => !excluded.has(sample.id)));
+      return Dataset.of({
+        size: runCount(kept),
+        stream: (opts) => {
+          const start = opts?.start ?? 0;
+          const dropped = start > 0 ? kept.pipe(streamDrop(start)) : kept;
+          return opts?.end === undefined
+            ? dropped
+            : dropped.pipe(streamTake(Math.max(0, opts.end - start)));
+        },
+      });
+    })
+  ).pipe(layerProvide(layer));
 }
 
 export const GPQA_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
@@ -131,7 +207,15 @@ export const GPQA_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
   isConfig: (config): config is GpqaBenchmarkConfig =>
     config.benchmarkId === "gpqa_diamond",
   makeDatasetLayer: makeGpqaDatasetLayer,
+  makeDatasetLayerForConfig: (config, retryConfig) =>
+    makeGpqaDatasetLayer(retryConfig, config.excludeSampleIds),
   scorer: gpqaScorer,
+  makeScorerLayer: (config, input) =>
+    makeGpqaScorerLayer(
+      config,
+      definedValues({ apiKey: input.apiKey, baseUrl: input.baseUrl })
+    ),
+  runLevelScores: integrityRunLevelScores,
   makeSolver: (model, config) =>
     gpqaSolver(
       model,
