@@ -32,10 +32,10 @@ import type {
 import { GPQA_META } from "./benchmark-meta";
 import { defineSingleTurnBenchmark } from "./define-single-turn-benchmark";
 import {
-  INTEGRITY_JUDGE_MODEL,
   integrityRunLevelScores,
   withIntegrityRubric,
 } from "./scorers/integrity/integrity-rubric";
+import { INTEGRITY_JUDGE_MODEL } from "./scorers/integrity/integrity-spec";
 import { mcqScorer } from "./scorers/mcq/scorer";
 import { seededPermutation } from "./scorers/mcq/shuffle";
 import type { Benchmark } from "./types";

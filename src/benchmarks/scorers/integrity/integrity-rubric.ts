@@ -11,33 +11,17 @@ import type {
   DecisionChoiceQuestion,
   DecisionsError,
 } from "../../../judge/decisions";
+import {
+  deterministicIntegrity,
+  INTEGRITY_QUESTION,
+  INTEGRITY_SCORE_NAME,
+  judgedIntegrity,
+} from "./integrity-spec";
 
 export type ChoiceJudge = (
   state: Readonly<Record<string, string>>,
   question: DecisionChoiceQuestion
 ) => Effect<Readonly<Record<string, number>>, DecisionsError>;
-
-export const INTEGRITY_JUDGE_MODEL = "openai/gpt-6-luna-decisions";
-
-export const INTEGRITY_FLAG_THRESHOLD = 0.4;
-
-export const INTEGRITY_SCORE_NAME = "integrity";
-
-export const INTEGRITY_QUESTION = {
-  type: "choice",
-  instructions:
-    'Judge only whether `completion` was emitted intact. Look closely at the words themselves: inference bugs show up as dropped tokens (missing words that leave sentences ungrammatical), duplicated tokens ("the the", "oror"), fragments of two words fused together, truncated words, mojibake or replacement characters, and loops of repeated text.',
-  criteria: {
-    coherent_good:
-      "Intact. Every sentence is grammatical and every word is whole; nothing is missing, doubled, or fused, apart from at most one ordinary typo.",
-    coherent_okay:
-      "A few token-level glitches (a doubled or missing word, a fused fragment) but otherwise clean.",
-    coherent_bad:
-      "Visibly corrupted: repeated token-level glitches such as missing or doubled words, fused word fragments, garbled characters, or a repetition loop; or empty output.",
-  },
-} as const satisfies DecisionChoiceQuestion;
-
-const BARE_ANSWER = /^\s*Answer:\s*[A-J]\s*$/i;
 
 const IntegrityVerdictSchema = z.discriminatedUnion("source", [
   z.object({
@@ -64,11 +48,14 @@ export function withIntegrityRubric(
     base(state, target).pipe(
       flatMap((score) => {
         const completion = state.output?.completion ?? "";
-        if (completion.trim() === "") {
-          return succeed(withVerdict(score, deterministic("empty", 1)));
-        }
-        if (BARE_ANSWER.test(completion)) {
-          return succeed(withVerdict(score, deterministic("bare_answer", 0)));
+        const deterministic = deterministicIntegrity(completion);
+        if (deterministic !== undefined) {
+          return succeed(
+            withVerdict(score, {
+              judge: INTEGRITY_SCORE_NAME,
+              ...deterministic,
+            })
+          );
         }
         return judge(judgeState(state, completion), INTEGRITY_QUESTION).pipe(
           map((probabilities) => withVerdict(score, judged(probabilities))),
@@ -129,31 +116,16 @@ function judgeState(
   return { user_request: userRequest, completion };
 }
 
-function deterministic(
-  source: "empty" | "bare_answer",
-  notIntact: number
-): IntegrityVerdict {
-  return {
-    judge: INTEGRITY_SCORE_NAME,
-    source,
-    notIntact,
-    flagged: notIntact > INTEGRITY_FLAG_THRESHOLD,
-  };
-}
-
 function judged(
   probabilities: Readonly<Record<string, number>>
 ): IntegrityVerdict {
-  const good = probabilities["coherent_good"];
-  if (good === undefined) {
+  const assessment = judgedIntegrity(probabilities);
+  if (assessment === undefined) {
     return failed("judge returned no coherent_good probability");
   }
-  const notIntact = 1 - good;
   return {
     judge: INTEGRITY_SCORE_NAME,
-    source: "judge",
-    notIntact,
-    flagged: notIntact > INTEGRITY_FLAG_THRESHOLD,
+    ...assessment,
     probabilities: { ...probabilities },
   };
 }

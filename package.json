@@ -11,6 +11,7 @@
     "./benchmarks/registry": "./src/benchmarks/registry.ts",
     "./benchmarks/search/core/config": "./src/benchmarks/search/core/config.ts",
     "./benchmarks/search/provenance": "./src/benchmarks/search/provenance.ts",
+    "./benchmarks/scorers/integrity": "./src/benchmarks/scorers/integrity/integrity-spec.ts",
     "./core": "./src/harness/core.ts",
     "./constants": "./src/harness/constants.ts",
     "./dataset": "./src/harness/dataset.ts",
