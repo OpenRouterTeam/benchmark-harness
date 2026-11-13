@@ -4,7 +4,6 @@ import type {
   ResponsesRequest,
   StreamEvents,
 } from "@openrouter/sdk/models";
-import { camelCase, snakeCase } from "change-case";
 import { Service } from "effect/Context";
 import { millis } from "effect/Duration";
 import type { Effect } from "effect/Effect";
@@ -24,6 +23,7 @@ import { reasoningRequestFor } from "../harness/constants";
 import type { ModelUsage } from "../harness/core";
 import { ModelError } from "../harness/core";
 import type { GenerateConfig } from "../harness/model";
+import { camelCase, snakeCase } from "../internal/casing";
 import { definedValues, isRecord, isUnknownArray } from "../internal/guards";
 import type { RetryConfig } from "../runtime/retry";
 import { rateLimitRetrySchedule, retrySalted } from "../runtime/retry";

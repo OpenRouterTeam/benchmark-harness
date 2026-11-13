@@ -91,5 +91,24 @@ export default defineConfig({
     "typescript/no-dynamic-delete": "warn",
     "typescript/no-invalid-void-type": "warn",
     "unicorn/prefer-export-from": "warn",
+    "eslint/no-restricted-imports": [
+      "error",
+      {
+        paths: [
+          {
+            name: "change-case",
+            message: "Import camelCase/snakeCase from src/internal/casing instead.",
+          },
+        ],
+      },
+    ],
   },
+  overrides: [
+    {
+      files: ["src/internal/casing.test.ts"],
+      rules: {
+        "eslint/no-restricted-imports": "off",
+      },
+    },
+  ],
 });

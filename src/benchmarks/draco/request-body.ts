@@ -11,10 +11,10 @@ import type {
   WebSearchServerToolConfig,
   WebSearchServerToolOpenRouter,
 } from "@openrouter/sdk/models";
-import { snakeCase } from "change-case";
 import { runSync } from "effect/Effect";
 import { getOrNull } from "effect/Option";
 
+import { snakeCase } from "../../internal/casing";
 import { optionalEnv } from "../../internal/env-config";
 import type { ValueOf } from "../../internal/guards";
 import { definedValues, isRecord } from "../../internal/guards";
