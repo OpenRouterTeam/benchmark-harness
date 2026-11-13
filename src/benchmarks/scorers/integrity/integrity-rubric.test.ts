@@ -207,6 +207,20 @@ describe("integrityRunLevelScores", () => {
     expect(integrity?.metrics["errors"]?.value).toBe(1);
   });
 
+  it("omits the rates when every integrity check errored", async () => {
+    const errored = await runPromise(
+      withIntegrityRubric(mcqScorer, () => fail(new DecisionsError("boom")))(
+        answered(PROSE),
+        TARGET
+      )
+    );
+    const [integrity] = integrityRunLevelScores(runOf([errored]));
+    expect(integrity?.metrics["flagged_rate"]).toBeUndefined();
+    expect(integrity?.metrics["mean_not_intact"]).toBeUndefined();
+    expect(integrity?.metrics["scored"]?.value).toBe(0);
+    expect(integrity?.metrics["errors"]?.value).toBe(1);
+  });
+
   it("reports nothing when no sample carries an integrity verdict", async () => {
     const plain = await runPromise(mcqScorer(answered(PROSE), TARGET));
     expect(integrityRunLevelScores(runOf([plain]))).toEqual([]);
