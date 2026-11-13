@@ -1,13 +1,19 @@
+import { gen } from "effect/Effect";
+import { HttpClient } from "effect/http";
 import type { Layer } from "effect/Layer";
+import { effect as layerEffect, succeed as layerSucceed } from "effect/Layer";
 
 import type { HfDatasetConfig } from "../datasets/huggingface";
 import { makeHfDatasetLayer } from "../datasets/huggingface";
 import type { Sample } from "../harness/core";
 import type { Dataset } from "../harness/dataset";
 import type { GenerateConfig, ModelService } from "../harness/model";
+import { Scorer } from "../harness/scorer";
 import type { SolverService } from "../harness/solver";
 import { chain, generate, systemMessage } from "../harness/solver";
 import { definedValues } from "../internal/guards";
+import type { DecisionsTarget } from "../judge/decisions";
+import { decisionChoiceProbabilities } from "../judge/decisions";
 import type { RetryConfig } from "../runtime/retry";
 import type {
   FixedTemperatureInferenceOverride,
@@ -15,6 +21,11 @@ import type {
 } from "./benchmark-config";
 import { GPQA_META } from "./benchmark-meta";
 import { defineSingleTurnBenchmark } from "./define-single-turn-benchmark";
+import {
+  INTEGRITY_JUDGE_MODEL,
+  integrityRunLevelScores,
+  withIntegrityRubric,
+} from "./scorers/integrity/integrity-rubric";
 import { mcqScorer } from "./scorers/mcq/scorer";
 import { seededPermutation } from "./scorers/mcq/shuffle";
 import type { Benchmark } from "./types";
@@ -113,6 +124,31 @@ export function gpqaSolver(
 
 export const gpqaScorer = mcqScorer;
 
+export function makeGpqaScorerLayer(
+  config: GpqaBenchmarkConfig,
+  target: DecisionsTarget
+): Layer<Scorer, never, HttpClient.HttpClient> {
+  if (config.integrityRubric !== true) {
+    return layerSucceed(Scorer, Scorer.of(gpqaScorer));
+  }
+  return layerEffect(Scorer)(
+    gen(function* () {
+      const client = yield* HttpClient.HttpClient;
+      return Scorer.of(
+        withIntegrityRubric(gpqaScorer, (state, question) =>
+          decisionChoiceProbabilities(
+            client,
+            target,
+            INTEGRITY_JUDGE_MODEL,
+            state,
+            question
+          )
+        )
+      );
+    })
+  );
+}
+
 export function makeGpqaDatasetLayer(
   retryConfig?: RetryConfig
 ): Layer<Dataset> {
@@ -132,6 +168,12 @@ export const GPQA_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
     config.benchmarkId === "gpqa_diamond",
   makeDatasetLayer: makeGpqaDatasetLayer,
   scorer: gpqaScorer,
+  makeScorerLayer: (config, input) =>
+    makeGpqaScorerLayer(
+      config,
+      definedValues({ apiKey: input.apiKey, baseUrl: input.baseUrl })
+    ),
+  runLevelScores: integrityRunLevelScores,
   makeSolver: (model, config) =>
     gpqaSolver(
       model,
