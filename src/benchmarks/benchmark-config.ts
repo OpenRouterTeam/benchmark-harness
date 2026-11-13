@@ -100,7 +100,7 @@ export const GpqaOptionsSchema = z.object({
     .boolean()
     .optional()
     .describe(
-      "Count a correct answer only when Clef judges the completion text intact. Needs CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN."
+      "Also judge each completion for token-level corruption with a decisions model and report it as a separate integrity metric (flagged rate and mean P(not intact)). Accuracy is unchanged."
     ),
 });
 

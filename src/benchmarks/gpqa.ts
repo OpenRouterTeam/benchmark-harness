@@ -12,8 +12,8 @@ import { Scorer } from "../harness/scorer";
 import type { SolverService } from "../harness/solver";
 import { chain, generate, systemMessage } from "../harness/solver";
 import { definedValues } from "../internal/guards";
-import { layerFail } from "../internal/layer";
-import { clefChoiceProbabilities, clefCredentialsFromEnv } from "../judge/clef";
+import type { DecisionsTarget } from "../judge/decisions";
+import { decisionChoiceProbabilities } from "../judge/decisions";
 import type { RetryConfig } from "../runtime/retry";
 import type {
   FixedTemperatureInferenceOverride,
@@ -21,7 +21,11 @@ import type {
 } from "./benchmark-config";
 import { GPQA_META } from "./benchmark-meta";
 import { defineSingleTurnBenchmark } from "./define-single-turn-benchmark";
-import { withIntegrityRubric } from "./scorers/integrity/integrity-rubric";
+import {
+  INTEGRITY_JUDGE_MODEL,
+  integrityRunLevelScores,
+  withIntegrityRubric,
+} from "./scorers/integrity/integrity-rubric";
 import { mcqScorer } from "./scorers/mcq/scorer";
 import { seededPermutation } from "./scorers/mcq/shuffle";
 import type { Benchmark } from "./types";
@@ -122,25 +126,23 @@ export const gpqaScorer = mcqScorer;
 
 export function makeGpqaScorerLayer(
   config: GpqaBenchmarkConfig,
-  env: Readonly<Record<string, string | undefined>> = process.env
-): Layer<Scorer, Error, HttpClient.HttpClient> {
+  target: DecisionsTarget
+): Layer<Scorer, never, HttpClient.HttpClient> {
   if (config.integrityRubric !== true) {
     return layerSucceed(Scorer, Scorer.of(gpqaScorer));
-  }
-  const credentials = clefCredentialsFromEnv(env);
-  if (credentials === null) {
-    return layerFail(
-      new Error(
-        "gpqa_diamond integrityRubric needs CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN"
-      )
-    );
   }
   return layerEffect(Scorer)(
     gen(function* () {
       const client = yield* HttpClient.HttpClient;
       return Scorer.of(
         withIntegrityRubric(gpqaScorer, (state, question) =>
-          clefChoiceProbabilities(client, credentials, state, question)
+          decisionChoiceProbabilities(
+            client,
+            target,
+            INTEGRITY_JUDGE_MODEL,
+            state,
+            question
+          )
         )
       );
     })
@@ -166,7 +168,12 @@ export const GPQA_BENCHMARK: Benchmark = defineSingleTurnBenchmark({
     config.benchmarkId === "gpqa_diamond",
   makeDatasetLayer: makeGpqaDatasetLayer,
   scorer: gpqaScorer,
-  makeScorerLayer: (config) => makeGpqaScorerLayer(config),
+  makeScorerLayer: (config, input) =>
+    makeGpqaScorerLayer(
+      config,
+      definedValues({ apiKey: input.apiKey, baseUrl: input.baseUrl })
+    ),
+  runLevelScores: integrityRunLevelScores,
   makeSolver: (model, config) =>
     gpqaSolver(
       model,

@@ -1,11 +1,15 @@
 import { describe, expect, it } from "bun:test";
 
-import { runPromiseExit, scoped } from "effect/Effect";
-import { build as buildLayer, provide as provideLayer } from "effect/Layer";
+import { gen, orDie, promise, provide, runPromise } from "effect/Effect";
+import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
+import { provide as provideLayer, succeed as layerSucceed } from "effect/Layer";
 
-import { fetchHttpClientLayer } from "../internal/http-client";
+import { initialTaskState, MessageRole, ScoreValue } from "../harness/core";
+import { Scorer } from "../harness/scorer";
+import { decisionsUrl } from "../judge/decisions";
 import type { GpqaBenchmarkConfig } from "./benchmark-config";
 import { gpqaRecordToSample, makeGpqaScorerLayer } from "./gpqa";
+import { INTEGRITY_JUDGE_MODEL } from "./scorers/integrity/integrity-rubric";
 
 const GPQA_RECORD = {
   Question: "What is 2+2?",
@@ -83,18 +87,63 @@ describe("gpqaRecordToSample", () => {
 });
 
 describe("makeGpqaScorerLayer", () => {
-  it("fails to build the integrity rubric without Clef credentials", async () => {
-    const exit = await runPromiseExit(
-      buildLayer(
+  it("asks the decisions endpoint and keeps accuracy separate", async () => {
+    const requests: { url: string; body: unknown }[] = [];
+    const client = HttpClient.make((request) =>
+      gen(function* () {
+        const web = yield* HttpClientRequest.toWeb(request).pipe(orDie);
+        requests.push({
+          url: request.url,
+          body: yield* promise(() => web.json()),
+        });
+        return HttpClientResponse.fromWeb(
+          request,
+          Response.json({
+            answers: { level: { probabilities: { coherent_good: 0.1 } } },
+          })
+        );
+      })
+    );
+    const program = gen(function* () {
+      const scorer = yield* Scorer;
+      const state = {
+        ...initialTaskState({ id: "s1", input: "Q?", target: { text: "B" } }),
+        output: {
+          completion: "The the answer.\n\nAnswer: B",
+          message: {
+            role: MessageRole.Assistant,
+            content: "The the answer.\n\nAnswer: B",
+          },
+        },
+      };
+      return yield* scorer(state, { text: "B" });
+    }).pipe(
+      provide(
         makeGpqaScorerLayer(
           {
             benchmarkId: "gpqa_diamond",
             integrityRubric: true,
           } as GpqaBenchmarkConfig,
-          {}
-        ).pipe(provideLayer(fetchHttpClientLayer))
-      ).pipe(scoped)
+          { apiKey: "k", baseUrl: "https://example.test/api/v1" }
+        ).pipe(provideLayer(layerSucceed(HttpClient.HttpClient, client)))
+      )
     );
-    expect(exit._tag).toBe("Failure");
+    const score = await runPromise(program);
+    expect(score.value).toBe(ScoreValue.Correct);
+    expect(requests[0]?.url).toBe("https://example.test/api/alpha/decisions");
+    expect(requests[0]?.body).toMatchObject({ model: INTEGRITY_JUDGE_MODEL });
+    expect(score.trajectory).toMatchObject({
+      kind: "judge_runs",
+      runs: [{ judge: "integrity", flagged: true }],
+    });
+  });
+});
+
+describe("decisionsUrl", () => {
+  it("derives the decisions endpoint from the API base URL", () => {
+    expect(decisionsUrl()).toBe("https://openrouter.ai/api/alpha/decisions");
+    expect(decisionsUrl("https://openrouter.ai/api/v1/")).toBe(
+      "https://openrouter.ai/api/alpha/decisions"
+    );
   });
 });

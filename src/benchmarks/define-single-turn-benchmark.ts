@@ -39,8 +39,10 @@ export interface SingleTurnBenchmarkDefinition<
   ) => Layer<Dataset>;
   readonly scorer: ScorerService;
   readonly makeScorerLayer?: (
-    config: C
+    config: C,
+    input: BenchmarkRunInput
   ) => Layer<Scorer, Error, HttpClient.HttpClient>;
+  readonly runLevelScores?: Benchmark["runLevelScores"];
   readonly makeSolver: (model: ModelService, config: C) => SolverService;
 }
 
@@ -105,7 +107,7 @@ export function defineSingleTurnBenchmark<
       })
     ).pipe(layerProvide(modelLayer));
     const scorerLayer =
-      definition.makeScorerLayer?.(benchmarkConfig) ??
+      definition.makeScorerLayer?.(benchmarkConfig, input) ??
       layerSucceed(Scorer, Scorer.of(definition.scorer));
     return layerMergeAll(datasetLayer, solverLayer, scorerLayer);
   }
@@ -116,5 +118,6 @@ export function defineSingleTurnBenchmark<
     temperature: definition.temperature,
     defaultEpochs: definition.defaultEpochs,
     makeLayer,
+    ...definedValues({ runLevelScores: definition.runLevelScores }),
   };
 }

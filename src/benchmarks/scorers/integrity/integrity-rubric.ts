@@ -1,17 +1,27 @@
 import type { Effect } from "effect/Effect";
 import { catch as catch_, flatMap, map, succeed } from "effect/Effect";
+import * as Result from "effect/Result";
 
 import type { Score, TaskState } from "../../../harness/core";
-import { MessageRole, ScoreValue } from "../../../harness/core";
+import { MessageRole } from "../../../harness/core";
+import type { RunResult } from "../../../harness/run";
 import type { ScorerService } from "../../../harness/scorer";
-import type { ClefChoiceQuestion, ClefError } from "../../../judge/clef";
+import { parseSchema, z } from "../../../internal/zod";
+import type {
+  DecisionChoiceQuestion,
+  DecisionsError,
+} from "../../../judge/decisions";
 
 export type ChoiceJudge = (
   state: Readonly<Record<string, string>>,
-  question: ClefChoiceQuestion
-) => Effect<Readonly<Record<string, number>>, ClefError>;
+  question: DecisionChoiceQuestion
+) => Effect<Readonly<Record<string, number>>, DecisionsError>;
 
-export const INTEGRITY_FLAG_THRESHOLD = 0.58;
+export const INTEGRITY_JUDGE_MODEL = "openai/gpt-6-luna-decisions";
+
+export const INTEGRITY_FLAG_THRESHOLD = 0.4;
+
+export const INTEGRITY_SCORE_NAME = "integrity";
 
 export const INTEGRITY_QUESTION = {
   type: "choice",
@@ -25,9 +35,26 @@ export const INTEGRITY_QUESTION = {
     coherent_bad:
       "Visibly corrupted: repeated token-level glitches such as missing or doubled words, fused word fragments, garbled characters, or a repetition loop; or empty output.",
   },
-} as const satisfies ClefChoiceQuestion;
+} as const satisfies DecisionChoiceQuestion;
 
 const BARE_ANSWER = /^\s*Answer:\s*[A-J]\s*$/i;
+
+const IntegrityVerdictSchema = z.discriminatedUnion("source", [
+  z.object({
+    judge: z.literal(INTEGRITY_SCORE_NAME),
+    source: z.enum(["judge", "empty", "bare_answer"]),
+    notIntact: z.number(),
+    flagged: z.boolean(),
+    probabilities: z.record(z.string(), z.number()).optional(),
+  }),
+  z.object({
+    judge: z.literal(INTEGRITY_SCORE_NAME),
+    source: z.literal("error"),
+    error: z.string(),
+  }),
+]);
+
+export type IntegrityVerdict = z.infer<typeof IntegrityVerdictSchema>;
 
 export function withIntegrityRubric(
   base: ScorerService,
@@ -37,20 +64,57 @@ export function withIntegrityRubric(
     base(state, target).pipe(
       flatMap((score) => {
         const completion = state.output?.completion ?? "";
-        if (completion.trim() === "" || BARE_ANSWER.test(completion)) {
-          return succeed(score);
+        if (completion.trim() === "") {
+          return succeed(withVerdict(score, deterministic("empty", 1)));
+        }
+        if (BARE_ANSWER.test(completion)) {
+          return succeed(withVerdict(score, deterministic("bare_answer", 0)));
         }
         return judge(judgeState(state, completion), INTEGRITY_QUESTION).pipe(
-          map((probabilities) => applyVerdict(score, probabilities)),
-          catch_((error) =>
-            succeed({
-              ...score,
-              explanation: `${score.explanation}; integrity check skipped: ${error.message}`,
-            })
-          )
+          map((probabilities) => withVerdict(score, judged(probabilities))),
+          catch_((error) => succeed(withVerdict(score, failed(error.message))))
         );
       })
     );
+}
+
+export function integrityRunLevelScores(result: RunResult): readonly {
+  readonly name: string;
+  readonly metrics: Readonly<Record<string, { readonly value: number }>>;
+}[] {
+  const verdicts = result.sampleScores.flatMap((sample) => {
+    const trajectory = sample.score.trajectory;
+    if (trajectory?.kind !== "judge_runs") {
+      return [];
+    }
+    const parsed = parseSchema(IntegrityVerdictSchema, trajectory.runs[0]);
+    return Result.isSuccess(parsed) ? [parsed.success] : [];
+  });
+  if (verdicts.length === 0) {
+    return [];
+  }
+  const scored = verdicts.flatMap((verdict) =>
+    verdict.source === "error" ? [] : [verdict]
+  );
+  const errors = verdicts.length - scored.length;
+  const flagged = scored.filter((verdict) => verdict.flagged).length;
+  const notIntact = scored.reduce((sum, verdict) => sum + verdict.notIntact, 0);
+  return [
+    {
+      name: INTEGRITY_SCORE_NAME,
+      metrics: {
+        flagged_rate: {
+          value: scored.length === 0 ? 0 : flagged / scored.length,
+        },
+        mean_not_intact: {
+          value: scored.length === 0 ? 0 : notIntact / scored.length,
+        },
+        flagged: { value: flagged },
+        scored: { value: scored.length },
+        errors: { value: errors },
+      },
+    },
+  ];
 }
 
 function judgeState(
@@ -63,23 +127,39 @@ function judgeState(
   return { user_request: userRequest, completion };
 }
 
-function applyVerdict(
-  score: Score,
-  probabilities: Readonly<Record<string, number>>
-): Score {
-  const notIntact = 1 - (probabilities["coherent_good"] ?? 0);
-  const trajectory = {
-    kind: "judge_runs",
-    runs: [{ judge: "clef_integrity", probabilities, notIntact }],
-  } as const;
-  if (notIntact <= INTEGRITY_FLAG_THRESHOLD) {
-    return { ...score, trajectory };
-  }
+function deterministic(
+  source: "empty" | "bare_answer",
+  notIntact: number
+): IntegrityVerdict {
   return {
-    ...score,
-    value:
-      score.value === ScoreValue.Skipped ? score.value : ScoreValue.Incorrect,
-    explanation: `${score.explanation}; completion flagged as corrupted (P(not intact)=${notIntact.toFixed(3)})`,
-    trajectory,
+    judge: INTEGRITY_SCORE_NAME,
+    source,
+    notIntact,
+    flagged: notIntact > INTEGRITY_FLAG_THRESHOLD,
   };
+}
+
+function judged(
+  probabilities: Readonly<Record<string, number>>
+): IntegrityVerdict {
+  const good = probabilities["coherent_good"];
+  if (good === undefined) {
+    return failed("judge returned no coherent_good probability");
+  }
+  const notIntact = 1 - good;
+  return {
+    judge: INTEGRITY_SCORE_NAME,
+    source: "judge",
+    notIntact,
+    flagged: notIntact > INTEGRITY_FLAG_THRESHOLD,
+    probabilities: { ...probabilities },
+  };
+}
+
+function failed(error: string): IntegrityVerdict {
+  return { judge: INTEGRITY_SCORE_NAME, source: "error", error };
+}
+
+function withVerdict(score: Score, verdict: IntegrityVerdict): Score {
+  return { ...score, trajectory: { kind: "judge_runs", runs: [verdict] } };
 }
