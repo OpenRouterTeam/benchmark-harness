@@ -1,14 +1,28 @@
 import { describe, expect, it } from "bun:test";
 
-import { gen, orDie, promise, provide, runPromise } from "effect/Effect";
+import {
+  gen,
+  orDie,
+  promise,
+  provide,
+  runPromise,
+  succeed,
+} from "effect/Effect";
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import { provide as provideLayer, succeed as layerSucceed } from "effect/Layer";
+import { fromIterable, runCollect } from "effect/Stream";
 
 import { initialTaskState, MessageRole, ScoreValue } from "../harness/core";
+import { Dataset } from "../harness/dataset";
 import { Scorer } from "../harness/scorer";
 import { decisionsUrl } from "../judge/decisions";
 import type { GpqaBenchmarkConfig } from "./benchmark-config";
-import { gpqaRecordToSample, makeGpqaScorerLayer } from "./gpqa";
+import { GpqaBenchmarkConfigSchema } from "./benchmark-config";
+import {
+  gpqaRecordToSample,
+  makeGpqaScorerLayer,
+  withoutSampleIds,
+} from "./gpqa";
 import { INTEGRITY_JUDGE_MODEL } from "./scorers/integrity/integrity-rubric";
 
 const GPQA_RECORD = {
@@ -145,5 +159,54 @@ describe("decisionsUrl", () => {
     expect(decisionsUrl("https://openrouter.ai/api/v1/")).toBe(
       "https://openrouter.ai/api/alpha/decisions"
     );
+  });
+});
+
+describe("withoutSampleIds", () => {
+  const samples = Array.from({ length: 6 }, (_, i) =>
+    gpqaRecordToSample(GPQA_RECORD, i)
+  );
+  const source = layerSucceed(
+    Dataset,
+    Dataset.of({
+      stream: () => fromIterable(samples),
+      size: succeed(samples.length),
+    })
+  );
+  const filtered = withoutSampleIds(source, [
+    "gpqa_diamond-1",
+    "gpqa_diamond-4",
+  ]);
+  const collectIds = (opts?: { start?: number; end?: number }) =>
+    runPromise(
+      gen(function* () {
+        const dataset = yield* Dataset;
+        const chunk = yield* runCollect(dataset.stream(opts));
+        return { size: yield* dataset.size, ids: chunk.map((s) => s.id) };
+      }).pipe(provide(filtered))
+    );
+
+  it("drops the listed ids and reports the reduced size", async () => {
+    expect(await collectIds()).toEqual({
+      size: 4,
+      ids: [
+        "gpqa_diamond-0",
+        "gpqa_diamond-2",
+        "gpqa_diamond-3",
+        "gpqa_diamond-5",
+      ],
+    });
+  });
+
+  it("slices start/end over the kept samples", async () => {
+    const { ids } = await collectIds({ start: 1, end: 3 });
+    expect(ids).toEqual(["gpqa_diamond-2", "gpqa_diamond-3"]);
+  });
+
+  it("rejects ids outside the gpqa_diamond-<index> form", () => {
+    const parsed = GpqaBenchmarkConfigSchema.shape.excludeSampleIds.safeParse([
+      "mmlu-1",
+    ]);
+    expect(parsed.success).toBe(false);
   });
 });
