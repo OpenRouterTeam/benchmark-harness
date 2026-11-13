@@ -95,7 +95,14 @@ export const FixedTemperatureBenchmarkBaseSchema =
     temperature: true,
   });
 
-export const GpqaOptionsSchema = z.object({});
+export const GpqaOptionsSchema = z.object({
+  integrityRubric: z
+    .boolean()
+    .optional()
+    .describe(
+      "Count a correct answer only when Clef judges the completion text intact. Needs CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN."
+    ),
+});
 
 export const GpqaBenchmarkConfigSchema = z.object({
   benchmarkId: z.literal("gpqa_diamond"),

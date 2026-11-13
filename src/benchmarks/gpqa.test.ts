@@ -1,6 +1,11 @@
 import { describe, expect, it } from "bun:test";
 
-import { gpqaRecordToSample } from "./gpqa";
+import { runPromiseExit, scoped } from "effect/Effect";
+import { build as buildLayer, provide as provideLayer } from "effect/Layer";
+
+import { fetchHttpClientLayer } from "../internal/http-client";
+import type { GpqaBenchmarkConfig } from "./benchmark-config";
+import { gpqaRecordToSample, makeGpqaScorerLayer } from "./gpqa";
 
 const GPQA_RECORD = {
   Question: "What is 2+2?",
@@ -74,5 +79,22 @@ describe("gpqaRecordToSample", () => {
     const sample = gpqaRecordToSample(GPQA_RECORD, 0);
     expect(sample.id).toBe("gpqa_diamond-0");
     expect(sample.metadata?.["subdomain"]).toBe("Arithmetic");
+  });
+});
+
+describe("makeGpqaScorerLayer", () => {
+  it("fails to build the integrity rubric without Clef credentials", async () => {
+    const exit = await runPromiseExit(
+      buildLayer(
+        makeGpqaScorerLayer(
+          {
+            benchmarkId: "gpqa_diamond",
+            integrityRubric: true,
+          } as GpqaBenchmarkConfig,
+          {}
+        ).pipe(provideLayer(fetchHttpClientLayer))
+      ).pipe(scoped)
+    );
+    expect(exit._tag).toBe("Failure");
   });
 });

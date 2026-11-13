@@ -38,6 +38,9 @@ export interface SingleTurnBenchmarkDefinition<
     retryConfig?: RetryConfig
   ) => Layer<Dataset>;
   readonly scorer: ScorerService;
+  readonly makeScorerLayer?: (
+    config: C
+  ) => Layer<Scorer, Error, HttpClient.HttpClient>;
   readonly makeSolver: (model: ModelService, config: C) => SolverService;
 }
 
@@ -101,7 +104,9 @@ export function defineSingleTurnBenchmark<
         return Solver.of(definition.makeSolver(model, benchmarkConfig));
       })
     ).pipe(layerProvide(modelLayer));
-    const scorerLayer = layerSucceed(Scorer, Scorer.of(definition.scorer));
+    const scorerLayer =
+      definition.makeScorerLayer?.(benchmarkConfig) ??
+      layerSucceed(Scorer, Scorer.of(definition.scorer));
     return layerMergeAll(datasetLayer, solverLayer, scorerLayer);
   }
   return {
