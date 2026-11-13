@@ -1,6 +1,43 @@
 import { describe, expect, it } from "bun:test";
 
-import { buildBenchmarkConfig, parseArgs, resolveSessionId } from ".";
+import type { CliError } from ".";
+import {
+  buildBenchmarkConfig as buildBenchmarkConfigResult,
+  formatCliError,
+  parseArgs as parseArgsResult,
+  resolveSessionId,
+} from ".";
+import type { BenchmarkRunConfig } from "../benchmarks/benchmark-config";
+import { assertFailure, assertSuccess } from "../internal/testing";
+
+function parseArgs(argv: readonly string[]) {
+  const parsed = parseArgsResult(argv);
+  assertSuccess(parsed);
+  return parsed.success;
+}
+
+function buildBenchmarkConfig(
+  opts: Parameters<typeof buildBenchmarkConfigResult>[0]
+): BenchmarkRunConfig {
+  const built = buildBenchmarkConfigResult(opts);
+  assertSuccess(built);
+  return built.success;
+}
+
+function parseArgsFailure(argv: readonly string[]): CliError {
+  const parsed = parseArgsResult(argv);
+  assertFailure(parsed);
+  return parsed.failure;
+}
+
+function buildBenchmarkConfigFailure(
+  opts: Parameters<typeof buildBenchmarkConfigResult>[0]
+): CliError {
+  const built = buildBenchmarkConfigResult(opts);
+  assertFailure(built);
+  return built.failure;
+}
+
 describe("bench-harness CLI", () => {
   it("defaults --reasoning-effort to high", () => {
     expect(parseArgs([]).reasoningEffort).toBe("high");
@@ -39,10 +76,25 @@ describe("bench-harness CLI", () => {
   });
 
   it("rejects --reasoning-effort auto for models without adaptive effort", () => {
-    expect(() =>
-      parseArgs(["--model", "openai/gpt-5", "--reasoning-effort", "auto"])
-    ).toThrow("--reasoning-effort auto is only supported for");
-    expect(() => parseArgs(["--reasoning-effort", "auto"])).toThrow(
+    const withModel = parseArgsFailure([
+      "--model",
+      "openai/gpt-5",
+      "--reasoning-effort",
+      "auto",
+    ]);
+    expect(withModel).toEqual({
+      kind: "adaptive_reasoning_effort_unsupported",
+      model: "openai/gpt-5",
+    });
+    expect(formatCliError(withModel)).toContain(
+      "--reasoning-effort auto is only supported for"
+    );
+    const withoutModel = parseArgsFailure(["--reasoning-effort", "auto"]);
+    expect(withoutModel).toEqual({
+      kind: "adaptive_reasoning_effort_unsupported",
+      model: undefined,
+    });
+    expect(formatCliError(withoutModel)).toContain(
       "--reasoning-effort auto is only supported for"
     );
   });
@@ -54,8 +106,21 @@ describe("bench-harness CLI", () => {
   });
 
   it("rejects an invalid --reasoning-effort value", () => {
-    expect(() => parseArgs(["--reasoning-effort", "invalid"])).toThrow(
+    const failure = parseArgsFailure(["--reasoning-effort", "invalid"]);
+    expect(failure).toEqual({
+      kind: "invalid_reasoning_effort",
+      raw: "invalid",
+    });
+    expect(formatCliError(failure)).toContain(
       "--reasoning-effort must be one of"
+    );
+  });
+
+  it("rejects an invalid --image-detail value", () => {
+    const failure = parseArgsFailure(["--image-detail", "ultra"]);
+    expect(failure).toEqual({ kind: "invalid_image_detail", raw: "ultra" });
+    expect(formatCliError(failure)).toBe(
+      '--image-detail must be one of: auto, low, high (got "ultra")'
     );
   });
 
@@ -83,8 +148,74 @@ describe("bench-harness CLI", () => {
   });
 
   it("rejects an invalid --cost-tier value", () => {
-    expect(() => parseArgs(["--cost-tier", "invalid"])).toThrow(
-      "--cost-tier must be one of"
+    const failure = parseArgsFailure(["--cost-tier", "invalid"]);
+    expect(failure).toEqual({ kind: "invalid_cost_tier", raw: "invalid" });
+    expect(formatCliError(failure)).toContain("--cost-tier must be one of");
+  });
+
+  it("requires --model for model benchmarks", () => {
+    const failure = buildBenchmarkConfigFailure({
+      benchmarkId: "gpqa_diamond",
+      model: undefined,
+      panelConfig: undefined,
+      artifactDir: undefined,
+      endpointId: undefined,
+      imageDetail: undefined,
+      reasoningEffort: "high",
+    });
+    expect(failure).toEqual({
+      kind: "model_required",
+      benchmarkId: "gpqa_diamond",
+    });
+    expect(formatCliError(failure)).toBe("gpqa_diamond requires --model");
+  });
+
+  it("rejects an unsupported benchmark id", () => {
+    const failure = buildBenchmarkConfigFailure({
+      benchmarkId: "not_a_benchmark",
+      model: "openai/gpt-5",
+      panelConfig: undefined,
+      artifactDir: undefined,
+      endpointId: undefined,
+      imageDetail: undefined,
+      reasoningEffort: "high",
+    });
+    expect(failure).toEqual({
+      kind: "unsupported_benchmark",
+      benchmarkId: "not_a_benchmark",
+    });
+    expect(formatCliError(failure)).toBe(
+      "Unsupported benchmark: not_a_benchmark"
+    );
+  });
+
+  it("rejects an invalid DRACO panel config", () => {
+    const failure = buildBenchmarkConfigFailure({
+      benchmarkId: "draco",
+      model: undefined,
+      panelConfig: { panel: 42 },
+      artifactDir: undefined,
+      endpointId: undefined,
+      imageDetail: undefined,
+      reasoningEffort: "high",
+    });
+    expect(failure.kind).toBe("invalid_draco_panel_config");
+    expect(formatCliError(failure)).toStartWith("Invalid DRACO panel config: ");
+  });
+
+  it("returns a schema validation failure for invalid benchmark options", () => {
+    const failure = buildBenchmarkConfigFailure({
+      benchmarkId: "gpqa_diamond",
+      model: "openai/gpt-5",
+      panelConfig: { maxTokens: "invalid" },
+      artifactDir: undefined,
+      endpointId: undefined,
+      imageDetail: undefined,
+      reasoningEffort: "high",
+    });
+    expect(failure.kind).toBe("invalid_benchmark_config");
+    expect(formatCliError(failure)).toStartWith(
+      "Invalid gpqa_diamond config: "
     );
   });
 
@@ -154,17 +285,23 @@ describe("bench-harness CLI", () => {
   });
 
   it("rejects unknown solver-config keys for single-turn benchmarks", () => {
-    expect(() =>
-      buildBenchmarkConfig({
-        benchmarkId: "gpqa_diamond",
-        model: "openai/gpt-5",
-        panelConfig: { bogus: true },
-        artifactDir: undefined,
-        endpointId: undefined,
-        imageDetail: undefined,
-        reasoningEffort: "low",
-      })
-    ).toThrow("Unknown gpqa_diamond solver-config option(s): bogus");
+    const failure = buildBenchmarkConfigFailure({
+      benchmarkId: "gpqa_diamond",
+      model: "openai/gpt-5",
+      panelConfig: { bogus: true },
+      artifactDir: undefined,
+      endpointId: undefined,
+      imageDetail: undefined,
+      reasoningEffort: "low",
+    });
+    expect(failure).toEqual({
+      kind: "unknown_solver_config_options",
+      benchmarkId: "gpqa_diamond",
+      options: ["bogus"],
+    });
+    expect(formatCliError(failure)).toBe(
+      "Unknown gpqa_diamond solver-config option(s): bogus"
+    );
   });
 
   it("passes tau3 retrieval config through the generic solver config", () => {
@@ -225,19 +362,25 @@ describe("resolveSessionId", () => {
   };
 
   it("uses BENCH_CHILD_WORKFLOW_ID when set", () => {
-    expect(withWorkflowId("trial-1", resolveSessionId)).toBe("trial-1");
+    const result = withWorkflowId("trial-1", resolveSessionId);
+    assertSuccess(result);
+    expect(result.success).toBe("trial-1");
   });
 
   it("treats an empty run identifier as unset rather than malformed", () => {
-    expect(withWorkflowId("", resolveSessionId)).toMatch(/^[0-9a-f-]{36}$/);
+    const result = withWorkflowId("", resolveSessionId);
+    assertSuccess(result);
+    expect(result.success).toMatch(/^[0-9a-f-]{36}$/);
   });
 
   it("rejects control characters that would break the x-session-id header", () => {
-    expect(() => withWorkflowId("trial-1\n", resolveSessionId)).toThrow(
-      "control character"
-    );
-    expect(() => withWorkflowId("trial\u007F", resolveSessionId)).toThrow(
-      "control character"
-    );
+    for (const sessionId of ["trial-1\n", "trial\u007F"]) {
+      const result = withWorkflowId(sessionId, resolveSessionId);
+      assertFailure(result);
+      expect(result.failure).toEqual({ kind: "unsafe_session_id", sessionId });
+      expect(formatCliError(result.failure)).toBe(
+        `BENCH_CHILD_WORKFLOW_ID contains a control character, which is not a valid x-session-id header value (got ${JSON.stringify(sessionId)}).`
+      );
+    }
   });
 });
