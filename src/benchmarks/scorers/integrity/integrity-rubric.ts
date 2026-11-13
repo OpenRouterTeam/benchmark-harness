@@ -23,13 +23,6 @@ export type ChoiceJudge = (
   question: DecisionChoiceQuestion
 ) => Effect<Readonly<Record<string, number>>, DecisionsError>;
 
-export {
-  INTEGRITY_FLAG_THRESHOLD,
-  INTEGRITY_JUDGE_MODEL,
-  INTEGRITY_QUESTION,
-  INTEGRITY_SCORE_NAME,
-} from "./integrity-spec";
-
 const IntegrityVerdictSchema = z.discriminatedUnion("source", [
   z.object({
     judge: z.literal(INTEGRITY_SCORE_NAME),

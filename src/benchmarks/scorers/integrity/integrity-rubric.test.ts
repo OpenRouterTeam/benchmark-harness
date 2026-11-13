@@ -13,10 +13,10 @@ import { DecisionsError } from "../../../judge/decisions";
 import { mcqScorer } from "../mcq/scorer";
 import type { ChoiceJudge } from "./integrity-rubric";
 import {
-  INTEGRITY_QUESTION,
   integrityRunLevelScores,
   withIntegrityRubric,
 } from "./integrity-rubric";
+import { INTEGRITY_QUESTION } from "./integrity-spec";
 
 const TARGET = { text: "B" };
 

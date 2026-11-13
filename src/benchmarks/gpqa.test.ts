@@ -23,7 +23,7 @@ import {
   makeGpqaScorerLayer,
   withoutSampleIds,
 } from "./gpqa";
-import { INTEGRITY_JUDGE_MODEL } from "./scorers/integrity/integrity-rubric";
+import { INTEGRITY_JUDGE_MODEL } from "./scorers/integrity/integrity-spec";
 
 const GPQA_RECORD = {
   Question: "What is 2+2?",
