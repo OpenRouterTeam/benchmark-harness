@@ -99,16 +99,18 @@ export function integrityRunLevelScores(result: RunResult): readonly {
   const errors = verdicts.length - scored.length;
   const flagged = scored.filter((verdict) => verdict.flagged).length;
   const notIntact = scored.reduce((sum, verdict) => sum + verdict.notIntact, 0);
+  const rates: Record<string, { readonly value: number }> =
+    scored.length === 0
+      ? {}
+      : {
+          flagged_rate: { value: flagged / scored.length },
+          mean_not_intact: { value: notIntact / scored.length },
+        };
   return [
     {
       name: INTEGRITY_SCORE_NAME,
       metrics: {
-        flagged_rate: {
-          value: scored.length === 0 ? 0 : flagged / scored.length,
-        },
-        mean_not_intact: {
-          value: scored.length === 0 ? 0 : notIntact / scored.length,
-        },
+        ...rates,
         flagged: { value: flagged },
         scored: { value: scored.length },
         errors: { value: errors },

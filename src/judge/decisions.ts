@@ -31,7 +31,8 @@ const DecisionsResponseSchema = z.object({
 });
 
 export function decisionsUrl(baseUrl?: string): string {
-  const base = (baseUrl ?? DEFAULT_OPENROUTER_BASE_URL).replace(/\/+$/, "");
+  const trimmed = (baseUrl ?? DEFAULT_OPENROUTER_BASE_URL).replace(/\/+$/, "");
+  const base = trimmed.endsWith("/api/v1") ? trimmed : `${trimmed}/api/v1`;
   return new URL("../alpha/decisions", `${base}/`).toString();
 }
 

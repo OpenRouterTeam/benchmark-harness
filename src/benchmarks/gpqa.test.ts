@@ -160,6 +160,12 @@ describe("decisionsUrl", () => {
       "https://openrouter.ai/api/alpha/decisions"
     );
   });
+
+  it("accepts an origin-only base URL like the model client does", () => {
+    expect(decisionsUrl("http://localhost:8787")).toBe(
+      "http://localhost:8787/api/alpha/decisions"
+    );
+  });
 });
 
 describe("withoutSampleIds", () => {
