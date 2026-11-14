@@ -20,6 +20,7 @@ import {
   BENCH_HARNESS_APP_REFERRER,
   BENCH_HARNESS_APP_TITLE,
 } from "../../providers/app-identity";
+import { normalizeBaseUrl } from "../../providers/openrouter-model";
 import {
   buildRouterPlugin,
   withRouterPlugin,
@@ -190,7 +191,7 @@ function requestCompletion(
   options: ToolCallSchemaFuzzSolverOptions,
   requestBody: Readonly<Record<string, unknown>>
 ): Effect<CompletionResult, ModelError | SolverError> {
-  const baseUrl = (options.baseUrl ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
+  const baseUrl = normalizeBaseUrl(options.baseUrl ?? DEFAULT_BASE_URL);
   const request = HttpClientRequest.post(`${baseUrl}/chat/completions`).pipe(
     HttpClientRequest.setHeaders({
       ...options.traceHeaders,
