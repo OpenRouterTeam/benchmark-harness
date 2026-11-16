@@ -385,9 +385,16 @@ export function makeDefaultS3Client(opts: {
     async objectUpdatedMs(key) {
       try {
         const res = await aws.fetch(objectUrl(key), { method: "HEAD" });
-        const modified = res.ok ? res.headers.get("last-modified") : null;
-        return modified === null ? undefined : Date.parse(modified);
-      } catch {
+        if (!res.ok) {
+          if (res.status !== 404) {
+            wLog("S3 cache head failed", { key, status: res.status });
+          }
+          return undefined;
+        }
+        const updated = Date.parse(res.headers.get("last-modified") ?? "");
+        return Number.isFinite(updated) ? updated : undefined;
+      } catch (error) {
+        wLog("S3 cache head failed", { key, error: String(error) });
         return undefined;
       }
     },
