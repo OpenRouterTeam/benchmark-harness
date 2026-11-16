@@ -7,9 +7,12 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
+import { createServer } from "node:http";
+import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { PassThrough, Readable } from "node:stream";
+import { pipeline } from "node:stream/promises";
 
 import type { GcsObjectClient } from "./cache-store";
 import {
@@ -605,6 +608,57 @@ describe("makeDefaultS3Client", () => {
       ]);
     } finally {
       await server.stop(true);
+    }
+  });
+
+  it("streams snapshot writes, retries after creating the bucket, and fails fast on early rejection", async () => {
+    const buckets = new Set<string>();
+    const sizes = new Map<string, number>();
+    const server = createServer((req, res) => {
+      const path = req.url ?? "";
+      const [, bucket = "", ...rest] = path.split("/");
+      if (rest.length === 0) {
+        buckets.add(bucket);
+        res.end();
+        return;
+      }
+      if (!buckets.has(bucket)) {
+        res.writeHead(404).end();
+        return;
+      }
+      if (rest[0] === "denied") {
+        res.writeHead(403).end();
+        return;
+      }
+      let size = 0;
+      req.on("data", (chunk: Buffer) => {
+        size += chunk.length;
+      });
+      req.on("end", () => {
+        sizes.set(path, size);
+        res.end();
+      });
+    });
+    const { promise: listening, resolve } = Promise.withResolvers<void>();
+    server.listen(0, "127.0.0.1", resolve);
+    await listening;
+    const body = (): Readable =>
+      Readable.from(Array.from({ length: 32 }, () => Buffer.alloc(1 << 20)));
+    try {
+      const client = makeDefaultS3Client({
+        endpoint: `http://127.0.0.1:${(server.address() as AddressInfo).port}`,
+        bucket: "cache",
+        accessKeyId: "id",
+        secretAccessKey: "secret",
+      });
+      await pipeline(body(), client.openObjectWriteStream("ok/a.tar.gz"));
+      expect(sizes.get("/cache/ok/a.tar.gz")).toBe(32 << 20);
+      await expect(
+        pipeline(body(), client.openObjectWriteStream("denied/a.tar.gz"))
+      ).rejects.toThrow("S3 put failed: HTTP 403");
+    } finally {
+      server.closeAllConnections();
+      server.close();
     }
   });
 });

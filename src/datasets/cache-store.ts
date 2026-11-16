@@ -361,7 +361,13 @@ export function makeDefaultS3Client(opts: {
       { method: "PUT", headers: Object.fromEntries(signed.headers) },
       (res) => {
         res.resume();
-        res.once("end", () => resolve(res.statusCode ?? 0));
+        res.once("end", () => {
+          const status = res.statusCode ?? 0;
+          if (status < 200 || status >= 300) {
+            req.destroy();
+          }
+          resolve(status);
+        });
         res.once("error", reject);
       }
     );
