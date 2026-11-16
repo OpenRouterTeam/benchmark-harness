@@ -1,4 +1,10 @@
 import { spawn } from "node:child_process";
+import { createReadStream, mkdtempSync } from "node:fs";
+import type { FileHandle } from "node:fs/promises";
+import { open, rm, stat } from "node:fs/promises";
+import { request as httpRequest } from "node:http";
+import { request as httpsRequest } from "node:https";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Readable, Writable } from "node:stream";
 import { finished, pipeline } from "node:stream/promises";
@@ -303,6 +309,14 @@ export function makeDefaultS3Client(opts: {
     );
   }
 
+  async function ensureBucket(): Promise<void> {
+    const created = await aws.fetch(bucketUrl, { method: "PUT" });
+    if (!created.ok && created.status !== 409) {
+      throw await failure("create bucket", created);
+    }
+    await created.body?.cancel();
+  }
+
   async function putObject(
     key: string,
     content: Buffer,
@@ -317,17 +331,62 @@ export function makeDefaultS3Client(opts: {
     let res = await put();
     if (res.status === 404) {
       await res.body?.cancel();
-      const created = await aws.fetch(bucketUrl, { method: "PUT" });
-      if (!created.ok && created.status !== 409) {
-        throw await failure("create bucket", created);
-      }
-      await created.body?.cancel();
+      await ensureBucket();
       res = await put();
     }
     if (!res.ok) {
       throw await failure("put", res);
     }
     await res.body?.cancel();
+  }
+
+  async function sendFile(
+    key: string,
+    path: string,
+    contentType: string
+  ): Promise<number> {
+    const url = objectUrl(key);
+    const { size } = await stat(path);
+    const signed = await aws.sign(url, {
+      method: "PUT",
+      headers: {
+        "content-type": contentType,
+        "content-length": String(size),
+      },
+    });
+    const send = url.startsWith("https:") ? httpsRequest : httpRequest;
+    const { promise, resolve, reject } = Promise.withResolvers<number>();
+    const req = send(
+      url,
+      { method: "PUT", headers: Object.fromEntries(signed.headers) },
+      (res) => {
+        res.resume();
+        res.once("end", () => resolve(res.statusCode ?? 0));
+        res.once("error", reject);
+      }
+    );
+    req.once("error", reject);
+    const body = pipeline(createReadStream(path), req).catch(
+      (error: unknown) => error
+    );
+    const status = await promise;
+    await body;
+    return status;
+  }
+
+  async function putFile(
+    key: string,
+    path: string,
+    contentType: string
+  ): Promise<void> {
+    let status = await sendFile(key, path, contentType);
+    if (status === 404) {
+      await ensureBucket();
+      status = await sendFile(key, path, contentType);
+    }
+    if (status < 200 || status >= 300) {
+      throw new Error(`S3 put failed: HTTP ${status}`);
+    }
   }
 
   async function getObject(key: string): Promise<Response | undefined> {
@@ -370,15 +429,44 @@ export function makeDefaultS3Client(opts: {
       return Readable.from(res.body);
     },
     openObjectWriteStream(key, contentType = "application/octet-stream") {
-      const chunks: Uint8Array[] = [];
+      const spoolDir = mkdtempSync(join(tmpdir(), "bench-s3-upload-"));
+      const spoolPath = join(spoolDir, "object");
+      let spool: FileHandle | undefined;
+      const cleanup = async (): Promise<void> => {
+        await spool?.close().catch(() => undefined);
+        spool = undefined;
+        await rm(spoolDir, { recursive: true, force: true });
+      };
+      const cleanupOnFailure = async (
+        step: () => Promise<void>
+      ): Promise<void> => {
+        try {
+          await step();
+        } catch (error) {
+          await cleanup();
+          throw error;
+        }
+      };
       return Writable.fromWeb(
         new WritableStream<Uint8Array>({
-          write(chunk) {
-            chunks.push(chunk);
-          },
+          start: () =>
+            cleanupOnFailure(async () => {
+              spool = await open(spoolPath, "w");
+            }),
+          write: (chunk) =>
+            cleanupOnFailure(async () => {
+              await spool?.writeFile(chunk);
+            }),
           async close() {
-            await putObject(key, Buffer.concat(chunks), contentType);
+            try {
+              await spool?.close();
+              spool = undefined;
+              await putFile(key, spoolPath, contentType);
+            } finally {
+              await cleanup();
+            }
           },
+          abort: cleanup,
         })
       );
     },
