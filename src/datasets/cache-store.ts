@@ -363,8 +363,6 @@ export function makeDefaultS3Client(opts: {
         res.resume();
         res.once("end", () => {
           const status = res.statusCode ?? 0;
-          // A server that rejects early may never read the rest of the body,
-          // so stop sending instead of waiting for it to close the socket.
           if (status < 200 || status >= 300) {
             req.destroy();
           }
