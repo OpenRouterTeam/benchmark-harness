@@ -593,6 +593,7 @@ describe("makeDefaultS3Client", () => {
         bucket: "cache",
         accessKeyId: "id",
         secretAccessKey: "secret",
+        useBunClient: false,
       });
       const key = "hf/org%2Fname/0-1.json";
       expect(await client.downloadObject(key)).toBeUndefined();
@@ -650,6 +651,7 @@ describe("makeDefaultS3Client", () => {
         bucket: "cache",
         accessKeyId: "id",
         secretAccessKey: "secret",
+        useBunClient: false,
       });
       await pipeline(body(), client.openObjectWriteStream("ok/a.tar.gz"));
       expect(sizes.get("/cache/ok/a.tar.gz")).toBe(32 << 20);
