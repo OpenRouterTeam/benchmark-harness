@@ -366,8 +366,12 @@ export function makeDefaultS3Client(opts: {
       }
     );
     req.once("error", reject);
-    await Promise.all([pipeline(createReadStream(path), req), promise]);
-    return promise;
+    const body = pipeline(createReadStream(path), req).catch(
+      (error: unknown) => error
+    );
+    const status = await promise;
+    await body;
+    return status;
   }
 
   async function putFile(
@@ -375,8 +379,11 @@ export function makeDefaultS3Client(opts: {
     path: string,
     contentType: string
   ): Promise<void> {
-    await ensureBucket();
-    const status = await sendFile(key, path, contentType);
+    let status = await sendFile(key, path, contentType);
+    if (status === 404) {
+      await ensureBucket();
+      status = await sendFile(key, path, contentType);
+    }
     if (status < 200 || status >= 300) {
       throw new Error(`S3 put failed: HTTP ${status}`);
     }
@@ -427,16 +434,29 @@ export function makeDefaultS3Client(opts: {
       let spool: FileHandle | undefined;
       const cleanup = async (): Promise<void> => {
         await spool?.close().catch(() => undefined);
+        spool = undefined;
         await rm(spoolDir, { recursive: true, force: true });
+      };
+      const cleanupOnFailure = async (
+        step: () => Promise<void>
+      ): Promise<void> => {
+        try {
+          await step();
+        } catch (error) {
+          await cleanup();
+          throw error;
+        }
       };
       return Writable.fromWeb(
         new WritableStream<Uint8Array>({
-          async start() {
-            spool = await open(spoolPath, "w");
-          },
-          async write(chunk) {
-            await spool?.write(chunk);
-          },
+          start: () =>
+            cleanupOnFailure(async () => {
+              spool = await open(spoolPath, "w");
+            }),
+          write: (chunk) =>
+            cleanupOnFailure(async () => {
+              await spool?.writeFile(chunk);
+            }),
           async close() {
             try {
               await spool?.close();
@@ -446,9 +466,7 @@ export function makeDefaultS3Client(opts: {
               await cleanup();
             }
           },
-          async abort() {
-            await cleanup();
-          },
+          abort: cleanup,
         })
       );
     },
