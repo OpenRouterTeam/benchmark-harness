@@ -15,6 +15,7 @@ import type { GcsObjectClient } from "./cache-store";
 import {
   datasetCacheWriteFailures,
   makeDiskCacheStore,
+  makeDefaultS3Client,
   makeGcsCacheStore,
   pipeTarGzTo,
   resolveCacheStore,
@@ -141,7 +142,12 @@ describe("GcsCacheStore", () => {
     expect(info.mock.calls).toEqual([
       [
         "dataset cache read",
-        { backend: "gcs", key: "hit.json", result: "hit" },
+        {
+          backend: "gcs",
+          key: "hit.json",
+          result: "hit",
+          duration_ms: expect.any(Number),
+        },
       ],
     ]);
   });
@@ -156,7 +162,12 @@ describe("GcsCacheStore", () => {
     expect(info.mock.calls).toEqual([
       [
         "dataset cache read",
-        { backend: "gcs", key: "missing.json", result: "miss" },
+        {
+          backend: "gcs",
+          key: "missing.json",
+          result: "miss",
+          duration_ms: expect.any(Number),
+        },
       ],
     ]);
   });
@@ -175,7 +186,12 @@ describe("GcsCacheStore", () => {
     expect(info.mock.calls).toEqual([
       [
         "dataset cache read",
-        { backend: "gcs", key: "stale.json", result: "stale" },
+        {
+          backend: "gcs",
+          key: "stale.json",
+          result: "stale",
+          duration_ms: expect.any(Number),
+        },
       ],
     ]);
   });
@@ -194,7 +210,12 @@ describe("GcsCacheStore", () => {
     expect(info.mock.calls).toEqual([
       [
         "dataset cache read",
-        { backend: "gcs", key: "invalid.json", result: "invalid" },
+        {
+          backend: "gcs",
+          key: "invalid.json",
+          result: "invalid",
+          duration_ms: expect.any(Number),
+        },
       ],
     ]);
   });
@@ -448,11 +469,21 @@ describe("DiskCacheStore", () => {
     expect(info.mock.calls).toEqual([
       [
         "dataset cache read",
-        { backend: "disk", key: "hit.json", result: "hit" },
+        {
+          backend: "disk",
+          key: "hit.json",
+          result: "hit",
+          duration_ms: expect.any(Number),
+        },
       ],
       [
         "dataset cache read",
-        { backend: "disk", key: "missing.json", result: "miss" },
+        {
+          backend: "disk",
+          key: "missing.json",
+          result: "miss",
+          duration_ms: expect.any(Number),
+        },
       ],
     ]);
   });
@@ -477,6 +508,10 @@ describe("resolveCacheStore", () => {
   const saved = {
     BENCH_DATASET_CACHE_BACKEND: process.env.BENCH_DATASET_CACHE_BACKEND,
     BENCH_GCS_BUCKET: process.env.BENCH_GCS_BUCKET,
+    BENCH_S3_ENDPOINT: process.env.BENCH_S3_ENDPOINT,
+    BENCH_S3_BUCKET: process.env.BENCH_S3_BUCKET,
+    BENCH_S3_ACCESS_KEY_ID: process.env.BENCH_S3_ACCESS_KEY_ID,
+    BENCH_S3_SECRET_ACCESS_KEY: process.env.BENCH_S3_SECRET_ACCESS_KEY,
   };
   afterEach(() => {
     for (const [name, value] of Object.entries(saved)) {
@@ -500,5 +535,76 @@ describe("resolveCacheStore", () => {
     process.env.BENCH_DATASET_CACHE_BACKEND = "gcs";
     process.env.BENCH_GCS_BUCKET = "my-bucket";
     expect(resolveCacheStore().backend).toBe("gcs");
+  });
+  it("selects s3 when backend and connection settings are set", () => {
+    process.env.BENCH_DATASET_CACHE_BACKEND = "s3";
+    process.env.BENCH_S3_ENDPOINT = "http://rustfs:9000";
+    process.env.BENCH_S3_BUCKET = "dataset-cache";
+    process.env.BENCH_S3_ACCESS_KEY_ID = "id";
+    process.env.BENCH_S3_SECRET_ACCESS_KEY = "secret";
+    expect(resolveCacheStore().backend).toBe("s3");
+  });
+  it("throws when backend=s3 is missing a connection setting", () => {
+    process.env.BENCH_DATASET_CACHE_BACKEND = "s3";
+    process.env.BENCH_S3_ENDPOINT = "http://rustfs:9000";
+    process.env.BENCH_S3_BUCKET = "dataset-cache";
+    process.env.BENCH_S3_ACCESS_KEY_ID = "id";
+    delete process.env.BENCH_S3_SECRET_ACCESS_KEY;
+    expect(() => resolveCacheStore()).toThrow("BENCH_S3_SECRET_ACCESS_KEY");
+  });
+});
+
+describe("makeDefaultS3Client", () => {
+  it("creates the bucket on first write and keeps encoded key segments", async () => {
+    const buckets = new Set<string>();
+    const objects = new Map<string, string>();
+    const requests: string[] = [];
+    const server = Bun.serve({
+      port: 0,
+      async fetch(req) {
+        const path = new URL(req.url).pathname;
+        requests.push(`${req.method} ${path}`);
+        const [, bucket = "", ...rest] = path.split("/");
+        if (rest.length === 0) {
+          buckets.add(bucket);
+          return new Response(null, { status: 200 });
+        }
+        if (!buckets.has(bucket)) {
+          return new Response("<Error><Code>NoSuchBucket</Code></Error>", {
+            status: 404,
+          });
+        }
+        if (req.method === "PUT") {
+          objects.set(path, await req.text());
+          return new Response(null, { status: 200 });
+        }
+        const body = objects.get(path);
+        return body === undefined
+          ? new Response(null, { status: 404 })
+          : new Response(body);
+      },
+    });
+    try {
+      const client = makeDefaultS3Client({
+        endpoint: `http://127.0.0.1:${server.port}/`,
+        bucket: "cache",
+        accessKeyId: "id",
+        secretAccessKey: "secret",
+      });
+      const key = "hf/org%2Fname/0-1.json";
+      expect(await client.downloadObject(key)).toBeUndefined();
+      await client.uploadObject(key, Buffer.from("{}"));
+      const stored = await client.downloadObject(key);
+      expect(stored?.toString()).toBe("{}");
+      expect(requests).toEqual([
+        "GET /cache/hf/org%252Fname/0-1.json",
+        "PUT /cache/hf/org%252Fname/0-1.json",
+        "PUT /cache",
+        "PUT /cache/hf/org%252Fname/0-1.json",
+        "GET /cache/hf/org%252Fname/0-1.json",
+      ]);
+    } finally {
+      await server.stop(true);
+    }
   });
 });

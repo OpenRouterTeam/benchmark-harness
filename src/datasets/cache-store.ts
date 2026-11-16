@@ -1,7 +1,9 @@
 import { spawn } from "node:child_process";
 import { join } from "node:path";
-import type { Readable, Writable } from "node:stream";
+import { Readable, Writable } from "node:stream";
 import { finished, pipeline } from "node:stream/promises";
+
+import { AwsClient } from "aws4fetch";
 
 import { getGcsStorage } from "../internal/gcs";
 import { iLog, wLog } from "../internal/log";
@@ -22,8 +24,13 @@ export function datasetCacheWriteFailures(): number {
 export const CACHE_BACKEND_ENV = "BENCH_DATASET_CACHE_BACKEND";
 export const GCS_BUCKET_ENV = "BENCH_GCS_BUCKET";
 export const GCS_PREFIX_ENV = "BENCH_GCS_PREFIX";
+export const S3_ENDPOINT_ENV = "BENCH_S3_ENDPOINT";
+export const S3_BUCKET_ENV = "BENCH_S3_BUCKET";
+export const S3_PREFIX_ENV = "BENCH_S3_PREFIX";
+export const S3_ACCESS_KEY_ID_ENV = "BENCH_S3_ACCESS_KEY_ID";
+export const S3_SECRET_ACCESS_KEY_ENV = "BENCH_S3_SECRET_ACCESS_KEY";
 
-export type DatasetCacheBackend = "disk" | "gcs";
+export type DatasetCacheBackend = "disk" | "gcs" | "s3";
 
 export interface ReadJsonOptions {
   readonly maxAgeMs?: number;
@@ -35,9 +42,15 @@ type DatasetCacheReadResult = "hit" | "miss" | "stale" | "invalid";
 function logDatasetCacheRead(
   backend: DatasetCacheBackend,
   key: string,
-  result: DatasetCacheReadResult
+  result: DatasetCacheReadResult,
+  startedMs: number
 ): void {
-  iLog("dataset cache read", { backend, key, result });
+  iLog("dataset cache read", {
+    backend,
+    key,
+    result,
+    duration_ms: Date.now() - startedMs,
+  });
 }
 
 export interface CacheStore {
@@ -130,6 +143,7 @@ export function makeDiskCacheStore(): CacheStore {
       return datasetCacheRoot() !== undefined;
     },
     async readJson(key, opts) {
+      const startedMs = Date.now();
       const root = datasetCacheRoot();
       if (root === undefined) {
         return undefined;
@@ -137,10 +151,10 @@ export function makeDiskCacheStore(): CacheStore {
       const path = join(root, key);
       const value = readJsonCacheFile(path, opts);
       if (value !== undefined) {
-        logDatasetCacheRead("disk", key, "hit");
+        logDatasetCacheRead("disk", key, "hit", startedMs);
         return value;
       }
-      logDatasetCacheRead("disk", key, "miss");
+      logDatasetCacheRead("disk", key, "miss", startedMs);
       return undefined;
     },
     async writeJson(key, value) {
@@ -160,7 +174,7 @@ export function makeDiskCacheStore(): CacheStore {
   };
 }
 
-export interface GcsObjectClient {
+export interface ObjectClient {
   readonly downloadObject: (key: string) => Promise<Buffer | undefined>;
   readonly uploadObject: (
     key: string,
@@ -175,10 +189,21 @@ export interface GcsObjectClient {
   readonly objectUpdatedMs: (key: string) => Promise<number | undefined>;
 }
 
+export type GcsObjectClient = ObjectClient;
+
 export interface GcsCacheStoreOptions {
   readonly bucket: string;
   readonly prefix?: string;
-  readonly client?: GcsObjectClient;
+  readonly client?: ObjectClient;
+}
+
+export interface S3CacheStoreOptions {
+  readonly endpoint: string;
+  readonly bucket: string;
+  readonly accessKeyId: string;
+  readonly secretAccessKey: string;
+  readonly prefix?: string;
+  readonly client?: ObjectClient;
 }
 
 function normalizePrefix(prefix: string | undefined): string {
@@ -248,40 +273,181 @@ export function makeDefaultGcsClient(bucket: string): GcsObjectClient {
   };
 }
 
-export function makeGcsCacheStore(opts: GcsCacheStoreOptions): CacheStore {
-  const prefix = normalizePrefix(opts.prefix);
-  const client: GcsObjectClient =
-    opts.client ?? makeDefaultGcsClient(opts.bucket);
+function encodeObjectPath(bucket: string, key: string): string {
+  return [bucket, ...key.split("/")].map(encodeURIComponent).join("/");
+}
+
+export function makeDefaultS3Client(opts: {
+  readonly endpoint: string;
+  readonly bucket: string;
+  readonly accessKeyId: string;
+  readonly secretAccessKey: string;
+}): ObjectClient {
+  const aws = new AwsClient({
+    accessKeyId: opts.accessKeyId,
+    secretAccessKey: opts.secretAccessKey,
+    service: "s3",
+    region: "us-east-1",
+    retries: 0,
+  });
+  const endpoint = opts.endpoint.replace(/\/+$/, "");
+  const objectUrl = (key: string): string =>
+    `${endpoint}/${encodeObjectPath(opts.bucket, key)}`;
+  const bucketUrl = `${endpoint}/${encodeURIComponent(opts.bucket)}`;
+
+  async function failure(op: string, res: Response): Promise<Error> {
+    const text = await res.text().catch(() => "");
+    const code = /<Code>([^<]+)<\/Code>/.exec(text)?.[1];
+    return new Error(
+      `S3 ${op} failed: HTTP ${res.status}${code ? ` ${code}` : ""}`
+    );
+  }
+
+  async function putObject(
+    key: string,
+    content: Buffer,
+    contentType: string
+  ): Promise<void> {
+    const put = (): Promise<Response> =>
+      aws.fetch(objectUrl(key), {
+        method: "PUT",
+        body: Uint8Array.from(content),
+        headers: { "content-type": contentType },
+      });
+    let res = await put();
+    if (res.status === 404) {
+      await res.body?.cancel();
+      const created = await aws.fetch(bucketUrl, { method: "PUT" });
+      if (!created.ok && created.status !== 409) {
+        throw await failure("create bucket", created);
+      }
+      await created.body?.cancel();
+      res = await put();
+    }
+    if (!res.ok) {
+      throw await failure("put", res);
+    }
+    await res.body?.cancel();
+  }
+
+  async function getObject(key: string): Promise<Response | undefined> {
+    const res = await aws.fetch(objectUrl(key));
+    if (res.status === 404) {
+      await res.body?.cancel();
+      return undefined;
+    }
+    if (!res.ok) {
+      throw await failure("get", res);
+    }
+    return res;
+  }
+
   return {
-    backend: "gcs",
+    async downloadObject(key) {
+      try {
+        const res = await getObject(key);
+        return res === undefined
+          ? undefined
+          : Buffer.from(await res.arrayBuffer());
+      } catch (error) {
+        wLog("S3 cache download failed", { key, error: String(error) });
+        return undefined;
+      }
+    },
+    async uploadObject(key, content, contentType = "application/octet-stream") {
+      try {
+        await putObject(key, content, contentType);
+      } catch (error) {
+        writeFailures += 1;
+        wLog("S3 cache upload failed", { key, error: String(error) });
+      }
+    },
+    async openObjectReadStream(key) {
+      const res = await getObject(key);
+      if (res === undefined || res.body === null) {
+        return undefined;
+      }
+      return Readable.from(res.body);
+    },
+    openObjectWriteStream(key, contentType = "application/octet-stream") {
+      const chunks: Uint8Array[] = [];
+      return Writable.fromWeb(
+        new WritableStream<Uint8Array>({
+          write(chunk) {
+            chunks.push(chunk);
+          },
+          async close() {
+            await putObject(key, Buffer.concat(chunks), contentType);
+          },
+        })
+      );
+    },
+    async objectUpdatedMs(key) {
+      try {
+        const res = await aws.fetch(objectUrl(key), { method: "HEAD" });
+        const modified = res.ok ? res.headers.get("last-modified") : null;
+        return modified === null ? undefined : Date.parse(modified);
+      } catch {
+        return undefined;
+      }
+    },
+  };
+}
+
+export function makeGcsCacheStore(opts: GcsCacheStoreOptions): CacheStore {
+  return makeObjectCacheStore(
+    "gcs",
+    opts.prefix,
+    opts.client ?? makeDefaultGcsClient(opts.bucket)
+  );
+}
+
+export function makeS3CacheStore(opts: S3CacheStoreOptions): CacheStore {
+  return makeObjectCacheStore(
+    "s3",
+    opts.prefix,
+    opts.client ?? makeDefaultS3Client(opts)
+  );
+}
+
+function makeObjectCacheStore(
+  backend: "gcs" | "s3",
+  rawPrefix: string | undefined,
+  client: ObjectClient
+): CacheStore {
+  const prefix = normalizePrefix(rawPrefix);
+  const label = backend.toUpperCase();
+  return {
+    backend,
     get enabled(): boolean {
       return !datasetCacheDisabled();
     },
     async readJson(key, readOpts) {
+      const startedMs = Date.now();
       const full = joinKey(prefix, key);
       if (readOpts?.maxAgeMs !== undefined) {
         const updated = await client.objectUpdatedMs(full);
         if (updated === undefined) {
-          logDatasetCacheRead("gcs", full, "miss");
+          logDatasetCacheRead(backend, full, "miss", startedMs);
           return undefined;
         }
         const now = readOpts.now ?? Date.now();
         if (Math.max(0, now - updated) >= readOpts.maxAgeMs) {
-          logDatasetCacheRead("gcs", full, "stale");
+          logDatasetCacheRead(backend, full, "stale", startedMs);
           return undefined;
         }
       }
       const buf = await client.downloadObject(full);
       if (buf === undefined) {
-        logDatasetCacheRead("gcs", full, "miss");
+        logDatasetCacheRead(backend, full, "miss", startedMs);
         return undefined;
       }
       try {
         const value: unknown = JSON.parse(buf.toString("utf8"));
-        logDatasetCacheRead("gcs", full, "hit");
+        logDatasetCacheRead(backend, full, "hit", startedMs);
         return value;
       } catch {
-        logDatasetCacheRead("gcs", full, "invalid");
+        logDatasetCacheRead(backend, full, "invalid", startedMs);
         return undefined;
       }
     },
@@ -295,7 +461,10 @@ export function makeGcsCacheStore(opts: GcsCacheStoreOptions): CacheStore {
         );
       } catch (error) {
         writeFailures += 1;
-        wLog("GCS cache write failed", { key: full, error: String(error) });
+        wLog(`${label} cache write failed`, {
+          key: full,
+          error: String(error),
+        });
       }
     },
     async tryHydrateCheckout(localDir, scope, commit) {
@@ -320,7 +489,7 @@ export function makeGcsCacheStore(opts: GcsCacheStoreOptions): CacheStore {
         });
         return true;
       } catch (error) {
-        wLog("GCS checkout hydrate failed", {
+        wLog(`${label} checkout hydrate failed`, {
           key: full,
           error: String(error),
         });
@@ -334,7 +503,7 @@ export function makeGcsCacheStore(opts: GcsCacheStoreOptions): CacheStore {
         await pipeTarGzTo(localDir, dest);
         iLog("checkout cache snapshot written", { key: full, scope, commit });
       } catch (error) {
-        wLog("GCS checkout snapshot failed", {
+        wLog(`${label} checkout snapshot failed`, {
           key: full,
           error: String(error),
         });
@@ -359,13 +528,22 @@ export function resolveCacheStore(): CacheStore {
       prefix: readEnv(GCS_PREFIX_ENV),
     });
   }
+  if (backend === "s3") {
+    return makeS3CacheStore({
+      endpoint: requireEnv(S3_ENDPOINT_ENV),
+      bucket: requireEnv(S3_BUCKET_ENV),
+      accessKeyId: requireEnv(S3_ACCESS_KEY_ID_ENV),
+      secretAccessKey: requireEnv(S3_SECRET_ACCESS_KEY_ENV),
+      prefix: readEnv(S3_PREFIX_ENV),
+    });
+  }
   return makeDiskCacheStore();
 }
 
 function readBackendEnv(): DatasetCacheBackend {
   const raw = readEnv(CACHE_BACKEND_ENV);
-  if (raw === "gcs") {
-    return "gcs";
+  if (raw === "gcs" || raw === "s3") {
+    return raw;
   }
   return "disk";
 }
@@ -373,4 +551,12 @@ function readBackendEnv(): DatasetCacheBackend {
 function readEnv(name: string): string | undefined {
   const value = process.env[name];
   return value !== undefined && value.length > 0 ? value : undefined;
+}
+
+function requireEnv(name: string): string {
+  const value = readEnv(name);
+  if (value === undefined) {
+    throw new Error(`${CACHE_BACKEND_ENV}=s3 requires ${name}`);
+  }
+  return value;
 }
