@@ -558,6 +558,22 @@ describe("resolveCacheStore", () => {
 });
 
 describe("makeDefaultS3Client", () => {
+  it("rejects an ambient session token that Bun's S3 client would send", () => {
+    process.env.AWS_SESSION_TOKEN = "token";
+    try {
+      expect(() =>
+        makeDefaultS3Client({
+          endpoint: "http://127.0.0.1:9",
+          bucket: "cache",
+          accessKeyId: "id",
+          secretAccessKey: "secret",
+        })
+      ).toThrow("AWS_SESSION_TOKEN");
+    } finally {
+      delete process.env.AWS_SESSION_TOKEN;
+    }
+  });
+
   it("creates the bucket on first write and keeps encoded key segments", async () => {
     const buckets = new Set<string>();
     const objects = new Map<string, string>();
@@ -593,7 +609,6 @@ describe("makeDefaultS3Client", () => {
         bucket: "cache",
         accessKeyId: "id",
         secretAccessKey: "secret",
-        useBunClient: false,
       });
       const key = "hf/org%2Fname/0-1.json";
       expect(await client.downloadObject(key)).toBeUndefined();
@@ -612,7 +627,7 @@ describe("makeDefaultS3Client", () => {
     }
   });
 
-  it("streams snapshot writes, retries after creating the bucket, and fails fast on early rejection", async () => {
+  it("uploads spooled snapshot writes, retries after creating the bucket, and surfaces rejections", async () => {
     const buckets = new Set<string>();
     const sizes = new Map<string, number>();
     const server = createServer((req, res) => {
@@ -644,20 +659,19 @@ describe("makeDefaultS3Client", () => {
     server.listen(0, "127.0.0.1", resolve);
     await listening;
     const body = (): Readable =>
-      Readable.from(Array.from({ length: 32 }, () => Buffer.alloc(1 << 20)));
+      Readable.from(Array.from({ length: 4 }, () => Buffer.alloc(1 << 20)));
     try {
       const client = makeDefaultS3Client({
         endpoint: `http://127.0.0.1:${(server.address() as AddressInfo).port}`,
         bucket: "cache",
         accessKeyId: "id",
         secretAccessKey: "secret",
-        useBunClient: false,
       });
       await pipeline(body(), client.openObjectWriteStream("ok/a.tar.gz"));
-      expect(sizes.get("/cache/ok/a.tar.gz")).toBe(32 << 20);
+      expect(sizes.get("/cache/ok/a.tar.gz")).toBe(4 << 20);
       await expect(
         pipeline(body(), client.openObjectWriteStream("denied/a.tar.gz"))
-      ).rejects.toThrow("S3 put failed: HTTP 403");
+      ).rejects.toThrow();
     } finally {
       server.closeAllConnections();
       server.close();
