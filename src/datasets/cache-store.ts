@@ -1,15 +1,11 @@
 import { spawn } from "node:child_process";
-import { createReadStream, mkdtempSync } from "node:fs";
+import { mkdtempSync } from "node:fs";
 import type { FileHandle } from "node:fs/promises";
-import { open, rm, stat } from "node:fs/promises";
-import { request as httpRequest } from "node:http";
-import { request as httpsRequest } from "node:https";
+import { open, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Readable, Writable } from "node:stream";
 import { finished, pipeline } from "node:stream/promises";
-
-import { AwsClient } from "aws4fetch";
 
 import { getGcsStorage } from "../internal/gcs";
 import { iLog, wLog } from "../internal/log";
@@ -279,33 +275,6 @@ export function makeDefaultGcsClient(bucket: string): GcsObjectClient {
   };
 }
 
-interface BunS3File {
-  readonly arrayBuffer: () => Promise<ArrayBuffer>;
-}
-
-interface BunS3Client {
-  readonly file: (key: string) => BunS3File;
-  readonly write: (
-    key: string,
-    body: Uint8Array | BunS3File,
-    options: { readonly type: string }
-  ) => Promise<number>;
-}
-
-interface BunS3Runtime {
-  readonly S3Client: new (options: {
-    readonly endpoint: string;
-    readonly bucket: string;
-    readonly accessKeyId: string;
-    readonly secretAccessKey: string;
-    readonly region: string;
-    readonly retry: number;
-  }) => BunS3Client;
-  readonly file: (path: string) => BunS3File;
-}
-
-const bunRuntime = (globalThis as { readonly Bun?: BunS3Runtime }).Bun;
-
 function s3ErrorCode(error: unknown): string | undefined {
   if (typeof error !== "object" || error === null || !("code" in error)) {
     return undefined;
@@ -313,8 +282,8 @@ function s3ErrorCode(error: unknown): string | undefined {
   return typeof error.code === "string" ? error.code : undefined;
 }
 
-function encodeObjectPath(bucket: string, key: string): string {
-  return [bucket, ...key.split("/")].map(encodeURIComponent).join("/");
+function isMissingObject(error: unknown): boolean {
+  return s3ErrorCode(error) === "NoSuchKey";
 }
 
 export function makeDefaultS3Client(opts: {
@@ -322,209 +291,38 @@ export function makeDefaultS3Client(opts: {
   readonly bucket: string;
   readonly accessKeyId: string;
   readonly secretAccessKey: string;
-  readonly useBunClient?: boolean;
 }): ObjectClient {
-  const bun =
-    (opts.useBunClient ?? true) &&
-    bunRuntime !== undefined &&
-    process.env.AWS_SESSION_TOKEN === undefined &&
-    process.env.S3_SESSION_TOKEN === undefined
-      ? new bunRuntime.S3Client({
-          endpoint: opts.endpoint,
-          bucket: opts.bucket,
-          accessKeyId: opts.accessKeyId,
-          secretAccessKey: opts.secretAccessKey,
-          region: "us-east-1",
-          retry: 0,
-        })
-      : undefined;
-  const aws = new AwsClient({
+  const client = new Bun.S3Client({
+    endpoint: opts.endpoint,
+    bucket: opts.bucket,
     accessKeyId: opts.accessKeyId,
     secretAccessKey: opts.secretAccessKey,
-    service: "s3",
     region: "us-east-1",
-    retries: 0,
+    retry: 0,
   });
-  const endpoint = opts.endpoint.replace(/\/+$/, "");
-  const objectUrl = (key: string): string =>
-    `${endpoint}/${encodeObjectPath(opts.bucket, key)}`;
-  const bucketUrl = `${endpoint}/${encodeURIComponent(opts.bucket)}`;
-
-  async function failure(op: string, res: Response): Promise<Error> {
-    const text = await res.text().catch(() => "");
-    const code = /<Code>([^<]+)<\/Code>/.exec(text)?.[1];
-    return new Error(
-      `S3 ${op} failed: HTTP ${res.status}${code ? ` ${code}` : ""}`
-    );
-  }
-
-  async function ensureBucket(): Promise<void> {
-    const created = await aws.fetch(bucketUrl, { method: "PUT" });
-    if (!created.ok && created.status !== 409) {
-      throw await failure("create bucket", created);
-    }
-    await created.body?.cancel();
-  }
-
-  async function bunWrite(
-    client: BunS3Client,
-    key: string,
-    body: Uint8Array | BunS3File,
-    contentType: string
-  ): Promise<void> {
-    const write = (): Promise<number> =>
-      client.write(key, body, { type: contentType });
-    try {
-      await write();
-    } catch (error) {
-      const code = s3ErrorCode(error);
-      if (code !== "NoSuchBucket" && code !== "UnknownError") {
-        throw error;
-      }
-      await ensureBucket();
-      await write();
-    }
-  }
-
-  async function putObject(
-    key: string,
-    content: Buffer,
-    contentType: string
-  ): Promise<void> {
-    if (bun !== undefined) {
-      await bunWrite(bun, key, content, contentType);
-      return;
-    }
-    const put = (): Promise<Response> =>
-      aws.fetch(objectUrl(key), {
-        method: "PUT",
-        body: Uint8Array.from(content),
-        headers: { "content-type": contentType },
-      });
-    let res = await put();
-    if (res.status === 404) {
-      await res.body?.cancel();
-      await ensureBucket();
-      res = await put();
-    }
-    if (!res.ok) {
-      throw await failure("put", res);
-    }
-    await res.body?.cancel();
-  }
-
-  async function sendFile(
-    key: string,
-    path: string,
-    contentType: string
-  ): Promise<number> {
-    const url = objectUrl(key);
-    const { size } = await stat(path);
-    const signed = await aws.sign(url, {
-      method: "PUT",
-      headers: {
-        "content-type": contentType,
-        "content-length": String(size),
-      },
-    });
-    const send = url.startsWith("https:") ? httpsRequest : httpRequest;
-    const { promise, resolve, reject } = Promise.withResolvers<number>();
-    const req = send(
-      url,
-      { method: "PUT", headers: Object.fromEntries(signed.headers) },
-      (res) => {
-        res.resume();
-        res.once("end", () => {
-          const status = res.statusCode ?? 0;
-          if (status < 200 || status >= 300) {
-            req.destroy();
-          }
-          resolve(status);
-        });
-        res.once("error", reject);
-      }
-    );
-    req.once("error", reject);
-    const body = pipeline(createReadStream(path), req).catch(
-      (error: unknown) => error
-    );
-    const status = await promise;
-    await body;
-    return status;
-  }
-
-  async function putFile(
-    key: string,
-    path: string,
-    contentType: string
-  ): Promise<void> {
-    if (bun !== undefined && bunRuntime !== undefined) {
-      await bunWrite(bun, key, bunRuntime.file(path), contentType);
-      return;
-    }
-    let status = await sendFile(key, path, contentType);
-    if (status === 404) {
-      await ensureBucket();
-      status = await sendFile(key, path, contentType);
-    }
-    if (status < 200 || status >= 300) {
-      throw new Error(`S3 put failed: HTTP ${status}`);
-    }
-  }
-
-  async function getObject(key: string): Promise<Response | undefined> {
-    const res = await aws.fetch(objectUrl(key));
-    if (res.status === 404) {
-      await res.body?.cancel();
-      return undefined;
-    }
-    if (!res.ok) {
-      throw await failure("get", res);
-    }
-    return res;
-  }
 
   return {
     async downloadObject(key) {
       try {
-        if (bun !== undefined) {
-          return await bun
-            .file(key)
-            .arrayBuffer()
-            .then(
-              (body: ArrayBuffer) => Buffer.from(body),
-              (error: unknown) => {
-                const code = s3ErrorCode(error);
-                if (code === "NoSuchKey" || code === "NoSuchBucket") {
-                  return undefined;
-                }
-                throw error;
-              }
-            );
-        }
-        const res = await getObject(key);
-        return res === undefined
-          ? undefined
-          : Buffer.from(await res.arrayBuffer());
+        return Buffer.from(await client.file(key).arrayBuffer());
       } catch (error) {
-        wLog("S3 cache download failed", { key, error: String(error) });
+        if (!isMissingObject(error)) {
+          wLog("S3 cache download failed", { key, error: String(error) });
+        }
         return undefined;
       }
     },
     async uploadObject(key, content, contentType = "application/octet-stream") {
       try {
-        await putObject(key, content, contentType);
+        await client.write(key, content, { type: contentType });
       } catch (error) {
         writeFailures += 1;
         wLog("S3 cache upload failed", { key, error: String(error) });
       }
     },
     async openObjectReadStream(key) {
-      const res = await getObject(key);
-      if (res === undefined || res.body === null) {
-        return undefined;
-      }
-      return Readable.from(res.body);
+      const file = client.file(key);
+      return (await file.exists()) ? Readable.from(file.stream()) : undefined;
     },
     openObjectWriteStream(key, contentType = "application/octet-stream") {
       const spoolDir = mkdtempSync(join(tmpdir(), "bench-s3-upload-"));
@@ -559,7 +357,9 @@ export function makeDefaultS3Client(opts: {
             try {
               await spool?.close();
               spool = undefined;
-              await putFile(key, spoolPath, contentType);
+              await client.write(key, Bun.file(spoolPath), {
+                type: contentType,
+              });
             } finally {
               await cleanup();
             }
@@ -570,17 +370,13 @@ export function makeDefaultS3Client(opts: {
     },
     async objectUpdatedMs(key) {
       try {
-        const res = await aws.fetch(objectUrl(key), { method: "HEAD" });
-        if (!res.ok) {
-          if (res.status !== 404) {
-            wLog("S3 cache head failed", { key, status: res.status });
-          }
-          return undefined;
-        }
-        const updated = Date.parse(res.headers.get("last-modified") ?? "");
+        const { lastModified } = await client.file(key).stat();
+        const updated = lastModified.getTime();
         return Number.isFinite(updated) ? updated : undefined;
       } catch (error) {
-        wLog("S3 cache head failed", { key, error: String(error) });
+        if (!isMissingObject(error)) {
+          wLog("S3 cache head failed", { key, error: String(error) });
+        }
         return undefined;
       }
     },
