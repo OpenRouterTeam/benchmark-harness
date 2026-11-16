@@ -279,6 +279,40 @@ export function makeDefaultGcsClient(bucket: string): GcsObjectClient {
   };
 }
 
+interface BunS3File {
+  readonly arrayBuffer: () => Promise<ArrayBuffer>;
+}
+
+interface BunS3Client {
+  readonly file: (key: string) => BunS3File;
+  readonly write: (
+    key: string,
+    body: Uint8Array | BunS3File,
+    options: { readonly type: string }
+  ) => Promise<number>;
+}
+
+interface BunS3Runtime {
+  readonly S3Client: new (options: {
+    readonly endpoint: string;
+    readonly bucket: string;
+    readonly accessKeyId: string;
+    readonly secretAccessKey: string;
+    readonly region: string;
+    readonly retry: number;
+  }) => BunS3Client;
+  readonly file: (path: string) => BunS3File;
+}
+
+const bunRuntime = (globalThis as { readonly Bun?: BunS3Runtime }).Bun;
+
+function s3ErrorCode(error: unknown): string | undefined {
+  if (typeof error !== "object" || error === null || !("code" in error)) {
+    return undefined;
+  }
+  return typeof error.code === "string" ? error.code : undefined;
+}
+
 function encodeObjectPath(bucket: string, key: string): string {
   return [bucket, ...key.split("/")].map(encodeURIComponent).join("/");
 }
@@ -288,7 +322,19 @@ export function makeDefaultS3Client(opts: {
   readonly bucket: string;
   readonly accessKeyId: string;
   readonly secretAccessKey: string;
+  readonly useBunClient?: boolean;
 }): ObjectClient {
+  const bun =
+    (opts.useBunClient ?? true) && bunRuntime !== undefined
+      ? new bunRuntime.S3Client({
+          endpoint: opts.endpoint,
+          bucket: opts.bucket,
+          accessKeyId: opts.accessKeyId,
+          secretAccessKey: opts.secretAccessKey,
+          region: "us-east-1",
+          retry: 0,
+        })
+      : undefined;
   const aws = new AwsClient({
     accessKeyId: opts.accessKeyId,
     secretAccessKey: opts.secretAccessKey,
@@ -317,11 +363,34 @@ export function makeDefaultS3Client(opts: {
     await created.body?.cancel();
   }
 
+  async function bunWrite(
+    client: BunS3Client,
+    key: string,
+    body: Uint8Array | BunS3File,
+    contentType: string
+  ): Promise<void> {
+    const write = (): Promise<number> =>
+      client.write(key, body, { type: contentType });
+    try {
+      await write();
+    } catch (error) {
+      if (s3ErrorCode(error) !== "NoSuchBucket") {
+        throw error;
+      }
+      await ensureBucket();
+      await write();
+    }
+  }
+
   async function putObject(
     key: string,
     content: Buffer,
     contentType: string
   ): Promise<void> {
+    if (bun !== undefined) {
+      await bunWrite(bun, key, content, contentType);
+      return;
+    }
     const put = (): Promise<Response> =>
       aws.fetch(objectUrl(key), {
         method: "PUT",
@@ -385,6 +454,10 @@ export function makeDefaultS3Client(opts: {
     path: string,
     contentType: string
   ): Promise<void> {
+    if (bun !== undefined && bunRuntime !== undefined) {
+      await bunWrite(bun, key, bunRuntime.file(path), contentType);
+      return;
+    }
     let status = await sendFile(key, path, contentType);
     if (status === 404) {
       await ensureBucket();
@@ -410,6 +483,21 @@ export function makeDefaultS3Client(opts: {
   return {
     async downloadObject(key) {
       try {
+        if (bun !== undefined) {
+          return await bun
+            .file(key)
+            .arrayBuffer()
+            .then(
+              (body: ArrayBuffer) => Buffer.from(body),
+              (error: unknown) => {
+                const code = s3ErrorCode(error);
+                if (code === "NoSuchKey" || code === "NoSuchBucket") {
+                  return undefined;
+                }
+                throw error;
+              }
+            );
+        }
         const res = await getObject(key);
         return res === undefined
           ? undefined
