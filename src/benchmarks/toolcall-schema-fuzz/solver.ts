@@ -19,6 +19,7 @@ import { parseSchema, z } from "../../internal/zod";
 import {
   BENCH_HARNESS_APP_REFERRER,
   BENCH_HARNESS_APP_TITLE,
+  requestedByHeaders,
 } from "../../providers/app-identity";
 import {
   buildRouterPlugin,
@@ -198,6 +199,7 @@ function requestCompletion(
       "Content-Type": "application/json",
       "HTTP-Referer": BENCH_HARNESS_APP_REFERRER,
       "X-OpenRouter-Title": BENCH_HARNESS_APP_TITLE,
+      ...requestedByHeaders(),
       ...definedValues({
         "x-session-id": options.sessionId,
         "X-OR-Endpoint-Id": options.endpointId,

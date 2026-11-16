@@ -62,6 +62,7 @@ import {
 import {
   BENCH_HARNESS_APP_REFERRER,
   BENCH_HARNESS_APP_TITLE,
+  requestedByHeaders,
 } from "./app-identity";
 import type { ModelErrorIdentifiers } from "./request-identifiers";
 import {
@@ -234,6 +235,7 @@ export function makeResponsesLayer(config: ResponsesConfig): Layer<Responses> {
     const headers: Record<string, string> = {
       "HTTP-Referer": BENCH_HARNESS_APP_REFERRER,
       "X-OpenRouter-Title": BENCH_HARNESS_APP_TITLE,
+      ...requestedByHeaders(),
       ...traceHeaders,
       ...options.extraHeaders,
       ...definedValues({
