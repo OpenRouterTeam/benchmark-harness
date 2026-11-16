@@ -377,7 +377,8 @@ export function makeDefaultS3Client(opts: {
     try {
       await write();
     } catch (error) {
-      if (s3ErrorCode(error) !== "NoSuchBucket") {
+      const code = s3ErrorCode(error);
+      if (code !== "NoSuchBucket" && code !== "UnknownError") {
         throw error;
       }
       await ensureBucket();
