@@ -325,7 +325,10 @@ export function makeDefaultS3Client(opts: {
   readonly useBunClient?: boolean;
 }): ObjectClient {
   const bun =
-    (opts.useBunClient ?? true) && bunRuntime !== undefined
+    (opts.useBunClient ?? true) &&
+    bunRuntime !== undefined &&
+    process.env.AWS_SESSION_TOKEN === undefined &&
+    process.env.S3_SESSION_TOKEN === undefined
       ? new bunRuntime.S3Client({
           endpoint: opts.endpoint,
           bucket: opts.bucket,
