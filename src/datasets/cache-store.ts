@@ -7,8 +7,6 @@ import { join } from "node:path";
 import { Readable, Writable } from "node:stream";
 import { finished, pipeline } from "node:stream/promises";
 
-import { AwsClient } from "aws4fetch";
-
 import { getGcsStorage } from "../internal/gcs";
 import { iLog, wLog } from "../internal/log";
 import {
@@ -277,36 +275,6 @@ export function makeDefaultGcsClient(bucket: string): GcsObjectClient {
   };
 }
 
-interface BunS3File {
-  readonly arrayBuffer: () => Promise<ArrayBuffer>;
-  readonly stream: () => ReadableStream<Uint8Array>;
-  readonly exists: () => Promise<boolean>;
-  readonly stat: () => Promise<{ readonly lastModified: Date }>;
-}
-
-interface BunS3Client {
-  readonly file: (key: string) => BunS3File;
-  readonly write: (
-    key: string,
-    body: Uint8Array | BunS3File,
-    options: { readonly type: string }
-  ) => Promise<number>;
-}
-
-interface BunS3Runtime {
-  readonly S3Client: new (options: {
-    readonly endpoint: string;
-    readonly bucket: string;
-    readonly accessKeyId: string;
-    readonly secretAccessKey: string;
-    readonly region: string;
-    readonly retry: number;
-  }) => BunS3Client;
-  readonly file: (path: string) => BunS3File;
-}
-
-const SESSION_TOKEN_ENVS = ["AWS_SESSION_TOKEN", "S3_SESSION_TOKEN"] as const;
-
 function s3ErrorCode(error: unknown): string | undefined {
   if (typeof error !== "object" || error === null || !("code" in error)) {
     return undefined;
@@ -315,24 +283,7 @@ function s3ErrorCode(error: unknown): string | undefined {
 }
 
 function isMissingObject(error: unknown): boolean {
-  const code = s3ErrorCode(error);
-  return code === "NoSuchKey" || code === "NoSuchBucket";
-}
-
-function bunS3Runtime(): BunS3Runtime {
-  const bun = (globalThis as { readonly Bun?: BunS3Runtime }).Bun;
-  if (bun === undefined) {
-    throw new Error("The s3 dataset cache backend requires the Bun runtime");
-  }
-  const tokenEnv = SESSION_TOKEN_ENVS.find(
-    (name) => process.env[name] !== undefined
-  );
-  if (tokenEnv !== undefined) {
-    throw new Error(
-      `The s3 dataset cache backend uses static keys; unset ${tokenEnv}, which Bun's S3 client would send with them`
-    );
-  }
-  return bun;
+  return s3ErrorCode(error) === "NoSuchKey";
 }
 
 export function makeDefaultS3Client(opts: {
@@ -341,8 +292,7 @@ export function makeDefaultS3Client(opts: {
   readonly accessKeyId: string;
   readonly secretAccessKey: string;
 }): ObjectClient {
-  const bun = bunS3Runtime();
-  const client = new bun.S3Client({
+  const client = new Bun.S3Client({
     endpoint: opts.endpoint,
     bucket: opts.bucket,
     accessKeyId: opts.accessKeyId,
@@ -350,41 +300,6 @@ export function makeDefaultS3Client(opts: {
     region: "us-east-1",
     retry: 0,
   });
-  const aws = new AwsClient({
-    accessKeyId: opts.accessKeyId,
-    secretAccessKey: opts.secretAccessKey,
-    service: "s3",
-    region: "us-east-1",
-    retries: 0,
-  });
-  const bucketUrl = `${opts.endpoint.replace(/\/+$/, "")}/${encodeURIComponent(opts.bucket)}`;
-
-  async function ensureBucket(): Promise<void> {
-    const created = await aws.fetch(bucketUrl, { method: "PUT" });
-    await created.body?.cancel();
-    if (!created.ok && created.status !== 409) {
-      throw new Error(`S3 create bucket failed: HTTP ${created.status}`);
-    }
-  }
-
-  async function write(
-    key: string,
-    body: Uint8Array | BunS3File,
-    contentType: string
-  ): Promise<void> {
-    const put = (): Promise<number> =>
-      client.write(key, body, { type: contentType });
-    try {
-      await put();
-    } catch (error) {
-      const code = s3ErrorCode(error);
-      if (code !== "NoSuchBucket" && code !== "UnknownError") {
-        throw error;
-      }
-      await ensureBucket();
-      await put();
-    }
-  }
 
   return {
     async downloadObject(key) {
@@ -399,7 +314,7 @@ export function makeDefaultS3Client(opts: {
     },
     async uploadObject(key, content, contentType = "application/octet-stream") {
       try {
-        await write(key, content, contentType);
+        await client.write(key, content, { type: contentType });
       } catch (error) {
         writeFailures += 1;
         wLog("S3 cache upload failed", { key, error: String(error) });
@@ -442,7 +357,9 @@ export function makeDefaultS3Client(opts: {
             try {
               await spool?.close();
               spool = undefined;
-              await write(key, bun.file(spoolPath), contentType);
+              await client.write(key, Bun.file(spoolPath), {
+                type: contentType,
+              });
             } finally {
               await cleanup();
             }

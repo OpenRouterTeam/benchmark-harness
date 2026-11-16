@@ -23,13 +23,16 @@ export const TEST_carriesRedirectSurvivingCredential =
 
 const liveFetchLayer = succeed(
   FetchHttpClient.Fetch,
-  (input: string | URL | Request, init?: RequestInit) =>
-    globalThis.fetch(
-      input,
-      carriesRedirectSurvivingCredential(input, init)
-        ? { ...init, redirect: "error" }
-        : init
-    )
+  Object.assign(
+    (input: string | URL | Request, init?: RequestInit) =>
+      globalThis.fetch(
+        input,
+        carriesRedirectSurvivingCredential(input, init)
+          ? { ...init, redirect: "error" }
+          : init
+      ),
+    { preconnect: globalThis.fetch.preconnect }
+  )
 );
 
 export const fetchHttpClientLayer: Layer<HttpClient> =

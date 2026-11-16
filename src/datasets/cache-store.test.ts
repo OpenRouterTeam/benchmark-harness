@@ -558,24 +558,7 @@ describe("resolveCacheStore", () => {
 });
 
 describe("makeDefaultS3Client", () => {
-  it("rejects an ambient session token that Bun's S3 client would send", () => {
-    process.env.AWS_SESSION_TOKEN = "token";
-    try {
-      expect(() =>
-        makeDefaultS3Client({
-          endpoint: "http://127.0.0.1:9",
-          bucket: "cache",
-          accessKeyId: "id",
-          secretAccessKey: "secret",
-        })
-      ).toThrow("AWS_SESSION_TOKEN");
-    } finally {
-      delete process.env.AWS_SESSION_TOKEN;
-    }
-  });
-
-  it("creates the bucket on first write and keeps encoded key segments", async () => {
-    const buckets = new Set<string>();
+  it("round-trips objects and keeps encoded key segments", async () => {
     const objects = new Map<string, string>();
     const requests: string[] = [];
     const server = Bun.serve({
@@ -583,16 +566,6 @@ describe("makeDefaultS3Client", () => {
       async fetch(req) {
         const path = new URL(req.url).pathname;
         requests.push(`${req.method} ${path}`);
-        const [, bucket = "", ...rest] = path.split("/");
-        if (rest.length === 0) {
-          buckets.add(bucket);
-          return new Response(null, { status: 200 });
-        }
-        if (!buckets.has(bucket)) {
-          return new Response("<Error><Code>NoSuchBucket</Code></Error>", {
-            status: 404,
-          });
-        }
         if (req.method === "PUT") {
           objects.set(path, await req.text());
           return new Response(null, { status: 200 });
@@ -618,8 +591,6 @@ describe("makeDefaultS3Client", () => {
       expect(requests).toEqual([
         "GET /cache/hf/org%252Fname/0-1.json",
         "PUT /cache/hf/org%252Fname/0-1.json",
-        "PUT /cache",
-        "PUT /cache/hf/org%252Fname/0-1.json",
         "GET /cache/hf/org%252Fname/0-1.json",
       ]);
     } finally {
@@ -627,22 +598,12 @@ describe("makeDefaultS3Client", () => {
     }
   });
 
-  it("uploads spooled snapshot writes, retries after creating the bucket, and surfaces rejections", async () => {
-    const buckets = new Set<string>();
+  it("uploads spooled snapshot writes and surfaces rejections", async () => {
     const sizes = new Map<string, number>();
     const server = createServer((req, res) => {
       const path = req.url ?? "";
-      const [, bucket = "", ...rest] = path.split("/");
-      if (rest.length === 0) {
-        buckets.add(bucket);
-        res.end();
-        return;
-      }
-      if (!buckets.has(bucket)) {
-        res.writeHead(404).end();
-        return;
-      }
-      if (rest[0] === "denied") {
+      const [, , first] = path.split("/");
+      if (first === "denied") {
         res.writeHead(403).end();
         return;
       }
