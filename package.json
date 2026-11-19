@@ -2,7 +2,7 @@
   "name": "@openrouter/bench-harness",
   "version": "0.0.0",
   "description": "Kepler, the OpenRouter TypeScript benchmark harness (inspect-ai-style primitives, Effect-based)",
-  "packageManager": "bun@1.4.4",
+  "packageManager": "bun@1.4.5",
   "type": "module",
   "exports": {
     "./benchmarks/benchmark-config": "./src/benchmarks/benchmark-config.ts",
