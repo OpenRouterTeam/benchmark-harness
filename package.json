@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "@effect/tsgo": "0.31.0",
-    "@types/bun": "1.4.4",
+    "@types/bun": "1.4.5",
     "@types/cli-progress": "3.11.6",
     "@types/node": "24.10.0",
     "@typescript/native": "npm:@typescript/native-preview@7.0.0-dev.20260707.2",
