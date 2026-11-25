@@ -1,0 +1,4 @@
+[install]
+# New npm versions must be at least 3 days old before bun resolves them, so a
+# hijacked release is usually reported and pulled before it reaches CI.
+minimumReleaseAge = 259200
