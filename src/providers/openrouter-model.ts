@@ -16,6 +16,7 @@ export {
   BENCH_HARNESS_APP_REFERRER,
   BENCH_HARNESS_APP_TITLE,
 } from "./app-identity";
+export { buildRouterPlugin } from "./router-plugin";
 
 export interface OpenRouterModelConfig {
   readonly model: string;

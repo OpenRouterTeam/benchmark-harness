@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { buildRouterPlugin } from "./router-plugin";
+import { buildRouterPlugin } from "@openrouter/bench-harness/providers/openrouter-model";
 
 describe.each([
   ["openrouter/auto", "auto-router"],
